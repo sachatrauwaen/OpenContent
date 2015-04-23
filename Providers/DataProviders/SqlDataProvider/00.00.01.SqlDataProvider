@@ -1,0 +1,55 @@
+﻿/************************************************************/
+/*****              SqlDataProvider                     *****/
+/*****                                                  *****/
+/*****                                                  *****/
+/***** Note: To manually execute this script you must   *****/
+/*****       perform a search and replace operation     *****/
+/*****       for {databaseOwner} and {objectQualifier}  *****/
+/*****                                                  *****/
+/************************************************************/
+
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}OpenContent_Items]') AND type in (N'U'))
+DROP TABLE {databaseOwner}[{objectQualifier}OpenContent_Items]
+GO
+
+CREATE TABLE {databaseOwner}{objectQualifier}OpenContent_Items
+    (
+    ContentId int NOT NULL IDENTITY (1, 1),
+    Title nvarchar(MAX) NOT NULL,
+	Json nvarchar(max) NOT NULL,
+	Html nvarchar(max) NOT NULL,
+    ModuleId int NOT NULL,
+    CreatedOnDate datetime NOT NULL,
+    CreatedByUserId int NOT NULL,
+    LastModifiedOnDate datetime NOT NULL,
+    LastModifiedByUserId int NOT NULL
+    )  ON [PRIMARY]
+     TEXTIMAGE_ON [PRIMARY]
+GO
+
+
+ALTER TABLE {databaseOwner}{objectQualifier}OpenContent_Items ADD CONSTRAINT
+    PK_{objectQualifier}OpenContent_Items PRIMARY KEY CLUSTERED 
+    (
+    ContentId
+    ) WITH( STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+
+GO
+
+ALTER TABLE {databaseOwner}{objectQualifier}OpenContent_Items
+    ADD CONSTRAINT
+	FK_OpenContent_Items_Modules FOREIGN KEY
+	(
+	    ModuleId
+	) REFERENCES dbo.Modules
+	(
+	    ModuleID
+	) ON UPDATE NO ACTION 
+	  ON DELETE CASCADE 
+	  NOT FOR REPLICATION
+GO
+
+
+/************************************************************/
+/*****              SqlDataProvider                     *****/
+/************************************************************/
