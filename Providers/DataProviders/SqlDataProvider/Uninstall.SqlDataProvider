@@ -1,0 +1,8 @@
+﻿
+ALTER TABLE {databaseOwner}[{objectQualifier}OpenContent_Items] DROP CONSTRAINT [FK_OpenContent_Items_Modules]
+GO
+
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}OpenContent_Items]') AND type in (N'U'))
+DROP TABLE {databaseOwner}[{objectQualifier}OpenContent_Items]
+GO
+

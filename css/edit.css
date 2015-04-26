@@ -1,0 +1,34 @@
+﻿.alpaca .ui-icon-circle-plus,
+.alpaca .ui-icon-circle-minus,
+.alpaca .ui-icon-circle-arrow-n,
+.alpaca .ui-icon-circle-arrow-s
+ {
+    display: block;
+	text-indent: -99999px;
+	overflow: hidden;
+	background-repeat: no-repeat;
+
+    width: 16px;
+    height: 16px;
+    background-image: url("images/ui-icons_222222_256x240.png");
+    
+}
+
+.alpaca .btn-group>.btn:first-child
+{
+-webkit-border-top-left-radius: 0px;
+-moz-border-radius-topleft: 0px;
+border-top-left-radius: 0px;
+-webkit-border-bottom-left-radius: 0px;
+-moz-border-radius-bottomleft: 0px;
+border-bottom-left-radius: 0px;
+}
+
+.alpaca .btn-group>.btn:last-child {
+-webkit-border-top-right-radius: 0px;
+-moz-border-radius-topright: 0px;
+border-top-right-radius: 0px;
+-webkit-border-bottom-right-radius: 0px;
+-moz-border-radius-bottomright: 0px;
+border-bottom-right-radius: 0px;
+}

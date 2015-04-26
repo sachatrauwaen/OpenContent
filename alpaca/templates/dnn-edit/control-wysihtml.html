@@ -1,0 +1,61 @@
+﻿<script type="text/x-handlebars-template">
+
+    <div>
+        <div id="{{id}}-toolbar" style="display: none;" class="toolbar">
+            <a data-wysihtml5-command="bold"><i class="fa fa-bold"></i></a>
+            <a data-wysihtml5-command="italic"><i class="fa fa-italic"></i></a>
+            <a data-wysihtml5-command="underline"><i class="fa fa-underline"></i></a>
+
+            <a data-wysihtml5-command="createHeader"><i class="fa fa-header"></i></a>
+                        
+            <a data-wysihtml5-command="insertBlockQuote"><i class="fa fa-file-text-o"></i></a>
+
+            <a data-wysihtml5-command="createLink"><i class="fa fa-link"></i></a>
+
+            <a data-wysihtml5-command="removeLink"><i class="fa fa-chain-broken"></i></a>
+            <div class="block">
+                <a data-wysihtml5-command="alignLeftStyle"><i class="fa fa-align-left"></i></a>
+                <a data-wysihtml5-command="alignRightStyle"><i class="fa fa-align-right"></i></a>
+                <a data-wysihtml5-command="alignCenterStyle"><i class="fa fa-align-center"></i></a>
+                <a data-wysihtml5-command="justifyFull"><i class="fa fa-align-justify"></i></a>
+            </div>
+            <div class="block">
+                <a data-wysihtml5-command="insertUnorderedList"><i class="fa fa-list-ul"></i></a>
+                <a data-wysihtml5-command="insertOrderedList"><i class="fa fa-list-ol"></i></a>
+            </div>
+            <div class="block">
+                <a data-wysihtml5-command="outdentList"><i class="fa fa-outdent"></i></a>
+                <a data-wysihtml5-command="indentList"><i class="fa fa-indent"></i></a>
+            </div>
+            <div class="block">
+                <a data-wysihtml5-action="change_view"><i class="fa fa-file-code-o"></i></a>
+            </div>
+            <div data-wysihtml5-dialog="createHeader" style="display: none;" class="dialog">
+                <a data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h1"><i class="fa fa-header"></i>1</a>
+                <a data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h2"><i class="fa fa-header"></i>2</a>
+                <a data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h3"><i class="fa fa-header"></i>3</a>
+                <a data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h4"><i class="fa fa-header"></i>4</a>
+                <a data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h5"><i class="fa fa-header"></i>5</a>
+                <a data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h6"><i class="fa fa-header"></i>6</a>
+                <a data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="p"><i class="fa fa-paragraph"></i></a>
+                <a data-wysihtml5-command="formatBlock" data-wysihtml5-command-blank-value="true"><i class="fa fa-minus"></i></a>
+            </div>
+
+          
+            <div data-wysihtml5-dialog="createLink" style="display: none;" class="dialog">
+
+                <label>
+                    Link:
+                    <input data-wysihtml5-dialog-field="href" value="http://" class="text">
+                    <select data-wysihtml5-dialog-field="target" style="padding:0;margin:0;width:100px;z-index:10;">
+                        <option value=""></option>
+                        <option value="_blank">new window</option>
+                    </select>
+                </label>
+                <a data-wysihtml5-dialog-action="save">OK</a>
+            </div>
+
+        </div>
+        <div id="{{id}}" data-placeholder="Go on, start editing..." class="editor editable"></div>
+    </div>
+</script>
