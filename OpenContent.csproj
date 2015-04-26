@@ -179,7 +179,9 @@
     <Content Include="alpaca\css\img\Delete_16X16_Gray.png" />
     <Content Include="alpaca\css\img\Dn_16X16_Standard.png" />
     <Content Include="alpaca\css\img\Up_16X16_Standard.png" />
+    <Content Include="alpaca\js\fields\dnn\CKEditorField.js" />
     <Content Include="alpaca\js\fields\dnn\ImageField.js" />
+    <Content Include="alpaca\js\fields\dnn\UrlField.js" />
     <Content Include="alpaca\js\fields\dnn\wysihtmlField.js" />
     <Content Include="alpaca\js\views\dnn.js" />
     <Content Include="alpaca\templates\dnn-edit\container-array-actionbar.html" />
@@ -208,6 +210,53 @@
     <Content Include="css\images\ui-icons_ffffff_256x240.png" />
     <Content Include="css\jquery-ui.css" />
     <Content Include="css\jquery-ui.min.css" />
+    <Content Include="images\icon_extensions.png" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\dist\bloodhound.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\dist\bloodhound.min.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\dist\typeahead.bundle.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\dist\typeahead.bundle.min.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\dist\typeahead.jquery.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\dist\typeahead.jquery.min.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\Gruntfile.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\karma.conf.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\src\bloodhound\bloodhound.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\src\bloodhound\lru_cache.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\src\bloodhound\options_parser.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\src\bloodhound\persistent_storage.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\src\bloodhound\search_index.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\src\bloodhound\tokenizers.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\src\bloodhound\transport.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\src\bloodhound\version.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\src\common\utils.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\src\typeahead\css.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\src\typeahead\dataset.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\src\typeahead\dropdown.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\src\typeahead\event_bus.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\src\typeahead\event_emitter.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\src\typeahead\highlight.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\src\typeahead\html.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\src\typeahead\input.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\src\typeahead\plugin.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\src\typeahead\typeahead.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\bloodhound_spec.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\dataset_view_spec.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\dropdown_view_spec.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\event_emitter_spec.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\fixtures\ajax_responses.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\fixtures\data.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\fixtures\html.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\helpers\typeahead_mocks.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\highlight_spec.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\input_view_spec.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\integration\test.html" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\integration\test.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\lru_cache_spec.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\persistent_storage_spec.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\playground.html" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\search_index_spec.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\tokenizers_spec.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\transport_spec.js" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\typeahead_view_spec.js" />
     <Content Include="js\CodeMirror\addon\mode\loadmode.js" />
     <Content Include="js\CodeMirror\addon\mode\multiplex.js" />
     <Content Include="js\CodeMirror\addon\mode\multiplex_test.js" />
@@ -339,6 +388,20 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_LocalResources\ShareTemplate.ascx.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\bower.json" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\CHANGELOG.md" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\composer.json" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\CONTRIBUTING.md" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\doc\bloodhound.md" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\doc\jquery_typeahead.md" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\doc\migration\0.10.0.md" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\LICENSE" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\package.json" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\README.md" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\ci" />
+    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\typeahead.js.jquery.json" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

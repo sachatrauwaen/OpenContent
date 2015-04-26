@@ -202,7 +202,7 @@ namespace Satrabel.OpenContent
             {
                 File.WriteAllText(srcFile, txtSource.Text);
             }
-            DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "Save Successful", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.GreenSuccess);
+            //DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "Save Successful", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.GreenSuccess);
         }
 
 

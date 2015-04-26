@@ -31,6 +31,8 @@ using DotNetNuke.Web.Client;
 using Satrabel.OpenContent.Components;
 using Satrabel.OpenContent.Components.Json;
 using Handlebars;
+using System.Web.WebPages;
+using System.Web;
 
 #endregion
 
@@ -69,7 +71,8 @@ namespace Satrabel.OpenContent
             {
                 if (!(string.IsNullOrEmpty(RazorScriptFile)))
                 {
-                    
+                    if (!File.Exists(Server.MapPath(RazorScriptFile)))
+                        Exceptions.ProcessModuleLoadException(this, new Exception(RazorScriptFile + " don't exist"));
 
 
                     //string filename = HostingEnvironment.MapPath("~/DesktopModules/Satrabel/Content/Templates/Carousel/Data.json");
@@ -85,8 +88,10 @@ namespace Satrabel.OpenContent
                         //model["Data"] = JValue.Parse(struc.Json);
                         //model["Settings"] = JValue.Parse(Data);
 
-                        dynamic model = new ExpandoObject();
-                        model.Data = JsonUtils.JsonToDynamic(struc.Json);
+                        //dynamic model = new ExpandoObject();
+                        //model.Data = JsonUtils.JsonToDynamic(struc.Json);
+
+                        dynamic model = JsonUtils.JsonToDynamic(struc.Json);
                         model.Settings = JsonUtils.JsonToDynamic(Data);
 
                         if (Path.GetExtension(RazorScriptFile) != ".hbs")
@@ -98,10 +103,21 @@ namespace Satrabel.OpenContent
                                 string filename = HostingEnvironment.MapPath("~/DesktopModules/OpenContent/Templates/web.config");
                                 File.Copy(filename, webConfig);
                             }
+                            
                             var razorEngine = new RazorEngine(RazorScriptFile, ModuleContext, LocalResourceFile);
                             var writer = new StringWriter();
-                            razorEngine.Render<dynamic>(writer, model);
-                            Controls.Add(new LiteralControl(Server.HtmlDecode(writer.ToString())));
+                            try
+                            {
+                                RazorRender(razorEngine.Webpage,writer, model);
+                                Controls.Add(new LiteralControl(Server.HtmlDecode(writer.ToString())));
+                            }
+                            catch (Exception ex)
+                            {
+                                Exceptions.ProcessModuleLoadException(this, ex);
+                                //Controls.Add(new LiteralControl(Server.HtmlDecode(writer.ToString())));
+                            }
+                            
+                            
                         }
                         else
                         {
@@ -271,6 +287,22 @@ namespace Satrabel.OpenContent
                 return Actions;
             }
         }
+
+        public void RazorRender(WebPageBase Webpage, TextWriter writer, dynamic model)
+        {
+            
+                var HttpContext = new HttpContextWrapper(System.Web.HttpContext.Current);
+
+                if ((Webpage) is DotNetNukeWebPage<dynamic>)
+                {
+                    var mv = (DotNetNukeWebPage<dynamic>)Webpage;
+                    mv.Model = model;
+                }
+                if (Webpage != null)
+                    Webpage.ExecutePageHierarchy(new WebPageContext(HttpContext, Webpage, null), writer, Webpage);
+                
+        }
+
     }
 }
 

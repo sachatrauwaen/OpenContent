@@ -15,6 +15,7 @@ using DotNetNuke.Common;
 using DotNetNuke.Framework.JavaScriptLibraries;
 using DotNetNuke.Framework;
 
+
 #endregion
 
 namespace Satrabel.OpenContent
@@ -38,7 +39,8 @@ namespace Satrabel.OpenContent
             ServicesFramework.Instance.RequestAjaxAntiForgerySupport();
             JavaScript.RequestRegistration(CommonJs.DnnPlugins); ;
             JavaScript.RequestRegistration(CommonJs.jQueryFileUpload);
-
+            DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "PortalId", PortalId.ToString(), true);
+            CKDNNporid.Value = PortalId.ToString();
 		}
 
 		protected override void OnLoad(EventArgs e)
