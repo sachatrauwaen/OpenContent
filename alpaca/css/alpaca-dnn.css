@@ -1,0 +1,293 @@
+﻿
+
+/* table */
+.alpaca-field-tablerow label.control-label {
+    display: none;
+}
+
+.alpaca-field-table .actionbar {
+    white-space: nowrap;
+    text-align: center;
+}
+
+.alpaca-field-table table {
+    padding-left: 32%;
+    margin-left: -38px;
+}
+
+    .alpaca-field-table table tr td .alpaca-field {
+        width: 100%;
+    }
+
+        .alpaca-field-table table tr td .alpaca-field .form-control {
+            width: auto;
+            margin: 0;
+        }
+
+.alpaca-field-table .form-group {
+    margin-bottom: 0px;
+}
+
+    .alpaca-field-table .form-group.alpaca-field-checkbox {
+        text-align: center;
+    }
+
+.alpaca-field-table .alpaca-control.checkbox {
+    /*
+    margin: 0px;
+    padding: 0px;
+    */
+    padding-top: 6px;
+}
+
+/*
+.alpaca-field-table .alpaca-control.checkbox input[type='checkbox']
+{
+    margin-left: -16px;
+    margin-top: -3px;
+}
+*/
+
+.alpaca-field-table table tr td.actionbar .alpaca-array-actionbar {
+    padding: 0;
+    margin: 0;
+}
+
+.alpaca-field-table .actionbar .alpaca-array-actionbar.btn-group {
+    width: auto;
+}
+
+
+/* -------------- */
+
+.alpaca-field .help-block,
+.alpaca-field .alpaca-message {
+    text-align: center;
+}
+
+.alpaca-field-text-max-length-indicator {
+    margin: 0;
+    color: #aaa;
+}
+
+    .alpaca-field-text-max-length-indicator.err {
+        color: #aa0000;
+    }
+
+.alpaca-message-notOptional {
+    color: #aa0000;
+}
+
+.alpaca .alpaca-field-array > fieldset > .alpaca-container > .alpaca-container-item > div > .alpaca-field-object,
+.alpaca .alpaca-field-array > .alpaca-container > .alpaca-container-item > div > .alpaca-field-object {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin: 10px;
+    width: auto;
+}
+
+.alpaca .dnnForm fieldset {
+    margin-bottom: 0;
+}
+
+.alpaca-control-container {
+    
+    width: 45%;
+    max-width: 445px;    
+    float:left;
+}
+.alpaca-image-display,
+.dnnFormItem.alpaca-field.alpaca-field-image input[type=text],
+.dnnFormItem.alpaca-field.alpaca-field-image .twitter-typeahead 
+{
+    /*
+    padding-left:32%;
+    margin-left:38px;
+    width: 45%;
+    max-width: 445px;    
+    */
+    width: 95%;
+}
+
+.alpaca-image-display {
+    margin-bottom: 18px;
+}
+
+    .alpaca-image-display img {
+        max-height: 200px;
+    }
+
+.alpaca-array-actionbar {
+    /* padding-left:32%; */
+    padding-left: 100%;
+    margin-left: -150px;
+    margin-top: 9px;
+    margin-bottom: -25px;
+}
+
+.alpaca-field-wysihtml .alpaca-control {
+    width: 45%;
+    max-width: 445px;
+    display: inline-block;
+}
+
+.alpaca-field-ckeditor .cke {
+    width: 47%;
+    max-width: 461px;
+    display: inline-block;
+    margin-bottom: 18px;
+    background: #ffffff;
+    border: 1px solid #c9c9c9;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    -webkit-box-shadow: 0px 1px 0px 0px rgba(255, 255, 255, 0.8), inset 0px 1px 2px 0px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 1px 0px 0px rgba(255, 255, 255, 0.8), inset 0px 1px 2px 0px rgba(0, 0, 0, 0.1);
+}
+
+.alpaca-field-ckeditor .cke_source {
+    border: 0;
+    padding: 0;
+    margin: 0;
+}
+
+.alpaca-field-ckeditor .cke_top {
+    border-bottom: 1px solid #b6b6b6;
+}
+
+
+.alpaca-field-wysihtml .editor {
+    margin-bottom: 18px;
+    padding: 8px;
+    background: #ffffff;
+    border: 1px solid #c9c9c9;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    -webkit-box-shadow: 0px 1px 0px 0px rgba(255, 255, 255, 0.8), inset 0px 1px 2px 0px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 1px 0px 0px rgba(255, 255, 255, 0.8), inset 0px 1px 2px 0px rgba(0, 0, 0, 0.1);
+    color: #333;
+    font-size: 12px;
+    width: 100%;
+}
+
+.alpaca-field-wysihtml .toolbar {
+    /*height:25px;*/
+}
+
+.alpaca-field-wysihtml .dialog {
+    padding: 2px;
+}
+
+
+
+.alpaca-field-wysihtml .toolbar .block {
+    display: inline-block;
+}
+
+.alpaca-field-wysihtml .toolbar a {
+    display: inline-block;
+    border-radius: 3px;
+    text-decoration: none;
+    background: #fff;
+    border: 1px solid #ddd;
+    padding: 0 0.2em;
+    margin: 1px 0;
+    color: #000;
+    cursor: pointer;
+}
+
+    .alpaca-field-wysihtml .toolbar a.wysihtml5-command-active,
+    .alpaca-field-wysihtml .toolbar .wysihtml5-action-active {
+        background: #222;
+        color: white;
+    }
+
+.alpaca-array-actionbar-action i.fa {
+    font-size: 16px;
+}
+
+.Add_16X16_Gray {
+    background-image: url('img/Add_16X16_Gray.png');
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+}
+
+.Delete_16X16_Gray {
+    background-image: url('img/Delete_16X16_Gray.png');
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+}
+
+.Up_16X16_Standard {
+    background-image: url('img/Up_16X16_Standard.png');
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+}
+
+.Dn_16X16_Standard {
+    background-image: url('img/Dn_16X16_Standard.png');
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+}
+
+.dnnFormItem.alpaca-field:hover {
+    background-color: #fafafa;
+}
+
+.radio.alpaca-control {
+    display: inline-block !important;
+}
+
+
+/** ************************************** **/
+/** TWITTER TYPEAHEAD                      **/
+/** ************************************** **/
+
+.twitter-typeahead {
+    float: left;
+    width: 45%;
+    max-width: 445px;
+    display: inline-block;
+}
+
+    .twitter-typeahead .tt-dropdown-menu {
+        background-color: white;
+        border: 1px #ccc solid;
+        padding: 10px;
+        color: #999;
+        width: 100%;
+        padding-bottom: 0px;
+    }
+
+        .twitter-typeahead .tt-dropdown-menu P {
+            font-size: 1em;
+        }
+
+.tt-suggestion.tt-is-under-cursor {
+    background-color: #ccc;
+    color: #333;
+}
+
+.tt-dropdown-menu {
+    background-color: white;
+    border: 1px solid rgb(204, 204, 204);
+    width: 100%;
+    top: 30px !important;
+}
+
+.dnnFormItem input[type="text"].tt-input {
+    width: 100%;
+}
+
+.tt-suggestion {
+    color: #333;
+}
+
+    .tt-suggestion.tt-cursor {
+        color: #fff;
+        background-color: #0097cf;
+    }
+
