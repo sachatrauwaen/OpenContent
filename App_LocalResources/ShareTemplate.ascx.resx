@@ -129,7 +129,13 @@
   <data name="lblFile.Text" xml:space="preserve">
     <value>File</value>
   </data>
+  <data name="lblMoreinfo.Text" xml:space="preserve">
+    <value>More info</value>
+  </data>
   <data name="lblTemplates.Text" xml:space="preserve">
+    <value>Template</value>
+  </data>
+  <data name="lblWebTemplates.Text" xml:space="preserve">
     <value>Template</value>
   </data>
 </root>
