@@ -38,7 +38,7 @@ using System.Web;
 
 namespace Satrabel.OpenContent
 {
-
+    
     public partial class View : RazorModuleBase, IActionable
     {
         public string TemplateFolder
@@ -64,8 +64,45 @@ namespace Satrabel.OpenContent
             }
         }
 
+        
         protected override void OnPreRender(EventArgs e)
         {
+            string OutputString = GenerateOutput();
+            Controls.Add(new LiteralControl(Server.HtmlDecode(OutputString)));
+        }
+
+
+        #region Event Handlers
+
+        protected override void OnInit(EventArgs e)
+        {
+            base.OnInit(e);
+            if (!(string.IsNullOrEmpty(RazorScriptFile)))
+            {
+                //JavaScript.RequestRegistration() 
+                string cssfilename = Path.ChangeExtension(RazorScriptFile, "css");
+
+                if (File.Exists(HostingEnvironment.MapPath(cssfilename)))
+                {
+                    ClientResourceManager.RegisterStyleSheet(Page, Page.ResolveUrl(cssfilename), FileOrder.Css.PortalCss);
+                }
+
+                string jsfilename = Path.ChangeExtension(RazorScriptFile, "js");
+
+                if (File.Exists(HostingEnvironment.MapPath(jsfilename)))
+                {
+                    ClientResourceManager.RegisterScript(Page, Page.ResolveUrl(jsfilename), FileOrder.Js.DefaultPriority);
+                }
+              
+
+                
+            }
+        }
+
+        private string GenerateOutput()
+        {
+            //List<string> scripts = new List<string>();
+
             //base.OnPreRender(e);
             try
             {
@@ -103,27 +140,28 @@ namespace Satrabel.OpenContent
                                 string filename = HostingEnvironment.MapPath("~/DesktopModules/OpenContent/Templates/web.config");
                                 File.Copy(filename, webConfig);
                             }
-                            
+
                             var razorEngine = new RazorEngine(RazorScriptFile, ModuleContext, LocalResourceFile);
                             var writer = new StringWriter();
                             try
                             {
-                                RazorRender(razorEngine.Webpage,writer, model);
-                                Controls.Add(new LiteralControl(Server.HtmlDecode(writer.ToString())));
+                                RazorRender(razorEngine.Webpage, writer, model);
+                                //Controls.Add(new LiteralControl(Server.HtmlDecode(writer.ToString())));
+                                return writer.ToString();
                             }
                             catch (Exception ex)
                             {
                                 Exceptions.ProcessModuleLoadException(this, ex);
                                 //Controls.Add(new LiteralControl(Server.HtmlDecode(writer.ToString())));
                             }
-                            
-                            
+
+
                         }
                         else
                         {
                             string source = File.ReadAllText(Server.MapPath(RazorScriptFile));
-
-                            Handlebars.Handlebars.RegisterHelper("multiply", (writer, context, parameters) =>
+                            var hbs = Handlebars.Handlebars.Create();
+                            hbs.RegisterHelper("multiply", (writer, context, parameters) =>
                             {
                                 try
                                 {
@@ -139,7 +177,7 @@ namespace Satrabel.OpenContent
                                 }
                             });
 
-                            Handlebars.Handlebars.RegisterHelper("divide", (writer, context, parameters) =>
+                            hbs.RegisterHelper("divide", (writer, context, parameters) =>
                             {
                                 try
                                 {
@@ -155,14 +193,54 @@ namespace Satrabel.OpenContent
                                 }
                             });
 
-                            var template = Handlebars.Handlebars.Compile(source);
+                            hbs.RegisterHelper("equal", (writer, options, context, arguments) =>
+                            {
+                                if (arguments.Length == 2 && arguments[0].Equals(arguments[1]))
+                                {
+                                    options.Template(writer, (object)context);
+                                }
+                                else
+                                {
+                                    options.Inverse(writer, (object)context);
+                                }
+                            });
+
+                            hbs.RegisterHelper("script", (writer, options, context, arguments) =>
+                            {
+                                writer.WriteSafeString("<script>");
+                                options.Template(writer, (object)context);
+                                writer.WriteSafeString("</script>");
+                            });
+
+                            hbs.RegisterHelper("registerscript", (writer, context, parameters) =>
+                            {
+                                if (parameters.Length == 1)
+                                {
+                                    string jsfilename = Path.GetDirectoryName(RazorScriptFile).Replace("\\", "/") + "/" + parameters[0];
+                                    ClientResourceManager.RegisterScript(Page, Page.ResolveUrl(jsfilename), FileOrder.Js.DefaultPriority);
+                                    //writer.WriteSafeString(Page.ResolveUrl(jsfilename));
+                                }
+                            });
+                            hbs.RegisterHelper("registerstylesheet", (writer, context, parameters) =>
+                            {
+                                if (parameters.Length == 1)
+                                {
+                                    string cssfilename = Path.GetDirectoryName(RazorScriptFile).Replace("\\", "/") + "/" + parameters[0];
+                                    ClientResourceManager.RegisterStyleSheet(Page, Page.ResolveUrl(cssfilename), FileOrder.Css.PortalCss);
+                                }
+                            });
+
+                            
+                            var template = hbs.Compile(source);
                             var result = template(model);
-                            Controls.Add(new LiteralControl(Server.HtmlDecode(result)));
+                            //Controls.Add(new LiteralControl(Server.HtmlDecode(result)));
+                            return result;
                         }
                     }
                     else
                     {
-                        Controls.Add(new LiteralControl(Server.HtmlDecode("No data found")));
+                        //Controls.Add(new LiteralControl(Server.HtmlDecode("No data found")));
+                        return "No data found";
                     }
 
                     //JObject config = JObject.Parse(File.ReadAllText(filename));
@@ -176,51 +254,30 @@ namespace Satrabel.OpenContent
 
                      */
 
-
+                }
+                else
+                {
+                    return "No template found";
                 }
             }
             catch (Exception ex)
             {
                 Exceptions.ProcessModuleLoadException(this, ex);
+                
             }
+            return "";
         }
-
-
-        #region Event Handlers
-
-        protected override void OnInit(EventArgs e)
-        {
-            base.OnInit(e);
-            if (!(string.IsNullOrEmpty(RazorScriptFile)))
-            {
-                //JavaScript.RequestRegistration() 
-                string cssfilename = Path.ChangeExtension(RazorScriptFile, "css");
-
-                if (File.Exists(HostingEnvironment.MapPath(cssfilename)))
-                {
-                    ClientResourceManager.RegisterStyleSheet(Page, Page.ResolveUrl(cssfilename), FileOrder.Css.PortalCss);
-                }
-
-                string jsfilename = Path.ChangeExtension(RazorScriptFile, "js");
-
-                if (File.Exists(HostingEnvironment.MapPath(jsfilename)))
-                {
-                    ClientResourceManager.RegisterScript(Page, Page.ResolveUrl(jsfilename), FileOrder.Js.DefaultPriority);
-                }
-
-            }
-        }
-
+        /*
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
 
             if (!Page.IsPostBack)
             {
-                //               txtField.Text = (string)Settings["field"];
+             
             }
         }
-
+        */
         protected void cmdSave_Click(object sender, EventArgs e)
         {
             //ModuleController.Instance.UpdateModuleSetting(ModuleId, "field", txtField.Text);
