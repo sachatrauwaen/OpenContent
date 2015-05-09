@@ -10,150 +10,123 @@
 namespace Satrabel.OpenContent {
     
     
-    public partial class ShareTemplate {
+    public partial class EditSettings {
         
         /// <summary>
-        /// lblAction control.
+        /// customJS control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.UserControl lblAction;
+        protected global::DotNetNuke.Web.Client.ClientResourceManagement.DnnCssInclude customJS;
         
         /// <summary>
-        /// rblAction control.
+        /// DnnJsInclude6 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RadioButtonList rblAction;
+        protected global::DotNetNuke.Web.Client.ClientResourceManagement.DnnJsInclude DnnJsInclude6;
         
         /// <summary>
-        /// phImport control.
+        /// DnnJsInclude1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder phImport;
+        protected global::DotNetNuke.Web.Client.ClientResourceManagement.DnnJsInclude DnnJsInclude1;
         
         /// <summary>
-        /// lblFile control.
+        /// DnnJsInclude2 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.UserControl lblFile;
+        protected global::DotNetNuke.Web.Client.ClientResourceManagement.DnnJsInclude DnnJsInclude2;
         
         /// <summary>
-        /// fuFile control.
+        /// DnnJsInclude3 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.FileUpload fuFile;
+        protected global::DotNetNuke.Web.Client.ClientResourceManagement.DnnJsInclude DnnJsInclude3;
         
         /// <summary>
-        /// cmdImport control.
+        /// DnnJsInclude4 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton cmdImport;
+        protected global::DotNetNuke.Web.Client.ClientResourceManagement.DnnJsInclude DnnJsInclude4;
         
         /// <summary>
-        /// phExport control.
+        /// ScopeWrapper control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder phExport;
+        protected global::System.Web.UI.WebControls.Panel ScopeWrapper;
         
         /// <summary>
-        /// lblTemplates control.
+        /// scriptListLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.UserControl lblTemplates;
+        protected global::System.Web.UI.UserControl scriptListLabel;
         
         /// <summary>
-        /// ddlTemplates control.
+        /// scriptList control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlTemplates;
+        protected global::System.Web.UI.WebControls.DropDownList scriptList;
         
         /// <summary>
-        /// cmdExport control.
+        /// CustomValidator control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton cmdExport;
+        protected global::System.Web.UI.WebControls.CustomValidator CustomValidator;
         
         /// <summary>
-        /// phImportWeb control.
+        /// HiddenField control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder phImportWeb;
+        protected global::System.Web.UI.WebControls.HiddenField HiddenField;
         
         /// <summary>
-        /// lblWebTemplates control.
+        /// cmdSave control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.UserControl lblWebTemplates;
+        protected global::System.Web.UI.WebControls.LinkButton cmdSave;
         
         /// <summary>
-        /// ddlWebTemplates control.
+        /// hlCancel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlWebTemplates;
-        
-        /// <summary>
-        /// lblMoreinfo control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.UserControl lblMoreinfo;
-        
-        /// <summary>
-        /// hlMoreInfo control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.HyperLink hlMoreInfo;
-        
-        /// <summary>
-        /// cmdImportWeb control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton cmdImportWeb;
+        protected global::System.Web.UI.WebControls.HyperLink hlCancel;
     }
 }

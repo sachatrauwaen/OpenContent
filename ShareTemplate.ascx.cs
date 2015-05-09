@@ -25,6 +25,9 @@ using DotNetNuke.Common.Utilities;
 using System.Collections.Generic;
 using ICSharpCode.SharpZipLib.Zip;
 using System.Web;
+using System.Xml;
+using Satrabel.OpenContent.Components.Rss;
+using System.Net;
 
 #endregion
 
@@ -73,6 +76,7 @@ namespace Satrabel.OpenContent
         {
             phImport.Visible = false;
             phExport.Visible = false;
+            phImportWeb.Visible = false;
             if (rblAction.SelectedIndex == 0) // import
             {
                 phImport.Visible = true;
@@ -82,6 +86,18 @@ namespace Satrabel.OpenContent
                 phExport.Visible = true;
                 ddlTemplates.Items.Clear();
                 ddlTemplates.Items.AddRange(OpenContentUtils.GetTemplates(PortalSettings, ModuleId, "").ToArray());
+            }
+            else if (rblAction.SelectedIndex == 2) // Import from web
+            {
+                phImportWeb.Visible = true;
+                ddlWebTemplates.Items.Clear();
+                
+                FeedParser parser = new FeedParser();
+                var items = parser.Parse("http://www.openextensions.net/templates?agentType=rss&PropertyTypeID=9", FeedType.RSS);
+                foreach (var item in items)
+                {
+                    ddlWebTemplates.Items.Add(new ListItem(item.Title, item.ZipEnclosure));
+                }
             }
         }
         protected void cmdImport_Click(object sender, EventArgs e)
@@ -98,7 +114,7 @@ namespace Satrabel.OpenContent
                 if (Path.GetExtension(fuFile.FileName) == ".zip")
                 {
                     string TemplateName = Path.GetFileNameWithoutExtension(fuFile.FileName);
-                    string FolderName = "OpenContent/Templates/"+TemplateName;
+                    string FolderName = "OpenContent/Templates/" + TemplateName;
                     folder = FolderManager.Instance.GetFolder(PortalId, FolderName);
                     int idx = 1;
                     while (folder != null)
@@ -149,8 +165,69 @@ namespace Satrabel.OpenContent
             var fileManager = DotNetNuke.Services.FileSystem.FileManager.Instance;
             //var file = fileManager.AddFile(folder, fuFile.FileName, fuFile.FileContent, true, fuFile.PostedFile.co);
             //var file = fileManager.AddFile(folder, fuFile.FileName, fuFile.PostedFile.InputStream, true, false, fuFile.PostedFile.ContentType);
-            CreateZipFile(Server.MapPath(ddlTemplates.SelectedValue)+".zip", Server.MapPath(ddlTemplates.SelectedValue));
+            CreateZipFile(Server.MapPath(ddlTemplates.SelectedValue) + ".zip", Server.MapPath(ddlTemplates.SelectedValue));
             DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "Export Successful", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.GreenSuccess);
+        }
+
+        protected void cmdImportWeb_Click(object sender, EventArgs e)
+        {
+            string FileName = ddlWebTemplates.SelectedValue;
+
+            string strMessage = "";
+            try
+            {
+                var folder = FolderManager.Instance.GetFolder(PortalId, "OpenContent/Templates");
+                if (folder == null)
+                {
+                    folder = FolderManager.Instance.AddFolder(PortalId, "OpenContent/Templates");
+                }
+                var fileManager = DotNetNuke.Services.FileSystem.FileManager.Instance;
+                if (Path.GetExtension(FileName) == ".zip")
+                {
+                    string TemplateName = Path.GetFileNameWithoutExtension(FileName);
+                    string FolderName = "OpenContent/Templates/" + TemplateName;
+                    folder = FolderManager.Instance.GetFolder(PortalId, FolderName);
+                    int idx = 1;
+                    while (folder != null)
+                    {
+                        FolderName = "OpenContent/Templates/" + TemplateName + idx;
+                        folder = FolderManager.Instance.GetFolder(PortalId, FolderName);
+                        idx++;
+                    }
+                    if (folder == null)
+                    {
+                        folder = FolderManager.Instance.AddFolder(PortalId, FolderName);
+                    }
+                    var req = (HttpWebRequest)WebRequest.Create(FileName);
+                    Stream stream = req.GetResponse().GetResponseStream();
+
+                    FileSystemUtils.UnzipResources(new ZipInputStream(stream), folder.PhysicalPath);
+                }
+            }
+            catch (PermissionsNotMetException exc)
+            {
+                //Logger.Warn(exc);
+                strMessage += "<br />" + string.Format(Localization.GetString("InsufficientFolderPermission"), "OpenContent/Templates");
+            }
+            catch (NoSpaceAvailableException exc)
+            {
+                //Logger.Warn(exc);
+                strMessage += "<br />" + string.Format(Localization.GetString("DiskSpaceExceeded"), fuFile.FileName);
+            }
+            catch (InvalidFileExtensionException exc)
+            {
+                //Logger.Warn(exc);
+                strMessage += "<br />" + string.Format(Localization.GetString("RestrictedFileType"), fuFile.FileName, Host.AllowedExtensionWhitelist.ToDisplayString());
+            }
+            catch (Exception exc)
+            {
+                //Logger.Error(exc);
+                strMessage += "<br />" + string.Format(Localization.GetString("SaveFileError"), fuFile.FileName);
+            }
+            if (string.IsNullOrEmpty(strMessage))
+                DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "Import Successful", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.GreenSuccess);
+            else
+                DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, strMessage, DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
         }
         private void CreateZipFile(string zipFileName, string Folder)
         {
@@ -222,7 +299,7 @@ namespace Satrabel.OpenContent
             switch (contentDisposition)
             {
                 case ContentDisposition.Attachment:
-                    objResponse.AppendHeader("content-disposition", "attachment; filename=\"" +  Path.GetFileName(FileName) + "\"");
+                    objResponse.AppendHeader("content-disposition", "attachment; filename=\"" + Path.GetFileName(FileName) + "\"");
                     break;
                 case ContentDisposition.Inline:
                     objResponse.AppendHeader("content-disposition", "inline; filename=\"" + Path.GetFileName(FileName) + "\"");
@@ -237,7 +314,7 @@ namespace Satrabel.OpenContent
             try
             {
                 Response.WriteFile(FileName);
-               
+
             }
             catch (Exception ex)
             {
@@ -251,7 +328,7 @@ namespace Satrabel.OpenContent
 
             HttpContext.Current.Server.ScriptTimeout = scriptTimeOut;
         }
- 
+
     }
 }
 

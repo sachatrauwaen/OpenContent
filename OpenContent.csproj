@@ -29,6 +29,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -37,6 +38,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ClientDependency.Core, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -108,6 +110,7 @@
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Components\FeatureController.cs" />
@@ -122,7 +125,16 @@
     <Compile Include="Components\OpenContentAPIController.cs" />
     <Compile Include="Components\OpenContentRouteMapper.cs" />
     <Compile Include="Components\OpenContentUtils.cs" />
+    <Compile Include="Components\Rss\FeedParser.cs" />
+    <Compile Include="Components\Rss\FeedItem.cs" />
     <Compile Include="Components\TemplateHelper.cs" />
+    <Compile Include="EditSettings.ascx.cs">
+      <DependentUpon>EditSettings.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="EditSettings.ascx.designer.cs">
+      <DependentUpon>EditSettings.ascx</DependentUpon>
+    </Compile>
     <Compile Include="ShareTemplate.ascx.cs">
       <DependentUpon>ShareTemplate.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -210,6 +222,7 @@
     <Content Include="css\images\ui-icons_ffffff_256x240.png" />
     <Content Include="css\jquery-ui.css" />
     <Content Include="css\jquery-ui.min.css" />
+    <Content Include="EditSettings.ascx" />
     <Content Include="images\icon_extensions.png" />
     <Content Include="js\alpaca-1.5.8\lib\typeahead.js\dist\bloodhound.js" />
     <Content Include="js\alpaca-1.5.8\lib\typeahead.js\dist\bloodhound.min.js" />
@@ -402,6 +415,20 @@
     <Content Include="js\alpaca-1.5.8\lib\typeahead.js\README.md" />
     <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\ci" />
     <Content Include="js\alpaca-1.5.8\lib\typeahead.js\typeahead.js.jquery.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="web.Debug.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+    <None Include="web.Release.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_LocalResources\EditSettings.ascx.resx" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

@@ -19,8 +19,9 @@
         <div class="dnnFormItem">
             <dnn:Label ID="lblAction" ControlName="scriptList" runat="server" />
             <asp:RadioButtonList ID="rblAction" runat="server" RepeatLayout="Flow" RepeatColumns="3" AutoPostBack="true" OnSelectedIndexChanged="rblAction_SelectedIndexChanged">
-                <asp:ListItem Text="Import"></asp:ListItem>
+                <asp:ListItem Text="Import from file"></asp:ListItem>
                 <asp:ListItem Text="Export"></asp:ListItem>
+                <asp:ListItem Text="Import from web"></asp:ListItem>
             </asp:RadioButtonList>
         </div>
     </fieldset>
@@ -34,7 +35,7 @@
                 <asp:FileUpload ID="fuFile" runat="server" />
             </div>
         </fieldset>
-        <ul class="dnnActions dnnClear">
+        <ul class="dnnActions dnnClear" style="display:block;padding-left:35%">
             <li>
                 <asp:LinkButton ID="cmdImport" resourcekey="cmdImport" runat="server" CssClass="dnnPrimaryAction" OnClick="cmdImport_Click" />
             </li>
@@ -51,7 +52,7 @@
                 <asp:DropDownList ID="ddlTemplates" runat="server" />
             </div>
         </fieldset>
-        <ul class="dnnActions dnnClear">
+        <ul class="dnnActions dnnClear" style="display:block;padding-left:35%">
             <li>
                 <asp:LinkButton ID="cmdExport" resourcekey="cmdExport" runat="server" CssClass="dnnPrimaryAction" OnClick="cmdExport_Click" />
             </li>
@@ -60,6 +61,27 @@
     </div>
 
 </asp:PlaceHolder>
+
+<asp:PlaceHolder ID="phImportWeb" runat="server" Visible="false">
+    <div class="dnnForm dnnImport dnnClear" id="dnnImportWeb">
+        <fieldset>
+            <div class="dnnFormItem">
+                <dnn:Label ID="lblWebTemplates" ControlName="ddlWebTemplates" runat="server" />
+                <asp:DropDownList ID="ddlWebTemplates" runat="server"></asp:DropDownList>
+            </div>
+            <div class="dnnFormItem">
+                <dnn:Label ID="lblMoreinfo" ControlName="fuFile" runat="server" />
+                <asp:HyperLink ID="hlMoreInfo" runat="server" NavigateUrl="http://www.openextensions.net/templates/open-content" Target="_blank">Template exchange on OpenExtensions.net</asp:HyperLink>
+            </div>
+        </fieldset>
+        <ul class="dnnActions dnnClear" style="display:block;padding-left:35%">
+            <li>
+                <asp:LinkButton ID="cmdImportWeb" resourcekey="cmdImport" runat="server" CssClass="dnnPrimaryAction" OnClick="cmdImportWeb_Click" />
+            </li>
+        </ul>
+    </div>
+</asp:PlaceHolder>
+
 
 <script type="text/javascript">
     jQuery(function ($) {
