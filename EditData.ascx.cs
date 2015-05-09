@@ -59,39 +59,49 @@ namespace Satrabel.OpenContent
         }
         protected void cmdSave_Click(object sender, EventArgs e)
         {
-            JObject json = JObject.Parse(txtSource.Text);
             OpenContentController ctrl = new OpenContentController();
             var data = ctrl.GetFirstContent(ModuleId);
-            if (data == null)
+
+            if (string.IsNullOrEmpty(txtSource.Text))
             {
-                data = new OpenContentInfo()
+                if (data != null)
                 {
-                    ModuleId = ModuleId,
-                    Title = json["Title"] == null ? ModuleContext.Configuration.ModuleTitle : json["Title"].ToString(),
-                    CreatedByUserId = UserInfo.UserID,
-                    CreatedOnDate = DateTime.Now,
-                    LastModifiedByUserId = UserInfo.UserID,
-                    LastModifiedOnDate = DateTime.Now,
-                    Html = "",
-                    Json = txtSource.Text
-                };
-                ctrl.AddContent(data);
+                    ctrl.DeleteContent(data);
+                }
             }
             else
             {
-                data.Title = json["Title"] == null ? ModuleContext.Configuration.ModuleTitle : json["Title"].ToString();
-                data.LastModifiedByUserId = UserInfo.UserID;
-                data.LastModifiedOnDate = DateTime.Now;
-                data.Json = txtSource.Text;
-                ctrl.UpdateContent(data);
-            }
+                JObject json = JObject.Parse(txtSource.Text);
+                if (data == null)
+                {
+                    data = new OpenContentInfo()
+                    {
+                        ModuleId = ModuleId,
+                        Title = json["Title"] == null ? ModuleContext.Configuration.ModuleTitle : json["Title"].ToString(),
+                        CreatedByUserId = UserInfo.UserID,
+                        CreatedOnDate = DateTime.Now,
+                        LastModifiedByUserId = UserInfo.UserID,
+                        LastModifiedOnDate = DateTime.Now,
+                        Html = "",
+                        Json = txtSource.Text
+                    };
+                    ctrl.AddContent(data);
+                }
+                else
+                {
+                    data.Title = json["Title"] == null ? ModuleContext.Configuration.ModuleTitle : json["Title"].ToString();
+                    data.LastModifiedByUserId = UserInfo.UserID;
+                    data.LastModifiedOnDate = DateTime.Now;
+                    data.Json = txtSource.Text;
+                    ctrl.UpdateContent(data);
+                }
 
-            if (json["ModuleTitle"] != null && json["ModuleTitle"].Type == JTokenType.String)
-            {
-                string ModuleTitle = json["ModuleTitle"].ToString();
-                OpenContentUtils.UpdateModuleTitle(ModuleContext.Configuration, ModuleTitle);
+                if (json["ModuleTitle"] != null && json["ModuleTitle"].Type == JTokenType.String)
+                {
+                    string ModuleTitle = json["ModuleTitle"].ToString();
+                    OpenContentUtils.UpdateModuleTitle(ModuleContext.Configuration, ModuleTitle);
+                }
             }
-
             Response.Redirect(Globals.NavigateURL(), true);
         }
         protected void cmdCancel_Click(object sender, EventArgs e)

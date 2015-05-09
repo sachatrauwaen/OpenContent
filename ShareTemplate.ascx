@@ -35,7 +35,7 @@
                 <asp:FileUpload ID="fuFile" runat="server" />
             </div>
         </fieldset>
-        <ul class="dnnActions dnnClear">
+        <ul class="dnnActions dnnClear" style="display:block;padding-left:35%">
             <li>
                 <asp:LinkButton ID="cmdImport" resourcekey="cmdImport" runat="server" CssClass="dnnPrimaryAction" OnClick="cmdImport_Click" />
             </li>
@@ -52,7 +52,7 @@
                 <asp:DropDownList ID="ddlTemplates" runat="server" />
             </div>
         </fieldset>
-        <ul class="dnnActions dnnClear">
+        <ul class="dnnActions dnnClear" style="display:block;padding-left:35%">
             <li>
                 <asp:LinkButton ID="cmdExport" resourcekey="cmdExport" runat="server" CssClass="dnnPrimaryAction" OnClick="cmdExport_Click" />
             </li>
@@ -71,10 +71,10 @@
             </div>
             <div class="dnnFormItem">
                 <dnn:Label ID="lblMoreinfo" ControlName="fuFile" runat="server" />
-                <asp:HyperLink ID="hlMoreInfo" runat="server" NavigateUrl="http://www.openextensions.net/templates/open-content" Target="_blank">Template catalogue on OpenExtensions.net website</asp:HyperLink>
+                <asp:HyperLink ID="hlMoreInfo" runat="server" NavigateUrl="http://www.openextensions.net/templates/open-content" Target="_blank">Template exchange on OpenExtensions.net</asp:HyperLink>
             </div>
         </fieldset>
-        <ul class="dnnActions dnnClear">
+        <ul class="dnnActions dnnClear" style="display:block;padding-left:35%">
             <li>
                 <asp:LinkButton ID="cmdImportWeb" resourcekey="cmdImport" runat="server" CssClass="dnnPrimaryAction" OnClick="cmdImportWeb_Click" />
             </li>

@@ -159,18 +159,18 @@ namespace Satrabel.OpenContent
                 scriptList.Items.Add(new ListItem("Stylesheet", Path.GetFileNameWithoutExtension(Template) + ".css"));
                 scriptList.Items.Add(new ListItem("Javascript", Path.GetFileNameWithoutExtension(Template) + ".js"));
 
-                scriptList.Items.Add(new ListItem("Data Schema", "schema.json"));
-                scriptList.Items.Add(new ListItem("Edit Layout Options", "options.json"));
-                scriptList.Items.Add(new ListItem("Edit Layout Options - Template File Overides", "options." + Path.GetFileNameWithoutExtension(Template) + ".json"));
+                scriptList.Items.Add(new ListItem("Schema", "schema.json"));
+                scriptList.Items.Add(new ListItem("Layout Options", "options.json"));
+                //scriptList.Items.Add(new ListItem("Edit Layout Options - Template File Overides", "options." + Path.GetFileNameWithoutExtension(Template) + ".json"));
                 foreach (Locale item in LocaleController.Instance.GetLocales(PortalId).Values)
                 {
-                    scriptList.Items.Add(new ListItem("Edit Layout Options - Language Overides - " + item.Code , "options." + item.Code + ".json"));
+                    scriptList.Items.Add(new ListItem("Layout Options - " + item.Code  , "options." + item.Code + ".json"));
                 }
-                scriptList.Items.Add(new ListItem("Settings Schema", "settings-schema.json"));
-                scriptList.Items.Add(new ListItem("Settings Layout Options", "settings-options.json"));
+                scriptList.Items.Add(new ListItem("Settings Schema", Path.GetFileNameWithoutExtension(Template)+"-schema.json"));
+                scriptList.Items.Add(new ListItem("Settings Layout Options", Path.GetFileNameWithoutExtension(Template)+"-options.json"));
                 foreach (Locale item in LocaleController.Instance.GetLocales(PortalId).Values)
                 {
-                    scriptList.Items.Add(new ListItem("Settings Layout Options - Language Overides - " + item.Code, "options." + item.Code + ".json"));
+                    scriptList.Items.Add(new ListItem("Settings Layout Options - " + item.Code, Path.GetFileNameWithoutExtension(Template)+"-options." + item.Code + ".json"));
                 }
             }
         }
