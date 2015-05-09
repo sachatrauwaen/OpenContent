@@ -117,25 +117,13 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="cmdExport.Text" xml:space="preserve">
-    <value>Export</value>
+  <data name="cmdSave.Text" xml:space="preserve">
+    <value>Save</value>
   </data>
-  <data name="cmdImport.Text" xml:space="preserve">
-    <value>Import</value>
+  <data name="cmdCancel.Text" xml:space="preserve">
+    <value>Cancel</value>
   </data>
-  <data name="lblAction.Text" xml:space="preserve">
-    <value>Action</value>
-  </data>
-  <data name="lblFile.Text" xml:space="preserve">
-    <value>File</value>
-  </data>
-  <data name="lblMoreinfo.Text" xml:space="preserve">
-    <value>More info</value>
-  </data>
-  <data name="lblTemplates.Text" xml:space="preserve">
-    <value>Template</value>
-  </data>
-  <data name="lblWebTemplates.Text" xml:space="preserve">
+  <data name="scriptListLabel.Text" xml:space="preserve">
     <value>Template</value>
   </data>
 </root>

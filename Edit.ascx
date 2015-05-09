@@ -117,12 +117,15 @@
         });
 
         self.FormSubmit = function (data, href) {
-            var postData = { form: data };
+            //var postData = { form: data };
+            var postData = JSON.stringify({ form: data });
             var action = "Update"; //self.getUpdateAction();
 
             $.ajax({
                 type: "POST",
                 url: sf.getServiceRoot('OpenContent') + "OpenContentAPI/" + action,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
                 data: postData,
                 beforeSend: sf.setModuleHeaders
             }).done(function (data) {

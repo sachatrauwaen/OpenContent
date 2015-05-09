@@ -52,6 +52,7 @@ namespace Satrabel.OpenContent.Components
             try
             {
                 string TemplateFilename = HostingEnvironment.MapPath("~/" + Template);
+                // schema
                 string schemaFilename = Path.GetDirectoryName(TemplateFilename) + "\\" + "schema.json";
                 JObject schemaJson = JObject.Parse(File.ReadAllText(schemaFilename));
                 json["schema"] = schemaJson;
@@ -59,27 +60,37 @@ namespace Satrabel.OpenContent.Components
                 string optionsFilename = Path.GetDirectoryName(TemplateFilename) + "\\" + "options.json";
                 if (File.Exists(optionsFilename))
                 {
-                    JObject optionsJson = JObject.Parse(File.ReadAllText(optionsFilename));
-                    json["options"] = optionsJson;
+                    string fileContent = File.ReadAllText(optionsFilename);
+                    if (!string.IsNullOrWhiteSpace(fileContent))
+                    {
+                        JObject optionsJson = JObject.Parse(fileContent);
+                        json["options"] = optionsJson;
+                    }
                 }
                 // language options
                 optionsFilename = Path.GetDirectoryName(TemplateFilename) + "\\" + "options." + PortalSettings.CultureCode + ".json";
                 if (File.Exists(optionsFilename))
                 {
-                    JObject optionsJson = JObject.Parse(File.ReadAllText(optionsFilename));
-                    json["options"] = json["options"].JsonMerge(optionsJson);
+                    string fileContent = File.ReadAllText(optionsFilename);
+                    if (!string.IsNullOrWhiteSpace(fileContent))
+                    {
+                        JObject optionsJson = JObject.Parse(fileContent);
+                        json["options"] = json["options"].JsonMerge(optionsJson);
+                    }
                 }
                 // template options
+                /*
                 optionsFilename = Path.GetDirectoryName(TemplateFilename) + "\\" + "options." + Path.GetFileNameWithoutExtension(TemplateFilename) + ".json";
                 if (File.Exists(optionsFilename))
                 {
                     JObject optionsJson = JObject.Parse(File.ReadAllText(optionsFilename));
                     json["options"] = json["options"].JsonMerge(optionsJson);
                 }
+                 */
                 int ModuleId = ActiveModule.ModuleID;
                 OpenContentController ctrl = new OpenContentController();
                 var struc = ctrl.GetFirstContent(ModuleId);
-                if (struc != null)
+                if (struc != null)                
                 {
                     json["data"] = JObject.Parse(struc.Json);
                 }
@@ -100,8 +111,9 @@ namespace Satrabel.OpenContent.Components
             JObject json = new JObject();
             try
             {
-                string prefix = "settings-";
                 string TemplateFilename = HostingEnvironment.MapPath("~/" + Template);
+                string prefix = Path.GetFileNameWithoutExtension(TemplateFilename) + "-";
+                // schema
                 string schemaFilename = Path.GetDirectoryName(TemplateFilename) + "\\" + prefix + "schema.json";
                 if (!File.Exists(schemaFilename))
                 {
@@ -110,14 +122,14 @@ namespace Satrabel.OpenContent.Components
                 JObject schemaJson = JObject.Parse(File.ReadAllText(schemaFilename));
                 json["schema"] = schemaJson;
                 // default options
-                string optionsFilename = Path.GetDirectoryName(TemplateFilename) + "\\" + "settings-options.json";
+                string optionsFilename = Path.GetDirectoryName(TemplateFilename) + "\\" + prefix + "options.json";
                 if (File.Exists(optionsFilename))
                 {
                     JObject optionsJson = JObject.Parse(File.ReadAllText(optionsFilename));
                     json["options"] = optionsJson;
                 }
                 // language options
-                optionsFilename = Path.GetDirectoryName(TemplateFilename) + "\\" + "settings-options." + PortalSettings.CultureCode + ".json";
+                optionsFilename = Path.GetDirectoryName(TemplateFilename) + "\\" + prefix + "options." + PortalSettings.CultureCode + ".json";
                 if (File.Exists(optionsFilename))
                 {
                     JObject optionsJson = JObject.Parse(File.ReadAllText(optionsFilename));
@@ -184,7 +196,7 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
-                var tabs = TabController.GetTabsBySortOrder(PortalSettings.PortalId).Where(t=> t.ParentId != PortalSettings.AdminTabId).Where(t => t.TabName.ToLower().Contains(q.ToLower())).Select(t => new { name = t.TabName + " ("+t.TabPath.Replace("//","/").Replace("/"+t.TabName+"/","")+")", value = (new Uri(Globals.NavigateURL(t.TabID))).PathAndQuery});
+                var tabs = TabController.GetTabsBySortOrder(PortalSettings.PortalId).Where(t => t.ParentId != PortalSettings.AdminTabId).Where(t => t.TabName.ToLower().Contains(q.ToLower())).Select(t => new { name = t.TabName + " (" + t.TabPath.Replace("//", "/").Replace("/" + t.TabName + "/", "") + ")", value = (new Uri(Globals.NavigateURL(t.TabID))).PathAndQuery });
                 return Request.CreateResponse(HttpStatusCode.OK, tabs);
             }
             catch (Exception exc)
@@ -211,7 +223,7 @@ namespace Satrabel.OpenContent.Components
                     files = files.Where(f => f.FileName.ToLower().Contains(q.ToLower()));
                 }
                 files = files.Where(f => fileManager.IsImageFile(f)).Where(f => f.FileName.ToLower().Contains(q.ToLower()));
-                var res = files.Select(f => new { value = PortalSettings.HomeDirectory+f.RelativePath, name = f.FileName + " ("+f.Folder+")" });
+                var res = files.Select(f => new { value = PortalSettings.HomeDirectory + f.RelativePath, name = f.FileName + " (" + f.Folder + ")" });
                 return Request.CreateResponse(HttpStatusCode.OK, res);
             }
             catch (Exception exc)
@@ -220,8 +232,6 @@ namespace Satrabel.OpenContent.Components
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
-
-
     }
 }
 

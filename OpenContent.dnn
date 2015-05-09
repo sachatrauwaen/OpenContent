@@ -1,6 +1,6 @@
 <dotnetnuke type="Package" version="5.0">
   <packages>
-    <package name="OpenContent" type="Module" version="01.00.00">
+    <package name="OpenContent" type="Module" version="01.00.02">
       <friendlyName>OpenContent</friendlyName>
       <description>OpenContent module by Satrabel.be</description>
       <iconFile>~/DesktopModules/OpenContent/Images/icon_extensions.png</iconFile>
@@ -14,8 +14,7 @@
       <releaseNotes src="ReleaseNotes.txt"></releaseNotes>
       <dependencies>
         <dependency type="CoreVersion">07.00.02</dependency>
-      </dependencies>
-      
+      </dependencies>      
       <components>
         <component type="Script">
           <scripts>
@@ -107,15 +106,17 @@
                     <viewOrder>0</viewOrder>
                     <supportsPopUps>True</supportsPopUps>
                   </moduleControl>
+                 
                   <moduleControl>
-                    <controlKey>Settings</controlKey>
-                    <controlSrc>DesktopModules/OpenContent/Settings.ascx</controlSrc>
+                    <controlKey>EditSettings</controlKey>
+                    <controlSrc>DesktopModules/OpenContent/EditSettings.ascx</controlSrc>
                     <supportsPartialRendering>False</supportsPartialRendering>
-                    <controlTitle>OpenContent Settings</controlTitle>
-                    <controlType>Edit</controlType>
+                    <controlTitle>Template Settings</controlTitle>
+                    <controlType>Admin</controlType>
                     <iconFile />
                     <helpUrl />
                     <viewOrder>0</viewOrder>
+                    <supportsPopUps>True</supportsPopUps>
                   </moduleControl>
                 </moduleControls>
               </moduleDefinition>

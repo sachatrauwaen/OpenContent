@@ -123,8 +123,14 @@
   <data name="EditData.Action" xml:space="preserve">
     <value>Edit Raw Data</value>
   </data>
+  <data name="EditSettings.Action" xml:space="preserve">
+    <value>Tamplate Settings</value>
+  </data>
   <data name="EditTemplate.Action" xml:space="preserve">
     <value>Edit Template Files</value>
+  </data>
+  <data name="Help.Action" xml:space="preserve">
+    <value>Help</value>
   </data>
   <data name="ShareTemplate.Action" xml:space="preserve">
     <value>Template Exchange</value>
