@@ -65,8 +65,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\bin\DotNetNuke.WebUtility.dll</HintPath>
     </Reference>
-    <Reference Include="Handlebars">
-      <HintPath>..\..\..\..\..\..\Users\sacha\Downloads\Handlebars.Net-1.2\Handlebars.Net-1.2\source\Handlebars\bin\Debug\Handlebars.dll</HintPath>
+    <Reference Include="Handlebars, Version=1.0.5607.41709, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Handlebars.Net\source\Handlebars\bin\Debug\Handlebars.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
