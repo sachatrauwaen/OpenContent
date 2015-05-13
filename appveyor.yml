@@ -1,0 +1,12 @@
+version: 1.0.{build}
+branches:
+  only:
+  - feature/build
+skip_tags: true
+configuration: Release
+platform: Any CPU
+build_script:
+- build-appveyor.cmd
+artifacts:
+- path: install\*.zip
+  name: Install
