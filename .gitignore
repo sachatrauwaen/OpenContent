@@ -32,3 +32,4 @@
 *.dSYM/
 install/
 obj/
+build-local.log

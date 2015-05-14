@@ -394,4 +394,3 @@ namespace Satrabel.OpenContent
         }
     }
 }
-
