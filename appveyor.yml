@@ -2,9 +2,6 @@ version: 1.0.{build}
 branches:
   only:
   - feature/build
-skip_tags: true
-configuration: Release
-platform: Any CPU
 assembly_info:
   patch: true
   file: '**\AssemblyInfo.*'
@@ -16,12 +13,3 @@ build_script:
 artifacts:
 - path: install\*.zip
   name: Install
-deploy:
-notifications:
-- provider: Email
-  to:
-  - info@satrabel.be
-  subject: Opencontent build
-  on_build_success: true
-  on_build_failure: true
-  on_build_status_changed: true
