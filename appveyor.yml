@@ -5,8 +5,23 @@ branches:
 skip_tags: true
 configuration: Release
 platform: Any CPU
+assembly_info:
+  patch: true
+  file: '**\AssemblyInfo.*'
+  assembly_version: '{version}'
+  assembly_file_version: '{version}'
+  assembly_informational_version: '{version}'
 build_script:
 - build-appveyor.cmd
 artifacts:
 - path: install\*.zip
   name: Install
+deploy:
+notifications:
+- provider: Email
+  to:
+  - info@satrabel.be
+  subject: Opencontent build
+  on_build_success: true
+  on_build_failure: true
+  on_build_status_changed: true
