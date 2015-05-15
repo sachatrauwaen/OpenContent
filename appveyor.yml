@@ -1,7 +1,4 @@
 version: 01.00.02.{build}-{branch}
-branches:
-  only:
-  - feature/build
 assembly_info:
   patch: true
   file: '**\AssemblyInfo.*'
