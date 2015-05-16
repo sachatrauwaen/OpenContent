@@ -46,7 +46,7 @@
       <HintPath>..\..\..\bin\OpenContent.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-	 <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -61,7 +61,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="UnitTest1.cs" />
+    <Compile Include="HandlebarsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Choose>

@@ -6,10 +6,10 @@ using Satrabel.OpenContent.Components.Json;
 namespace OpenContentTests
 {
     [TestClass]
-    public class UnitTest1
+    public class HandlebarsTests
     {
         [TestMethod]
-        public void TestMethod1()
+        public void EachFromJson()
         {
 
             string expected = "123";

@@ -1,2 +1,2 @@
 msbuild OpenContent.csproj /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"  /p:Configuration=Release,Platform=AnyCPU,SolutionDir=Solution,ReferencePath=ref
-msbuild tests/OpenContent.csproj /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"  /p:Configuration=Release,Platform=AnyCPU,SolutionDir=Solution,ReferencePath=ref
+msbuild tests/OpenContentTests.csproj /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"  /p:Configuration=Release,Platform=AnyCPU,SolutionDir=Solution,ReferencePath=ref
