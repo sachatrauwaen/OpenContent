@@ -117,6 +117,7 @@
     <Compile Include="Components\FeatureController.cs" />
     <Compile Include="Components\FilesStatus.cs" />
     <Compile Include="Components\FileUploadController.cs" />
+    <Compile Include="Components\Handlebars\HandlebarsEngine.cs" />
     <Compile Include="Components\Json\JsonMergeExtensions.cs" />
     <Compile Include="Components\Json\JsonMergeOptionArrayHandling.cs" />
     <Compile Include="Components\Json\JsonMergeOptions.cs" />

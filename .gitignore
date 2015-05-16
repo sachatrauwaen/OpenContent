@@ -33,3 +33,4 @@
 install/
 obj/
 build-local.log
+Tests/bin/
