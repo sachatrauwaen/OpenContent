@@ -30,7 +30,6 @@ using DotNetNuke.Web.Client.ClientResourceManagement;
 using DotNetNuke.Web.Client;
 using Satrabel.OpenContent.Components;
 using Satrabel.OpenContent.Components.Json;
-using Handlebars;
 using System.Web.WebPages;
 using System.Web;
 using Satrabel.OpenContent.Components.Handlebars;

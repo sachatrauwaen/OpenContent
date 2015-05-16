@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
-using HandlebarsNet = Handlebars;
+using HandlebarsNet = HandlebarsDotNet;
 
 namespace Satrabel.OpenContent.Components.Handlebars
 {
