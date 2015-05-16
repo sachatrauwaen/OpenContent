@@ -39,9 +39,6 @@
     <Reference Include="Handlebars">
       <HintPath>..\..\..\bin\Handlebars.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Web.Helpers">
-      <HintPath>..\..\..\bin\Microsoft.Web.Helpers.dll</HintPath>
-    </Reference>
     <Reference Include="OpenContent">
       <HintPath>..\..\..\bin\OpenContent.dll</HintPath>
     </Reference>
