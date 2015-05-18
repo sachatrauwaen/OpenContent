@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
-using HandlebarsNet = Handlebars;
+using HandlebarsDotNet;
 
 namespace Satrabel.OpenContent.Components.Handlebars
 {
@@ -14,7 +14,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
     {
         public string Execute(string source, dynamic model)
         {
-            var hbs = HandlebarsNet.Handlebars.Create();
+            var hbs = HandlebarsDotNet.Handlebars.Create();
             RegisterDivideHelper(hbs);
             RegisterMultiplyHelper(hbs);
             RegisterEqualHelper(hbs);
@@ -26,18 +26,18 @@ namespace Satrabel.OpenContent.Components.Handlebars
         {
             string source = File.ReadAllText(System.Web.Hosting.HostingEnvironment.MapPath(sourceFilename));
             string sourceFolder = Path.GetDirectoryName(sourceFilename).Replace("\\", "/") + "/";
-            var hbs = HandlebarsNet.Handlebars.Create();
+            var hbs = HandlebarsDotNet.Handlebars.Create();
             RegisterDivideHelper(hbs);
             RegisterMultiplyHelper(hbs);
             RegisterEqualHelper(hbs);
             RegisterScriptHelper(hbs);
-            RegisterRegisterScriptHelper(hbs, page, sourceFolder);
+            RegisterRegisterStylesheetHelper(hbs, page, sourceFolder);
             RegisterRegisterScriptHelper(hbs, page, sourceFolder);
             var template = hbs.Compile(source);
             var result = template(model);
             return result;
         }
-        private void RegisterMultiplyHelper(HandlebarsNet.IHandlebars hbs)
+        private void RegisterMultiplyHelper(HandlebarsDotNet.IHandlebars hbs)
         {
             hbs.RegisterHelper("multiply", (writer, context, parameters) =>
             {
@@ -46,15 +46,15 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     int a = int.Parse(parameters[0].ToString());
                     int b = int.Parse(parameters[1].ToString());
                     int c = a * b;
-                    HandlebarsNet.HandlebarsExtensions.WriteSafeString(writer, c.ToString());
+                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, c.ToString());
                 }
                 catch (Exception)
                 {
-                    HandlebarsNet.HandlebarsExtensions.WriteSafeString(writer, "0");
+                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "0");
                 }
             });
         }
-        private void RegisterDivideHelper(HandlebarsNet.IHandlebars hbs)
+        private void RegisterDivideHelper(HandlebarsDotNet.IHandlebars hbs)
         {
             hbs.RegisterHelper("divide", (writer, context, parameters) =>
             {
@@ -63,15 +63,15 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     int a = int.Parse(parameters[0].ToString());
                     int b = int.Parse(parameters[1].ToString());
                     int c = a / b;
-                    HandlebarsNet.HandlebarsExtensions.WriteSafeString(writer, c.ToString());
+                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, c.ToString());
                 }
                 catch (Exception)
                 {
-                    HandlebarsNet.HandlebarsExtensions.WriteSafeString(writer, "0");
+                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "0");
                 }
             });
         }
-        private void RegisterEqualHelper(HandlebarsNet.IHandlebars hbs)
+        private void RegisterEqualHelper(HandlebarsDotNet.IHandlebars hbs)
         {
             hbs.RegisterHelper("equal", (writer, options, context, arguments) =>
             {
@@ -85,17 +85,17 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 }
             });
         }
-        private void RegisterScriptHelper(HandlebarsNet.IHandlebars hbs)
+        private void RegisterScriptHelper(HandlebarsDotNet.IHandlebars hbs)
         {
             hbs.RegisterHelper("script", (writer, options, context, arguments) =>
             {
-                HandlebarsNet.HandlebarsExtensions.WriteSafeString(writer, "<script>");
+                HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "<script>");
                 options.Template(writer, (object)context);
-                HandlebarsNet.HandlebarsExtensions.WriteSafeString(writer, "</script>");
+                HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "</script>");
             });
             
         }
-        private void RegisterRegisterScriptHelper(HandlebarsNet.IHandlebars hbs, Page page, string sourceFolder)
+        private void RegisterRegisterScriptHelper(HandlebarsDotNet.IHandlebars hbs, Page page, string sourceFolder)
         {
             hbs.RegisterHelper("registerscript", (writer, context, parameters) =>
             {
@@ -107,7 +107,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 }
             });
         }
-        private void RegisterRegisterStylesheetHelper(HandlebarsNet.IHandlebars hbs, Page page, string sourceFolder)
+        private void RegisterRegisterStylesheetHelper(HandlebarsDotNet.IHandlebars hbs, Page page, string sourceFolder)
         {
             hbs.RegisterHelper("registerstylesheet", (writer, context, parameters) =>
             {
