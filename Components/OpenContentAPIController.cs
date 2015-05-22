@@ -115,12 +115,21 @@ namespace Satrabel.OpenContent.Components
                 string prefix = Path.GetFileNameWithoutExtension(TemplateFilename) + "-";
                 // schema
                 string schemaFilename = Path.GetDirectoryName(TemplateFilename) + "\\" + prefix + "schema.json";
+                /*
                 if (!File.Exists(schemaFilename))
                 {
                     return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "schema.json missing for template " + Template);
                 }
-                JObject schemaJson = JObject.Parse(File.ReadAllText(schemaFilename));
-                json["schema"] = schemaJson;
+                 */
+                if (File.Exists(schemaFilename))
+                {
+                    JObject schemaJson = JObject.Parse(File.ReadAllText(schemaFilename));
+                    json["schema"] = schemaJson;
+                    if (!string.IsNullOrEmpty(Data))
+                    {
+                        json["data"] = JObject.Parse(Data);
+                    }
+                }
                 // default options
                 string optionsFilename = Path.GetDirectoryName(TemplateFilename) + "\\" + prefix + "options.json";
                 if (File.Exists(optionsFilename))
