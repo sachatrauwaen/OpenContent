@@ -10,7 +10,7 @@ using System.Web.UI.WebControls;
 
 namespace Satrabel.OpenContent.Components
 {
-    class OpenContentUtils
+    public class OpenContentUtils
     {
         public static void UpdateModuleTitle(ModuleInfo Module, string ModuleTitle)
         {

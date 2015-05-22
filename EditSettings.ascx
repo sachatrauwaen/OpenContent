@@ -1,4 +1,4 @@
-<%@ Control Language="C#" AutoEventWireup="false" Inherits="Satrabel.OpenContent.EditSettings" Codebehind="EditSettings.ascx.cs" %>
+<%@ Control Language="C#" AutoEventWireup="false" Inherits="Satrabel.OpenContent.EditSettings" CodeBehind="EditSettings.ascx.cs" %>
 <%@ Register TagPrefix="dnn" TagName="Label" Src="~/controls/LabelControl.ascx" %>
 <%@ Register TagPrefix="dnncl" Namespace="DotNetNuke.Web.Client.ClientResourceManagement" Assembly="DotNetNuke.Web.Client" %>
 
@@ -18,16 +18,19 @@
     <div class="dnnFormItem">
         <dnn:Label ID="scriptListLabel" ControlName="scriptList" runat="server" />
         <asp:DropDownList ID="scriptList" runat="server" />
+        <asp:HyperLink ID="hlTemplateExchange" runat="server">More...</asp:HyperLink>
     </div>
 
     <div id="field1" class="alpaca"></div>
     <asp:CustomValidator ID="CustomValidator" runat="server" ErrorMessage="CustomValidator" ControlToValidate="scriptList" ClientValidationFunction="ClientValidation"></asp:CustomValidator>
     <asp:HiddenField ID="HiddenField" runat="server" />
 
-     <ul class="dnnActions dnnClear" style="display:block;padding-left:35%">
-		<li><asp:LinkButton id="cmdSave" runat="server" class="dnnPrimaryAction" resourcekey="cmdSave" OnClick="cmdSave_Click" /></li>
-		<li><asp:HyperLink id="hlCancel" runat="server" class="dnnSecondaryAction" resourcekey="cmdCancel" /></li>
-	</ul>
+    <ul class="dnnActions dnnClear" style="display: block; padding-left: 35%">
+        <li>
+            <asp:LinkButton ID="cmdSave" runat="server" class="dnnPrimaryAction" resourcekey="cmdSave" OnClick="cmdSave_Click" /></li>
+        <li>
+            <asp:HyperLink ID="hlCancel" runat="server" class="dnnSecondaryAction" resourcekey="cmdCancel" /></li>
+    </ul>
 
 </asp:Panel>
 
@@ -38,14 +41,16 @@
             //return;
         }
         var alp = $("#field1").alpaca("get");
-        alp.refreshValidationState(true);
-        if (alp.isValid(true)) {
-            var value = alp.getValue();
-            //alert(JSON.stringify(value, null, "  "));
-            $("#<%= HiddenField.ClientID %>").val(JSON.stringify(value, null, "  "));
-            return;
+        if (alp) {
+            alp.refreshValidationState(true);
+            if (alp.isValid(true)) {
+                var value = alp.getValue();
+                //alert(JSON.stringify(value, null, "  "));
+                $("#<%= HiddenField.ClientID %>").val(JSON.stringify(value, null, "  "));
+                return;
+            }
+            args.IsValid = false;
         }
-        args.IsValid = false;
         return;
     }
 
@@ -59,12 +64,12 @@
         sf = $.ServicesFramework(<%=ModuleId %>);
 
         $("#<%= scriptList.ClientID %>").change(function () {
-            $("#field1").alpaca("destroy");
-            self.CreateForm();
-        });
+                $("#field1").alpaca("destroy");
+                self.CreateForm();
+            });
 
-        self.CreateForm = function () {
-            var Template = $("#<%= scriptList.ClientID %>").val();
+            self.CreateForm = function () {
+                var Template = $("#<%= scriptList.ClientID %>").val();
             if (!Template) return;
             var postData = {};
             //var getData = "tabId=<%=TabId %>&moduleId=<%=ModuleId %>";
@@ -77,42 +82,44 @@
                 data: getData,
                 beforeSend: sf.setModuleHeaders
             }).done(function (config) {
-                var ConnectorClass = Alpaca.getConnectorClass("default");
-                connector = new ConnectorClass("default");
-                connector.servicesFramework = sf;
+                if (config.schema) {
+                    var ConnectorClass = Alpaca.getConnectorClass("default");
+                    connector = new ConnectorClass("default");
+                    connector.servicesFramework = sf;
 
-                $.alpaca.Fields.DnnFileField = $.alpaca.Fields.FileField.extend({
-                    setup: function () {
-                        this.base();
-                    },
-                    afterRenderControl: function (model, callback) {
-                        var self = this;
-                        this.base(model, function () {
-                            self.handlePostRender(function () {
-                                callback();
+                    $.alpaca.Fields.DnnFileField = $.alpaca.Fields.FileField.extend({
+                        setup: function () {
+                            this.base();
+                        },
+                        afterRenderControl: function (model, callback) {
+                            var self = this;
+                            this.base(model, function () {
+                                self.handlePostRender(function () {
+                                    callback();
+                                });
                             });
-                        });
-                    },
-                    handlePostRender: function (callback) {
-                        //var self = this;
-                        var el = this.control;
-                        self.SetupFileUpload(el);
-                        callback();
-                    }
-                });
-                Alpaca.registerFieldClass("file", Alpaca.Fields.DnnFileField);
+                        },
+                        handlePostRender: function (callback) {
+                            //var self = this;
+                            var el = this.control;
+                            self.SetupFileUpload(el);
+                            callback();
+                        }
+                    });
+                    Alpaca.registerFieldClass("file", Alpaca.Fields.DnnFileField);
 
-                $("#field1").alpaca({
-                    "schema": config.schema,
-                    "options": config.options,
-                    "data": config.data,
-                    "view": "dnn-edit",
-                    "connector": connector,
-                    "postRender": function (control) {
-                        $('#field1').dnnPanels();
-                        $('.dnnTooltip').dnnTooltip();
-                    }
-                });
+                    $("#field1").alpaca({
+                        "schema": config.schema,
+                        "options": config.options,
+                        "data": config.data,
+                        "view": "dnn-edit",
+                        "connector": connector,
+                        "postRender": function (control) {
+                            $('#field1').dnnPanels();
+                            $('.dnnTooltip').dnnTooltip();
+                        }
+                    });
+                }
             }).fail(function (xhr, result, status) {
                 //var res = JSON.parse(xhr.responseText);
                 alert(status + " : " + xhr.responseText);
@@ -174,13 +181,13 @@
         self.CreateForm();
     }
 
-    $(document).ready(function () {
+        $(document).ready(function () {
 
-        setupStructSettings();
-        Sys.WebForms.PageRequestManager.getInstance().add_endRequest(function () {
             setupStructSettings();
+            Sys.WebForms.PageRequestManager.getInstance().add_endRequest(function () {
+                setupStructSettings();
+            });
         });
-    });
 
-}(jQuery, window.Sys));
+    }(jQuery, window.Sys));
 </script>

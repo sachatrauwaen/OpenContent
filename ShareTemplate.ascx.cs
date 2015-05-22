@@ -130,22 +130,22 @@ namespace Satrabel.OpenContent
                     FileSystemUtils.UnzipResources(new ZipInputStream(fuFile.FileContent), folder.PhysicalPath);
                 }
             }
-            catch (PermissionsNotMetException exc)
+            catch (PermissionsNotMetException )
             {
                 //Logger.Warn(exc);
                 strMessage += "<br />" + string.Format(Localization.GetString("InsufficientFolderPermission"), "OpenContent/Templates");
             }
-            catch (NoSpaceAvailableException exc)
+            catch (NoSpaceAvailableException )
             {
                 //Logger.Warn(exc);
                 strMessage += "<br />" + string.Format(Localization.GetString("DiskSpaceExceeded"), fuFile.FileName);
             }
-            catch (InvalidFileExtensionException exc)
+            catch (InvalidFileExtensionException )
             {
                 //Logger.Warn(exc);
                 strMessage += "<br />" + string.Format(Localization.GetString("RestrictedFileType"), fuFile.FileName, Host.AllowedExtensionWhitelist.ToDisplayString());
             }
-            catch (Exception exc)
+            catch (Exception )
             {
                 //Logger.Error(exc);
                 strMessage += "<br />" + string.Format(Localization.GetString("SaveFileError"), fuFile.FileName);
@@ -204,22 +204,22 @@ namespace Satrabel.OpenContent
                     FileSystemUtils.UnzipResources(new ZipInputStream(stream), folder.PhysicalPath);
                 }
             }
-            catch (PermissionsNotMetException exc)
+            catch (PermissionsNotMetException )
             {
                 //Logger.Warn(exc);
                 strMessage += "<br />" + string.Format(Localization.GetString("InsufficientFolderPermission"), "OpenContent/Templates");
             }
-            catch (NoSpaceAvailableException exc)
+            catch (NoSpaceAvailableException )
             {
                 //Logger.Warn(exc);
                 strMessage += "<br />" + string.Format(Localization.GetString("DiskSpaceExceeded"), fuFile.FileName);
             }
-            catch (InvalidFileExtensionException exc)
+            catch (InvalidFileExtensionException )
             {
                 //Logger.Warn(exc);
                 strMessage += "<br />" + string.Format(Localization.GetString("RestrictedFileType"), fuFile.FileName, Host.AllowedExtensionWhitelist.ToDisplayString());
             }
-            catch (Exception exc)
+            catch (Exception )
             {
                 //Logger.Error(exc);
                 strMessage += "<br />" + string.Format(Localization.GetString("SaveFileError"), fuFile.FileName);

@@ -201,7 +201,7 @@
 
                 tDatasets.templates = {
                     "empty": "Nothing found...",
-                    "suggestion": "<div style='width:20%;display:inline-block;background-color:#fff;padding:2px;'><img src='{{value}}' style='height:20px' /></div> {{name}}"
+                    "suggestion": "<div style='width:20%;display:inline-block;background-color:#fff;padding:2px;'><img src='{{value}}' style='height:40px' /></div> {{name}}"
                 };
 
                 // compile templates

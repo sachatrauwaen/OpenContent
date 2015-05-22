@@ -30,9 +30,9 @@ using DotNetNuke.Web.Client.ClientResourceManagement;
 using DotNetNuke.Web.Client;
 using Satrabel.OpenContent.Components;
 using Satrabel.OpenContent.Components.Json;
-using Handlebars;
 using System.Web.WebPages;
 using System.Web;
+using Satrabel.OpenContent.Components.Handlebars;
 
 #endregion
 
@@ -173,77 +173,10 @@ namespace Satrabel.OpenContent
                         }
                         else
                         {
-                            string source = File.ReadAllText(Server.MapPath(RazorScriptFile));
-                            var hbs = Handlebars.Handlebars.Create();
-                            hbs.RegisterHelper("multiply", (writer, context, parameters) =>
-                            {
-                                try
-                                {
-                                    int a = int.Parse(parameters[0].ToString());
-                                    int b = int.Parse(parameters[1].ToString());
-                                    int c = a * b;
-                                    writer.WriteSafeString(c.ToString());
-                                }
-                                catch (Exception)
-                                {
-                                    writer.WriteSafeString("0");
-                                }
-                            });
-                            hbs.RegisterHelper("divide", (writer, context, parameters) =>
-                            {
-                                try
-                                {
-                                    int a = int.Parse(parameters[0].ToString());
-                                    int b = int.Parse(parameters[1].ToString());
-                                    int c = a / b;
-                                    writer.WriteSafeString(c.ToString());
-                                }
-                                catch (Exception)
-                                {
-                                    writer.WriteSafeString("0");
-                                }
-                            });
-                            hbs.RegisterHelper("equal", (writer, options, context, arguments) =>
-                            {
-                                if (arguments.Length == 2 && arguments[0].Equals(arguments[1]))
-                                {
-                                    options.Template(writer, (object)context);
-                                }
-                                else
-                                {
-                                    options.Inverse(writer, (object)context);
-                                }
-                            });
-
-                            hbs.RegisterHelper("script", (writer, options, context, arguments) =>
-                            {
-                                writer.WriteSafeString("<script>");
-                                options.Template(writer, (object)context);
-                                writer.WriteSafeString("</script>");
-                            });
-
-                            hbs.RegisterHelper("registerscript", (writer, context, parameters) =>
-                            {
-                                if (parameters.Length == 1)
-                                {
-                                    string jsfilename = Path.GetDirectoryName(RazorScriptFile).Replace("\\", "/") + "/" + parameters[0];
-                                    ClientResourceManager.RegisterScript(Page, Page.ResolveUrl(jsfilename), FileOrder.Js.DefaultPriority);
-                                    //writer.WriteSafeString(Page.ResolveUrl(jsfilename));
-                                }
-                            });
-                            hbs.RegisterHelper("registerstylesheet", (writer, context, parameters) =>
-                            {
-                                if (parameters.Length == 1)
-                                {
-                                    string cssfilename = Path.GetDirectoryName(RazorScriptFile).Replace("\\", "/") + "/" + parameters[0];
-                                    ClientResourceManager.RegisterStyleSheet(Page, Page.ResolveUrl(cssfilename), FileOrder.Css.PortalCss);
-                                }
-                            });
-                            var template = hbs.Compile(source);
-                            var result = template(model);
+                            HandlebarsEngine hbEngine = new HandlebarsEngine();
+                            return hbEngine.Execute(Page, RazorScriptFile, model);
                             //Controls.Add(new LiteralControl(Server.HtmlDecode(result)));
-                            return result;
-                        }
+                         }
                     }
                     else
                     {
@@ -394,4 +327,3 @@ namespace Satrabel.OpenContent
         }
     }
 }
-
