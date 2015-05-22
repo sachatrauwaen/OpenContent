@@ -18,6 +18,7 @@
     <div class="dnnFormItem">
         <dnn:Label ID="scriptListLabel" ControlName="scriptList" runat="server" />
         <asp:DropDownList ID="scriptList" runat="server" />
+        <asp:HyperLink ID="hlTemplateExchange" runat="server">More...</asp:HyperLink>
     </div>
 
     <div id="field1" class="alpaca"></div>

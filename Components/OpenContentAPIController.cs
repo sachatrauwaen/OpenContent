@@ -137,7 +137,14 @@ namespace Satrabel.OpenContent.Components
                 }
                 if (!string.IsNullOrEmpty(Data))
                 {
-                    json["data"] = JObject.Parse(Data);
+                    try
+                    {
+                        json["data"] = JObject.Parse(Data);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error("Settings Json Data : " + Data, ex);
+                    }
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, json);
             }
