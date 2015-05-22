@@ -1,0 +1,12 @@
+version: 01.00.02.{build}-{branch}
+assembly_info:
+  patch: true
+  file: '**\AssemblyInfo.*'
+  assembly_version: '{version}'
+  assembly_file_version: '{version}'
+  assembly_informational_version: '{version}'
+build_script:
+- build-appveyor.cmd
+artifacts:
+- path: install\*.zip
+  name: Install
