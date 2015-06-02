@@ -232,12 +232,12 @@ namespace Satrabel.OpenContent.Components
                 var fileManager = FileManager.Instance;
                 var portalFolder = folderManager.GetFolder(PortalSettings.PortalId, d ?? "");
                 var files = folderManager.GetFiles(portalFolder, true);
-                files = files.Where(f => fileManager.IsImageFile(f));
+                files = files.Where(f => IsImageFile(f));
                 if (q != "*")
                 {
                     files = files.Where(f => f.FileName.ToLower().Contains(q.ToLower()));
                 }
-                files = files.Where(f => fileManager.IsImageFile(f)).Where(f => f.FileName.ToLower().Contains(q.ToLower()));
+                files = files.Where(f => IsImageFile(f)).Where(f => f.FileName.ToLower().Contains(q.ToLower()));
                 var res = files.Select(f => new { value = PortalSettings.HomeDirectory + f.RelativePath, name = f.FileName + " (" + f.Folder + ")" });
                 return Request.CreateResponse(HttpStatusCode.OK, res);
             }
@@ -246,6 +246,11 @@ namespace Satrabel.OpenContent.Components
                 Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
+        }
+
+        private bool IsImageFile(IFileInfo file)
+        {
+            return (Globals.glbImageFileTypes + ",").IndexOf(file.Extension.ToLower().Replace(".", "") + ",") > -1;
         }
     }
 }
