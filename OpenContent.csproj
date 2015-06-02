@@ -122,6 +122,7 @@
     <Compile Include="Components\Json\JsonMergeOptionArrayHandling.cs" />
     <Compile Include="Components\Json\JsonMergeOptions.cs" />
     <Compile Include="Components\Json\JsonUtils.cs" />
+    <Compile Include="Components\DnnEntitiesAPIController.cs" />
     <Compile Include="Components\OpenContentController.cs" />
     <Compile Include="Components\OpenContentInfo.cs" />
     <Compile Include="Components\OpenContentAPIController.cs" />
@@ -197,6 +198,7 @@
     <Content Include="alpaca\js\fields\dnn\ImageField.js" />
     <Content Include="alpaca\js\fields\dnn\UrlField.js" />
     <Content Include="alpaca\js\fields\dnn\wysihtmlField.js" />
+    <Content Include="alpaca\js\views\dnnbootstrap.js" />
     <Content Include="alpaca\js\views\dnn.js" />
     <Content Include="alpaca\templates\dnn-edit\container-array-actionbar.html" />
     <Content Include="alpaca\templates\dnn-edit\container-array.html" />
