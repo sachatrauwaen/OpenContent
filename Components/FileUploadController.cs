@@ -97,10 +97,17 @@ namespace Satrabel.OpenContent.Components
 
                 if (IsAllowedExtension(fileName))
                 {
-                    var userFolder = _folderManager.GetFolder(PortalSettings.PortalId, "OpenContent/Files/" + ActiveModule.ModuleID);
+                    string uploadfolder = "OpenContent/Files/" + ActiveModule.ModuleID;
+
+                    if (!string.IsNullOrEmpty(context.Request.Form["uploadfolder"]))
+                    {
+                        uploadfolder = context.Request.Form["uploadfolder"];
+                    }
+
+                    var userFolder = _folderManager.GetFolder(PortalSettings.PortalId, uploadfolder);
                     if (userFolder == null)
                     {
-                        userFolder = _folderManager.AddFolder(PortalSettings.PortalId, "OpenContent/Files/" + ActiveModule.ModuleID);
+                        userFolder = _folderManager.AddFolder(PortalSettings.PortalId, uploadfolder);
                     }
                     //todo: deal with the case where the exact file name already exists.
                     var fileInfo = _fileManager.AddFile(userFolder, fileName, file.InputStream, true);
