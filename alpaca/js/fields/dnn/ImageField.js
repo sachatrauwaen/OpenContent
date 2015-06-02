@@ -20,9 +20,13 @@
         getFieldType: function () {
             return "image";
         }
-
-        /* builder_helpers */
         ,
+        setup: function () {
+            if (!this.options.uploadfolder) {
+                this.options.uploadfolder = "";
+            }
+            this.base();
+        },
 
         /**
          * @see Alpaca.Fields.TextField#getTitle
@@ -87,12 +91,13 @@
 
             //var el = this.control;
             var el = this.getControlEl();
-            
+
+                       
             $(this.control.get(0)).find('input[type=file]').fileupload({
                 dataType: 'json',
                 url: self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
                 maxFileSize: 25000000,
-                formData: { example: 'test' },
+                formData: { uploadfolder : self.options.uploadfolder },
                 beforeSend: self.sf.setModuleHeaders,
                 add: function (e, data) {
                     //data.context = $(opts.progressContextSelector);
