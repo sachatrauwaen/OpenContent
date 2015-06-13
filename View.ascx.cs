@@ -41,13 +41,7 @@ namespace Satrabel.OpenContent
 
     public partial class View : RazorModuleBase, IActionable
     {
-        public string TemplateFolder
-        {
-            get
-            {
-                return ModuleContext.PortalSettings.HomeSystemDirectory + "/OpenContent/Templates/";
-            }
-        }
+        
         protected override string RazorScriptFile
         {
             get

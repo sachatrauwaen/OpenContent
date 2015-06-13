@@ -38,21 +38,13 @@ namespace Satrabel.OpenContent
         protected override void OnInit(EventArgs e)
         {
             base.OnInit(e);
-            //hlCancel.NavigateUrl = Globals.NavigateURL();
-            //cmdSave.NavigateUrl = Globals.NavigateURL();
-
             cmdSave.Click += cmdSave_Click;
             cmdSaveClose.Click += cmdSaveAndClose_Click;
             cmdCancel.Click += cmdCancel_Click;
             cmdCustom.Click += cmdCustom_Click;
-            var js = string.Format("javascript:return confirm('{0}');", Localization.GetSafeJSString(LocalizeString("OverwriteTemplate")));
-            cmdCustom.Attributes.Add("onClick", js);
-
+            //var js = string.Format("javascript:return confirm('{0}');", Localization.GetSafeJSString(LocalizeString("OverwriteTemplate")));
+            //cmdCustom.Attributes.Add("onClick", js);
             scriptList.SelectedIndexChanged += scriptList_SelectedIndexChanged;
-
-            //ServicesFramework.Instance.RequestAjaxScriptSupport();
-            //ServicesFramework.Instance.RequestAjaxAntiForgerySupport();
-
         }
 
         private void cmdCustom_Click(object sender, EventArgs e)
@@ -73,31 +65,36 @@ namespace Satrabel.OpenContent
             {
                 File.Copy(item, ModuleDir + Path.GetFileName(item));
             }
+            ModuleController mc = new ModuleController();
+            Template = ModuleTemplateDirectory + "schema.json";
+            mc.UpdateModuleSetting(ModuleId, "template", Template);
+            InitEditor(Template);
         }
 
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-
             if (!Page.IsPostBack)
             {
-                LoadFiles();
-                DisplayFile();
                 string Template = ModuleContext.Settings["template"] as string;
-                if (Template.StartsWith(ModuleTemplateDirectory))
-                {
-                    cmdCustom.Visible = false;
-                }
-                
+                InitEditor(Template);
             }
         }
 
-        private void DisplayFile()
+        private void InitEditor(string Template)
         {
-            string Template = ModuleContext.Settings["template"] as string;
+            LoadFiles(Template);
+            DisplayFile(Template);
+            if (Template.StartsWith(ModuleTemplateDirectory))
+            {
+                cmdCustom.Visible = false;
+            }
+        }
+
+        private void DisplayFile(string Template)
+        {
             string TemplateFolder = Path.GetDirectoryName(Template);
             TemplateFolder = OpenContentUtils.ReverseMapPath(TemplateFolder);
-
             string scriptFile = TemplateFolder + "/" + scriptList.SelectedValue;
             plSource.Text = scriptFile;
             string srcFile = Server.MapPath(scriptFile);
@@ -148,17 +145,14 @@ namespace Satrabel.OpenContent
             }
             DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "mimeType", mimeType, true);
         }
-        private void LoadFiles()
+        private void LoadFiles(string Template)
         {
             scriptList.Items.Clear();
-            string Template = ModuleContext.Settings["template"] as string;
-
             if (!(string.IsNullOrEmpty(Template)))
             {
                 scriptList.Items.Add(new ListItem("Template", Path.GetFileName(Template)));
                 scriptList.Items.Add(new ListItem("Stylesheet", Path.GetFileNameWithoutExtension(Template) + ".css"));
                 scriptList.Items.Add(new ListItem("Javascript", Path.GetFileNameWithoutExtension(Template) + ".js"));
-
                 scriptList.Items.Add(new ListItem("Schema", "schema.json"));
                 scriptList.Items.Add(new ListItem("Layout Options", "options.json"));
                 //scriptList.Items.Add(new ListItem("Edit Layout Options - Template File Overides", "options." + Path.GetFileNameWithoutExtension(Template) + ".json"));
@@ -213,11 +207,10 @@ namespace Satrabel.OpenContent
 
         private void scriptList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            DisplayFile();
+            string Template = ModuleContext.Settings["template"] as string;
+            DisplayFile(Template);
         }
-
         #endregion
-
     }
 }
 

@@ -7,20 +7,15 @@
 
 <dnncl:DnnJsInclude ID="DnnJsInclude4" runat="server" FilePath="~/DesktopModules/OpenContent/js/alpaca-1.5.8/lib/typeahead.js/dist/typeahead.bundle.min.js" Priority="106" ForceProvider="DnnPageHeaderProvider" />
 
-<dnncl:DnnJsInclude ID="DnnJsInclude5" runat="server" FilePath="~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js" Priority="106" ForceProvider="DnnPageHeaderProvider" />
-
 <script src="<%=ControlPath %>js/wysihtml/wysihtml-toolbar.js"></script>
 <script src="<%=ControlPath %>js/wysihtml/parser_rules/advanced_opencontent.js"></script>  
 <script type="text/javascript" src="<%=ControlPath %>alpaca/js/views/dnn.js"></script>
 <script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/ImageField.js"></script>
 <script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/UrlField.js"></script>
 <script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/CKEditorField.js"></script>
-
 <script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/wysihtmlField.js"></script>
 
 <dnncl:DnnCssInclude ID="DnnCssInclude1" runat="server" FilePath="~/DesktopModules/OpenContent/css/font-awesome/css/font-awesome.min.css" AddTag="false" />
-
-
 
 <asp:Panel ID="ScopeWrapper" runat="server">
     <div id="field1" class="alpaca"></div>
@@ -63,6 +58,7 @@
             var ConnectorClass = Alpaca.getConnectorClass("default");
             connector = new ConnectorClass("default");
             connector.servicesFramework = sf;
+            connector.culture = '<%=CurrentCulture%>';
 
             $.alpaca.Fields.DnnFileField = $.alpaca.Fields.FileField.extend({
                 setup: function () {
@@ -108,8 +104,8 @@
                         }
                         return false;
                     });
-                    $('#field1').dnnPanels();
-                    $('.dnnTooltip').dnnTooltip();
+                    //$('#field1').dnnPanels();
+                    //$('.dnnTooltip').dnnTooltip();
                 }
             });
         }).fail(function (xhr, result, status) {

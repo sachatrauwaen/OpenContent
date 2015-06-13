@@ -159,7 +159,12 @@
             $(anchorEl).mouseover(function (e) {
                 $(this).css("cursor", "pointer");
             })
+
+            
+
         }
+        $(fieldEl).dnnPanels();
+        $('.dnnTooltip', fieldEl).dnnTooltip();
     };
 
     Alpaca.registerView({
@@ -186,7 +191,7 @@
         "type": "edit",
         "ui": "dnn",
         "title": "Edit View for DNN",
-        "displayReadonly": true,
+        "displayReadonly": false,
         "callbacks": callbacks,
         "styles": styles,
         "templates": {
