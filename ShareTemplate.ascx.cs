@@ -36,11 +36,19 @@ namespace Satrabel.OpenContent
 
     public partial class ShareTemplate : PortalModuleBase
     {
+        protected virtual string GetModuleSubDir()
+        {
+            string dir = Path.GetDirectoryName(ModuleContext.Configuration.ModuleControl.ControlSrc);
+            dir = dir.Substring(dir.IndexOf("DesktopModules")+15);
+            return dir;
+        }
+
+
         public string ModuleTemplateDirectory
         {
             get
             {
-                return PortalSettings.HomeDirectory + "OpenContent/Templates/" + ModuleId.ToString() + "/";
+                return PortalSettings.HomeDirectory + GetModuleSubDir() + "/Templates/" + ModuleId.ToString() + "/";
             }
         }
         #region Event Handlers
@@ -77,21 +85,25 @@ namespace Satrabel.OpenContent
             phImport.Visible = false;
             phExport.Visible = false;
             phImportWeb.Visible = false;
-            if (rblAction.SelectedIndex == 0) // import
+            phCopy.Visible = false;
+
+            if (rblAction.SelectedIndex == 0) return;
+
+            if (rblAction.SelectedValue == "importfile") // import
             {
                 phImport.Visible = true;
             }
-            else if (rblAction.SelectedIndex == 1) // export
+            else if (rblAction.SelectedValue == "exportfile") // export
             {
                 phExport.Visible = true;
                 ddlTemplates.Items.Clear();
-                ddlTemplates.Items.AddRange(OpenContentUtils.GetTemplates(PortalSettings, ModuleId, "").ToArray());
+                ddlTemplates.Items.AddRange(OpenContentUtils.GetTemplates(PortalSettings, ModuleId, "", GetModuleSubDir()).ToArray());
             }
-            else if (rblAction.SelectedIndex == 2) // Import from web
+            else if (rblAction.SelectedValue == "importweb") // Import from web
             {
                 phImportWeb.Visible = true;
                 ddlWebTemplates.Items.Clear();
-                
+
                 FeedParser parser = new FeedParser();
                 var items = parser.Parse("http://www.openextensions.net/templates?agentType=rss&PropertyTypeID=9", FeedType.RSS);
                 foreach (var item in items)
@@ -99,27 +111,36 @@ namespace Satrabel.OpenContent
                     ddlWebTemplates.Items.Add(new ListItem(item.Title, item.ZipEnclosure));
                 }
             }
+            else if (rblAction.SelectedValue == "copy") // copy
+            {
+                phCopy.Visible = true;
+                ddlCopyTemplate.Items.Clear();
+                ddlCopyTemplate.Items.AddRange(OpenContentUtils.GetTemplates(PortalSettings, ModuleId, "", GetModuleSubDir()).ToArray());
+            }
         }
         protected void cmdImport_Click(object sender, EventArgs e)
         {
             string strMessage = "";
             try
             {
-                var folder = FolderManager.Instance.GetFolder(PortalId, "OpenContent/Templates");
+                var folder = FolderManager.Instance.GetFolder(PortalId, GetModuleSubDir()+"/Templates");
                 if (folder == null)
                 {
-                    folder = FolderManager.Instance.AddFolder(PortalId, "OpenContent/Templates");
+                    folder = FolderManager.Instance.AddFolder(PortalId, GetModuleSubDir() + "/Templates");
                 }
                 var fileManager = DotNetNuke.Services.FileSystem.FileManager.Instance;
                 if (Path.GetExtension(fuFile.FileName) == ".zip")
                 {
                     string TemplateName = Path.GetFileNameWithoutExtension(fuFile.FileName);
-                    string FolderName = "OpenContent/Templates/" + TemplateName;
+                    if (!string.IsNullOrEmpty(tbImportName.Text))
+                        TemplateName = tbImportName.Text;
+
+                    string FolderName = GetModuleSubDir() + "/Templates/" + TemplateName;
                     folder = FolderManager.Instance.GetFolder(PortalId, FolderName);
                     int idx = 1;
                     while (folder != null)
                     {
-                        FolderName = "OpenContent/Templates/" + TemplateName + idx;
+                        FolderName = GetModuleSubDir() + "/Templates/" + TemplateName + idx;
                         folder = FolderManager.Instance.GetFolder(PortalId, FolderName);
                         idx++;
                     }
@@ -130,22 +151,22 @@ namespace Satrabel.OpenContent
                     FileSystemUtils.UnzipResources(new ZipInputStream(fuFile.FileContent), folder.PhysicalPath);
                 }
             }
-            catch (PermissionsNotMetException )
+            catch (PermissionsNotMetException)
             {
                 //Logger.Warn(exc);
-                strMessage += "<br />" + string.Format(Localization.GetString("InsufficientFolderPermission"), "OpenContent/Templates");
+                strMessage += "<br />" + string.Format(Localization.GetString("InsufficientFolderPermission"), GetModuleSubDir()+"/Templates");
             }
-            catch (NoSpaceAvailableException )
+            catch (NoSpaceAvailableException)
             {
                 //Logger.Warn(exc);
                 strMessage += "<br />" + string.Format(Localization.GetString("DiskSpaceExceeded"), fuFile.FileName);
             }
-            catch (InvalidFileExtensionException )
+            catch (InvalidFileExtensionException)
             {
                 //Logger.Warn(exc);
                 strMessage += "<br />" + string.Format(Localization.GetString("RestrictedFileType"), fuFile.FileName, Host.AllowedExtensionWhitelist.ToDisplayString());
             }
-            catch (Exception )
+            catch (Exception)
             {
                 //Logger.Error(exc);
                 strMessage += "<br />" + string.Format(Localization.GetString("SaveFileError"), fuFile.FileName);
@@ -157,15 +178,21 @@ namespace Satrabel.OpenContent
         }
         protected void cmdExport_Click(object sender, EventArgs e)
         {
-            var folder = FolderManager.Instance.GetFolder(PortalId, "OpenContent/Templates");
+            var folder = FolderManager.Instance.GetFolder(PortalId, GetModuleSubDir() + "/Templates");
             if (folder == null)
             {
-                folder = FolderManager.Instance.AddFolder(PortalId, "OpenContent/Templates");
+                folder = FolderManager.Instance.AddFolder(PortalId, GetModuleSubDir() + "/Templates");
             }
             var fileManager = DotNetNuke.Services.FileSystem.FileManager.Instance;
             //var file = fileManager.AddFile(folder, fuFile.FileName, fuFile.FileContent, true, fuFile.PostedFile.co);
             //var file = fileManager.AddFile(folder, fuFile.FileName, fuFile.PostedFile.InputStream, true, false, fuFile.PostedFile.ContentType);
-            CreateZipFile(Server.MapPath(ddlTemplates.SelectedValue) + ".zip", Server.MapPath(ddlTemplates.SelectedValue));
+            string zipfilename;
+            if (string.IsNullOrEmpty(tbExportName.Text))
+                zipfilename = Server.MapPath(ddlTemplates.SelectedValue) + ".zip";
+            else
+                zipfilename = Path.GetDirectoryName(Server.MapPath(ddlTemplates.SelectedValue)) + "\\" + tbExportName.Text + ".zip";
+
+            CreateZipFile(zipfilename, Server.MapPath(ddlTemplates.SelectedValue));
             DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "Export Successful", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.GreenSuccess);
         }
 
@@ -176,21 +203,21 @@ namespace Satrabel.OpenContent
             string strMessage = "";
             try
             {
-                var folder = FolderManager.Instance.GetFolder(PortalId, "OpenContent/Templates");
+                var folder = FolderManager.Instance.GetFolder(PortalId, GetModuleSubDir() + "/Templates");
                 if (folder == null)
                 {
-                    folder = FolderManager.Instance.AddFolder(PortalId, "OpenContent/Templates");
+                    folder = FolderManager.Instance.AddFolder(PortalId, GetModuleSubDir() + "/Templates");
                 }
                 var fileManager = DotNetNuke.Services.FileSystem.FileManager.Instance;
                 if (Path.GetExtension(FileName) == ".zip")
                 {
                     string TemplateName = Path.GetFileNameWithoutExtension(FileName);
-                    string FolderName = "OpenContent/Templates/" + TemplateName;
+                    string FolderName = GetModuleSubDir() + "/Templates/" + TemplateName;
                     folder = FolderManager.Instance.GetFolder(PortalId, FolderName);
                     int idx = 1;
                     while (folder != null)
                     {
-                        FolderName = "OpenContent/Templates/" + TemplateName + idx;
+                        FolderName = GetModuleSubDir() + "/Templates/" + TemplateName + idx;
                         folder = FolderManager.Instance.GetFolder(PortalId, FolderName);
                         idx++;
                     }
@@ -204,22 +231,22 @@ namespace Satrabel.OpenContent
                     FileSystemUtils.UnzipResources(new ZipInputStream(stream), folder.PhysicalPath);
                 }
             }
-            catch (PermissionsNotMetException )
+            catch (PermissionsNotMetException)
             {
                 //Logger.Warn(exc);
-                strMessage += "<br />" + string.Format(Localization.GetString("InsufficientFolderPermission"), "OpenContent/Templates");
+                strMessage += "<br />" + string.Format(Localization.GetString("InsufficientFolderPermission"), GetModuleSubDir() + "/Templates");
             }
-            catch (NoSpaceAvailableException )
+            catch (NoSpaceAvailableException)
             {
                 //Logger.Warn(exc);
                 strMessage += "<br />" + string.Format(Localization.GetString("DiskSpaceExceeded"), fuFile.FileName);
             }
-            catch (InvalidFileExtensionException )
+            catch (InvalidFileExtensionException)
             {
                 //Logger.Warn(exc);
                 strMessage += "<br />" + string.Format(Localization.GetString("RestrictedFileType"), fuFile.FileName, Host.AllowedExtensionWhitelist.ToDisplayString());
             }
-            catch (Exception )
+            catch (Exception)
             {
                 //Logger.Error(exc);
                 strMessage += "<br />" + string.Format(Localization.GetString("SaveFileError"), fuFile.FileName);
@@ -237,7 +264,7 @@ namespace Satrabel.OpenContent
             int CompressionLevel = 9;
             var zipFile = new System.IO.FileInfo(zipFileName);
 
-            string ZipFileShortName = zipFile.Name;
+            //string ZipFileShortName = zipFile.Name;
 
             FileStream strmZipFile = null;
             //Log.StartJob(Util.WRITER_CreatingPackage);
@@ -329,6 +356,41 @@ namespace Satrabel.OpenContent
             HttpContext.Current.Server.ScriptTimeout = scriptTimeOut;
         }
 
+        private void CopyTemplate(string Folder, string TemplateName)
+        {
+            try
+            {
+                string FolderName = GetModuleSubDir() + "/Templates/" + TemplateName;
+                var folder = FolderManager.Instance.GetFolder(PortalId, FolderName);
+                int idx = 1;
+                while (folder != null)
+                {
+                    FolderName = GetModuleSubDir() + "/Templates/" + TemplateName + idx;
+                    folder = FolderManager.Instance.GetFolder(PortalId, FolderName);
+                    idx++;
+                }
+                if (folder == null)
+                {
+                    folder = FolderManager.Instance.AddFolder(PortalId, FolderName);
+                }
+                foreach (var item in Directory.GetFiles(Folder))
+                {
+                    File.Copy(item, folder.PhysicalPath+ Path.GetFileName(item));
+                }
+            }
+            catch (Exception ex)
+            {
+                DotNetNuke.Services.Exceptions.Exceptions.LogException(ex);                
+            }
+        }
+
+        protected void lbCopy_Click(object sender, EventArgs e)
+        {
+            string oldFolder = Server.MapPath(ddlCopyTemplate.SelectedValue);
+            CopyTemplate(oldFolder, tbCopyName.Text);
+
+            DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "Copy Successful", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.GreenSuccess);
+        }
     }
 }
 

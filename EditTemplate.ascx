@@ -26,11 +26,11 @@
         <div class="dnnFormItem">
             <asp:Label ID="Label1" ControlName="txtSource" runat="server" CssClass="dnnLabel" Text="" />
             <asp:Label ID="plSource" ControlName="txtSource" runat="server" />
-            
+
         </div>
         <div class="dnnFormItem">
 
-            
+
             <asp:Label ID="Label2" runat="server" />
         </div>
         <div>
@@ -48,7 +48,7 @@
 
         </li>
         <li>
-            <asp:LinkButton ID="cmdCustom" resourcekey="cmdCustom" runat="server" CssClass="dnnSecondaryAction"  />
+            <asp:LinkButton ID="cmdCustom" resourcekey="cmdCustom" runat="server" CssClass="dnnSecondaryAction" />
         </li>
     </ul>
 </div>
@@ -67,26 +67,33 @@
               });
         });
 
-
-
         var setupModule = function () {
+
+            $('#<%= cmdCustom.ClientID %>').dnnConfirm({
+                text: '<%= Localization.GetSafeJSString("OverwriteTemplate.Text") %>',
+                yesText: '<%= Localization.GetSafeJSString("Yes.Text", Localization.SharedResourceFile) %>',
+                noText: '<%= Localization.GetSafeJSString("No.Text", Localization.SharedResourceFile) %>',
+                title: '<%= Localization.GetSafeJSString("Confirm.Text", Localization.SharedResourceFile) %>'
+            });
+
+
             var cm = CodeMirror.fromTextArea($("textarea[id$='txtSource']")[0], {
                 lineNumbers: true,
                 matchBrackets: true,
                 lineWrapping: true,
                 mode: mimeType
             });
-        
+
             var resizeModule = function resizeDnnEditHtml() {
                 //$('#dnnEditScript fieldset').height($(window).height() - $('#dnnEditScript ul dnnActions').height() - 18 - 52);
                 $('window.frameElement, body, html').css('overflow', 'hidden');
 
 
-                var containerHeight = $(window).height() -18 -52 - 52 -18 - 30 ;
+                var containerHeight = $(window).height() - 18 - 52 - 52 - 18 - 30;
 
                 //$('.editorContainer').height(containerHeight - $('.editorContainer').offset().top - 110);
                 //$('.editorContainer').height(containerHeight - 250);
-                $('#dnnEditScript .CodeMirror').height(containerHeight );
+                $('#dnnEditScript .CodeMirror').height(containerHeight);
 
                 cm.refresh();
             };

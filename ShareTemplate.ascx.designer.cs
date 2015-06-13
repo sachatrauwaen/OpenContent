@@ -28,7 +28,7 @@ namespace Satrabel.OpenContent {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RadioButtonList rblAction;
+        protected global::System.Web.UI.WebControls.DropDownList rblAction;
         
         /// <summary>
         /// phImport control.
@@ -56,6 +56,24 @@ namespace Satrabel.OpenContent {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.FileUpload fuFile;
+        
+        /// <summary>
+        /// lblImportName control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.UserControl lblImportName;
+        
+        /// <summary>
+        /// tbImportName control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox tbImportName;
         
         /// <summary>
         /// cmdImport control.
@@ -92,6 +110,24 @@ namespace Satrabel.OpenContent {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList ddlTemplates;
+        
+        /// <summary>
+        /// lblExportName control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.UserControl lblExportName;
+        
+        /// <summary>
+        /// tbExportName control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox tbExportName;
         
         /// <summary>
         /// cmdExport control.
@@ -157,12 +193,57 @@ namespace Satrabel.OpenContent {
         protected global::System.Web.UI.WebControls.LinkButton cmdImportWeb;
         
         /// <summary>
-        /// hlTemplateSettings control.
+        /// phCopy control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.HyperLink hlTemplateSettings;
+        protected global::System.Web.UI.WebControls.PlaceHolder phCopy;
+        
+        /// <summary>
+        /// lCopyTemplates control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.UserControl lCopyTemplates;
+        
+        /// <summary>
+        /// ddlCopyTemplate control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlCopyTemplate;
+        
+        /// <summary>
+        /// lCopyName control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.UserControl lCopyName;
+        
+        /// <summary>
+        /// tbCopyName control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox tbCopyName;
+        
+        /// <summary>
+        /// lbCopy control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton lbCopy;
     }
 }

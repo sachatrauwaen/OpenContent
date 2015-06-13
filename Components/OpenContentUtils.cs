@@ -22,13 +22,13 @@ namespace Satrabel.OpenContent.Components
                 mc.UpdateModule(mod);
             }
         }
-        public static string GetSiteTemplateFolder(PortalSettings portalSettings)
+        public static string GetSiteTemplateFolder(PortalSettings portalSettings, string moduleSubDir)
         {
-            return portalSettings.HomeDirectory + "/OpenContent/Templates/";
+            return portalSettings.HomeDirectory + moduleSubDir+"/Templates/";
         }
-        public static List<ListItem> GetTemplatesFiles(PortalSettings portalSettings, int ModuleId, string SelectedTemplate)
+        public static List<ListItem> GetTemplatesFiles(PortalSettings portalSettings, int ModuleId, string SelectedTemplate, string moduleSubDir)
         {
-            string basePath = HostingEnvironment.MapPath(GetSiteTemplateFolder(portalSettings));
+            string basePath = HostingEnvironment.MapPath(GetSiteTemplateFolder(portalSettings, moduleSubDir));
             if (!Directory.Exists(basePath))
             {
                 Directory.CreateDirectory(basePath);
@@ -78,9 +78,9 @@ namespace Satrabel.OpenContent.Components
             }
             return lst;
         }
-        public static List<ListItem> GetTemplates(PortalSettings portalSettings, int ModuleId, string SelectedTemplate)
+        public static List<ListItem> GetTemplates(PortalSettings portalSettings, int ModuleId, string SelectedTemplate, string moduleSubDir)
         {
-            string basePath = HostingEnvironment.MapPath(GetSiteTemplateFolder(portalSettings));
+            string basePath = HostingEnvironment.MapPath(GetSiteTemplateFolder(portalSettings, moduleSubDir));
             if (!Directory.Exists(basePath))
             {
                 Directory.CreateDirectory(basePath);
