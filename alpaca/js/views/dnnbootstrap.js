@@ -43,7 +43,7 @@
         "type": "edit",
         "ui": "dnnbootstrap",
         "title": "Bootstrap Edit View for DNN",
-        "displayReadonly": true,
+        "displayReadonly": false,
         "templates": {
             "control-image": "/DesktopModules/OpenContent/alpaca/templates/dnn-edit/control-image.html",
             "control-wysihtml": "/DesktopModules/OpenContent/alpaca/templates/dnn-edit/control-wysihtml.html"
