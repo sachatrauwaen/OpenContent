@@ -33,7 +33,6 @@ using System.Net;
 
 namespace Satrabel.OpenContent
 {
-
     public partial class ShareTemplate : PortalModuleBase
     {
         protected virtual string GetModuleSubDir()
@@ -42,8 +41,6 @@ namespace Satrabel.OpenContent
             dir = dir.Substring(dir.IndexOf("DesktopModules")+15);
             return dir;
         }
-
-
         public string ModuleTemplateDirectory
         {
             get
@@ -52,14 +49,9 @@ namespace Satrabel.OpenContent
             }
         }
         #region Event Handlers
-
         protected override void OnInit(EventArgs e)
         {
             base.OnInit(e);
-            //cmdSave.Click += cmdSave_Click;
-            //cmdCancel.Click += cmdCancel_Click;
-            //ServicesFramework.Instance.RequestAjaxScriptSupport();
-            //ServicesFramework.Instance.RequestAjaxAntiForgerySupport();
         }
         protected override void OnLoad(EventArgs e)
         {
@@ -70,23 +62,19 @@ namespace Satrabel.OpenContent
         }
         protected void cmdSave_Click(object sender, EventArgs e)
         {
-
             Response.Redirect(Globals.NavigateURL(), true);
         }
         protected void cmdCancel_Click(object sender, EventArgs e)
         {
             Response.Redirect(Globals.NavigateURL(), true);
         }
-
         #endregion
-
         protected void rblAction_SelectedIndexChanged(object sender, EventArgs e)
         {
             phImport.Visible = false;
             phExport.Visible = false;
             phImportWeb.Visible = false;
             phCopy.Visible = false;
-
             if (rblAction.SelectedIndex == 0) return;
 
             if (rblAction.SelectedValue == "importfile") // import
@@ -103,7 +91,6 @@ namespace Satrabel.OpenContent
             {
                 phImportWeb.Visible = true;
                 ddlWebTemplates.Items.Clear();
-
                 FeedParser parser = new FeedParser();
                 var items = parser.Parse("http://www.openextensions.net/templates?agentType=rss&PropertyTypeID=9", FeedType.RSS);
                 foreach (var item in items)
@@ -186,20 +173,13 @@ namespace Satrabel.OpenContent
             var fileManager = DotNetNuke.Services.FileSystem.FileManager.Instance;
             //var file = fileManager.AddFile(folder, fuFile.FileName, fuFile.FileContent, true, fuFile.PostedFile.co);
             //var file = fileManager.AddFile(folder, fuFile.FileName, fuFile.PostedFile.InputStream, true, false, fuFile.PostedFile.ContentType);
-            string zipfilename;
-            if (string.IsNullOrEmpty(tbExportName.Text))
-                zipfilename = Server.MapPath(ddlTemplates.SelectedValue) + ".zip";
-            else
-                zipfilename = Path.GetDirectoryName(Server.MapPath(ddlTemplates.SelectedValue)) + "\\" + tbExportName.Text + ".zip";
-
+            string zipfilename = Server.MapPath(ddlTemplates.SelectedValue) + ".zip";
             CreateZipFile(zipfilename, Server.MapPath(ddlTemplates.SelectedValue));
             DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "Export Successful", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.GreenSuccess);
         }
-
         protected void cmdImportWeb_Click(object sender, EventArgs e)
         {
             string FileName = ddlWebTemplates.SelectedValue;
-
             string strMessage = "";
             try
             {
@@ -227,7 +207,6 @@ namespace Satrabel.OpenContent
                     }
                     var req = (HttpWebRequest)WebRequest.Create(FileName);
                     Stream stream = req.GetResponse().GetResponseStream();
-
                     FileSystemUtils.UnzipResources(new ZipInputStream(stream), folder.PhysicalPath);
                 }
             }
@@ -258,14 +237,8 @@ namespace Satrabel.OpenContent
         }
         private void CreateZipFile(string zipFileName, string Folder)
         {
-            //string basePath = Server.MapPath(OpenContentUtils.GetSiteTemplateFolder(PortalSettings));
-            //string packageFilePath = Folder.Replace(basePath, "");
-            //zipFileName = basePath + zipFileName + ".zip";
             int CompressionLevel = 9;
             var zipFile = new System.IO.FileInfo(zipFileName);
-
-            //string ZipFileShortName = zipFile.Name;
-
             FileStream strmZipFile = null;
             //Log.StartJob(Util.WRITER_CreatingPackage);
             try
@@ -277,7 +250,6 @@ namespace Satrabel.OpenContent
                 {
                     strmZipStream = new ZipOutputStream(strmZipFile);
                     strmZipStream.SetLevel(CompressionLevel);
-
                     foreach (var item in Directory.GetFiles(Folder))
                     {
                         FileSystemUtils.AddToZip(ref strmZipStream, Path.GetFullPath(item), Path.GetFileName(item), "");
@@ -312,17 +284,13 @@ namespace Satrabel.OpenContent
                 }
             }
         }
-
         private void WriteFileToHttpContext(string FileName, ContentDisposition contentDisposition)
         {
             var scriptTimeOut = HttpContext.Current.Server.ScriptTimeout;
-
             HttpContext.Current.Server.ScriptTimeout = int.MaxValue;
             var objResponse = HttpContext.Current.Response;
-
             objResponse.ClearContent();
             objResponse.ClearHeaders();
-
             switch (contentDisposition)
             {
                 case ContentDisposition.Attachment:
@@ -334,25 +302,19 @@ namespace Satrabel.OpenContent
                 default:
                     throw new ArgumentOutOfRangeException("contentDisposition");
             }
-
             //objResponse.AppendHeader("Content-Length", File.get.ToString());
             objResponse.ContentType = FileManager.Instance.GetContentType(Path.GetExtension(FileName).Replace(".", ""));
-
             try
             {
                 Response.WriteFile(FileName);
-
             }
             catch (Exception ex)
             {
                 //Logger.Error(ex);
-
                 objResponse.Write("Error : " + ex.Message);
             }
-
             objResponse.Flush();
             objResponse.End();
-
             HttpContext.Current.Server.ScriptTimeout = scriptTimeOut;
         }
 
@@ -388,7 +350,6 @@ namespace Satrabel.OpenContent
         {
             string oldFolder = Server.MapPath(ddlCopyTemplate.SelectedValue);
             CopyTemplate(oldFolder, tbCopyName.Text);
-
             DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "Copy Successful", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.GreenSuccess);
         }
     }

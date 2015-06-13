@@ -15,6 +15,9 @@ using DotNetNuke.Common;
 using DotNetNuke.Framework.JavaScriptLibraries;
 using DotNetNuke.Framework;
 using DotNetNuke.Services.Localization;
+using System.IO;
+using DotNetNuke.Web.Client.ClientResourceManagement;
+using DotNetNuke.Web.Client;
 
 
 #endregion
@@ -32,16 +35,16 @@ namespace Satrabel.OpenContent
             base.OnInit(e);
             hlCancel.NavigateUrl = Globals.NavigateURL();
             cmdSave.NavigateUrl = Globals.NavigateURL();
-
-            //cmdSave.Click += cmdSave_Click;
-            //cmdCancel.Click += cmdCancel_Click;
-
             ServicesFramework.Instance.RequestAjaxScriptSupport();
             ServicesFramework.Instance.RequestAjaxAntiForgerySupport();
-            JavaScript.RequestRegistration(CommonJs.DnnPlugins); ;
-            JavaScript.RequestRegistration(CommonJs.jQueryFileUpload);
-            DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "PortalId", PortalId.ToString(), true);
-            CKDNNporid.Value = PortalId.ToString();
+            JavaScript.RequestRegistration(CommonJs.DnnPlugins); // dnnPanels
+            JavaScript.RequestRegistration(CommonJs.jQueryFileUpload); // image file upload
+            if (File.Exists(Server.MapPath("~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js")))
+            {
+                ClientResourceManager.RegisterScript(Page, "~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js",FileOrder.Js.DefaultPriority);
+                DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "PortalId", PortalId.ToString(), true);
+                CKDNNporid.Value = PortalId.ToString();
+            }
         }
 
         protected override void OnLoad(EventArgs e)
