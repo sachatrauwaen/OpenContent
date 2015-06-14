@@ -138,6 +138,7 @@
     <Compile Include="EditSettings.ascx.designer.cs">
       <DependentUpon>EditSettings.ascx</DependentUpon>
     </Compile>
+    <Compile Include="RadAjaxLoadingPanel.cs" />
     <Compile Include="ShareTemplate.ascx.cs">
       <DependentUpon>ShareTemplate.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -189,6 +190,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="alpaca\css\alpaca-dnnbootstrap.css" />
     <Content Include="alpaca\css\alpaca-dnn.css" />
     <Content Include="alpaca\css\img\Add_16x16_Gray.png" />
     <Content Include="alpaca\css\img\Delete_16X16_Gray.png" />
@@ -227,6 +229,7 @@
     <Content Include="css\jquery-ui.css" />
     <Content Include="css\jquery-ui.min.css" />
     <Content Include="EditSettings.ascx" />
+    <Content Include="HtmlPage.html" />
     <Content Include="images\icon_extensions.png" />
     <Content Include="js\alpaca-1.5.8\lib\typeahead.js\dist\bloodhound.js" />
     <Content Include="js\alpaca-1.5.8\lib\typeahead.js\dist\bloodhound.min.js" />
@@ -274,12 +277,17 @@
     <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\tokenizers_spec.js" />
     <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\transport_spec.js" />
     <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\typeahead_view_spec.js" />
+    <Content Include="js\alpacaform.js" />
+    <Content Include="js\app.js" />
     <Content Include="js\CodeMirror\addon\mode\loadmode.js" />
     <Content Include="js\CodeMirror\addon\mode\multiplex.js" />
     <Content Include="js\CodeMirror\addon\mode\multiplex_test.js" />
     <Content Include="js\CodeMirror\addon\mode\overlay.js" />
     <Content Include="js\CodeMirror\addon\mode\simple.js" />
     <Content Include="js\CodeMirror\mode\handlebars\handlebars.js" />
+    <Content Include="js\main1.js" />
+    <Content Include="js\main2.js" />
+    <Content Include="js\require.js" />
     <Content Include="ShareTemplate.ascx" />
     <Content Include="EditData.ascx" />
     <Content Include="EditTemplate.ascx" />

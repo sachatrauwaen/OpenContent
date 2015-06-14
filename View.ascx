@@ -1,5 +1,12 @@
 <%@ Control Language="C#" AutoEventWireup="false" Inherits="Satrabel.OpenContent.View" CodeBehind="View.ascx.cs" %>
 
+<asp:UpdatePanel ID="UpdatePanel1" runat="server">
+    <ContentTemplate>
+        <asp:Literal ID="lOutput" runat="server"></asp:Literal>
+    </ContentTemplate>
+</asp:UpdatePanel>
+
+
 <asp:Panel ID="pHelp" runat="server" Visible="false">
     <h3>Get started</h3>
     <ol>
@@ -23,3 +30,17 @@
         <asp:HyperLink ID="hlEditContent2" runat="server" Visible="false">Edit Content</asp:HyperLink>
     </p>
 </asp:Panel>
+
+
+<script>
+    var EditModal<%= ModuleId %> = function () {
+
+        dnnModal.show('/DesktopModules/OpenContent/HtmlPage.html', false, 550, 950, false, '');
+
+        var iframe = document.getElementById("iPopUp");
+        var sf = $.ServicesFramework(<%=ModuleId %>);
+        var refresh = function() {__doPostBack('<%= UpdatePanel1.ClientID %>', '')};
+        iframe.dnn = {moduleid : <%= ModuleId %>, sf : sf, refresh : refresh};
+
+    };
+</script>
