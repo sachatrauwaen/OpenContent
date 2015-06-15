@@ -138,7 +138,6 @@
     <Compile Include="EditSettings.ascx.designer.cs">
       <DependentUpon>EditSettings.ascx</DependentUpon>
     </Compile>
-    <Compile Include="RadAjaxLoadingPanel.cs" />
     <Compile Include="ShareTemplate.ascx.cs">
       <DependentUpon>ShareTemplate.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
