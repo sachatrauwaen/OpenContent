@@ -215,6 +215,21 @@ namespace Satrabel.OpenContent.Components
             return Request.CreateResponse(HttpStatusCode.OK, "");
         }
 
+        public HttpResponseMessage UpdateSettings(JObject json)
+        {
+            int ModuleId = ActiveModule.ModuleID;
+
+            var data = json["data"].ToString();
+            var template = json["template"].ToString();
+
+            ModuleController mc = new ModuleController();
+            mc.UpdateModuleSetting(ModuleId, "template", template);
+            mc.UpdateModuleSetting(ModuleId, "data", data);
+
+
+            return Request.CreateResponse(HttpStatusCode.OK, "");
+        }
+
     }
 }
 

@@ -33,6 +33,10 @@ using Satrabel.OpenContent.Components.Json;
 using System.Web.WebPages;
 using System.Web;
 using Satrabel.OpenContent.Components.Handlebars;
+using DotNetNuke.Framework;
+using DotNetNuke.Common.Utilities;
+using DotNetNuke.Common;
+using DotNetNuke.UI;
 
 #endregion
 
@@ -41,7 +45,7 @@ namespace Satrabel.OpenContent
 
     public partial class View : RazorModuleBase, IActionable
     {
-        
+
         protected override string RazorScriptFile
         {
             get
@@ -64,13 +68,21 @@ namespace Satrabel.OpenContent
             //base.OnPreRender(e);
             Boolean DemoData = false;
             string OutputString = GenerateOutput(out DemoData);
-            if (!string.IsNullOrEmpty(OutputString)){
-                Controls.Add(new LiteralControl(Server.HtmlDecode(OutputString)));
+            if (!string.IsNullOrEmpty(OutputString))
+            {
+
+                var lit = new LiteralControl(Server.HtmlDecode(OutputString));
+                Controls.Add(lit);
+                if (ModuleContext.IsEditable)
+                {
+                    AJAX.WrapUpdatePanelControl(lit, true);
+                }
+
                 if (DemoData)
                     pDemo.Visible = true;
             }
             else
-            { 
+            {
                 pHelp.Visible = true;
             }
         }
@@ -170,7 +182,7 @@ namespace Satrabel.OpenContent
                             HandlebarsEngine hbEngine = new HandlebarsEngine();
                             return hbEngine.Execute(Page, RazorScriptFile, model);
                             //Controls.Add(new LiteralControl(Server.HtmlDecode(result)));
-                         }
+                        }
                     }
                     else
                     {
@@ -213,6 +225,7 @@ namespace Satrabel.OpenContent
                 bool TemplateDefined = !string.IsNullOrEmpty(Template);
 
                 if (TemplateDefined)
+                {
                     Actions.Add(ModuleContext.GetNextActionID(),
                                 Localization.GetString(ModuleActionType.AddContent, LocalResourceFile),
                                 ModuleActionType.AddContent,
@@ -223,7 +236,7 @@ namespace Satrabel.OpenContent
                                 SecurityAccessLevel.Edit,
                                 true,
                                 false);
-
+                }
                 Actions.Add(ModuleContext.GetNextActionID(),
                          Localization.GetString("EditSettings.Action", LocalResourceFile),
                          ModuleActionType.ContentOptions,
@@ -309,10 +322,11 @@ namespace Satrabel.OpenContent
             {
                 hlTempleteExchange.NavigateUrl = ModuleContext.EditUrl("ShareTemplate");
                 hlEditSettings.NavigateUrl = ModuleContext.EditUrl("EditSettings");
-                  hlTempleteExchange.Visible=true;
-                  hlEditSettings.Visible = true;
+                hlTempleteExchange.Visible = true;
+                hlEditSettings.Visible = true;
             }
-            if (TemplateDefined && ModuleContext.EditMode) {
+            if (TemplateDefined && ModuleContext.EditMode)
+            {
                 hlEditContent.NavigateUrl = ModuleContext.EditUrl("Edit");
                 hlEditContent.Visible = true;
                 hlEditContent2.NavigateUrl = ModuleContext.EditUrl("Edit");
