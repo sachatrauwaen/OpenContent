@@ -18,11 +18,13 @@
     <fieldset>
         <div class="dnnFormItem">
             <dnn:Label ID="lblAction" ControlName="scriptList" runat="server" />
-            <asp:RadioButtonList ID="rblAction" runat="server" RepeatLayout="Flow" RepeatColumns="3" AutoPostBack="true" OnSelectedIndexChanged="rblAction_SelectedIndexChanged">
-                <asp:ListItem Text="Import from file"></asp:ListItem>
-                <asp:ListItem Text="Export"></asp:ListItem>
-                <asp:ListItem Text="Import from web"></asp:ListItem>
-            </asp:RadioButtonList>
+            <asp:DropDownList ID="rblAction" runat="server" AutoPostBack="true" OnSelectedIndexChanged="rblAction_SelectedIndexChanged">
+                <asp:ListItem Text="--select--" ></asp:ListItem>
+                <asp:ListItem Text="Import from file" Value="importfile"></asp:ListItem>
+                <asp:ListItem Text="Import from web" Value="importweb"></asp:ListItem>
+                <asp:ListItem Text="Copy template" Value="copy"></asp:ListItem>
+                <asp:ListItem Text="Export" Value="exportfile"></asp:ListItem>
+            </asp:DropDownList>
         </div>
     </fieldset>
 </div>
@@ -33,6 +35,11 @@
             <div class="dnnFormItem">
                 <dnn:Label ID="lblFile" ControlName="fuFile" runat="server" />
                 <asp:FileUpload ID="fuFile" runat="server" />
+                <br />
+            </div>
+            <div class="dnnFormItem">
+                <dnn:Label ID="lblImportName" ControlName="tbImportName" runat="server" />
+                <asp:TextBox runat="server" ID="tbImportName" /> 
             </div>
         </fieldset>
         <ul class="dnnActions dnnClear" style="display:block;padding-left:35%">
@@ -46,7 +53,6 @@
 <asp:PlaceHolder ID="phExport" runat="server" Visible="false">
     <div class="dnnForm dnnExport dnnClear" id="dnnExport">
         <fieldset>
-
             <div class="dnnFormItem">
                 <dnn:Label ID="lblTemplates" ControlName="ddlTemplates" runat="server" />
                 <asp:DropDownList ID="ddlTemplates" runat="server" />
@@ -56,7 +62,6 @@
             <li>
                 <asp:LinkButton ID="cmdExport" resourcekey="cmdExport" runat="server" CssClass="dnnPrimaryAction" OnClick="cmdExport_Click" />
             </li>
-          
         </ul>
     </div>
 
@@ -82,6 +87,25 @@
     </div>
 </asp:PlaceHolder>
 
+<asp:PlaceHolder ID="phCopy" runat="server" Visible="false">
+    <div class="dnnForm dnnImport dnnClear" id="dnnCopy">
+        <fieldset>
+            <div class="dnnFormItem">
+                <dnn:Label ID="lCopyTemplates" ControlName="ddlTemplates" runat="server" />
+                <asp:DropDownList ID="ddlCopyTemplate" runat="server" />
+            </div>
+            <div class="dnnFormItem">
+                <dnn:Label ID="lCopyName" ControlName="tbCopyName" runat="server" />
+                <asp:TextBox runat="server" ID="tbCopyName" /> 
+            </div>
+        </fieldset>
+        <ul class="dnnActions dnnClear" style="display:block;padding-left:35%">
+            <li>
+                <asp:LinkButton ID="lbCopy" resourcekey="cmdCopy" runat="server" CssClass="dnnPrimaryAction" OnClick="lbCopy_Click" />
+            </li>
+        </ul>
+    </div>
+</asp:PlaceHolder>
 
 <script type="text/javascript">
     jQuery(function ($) {

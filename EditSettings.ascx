@@ -115,8 +115,8 @@
                         "view": "dnn-edit",
                         "connector": connector,
                         "postRender": function (control) {
-                            $('#field1').dnnPanels();
-                            $('.dnnTooltip').dnnTooltip();
+                            //$('#field1').dnnPanels();
+                            //$('.dnnTooltip').dnnTooltip();
                         }
                     });
                 }

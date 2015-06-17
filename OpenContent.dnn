@@ -1,6 +1,6 @@
 <dotnetnuke type="Package" version="5.0">
   <packages>
-    <package name="OpenContent" type="Module" version="01.01.00">
+    <package name="OpenContent" type="Module" version="01.01.01">
       <friendlyName>OpenContent</friendlyName>
       <description>OpenContent module by Satrabel.be</description>
       <iconFile>~/DesktopModules/OpenContent/Images/icon_extensions.png</iconFile>
@@ -40,7 +40,6 @@
             </resourceFile>
           </resourceFiles>
         </component>
-
         <component type="Module">
           <desktopModule>
             <moduleName>OpenContent</moduleName>
@@ -106,7 +105,6 @@
                     <viewOrder>0</viewOrder>
                     <supportsPopUps>True</supportsPopUps>
                   </moduleControl>
-                 
                   <moduleControl>
                     <controlKey>EditSettings</controlKey>
                     <controlSrc>DesktopModules/OpenContent/EditSettings.ascx</controlSrc>
