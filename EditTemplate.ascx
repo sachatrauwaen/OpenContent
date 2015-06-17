@@ -1,4 +1,5 @@
 <%@ Control Language="C#" AutoEventWireup="false" Inherits="Satrabel.OpenContent.EditTemplate" CodeBehind="EditTemplate.ascx.cs" %>
+<%@ Import Namespace="DotNetNuke.Services.Localization" %>
 <%@ Register Assembly="DotnetNuke" Namespace="DotNetNuke.UI.WebControls" TagPrefix="dnn" %>
 <%@ Register TagPrefix="dnn" TagName="Label" Src="~/controls/LabelControl.ascx" %>
 <%@ Register TagPrefix="dnn" Namespace="DotNetNuke.Web.Client.ClientResourceManagement" Assembly="DotNetNuke.Web.Client" %>
