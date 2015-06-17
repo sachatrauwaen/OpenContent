@@ -120,11 +120,14 @@
         };
         self.FormSubmit = function (data, href) {
             var Template = $("#<%= scriptList.ClientID %>").val();
-            var postData = { data: data, template: Template };
+            //var postData = { 'data': data, 'template': Template };
+            var postData = JSON.stringify({ 'data': data, 'template': Template });
             var action = "UpdateSettings";
             $.ajax({
                 type: "POST",
                 url: sf.getServiceRoot('OpenContent') + "OpenContentAPI/" + action,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
                 data: postData,
                 beforeSend: sf.setModuleHeaders
             }).done(function (data) {
