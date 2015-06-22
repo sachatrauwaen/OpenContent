@@ -37,6 +37,8 @@ using DotNetNuke.Framework;
 using DotNetNuke.Common.Utilities;
 using DotNetNuke.Common;
 using DotNetNuke.UI;
+using DotNetNuke.Entities.Host;
+using DotNetNuke.Entities.Controllers;
 
 #endregion
 
@@ -70,16 +72,13 @@ namespace Satrabel.OpenContent
             string OutputString = GenerateOutput(out DemoData);
             if (!string.IsNullOrEmpty(OutputString))
             {
-
                 var lit = new LiteralControl(Server.HtmlDecode(OutputString));
                 Controls.Add(lit);
-                if (ModuleContext.IsEditable)
+                if (ModuleContext.IsEditable && HostController.Instance.GetBoolean("EditWitoutPostback", false))
                 {
                     AJAX.WrapUpdatePanelControl(lit, true);
                 }
-
-                if (DemoData)
-                    pDemo.Visible = true;
+                if (DemoData) pDemo.Visible = true;
             }
             else
             {
@@ -153,6 +152,7 @@ namespace Satrabel.OpenContent
 
                         dynamic model = JsonUtils.JsonToDynamic(dataJson);
                         model.Settings = JsonUtils.JsonToDynamic(Data);
+                        model.Context = new { ModuleId = ModuleContext.ModuleId, PortalId = ModuleContext.PortalId };
 
                         if (Path.GetExtension(RazorScriptFile) != ".hbs")
                         {
@@ -278,6 +278,16 @@ namespace Satrabel.OpenContent
                            "",
                            "~/DesktopModules/OpenContent/images/exchange.png",
                            ModuleContext.EditUrl("ShareTemplate"),
+                           false,
+                           SecurityAccessLevel.Host,
+                           true,
+                           false);
+                Actions.Add(ModuleContext.GetNextActionID(),
+                           Localization.GetString("EditGlobalSettings.Action", LocalResourceFile),
+                           ModuleActionType.ContentOptions,
+                           "",
+                           "~/DesktopModules/OpenContent/images/settings.png",
+                           ModuleContext.EditUrl("EditGlobalSettings"),
                            false,
                            SecurityAccessLevel.Host,
                            true,
