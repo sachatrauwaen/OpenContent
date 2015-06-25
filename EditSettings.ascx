@@ -47,8 +47,10 @@
         self = moduleScope,
         sf = $.ServicesFramework(<%=ModuleId %>);
 
-        $("#<%= scriptList.ClientID %>").change(function () {
-                $("#field1").alpaca("destroy");
+            $("#<%= scriptList.ClientID %>").change(function () {
+                if ($("#field1").alpaca("exists")) {
+                    $("#field1").alpaca("destroy");
+                }
                 self.CreateForm();
             });
 
