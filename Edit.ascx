@@ -27,6 +27,14 @@
 <asp:HiddenField ID="CKDNNporid" runat="server" ClientIDMode="Static" />
 <script type="text/javascript">
     $(document).ready(function () {
+
+        var windowTop = parent;
+        var popup = windowTop.jQuery("#iPopUp");
+        popup.dialog("option", {
+            close: function () { window.dnnModal.closePopUp(false, ""); }
+        });
+
+
         var moduleScope = $('#<%=ScopeWrapper.ClientID %>'),
             self = moduleScope,
             sf = $.ServicesFramework(<%=ModuleId %>);
@@ -127,7 +135,15 @@
             }).done(function (data) {
                 //alert('ok:' + data);
                 //self.loadSettings();
-                window.location.href = href;
+                //window.location.href = href;
+
+                var windowTop = parent; //needs to be assign to a varaible for Opera compatibility issues.
+                //var popup = windowTop.jQuery("#iPopUp");
+
+                windowTop.__doPostBack('dnn_ctr<%=ModuleId %>_View__UP', '');
+                //window.frameElement.opencontent.refresh();
+                dnnModal.closePopUp(false, href);
+
             }).fail(function (xhr, result, status) {
                 alert("Uh-oh, something broke: " + status);
             });
