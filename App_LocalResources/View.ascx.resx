@@ -127,7 +127,7 @@
     <value>Edit Global Settings</value>
   </data>
   <data name="EditSettings.Action" xml:space="preserve">
-    <value>Tamplate Settings</value>
+    <value>Template Settings</value>
   </data>
   <data name="EditTemplate.Action" xml:space="preserve">
     <value>Edit Template Files</value>
