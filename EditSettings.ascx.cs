@@ -30,7 +30,7 @@ namespace Satrabel.OpenContent
 		protected override void OnInit(EventArgs e)
 		{
 			base.OnInit(e);
-            hlCancel.NavigateUrl = Globals.NavigateURL();
+            //hlCancel.NavigateUrl = Globals.NavigateURL();
             //cmdSave.NavigateUrl = Globals.NavigateURL();
 
 			//cmdSave.Click += cmdSave_Click;
@@ -48,10 +48,9 @@ namespace Satrabel.OpenContent
 		protected override void OnLoad(EventArgs e)
 		{
 			base.OnLoad(e);
-			
 			if (!Page.IsPostBack)
 			{
-                //hlTemplateExchange.NavigateUrl = EditUrl("ShareTemplate");
+                hlTemplateExchange.NavigateUrl = EditUrl("ShareTemplate");
                 var scriptFileSetting = Settings["template"] as string;
                 scriptList.Items.AddRange(OpenContentUtils.GetTemplatesFiles(PortalSettings, ModuleId, scriptFileSetting, "OpenContent").ToArray());
 			}
@@ -59,10 +58,12 @@ namespace Satrabel.OpenContent
 		
 		protected void cmdSave_Click(object sender, EventArgs e)
 		{
+            /*
             ModuleController mc = new ModuleController();
             mc.UpdateModuleSetting(ModuleId, "template", scriptList.SelectedValue);
             mc.UpdateModuleSetting(ModuleId, "data", HiddenField.Value);
             Response.Redirect(Globals.NavigateURL(), true);
+             */
             //DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "Update Successful", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.GreenSuccess);
 		}
 

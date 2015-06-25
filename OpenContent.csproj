@@ -131,6 +131,13 @@
     <Compile Include="Components\Rss\FeedParser.cs" />
     <Compile Include="Components\Rss\FeedItem.cs" />
     <Compile Include="Components\TemplateHelper.cs" />
+    <Compile Include="EditGlobalSettings.ascx.cs">
+      <DependentUpon>EditGlobalSettings.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="EditGlobalSettings.ascx.designer.cs">
+      <DependentUpon>EditGlobalSettings.ascx</DependentUpon>
+    </Compile>
     <Compile Include="EditSettings.ascx.cs">
       <DependentUpon>EditSettings.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -226,6 +233,7 @@
     <Content Include="css\images\ui-icons_ffffff_256x240.png" />
     <Content Include="css\jquery-ui.css" />
     <Content Include="css\jquery-ui.min.css" />
+    <Content Include="EditGlobalSettings.ascx" />
     <Content Include="EditSettings.ascx" />
     <Content Include="images\icon_extensions.png" />
     <Content Include="js\alpaca-1.5.8\lib\typeahead.js\dist\bloodhound.js" />
@@ -280,6 +288,7 @@
     <Content Include="js\CodeMirror\addon\mode\overlay.js" />
     <Content Include="js\CodeMirror\addon\mode\simple.js" />
     <Content Include="js\CodeMirror\mode\handlebars\handlebars.js" />
+    <Content Include="js\opencontent.js" />
     <Content Include="ShareTemplate.ascx" />
     <Content Include="EditData.ascx" />
     <Content Include="EditTemplate.ascx" />
@@ -433,6 +442,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_LocalResources\EditSettings.ascx.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_LocalResources\EditGlobalSettings.ascx.resx" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

@@ -1,7 +1,7 @@
 ﻿<div class="License">
 	<h3>License</h3>
 	<p class="Owner">
-		Satrabel.be  <a href=http://www.christoc.com>http://www.satrabel.be</a></br>
+		Satrabel.be  <a href=http://www.satrabel.be>http://www.satrabel.be</a></br>
 		Copyright (c) 2015</br>	
 		by Satrabel.be</br>
 	</p>

@@ -33,6 +33,12 @@ using Satrabel.OpenContent.Components.Json;
 using System.Web.WebPages;
 using System.Web;
 using Satrabel.OpenContent.Components.Handlebars;
+using DotNetNuke.Framework;
+using DotNetNuke.Common.Utilities;
+using DotNetNuke.Common;
+using DotNetNuke.UI;
+using DotNetNuke.Entities.Host;
+using DotNetNuke.Entities.Controllers;
 
 #endregion
 
@@ -41,7 +47,7 @@ namespace Satrabel.OpenContent
 
     public partial class View : RazorModuleBase, IActionable
     {
-        
+
         protected override string RazorScriptFile
         {
             get
@@ -64,13 +70,18 @@ namespace Satrabel.OpenContent
             //base.OnPreRender(e);
             Boolean DemoData = false;
             string OutputString = GenerateOutput(out DemoData);
-            if (!string.IsNullOrEmpty(OutputString)){
-                Controls.Add(new LiteralControl(Server.HtmlDecode(OutputString)));
-                if (DemoData)
-                    pDemo.Visible = true;
+            if (!string.IsNullOrEmpty(OutputString))
+            {
+                var lit = new LiteralControl(Server.HtmlDecode(OutputString));
+                Controls.Add(lit);
+                if (ModuleContext.IsEditable && HostController.Instance.GetBoolean("EditWitoutPostback", false))
+                {
+                    AJAX.WrapUpdatePanelControl(lit, true);
+                }
+                if (DemoData) pDemo.Visible = true;
             }
             else
-            { 
+            {
                 pHelp.Visible = true;
             }
         }
@@ -91,6 +102,7 @@ namespace Satrabel.OpenContent
                 {
                     ClientResourceManager.RegisterScript(Page, Page.ResolveUrl(jsfilename), FileOrder.Js.DefaultPriority);
                 }
+                ClientResourceManager.RegisterScript(Page, Page.ResolveUrl("~/DesktopModules/OpenContent/js/opencontent.js"), FileOrder.Js.DefaultPriority);
             }
         }
 
@@ -140,6 +152,7 @@ namespace Satrabel.OpenContent
 
                         dynamic model = JsonUtils.JsonToDynamic(dataJson);
                         model.Settings = JsonUtils.JsonToDynamic(Data);
+                        model.Context = new { ModuleId = ModuleContext.ModuleId, PortalId = ModuleContext.PortalId };
 
                         if (Path.GetExtension(RazorScriptFile) != ".hbs")
                         {
@@ -170,7 +183,7 @@ namespace Satrabel.OpenContent
                             HandlebarsEngine hbEngine = new HandlebarsEngine();
                             return hbEngine.Execute(Page, RazorScriptFile, model);
                             //Controls.Add(new LiteralControl(Server.HtmlDecode(result)));
-                         }
+                        }
                     }
                     else
                     {
@@ -213,6 +226,7 @@ namespace Satrabel.OpenContent
                 bool TemplateDefined = !string.IsNullOrEmpty(Template);
 
                 if (TemplateDefined)
+                {
                     Actions.Add(ModuleContext.GetNextActionID(),
                                 Localization.GetString(ModuleActionType.AddContent, LocalResourceFile),
                                 ModuleActionType.AddContent,
@@ -223,7 +237,7 @@ namespace Satrabel.OpenContent
                                 SecurityAccessLevel.Edit,
                                 true,
                                 false);
-
+                }
                 Actions.Add(ModuleContext.GetNextActionID(),
                          Localization.GetString("EditSettings.Action", LocalResourceFile),
                          ModuleActionType.ContentOptions,
@@ -264,6 +278,16 @@ namespace Satrabel.OpenContent
                            "",
                            "~/DesktopModules/OpenContent/images/exchange.png",
                            ModuleContext.EditUrl("ShareTemplate"),
+                           false,
+                           SecurityAccessLevel.Host,
+                           true,
+                           false);
+                Actions.Add(ModuleContext.GetNextActionID(),
+                           Localization.GetString("EditGlobalSettings.Action", LocalResourceFile),
+                           ModuleActionType.ContentOptions,
+                           "",
+                           "~/DesktopModules/OpenContent/images/settings.png",
+                           ModuleContext.EditUrl("EditGlobalSettings"),
                            false,
                            SecurityAccessLevel.Host,
                            true,
@@ -309,10 +333,11 @@ namespace Satrabel.OpenContent
             {
                 hlTempleteExchange.NavigateUrl = ModuleContext.EditUrl("ShareTemplate");
                 hlEditSettings.NavigateUrl = ModuleContext.EditUrl("EditSettings");
-                  hlTempleteExchange.Visible=true;
-                  hlEditSettings.Visible = true;
+                hlTempleteExchange.Visible = true;
+                hlEditSettings.Visible = true;
             }
-            if (TemplateDefined && ModuleContext.EditMode) {
+            if (TemplateDefined && ModuleContext.EditMode)
+            {
                 hlEditContent.NavigateUrl = ModuleContext.EditUrl("Edit");
                 hlEditContent.Visible = true;
                 hlEditContent2.NavigateUrl = ModuleContext.EditUrl("Edit");

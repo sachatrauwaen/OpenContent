@@ -49,24 +49,6 @@ namespace Satrabel.OpenContent {
         protected global::DotNetNuke.Web.Client.ClientResourceManagement.DnnJsInclude DnnJsInclude2;
         
         /// <summary>
-        /// DnnJsInclude3 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::DotNetNuke.Web.Client.ClientResourceManagement.DnnJsInclude DnnJsInclude3;
-        
-        /// <summary>
-        /// DnnJsInclude4 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::DotNetNuke.Web.Client.ClientResourceManagement.DnnJsInclude DnnJsInclude4;
-        
-        /// <summary>
         /// ScopeWrapper control.
         /// </summary>
         /// <remarks>
@@ -103,31 +85,13 @@ namespace Satrabel.OpenContent {
         protected global::System.Web.UI.WebControls.HyperLink hlTemplateExchange;
         
         /// <summary>
-        /// CustomValidator control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.CustomValidator CustomValidator;
-        
-        /// <summary>
-        /// HiddenField control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.HiddenField HiddenField;
-        
-        /// <summary>
         /// cmdSave control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton cmdSave;
+        protected global::System.Web.UI.WebControls.HyperLink cmdSave;
         
         /// <summary>
         /// hlCancel control.
