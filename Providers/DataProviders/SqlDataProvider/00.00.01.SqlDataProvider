@@ -46,7 +46,6 @@ ALTER TABLE {databaseOwner}{objectQualifier}OpenContent_Items
 	    ModuleID
 	) ON UPDATE NO ACTION 
 	  ON DELETE CASCADE 
-	  NOT FOR REPLICATION
 GO
 
 
