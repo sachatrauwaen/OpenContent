@@ -16,6 +16,10 @@
 
 <div class="dnnForm dnnRazorHostEditScript dnnClear" id="dnnEditScript">
     <fieldset>
+        <div class="dnnFormItem">
+            <dnn:Label id="sourceLabel" runat="Server" controlname="scriptList" />
+            <asp:DropDownList ID="sourceList" runat="server" AutoPostBack="true" />
+        </div>
         <div>
             <asp:TextBox ID="txtSource" runat="server" TextMode="MultiLine" Rows="30" Columns="140" />
 

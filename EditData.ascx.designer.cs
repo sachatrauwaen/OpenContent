@@ -13,6 +13,24 @@ namespace Satrabel.OpenContent {
     public partial class EditData {
         
         /// <summary>
+        /// sourceLabel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.UserControl sourceLabel;
+        
+        /// <summary>
+        /// sourceList control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList sourceList;
+        
+        /// <summary>
         /// txtSource control.
         /// </summary>
         /// <remarks>
