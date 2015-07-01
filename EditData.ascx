@@ -16,6 +16,10 @@
 
 <div class="dnnForm dnnRazorHostEditScript dnnClear" id="dnnEditScript">
     <fieldset>
+        <div class="dnnFormItem">
+            <dnn:Label id="DataType" runat="Server" controlname="scriptList" />
+            <asp:DropDownList ID="sourceList" runat="server" AutoPostBack="true" />
+        </div>
         <div>
             <asp:TextBox ID="txtSource" runat="server" TextMode="MultiLine" Rows="30" Columns="140" />
 
@@ -36,14 +40,33 @@
         var mimeType = dnn.getVar('mimeType') || "text/html";
 
         var setupModule = function () {
-            CodeMirror.fromTextArea($("textarea[id$='txtSource']")[0], {
+            var cm = CodeMirror.fromTextArea($("textarea[id$='txtSource']")[0], {
                 lineNumbers: true,
                 matchBrackets: true,
                 lineWrapping: true,
                 mode: 'application/json'
             });
 
+            //var $modal = $("#iPopUp");
+            //$modal.css('height', window.innerHeight);
 
+            var resizeModule = function resizeDnnEditHtml() {
+                $('window.frameElement, body, html').css('overflow', 'hidden');
+                var containerHeight = $(window).height() - 18 - 52 - 52 - 18;
+                $('#dnnEditScript .CodeMirror').height(containerHeight);
+                cm.refresh();
+            };
+            if (window.frameElement && window.frameElement.id == "iPopUp") {
+                resizeModule();
+                $(window).resize(function () {
+                    var timeout;
+                    if (timeout) clearTimeout(timeout);
+                    timeout = setTimeout(function () {
+                        timeout = null;
+                        resizeModule();
+                    }, 50);
+                });
+            }
         };
 
         setupModule();

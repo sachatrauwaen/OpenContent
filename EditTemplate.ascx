@@ -27,7 +27,6 @@
         <div class="dnnFormItem">
             <asp:Label ID="Label1" ControlName="txtSource" runat="server" CssClass="dnnLabel" Text="" />
             <asp:Label ID="plSource" ControlName="txtSource" runat="server" />
-
         </div>
         <div class="dnnFormItem">
 
