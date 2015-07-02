@@ -164,17 +164,17 @@ namespace Satrabel.OpenContent
                                 File.Copy(filename, webConfig);
                             }
 
-                            var razorEngine = new RazorEngine(RazorScriptFile, ModuleContext, LocalResourceFile);
-                            var writer = new StringWriter();
                             try
                             {
+                                var razorEngine = new RazorEngine(RazorScriptFile, ModuleContext, LocalResourceFile);
+                                var writer = new StringWriter();
                                 RazorRender(razorEngine.Webpage, writer, model);
                                 //Controls.Add(new LiteralControl(Server.HtmlDecode(writer.ToString())));
                                 return writer.ToString();
                             }
                             catch (Exception ex)
                             {
-                                Exceptions.ProcessModuleLoadException(this, ex);
+                                Exceptions.ProcessModuleLoadException(string.Format("Error while loading template {0}", RazorScriptFile), this, ex);
                                 //Controls.Add(new LiteralControl(Server.HtmlDecode(writer.ToString())));
                             }
                         }
