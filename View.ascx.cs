@@ -140,7 +140,7 @@ namespace Satrabel.OpenContent
                     }
                     if (!string.IsNullOrEmpty(dataJson))
                     {
-                        string Data = ModuleContext.Settings["data"] as string;
+                        string settingsData = ModuleContext.Settings["data"] as string;
 
                         //dynamic json = JValue.Parse(struc.Json);
                         //JObject model = new JObject();
@@ -151,7 +151,7 @@ namespace Satrabel.OpenContent
                         //model.Data = JsonUtils.JsonToDynamic(struc.Json);
 
                         dynamic model = JsonUtils.JsonToDynamic(dataJson);
-                        model.Settings = JsonUtils.JsonToDynamic(Data);
+                        model.Settings = JsonUtils.JsonToDynamic(settingsData);
                         model.Context = new { ModuleId = ModuleContext.ModuleId, PortalId = ModuleContext.PortalId };
 
                         if (Path.GetExtension(RazorScriptFile) != ".hbs")

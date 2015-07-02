@@ -120,4 +120,7 @@
   <data name="cmdSave.Text" xml:space="preserve">
     <value>Save</value>
   </data>
+  <data name="DataType.Text" xml:space="preserve">
+    <value>Type of data</value>
+  </data>
 </root>
