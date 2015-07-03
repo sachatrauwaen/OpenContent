@@ -30,14 +30,29 @@
 
         var windowTop = parent;
         var popup = windowTop.jQuery("#iPopUp");
-        if (popup.length > 0){
+        if (popup.length) {
+
+            var $window = $(windowTop),
+                            newHeight,
+                            newWidth;
+
+            newHeight = $window.height() - 46;
+            newWidth = Math.min($window.width() - 40, 1100);
+
             popup.dialog("option", {
-                close: function () { window.dnnModal.closePopUp(false, ""); }
+                close: function () { window.dnnModal.closePopUp(false, ""); },
+                //'position': 'top',
+                height: newHeight,
+                width: newWidth,
+                //position: 'center'
             });
             $("#<%=hlCancel.ClientID%>").click(function () {
                 dnnModal.closePopUp(false, "");
                 return false;
             });
+            //$(popup).height(windowTop.innerHeight-111);
+            //$(popup).css('height', windowTop.innerHeight + 100).dialog('option', );
+            //$(popup).dialog({ position: 'center' });
         }
 
         var moduleScope = $('#<%=ScopeWrapper.ClientID %>'),
