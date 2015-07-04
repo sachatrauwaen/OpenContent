@@ -287,6 +287,7 @@
     <Content Include="js\CodeMirror\addon\mode\simple.js" />
     <Content Include="js\CodeMirror\mode\handlebars\handlebars.js" />
     <Content Include="js\opencontent.js" />
+    <None Include="Scripts\_references.js" />
     <Content Include="ShareTemplate.ascx" />
     <Content Include="EditData.ascx" />
     <Content Include="EditTemplate.ascx" />
