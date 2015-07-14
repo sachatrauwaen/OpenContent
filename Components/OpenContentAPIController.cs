@@ -101,7 +101,7 @@ namespace Satrabel.OpenContent.Components
                 int ModuleId = ActiveModule.ModuleID;
                 OpenContentController ctrl = new OpenContentController();
                 var struc = ctrl.GetFirstContent(ModuleId);
-                if (struc != null)                
+                if (struc != null)
                 {
                     json["data"] = JObject.Parse(struc.Json);
                 }
@@ -179,55 +179,75 @@ namespace Satrabel.OpenContent.Components
         [HttpPost]
         public HttpResponseMessage Update(JObject json)
         {
-            int ModuleId = ActiveModule.ModuleID;
-            OpenContentController ctrl = new OpenContentController();
-            var content = ctrl.GetFirstContent(ModuleId);
-            if (content == null)
+            try
             {
-                content = new OpenContentInfo()
+                int ModuleId = ActiveModule.ModuleID;
+                OpenContentController ctrl = new OpenContentController();
+                var content = ctrl.GetFirstContent(ModuleId);
+                if (content == null)
                 {
-                    ModuleId = ModuleId,
-                    Title = json["form"]["Title"] == null ? ActiveModule.ModuleTitle : json["form"]["Title"].ToString(),
-                    Json = json["form"].ToString(),
-                    CreatedByUserId = UserInfo.UserID,
-                    CreatedOnDate = DateTime.Now,
-                    LastModifiedByUserId = UserInfo.UserID,
-                    LastModifiedOnDate = DateTime.Now,
-                    Html = "",
-                };
-                ctrl.AddContent(content);
+                    content = new OpenContentInfo()
+                    {
+                        ModuleId = ModuleId,
+                        Title = json["form"]["Title"] == null ? ActiveModule.ModuleTitle : json["form"]["Title"].ToString(),
+                        Json = json["form"].ToString(),
+                        CreatedByUserId = UserInfo.UserID,
+                        CreatedOnDate = DateTime.Now,
+                        LastModifiedByUserId = UserInfo.UserID,
+                        LastModifiedOnDate = DateTime.Now,
+                        Html = "",
+                    };
+                    ctrl.AddContent(content);
+                }
+                else
+                {
+                    content.Title = json["form"]["Title"] == null ? ActiveModule.ModuleTitle : json["form"]["Title"].ToString();
+                    content.Json = json["form"].ToString();
+                    content.LastModifiedByUserId = UserInfo.UserID;
+                    content.LastModifiedOnDate = DateTime.Now;
+                    ctrl.UpdateContent(content);
+                }
+                if (json["form"]["ModuleTitle"] != null && json["form"]["ModuleTitle"].Type == JTokenType.String)
+                {
+                    string ModuleTitle = json["form"]["ModuleTitle"].ToString();
+                    OpenContentUtils.UpdateModuleTitle(ActiveModule, ModuleTitle);
+                }
+
+
+                return Request.CreateResponse(HttpStatusCode.OK, "");
             }
-            else
+            catch (Exception exc)
             {
-                content.Title = json["form"]["Title"] == null ? ActiveModule.ModuleTitle : json["form"]["Title"].ToString();
-                content.Json = json["form"].ToString();
-                content.LastModifiedByUserId = UserInfo.UserID;
-                content.LastModifiedOnDate = DateTime.Now;
-                ctrl.UpdateContent(content);
-            }
-            if (json["form"]["ModuleTitle"] != null && json["form"]["ModuleTitle"].Type == JTokenType.String)
-            {
-                string ModuleTitle = json["form"]["ModuleTitle"].ToString();
-                OpenContentUtils.UpdateModuleTitle(ActiveModule, ModuleTitle);
+                Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
 
 
-            return Request.CreateResponse(HttpStatusCode.OK, "");
         }
 
         public HttpResponseMessage UpdateSettings(JObject json)
         {
-            int ModuleId = ActiveModule.ModuleID;
+            try
+            {
+                int ModuleId = ActiveModule.ModuleID;
 
-            var data = json["data"].ToString();
-            var template = json["template"].ToString();
+                var data = json["data"].ToString();
+                var template = json["template"].ToString();
 
-            ModuleController mc = new ModuleController();
-            mc.UpdateModuleSetting(ModuleId, "template", template);
-            mc.UpdateModuleSetting(ModuleId, "data", data);
+                ModuleController mc = new ModuleController();
+                mc.UpdateModuleSetting(ModuleId, "template", template);
+                mc.UpdateModuleSetting(ModuleId, "data", data);
 
 
-            return Request.CreateResponse(HttpStatusCode.OK, "");
+                return Request.CreateResponse(HttpStatusCode.OK, "");
+
+            }
+            catch (Exception exc)
+            {
+                Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+
         }
 
     }

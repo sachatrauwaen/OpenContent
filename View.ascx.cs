@@ -74,7 +74,7 @@ namespace Satrabel.OpenContent
             {
                 var lit = new LiteralControl(Server.HtmlDecode(OutputString));
                 Controls.Add(lit);
-                if (ModuleContext.IsEditable && HostController.Instance.GetBoolean("EditWitoutPostback", false))
+                if (ModuleContext.PortalSettings.EnablePopUps && ModuleContext.IsEditable && HostController.Instance.GetBoolean("EditWitoutPostback", false))
                 {
                     AJAX.WrapUpdatePanelControl(lit, true);
                 }

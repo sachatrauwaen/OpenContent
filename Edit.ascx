@@ -30,10 +30,30 @@
 
         var windowTop = parent;
         var popup = windowTop.jQuery("#iPopUp");
-        popup.dialog("option", {
-            close: function () { window.dnnModal.closePopUp(false, ""); }
-        });
+        if (popup.length) {
 
+            var $window = $(windowTop),
+                            newHeight,
+                            newWidth;
+
+            newHeight = $window.height() - 46;
+            newWidth = Math.min($window.width() - 40, 1100);
+
+            popup.dialog("option", {
+                close: function () { window.dnnModal.closePopUp(false, ""); },
+                //'position': 'top',
+                height: newHeight,
+                width: newWidth,
+                //position: 'center'
+            });
+            $("#<%=hlCancel.ClientID%>").click(function () {
+                dnnModal.closePopUp(false, "");
+                return false;
+            });
+            //$(popup).height(windowTop.innerHeight-111);
+            //$(popup).css('height', windowTop.innerHeight + 100).dialog('option', );
+            //$(popup).dialog({ position: 'center' });
+        }
 
         var moduleScope = $('#<%=ScopeWrapper.ClientID %>'),
             self = moduleScope,
@@ -136,14 +156,18 @@
                 //alert('ok:' + data);
                 //self.loadSettings();
                 //window.location.href = href;
-
+                
                 var windowTop = parent; //needs to be assign to a varaible for Opera compatibility issues.
-                //var popup = windowTop.jQuery("#iPopUp");
-
-                windowTop.__doPostBack('dnn_ctr<%=ModuleId %>_View__UP', '');
-                //window.frameElement.opencontent.refresh();
-                dnnModal.closePopUp(false, href);
-
+                var popup = windowTop.jQuery("#iPopUp");
+                if (popup.length > 0)
+                {
+                    windowTop.__doPostBack('dnn_ctr<%=ModuleId %>_View__UP', '');
+                    dnnModal.closePopUp(false, href);
+                }
+                else
+                {
+                    window.location.href = href;
+                }
             }).fail(function (xhr, result, status) {
                 alert("Uh-oh, something broke: " + status);
             });
