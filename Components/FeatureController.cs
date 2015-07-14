@@ -13,94 +13,70 @@
 using System.Collections.Generic;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Services.Search;
+using DotNetNuke.Common.Utilities;
+using System.Xml;
+using DotNetNuke.Common;
+using System;
+using DotNetNuke.Services.Search.Entities;
 
 namespace Satrabel.OpenContent.Components
 {
-
-
-    //uncomment the interfaces to add the support.
-    public class FeatureController //: IPortable, ISearchable, IUpgradeable
+    public class FeatureController : ModuleSearchBase, IPortable //, IUpgradeable
     {
-
-
         #region Optional Interfaces
-
-        /// -----------------------------------------------------------------------------
-        /// <summary>
-        /// ExportModule implements the IPortable ExportModule Interface
-        /// </summary>
-        /// <param name="ModuleID">The Id of the module to be exported</param>
-        /// -----------------------------------------------------------------------------
-        //public string ExportModule(int ModuleID)
-        //{
-        //string strXML = "";
-
-        //List<OpenContentInfo> colOpenContents = GetOpenContents(ModuleID);
-        //if (colOpenContents.Count != 0)
-        //{
-        //    strXML += "<OpenContents>";
-
-        //    foreach (OpenContentInfo objOpenContent in colOpenContents)
-        //    {
-        //        strXML += "<OpenContent>";
-        //        strXML += "<content>" + DotNetNuke.Common.Utilities.XmlUtils.XMLEncode(objOpenContent.Content) + "</content>";
-        //        strXML += "</OpenContent>";
-        //    }
-        //    strXML += "</OpenContents>";
-        //}
-
-        //return strXML;
-
-        //	throw new System.NotImplementedException("The method or operation is not implemented.");
-        //}
-
-        /// -----------------------------------------------------------------------------
-        /// <summary>
-        /// ImportModule implements the IPortable ImportModule Interface
-        /// </summary>
-        /// <param name="ModuleID">The Id of the module to be imported</param>
-        /// <param name="Content">The content to be imported</param>
-        /// <param name="Version">The version of the module to be imported</param>
-        /// <param name="UserId">The Id of the user performing the import</param>
-        /// -----------------------------------------------------------------------------
-        //public void ImportModule(int ModuleID, string Content, string Version, int UserID)
-        //{
-        //XmlNode xmlOpenContents = DotNetNuke.Common.Globals.GetContent(Content, "OpenContents");
-        //foreach (XmlNode xmlOpenContent in xmlOpenContents.SelectNodes("OpenContent"))
-        //{
-        //    OpenContentInfo objOpenContent = new OpenContentInfo();
-        //    objOpenContent.ModuleId = ModuleID;
-        //    objOpenContent.Content = xmlOpenContent.SelectSingleNode("content").InnerText;
-        //    objOpenContent.CreatedByUser = UserID;
-        //    AddOpenContent(objOpenContent);
-        //}
-
-        //	throw new System.NotImplementedException("The method or operation is not implemented.");
-        //}
-
-        /// -----------------------------------------------------------------------------
-        /// <summary>
-        /// GetSearchItems implements the ISearchable Interface
-        /// </summary>
-        /// <param name="ModInfo">The ModuleInfo for the module to be Indexed</param>
-        /// -----------------------------------------------------------------------------
-        //public DotNetNuke.Services.Search.SearchItemInfoCollection GetSearchItems(DotNetNuke.Entities.Modules.ModuleInfo ModInfo)
-        //{
-        //SearchItemInfoCollection SearchItemCollection = new SearchItemInfoCollection();
-
-        //List<OpenContentInfo> colOpenContents = GetOpenContents(ModInfo.ModuleID);
-
-        //foreach (OpenContentInfo objOpenContent in colOpenContents)
-        //{
-        //    SearchItemInfo SearchItem = new SearchItemInfo(ModInfo.ModuleTitle, objOpenContent.Content, objOpenContent.CreatedByUser, objOpenContent.CreatedDate, ModInfo.ModuleID, objOpenContent.ItemId.ToString(), objOpenContent.Content, "ItemId=" + objOpenContent.ItemId.ToString());
-        //    SearchItemCollection.Add(SearchItem);
-        //}
-
-        //return SearchItemCollection;
-
-        //	throw new System.NotImplementedException("The method or operation is not implemented.");
-        //}
-
+        public string ExportModule(int ModuleID)
+        {
+            string xml = "";
+            OpenContentController ctrl = new OpenContentController();
+            var content = ctrl.GetFirstContent(ModuleID);
+            if ((content != null))
+            {
+                xml += "<opencontent>";
+                xml += "<json>" + XmlUtils.XMLEncode(content.Json) + "</json>";
+                xml += "</opencontent>";
+            }
+            return xml;
+        }
+        public void ImportModule(int ModuleID, string Content, string Version, int UserID)
+        {
+            OpenContentController ctrl = new OpenContentController();
+            XmlNode xml = Globals.GetContent(Content, "opencontent");
+            var content = new OpenContentInfo()
+            {
+                ModuleId = ModuleID,
+                Json = xml.SelectSingleNode("json").InnerText,
+                CreatedByUserId = UserID,
+                CreatedOnDate = DateTime.Now,
+                LastModifiedByUserId = UserID,
+                LastModifiedOnDate = DateTime.Now,
+                Html = ""
+            };
+            ctrl.AddContent(content);
+        }
+        #region ModuleSearchBase
+        public override IList<SearchDocument> GetModifiedSearchDocuments(ModuleInfo modInfo, DateTime beginDateUtc)
+        {
+            var searchDocuments = new List<SearchDocument>();
+            OpenContentController ctrl = new OpenContentController();
+            var content = ctrl.GetFirstContent(modInfo.ModuleID);
+            if (content != null &&
+                (content.LastModifiedOnDate.ToUniversalTime() > beginDateUtc &&
+                 content.LastModifiedOnDate.ToUniversalTime() < DateTime.UtcNow))
+            {
+                var searchDoc = new SearchDocument
+                {
+                    UniqueKey = modInfo.ModuleID.ToString(),
+                    PortalId = modInfo.PortalID,
+                    Title = modInfo.ModuleTitle,
+                    Description = content.Title,
+                    Body = content.Json,
+                    ModifiedTimeUtc = content.LastModifiedOnDate.ToUniversalTime()
+                };
+                searchDocuments.Add(searchDoc);
+            }
+            return searchDocuments;
+        }
+        #endregion
         /// -----------------------------------------------------------------------------
         /// <summary>
         /// UpgradeModule implements the IUpgradeable Interface
@@ -111,9 +87,6 @@ namespace Satrabel.OpenContent.Components
         //{
         //	throw new System.NotImplementedException("The method or operation is not implemented.");
         //}
-
         #endregion
-
     }
-
 }
