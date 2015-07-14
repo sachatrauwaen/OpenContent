@@ -83,14 +83,13 @@
         getValue: function()
         {
             var value = null;
-
             if (this.editor)
             {
-                value = this.editor.getValue();
+                if (this.editor.currentView == 'source')
+                    value = this.editor.sourceView.textarea.value
+                else 
+                    value = this.editor.getValue();
             }
-
-           
-
             return value;
         },
 
