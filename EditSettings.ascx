@@ -115,6 +115,13 @@
                         }
                     });
                 }
+                else {
+                    $("#<%=cmdSave.ClientID%>").click(function () {
+                        var href = $(this).attr('href');
+                        self.FormSubmit("", href);
+                        return false;
+                    });
+                }
             }).fail(function (xhr, result, status) {
                 alert("Uh-oh, something broke: " + status);
             });
