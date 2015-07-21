@@ -39,6 +39,8 @@ using DotNetNuke.Common;
 using DotNetNuke.UI;
 using DotNetNuke.Entities.Host;
 using DotNetNuke.Entities.Controllers;
+using Satrabel.OpenContent.Components.Rss;
+using System.Web.UI.WebControls;
 
 #endregion
 
@@ -56,6 +58,11 @@ namespace Satrabel.OpenContent
                 var m_RazorScriptFile = "";
                 string Template = ModuleContext.Settings["template"] as string;
 
+                if (pHelp.Visible && rblUseTemplate.SelectedIndex == 0)
+                {
+                    Template = ddlTemplate.SelectedValue;
+                }
+
                 if (!(string.IsNullOrEmpty(Template)))
                 {
                     m_RazorScriptFile = "~/" + Template;
@@ -67,9 +74,10 @@ namespace Satrabel.OpenContent
 
         protected override void OnPreRender(EventArgs e)
         {
+            pHelp.Visible = false;
             //base.OnPreRender(e);
             Boolean DemoData = false;
-            string OutputString = GenerateOutput(out DemoData);
+            string OutputString = GenerateOutput(RazorScriptFile, out DemoData);
             if (!string.IsNullOrEmpty(OutputString))
             {
                 var lit = new LiteralControl(Server.HtmlDecode(OutputString));
@@ -78,56 +86,60 @@ namespace Satrabel.OpenContent
                 {
                     AJAX.WrapUpdatePanelControl(lit, true);
                 }
-                if (DemoData) pDemo.Visible = true;
+                //if (DemoData) pDemo.Visible = true;
             }
-            else
+            if (string.IsNullOrEmpty(OutputString) || (DemoData && ModuleContext.IsEditable) )
             {
                 pHelp.Visible = true;
+                if (!Page.IsPostBack)
+                {
+
+                    var scriptFileSetting = ModuleContext.Settings["template"] as string;
+                    ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplatesFiles(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, "OpenContent").ToArray());
+                    if (ddlTemplate.Items.Count == 0)
+                    {
+                        rblUseTemplate.Items[0].Enabled = false;
+                        rblUseTemplate.SelectedIndex = 1;
+                        rblUseTemplate_SelectedIndexChanged(null, null);
+                        rblFrom.Items[0].Enabled = false;
+                        rblFrom.SelectedIndex = 1;
+                        rblFrom_SelectedIndexChanged(null, null);
+                    }
+                }
+
             }
         }
         #region Event Handlers
         protected override void OnInit(EventArgs e)
         {
             base.OnInit(e);
-            if (!(string.IsNullOrEmpty(RazorScriptFile)))
-            {
-                //JavaScript.RequestRegistration() 
-                string cssfilename = Path.ChangeExtension(RazorScriptFile, "css");
-                if (File.Exists(HostingEnvironment.MapPath(cssfilename)))
-                {
-                    ClientResourceManager.RegisterStyleSheet(Page, Page.ResolveUrl(cssfilename), FileOrder.Css.PortalCss);
-                }
-                string jsfilename = Path.ChangeExtension(RazorScriptFile, "js");
-                if (File.Exists(HostingEnvironment.MapPath(jsfilename)))
-                {
-                    ClientResourceManager.RegisterScript(Page, Page.ResolveUrl(jsfilename), FileOrder.Js.DefaultPriority);
-                }
-                ClientResourceManager.RegisterScript(Page, Page.ResolveUrl("~/DesktopModules/OpenContent/js/opencontent.js"), FileOrder.Js.DefaultPriority);
-            }
+           
         }
 
-        private string GenerateOutput(out bool DemoData)
+        private string GenerateOutput(string Template, out bool DemoData)
         {
             DemoData = false;
             //List<string> scripts = new List<string>();
             try
             {
-                if (!(string.IsNullOrEmpty(RazorScriptFile)))
+                if (!(string.IsNullOrEmpty(Template)))
                 {
-                    if (!File.Exists(Server.MapPath(RazorScriptFile)))
-                        Exceptions.ProcessModuleLoadException(this, new Exception(RazorScriptFile + " don't exist"));
+                    if (!File.Exists(Server.MapPath(Template)))
+                        Exceptions.ProcessModuleLoadException(this, new Exception(Template + " don't exist"));
 
                     string dataJson = "";
+                    string settingsData = "";
                     OpenContentController ctrl = new OpenContentController();
                     var struc = ctrl.GetFirstContent(ModuleContext.ModuleId);
                     if (struc != null)
                     {
                         dataJson = struc.Json;
+                        settingsData = ModuleContext.Settings["data"] as string;
                     }
                     else
                     {
                         // demo data
-                        var dataFilename = Path.GetDirectoryName(Server.MapPath(RazorScriptFile)) + "\\" + "data.json";
+                        var dataFilename = Path.GetDirectoryName(Server.MapPath(Template)) + "\\" + "data.json";
                         if (File.Exists(dataFilename))
                         {
                             string fileContent = File.ReadAllText(dataFilename);
@@ -136,11 +148,20 @@ namespace Satrabel.OpenContent
                                 dataJson = fileContent;
                             }
                         }
+                        var settingsFilename = Path.GetDirectoryName(Server.MapPath(Template)) +"\\" +Path.GetFileNameWithoutExtension(Template)+ "-data.json";
+                        if (File.Exists(settingsFilename))
+                        {
+                            string fileContent = File.ReadAllText(settingsFilename);
+                            if (!string.IsNullOrWhiteSpace(fileContent))
+                            {
+                                settingsData = fileContent;
+                            }
+                        }
                         DemoData = true;
                     }
                     if (!string.IsNullOrEmpty(dataJson))
                     {
-                        string settingsData = ModuleContext.Settings["data"] as string;
+                        
 
                         //dynamic json = JValue.Parse(struc.Json);
                         //JObject model = new JObject();
@@ -151,12 +172,13 @@ namespace Satrabel.OpenContent
                         //model.Data = JsonUtils.JsonToDynamic(struc.Json);
 
                         dynamic model = JsonUtils.JsonToDynamic(dataJson);
-                        model.Settings = JsonUtils.JsonToDynamic(settingsData);
+                        if (settingsData != null)
+                            model.Settings = JsonUtils.JsonToDynamic(settingsData);
                         model.Context = new { ModuleId = ModuleContext.ModuleId, PortalId = ModuleContext.PortalId };
 
-                        if (Path.GetExtension(RazorScriptFile) != ".hbs")
+                        if (Path.GetExtension(Template) != ".hbs")
                         {
-                            string webConfig = Path.GetDirectoryName(Server.MapPath(RazorScriptFile));
+                            string webConfig = Path.GetDirectoryName(Server.MapPath(Template));
                             webConfig = webConfig.Remove(webConfig.LastIndexOf("\\")) + "\\web.config";
                             if (!File.Exists(webConfig))
                             {
@@ -166,7 +188,7 @@ namespace Satrabel.OpenContent
 
                             try
                             {
-                                var razorEngine = new RazorEngine(RazorScriptFile, ModuleContext, LocalResourceFile);
+                                var razorEngine = new RazorEngine(Template, ModuleContext, LocalResourceFile);
                                 var writer = new StringWriter();
                                 RazorRender(razorEngine.Webpage, writer, model);
                                 //Controls.Add(new LiteralControl(Server.HtmlDecode(writer.ToString())));
@@ -181,7 +203,7 @@ namespace Satrabel.OpenContent
                         else
                         {
                             HandlebarsEngine hbEngine = new HandlebarsEngine();
-                            return hbEngine.Execute(Page, RazorScriptFile, model);
+                            return hbEngine.Execute(Page, Template, model);
                             //Controls.Add(new LiteralControl(Server.HtmlDecode(result)));
                         }
                     }
@@ -327,13 +349,31 @@ namespace Satrabel.OpenContent
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-            string Template = ModuleContext.Settings["template"] as string;
+            string Template = RazorScriptFile; //  ModuleContext.Settings["template"] as string;
+
+            if (!(string.IsNullOrEmpty(Template)))
+            {
+                //JavaScript.RequestRegistration() 
+                string cssfilename = Path.ChangeExtension(Template, "css");
+                if (File.Exists(HostingEnvironment.MapPath(cssfilename)))
+                {
+                    ClientResourceManager.RegisterStyleSheet(Page, Page.ResolveUrl(cssfilename), FileOrder.Css.PortalCss);
+                }
+                string jsfilename = Path.ChangeExtension(Template, "js");
+                if (File.Exists(HostingEnvironment.MapPath(jsfilename)))
+                {
+                    ClientResourceManager.RegisterScript(Page, Page.ResolveUrl(jsfilename), FileOrder.Js.DefaultPriority);
+                }
+                ClientResourceManager.RegisterScript(Page, Page.ResolveUrl("~/DesktopModules/OpenContent/js/opencontent.js"), FileOrder.Js.DefaultPriority);
+            }
+
+
             bool TemplateDefined = !string.IsNullOrEmpty(Template);
             if (ModuleContext.PortalSettings.UserInfo.IsSuperUser)
             {
-                hlTempleteExchange.NavigateUrl = ModuleContext.EditUrl("ShareTemplate");
+                //hlTempleteExchange.NavigateUrl = ModuleContext.EditUrl("ShareTemplate");
                 hlEditSettings.NavigateUrl = ModuleContext.EditUrl("EditSettings");
-                hlTempleteExchange.Visible = true;
+                //hlTempleteExchange.Visible = true;
                 hlEditSettings.Visible = true;
             }
             if (TemplateDefined && ModuleContext.EditMode)
@@ -342,6 +382,106 @@ namespace Satrabel.OpenContent
                 hlEditContent.Visible = true;
                 hlEditContent2.NavigateUrl = ModuleContext.EditUrl("Edit");
                 hlEditContent2.Visible = true;
+            }
+        }
+
+        protected void rblUseTemplate_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            phFrom.Visible = rblUseTemplate.SelectedIndex == 1;
+            phTemplateName.Visible = rblUseTemplate.SelectedIndex == 1;
+            rblFrom.SelectedIndex = 0;
+            var scriptFileSetting = ModuleContext.Settings["template"] as string;
+            ddlTemplate.Items.Clear();
+            if (rblUseTemplate.SelectedIndex == 0) // existing
+            {
+                ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplatesFiles(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, "OpenContent").ToArray());
+            }
+            else if (rblUseTemplate.SelectedIndex == 1) // new
+            {
+                ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplates(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, "OpenContent").ToArray());
+            }
+        }
+
+        protected void rblFrom_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ddlTemplate.Items.Clear();
+            if (rblFrom.SelectedIndex == 0) // site
+            {
+                var scriptFileSetting = ModuleContext.Settings["template"] as string;
+                ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplates(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, "OpenContent").ToArray());
+
+                //ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplatesFiles(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, "OpenContent").ToArray());
+            }
+            else if (rblFrom.SelectedIndex == 1) // web
+            {
+                FeedParser parser = new FeedParser();
+                var items = parser.Parse("http://www.openextensions.net/templates?agentType=rss&PropertyTypeID=9", FeedType.RSS);
+                foreach (var item in items.OrderBy(t => t.Title))
+                {
+                    ddlTemplate.Items.Add(new ListItem(item.Title, item.ZipEnclosure));
+                }
+                if (ddlTemplate.Items.Count > 0)
+                {
+                    tbTemplateName.Text = Path.GetFileNameWithoutExtension(ddlTemplate.Items[0].Value);
+                }
+            }
+        }
+        protected void bSave_Click(object sender, EventArgs e)
+        {
+            try
+            {
+
+                ModuleController mc = new ModuleController();
+                if (rblUseTemplate.SelectedIndex == 0) // existing
+                {
+
+                    mc.UpdateModuleSetting(ModuleContext.ModuleId, "template", ddlTemplate.SelectedValue);
+                    //mc.UpdateModuleSetting(ModuleId, "data", HiddenField.Value);
+
+                }
+                else if (rblUseTemplate.SelectedIndex == 1) // new
+                {
+                    if (rblFrom.SelectedIndex == 0) // site
+                    {
+                        string oldFolder = Server.MapPath(ddlTemplate.SelectedValue);
+                        string Template = OpenContentUtils.CopyTemplate(ModuleContext.PortalId, oldFolder, tbTemplateName.Text);
+                        mc.UpdateModuleSetting(ModuleContext.ModuleId, "template", Template);
+                    }
+                    else if (rblFrom.SelectedIndex == 1) // web
+                    {
+                        string FileName = ddlTemplate.SelectedValue;
+                        string Template = OpenContentUtils.ImportFromWeb(ModuleContext.PortalId, FileName, tbTemplateName.Text);
+                        mc.UpdateModuleSetting(ModuleContext.ModuleId, "template", Template);
+                    }
+                }
+                Response.Redirect(Globals.NavigateURL(), true);
+
+            }
+            catch (Exception exc)
+            {
+                //Module failed to load
+                Exceptions.ProcessModuleLoadException(this, exc);
+            }
+        }
+
+        protected void ddlTemplate_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (rblUseTemplate.SelectedIndex == 0) // existing
+            {
+                bool DemoData;
+                string OutputString = GenerateOutput(ddlTemplate.SelectedValue, out DemoData);
+                if (!string.IsNullOrEmpty(OutputString))
+                {
+                    var lit = new LiteralControl(Server.HtmlDecode(OutputString));
+                    Controls.Add(lit);
+                }
+            }
+            else
+            {
+                if (rblFrom.SelectedIndex == 1) // web
+                {
+                    tbTemplateName.Text = Path.GetFileNameWithoutExtension(ddlTemplate.SelectedValue);
+                }
             }
         }
     }
