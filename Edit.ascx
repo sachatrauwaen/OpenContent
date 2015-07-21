@@ -11,6 +11,7 @@
 <script src="<%=ControlPath %>js/wysihtml/parser_rules/advanced_opencontent.js"></script>  
 <script type="text/javascript" src="<%=ControlPath %>alpaca/js/views/dnn.js"></script>
 <script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/ImageField.js"></script>
+<script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/FileField.js"></script>
 <script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/UrlField.js"></script>
 <script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/CKEditorField.js"></script>
 <script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/wysihtmlField.js"></script>
@@ -88,32 +89,6 @@
             connector.servicesFramework = sf;
             connector.culture = '<%=CurrentCulture%>';
 
-            $.alpaca.Fields.DnnFileField = $.alpaca.Fields.FileField.extend({
-                setup: function () {
-                    this.base();
-                },
-                afterRenderControl: function (model, callback) {
-                    var self = this;
-                    this.base(model, function () {
-                        self.handlePostRender(function () {
-                            callback();
-                        });
-                    });
-                },
-                handlePostRender: function (callback) {
-                    //var self = this;
-
-                    var el = this.control;
-                    self.SetupFileUpload(el);
-                    callback();
-                }
-            });
-            Alpaca.registerFieldClass("file", Alpaca.Fields.DnnFileField);
-
-
-            
-
-
             $("#field1").alpaca({
                 "schema": config.schema,
                 "options": config.options,
@@ -173,35 +148,5 @@
             });
         };
 
-        self.SetupFileUpload = function (fileupload) {
-            //$('#field1 input[type="file"]')
-            $(fileupload).fileupload({
-                dataType: 'json',
-                url: sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
-                maxFileSize: 25000000,
-                formData: {example: 'test'},
-                beforeSend: sf.setModuleHeaders,
-                add: function (e, data) {
-                    //data.context = $(opts.progressContextSelector);
-                    //data.context.find($(opts.progressFileNameSelector)).html(data.files[0].name);
-                    //data.context.show('fade');
-                    data.submit();
-                },
-                progress: function (e, data) {
-                    if (data.context) {
-                        var progress = parseInt(data.loaded / data.total * 100, 10);
-                        data.context.find(opts.progressBarSelector).css('width', progress + '%').find('span').html(progress + '%');
-                    }
-                },
-                done: function (e, data) {
-                    if (data.result) {
-                        $.each(data.result, function (index, file) {
-                            $(e.target).closest('.alpaca-container').find('.alpaca-field-image input').val(file.url);
-                            $(e.target).closest('.alpaca-container').find('.alpaca-image-display img').attr('src', file.url);
-                        });
-                    }
-                }
-            }).data('loaded', true);
-        }
     });
 </script>
