@@ -27,13 +27,9 @@ namespace Satrabel.OpenContent
 
     public partial class EditData : PortalModuleBase
     {
-        public string ModuleTemplateDirectory
-        {
-            get
-            {
-                return PortalSettings.HomeDirectory + "OpenContent/Templates/" + ModuleId.ToString() + "/";
-            }
-        }
+        private const string cData = "Data";
+        private const string cSettings = "Settings";
+
         #region Event Handlers
 
         protected override void OnInit(EventArgs e)
@@ -43,21 +39,68 @@ namespace Satrabel.OpenContent
             cmdCancel.Click += cmdCancel_Click;
             //ServicesFramework.Instance.RequestAjaxScriptSupport();
             //ServicesFramework.Instance.RequestAjaxAntiForgerySupport();
+            sourceList.SelectedIndexChanged += sourceList_SelectedIndexChanged;
         }
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
             if (!Page.IsPostBack)
             {
-                OpenContentController ctrl = new OpenContentController();
-                OpenContentInfo data = ctrl.GetFirstContent(ModuleId);
-                if (data != null)
-                {
-                    txtSource.Text = data.Json;
-                }
+                InitEditor();
             }
         }
+
+
+        private void InitEditor()
+        {
+            LoadFiles();
+            DisplayFile(cData);
+        }
+
+        private void DisplayFile(string selectedDataType)
+        {
+            string json = string.Empty;
+            switch (selectedDataType)
+            {
+                case cData:
+                    OpenContentController ctrl = new OpenContentController();
+                    OpenContentInfo data = ctrl.GetFirstContent(ModuleId);
+                    if (data != null)
+                    {
+                        json = data.Json;
+                    }
+                    break;
+                case cSettings:
+                    json = ModuleContext.Settings["data"] as string;
+                    break;
+            }
+
+            txtSource.Text = json;
+        }
+
+        private void LoadFiles()
+        {
+            sourceList.Items.Clear();
+            sourceList.Items.Add(new ListItem(cData, cData));
+            sourceList.Items.Add(new ListItem(cSettings, cSettings));
+        }
+
         protected void cmdSave_Click(object sender, EventArgs e)
+        {
+            if (sourceList.SelectedValue == cData)
+            {
+                SaveData();
+            }
+            else if (sourceList.SelectedValue == cSettings)
+            {
+                SaveSettings();
+            }
+
+
+            Response.Redirect(Globals.NavigateURL(), true);
+        }
+
+        private void SaveData()
         {
             OpenContentController ctrl = new OpenContentController();
             var data = ctrl.GetFirstContent(ModuleId);
@@ -102,13 +145,22 @@ namespace Satrabel.OpenContent
                     OpenContentUtils.UpdateModuleTitle(ModuleContext.Configuration, ModuleTitle);
                 }
             }
-            Response.Redirect(Globals.NavigateURL(), true);
+        }
+        private void SaveSettings()
+        {
+            ModuleController mc = new ModuleController();
+            mc.UpdateModuleSetting(ModuleId, "data", txtSource.Text);
         }
         protected void cmdCancel_Click(object sender, EventArgs e)
         {
             Response.Redirect(Globals.NavigateURL(), true);
         }
 
+        private void sourceList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //string template = ModuleContext.Settings["template"] as string;
+            DisplayFile(sourceList.SelectedValue);
+        }
         #endregion
 
     }

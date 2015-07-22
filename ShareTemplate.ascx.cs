@@ -38,7 +38,7 @@ namespace Satrabel.OpenContent
         protected virtual string GetModuleSubDir()
         {
             string dir = Path.GetDirectoryName(ModuleContext.Configuration.ModuleControl.ControlSrc);
-            dir = dir.Substring(dir.IndexOf("DesktopModules")+15);
+            dir = dir.Substring(dir.IndexOf("DesktopModules") + 15);
             return dir;
         }
         public string ModuleTemplateDirectory
@@ -110,7 +110,7 @@ namespace Satrabel.OpenContent
             string strMessage = "";
             try
             {
-                var folder = FolderManager.Instance.GetFolder(PortalId, GetModuleSubDir()+"/Templates");
+                var folder = FolderManager.Instance.GetFolder(PortalId, GetModuleSubDir() + "/Templates");
                 if (folder == null)
                 {
                     folder = FolderManager.Instance.AddFolder(PortalId, GetModuleSubDir() + "/Templates");
@@ -141,7 +141,7 @@ namespace Satrabel.OpenContent
             catch (PermissionsNotMetException)
             {
                 //Logger.Warn(exc);
-                strMessage += "<br />" + string.Format(Localization.GetString("InsufficientFolderPermission"), GetModuleSubDir()+"/Templates");
+                strMessage += "<br />" + string.Format(Localization.GetString("InsufficientFolderPermission"), GetModuleSubDir() + "/Templates");
             }
             catch (NoSpaceAvailableException)
             {
@@ -180,6 +180,8 @@ namespace Satrabel.OpenContent
         protected void cmdImportWeb_Click(object sender, EventArgs e)
         {
             string FileName = ddlWebTemplates.SelectedValue;
+            string strMessage = OpenContentUtils.ImportFromWeb(PortalId, FileName, "");
+            /*
             string strMessage = "";
             try
             {
@@ -230,6 +232,7 @@ namespace Satrabel.OpenContent
                 //Logger.Error(exc);
                 strMessage += "<br />" + string.Format(Localization.GetString("SaveFileError"), fuFile.FileName);
             }
+             */
             if (string.IsNullOrEmpty(strMessage))
                 DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "Import Successful", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.GreenSuccess);
             else
@@ -317,7 +320,7 @@ namespace Satrabel.OpenContent
             objResponse.End();
             HttpContext.Current.Server.ScriptTimeout = scriptTimeOut;
         }
-
+        /*
         private void CopyTemplate(string Folder, string TemplateName)
         {
             try
@@ -337,19 +340,27 @@ namespace Satrabel.OpenContent
                 }
                 foreach (var item in Directory.GetFiles(Folder))
                 {
-                    File.Copy(item, folder.PhysicalPath+ Path.GetFileName(item));
+                    File.Copy(item, folder.PhysicalPath + Path.GetFileName(item));
                 }
             }
             catch (Exception ex)
             {
-                DotNetNuke.Services.Exceptions.Exceptions.LogException(ex);                
+                DotNetNuke.Services.Exceptions.Exceptions.LogException(ex);
             }
         }
-
+        */
         protected void lbCopy_Click(object sender, EventArgs e)
         {
             string oldFolder = Server.MapPath(ddlCopyTemplate.SelectedValue);
-            CopyTemplate(oldFolder, tbCopyName.Text);
+            try
+            {
+                //CopyTemplate(oldFolder, tbCopyName.Text);
+                OpenContentUtils.CopyTemplate(PortalId, oldFolder, tbCopyName.Text);
+            }
+            catch (Exception ex)
+            {
+                DotNetNuke.Services.Exceptions.Exceptions.LogException(ex);
+            }
             DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "Copy Successful", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.GreenSuccess);
         }
     }

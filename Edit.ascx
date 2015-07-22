@@ -11,6 +11,7 @@
 <script src="<%=ControlPath %>js/wysihtml/parser_rules/advanced_opencontent.js"></script>  
 <script type="text/javascript" src="<%=ControlPath %>alpaca/js/views/dnn.js"></script>
 <script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/ImageField.js"></script>
+<script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/FileField.js"></script>
 <script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/UrlField.js"></script>
 <script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/CKEditorField.js"></script>
 <script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/wysihtmlField.js"></script>
@@ -30,10 +31,30 @@
 
         var windowTop = parent;
         var popup = windowTop.jQuery("#iPopUp");
-        popup.dialog("option", {
-            close: function () { window.dnnModal.closePopUp(false, ""); }
-        });
+        if (popup.length) {
 
+            var $window = $(windowTop),
+                            newHeight,
+                            newWidth;
+
+            newHeight = $window.height() - 46;
+            newWidth = Math.min($window.width() - 40, 1100);
+
+            popup.dialog("option", {
+                close: function () { window.dnnModal.closePopUp(false, ""); },
+                //'position': 'top',
+                height: newHeight,
+                width: newWidth,
+                //position: 'center'
+            });
+            $("#<%=hlCancel.ClientID%>").click(function () {
+                dnnModal.closePopUp(false, "");
+                return false;
+            });
+            //$(popup).height(windowTop.innerHeight-111);
+            //$(popup).css('height', windowTop.innerHeight + 100).dialog('option', );
+            //$(popup).dialog({ position: 'center' });
+        }
 
         var moduleScope = $('#<%=ScopeWrapper.ClientID %>'),
             self = moduleScope,
@@ -67,32 +88,6 @@
             connector = new ConnectorClass("default");
             connector.servicesFramework = sf;
             connector.culture = '<%=CurrentCulture%>';
-
-            $.alpaca.Fields.DnnFileField = $.alpaca.Fields.FileField.extend({
-                setup: function () {
-                    this.base();
-                },
-                afterRenderControl: function (model, callback) {
-                    var self = this;
-                    this.base(model, function () {
-                        self.handlePostRender(function () {
-                            callback();
-                        });
-                    });
-                },
-                handlePostRender: function (callback) {
-                    //var self = this;
-
-                    var el = this.control;
-                    self.SetupFileUpload(el);
-                    callback();
-                }
-            });
-            Alpaca.registerFieldClass("file", Alpaca.Fields.DnnFileField);
-
-
-            
-
 
             $("#field1").alpaca({
                 "schema": config.schema,
@@ -136,48 +131,22 @@
                 //alert('ok:' + data);
                 //self.loadSettings();
                 //window.location.href = href;
-
+                
                 var windowTop = parent; //needs to be assign to a varaible for Opera compatibility issues.
-                //var popup = windowTop.jQuery("#iPopUp");
-
-                windowTop.__doPostBack('dnn_ctr<%=ModuleId %>_View__UP', '');
-                //window.frameElement.opencontent.refresh();
-                dnnModal.closePopUp(false, href);
-
+                var popup = windowTop.jQuery("#iPopUp");
+                if (popup.length > 0)
+                {
+                    windowTop.__doPostBack('dnn_ctr<%=ModuleId %>_View__UP', '');
+                    dnnModal.closePopUp(false, href);
+                }
+                else
+                {
+                    window.location.href = href;
+                }
             }).fail(function (xhr, result, status) {
                 alert("Uh-oh, something broke: " + status);
             });
         };
 
-        self.SetupFileUpload = function (fileupload) {
-            //$('#field1 input[type="file"]')
-            $(fileupload).fileupload({
-                dataType: 'json',
-                url: sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
-                maxFileSize: 25000000,
-                formData: {example: 'test'},
-                beforeSend: sf.setModuleHeaders,
-                add: function (e, data) {
-                    //data.context = $(opts.progressContextSelector);
-                    //data.context.find($(opts.progressFileNameSelector)).html(data.files[0].name);
-                    //data.context.show('fade');
-                    data.submit();
-                },
-                progress: function (e, data) {
-                    if (data.context) {
-                        var progress = parseInt(data.loaded / data.total * 100, 10);
-                        data.context.find(opts.progressBarSelector).css('width', progress + '%').find('span').html(progress + '%');
-                    }
-                },
-                done: function (e, data) {
-                    if (data.result) {
-                        $.each(data.result, function (index, file) {
-                            $(e.target).closest('.alpaca-container').find('.alpaca-field-image input').val(file.url);
-                            $(e.target).closest('.alpaca-container').find('.alpaca-image-display img').attr('src', file.url);
-                        });
-                    }
-                }
-            }).data('loaded', true);
-        }
     });
 </script>

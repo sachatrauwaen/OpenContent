@@ -27,25 +27,24 @@
 </asp:Panel>
 
 <script type="text/javascript">
-
     /*globals jQuery, window, Sys */
     (function ($, Sys) {
-
         function setupStructSettings() {
-
             var windowTop = parent;
             var popup = windowTop.jQuery("#iPopUp");
-            popup.dialog("option", {
-                close: function () { window.dnnModal.closePopUp(false, ""); }
-            });
-            $("#<%=hlCancel.ClientID%>").click(function (){
-                dnnModal.closePopUp(false, href);
-            });
-
+            if (popup.length > 0) {
+                popup.dialog("option", {
+                    close: function () { window.dnnModal.closePopUp(false, ""); }
+                });
+                $("#<%=hlCancel.ClientID%>").click(function () {
+                    dnnModal.closePopUp(false, "");
+                    return false;
+                });
+            }
 
             var moduleScope = $('#<%=ScopeWrapper.ClientID %>'),
-        self = moduleScope,
-        sf = $.ServicesFramework(<%=ModuleId %>);
+                self = moduleScope,
+                sf = $.ServicesFramework(<%=ModuleId %>);
 
             $("#<%= scriptList.ClientID %>").change(function () {
                 if ($("#field1").alpaca("exists")) {
@@ -116,6 +115,13 @@
                         }
                     });
                 }
+                else {
+                    $("#<%=cmdSave.ClientID%>").click(function () {
+                        var href = $(this).attr('href');
+                        self.FormSubmit("", href);
+                        return false;
+                    });
+                }
             }).fail(function (xhr, result, status) {
                 alert("Uh-oh, something broke: " + status);
             });
@@ -135,8 +141,15 @@
             }).done(function (data) {
 
                 var windowTop = parent; //needs to be assign to a varaible for Opera compatibility issues.
-                windowTop.__doPostBack('dnn_ctr<%=ModuleId %>_View__UP', '');
-                dnnModal.closePopUp(false, href);
+                var popup = windowTop.jQuery("#iPopUp");
+                if (popup.length > 0) {
+
+                    windowTop.__doPostBack('dnn_ctr<%=ModuleId %>_View__UP', '');
+                    dnnModal.closePopUp(false, href);
+                }
+                else {
+                    window.location.href = href;
+                }
 
             }).fail(function (xhr, result, status) {
                 alert("Uh-oh, something broke: " + status + " " + xhr.responseText);
