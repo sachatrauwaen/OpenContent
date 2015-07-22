@@ -1,21 +1,50 @@
 <%@ Control Language="C#" AutoEventWireup="false" Inherits="Satrabel.OpenContent.View" CodeBehind="View.ascx.cs" %>
 
-<asp:Panel ID="pHelp" runat="server" Visible="false">
-    <h3>Get started</h3>
-    <ol>
+<asp:Panel ID="pHelp" runat="server" Visible="false" CssClass="dnnForm">
+    <fieldset>
+        <div class="dnnFormItem">
+            <asp:Label ID="lUseTemplate" runat="server" ControlName="rblUseTemplate" ResourceKey="lUseTemplate" CssClass="dnnLabel" />
+            <asp:RadioButtonList runat="server" ID="rblUseTemplate" AutoPostBack="true" OnSelectedIndexChanged="rblUseTemplate_SelectedIndexChanged"
+                RepeatDirection="Horizontal" CssClass="dnnFormRadioButtons">
+                <asp:ListItem Text="Use a existing template" Selected="True" />
+                <asp:ListItem Text="Create a new template" />
+            </asp:RadioButtonList>
+        </div>
+        <asp:PlaceHolder ID="phFrom" runat="server" Visible="false">
+            <div class="dnnFormItem">
+                <asp:Label ID="Label4" runat="server" ControlName="rblFrom" CssClass="dnnLabel" ResourceKey="lFrom" />
+                <asp:RadioButtonList runat="server" ID="rblFrom" AutoPostBack="true" OnSelectedIndexChanged="rblFrom_SelectedIndexChanged"
+                    RepeatDirection="Horizontal" CssClass="dnnFormRadioButtons">
+                    <asp:ListItem Text="Site" Selected="True" />
+                    <asp:ListItem Text="Web (openextensions.net)" />
+                </asp:RadioButtonList>
+            </div>
+        </asp:PlaceHolder>
+        <asp:PlaceHolder ID="phTemplate" runat="server">
+            <div class="dnnFormItem">
+                <asp:Label runat="server" ControlName="ddlTemplate" ResourceKey="lTemplate" CssClass="dnnLabel" />
+                <asp:DropDownList runat="server" ID="ddlTemplate" AutoPostBack="true" OnSelectedIndexChanged="ddlTemplate_SelectedIndexChanged">
+                </asp:DropDownList>
+            </div>
+        </asp:PlaceHolder>
+        <asp:PlaceHolder ID="phTemplateName" runat="server" Visible="false">
+            <div class="dnnFormItem">
+                <asp:Label runat="server" ControlName="tbTemplateName" ResourceKey="lTemplateName" CssClass="dnnLabel" />
+                <asp:TextBox ID="tbTemplateName" runat="server"></asp:TextBox>
+            </div>
+        </asp:PlaceHolder>
+    </fieldset>
+    <ul class="dnnActions dnnClear" style="padding-left: 32%; margin-left: 38px;">
         <li>
-            <asp:Label ID="scriptListLabel" runat="server" Text="Get a template > " />
-            <asp:HyperLink ID="hlTempleteExchange" runat="server" Visible="false">Template Exchange</asp:HyperLink>
+            <asp:LinkButton ID="bSave" runat="server" CssClass="dnnPrimaryAction" ResourceKey="Save" OnClick="bSave_Click" />
         </li>
         <li>
-            <asp:Label ID="Label1" runat="server" Text="Chose a template > " />
-            <asp:HyperLink ID="hlEditSettings" runat="server" Visible="false">Template Settings</asp:HyperLink>
+             <asp:HyperLink ID="hlEditSettings" runat="server" Visible="false" CssClass="dnnSecondaryAction" >Template Settings</asp:HyperLink>
         </li>
         <li>
-            <asp:Label ID="Label2" runat="server" Text="Enter the content > " />
-            <asp:HyperLink ID="hlEditContent" runat="server" Visible="false">Edit Content</asp:HyperLink>
+             <asp:HyperLink ID="hlEditContent" runat="server" Visible="false" CssClass="dnnSecondaryAction" >Edit Content</asp:HyperLink>
         </li>
-    </ol>
+    </ul>
 </asp:Panel>
 <asp:Panel ID="pDemo" runat="server" Visible="false">
     <p>

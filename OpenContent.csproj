@@ -202,6 +202,7 @@
     <Content Include="alpaca\css\img\Dn_16X16_Standard.png" />
     <Content Include="alpaca\css\img\Up_16X16_Standard.png" />
     <Content Include="alpaca\js\fields\dnn\CKEditorField.js" />
+    <Content Include="alpaca\js\fields\dnn\FileField.js" />
     <Content Include="alpaca\js\fields\dnn\ImageField.js" />
     <Content Include="alpaca\js\fields\dnn\UrlField.js" />
     <Content Include="alpaca\js\fields\dnn\wysihtmlField.js" />
@@ -210,6 +211,7 @@
     <Content Include="alpaca\templates\dnn-edit\container-array-actionbar.html" />
     <Content Include="alpaca\templates\dnn-edit\container-array.html" />
     <Content Include="alpaca\templates\dnn-edit\container.html" />
+    <Content Include="alpaca\templates\dnn-edit\control-file.html" />
     <Content Include="alpaca\templates\dnn-edit\control-image.html" />
     <Content Include="alpaca\templates\dnn-edit\control-wysihtml.html" />
     <Content Include="alpaca\templates\dnn-edit\control.html" />
