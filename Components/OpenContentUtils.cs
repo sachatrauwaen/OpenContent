@@ -88,27 +88,30 @@ namespace Satrabel.OpenContent.Components
             }
             // skin
             basePath = HostingEnvironment.MapPath(GetSkinTemplateFolder(portalSettings, moduleSubDir));
-            foreach (var dir in Directory.GetDirectories(basePath))
+            if (Directory.Exists(basePath))
             {
-                string TemplateCat = "Skin";
-                string DirName = Path.GetFileNameWithoutExtension(dir);
-                var files = Directory.EnumerateFiles(dir, "*.*", SearchOption.AllDirectories)
-                            .Where(s => s.EndsWith(".cshtml") || s.EndsWith(".vbhtml") || s.EndsWith(".hbs"));
-                foreach (string script in files)
+                foreach (var dir in Directory.GetDirectories(basePath))
                 {
-                    string scriptName = script.Remove(script.LastIndexOf(".")).Replace(basePath, "");
-                    if (scriptName.ToLower().EndsWith("template"))
-                        scriptName = scriptName.Remove(scriptName.LastIndexOf("\\"));
-                    else
-                        scriptName = scriptName.Replace("\\", " - ");
-
-                    string scriptPath = ReverseMapPath(script);
-                    var item = new ListItem(TemplateCat + " : " + scriptName, scriptPath);
-                    if (!(string.IsNullOrEmpty(SelectedTemplate)) && scriptPath.ToLowerInvariant() == SelectedTemplate.ToLowerInvariant())
+                    string TemplateCat = "Skin";
+                    string DirName = Path.GetFileNameWithoutExtension(dir);
+                    var files = Directory.EnumerateFiles(dir, "*.*", SearchOption.AllDirectories)
+                                .Where(s => s.EndsWith(".cshtml") || s.EndsWith(".vbhtml") || s.EndsWith(".hbs"));
+                    foreach (string script in files)
                     {
-                        item.Selected = true;
+                        string scriptName = script.Remove(script.LastIndexOf(".")).Replace(basePath, "");
+                        if (scriptName.ToLower().EndsWith("template"))
+                            scriptName = scriptName.Remove(scriptName.LastIndexOf("\\"));
+                        else
+                            scriptName = scriptName.Replace("\\", " - ");
+
+                        string scriptPath = ReverseMapPath(script);
+                        var item = new ListItem(TemplateCat + " : " + scriptName, scriptPath);
+                        if (!(string.IsNullOrEmpty(SelectedTemplate)) && scriptPath.ToLowerInvariant() == SelectedTemplate.ToLowerInvariant())
+                        {
+                            item.Selected = true;
+                        }
+                        lst.Add(item);
                     }
-                    lst.Add(item);
                 }
             }
             return lst;
@@ -153,19 +156,22 @@ namespace Satrabel.OpenContent.Components
             }
             // skin
             basePath = HostingEnvironment.MapPath(GetSkinTemplateFolder(portalSettings, moduleSubDir));
-            foreach (var dir in Directory.GetDirectories(basePath))
+            if (Directory.Exists(basePath))
             {
-                string TemplateCat = "Skin";
-                string DirName = Path.GetFileNameWithoutExtension(dir);
-                string scriptName = dir;
-                scriptName = TemplateCat + ":" + scriptName.Substring(scriptName.LastIndexOf("\\") + 1);
-                string scriptPath = ReverseMapPath(dir);
-                var item = new ListItem(scriptName, scriptPath);
-                if (!(string.IsNullOrEmpty(SelectedTemplate)) && scriptPath.ToLowerInvariant() == SelectedTemplate.ToLowerInvariant())
+                foreach (var dir in Directory.GetDirectories(basePath))
                 {
-                    item.Selected = true;
+                    string TemplateCat = "Skin";
+                    string DirName = Path.GetFileNameWithoutExtension(dir);
+                    string scriptName = dir;
+                    scriptName = TemplateCat + ":" + scriptName.Substring(scriptName.LastIndexOf("\\") + 1);
+                    string scriptPath = ReverseMapPath(dir);
+                    var item = new ListItem(scriptName, scriptPath);
+                    if (!(string.IsNullOrEmpty(SelectedTemplate)) && scriptPath.ToLowerInvariant() == SelectedTemplate.ToLowerInvariant())
+                    {
+                        item.Selected = true;
+                    }
+                    lst.Add(item);
                 }
-                lst.Add(item);
             }
             return lst;
         }
