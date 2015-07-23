@@ -46,6 +46,7 @@
         "displayReadonly": false,
         "templates": {
             "control-image": "/DesktopModules/OpenContent/alpaca/templates/dnn-edit/control-image.html",
+            "control-file": "/DesktopModules/OpenContent/alpaca/templates/dnn-edit/control-file.html",
             "control-wysihtml": "/DesktopModules/OpenContent/alpaca/templates/dnn-edit/control-wysihtml.html"
         }
     });
