@@ -126,4 +126,7 @@
   <data name="lEditWitoutPostback.Text" xml:space="preserve">
     <value>Edit Without Postback (all modules on all portals)</value>
   </data>
+  <data name="lAddEditControl.Text" xml:space="preserve">
+    <value>Additional Edit Control</value>
+  </data>
 </root>

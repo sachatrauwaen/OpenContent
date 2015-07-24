@@ -41,6 +41,7 @@ using DotNetNuke.Entities.Host;
 using DotNetNuke.Entities.Controllers;
 using Satrabel.OpenContent.Components.Rss;
 using System.Web.UI.WebControls;
+using DotNetNuke.Entities.Portals;
 
 #endregion
 
@@ -76,21 +77,19 @@ namespace Satrabel.OpenContent
             string dataJson;
             string settingsJson;
             string OutputString = "";
+            var Template = ModuleContext.Settings["template"] as string;
             bool dataExist = GetData(out dataJson, out settingsJson);
             if (dataExist)
             {
-                string Template = ModuleContext.Settings["template"] as string;
                 OutputString = GenerateOutput(Template, dataJson, settingsJson);
             }
             else if (ModuleContext.EditMode)
             {
-                var Template = ModuleContext.Settings["template"] as string;
                 if (string.IsNullOrEmpty(Template) || ModuleContext.IsEditable)
                 {
                     pHelp.Visible = true;
                     if (!Page.IsPostBack)
                     {
-
                         ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplatesFiles(ModuleContext.PortalSettings, ModuleContext.ModuleId, Template, "OpenContent").ToArray());
                         if (ddlTemplate.Items.Count == 0)
                         {
@@ -119,6 +118,14 @@ namespace Satrabel.OpenContent
                     {
                         OutputString = GenerateOutput(Template, dataJson, settingsJson);
                     }
+                }
+            }
+            else if (!string.IsNullOrEmpty(Template))
+            {
+                bool demoExist = GetDemoData(Template, out dataJson, out settingsJson);
+                if (demoExist)
+                {
+                    OutputString = GenerateOutput(Template, dataJson, settingsJson);
                 }
             }
             if (!string.IsNullOrEmpty(OutputString))
@@ -277,6 +284,22 @@ namespace Satrabel.OpenContent
                                 true,
                                 false);
                 }
+                /*
+                string AddEditControl = PortalController.GetPortalSetting("OpenContent_AddEditControl", ModuleContext.PortalId, "");
+                if (TemplateDefined && !string.IsNullOrEmpty(AddEditControl))
+                {
+                    Actions.Add(ModuleContext.GetNextActionID(),
+                                Localization.GetString("AddEntity.Action", LocalResourceFile),
+                                ModuleActionType.EditContent,
+                                "",
+                                "",
+                                ModuleContext.EditUrl("AddEdit"),
+                                false,
+                                SecurityAccessLevel.Edit,
+                                true,
+                                false);
+                }
+                */
                 Actions.Add(ModuleContext.GetNextActionID(),
                          Localization.GetString("EditSettings.Action", LocalResourceFile),
                          ModuleActionType.ContentOptions,

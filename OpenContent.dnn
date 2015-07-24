@@ -74,6 +74,17 @@
                     <supportsPopUps>True</supportsPopUps>
                   </moduleControl>
                   <moduleControl>
+                    <controlKey>AddEdit</controlKey>
+                    <controlSrc>DesktopModules/OpenContent/AddEdit.ascx</controlSrc>
+                    <supportsPartialRendering>False</supportsPartialRendering>
+                    <controlTitle>Edit Content</controlTitle>
+                    <controlType>Edit</controlType>
+                    <iconFile />
+                    <helpUrl />
+                    <viewOrder>0</viewOrder>
+                    <supportsPopUps>True</supportsPopUps>
+                  </moduleControl>
+                  <moduleControl>
                     <controlKey>EditTemplate</controlKey>
                     <controlSrc>DesktopModules/OpenContent/EditTemplate.ascx</controlSrc>
                     <supportsPartialRendering>False</supportsPartialRendering>

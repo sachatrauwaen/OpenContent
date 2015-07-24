@@ -153,4 +153,7 @@
   <data name="lTemplateName.Text" xml:space="preserve">
     <value>New Template Name</value>
   </data>
+  <data name="AddEntity.Action" xml:space="preserve">
+    <value>Add Content</value>
+  </data>
 </root>

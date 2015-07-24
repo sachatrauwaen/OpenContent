@@ -131,6 +131,13 @@
     <Compile Include="Components\Rss\FeedParser.cs" />
     <Compile Include="Components\Rss\FeedItem.cs" />
     <Compile Include="Components\TemplateHelper.cs" />
+    <Compile Include="AddEdit.ascx.cs">
+      <DependentUpon>AddEdit.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="AddEdit.ascx.designer.cs">
+      <DependentUpon>AddEdit.ascx</DependentUpon>
+    </Compile>
     <Compile Include="EditGlobalSettings.ascx.cs">
       <DependentUpon>EditGlobalSettings.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -233,6 +240,7 @@
     <Content Include="css\images\ui-icons_ef8c08_256x240.png" />
     <Content Include="css\images\ui-icons_ffd27a_256x240.png" />
     <Content Include="css\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="AddEdit.ascx" />
     <Content Include="EditGlobalSettings.ascx" />
     <Content Include="EditSettings.ascx" />
     <Content Include="images\icon_extensions.png" />
