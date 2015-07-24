@@ -68,7 +68,6 @@ namespace Satrabel.OpenContent
             }
         }
 
-
         protected override void OnPreRender(EventArgs e)
         {
             pHelp.Visible = false;
@@ -76,21 +75,19 @@ namespace Satrabel.OpenContent
             string dataJson;
             string settingsJson;
             string OutputString = "";
+            var Template = ModuleContext.Settings["template"] as string;
             bool dataExist = GetData(out dataJson, out settingsJson);
             if (dataExist)
             {
-                string Template = ModuleContext.Settings["template"] as string;
                 OutputString = GenerateOutput(Template, dataJson, settingsJson);
             }
             else if (ModuleContext.EditMode)
             {
-                var Template = ModuleContext.Settings["template"] as string;
                 if (string.IsNullOrEmpty(Template) || ModuleContext.IsEditable)
                 {
                     pHelp.Visible = true;
                     if (!Page.IsPostBack)
                     {
-
                         ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplatesFiles(ModuleContext.PortalSettings, ModuleContext.ModuleId, Template, "OpenContent").ToArray());
                         if (ddlTemplate.Items.Count == 0)
                         {
@@ -121,6 +118,14 @@ namespace Satrabel.OpenContent
                     }
                 }
             }
+            else if (!string.IsNullOrEmpty(Template))
+            {
+                bool demoExist = GetDemoData(Template, out dataJson, out settingsJson);
+                if (demoExist)
+                {
+                    OutputString = GenerateOutput(Template, dataJson, settingsJson);
+                }
+            }
             if (!string.IsNullOrEmpty(OutputString))
             {
                 var lit = new LiteralControl(Server.HtmlDecode(OutputString));
@@ -132,6 +137,7 @@ namespace Satrabel.OpenContent
                 //if (DemoData) pDemo.Visible = true;
             }
         }
+       
         #region Event Handlers
         protected override void OnInit(EventArgs e)
         {
