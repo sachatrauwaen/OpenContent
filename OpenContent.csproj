@@ -114,6 +114,12 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddEdit.ascx.cs">
+      <DependentUpon>AddEdit.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="AddEdit.ascx.designer.cs">
+      <DependentUpon>AddEdit.ascx</DependentUpon>
+    </Compile>
     <Compile Include="Components\FeatureController.cs" />
     <Compile Include="Components\FilesStatus.cs" />
     <Compile Include="Components\FileUploadController.cs" />
@@ -131,13 +137,6 @@
     <Compile Include="Components\Rss\FeedParser.cs" />
     <Compile Include="Components\Rss\FeedItem.cs" />
     <Compile Include="Components\TemplateHelper.cs" />
-    <Compile Include="AddEdit.ascx.cs">
-      <DependentUpon>AddEdit.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="AddEdit.ascx.designer.cs">
-      <DependentUpon>AddEdit.ascx</DependentUpon>
-    </Compile>
     <Compile Include="EditGlobalSettings.ascx.cs">
       <DependentUpon>EditGlobalSettings.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -203,11 +202,13 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="AddEdit.ascx" />
     <Content Include="alpaca\css\alpaca-dnn.css" />
     <Content Include="alpaca\css\img\Add_16x16_Gray.png" />
     <Content Include="alpaca\css\img\Delete_16X16_Gray.png" />
     <Content Include="alpaca\css\img\Dn_16X16_Standard.png" />
     <Content Include="alpaca\css\img\Up_16X16_Standard.png" />
+    <Content Include="alpaca\js\fields\dnn\AddressField.js" />
     <Content Include="alpaca\js\fields\dnn\CKEditorField.js" />
     <Content Include="alpaca\js\fields\dnn\FileField.js" />
     <Content Include="alpaca\js\fields\dnn\ImageField.js" />
@@ -240,7 +241,6 @@
     <Content Include="css\images\ui-icons_ef8c08_256x240.png" />
     <Content Include="css\images\ui-icons_ffd27a_256x240.png" />
     <Content Include="css\images\ui-icons_ffffff_256x240.png" />
-    <Content Include="AddEdit.ascx" />
     <Content Include="EditGlobalSettings.ascx" />
     <Content Include="EditSettings.ascx" />
     <Content Include="images\icon_extensions.png" />
