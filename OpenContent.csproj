@@ -116,6 +116,7 @@
   <ItemGroup>
     <Compile Include="AddEdit.ascx.cs">
       <DependentUpon>AddEdit.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="AddEdit.ascx.designer.cs">
       <DependentUpon>AddEdit.ascx</DependentUpon>
