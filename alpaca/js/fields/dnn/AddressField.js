@@ -132,6 +132,9 @@
                 if (value.street) {
                     address += value.street + " ";
                 }
+                if (value.number) {
+                    address += value.number + " ";
+                }
                 if (value.city) {
                     address += value.city + " ";
                 }
