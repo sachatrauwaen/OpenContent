@@ -52,8 +52,8 @@
                         "type": "string",
                         "enum": ["AL", "AK", "AS", "AZ", "AR", "CA", "CO", "CT", "DE", "DC", "FM", "FL", "GA", "GU", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MH", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "MP", "OH", "OK", "OR", "PW", "PA", "PR", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VI", "VA", "WA", "WV", "WI", "WY"]
                     },
-                    "postcode": {
-                        "title": "Postcode",
+                    "postalcode": {
+                        "title": "Postal Code",
                         "type": "string"
                     },
                     "country": {
@@ -84,8 +84,8 @@
                     "city": {
                         "fieldClass": "city"
                     },
-                    "postcode": {
-                        "fieldClass": "postcode"
+                    "postalcode": {
+                        "fieldClass": "postalcode"
                     },
                     "state": {
                         "optionLabels": ["ALABAMA", "ALASKA", "AMERICANSAMOA", "ARIZONA", "ARKANSAS", "CALIFORNIA", "COLORADO", "CONNECTICUT", "DELAWARE", "DISTRICTOFCOLUMBIA", "FEDERATEDSTATESOFMICRONESIA", "FLORIDA", "GEORGIA", "GUAM", "HAWAII", "IDAHO", "ILLINOIS", "INDIANA", "IOWA", "KANSAS", "KENTUCKY", "LOUISIANA", "MAINE", "MARSHALLISLANDS", "MARYLAND", "MASSACHUSETTS", "MICHIGAN", "MINNESOTA", "MISSISSIPPI", "MISSOURI", "MONTANA", "NEBRASKA", "NEVADA", "NEWHAMPSHIRE", "NEWJERSEY", "NEWMEXICO", "NEWYORK", "NORTHCAROLINA", "NORTHDAKOTA", "NORTHERNMARIANAISLANDS", "OHIO", "OKLAHOMA", "OREGON", "PALAU", "PENNSYLVANIA", "PUERTORICO", "RHODEISLAND", "SOUTHCAROLINA", "SOUTHDAKOTA", "TENNESSEE", "TEXAS", "UTAH", "VERMONT", "VIRGINISLANDS", "VIRGINIA", "WASHINGTON", "WESTVIRGINIA", "WISCONSIN", "WYOMING"],
@@ -138,8 +138,8 @@
                 if (value.state) {
                     address += value.state + " ";
                 }
-                if (value.zip) {
-                    address += value.zip;
+                if (value.postalcode) {
+                    address += value.postalcode;
                 }
                 if (value.country) {
                     address += value.country;
@@ -225,7 +225,7 @@
                                 return;
                             }
                             var place = places[0];
-                            $(".alpaca-field.postcode input.alpaca-control", container).val(addressPart(place, "postal_code"));
+                            $(".alpaca-field.postalcode input.alpaca-control", container).val(addressPart(place, "postal_code"));
                             $(".alpaca-field.city input.alpaca-control", container).val(addressPart(place, "locality"));
                             $(".alpaca-field.street input.alpaca-control", container).val(addressPart(place, "route"));
                             $(".alpaca-field.number input.alpaca-control", container).val(addressPart(place, "street_number"));
@@ -275,7 +275,7 @@
          * @see Alpaca.Fields.ObjectField#getDescription
          */
         getDescription: function () {
-            return "Address with Street, City, State, Zip and Country. Also comes with support for Google map.";
+            return "Address with Street, City, State, Postal code and Country. Also comes with support for Google map.";
         },
 
         /**
