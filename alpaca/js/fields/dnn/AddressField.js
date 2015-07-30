@@ -60,11 +60,11 @@
                         "title": "Country",
                         "type": "string"
                     },
-                    "lat": {
+                    "latitude": {
                         "title": "Latitude",
                         "type": "number"
                     },
-                    "lng": {
+                    "longitude": {
                         "title": "Longitude",
                         "type": "number"
                     }
@@ -96,10 +96,10 @@
                         "type": "country",
                         "fieldClass": "country"
                     },
-                    "lat": {
+                    "latitude": {
                         "fieldClass": "lat"
                     },
-                    "lng": {
+                    "longitude": {
                         "fieldClass": "lng"
                     }
                 }
