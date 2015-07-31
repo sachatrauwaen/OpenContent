@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Web;
 using System.Web.Hosting;
 using System.Web.UI.WebControls;
@@ -287,6 +288,76 @@ namespace Satrabel.OpenContent.Components
             }
             return ReverseMapPath(Template);
         }
+
+        public static bool IsListTemplate(string Template)
+        {
+            return !string.IsNullOrEmpty(Template) && Template.EndsWith("$.hbs");
+        }
+
+        public static string CleanupUrl(string Url)
+        {
+            string replaceWith = "-";
+
+            string AccentFrom = "ÀÁÂÃÄÅàáâãäåảạăắằẳẵặấầẩẫậÒÓÔÕÖØòóôõöøỏõọồốổỗộơớờởợÈÉÊËèéêëẻẽẹếềểễệÌÍÎÏìíîïỉĩịÙÚÛÜùúûüủũụưứừửữựÿýỳỷỹỵÑñÇçĞğİıŞş₤€ßđ";
+            string AccentTo   = "AAAAAAaaaaaaaaaaaaaaaaaaaOOOOOOoooooooooooooooooooEEEEeeeeeeeeeeeeIIIIiiiiiiiUUUUuuuuuuuuuuuuuyyyyyyNnCcGgIiSsLEsd";
+
+            Url = Url.ToLower().Trim();
+
+            StringBuilder result = new StringBuilder(Url.Length);
+            string ch = ""; int i = 0; int last = Url.ToCharArray().GetUpperBound(0);
+            foreach (char c in Url.ToCharArray())
+            {
+
+                //use string for manipulation
+                ch = c.ToString();
+                if (ch == " ")
+                {
+                    ch = replaceWith;
+                }
+                else if (@".[]|:;`%\\""".Contains(ch))
+                    ch = "";
+                else if (@" &$+,/=?@~#<>()¿¡«»!'’–".Contains(ch))
+                    ch = replaceWith;
+                else
+                {
+                    for (int ii = 0; ii < AccentFrom.Length; ii++)
+                    {
+                        if (ch == AccentFrom[ii].ToString())
+                        {
+                            ch = AccentTo[ii].ToString();
+                        }
+                    }
+                }
+
+                if (i == last)
+                {
+                    if (!(ch == "-" || ch == replaceWith))
+                    {   //only append if not the same as the replacement character
+                        result.Append(ch);
+                    }
+                }
+                else
+                    result.Append(ch);
+                i++;//increment counter
+            }
+            result = result.Replace(replaceWith + replaceWith, replaceWith);
+            result = result.Replace(replaceWith + replaceWith, replaceWith);
+            
+            // remove ending -
+            while (result.Length > 1 && result[result.Length - 1] == replaceWith[0])
+            {
+                result.Remove(result.Length - 1, 1);
+            }
+            // remove starting -
+            while (result.Length > 1 && result[0] == replaceWith[0])
+            {
+                result.Remove(0, 1);
+            }
+             
+            return result.ToString();
+        }
     }
+
+    
 
 }

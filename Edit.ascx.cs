@@ -27,6 +27,14 @@ namespace Satrabel.OpenContent
 
     public partial class Edit : PortalModuleBase
     {
+        public bool ListMode
+        {
+            get
+            {
+                //ModuleContext.Settings["template"]
+                return true;
+            }
+        }
 
         #region Event Handlers
 

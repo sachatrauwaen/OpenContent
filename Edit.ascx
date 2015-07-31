@@ -28,7 +28,7 @@
 <asp:HiddenField ID="CKDNNporid" runat="server" ClientIDMode="Static" />
 <script type="text/javascript">
     $(document).ready(function () {
-
+        var itemId = "<%=Page.Request.QueryString["id"]%>";
         var windowTop = parent;
         var popup = windowTop.jQuery("#iPopUp");
         if (popup.length) {
@@ -62,6 +62,7 @@
 
         var postData = {  };
         var getData = "";
+        if (itemId) getData = "id=" + itemId;
         var action = "Edit"; //self.getUpdateAction();
 
         $.ajax({
@@ -117,7 +118,7 @@
 
         self.FormSubmit = function (data, href) {
             //var postData = { form: data };
-            var postData = JSON.stringify({ form: data });
+            var postData = JSON.stringify({ form: data, id : itemId });
             var action = "Update"; //self.getUpdateAction();
 
             $.ajax({
