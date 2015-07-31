@@ -63,9 +63,12 @@ namespace Satrabel.OpenContent.Components
                 }
                 var files = Directory.EnumerateFiles(dir, "*.*", SearchOption.AllDirectories)
                             .Where(s => s.EndsWith(".cshtml") || s.EndsWith(".vbhtml") || s.EndsWith(".hbs"));
+
+                files = files.Where(f => f.EndsWith("$.hbs") || !f.Contains("$"));
                 foreach (string script in files)
                 {
                     string scriptName = script.Remove(script.LastIndexOf(".")).Replace(basePath, "");
+                    scriptName = scriptName.Replace("$", "");
                     if (TemplateCat == "Module")
                     {
                         if (scriptName.ToLower().EndsWith("template"))
@@ -97,9 +100,11 @@ namespace Satrabel.OpenContent.Components
                     string DirName = Path.GetFileNameWithoutExtension(dir);
                     var files = Directory.EnumerateFiles(dir, "*.*", SearchOption.AllDirectories)
                                 .Where(s => s.EndsWith(".cshtml") || s.EndsWith(".vbhtml") || s.EndsWith(".hbs"));
+                    files = files.Where(f => f.EndsWith("$.hbs") || !f.Contains("$"));
                     foreach (string script in files)
                     {
                         string scriptName = script.Remove(script.LastIndexOf(".")).Replace(basePath, "");
+                        scriptName = scriptName.Replace("$", "");
                         if (scriptName.ToLower().EndsWith("template"))
                             scriptName = scriptName.Remove(scriptName.LastIndexOf("\\"));
                         else
