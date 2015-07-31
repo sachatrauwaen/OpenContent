@@ -1,9 +1,9 @@
 ﻿/*globals jQuery, window, Sys */
 (function ($, Sys) {
-    
+
     var OpenContent = function () {
         return {
-            version : {major:1,minor:2,patch:0}
+            version: { major: 1, minor: 2, patch: 0 }
         };
     }
 
@@ -31,3 +31,6 @@
         });
     });
 }(jQuery, window.Sys));
+
+
+

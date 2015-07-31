@@ -38,8 +38,8 @@ namespace Satrabel.OpenContent
             
             ServicesFramework.Instance.RequestAjaxScriptSupport();
             ServicesFramework.Instance.RequestAjaxAntiForgerySupport();
-            //JavaScript.RequestRegistration(CommonJs.DnnPlugins); ;
-            //JavaScript.RequestRegistration(CommonJs.jQueryFileUpload);
+            JavaScript.RequestRegistration(CommonJs.DnnPlugins); ;
+            JavaScript.RequestRegistration(CommonJs.jQueryFileUpload);
 
             //DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "PortalId", PortalId.ToString(), true);
             //CKDNNporid.Value = PortalId.ToString();

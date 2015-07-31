@@ -4,8 +4,9 @@
 <dnncl:DnnCssInclude ID="customJS" runat="server" FilePath="~/DesktopModules/OpenContent/alpaca/css/alpaca-dnn.css" AddTag="false" />
 <dnncl:DnnJsInclude ID="DnnJsInclude1" runat="server" FilePath="~/DesktopModules/OpenContent/js/alpaca-1.5.8/lib/handlebars/handlebars.js" Priority="106" ForceProvider="DnnPageHeaderProvider" />
 <dnncl:DnnJsInclude ID="DnnJsInclude2" runat="server" FilePath="~/DesktopModules/OpenContent/js/alpaca-1.5.8/alpaca/web/alpaca.js" Priority="107" ForceProvider="DnnPageHeaderProvider" />
-
 <dnncl:DnnJsInclude ID="DnnJsInclude4" runat="server" FilePath="~/DesktopModules/OpenContent/js/alpaca-1.5.8/lib/typeahead.js/dist/typeahead.bundle.min.js" Priority="106" ForceProvider="DnnPageHeaderProvider" />
+
+<dnncl:DnnJsInclude ID="DnnJsInclude3" runat="server" FilePath="~/DesktopModules/OpenContent/js/script.js/script.min.js" Priority="106" ForceProvider="DnnPageHeaderProvider" />
 
 <script src="<%=ControlPath %>js/wysihtml/wysihtml-toolbar.js"></script>
 <script src="<%=ControlPath %>js/wysihtml/parser_rules/advanced_opencontent.js"></script>  
@@ -15,6 +16,9 @@
 <script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/UrlField.js"></script>
 <script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/CKEditorField.js"></script>
 <script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/wysihtmlField.js"></script>
+
+
+
 <!--
 <script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/AddressField.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places"></script>
@@ -66,7 +70,7 @@
 
         var postData = {  };
         var getData = "";
-        var action = "Edit"; //self.getUpdateAction();
+        var action = "Edit";
 
         $.ajax({
             type: "GET",
@@ -74,20 +78,30 @@
             data: getData,
             beforeSend: sf.setModuleHeaders
         }).done(function (config) {
-            //alert('ok:' + JSON.stringify(config));
-            /*
-            config.options.form = {
-                "buttons": {
-                    "submit": {
-                        "title": "View",
-                        "click": function (){
-                            alert(JSON.stringify(this.getValue()));
-                        }
-                    }
+            var jsfiles = [];
+            if (config.options) {
+                var types = self.GetFieldTypes(config.options);
+                if ($.inArray("address", types) != -1    ) {
+                    jsfiles.push('<%=ControlPath %>alpaca/js/fields/dnn/AddressField.js');
+                    gminitializecallback = function () { // for google map
+                        self.FormEdit(config);
+                    };                    
                 }
-            };
-            */
+            }
+            $script(jsfiles, function () {
+                if (gminitializecallback) { // for google map
+                    $script('https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places&callback=gminitialize');
+                }
+                else
+                {
+                    self.FormEdit(config);
+                }
+            });
+        }).fail(function (xhr, result, status) {
+            alert("Uh-oh, something broke: " + status);
+        });
 
+        self.FormEdit = function (config) {
             var ConnectorClass = Alpaca.getConnectorClass("default");
             connector = new ConnectorClass("default");
             connector.servicesFramework = sf;
@@ -115,9 +129,7 @@
                     //$('.dnnTooltip').dnnTooltip();
                 }
             });
-        }).fail(function (xhr, result, status) {
-            alert("Uh-oh, something broke: " + status);
-        });
+        };
 
         self.FormSubmit = function (data, href) {
             //var postData = { form: data };
@@ -152,5 +164,26 @@
             });
         };
 
+        self.GetFieldTypes = function (options) {
+            var types = [];
+            if (options.fields) {
+                fields = options.fields;
+                for (var key in fields) {
+                    field = fields[key];
+                    if (field.type) {
+                        types.push(field.type);
+                    }
+                    var subtypes = self.GetFieldTypes(field);
+                    types = types.concat(subtypes);
+                }
+            }
+            return types;
+        }
+
     });
+    var gminitializecallback;
+    function gminitialize() {
+        if (gminitializecallback)
+            gminitializecallback();
+    }
 </script>
