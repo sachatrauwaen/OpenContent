@@ -260,12 +260,10 @@ namespace Satrabel.OpenContent.Components
 
                 var data = json["data"].ToString();
                 var template = json["template"].ToString();
-                bool list = bool.Parse(json["list"].ToString());
 
                 ModuleController mc = new ModuleController();
                 mc.UpdateModuleSetting(ModuleId, "template", template);
                 mc.UpdateModuleSetting(ModuleId, "data", data);
-                mc.UpdateModuleSetting(ModuleId, "list", list.ToString());
                 return Request.CreateResponse(HttpStatusCode.OK, "");
             }
             catch (Exception exc)

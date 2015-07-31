@@ -11,11 +11,6 @@
 
 <asp:Panel ID="ScopeWrapper" runat="server" CssClass="dnnForm">
     <div class="dnnFormItem">
-        <dnn:Label ID="lList" ControlName="cbList" runat="server" />
-        <asp:RadioButton ID="rbSingle" runat="server" Text="Single Item" ClientIDMode="Static" GroupName="Manage"/>
-        <asp:RadioButton ID="rbMultiple" runat="server" Text="Multiple Items" ClientIDMode="Static" GroupName="Manage"/>
-    </div>
-    <div class="dnnFormItem">
         <dnn:Label ID="scriptListLabel" ControlName="scriptList" runat="server" />
         <asp:DropDownList ID="scriptList" runat="server" />
         <asp:HyperLink ID="hlTemplateExchange" runat="server" Visible="false">More...</asp:HyperLink>
@@ -133,9 +128,8 @@
         };
         self.FormSubmit = function (data, href) {
             var Template = $("#<%= scriptList.ClientID %>").val();
-            var List = $("#<%= rbMultiple.ClientID %>").is(":checked");
             //var postData = { 'data': data, 'template': Template };
-            var postData = JSON.stringify({ 'data': data, 'template': Template, 'list': List});
+            var postData = JSON.stringify({ 'data': data, 'template': Template});
             var action = "UpdateSettings";
             $.ajax({
                 type: "POST",

@@ -58,33 +58,6 @@ namespace Satrabel.OpenContent {
         protected global::System.Web.UI.WebControls.Panel ScopeWrapper;
         
         /// <summary>
-        /// lList control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.UserControl lList;
-        
-        /// <summary>
-        /// rbSingle control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RadioButton rbSingle;
-        
-        /// <summary>
-        /// rbMultiple control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RadioButton rbMultiple;
-        
-        /// <summary>
         /// scriptListLabel control.
         /// </summary>
         /// <remarks>

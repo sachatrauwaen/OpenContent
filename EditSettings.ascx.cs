@@ -53,13 +53,6 @@ namespace Satrabel.OpenContent
                 hlTemplateExchange.NavigateUrl = EditUrl("ShareTemplate");
                 var scriptFileSetting = Settings["template"] as string;
                 scriptList.Items.AddRange(OpenContentUtils.GetTemplatesFiles(PortalSettings, ModuleId, scriptFileSetting, "OpenContent").ToArray());
-                rbSingle.Checked = true;
-                var ListSetting = Settings["list"] as string;
-                bool ListMode = false;
-                if (ListSetting != null && bool.TryParse(ListSetting, out ListMode))
-                {
-                    rbMultiple.Checked = ListMode;
-                }
             }
         }
 
