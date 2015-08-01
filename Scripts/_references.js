@@ -69,3 +69,4 @@
 /// <reference path="../js/wysihtml/parser_rules/advanced_unwrap.js" />
 /// <reference path="../js/wysihtml/parser_rules/simple.js" />
 /// <reference path="../alpaca/js/fields/dnn/filefield.js" />
+/// <reference path="../alpaca/js/fields/dnn/AddressField.js" />
