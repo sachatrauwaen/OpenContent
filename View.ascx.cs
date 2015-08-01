@@ -69,7 +69,6 @@ namespace Satrabel.OpenContent
             }
         }
 
-
         protected override void OnPreRender(EventArgs e)
         {
             pHelp.Visible = false;
@@ -136,9 +135,11 @@ namespace Satrabel.OpenContent
                 {
                     AJAX.WrapUpdatePanelControl(lit, true);
                 }
+                IncludeResourses(Template);
                 //if (DemoData) pDemo.Visible = true;
             }
         }
+       
         #region Event Handlers
         protected override void OnInit(EventArgs e)
         {
@@ -389,7 +390,7 @@ namespace Satrabel.OpenContent
             string Template = ModuleContext.Settings["template"] as string;
             if (!Page.IsPostBack)
             {
-                IncludeResourses(Template);
+                
             }
             bool TemplateDefined = !string.IsNullOrEmpty(Template);
             if (ModuleContext.PortalSettings.UserInfo.IsSuperUser)
@@ -437,7 +438,7 @@ namespace Satrabel.OpenContent
             if (rblUseTemplate.SelectedIndex == 0) // existing
             {
                 ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplatesFiles(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, "OpenContent").ToArray());
-                IncludeResourses(ddlTemplate.SelectedValue);
+                //IncludeResourses(ddlTemplate.SelectedValue);
             }
             else if (rblUseTemplate.SelectedIndex == 1) // new
             {
@@ -507,7 +508,7 @@ namespace Satrabel.OpenContent
         {
             if (rblUseTemplate.SelectedIndex == 0) // existing
             {
-                IncludeResourses(ddlTemplate.SelectedValue);
+                //IncludeResourses(ddlTemplate.SelectedValue);
             }
             else if (rblUseTemplate.SelectedIndex == 1) // new template
             {
