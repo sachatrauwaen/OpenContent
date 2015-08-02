@@ -40,6 +40,33 @@ namespace Satrabel.OpenContent {
         protected global::System.Web.UI.WebControls.CheckBox cbEditWitoutPostback;
         
         /// <summary>
+        /// phAddEditControl control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.PlaceHolder phAddEditControl;
+        
+        /// <summary>
+        /// lAddEditControl control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.UserControl lAddEditControl;
+        
+        /// <summary>
+        /// tbAddEditControl control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox tbAddEditControl;
+        
+        /// <summary>
         /// cmdSave control.
         /// </summary>
         /// <remarks>

@@ -500,6 +500,22 @@ namespace Satrabel.OpenContent
                                 true,
                                 false);
                 }
+                /*
+                string AddEditControl = PortalController.GetPortalSetting("OpenContent_AddEditControl", ModuleContext.PortalId, "");
+                if (TemplateDefined && !string.IsNullOrEmpty(AddEditControl))
+                {
+                    Actions.Add(ModuleContext.GetNextActionID(),
+                                Localization.GetString("AddEntity.Action", LocalResourceFile),
+                                ModuleActionType.EditContent,
+                                "",
+                                "",
+                                ModuleContext.EditUrl("AddEdit"),
+                                false,
+                                SecurityAccessLevel.Edit,
+                                true,
+                                false);
+                }
+                */
                 Actions.Add(ModuleContext.GetNextActionID(),
                          Localization.GetString("EditSettings.Action", LocalResourceFile),
                          ModuleActionType.ContentOptions,

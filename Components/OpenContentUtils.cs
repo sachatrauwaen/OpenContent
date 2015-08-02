@@ -452,6 +452,8 @@ namespace Satrabel.OpenContent.Components
         public bool EditWitoutPostback { get; set; }
         [JsonProperty(PropertyName = "templates")]
         public Dictionary<string, TemplateManifest> Templates { get; set; }
+        [JsonProperty(PropertyName = "additionalEditControl")]
+        public string AdditionalEditControl { get; set; }
     }
 
 }

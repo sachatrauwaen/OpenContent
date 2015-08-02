@@ -6,6 +6,9 @@
 <dnncl:DnnJsInclude ID="DnnJsInclude6" runat="server" FilePath="~/Resources/Shared/Components/UserFileManager/jquery.dnnUserFileUpload.js" Priority="106" />
 <dnncl:DnnJsInclude ID="DnnJsInclude1" runat="server" FilePath="~/DesktopModules/OpenContent/js/alpaca-1.5.8/lib/handlebars/handlebars.js" Priority="106" ForceProvider="DnnPageHeaderProvider" />
 <dnncl:DnnJsInclude ID="DnnJsInclude2" runat="server" FilePath="~/DesktopModules/OpenContent/js/alpaca-1.5.8/alpaca/web/alpaca.js" Priority="107" ForceProvider="DnnPageHeaderProvider" />
+
+<dnncl:DnnJsInclude ID="DnnJsInclude3" runat="server" FilePath="~/DesktopModules/OpenContent/js/script.js/script.min.js" Priority="106" ForceProvider="DnnPageHeaderProvider" />
+
 <script type="text/javascript" src="<%=ControlPath %>alpaca/js/views/dnn.js"></script>
 <script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/ImageField.js"></script>
 
@@ -46,7 +49,7 @@
                 self = moduleScope,
                 sf = $.ServicesFramework(<%=ModuleId %>);
 
-            $("#<%= scriptList.ClientID %>").change(function () {
+                $("#<%= scriptList.ClientID %>").change(function () {
                 if ($("#field1").alpaca("exists")) {
                     $("#field1").alpaca("destroy");
                 }
@@ -55,97 +58,95 @@
 
             self.CreateForm = function () {
                 var Template = $("#<%= scriptList.ClientID %>").val();
-            if (!Template) return;
-            var postData = {};
-            //var getData = "tabId=<%=TabId %>&moduleId=<%=ModuleId %>";
-            var getData = "Template=" + Template;
-            var action = "Settings"; //self.getUpdateAction();
+                if (!Template) return;
+                var postData = {};
+                //var getData = "tabId=<%=TabId %>&moduleId=<%=ModuleId %>";
+                var getData = "Template=" + Template;
+                var action = "Settings"; //self.getUpdateAction();
 
-            $.ajax({
-                type: "GET",
-                url: sf.getServiceRoot('OpenContent') + "OpenContentAPI/" + action,
-                data: getData,
-                beforeSend: sf.setModuleHeaders
-            }).done(function (config) {
-                if (config.schema) {
-                    var ConnectorClass = Alpaca.getConnectorClass("default");
-                    connector = new ConnectorClass("default");
-                    connector.servicesFramework = sf;
+                $.ajax({
+                    type: "GET",
+                    url: sf.getServiceRoot('OpenContent') + "OpenContentAPI/" + action,
+                    data: getData,
+                    beforeSend: sf.setModuleHeaders
+                }).done(function (config) {
+                    if (config.schema) {
 
-                    $.alpaca.Fields.DnnFileField = $.alpaca.Fields.FileField.extend({
-                        setup: function () {
-                            this.base();
-                        },
-                        afterRenderControl: function (model, callback) {
-                            var self = this;
-                            this.base(model, function () {
-                                self.handlePostRender(function () {
-                                    callback();
-                                });
-                            });
-                        },
-                        handlePostRender: function (callback) {
-                            //var self = this;
-                            var el = this.control;
-                            self.SetupFileUpload(el);
-                            callback();
+                        var jsfiles = [];
+                        if (config.options) {
+                            var types = self.GetFieldTypes(config.options);
+                            if ($.inArray("address", types) != -1) {
+                                jsfiles.push('<%=ControlPath %>alpaca/js/fields/dnn/AddressField.js');
+                                gminitializecallback = function () { // for google map
+                                    self.FormEdit(config);
+                                };
+                            }
                         }
-                    });
-                    Alpaca.registerFieldClass("file", Alpaca.Fields.DnnFileField);
-
-                    $("#field1").alpaca({
-                        "schema": config.schema,
-                        "options": config.options,
-                        "data": config.data,
-                        "view": "dnn-edit",
-                        "connector": connector,
-                        "postRender": function (control) {
-                            var selfControl = control;
-                            $("#<%=cmdSave.ClientID%>").click(function () {
-                                selfControl.refreshValidationState(true);
-                                if (selfControl.isValid(true)) {
-                                    var value = selfControl.getValue();
-                                    //alert(JSON.stringify(value, null, "  "));
-                                    var href = $(this).attr('href');
-                                    self.FormSubmit(value, href);
-                                }
-                                return false;
-                            });
-
+                        $script(jsfiles, function () {
+                            if (gminitializecallback) { // for google map
+                                $script('https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places&callback=gminitialize');
+                            }
+                            else {
+                                self.FormEdit(config);
+                            }
+                        });
+                    }
+                    else {
+                        $("#<%=cmdSave.ClientID%>").click(function () {
+                            var href = $(this).attr('href');
+                            self.FormSubmit("", href);
+                            return false;
+                        });
+                    }
+                }).fail(function (xhr, result, status) {
+                    alert("Uh-oh, something broke: " + status);
+                });
+            };
+            self.FormEdit = function (config) {
+                var ConnectorClass = Alpaca.getConnectorClass("default");
+                connector = new ConnectorClass("default");
+                connector.servicesFramework = sf;
+                $("#field1").alpaca({
+                    "schema": config.schema,
+                    "options": config.options,
+                    "data": config.data,
+                    "view": "dnn-edit",
+                    "connector": connector,
+                    "postRender": function (control) {
+                        var selfControl = control;
+                        $("#<%=cmdSave.ClientID%>").click(function () {
+                        selfControl.refreshValidationState(true);
+                        if (selfControl.isValid(true)) {
+                            var value = selfControl.getValue();
+                            //alert(JSON.stringify(value, null, "  "));
+                            var href = $(this).attr('href');
+                            self.FormSubmit(value, href);
                         }
-                    });
-                }
-                else {
-                    $("#<%=cmdSave.ClientID%>").click(function () {
-                        var href = $(this).attr('href');
-                        self.FormSubmit("", href);
                         return false;
                     });
                 }
-            }).fail(function (xhr, result, status) {
-                alert("Uh-oh, something broke: " + status);
             });
         };
+
         self.FormSubmit = function (data, href) {
             var Template = $("#<%= scriptList.ClientID %>").val();
-            //var postData = { 'data': data, 'template': Template };
-            var postData = JSON.stringify({ 'data': data, 'template': Template});
-            var action = "UpdateSettings";
-            $.ajax({
-                type: "POST",
-                url: sf.getServiceRoot('OpenContent') + "OpenContentAPI/" + action,
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                data: postData,
-                beforeSend: sf.setModuleHeaders
-            }).done(function (data) {
+           //var postData = { 'data': data, 'template': Template };
+           var postData = JSON.stringify({ 'data': data, 'template': Template });
+           var action = "UpdateSettings";
+           $.ajax({
+               type: "POST",
+               url: sf.getServiceRoot('OpenContent') + "OpenContentAPI/" + action,
+               contentType: "application/json; charset=utf-8",
+               dataType: "json",
+               data: postData,
+               beforeSend: sf.setModuleHeaders
+           }).done(function (data) {
 
-                var windowTop = parent; //needs to be assign to a varaible for Opera compatibility issues.
-                var popup = windowTop.jQuery("#iPopUp");
-                if (popup.length > 0) {
-
-                    windowTop.__doPostBack('dnn_ctr<%=ModuleId %>_View__UP', '');
-                    dnnModal.closePopUp(false, href);
+               var windowTop = parent; //needs to be assign to a varaible for Opera compatibility issues.
+               var popup = windowTop.jQuery("#iPopUp");
+               if (popup.length > 0) {
+                   windowTop.__doPostBack('dnn_ctr<%=ModuleId %>_View__UP', '');
+                   dnnModal.closePopUp(false, href);
                 }
                 else {
                     window.location.href = href;
@@ -154,42 +155,24 @@
             }).fail(function (xhr, result, status) {
                 alert("Uh-oh, something broke: " + status + " " + xhr.responseText);
             });
-        };
+       };
 
-        self.SetupFileUpload = function (fileupload) {
-
-            //$('#field1 input[type="file"]')
-            $(fileupload).fileupload({
-                dataType: 'json',
-                url: sf.getServiceRoot('Satrabel.Content') + "FileUpload/UploadFile",
-                maxFileSize: 25000000,
-                formData: { example: 'test' },
-                beforeSend: sf.setModuleHeaders,
-                add: function (e, data) {
-                    //data.context = $(opts.progressContextSelector);
-                    //data.context.find($(opts.progressFileNameSelector)).html(data.files[0].name);
-                    //data.context.show('fade');
-                    data.submit();
-                },
-                progress: function (e, data) {
-                    if (data.context) {
-                        var progress = parseInt(data.loaded / data.total * 100, 10);
-                        data.context.find(opts.progressBarSelector).css('width', progress + '%').find('span').html(progress + '%');
-                    }
-                },
-                done: function (e, data) {
-                    if (data.result) {
-                        $.each(data.result, function (index, file) {
-                            //$('<p/>').text(file.name).appendTo($(e.target).parent().parent());
-                            //$('<img/>').attr('src', file.url).appendTo($(e.target).parent().parent());
-
-                            $(e.target).closest('.alpaca-container').find('.alpaca-field-image input').val(file.url);
-                            $(e.target).closest('.alpaca-container').find('.alpaca-image-display img').attr('src', file.url);
-                        });
+           
+            self.GetFieldTypes = function (options) {
+                var types = [];
+                if (options.fields) {
+                    fields = options.fields;
+                    for (var key in fields) {
+                        field = fields[key];
+                        if (field.type) {
+                            types.push(field.type);
+                        }
+                        var subtypes = self.GetFieldTypes(field);
+                        types = types.concat(subtypes);
                     }
                 }
-            }).data('loaded', true);
-        }
+                return types;
+            }
         self.CreateForm();
     }
 
@@ -202,4 +185,10 @@
         });
 
     }(jQuery, window.Sys));
+
+var gminitializecallback;
+function gminitialize() {
+    if (gminitializecallback)
+        gminitializecallback();
+}
 </script>
