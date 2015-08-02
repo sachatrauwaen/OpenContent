@@ -55,7 +55,8 @@ namespace Satrabel.OpenContent.Components
         public HttpResponseMessage Edit(int id)
         {
             string Template = (string)ActiveModule.ModuleSettings["template"];
-            bool ListMode = OpenContentUtils.IsListTemplate(Template);
+            var manifest = OpenContentUtils.GetTemplateManifest(Template);
+            bool ListMode = manifest != null && manifest.IsListTemplate;
             JObject json = new JObject();
             try
             {
@@ -204,12 +205,18 @@ namespace Satrabel.OpenContent.Components
             try
             {
                 int ModuleId = ActiveModule.ModuleID;
+                string Template = (string)ActiveModule.ModuleSettings["template"];
+                var manifest = OpenContentUtils.GetTemplateManifest(Template);
+                bool ListMode = manifest != null && manifest.IsListTemplate;
                 OpenContentController ctrl = new OpenContentController();
                 OpenContentInfo content = null;
-                int ItemId;
-                if (int.TryParse(json["id"].ToString(), out ItemId))
+                if (ListMode)
                 {
-                    content = ctrl.GetContent(ItemId, ModuleId);
+                    int ItemId;
+                    if (int.TryParse(json["id"].ToString(), out ItemId))
+                    {
+                        content = ctrl.GetContent(ItemId, ModuleId);
+                    }
                 }
                 else
                 {

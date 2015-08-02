@@ -43,12 +43,18 @@ namespace Satrabel.OpenContent.Components.Handlebars
             var result = template(model);
             return result;
         }
-        public string Execute(Page page, IModuleControl module, string listFilename, string itemFilename, dynamic model)
+        public string Execute(Page page, IModuleControl module, TemplateFiles files, string templateVirtualFolder, dynamic model)
         {
-            string source = File.ReadAllText(System.Web.Hosting.HostingEnvironment.MapPath(listFilename));
-            string sourceFolder = Path.GetDirectoryName(listFilename).Replace("\\", "/") + "/";
+            string source = File.ReadAllText(System.Web.Hosting.HostingEnvironment.MapPath(templateVirtualFolder + "/" + files.Template));
+            string sourceFolder = templateVirtualFolder.Replace("\\", "/") + "/";
             var hbs = HandlebarsDotNet.Handlebars.Create();
-            RegisterTemplate(hbs, itemFilename);
+            if (files.PartialTemplates != null)
+            {
+                foreach (var part in files.PartialTemplates)
+                {
+                    RegisterTemplate(hbs, part.Key, templateVirtualFolder + "/" + part.Value.Template);
+                }
+            }
             RegisterDivideHelper(hbs);
             RegisterMultiplyHelper(hbs);
             RegisterEqualHelper(hbs);
@@ -62,13 +68,16 @@ namespace Satrabel.OpenContent.Components.Handlebars
             var result = template(model);
             return result;
         }
-        private void RegisterTemplate(HandlebarsDotNet.IHandlebars hbs, string sourceFilename)
+        private void RegisterTemplate(HandlebarsDotNet.IHandlebars hbs, string name, string sourceFilename)
         {
             string FileName = System.Web.Hosting.HostingEnvironment.MapPath(sourceFilename);
-            using (var reader = new StreamReader(FileName))
+            if (File.Exists(FileName))
             {
-                var partialTemplate = hbs.Compile(reader);
-                hbs.RegisterTemplate("item", partialTemplate);
+                using (var reader = new StreamReader(FileName))
+                {
+                    var partialTemplate = hbs.Compile(reader);
+                    hbs.RegisterTemplate(name, partialTemplate);
+                }
             }
         }
         private void RegisterMultiplyHelper(HandlebarsDotNet.IHandlebars hbs)
@@ -127,7 +136,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 options.Template(writer, (object)context);
                 HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "</script>");
             });
-            
+
         }
         private void RegisterRegisterScriptHelper(HandlebarsDotNet.IHandlebars hbs, Page page, string sourceFolder)
         {
@@ -163,7 +172,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 if (parameters.Length == 1)
                 {
                     string id = parameters[0] as string;
-                    writer.WriteSafeString(module.ModuleContext.EditUrl("itemid",id));
+                    writer.WriteSafeString(module.ModuleContext.EditUrl("itemid", id));
                 }
             });
         }
@@ -180,12 +189,12 @@ namespace Satrabel.OpenContent.Components.Handlebars
                         var en = parameters[0] as IEnumerable<Object>;
                         a = en.ToArray();
                     }
-                    else 
+                    else
                     {
                         a = (object[])parameters[0];
                     }
-                    
-                    
+
+
                     int b = int.Parse(parameters[1].ToString());
                     object c = a[b];
                     HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, c.ToString());
@@ -237,6 +246,6 @@ namespace Satrabel.OpenContent.Components.Handlebars
             });
 
         }
-        
+
     }
 }

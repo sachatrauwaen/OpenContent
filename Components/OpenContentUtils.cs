@@ -5,6 +5,8 @@ using DotNetNuke.Entities.Portals;
 using DotNetNuke.Services.FileSystem;
 using DotNetNuke.Services.Localization;
 using ICSharpCode.SharpZipLib.Zip;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -61,34 +63,57 @@ namespace Satrabel.OpenContent.Components
                         continue;
                     }
                 }
-                var files = Directory.EnumerateFiles(dir, "*.*", SearchOption.AllDirectories)
-                            .Where(s => s.EndsWith(".cshtml") || s.EndsWith(".vbhtml") || s.EndsWith(".hbs"));
-
-                files = files.Where(f => f.EndsWith("$.hbs") || !f.Contains("$"));
-                foreach (string script in files)
+                IEnumerable<string> files = null;
+                string TemplateVirtualFolder = ReverseMapPath(dir);
+                var manifest = GetManifest(TemplateVirtualFolder);
+                if (manifest != null && manifest.Templates != null)
                 {
-                    string scriptName = script.Remove(script.LastIndexOf(".")).Replace(basePath, "");
-                    scriptName = scriptName.Replace("$", "");
-                    if (TemplateCat == "Module")
+                    files = manifest.Templates.Select(t => t.Key);
+                    foreach (var template in manifest.Templates)
                     {
-                        if (scriptName.ToLower().EndsWith("template"))
-                            scriptName = "";
-                        else
-                            scriptName = scriptName.Substring(scriptName.LastIndexOf("\\") + 1);
+                        string TemplateName = DirName;
+                        if (!string.IsNullOrEmpty(template.Value.Title))
+                        {
+                            TemplateName = TemplateName + " - " + template.Value.Title; 
+                        }
+                        string scriptPath = TemplateVirtualFolder + "/" + template.Key;
+                        var item = new ListItem(TemplateCat + " : "+ TemplateName, scriptPath);
+                        if (!(string.IsNullOrEmpty(SelectedTemplate)) && scriptPath.ToLowerInvariant() == SelectedTemplate.ToLowerInvariant())
+                        {
+                            item.Selected = true;
+                        }
+                        lst.Add(item);
                     }
-                    else if (scriptName.ToLower().EndsWith("template"))
-                        scriptName = scriptName.Remove(scriptName.LastIndexOf("\\"));
-                    else
-                        scriptName = scriptName.Replace("\\", " - ");
-
-                    string scriptPath = ReverseMapPath(script);
-                    var item = new ListItem(TemplateCat + " : " + scriptName, scriptPath);
-                    if (!(string.IsNullOrEmpty(SelectedTemplate)) && scriptPath.ToLowerInvariant() == SelectedTemplate.ToLowerInvariant())
-                    {
-                        item.Selected = true;
-                    }
-                    lst.Add(item);
                 }
+                else
+                {
+                    files = Directory.EnumerateFiles(dir, "*.*", SearchOption.AllDirectories)
+                            .Where(s => s.EndsWith(".cshtml") || s.EndsWith(".vbhtml") || s.EndsWith(".hbs"));
+                    foreach (string script in files)
+                    {
+                        string scriptName = script.Remove(script.LastIndexOf(".")).Replace(basePath, "");
+                        if (TemplateCat == "Module")
+                        {
+                            if (scriptName.ToLower().EndsWith("template"))
+                                scriptName = "";
+                            else
+                                scriptName = scriptName.Substring(scriptName.LastIndexOf("\\") + 1);
+                        }
+                        else if (scriptName.ToLower().EndsWith("template"))
+                            scriptName = scriptName.Remove(scriptName.LastIndexOf("\\"));
+                        else
+                            scriptName = scriptName.Replace("\\", " - ");
+
+                        string scriptPath = ReverseMapPath(script);
+                        var item = new ListItem(TemplateCat + " : " + scriptName, scriptPath);
+                        if (!(string.IsNullOrEmpty(SelectedTemplate)) && scriptPath.ToLowerInvariant() == SelectedTemplate.ToLowerInvariant())
+                        {
+                            item.Selected = true;
+                        }
+                        lst.Add(item);
+                    }
+                }
+                
             }
             // skin
             basePath = HostingEnvironment.MapPath(GetSkinTemplateFolder(portalSettings, moduleSubDir));
@@ -293,18 +318,18 @@ namespace Satrabel.OpenContent.Components
             }
             return ReverseMapPath(Template);
         }
-
+        /*
         public static bool IsListTemplate(string Template)
         {
             return !string.IsNullOrEmpty(Template) && Template.EndsWith("$.hbs");
         }
-
+        */
         public static string CleanupUrl(string Url)
         {
             string replaceWith = "-";
 
             string AccentFrom = "ÀÁÂÃÄÅàáâãäåảạăắằẳẵặấầẩẫậÒÓÔÕÖØòóôõöøỏõọồốổỗộơớờởợÈÉÊËèéêëẻẽẹếềểễệÌÍÎÏìíîïỉĩịÙÚÛÜùúûüủũụưứừửữựÿýỳỷỹỵÑñÇçĞğİıŞş₤€ßđ";
-            string AccentTo   = "AAAAAAaaaaaaaaaaaaaaaaaaaOOOOOOoooooooooooooooooooEEEEeeeeeeeeeeeeIIIIiiiiiiiUUUUuuuuuuuuuuuuuyyyyyyNnCcGgIiSsLEsd";
+            string AccentTo = "AAAAAAaaaaaaaaaaaaaaaaaaaOOOOOOoooooooooooooooooooEEEEeeeeeeeeeeeeIIIIiiiiiiiUUUUuuuuuuuuuuuuuyyyyyyNnCcGgIiSsLEsd";
 
             Url = Url.ToLower().Trim();
 
@@ -347,7 +372,7 @@ namespace Satrabel.OpenContent.Components
             }
             result = result.Replace(replaceWith + replaceWith, replaceWith);
             result = result.Replace(replaceWith + replaceWith, replaceWith);
-            
+
             // remove ending -
             while (result.Length > 1 && result[result.Length - 1] == replaceWith[0])
             {
@@ -358,11 +383,75 @@ namespace Satrabel.OpenContent.Components
             {
                 result.Remove(0, 1);
             }
-             
+
             return result.ToString();
+        }
+
+        public static Manifest GetManifest(string folder)
+        {
+            Manifest manifest = null;
+            string filename = HostingEnvironment.MapPath(folder + "/manifest.json");
+            if (File.Exists(filename))
+            {
+                string content = File.ReadAllText(filename);
+                manifest = JsonConvert.DeserializeObject<Manifest>(content);
+            }
+            return manifest;
+        }
+        public static TemplateManifest GetTemplateManifest(string Template)
+        {
+            TemplateManifest templateManifest = null;
+            if (!string.IsNullOrEmpty(Template))
+            {
+                string TemplateFolder = Path.GetDirectoryName(Template);
+                string TemplateFile = Path.GetFileNameWithoutExtension(Template);
+                Manifest manifest = GetManifest(TemplateFolder);
+                if (manifest != null && manifest.Templates.ContainsKey(TemplateFile))
+                {
+                    templateManifest = manifest.Templates[TemplateFile];
+                }
+            }
+            return templateManifest;
         }
     }
 
-    
+    public class TemplateManifest
+    {
+        [JsonProperty(PropertyName = "type")]
+        public string Type { get; set; }
+        [JsonProperty(PropertyName = "title")]
+        public string Title { get; set; }
+        [JsonProperty(PropertyName = "main")]
+        public TemplateFiles Main { get; set; }
+        [JsonProperty(PropertyName = "detail")]
+        public TemplateFiles Detail { get; set; }
+        public bool IsListTemplate
+        {
+            get
+            {
+                return Type == "multiple";
+            }
+        }
+    }
+    public class PartialTemplate
+    {
+        [JsonProperty(PropertyName = "template")]
+        public string Template { get; set; }
+    }
+    public class TemplateFiles
+    {
+        [JsonProperty(PropertyName = "template")]
+        public string Template { get; set; }
+        [JsonProperty(PropertyName = "partialTemplates")]
+        public Dictionary<string, PartialTemplate> PartialTemplates { get; set; }
+    }
+
+    public class Manifest
+    {
+        [JsonProperty(PropertyName = "editWitoutPostback")]
+        public bool EditWitoutPostback { get; set; }
+        [JsonProperty(PropertyName = "templates")]
+        public Dictionary<string, TemplateManifest> Templates { get; set; }
+    }
 
 }
