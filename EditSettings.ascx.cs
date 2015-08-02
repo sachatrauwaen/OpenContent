@@ -22,20 +22,20 @@ using Satrabel.OpenContent.Components;
 namespace Satrabel.OpenContent
 {
 
-	public partial class EditSettings : PortalModuleBase
-	{
+    public partial class EditSettings : PortalModuleBase
+    {
 
-		#region Event Handlers
+        #region Event Handlers
 
-		protected override void OnInit(EventArgs e)
-		{
-			base.OnInit(e);
+        protected override void OnInit(EventArgs e)
+        {
+            base.OnInit(e);
             hlCancel.NavigateUrl = Globals.NavigateURL();
             cmdSave.NavigateUrl = Globals.NavigateURL();
 
-			//cmdSave.Click += cmdSave_Click;
-			//cmdCancel.Click += cmdCancel_Click;
-            
+            //cmdSave.Click += cmdSave_Click;
+            //cmdCancel.Click += cmdCancel_Click;
+
             ServicesFramework.Instance.RequestAjaxScriptSupport();
             ServicesFramework.Instance.RequestAjaxAntiForgerySupport();
             //JavaScript.RequestRegistration(CommonJs.DnnPlugins); ;
@@ -43,21 +43,21 @@ namespace Satrabel.OpenContent
 
             //DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "PortalId", PortalId.ToString(), true);
             //CKDNNporid.Value = PortalId.ToString();
-		}
+        }
 
-		protected override void OnLoad(EventArgs e)
-		{
-			base.OnLoad(e);
-			if (!Page.IsPostBack)
-			{
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+            if (!Page.IsPostBack)
+            {
                 hlTemplateExchange.NavigateUrl = EditUrl("ShareTemplate");
                 var scriptFileSetting = Settings["template"] as string;
                 scriptList.Items.AddRange(OpenContentUtils.GetTemplatesFiles(PortalSettings, ModuleId, scriptFileSetting, "OpenContent").ToArray());
-			}
-		}
-		
-		protected void cmdSave_Click(object sender, EventArgs e)
-		{
+            }
+        }
+
+        protected void cmdSave_Click(object sender, EventArgs e)
+        {
             /*
             ModuleController mc = new ModuleController();
             mc.UpdateModuleSetting(ModuleId, "template", scriptList.SelectedValue);
@@ -65,16 +65,16 @@ namespace Satrabel.OpenContent
             Response.Redirect(Globals.NavigateURL(), true);
              */
             //DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "Update Successful", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.GreenSuccess);
-		}
+        }
 
 
-		protected void cmdCancel_Click(object sender, EventArgs e)
-		{
-		}
+        protected void cmdCancel_Click(object sender, EventArgs e)
+        {
+        }
 
-		#endregion
+        #endregion
 
 
-	}
+    }
 }
 

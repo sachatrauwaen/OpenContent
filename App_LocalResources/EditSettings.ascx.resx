@@ -126,4 +126,7 @@
   <data name="scriptListLabel.Text" xml:space="preserve">
     <value>Template</value>
   </data>
+  <data name="lList.Text" xml:space="preserve">
+    <value>Manage</value>
+  </data>
 </root>

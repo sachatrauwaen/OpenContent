@@ -9,11 +9,11 @@
 <script type="text/javascript" src="<%=ControlPath %>alpaca/js/views/dnn.js"></script>
 <script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/ImageField.js"></script>
 
-<asp:Panel ID="ScopeWrapper" runat="server">
+<asp:Panel ID="ScopeWrapper" runat="server" CssClass="dnnForm">
     <div class="dnnFormItem">
         <dnn:Label ID="scriptListLabel" ControlName="scriptList" runat="server" />
         <asp:DropDownList ID="scriptList" runat="server" />
-        <asp:HyperLink ID="hlTemplateExchange" runat="server">More...</asp:HyperLink>
+        <asp:HyperLink ID="hlTemplateExchange" runat="server" Visible="false">More...</asp:HyperLink>
     </div>
     <div id="field1" class="alpaca"></div>
     <ul class="dnnActions dnnClear" style="display: block; padding-left: 35%">
@@ -129,7 +129,7 @@
         self.FormSubmit = function (data, href) {
             var Template = $("#<%= scriptList.ClientID %>").val();
             //var postData = { 'data': data, 'template': Template };
-            var postData = JSON.stringify({ 'data': data, 'template': Template });
+            var postData = JSON.stringify({ 'data': data, 'template': Template});
             var action = "UpdateSettings";
             $.ajax({
                 type: "POST",
