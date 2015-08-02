@@ -47,7 +47,16 @@ namespace Satrabel.OpenContent.Components
         [HttpGet]
         public HttpResponseMessage Edit()
         {
+            return Edit(-1);
+        }
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [HttpGet]
+        public HttpResponseMessage Edit(int id)
+        {
             string Template = (string)ActiveModule.ModuleSettings["template"];
+            var manifest = OpenContentUtils.GetTemplateManifest(Template);
+            bool ListMode = manifest != null && manifest.IsListTemplate;
             JObject json = new JObject();
             try
             {
@@ -100,10 +109,24 @@ namespace Satrabel.OpenContent.Components
                  */
                 int ModuleId = ActiveModule.ModuleID;
                 OpenContentController ctrl = new OpenContentController();
-                var struc = ctrl.GetFirstContent(ModuleId);
-                if (struc != null)
+                if (ListMode)
                 {
-                    json["data"] = JObject.Parse(struc.Json);
+                    if (id > 0)
+                    {
+                        var struc = ctrl.GetContent(id, ModuleId);
+                        if (struc != null)
+                        {
+                            json["data"] = JObject.Parse(struc.Json);
+                        }
+                    }
+                }
+                else
+                {
+                    var struc = ctrl.GetFirstContent(ModuleId);
+                    if (struc != null)
+                    {
+                        json["data"] = JObject.Parse(struc.Json);
+                    }
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, json);
             }
@@ -182,8 +205,24 @@ namespace Satrabel.OpenContent.Components
             try
             {
                 int ModuleId = ActiveModule.ModuleID;
+                string Template = (string)ActiveModule.ModuleSettings["template"];
+                var manifest = OpenContentUtils.GetTemplateManifest(Template);
+                bool ListMode = manifest != null && manifest.IsListTemplate;
                 OpenContentController ctrl = new OpenContentController();
-                var content = ctrl.GetFirstContent(ModuleId);
+                OpenContentInfo content = null;
+                if (ListMode)
+                {
+                    int ItemId;
+                    if (int.TryParse(json["id"].ToString(), out ItemId))
+                    {
+                        content = ctrl.GetContent(ItemId, ModuleId);
+                    }
+                }
+                else
+                {
+                    content = ctrl.GetFirstContent(ModuleId);
+                }
+
                 if (content == null)
                 {
                     content = new OpenContentInfo()
@@ -212,8 +251,6 @@ namespace Satrabel.OpenContent.Components
                     string ModuleTitle = json["form"]["ModuleTitle"].ToString();
                     OpenContentUtils.UpdateModuleTitle(ActiveModule, ModuleTitle);
                 }
-
-
                 return Request.CreateResponse(HttpStatusCode.OK, "");
             }
             catch (Exception exc)
@@ -221,10 +258,7 @@ namespace Satrabel.OpenContent.Components
                 Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
-
-
         }
-
         public HttpResponseMessage UpdateSettings(JObject json)
         {
             try
@@ -237,10 +271,7 @@ namespace Satrabel.OpenContent.Components
                 ModuleController mc = new ModuleController();
                 mc.UpdateModuleSetting(ModuleId, "template", template);
                 mc.UpdateModuleSetting(ModuleId, "data", data);
-
-
                 return Request.CreateResponse(HttpStatusCode.OK, "");
-
             }
             catch (Exception exc)
             {

@@ -150,7 +150,41 @@ namespace Satrabel.OpenContent
             scriptList.Items.Clear();
             if (!(string.IsNullOrEmpty(Template)))
             {
-                scriptList.Items.Add(new ListItem("Template", Path.GetFileName(Template)));
+                string TemplateFolder = Path.GetDirectoryName(Template);
+                TemplateManifest manifest = OpenContentUtils.GetTemplateManifest(Template);
+                if (manifest != null )
+                {
+                    if (manifest.Main != null){
+                        scriptList.Items.Add(new ListItem("Template", manifest.Main.Template));
+                    }
+                    if (manifest.Main.PartialTemplates != null)
+                    {
+                        foreach (var part in manifest.Main.PartialTemplates)
+                        {
+                            scriptList.Items.Add(new ListItem("Template - " + Path.GetFileNameWithoutExtension(part.Value.Template), part.Value.Template));
+                        }
+                    }
+                    if (manifest.Detail != null)
+                    {
+                        scriptList.Items.Add(new ListItem("Template - " + Path.GetFileNameWithoutExtension(manifest.Detail.Template), manifest.Detail.Template));
+                    }
+                    if (manifest.Detail.PartialTemplates != null)
+                    {
+                        foreach (var part in manifest.Detail.PartialTemplates)
+                        {
+                            scriptList.Items.Add(new ListItem("Template - " + Path.GetFileNameWithoutExtension(part.Value.Template), part.Value.Template));
+                        }
+                    }
+                }
+                else
+                {
+                    scriptList.Items.Add(new ListItem("Template", Path.GetFileName(Template)));
+                }
+
+                
+
+
+
                 scriptList.Items.Add(new ListItem("Stylesheet", Path.GetFileNameWithoutExtension(Template) + ".css"));
                 scriptList.Items.Add(new ListItem("Javascript", Path.GetFileNameWithoutExtension(Template) + ".js"));
                 scriptList.Items.Add(new ListItem("Schema", "schema.json"));
@@ -158,13 +192,13 @@ namespace Satrabel.OpenContent
                 //scriptList.Items.Add(new ListItem("Edit Layout Options - Template File Overides", "options." + Path.GetFileNameWithoutExtension(Template) + ".json"));
                 foreach (Locale item in LocaleController.Instance.GetLocales(PortalId).Values)
                 {
-                    scriptList.Items.Add(new ListItem("Layout Options - " + item.Code  , "options." + item.Code + ".json"));
+                    scriptList.Items.Add(new ListItem("Layout Options - " + item.Code, "options." + item.Code + ".json"));
                 }
-                scriptList.Items.Add(new ListItem("Settings Schema", Path.GetFileNameWithoutExtension(Template)+"-schema.json"));
-                scriptList.Items.Add(new ListItem("Settings Layout Options", Path.GetFileNameWithoutExtension(Template)+"-options.json"));
+                scriptList.Items.Add(new ListItem("Settings Schema", Path.GetFileNameWithoutExtension(Template) + "-schema.json"));
+                scriptList.Items.Add(new ListItem("Settings Layout Options", Path.GetFileNameWithoutExtension(Template) + "-options.json"));
                 foreach (Locale item in LocaleController.Instance.GetLocales(PortalId).Values)
                 {
-                    scriptList.Items.Add(new ListItem("Settings Layout Options - " + item.Code, Path.GetFileNameWithoutExtension(Template)+"-options." + item.Code + ".json"));
+                    scriptList.Items.Add(new ListItem("Settings Layout Options - " + item.Code, Path.GetFileNameWithoutExtension(Template) + "-options." + item.Code + ".json"));
                 }
             }
         }

@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AddContent.Action" xml:space="preserve">
-    <value>Edit Content</value>
+    <value>Add Content</value>
   </data>
   <data name="EditData.Action" xml:space="preserve">
     <value>Edit Raw Data</value>

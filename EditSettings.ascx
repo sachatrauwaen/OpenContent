@@ -12,11 +12,11 @@
 <script type="text/javascript" src="<%=ControlPath %>alpaca/js/views/dnn.js"></script>
 <script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/ImageField.js"></script>
 
-<asp:Panel ID="ScopeWrapper" runat="server">
+<asp:Panel ID="ScopeWrapper" runat="server" CssClass="dnnForm">
     <div class="dnnFormItem">
         <dnn:Label ID="scriptListLabel" ControlName="scriptList" runat="server" />
         <asp:DropDownList ID="scriptList" runat="server" />
-        <asp:HyperLink ID="hlTemplateExchange" runat="server">More...</asp:HyperLink>
+        <asp:HyperLink ID="hlTemplateExchange" runat="server" Visible="false">More...</asp:HyperLink>
     </div>
     <div id="field1" class="alpaca"></div>
     <ul class="dnnActions dnnClear" style="display: block; padding-left: 35%">
@@ -145,9 +145,8 @@
                var windowTop = parent; //needs to be assign to a varaible for Opera compatibility issues.
                var popup = windowTop.jQuery("#iPopUp");
                if (popup.length > 0) {
-
                    windowTop.__doPostBack('dnn_ctr<%=ModuleId %>_View__UP', '');
-                    dnnModal.closePopUp(false, href);
+                   dnnModal.closePopUp(false, href);
                 }
                 else {
                     window.location.href = href;
