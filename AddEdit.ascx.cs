@@ -19,6 +19,7 @@ using System.IO;
 using DotNetNuke.Web.Client.ClientResourceManagement;
 using DotNetNuke.Web.Client;
 using DotNetNuke.Entities.Portals;
+using Satrabel.OpenContent.Components;
 
 
 #endregion
@@ -31,16 +32,26 @@ namespace Satrabel.OpenContent
         protected override void OnInit(EventArgs e)
         {
             base.OnInit(e);
-            string AddEditControl = PortalController.GetPortalSetting("OpenContent_AddEditControl", ModuleContext.PortalId, "");
-            
-            var contr = LoadControl(AddEditControl);
-            PortalModuleBase mod = contr as PortalModuleBase;
-            if (mod != null)
+            //string AddEditControl = PortalController.GetPortalSetting("OpenContent_AddEditControl", ModuleContext.PortalId, "");
+            var Template = ModuleContext.Settings["template"] as string;
+            if (!string.IsNullOrEmpty(Template))
             {
-                mod.ModuleConfiguration = this.ModuleConfiguration;
-                mod.ModuleId = this.ModuleId;
+                string TemplateFolder = Path.GetDirectoryName(Template).Replace("\\", "/");
+                var manifest = OpenContentUtils.GetManifest(TemplateFolder);
+                string AddEditControl = manifest.AdditionalEditControl;
+                if (!string.IsNullOrEmpty(AddEditControl))
+                {
+                    var contr = LoadControl(AddEditControl);
+                    PortalModuleBase mod = contr as PortalModuleBase;
+                    if (mod != null)
+                    {
+                        mod.ModuleConfiguration = this.ModuleConfiguration;
+                        mod.ModuleId = this.ModuleId;
+                        mod.LocalResourceFile = this.LocalResourceFile;
+                    }
+                    this.Controls.Add(contr);
+                }
             }
-            this.Controls.Add(contr);
         }
         protected override void OnLoad(EventArgs e)
         {
