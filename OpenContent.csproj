@@ -299,7 +299,11 @@
     <Content Include="js\CodeMirror\addon\mode\simple.js" />
     <Content Include="js\CodeMirror\mode\handlebars\handlebars.js" />
     <Content Include="js\opencontent.js" />
+    <Content Include="js\requirejs\async.js" />
+    <Content Include="js\requirejs\config.js" />
     <None Include="Scripts\_references.js" />
+    <Content Include="js\requirejs\googlemaps.js" />
+    <Content Include="js\requirejs\require.js" />
     <Content Include="ShareTemplate.ascx" />
     <Content Include="EditData.ascx" />
     <Content Include="EditTemplate.ascx" />
@@ -456,6 +460,7 @@
   <ItemGroup>
     <Content Include="App_LocalResources\EditGlobalSettings.ascx.resx" />
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

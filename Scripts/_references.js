@@ -70,3 +70,7 @@
 /// <reference path="../js/wysihtml/parser_rules/simple.js" />
 /// <reference path="../alpaca/js/fields/dnn/filefield.js" />
 /// <reference path="../alpaca/js/fields/dnn/AddressField.js" />
+/// <reference path="../js/requirejs/config.js" />
+/// <reference path="../js/requirejs/async.js" />
+/// <reference path="../js/requirejs/googlemaps.js" />
+/// <reference path="../js/requirejs/require.js" />
