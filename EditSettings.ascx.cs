@@ -33,13 +33,11 @@ namespace Satrabel.OpenContent
             hlCancel.NavigateUrl = Globals.NavigateURL();
             cmdSave.NavigateUrl = Globals.NavigateURL();
 
-            //cmdSave.Click += cmdSave_Click;
-            //cmdCancel.Click += cmdCancel_Click;
-
             ServicesFramework.Instance.RequestAjaxScriptSupport();
             ServicesFramework.Instance.RequestAjaxAntiForgerySupport();
             JavaScript.RequestRegistration(CommonJs.DnnPlugins); ;
             JavaScript.RequestRegistration(CommonJs.jQueryFileUpload);
+            DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "oc_moduleRoot", ControlPath, true);
 
             //DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "PortalId", PortalId.ToString(), true);
             //CKDNNporid.Value = PortalId.ToString();

@@ -7,10 +7,11 @@
 <dnncl:DnnJsInclude ID="DnnJsInclude1" runat="server" FilePath="~/DesktopModules/OpenContent/js/alpaca-1.5.8/lib/handlebars/handlebars.js" Priority="106" ForceProvider="DnnPageHeaderProvider" />
 <dnncl:DnnJsInclude ID="DnnJsInclude2" runat="server" FilePath="~/DesktopModules/OpenContent/js/alpaca-1.5.8/alpaca/web/alpaca.js" Priority="107" ForceProvider="DnnPageHeaderProvider" />
 
-<dnncl:DnnJsInclude ID="DnnJsInclude3" runat="server" FilePath="~/DesktopModules/OpenContent/js/script.js/script.min.js" Priority="106" ForceProvider="DnnPageHeaderProvider" />
-
 <script type="text/javascript" src="<%=ControlPath %>alpaca/js/views/dnn.js"></script>
 <script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/ImageField.js"></script>
+
+<dnncl:DnnJsInclude ID="DnnJsInclude4" runat="server" FilePath="~/DesktopModules/OpenContent/js/requirejs/require.js" Priority="110" ForceProvider="DnnFormBottomProvider" />
+<dnncl:DnnJsInclude ID="DnnJsInclude5" runat="server" FilePath="~/DesktopModules/OpenContent/js/requirejs/config.js" Priority="111"  ForceProvider="DnnFormBottomProvider" />
 
 <asp:Panel ID="ScopeWrapper" runat="server" CssClass="dnnForm">
     <div class="dnnFormItem">
@@ -71,25 +72,21 @@
                     beforeSend: sf.setModuleHeaders
                 }).done(function (config) {
                     if (config.schema) {
-
-                        var jsfiles = [];
+                        var jsmodules = [];
                         if (config.options) {
                             var types = self.GetFieldTypes(config.options);
                             if ($.inArray("address", types) != -1) {
-                                jsfiles.push('<%=ControlPath %>alpaca/js/fields/dnn/AddressField.js');
-                                gminitializecallback = function () { // for google map
-                                    self.FormEdit(config);
-                                };
+                                jsmodules.push('addressfield');
                             }
                         }
-                        $script(jsfiles, function () {
-                            if (gminitializecallback) { // for google map
-                                $script('https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places&callback=gminitialize');
-                            }
-                            else {
+                        if (jsmodules.length > 0) {
+                            require(jsmodules, function () {
                                 self.FormEdit(config);
-                            }
-                        });
+                            });
+                        }
+                        else {
+                            self.FormEdit(config);
+                        }
                     }
                     else {
                         $("#<%=cmdSave.ClientID%>").click(function () {
