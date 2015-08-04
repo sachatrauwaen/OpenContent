@@ -288,8 +288,16 @@ namespace Satrabel.OpenContent
         {
             // schema
             string schemaFilename = TemplateFolder + "\\" + "schema.json";
-            dynamic schema = JsonUtils.JsonToDynamic(File.ReadAllText(schemaFilename));
-            model.Schema = schema;
+            try
+            {
+                dynamic schema = JsonUtils.JsonToDynamic(File.ReadAllText(schemaFilename));
+                model.Schema = schema;
+            }
+            catch (Exception ex)
+            {
+                Exceptions.ProcessModuleLoadException(schemaFilename, this, ex, true);
+            }
+            
             // options
             JToken optionsJson = null;
             // default options

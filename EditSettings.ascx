@@ -82,14 +82,19 @@
                                 };
                             }
                         }
-                        $script(jsfiles, function () {
-                            if (gminitializecallback) { // for google map
-                                $script('https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places&callback=gminitialize');
-                            }
-                            else {
-                                self.FormEdit(config);
-                            }
-                        });
+                        if (jsfiles.length > 0) {
+                            $script(jsfiles, function () {
+                                if (gminitializecallback) { // for google map
+                                    $script('https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places&callback=gminitialize');
+                                }
+                                else {
+                                    self.FormEdit(config);
+                                }
+                            });
+                        }
+                        else {
+                            self.FormEdit(config);
+                        }
                     }
                     else {
                         $("#<%=cmdSave.ClientID%>").click(function () {
