@@ -70,3 +70,5 @@
 /// <reference path="../js/wysihtml/parser_rules/simple.js" />
 /// <reference path="../alpaca/js/fields/dnn/filefield.js" />
 /// <reference path="../alpaca/js/fields/dnn/AddressField.js" />
+/// <reference path="../alpaca/js/fields/dnn/datefield.js" />
+/// <reference path="../alpaca/js/fields/dnn/numberfield.js" />

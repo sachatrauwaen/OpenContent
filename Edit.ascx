@@ -16,6 +16,7 @@
 <script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/UrlField.js"></script>
 <script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/CKEditorField.js"></script>
 <script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/wysihtmlField.js"></script>
+<script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/NumberField.js"></script>
 
 <!--
 <script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/AddressField.js"></script>
@@ -110,6 +111,10 @@
             connector = new ConnectorClass("default");
             connector.servicesFramework = sf;
             connector.culture = '<%=CurrentCulture%>';
+            connector.numberDecimalSeparator = '<%=NumberDecimalSeparator%>';
+            
+
+            $.alpaca.setDefaultLocale(connector.culture.replace('-','_'));
 
             $("#field1").alpaca({
                 "schema": config.schema,

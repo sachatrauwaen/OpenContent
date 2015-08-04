@@ -212,6 +212,8 @@
     <Content Include="alpaca\css\img\Up_16X16_Standard.png" />
     <Content Include="alpaca\js\fields\dnn\AddressField.js" />
     <Content Include="alpaca\js\fields\dnn\CKEditorField.js" />
+    <Content Include="alpaca\js\fields\dnn\NumberField.js" />
+    <Content Include="alpaca\js\fields\dnn\DateField.js" />
     <Content Include="alpaca\js\fields\dnn\FileField.js" />
     <Content Include="alpaca\js\fields\dnn\ImageField.js" />
     <Content Include="alpaca\js\fields\dnn\UrlField.js" />
