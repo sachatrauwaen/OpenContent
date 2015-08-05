@@ -87,6 +87,13 @@ namespace Satrabel.OpenContent
                 return LocaleController.Instance.GetCurrentLocale(PortalId).Code;
             }
         }
+        public string NumberDecimalSeparator
+        {
+            get
+            {
+                return LocaleController.Instance.GetCurrentLocale(PortalId).Culture.NumberFormat.NumberDecimalSeparator;
+            }
+        }
     }
 }
 

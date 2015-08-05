@@ -74,3 +74,5 @@
 /// <reference path="../js/requirejs/async.js" />
 /// <reference path="../js/requirejs/googlemaps.js" />
 /// <reference path="../js/requirejs/require.js" />
+/// <reference path="../alpaca/js/fields/dnn/datefield.js" />
+/// <reference path="../alpaca/js/fields/dnn/numberfield.js" />

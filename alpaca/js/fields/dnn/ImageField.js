@@ -25,6 +25,9 @@
             if (!this.options.uploadfolder) {
                 this.options.uploadfolder = "";
             }
+            if (!this.options.uploadhidden) {
+                this.options.uploadhidden = false;
+            }
             this.base();
         },
 
@@ -92,39 +95,41 @@
             //var el = this.control;
             var el = this.getControlEl();
 
-                       
-            $(this.control.get(0)).find('input[type=file]').fileupload({
-                dataType: 'json',
-                url: self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
-                maxFileSize: 25000000,
-                formData: { uploadfolder : self.options.uploadfolder },
-                beforeSend: self.sf.setModuleHeaders,
-                add: function (e, data) {
-                    //data.context = $(opts.progressContextSelector);
-                    //data.context.find($(opts.progressFileNameSelector)).html(data.files[0].name);
-                    //data.context.show('fade');
-                    data.submit();
-                },
-                progress: function (e, data) {
-                    if (data.context) {
-                        var progress = parseInt(data.loaded / data.total * 100, 10);
-                        data.context.find(opts.progressBarSelector).css('width', progress + '%').find('span').html(progress + '%');
+            if (self.options.uploadhidden) {
+                $(this.control.get(0)).find('input[type=file]').hide();
+            } else {
+                $(this.control.get(0)).find('input[type=file]').fileupload({
+                    dataType: 'json',
+                    url: self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
+                    maxFileSize: 25000000,
+                    formData: { uploadfolder : self.options.uploadfolder },
+                    beforeSend: self.sf.setModuleHeaders,
+                    add: function (e, data) {
+                        //data.context = $(opts.progressContextSelector);
+                        //data.context.find($(opts.progressFileNameSelector)).html(data.files[0].name);
+                        //data.context.show('fade');
+                        data.submit();
+                    },
+                    progress: function (e, data) {
+                        if (data.context) {
+                            var progress = parseInt(data.loaded / data.total * 100, 10);
+                            data.context.find(opts.progressBarSelector).css('width', progress + '%').find('span').html(progress + '%');
+                        }
+                    },
+                    done: function (e, data) {
+                        if (data.result) {
+                            $.each(data.result, function (index, file) {
+                                self.setValue(file.url);
+                                $(el).change();
+                                //$(el).change();
+                                //$(e.target).parent().find('input[type=text]').val(file.url);
+                                //el.val(file.url);
+                                //$(e.target).parent().find('.alpaca-image-display img').attr('src', file.url);
+                            });
+                        }
                     }
-                },
-                done: function (e, data) {
-                    if (data.result) {
-                        $.each(data.result, function (index, file) {
-                            self.setValue(file.url);
-                            $(el).change();
-                            //$(el).change();
-                            //$(e.target).parent().find('input[type=text]').val(file.url);
-                            //el.val(file.url);
-                            //$(e.target).parent().find('.alpaca-image-display img').attr('src', file.url);
-                        });
-                    }
-                }
-            }).data('loaded', true);
-
+                }).data('loaded', true);
+            }
             $(el).change(function () {
 
                 var value = $(this).val();
@@ -135,6 +140,10 @@
                 //}
 
             });
+
+            if (self.options.manageurl) {
+                var manageButton = $('<a href="' + self.options.manageurl + '" target="_blank" class="alpaca-form-button">Manage files</a>').appendTo($(el).parent());
+            }
             
             callback();
         },
