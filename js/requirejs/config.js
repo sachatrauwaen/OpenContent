@@ -12,10 +12,19 @@ require.config({
     baseUrl : oc_moduleRoot,
     paths: {
         'async': 'js/requirejs/async',
-        alpacafields: 'alpaca/js/fields/dnn'
+        'text': 'js/requirejs/text',
+        'css': 'js/requirejs/css',
+        alpacafields: 'alpaca/js/fields/dnn',
+        'cropper':'js/cropper/cropper'
     },
     shim: {
+
+
     }
+});
+
+define('jquery', [], function() {
+    return jQuery;
 });
 
 define('gmaps', ['async!http://maps.google.com/maps/api/js?v=3&sensor=false'],
@@ -35,3 +44,12 @@ define('addressfield', ['gmaps_places', 'alpacafields/AddressField'],
     function () {
         return Alpaca.Fields.AddressField;
     });
+
+define('imagecropperfield', ['css!cropper', 'cropper', 'alpacafields/ImageCropperField'],
+    function () {
+        return Alpaca.Fields.ImageCropperField;
+    });
+
+
+
+    

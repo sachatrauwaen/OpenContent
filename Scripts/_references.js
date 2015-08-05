@@ -76,3 +76,5 @@
 /// <reference path="../js/requirejs/require.js" />
 /// <reference path="../alpaca/js/fields/dnn/datefield.js" />
 /// <reference path="../alpaca/js/fields/dnn/numberfield.js" />
+/// <reference path="../alpaca/js/fields/dnn/imagecropperfield.js" />
+/// <reference path="../js/cropper/cropper.js" />

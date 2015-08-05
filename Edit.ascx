@@ -16,6 +16,8 @@
 <script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/CKEditorField.js"></script>
 <script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/wysihtmlField.js"></script>
 <script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/NumberField.js"></script>
+<script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/ImageCropperField.js"></script>
+
 
 <dnncl:DnnJsInclude ID="DnnJsInclude3" runat="server" FilePath="~/DesktopModules/OpenContent/js/requirejs/require.js" Priority="110" ForceProvider="DnnFormBottomProvider" />
 <dnncl:DnnJsInclude ID="DnnJsInclude5" runat="server" FilePath="~/DesktopModules/OpenContent/js/requirejs/config.js" Priority="111"  ForceProvider="DnnFormBottomProvider" />
@@ -88,6 +90,9 @@
                 var types = self.GetFieldTypes(config.options);
                 if ($.inArray("address", types) != -1) {
                     jsmodules.push('addressfield');
+                }
+                if ($.inArray("imagecropper", types) != -1) {
+                    jsmodules.push('imagecropperfield');
                 }
             }
             if (jsmodules.length > 0) {
