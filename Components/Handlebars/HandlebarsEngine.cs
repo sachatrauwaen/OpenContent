@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.UI;
 using HandlebarsDotNet;
 using DotNetNuke.UI.Modules;
+using System.Globalization;
 
 namespace Satrabel.OpenContent.Components.Handlebars
 {
@@ -20,6 +21,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterDivideHelper(hbs);
             RegisterMultiplyHelper(hbs);
             RegisterEqualHelper(hbs);
+            RegisterFormatNumberHelper(hbs);
             RegisterArrayIndexHelper(hbs);
             RegisterArrayTranslateHelper(hbs);
             var template = hbs.Compile(source);
@@ -34,6 +36,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterDivideHelper(hbs);
             RegisterMultiplyHelper(hbs);
             RegisterEqualHelper(hbs);
+            RegisterFormatNumberHelper(hbs);
             RegisterScriptHelper(hbs);
             RegisterRegisterStylesheetHelper(hbs, page, sourceFolder);
             RegisterRegisterScriptHelper(hbs, page, sourceFolder);
@@ -58,6 +61,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterDivideHelper(hbs);
             RegisterMultiplyHelper(hbs);
             RegisterEqualHelper(hbs);
+            RegisterFormatNumberHelper(hbs);
             RegisterScriptHelper(hbs);
             RegisterRegisterStylesheetHelper(hbs, page, sourceFolder);
             RegisterRegisterScriptHelper(hbs, page, sourceFolder);
@@ -247,5 +251,33 @@ namespace Satrabel.OpenContent.Components.Handlebars
 
         }
 
+        private void RegisterFormatNumberHelper(HandlebarsDotNet.IHandlebars hbs)
+        {
+            hbs.RegisterHelper("formatNumber", (writer, context, parameters) =>
+            {
+                try
+                {
+                    decimal? number = parameters[0] as decimal?;
+                    string format = parameters[1].ToString();
+                    string provider = parameters[2].ToString();
+
+                    IFormatProvider formatprovider = null;
+                    if (provider.ToLower() == "invariant"){
+                        formatprovider = CultureInfo.InvariantCulture;
+                    }
+                    else if (!string.IsNullOrWhiteSpace( provider))
+                    {
+                        formatprovider = CultureInfo.CreateSpecificCulture(provider);
+                    }
+                    
+                    string res = number.Value.ToString(format, formatprovider);
+                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, res);
+                }
+                catch (Exception)
+                {
+                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "");
+                }
+            });
+        }
     }
 }
