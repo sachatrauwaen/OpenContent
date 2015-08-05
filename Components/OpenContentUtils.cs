@@ -406,7 +406,7 @@ namespace Satrabel.OpenContent.Components
                 string TemplateFolder = Path.GetDirectoryName(Template);
                 string TemplateFile = Path.GetFileNameWithoutExtension(Template);
                 Manifest manifest = GetManifest(TemplateFolder);
-                if (manifest != null && manifest.Templates.ContainsKey(TemplateFile))
+                if (manifest != null && manifest.Templates != null && manifest.Templates.ContainsKey(TemplateFile))
                 {
                     templateManifest = manifest.Templates[TemplateFile];
                 }
