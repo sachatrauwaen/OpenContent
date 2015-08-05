@@ -64,7 +64,7 @@ namespace Satrabel.OpenContent
             TemplateManifest manifest = null;
             if (!string.IsNullOrEmpty(Template))
             {
-                TemplateFolder = Path.GetDirectoryName(Template).Replace("\\","/");
+                TemplateFolder = Path.GetDirectoryName(Template).Replace("\\", "/");
                 manifest = OpenContentUtils.GetTemplateManifest(Template);
                 if (manifest != null && manifest.Main != null)
                 {
@@ -197,7 +197,7 @@ namespace Satrabel.OpenContent
                     if (!string.IsNullOrEmpty(dataJson))
                     {
                         dynamic model = JsonUtils.JsonToDynamic(dataJson);
-                        CompleteModel(settingsJson, TemplateFolder, model);
+                        CompleteModel(settingsJson, TemplateFolder, model, null);
                         if (Path.GetExtension(Template) != ".hbs")
                         {
                             return ExecuteRazor(Template, model);
@@ -272,7 +272,7 @@ namespace Satrabel.OpenContent
                             };
                             model.Items.Add(dyn);
                         }
-                        CompleteModel(settingsJson, TemplateFolder, model);
+                        CompleteModel(settingsJson, TemplateFolder, model, files);
                         return ExecuteTemplate(TemplateVirtualFolder, files, Template, model);
                     }
                 }
@@ -284,49 +284,54 @@ namespace Satrabel.OpenContent
             return "";
         }
 
-        private void CompleteModel(string settingsJson, string TemplateFolder, dynamic model)
+        private void CompleteModel(string settingsJson, string TemplateFolder, dynamic model, TemplateFiles manifest)
         {
-            // schema
-            string schemaFilename = TemplateFolder + "\\" + "schema.json";
-            try
+            if (manifest != null && manifest.SchemaInTemplate)
             {
-                dynamic schema = JsonUtils.JsonToDynamic(File.ReadAllText(schemaFilename));
-                model.Schema = schema;
-            }
-            catch (Exception ex)
-            {
-                Exceptions.ProcessModuleLoadException(string.Format("Invalid json-schema. Please verify file {0}.", schemaFilename), this, ex, true);
-            }
-            
-            // options
-            JToken optionsJson = null;
-            // default options
-            string optionsFilename = TemplateFolder + "\\" + "options.json";
-            if (File.Exists(optionsFilename))
-            {
-                string fileContent = File.ReadAllText(optionsFilename);
-                if (!string.IsNullOrWhiteSpace(fileContent))
+                // schema
+                string schemaFilename = TemplateFolder + "\\" + "schema.json";
+                try
                 {
-                    optionsJson = JObject.Parse(fileContent);
+                    dynamic schema = JsonUtils.JsonToDynamic(File.ReadAllText(schemaFilename));
+                    model.Schema = schema;
+                }
+                catch (Exception ex)
+                {
+                    Exceptions.ProcessModuleLoadException(string.Format("Invalid json-schema. Please verify file {0}.", schemaFilename), this, ex, true);
                 }
             }
-            // language options
-            optionsFilename = TemplateFolder + "\\" + "options." + ModuleContext.PortalSettings.CultureCode + ".json";
-            if (File.Exists(optionsFilename))
+            if (manifest != null && manifest.OptionsInTemplate)
             {
-                string fileContent = File.ReadAllText(optionsFilename);
-                if (!string.IsNullOrWhiteSpace(fileContent))
+                // options
+                JToken optionsJson = null;
+                // default options
+                string optionsFilename = TemplateFolder + "\\" + "options.json";
+                if (File.Exists(optionsFilename))
                 {
-                    if (optionsJson == null)
+                    string fileContent = File.ReadAllText(optionsFilename);
+                    if (!string.IsNullOrWhiteSpace(fileContent))
+                    {
                         optionsJson = JObject.Parse(fileContent);
-                    else
-                        optionsJson = optionsJson.JsonMerge(JObject.Parse(fileContent));
+                    }
                 }
-            }
-            if (optionsJson != null)
-            {
-                dynamic Options = JsonUtils.JsonToDynamic(optionsJson.ToString());
-                model.Options = Options;
+                // language options
+                optionsFilename = TemplateFolder + "\\" + "options." + ModuleContext.PortalSettings.CultureCode + ".json";
+                if (File.Exists(optionsFilename))
+                {
+                    string fileContent = File.ReadAllText(optionsFilename);
+                    if (!string.IsNullOrWhiteSpace(fileContent))
+                    {
+                        if (optionsJson == null)
+                            optionsJson = JObject.Parse(fileContent);
+                        else
+                            optionsJson = optionsJson.JsonMerge(JObject.Parse(fileContent));
+                    }
+                }
+                if (optionsJson != null)
+                {
+                    dynamic Options = JsonUtils.JsonToDynamic(optionsJson.ToString());
+                    model.Options = Options;
+                }
             }
             // settings
             if (settingsJson != null)
@@ -353,7 +358,7 @@ namespace Satrabel.OpenContent
                     if (!string.IsNullOrEmpty(dataJson))
                     {
                         dynamic model = JsonUtils.JsonToDynamic(dataJson);
-                        CompleteModel(settingsJson, TemplateFolder, model);
+                        CompleteModel(settingsJson, TemplateFolder, model, files);
 
                         return ExecuteTemplate(TemplateVirtualFolder, files, Template, model);
                     }
