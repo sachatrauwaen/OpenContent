@@ -6,9 +6,9 @@
         <input type="text" id="{{id}}" {{#if options.placeholder}} placeholder="{{options.placeholder}}" {{/if}} {{#if options.size}} size="{{options.size}}" {{/if}} {{#if options.readonly}} readonly="readonly" {{/if}} {{#if name}} name="{{name}}" {{/if}} {{#each options.data}} data-{{@key}}="{{this}}" {{/each}} />
 
         <div class="alpaca-image-display">
-            <img id="{{id}}-image" src="{{data.RawImageUrl}}">      
+            <img id="{{id}}-image" src="{{data.url}}" class="image">      
         </div>
-        <input type="text" id="{{id}}-cropped" {{#if options.placeholder}} placeholder="{{options.placeholder}}" {{/if}} {{#if options.size}} size="{{options.size}}" {{/if}} {{#if options.readonly}} readonly="readonly" {{/if}} {{#if name}} name="{{name}}" {{/if}} {{#each options.data}} data-{{@key}}="{{this}}" {{/each}} value="{{data.CroppedImageUrl}}" class="cropped_image_url" />
+        
 
 
     </div>

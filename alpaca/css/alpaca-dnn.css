@@ -110,6 +110,18 @@
     width: 95%;
 }
 
+.dnnFormItem.alpaca-field.alpaca-field-imagecropper .alpaca-form-button {
+    padding:5px;margin:5px;border : solid 1px #aaa;
+}
+
+
+.dnnFormItem.alpaca-field.alpaca-field-imagecropper .alpaca-form-tab {
+    padding:5px;border : solid 1px #aaa;
+}
+
+.dnnFormItem.alpaca-field.alpaca-field-imagecropper .alpaca-form-tab.active {
+    background-color:#ccc;
+}
 
 .dnnFormItem.alpaca-field.alpaca-field-file input[type=text],
 .dnnFormItem.alpaca-field.alpaca-field-file .twitter-typeahead {
@@ -127,8 +139,8 @@
 }
 
 .alpaca-field-imagecropper .alpaca-image-display img {
-    min-height: 300px;
-    max-height: 300px;
+    height: 300px;
+    
 }
 
 

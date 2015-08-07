@@ -31,6 +31,7 @@
             if (!this.options.cropper) {
                 this.options.cropper = {};
             }
+            this.options.cropper.responsive = false;
             this.base();
         },
 
@@ -55,23 +56,24 @@
             //var el = $( this.control).filter('#'+this.id);
             //var el = $(this.control.get(0)).find('input[type=text]');
             var el = this.getControlEl();
-
+            
             if (el && el.length > 0) {
                 if (Alpaca.isEmpty(value)) {
                     el.val("");
                 }
                 else {
-                    el.val(value.RawImageUrl);
-                    var $CroppedImageUrl = el.parent().find('.cropped_image_url');
-                    $CroppedImageUrl.val(value.CroppedImageUrl);
-                    $CroppedImageUrl.data('cropdata', value.cropdata);
-
-                    
+                    el.val(value.url);
+                    /*
+                    var $url = el.parent().find('.cropped_image_url');
+                    $url.val(value.url);
+                    $url.data('cropdata', value.cropdata);
+                    */
                 }
+                this.setCroppedData(value.cropdata);
             }
             
             // be sure to call into base method
-            //this.base(value);
+            //this.base(textvalue);
 
             // if applicable, update the max length indicator
             this.updateMaxLengthIndicator();
@@ -79,27 +81,141 @@
 
         getValue: function () {
             var value = null;
-
-            //var el = $(this.control).filter('#' + this.id);
-            //var el = $(this.control.get(0)).find('input[type=text]');
             var el = this.getControlEl();
             if (el && el.length > 0) {
                 //value = el.val();
                 value = {
-                    RawImageUrl: el.val()
+                    url: el.val()
                 };
-                var $CroppedImageUrl = el.parent().find('.cropped_image_url');
-                var CroppedImageUrl= $CroppedImageUrl.val();
+                /*
+                var $url = el.parent().find('.cropped_image_url');
+                var url= $url.val();
                                 
-                if (CroppedImageUrl) {
-                    value.CroppedImageUrl = CroppedImageUrl;
-                    value.cropdata = $CroppedImageUrl.data('cropdata');
+                if (url) {
+                    value.url = url;
+                    value.cropdata = $url.data('cropdata');
                 }
-
+                */
+                value.cropdata = this.getCroppedData();
             }
             return value;
         },
+        getCroppedData: function () {
+            var el = this.getControlEl();
+            var cropdata = {};
+            for (var i in this.options.croppers) {
+                var cropper = this.options.croppers[i];
+                var id = this.id + '-' + i;
+                var $cropbutton = $('#'+id);
+                cropdata[i] = $cropbutton.data('cropdata');
+            }
+            return cropdata;
+        },
+        cropAllImages: function (url) {
+            var self = this;
+            for (var i in this.options.croppers) {
+                
+                var id = this.id + '-' + i;
+                var $cropbutton = $('#' + id);
 
+                //cropdata[i] = $cropbutton.data('cropdata');
+                                
+                var cropopt = this.options.croppers[i];
+                var crop = { "x": 0, "y": 0, "width": cropopt.width, "height": cropopt.height, "rotate": 0 };
+                var postData = JSON.stringify({ url: url, id: i, crop : crop, resize: cropopt });
+
+                var action = "CropImage";
+                $.ajax({
+                    type: "POST",
+                    url: self.sf.getServiceRoot('OpenContent') + "DnnEntitiesAPI/" + action,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: postData,
+                    beforeSend: self.sf.setModuleHeaders
+                }).done(function (res) {
+                    
+                    var cropdata = { url: res.url, cropper: crop };
+                    self.setCroppedDataForId(id, cropdata);
+
+                }).fail(function (xhr, result, status) {
+                    alert("Uh-oh, something broke: " + status);
+                });
+
+            }
+            //var data = $image.cropper('getData', { rounded: true });
+            //var cropperId = cropButton.data('cropperId');
+            
+        },
+        setCroppedData: function (value) {
+
+            var el = this.getControlEl();
+            var parentel = this.getFieldEl();
+            if (el && el.length > 0) {
+                if (Alpaca.isEmpty(value)) {
+                    
+                }
+                else {
+                    var firstCropButton;
+                    for (var i in this.options.croppers) {
+                        var cropper = this.options.croppers[i];
+                        var id = this.id + '-' + i;
+                        var $cropbutton = $('#' + id);
+                        cropdata = value[i];
+                        if (cropdata) {
+                            $cropbutton.data('cropdata', cropdata);
+                        }
+                        
+                        if (!firstCropButton) {
+                            firstCropButton = $cropbutton;
+                            $(firstCropButton).addClass('active');
+                            if (cropdata) {
+                                var $image = $(parentel).find('.alpaca-image-display img.image');
+                                var cropper = $image.data('cropper');
+                                if (cropper){
+                                    $image.cropper('setData', cropdata.cropper);
+                                }
+                            }
+                        }
+                        
+                    }
+                }
+            }
+
+            /*
+            var el = this.getControlEl();
+            var $image = el.parent().find('.image');
+            if (el && el.length > 0) {
+                if (Alpaca.isEmpty(value)) {
+                    $image.data('cropdata', {});
+                }
+                else {
+                    $image.data('cropdata', value);
+                }
+            }
+            */
+        },
+
+        setCroppedDataForId: function (id, value) {
+            var el = this.getControlEl();
+            if (value) {
+                var $cropbutton = $('#' + id);
+                $cropbutton.data('cropdata', value);                
+            }
+        },
+        getCurrentCropData : function() {
+            var el = this.getControlEl();
+            var curtab = $(el).parent().find(".alpaca-form-tab.active");
+            var cropdata = $(this).data('cropdata');
+            //var cropopt = $(this).data('cropopt');
+            return cropdata;
+        },
+        setCurrentCropData: function (value) {
+            var el = this.getFieldEl(); //this.getControlEl();
+            
+            var curtab = $(el).parent().find(".alpaca-form-tab.active");
+            $(curtab).data('cropdata', value);
+            return cropdata;
+        },
         afterRenderControl: function (model, callback) {
             var self = this;
             this.base(model, function () {
@@ -108,29 +224,93 @@
                 });
             });
         },
+        
         handlePostRender: function (callback) {
             var self = this;
-
-            //var el = this.control;
             var el = this.getControlEl();
+            var parentel = this.getFieldEl();
 
-            
-            var $image = $(self.control).parent().find('.alpaca-image-display img');
-            $image.one("load", function () {
-                $image.cropper(self.options.cropper).on('built.cropper', function () {
-                    
-                    var $CroppedImageUrl = el.parent().find('.cropped_image_url');
-                    var cropdata = $CroppedImageUrl.data('cropdata');
-                    if (cropdata) {
-                        $image.cropper('setData', cropdata);
-                        //self.options.cropper.data = cropdata;
-                    }
+            var cropButton = $('<a href="#" class="alpaca-form-button">Crop</a>').appendTo($(el).parent());
+            cropButton.click(function () {
+                var data = $image.cropper('getData', { rounded: true });
+                var cropperId = cropButton.data('cropperId');
+                var cropopt = self.options.croppers[cropperId];
+                var postData = JSON.stringify({ url: el.val(), id: cropperId, crop: data, resize: cropopt });
+
+                var action = "CropImage";
+                $.ajax({
+                    type: "POST",
+                    url: self.sf.getServiceRoot('OpenContent') + "DnnEntitiesAPI/" + action,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: postData,
+                    beforeSend: self.sf.setModuleHeaders
+                }).done(function (res) {
+                    //var $url = el.parent().find('.cropped_image_url');
+                    //$url.val(res.url);
+                    //$url.data('cropdata',data);
+
+                    var cropdata = { url: res.url, cropper: data };
+                    self.setCroppedDataForId(cropButton.data('cropperButtonId'), cropdata);
+
+                }).fail(function (xhr, result, status) {
+                    alert("Uh-oh, something broke: " + status);
                 });
-                
+
+                return false;
+            });
+
+
+            var firstCropButton;
+            
+            for (var i in self.options.croppers) {
+                var cropper = self.options.croppers[i];
+                var id = self.id + '-' + i;
+                var cropperButton = $('<a id="' + id + '" data-id="' + i + '" href="#" class="alpaca-form-tab" >' + i + '</a>').appendTo($(el).parent());
+                cropperButton.data('cropopt', cropper);
+                cropperButton.click(function () {
+                    $image.off('change.cropper');
+                                        
+                    var cropdata = $(this).data('cropdata');
+                    var cropopt = $(this).data('cropopt');
+                    $image.cropper('setAspectRatio', cropopt.width / cropopt.height);
+                    if (cropdata) {
+                        $image.cropper('setData', cropdata.cropper);
+                    } else {
+                        $image.cropper('reset');
+                    }
+                    cropButton.data('cropperButtonId', this.id);
+                    cropButton.data('cropperId', $(this).attr("data-id"));
+                    
+                    $(this).parent().find('.alpaca-form-tab').removeClass('active');
+                    $(this).addClass('active');
+
+                    //$image.on('change.cropper', self.cropChange);
+
+                    return false;
+                });
+                if (!firstCropButton) {
+                    firstCropButton = cropperButton;
+                    $(firstCropButton).addClass('active');
+                    cropButton.data('cropperButtonId', $(firstCropButton).attr('id'));
+                    cropButton.data('cropperId', $(firstCropButton).attr("data-id"));
+                }
+            }
+            
+            var $image = $(parentel).find('.alpaca-image-display img.image');
+            $image.cropper(self.options.cropper).on('built.cropper', function () {
+                var cropopt = $(firstCropButton).data('cropopt');
+                if (cropopt) {
+                    $(this).cropper('setAspectRatio', cropopt.width / cropopt.height);
+                }
+                var cropdata = $(firstCropButton).data('cropdata');
+                if (cropdata) {
+                    var $image = $(parentel).find('.alpaca-image-display img.image');
+                    $(this).cropper('setData', cropdata.cropper);
+                }
+                //$(this).on('change.cropper', self.cropChange);
             });
             
-            
-
             if (self.options.uploadhidden) {
                 $(this.control.get(0)).find('input[type=file]').hide();
             } else {
@@ -174,8 +354,12 @@
 
                 //var newValue = $(el).typeahead('val');
                 //if (newValue !== value) {
-                $(self.control).parent().find('.alpaca-image-display img').attr('src', value);
+                $(parentel).find('.alpaca-image-display img.image').attr('src', value);
                 $image.cropper('replace', value);
+                if (value){
+                    self.cropAllImages(value);
+                }
+
                 //}
 
             });
@@ -184,33 +368,6 @@
                 var manageButton = $('<a href="' + self.options.manageurl + '" target="_blank" class="alpaca-form-button">Manage files</a>').appendTo($(el).parent());
             }
 
-            var cropButton = $('<a href="#" class="alpaca-form-button">Crop</a>').appendTo($(el).parent());
-            cropButton.click(function () {
-
-
-                var data = $image.cropper('getData', { rounded: true });
-                
-                var adddata = {RawImageUrl : el.val()};
-
-                var postData = JSON.stringify($.extend(adddata, data));
-                var action = "CropImage";                
-                $.ajax({
-                    type: "POST",
-                    url: self.sf.getServiceRoot('OpenContent') + "DnnEntitiesAPI/" + action,
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    data: postData,
-                    beforeSend: self.sf.setModuleHeaders
-                }).done(function (res) {
-                    var $CroppedImageUrl = el.parent().find('.cropped_image_url');
-                    $CroppedImageUrl.val(res.url);
-                    $CroppedImageUrl.data('cropdata',data);
-                }).fail(function (xhr, result, status) {
-                    alert("Uh-oh, something broke: " + status);
-                });
-
-                return false;
-            });
             
             callback();
         },
@@ -302,7 +459,8 @@
 
                 // listen for "autocompleted" event and set the value of the field
                 $(el).on("typeahead:autocompleted", function (event, datum) {
-                    self.setValue(datum.value);
+                    //self.setValue(datum.value);
+                    el.val(datum.value);
                     $(el).change();
                     //$(self.control).parent().find('input[type=text]').val(datum.value);
                     //$(self.control).parent().find('.alpaca-image-display img').attr('src', datum.value);
@@ -310,7 +468,8 @@
 
                 // listen for "selected" event and set the value of the field
                 $(el).on("typeahead:selected", function (event, datum) {
-                    self.setValue(datum.value);
+                    //self.setValue(datum.value);
+                    el.val(datum.value);
                     $(el).change();
                     //$(self.control).parent().find('input[type=text]').val(datum.value);
                     //$(self.control).parent().find('.alpaca-image-display img').attr('src', datum.value);

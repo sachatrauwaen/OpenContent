@@ -114,7 +114,7 @@ namespace Satrabel.OpenContent.Components
             return (Globals.glbImageFileTypes + ",").IndexOf(file.Extension.ToLower().Replace(".", "") + ",") > -1;
         }
 
-        public HttpResponseMessage CropImage(CropDTO cropData)
+        public HttpResponseMessage CropImage(CropResizeDTO cropData)
         {
             FilesStatus fs = null;
             try
@@ -122,7 +122,7 @@ namespace Satrabel.OpenContent.Components
                 var folderManager = FolderManager.Instance;
                 var fileManager = FileManager.Instance;
                 var portalFolder = folderManager.GetFolder(ActiveModule.PortalID, "");
-                string RawImageUrl = cropData.RawImageUrl;
+                string RawImageUrl = cropData.url;
                 if (RawImageUrl.IndexOf('?') > 0)
                 {
                     RawImageUrl = RawImageUrl.Substring(0, RawImageUrl.IndexOf('?'));
@@ -135,8 +135,12 @@ namespace Satrabel.OpenContent.Components
                 {
                     var folder = folderManager.GetFolder(file.FolderId);
                     var image = Image.FromFile(file.PhysicalPath);
-                    var imageCropped = ImageUtils.Crop(image, cropData.x, cropData.y, cropData.width, cropData.height);
-                    string newFilename = "cropped-" + file.FileName;
+                    var imageCropped = ImageUtils.Crop(image, cropData.crop.x, cropData.crop.y, cropData.crop.width, cropData.crop.height);
+                    if (cropData.resize != null && cropData.resize.width > 0 && cropData.resize.height > 0) 
+                    { 
+                        imageCropped = ImageUtils.Resize(imageCropped, cropData.resize.width, cropData.resize.height);
+                    }
+                    string newFilename = Path.GetFileNameWithoutExtension(file.FileName) + "-" +cropData.id +Path.GetExtension(file.FileName);
 
                     Stream content = new MemoryStream();
                     ImageFormat imgFormat = ImageFormat.Bmp;
@@ -183,14 +187,25 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
+        public class CropResizeDTO
+        {
+            public string id { get; set; }
+            public string url { get; set; }
+            public CropDTO crop { get; set; }
+            public ResizeDTO resize { get; set; }
+        }
         public class CropDTO
         {
-            public string RawImageUrl { get; set; }
             public int x { get; set; }
             public int y { get; set; }
             public int width { get; set; }
             public int height { get; set; }
             public int rotate { get; set; }
+        }
+        public class ResizeDTO
+        {
+            public int width { get; set; }
+            public int height { get; set; }
         }
     }
 }
