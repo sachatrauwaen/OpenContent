@@ -1,12 +1,46 @@
 ﻿var oc_moduleRoot = dnn.getVar('oc_moduleRoot');
 
-var opencontent = {
-    fields: {
-        "address": {
-            modules : [""]
+function oc_loadmodules(options, callback) {
+    var jsmodules = oc_modules(options);
+    if (jsmodules.length > 0) {
+        require(jsmodules, function () {
+            callback();
+        });
+    }
+    else {
+        callback();
+    }
+}
+
+function oc_modules(options) {
+    var jsmodules = [];
+    if (options) {
+        var types = oc_fieldtypes(options);
+        if ($.inArray("address", types) != -1) {
+            jsmodules.push('addressfield');
+        }
+        if ($.inArray("imagecropper", types) != -1) {
+            jsmodules.push('imagecropperfield');
         }
     }
-};
+    return jsmodules;
+}
+
+function oc_fieldtypes (options) {
+    var types = [];
+    if (options.fields) {
+        fields = options.fields;
+        for (var key in fields) {
+            field = fields[key];
+            if (field.type) {
+                types.push(field.type);
+            }
+            var subtypes = oc_fieldtypes(field);
+            types = types.concat(subtypes);
+        }
+    }
+    return types;
+}
 
 require.config({
     baseUrl : oc_moduleRoot,
@@ -19,7 +53,6 @@ require.config({
     },
     shim: {
 
-
     }
 });
 
@@ -29,13 +62,11 @@ define('jquery', [], function() {
 
 define('gmaps', ['async!http://maps.google.com/maps/api/js?v=3&sensor=false'],
     function () {
-        // return the gmaps namespace for brevity
         return window.google.maps;
     });
 
 define('gmaps_places', ['async!https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places'],
-    function () {
-        // return the gmaps namespace for brevity
+    function () {        
         return window.google.maps;
     });
 
