@@ -119,47 +119,80 @@ namespace Satrabel.OpenContent.Components
             FilesStatus fs = null;
             try
             {
+                var res = new CropResizeResultDTO()
+                {
+                    crop = new CropDTO()
+                    {
+                        x = cropData.crop.x,
+                        y = cropData.crop.y,
+                        width = cropData.crop.width,
+                        height = cropData.crop.height
+                    }
+                };
                 var folderManager = FolderManager.Instance;
                 var fileManager = FileManager.Instance;
-                var portalFolder = folderManager.GetFolder(ActiveModule.PortalID, "");
+                
+                
                 string RawImageUrl = cropData.url;
                 if (RawImageUrl.IndexOf('?') > 0)
                 {
                     RawImageUrl = RawImageUrl.Substring(0, RawImageUrl.IndexOf('?'));
                 }
                 RawImageUrl = RawImageUrl.Replace(PortalSettings.HomeDirectory, "");
-
                 var file = fileManager.GetFile(ActiveModule.PortalID, RawImageUrl);
-                
+
+                string cropfolder = "OpenContent/Files/" + ActiveModule.ModuleID;
+                                
+                if (!string.IsNullOrEmpty(cropData.cropfolder))
+                {
+                    cropfolder = cropData.cropfolder;
+                }
+                var userFolder = folderManager.GetFolder(PortalSettings.PortalId, cropfolder);
+                if (userFolder == null)
+                {
+                    userFolder = folderManager.AddFolder(PortalSettings.PortalId, cropfolder);
+                }
+                string newFilename = Path.GetFileNameWithoutExtension(file.FileName) + "-" + cropData.id + Path.GetExtension(file.FileName);
+
                 if (file != null)
                 {
                     var folder = folderManager.GetFolder(file.FolderId);
                     var image = Image.FromFile(file.PhysicalPath);
-                    var imageCropped = ImageUtils.Crop(image, cropData.crop.x, cropData.crop.y, cropData.crop.width, cropData.crop.height);
-                    if (cropData.resize != null && cropData.resize.width > 0 && cropData.resize.height > 0) 
-                    { 
-                        imageCropped = ImageUtils.Resize(imageCropped, cropData.resize.width, cropData.resize.height);
+                    Image imageCropped;
+                    //int x = cropData.crop.x;
+                    //int y = cropData.crop.y;
+                    if (cropData.crop.x < 0 && cropData.crop.y < 0) // center
+                    {
+                        int left = 0;
+                        int top = 0;
+                        imageCropped = ImageUtils.SaveCroppedImage(image, cropData.crop.width, cropData.crop.height, out left, out top);
+                        res.crop.x = left;
+                        res.crop.y = top;
                     }
-                    string newFilename = Path.GetFileNameWithoutExtension(file.FileName) + "-" +cropData.id +Path.GetExtension(file.FileName);
-
+                    else { 
+                        imageCropped = ImageUtils.Crop(image, cropData.crop.x, cropData.crop.y, cropData.crop.width, cropData.crop.height);
+                        if (cropData.resize != null && cropData.resize.width > 0 && cropData.resize.height > 0)
+                        {
+                            imageCropped = ImageUtils.Resize(imageCropped, cropData.resize.width, cropData.resize.height);
+                        }
+                    }
+                    
                     Stream content = new MemoryStream();
                     ImageFormat imgFormat = ImageFormat.Bmp;
-                    if (file.Extension.ToLowerInvariant() == ".png")
+                    if (file.Extension.ToLowerInvariant() == "png")
                     {
                         imgFormat = ImageFormat.Png;
                     }
-                    else if (file.Extension.ToLowerInvariant() == ".gif")
+                    else if (file.Extension.ToLowerInvariant() == "gif")
                     {
                         imgFormat = ImageFormat.Gif;
                     }
-                    else if (file.Extension.ToLowerInvariant() == ".jpg")
+                    else if (file.Extension.ToLowerInvariant() == "jpg")
                     {
                         imgFormat = ImageFormat.Jpeg;
                     }
-
                     imageCropped.Save(content, imgFormat);
-
-                    var newFile = fileManager.AddFile(folder, newFilename, content, true);
+                    var newFile = fileManager.AddFile(userFolder, newFilename, content, true);
                     fs = new FilesStatus()
                     {
                         success = true,
@@ -172,13 +205,10 @@ namespace Satrabel.OpenContent.Components
                         //thumbnail_url = fileIcon,
                         message = "success",
                         id = newFile.FileId,
-
                     };
-
                 }
-
-
-                return Request.CreateResponse(HttpStatusCode.OK, fs);
+                res.url = fs.url;
+                return Request.CreateResponse(HttpStatusCode.OK, res);
             }
             catch (Exception exc)
             {
@@ -193,6 +223,12 @@ namespace Satrabel.OpenContent.Components
             public string url { get; set; }
             public CropDTO crop { get; set; }
             public ResizeDTO resize { get; set; }
+            public string cropfolder { get; set; }
+        }
+        public class CropResizeResultDTO
+        {
+            public string url { get; set; }
+            public CropDTO crop { get; set; }
         }
         public class CropDTO
         {

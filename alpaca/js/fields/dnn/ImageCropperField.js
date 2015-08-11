@@ -32,6 +32,9 @@
                 this.options.cropper = {};
             }
             this.options.cropper.responsive = false;
+            if (!this.options.cropper.autoCropArea) {
+                this.options.cropper.autoCropArea = 1;
+            }
             this.base();
         },
 
@@ -61,17 +64,14 @@
                 if (Alpaca.isEmpty(value)) {
                     el.val("");
                 }
+                else if (Alpaca.isString(value)) {
+                    el.val(value);
+                }
                 else {
                     el.val(value.url);
-                    /*
-                    var $url = el.parent().find('.cropped_image_url');
-                    $url.val(value.url);
-                    $url.data('cropdata', value.cropdata);
-                    */
+                    this.setCroppedData(value.cropdata);
                 }
-                this.setCroppedData(value.cropdata);
             }
-            
             // be sure to call into base method
             //this.base(textvalue);
 
@@ -87,15 +87,6 @@
                 value = {
                     url: el.val()
                 };
-                /*
-                var $url = el.parent().find('.cropped_image_url');
-                var url= $url.val();
-                                
-                if (url) {
-                    value.url = url;
-                    value.cropdata = $url.data('cropdata');
-                }
-                */
                 value.cropdata = this.getCroppedData();
             }
             return value;
@@ -121,8 +112,9 @@
                 //cropdata[i] = $cropbutton.data('cropdata');
                                 
                 var cropopt = this.options.croppers[i];
-                var crop = { "x": 0, "y": 0, "width": cropopt.width, "height": cropopt.height, "rotate": 0 };
-                var postData = JSON.stringify({ url: url, id: i, crop : crop, resize: cropopt });
+                
+                var crop = { "x": -1, "y": -1, "width": cropopt.width, "height": cropopt.height, "rotate": 0 };
+                var postData = JSON.stringify({ url: url, id: i, crop: crop, resize: cropopt, cropfolder: this.options.cropfolder});
 
                 var action = "CropImage";
                 $.ajax({
@@ -130,11 +122,11 @@
                     url: self.sf.getServiceRoot('OpenContent') + "DnnEntitiesAPI/" + action,
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
+                    async: false,
                     data: postData,
                     beforeSend: self.sf.setModuleHeaders
                 }).done(function (res) {
-                    
-                    var cropdata = { url: res.url, cropper: crop };
+                    var cropdata = { url: res.url, cropper: {} };
                     self.setCroppedDataForId(id, cropdata);
 
                 }).fail(function (xhr, result, status) {
@@ -230,12 +222,13 @@
             var el = this.getControlEl();
             var parentel = this.getFieldEl();
 
-            var cropButton = $('<a href="#" class="alpaca-form-button">Crop</a>').appendTo($(el).parent());
+            var cropButton = $('<a href="#" class="alpaca-form-button">Crop</a>');//.appendTo($(el).parent());
             cropButton.click(function () {
                 var data = $image.cropper('getData', { rounded: true });
                 var cropperId = cropButton.data('cropperId');
                 var cropopt = self.options.croppers[cropperId];
                 var postData = JSON.stringify({ url: el.val(), id: cropperId, crop: data, resize: cropopt });
+                $(cropButton).css('cursor', 'wait');
 
                 var action = "CropImage";
                 $.ajax({
@@ -252,9 +245,14 @@
 
                     var cropdata = { url: res.url, cropper: data };
                     self.setCroppedDataForId(cropButton.data('cropperButtonId'), cropdata);
+                    
+                    setTimeout(function () {
+                        $(cropButton).css('cursor', 'initial');
+                    }, 500);
 
                 }).fail(function (xhr, result, status) {
                     alert("Uh-oh, something broke: " + status);
+                    $(parentel).css('cursor', 'initial');
                 });
 
                 return false;
@@ -363,7 +361,7 @@
                 //}
 
             });
-
+            cropButton.appendTo($(el).parent());
             if (self.options.manageurl) {
                 var manageButton = $('<a href="' + self.options.manageurl + '" target="_blank" class="alpaca-form-button">Manage files</a>').appendTo($(el).parent());
             }
