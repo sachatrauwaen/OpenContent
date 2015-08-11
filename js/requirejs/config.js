@@ -26,7 +26,7 @@ function oc_modules(options) {
     return jsmodules;
 }
 
-function oc_fieldtypes (options) {
+function oc_fieldtypes(options) {
     var types = [];
     if (options.fields) {
         fields = options.fields;
@@ -38,6 +38,9 @@ function oc_fieldtypes (options) {
             var subtypes = oc_fieldtypes(field);
             types = types.concat(subtypes);
         }
+    }
+    else if (options.items && options.items.type) {
+        types.push(options.items.type);
     }
     return types;
 }
