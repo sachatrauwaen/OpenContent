@@ -206,7 +206,7 @@
             
             var curtab = $(el).parent().find(".alpaca-form-tab.active");
             $(curtab).data('cropdata', value);
-            return cropdata;
+          
         },
         afterRenderControl: function (model, callback) {
             var self = this;
@@ -216,7 +216,26 @@
                 });
             });
         },
-        
+        cropChange: function (e) {
+            var self = e.data;
+            //var parentel = this.getFieldEl();
+            var $image = this; //$(parentel).find('.alpaca-image-display img.image');
+            var data = $(this).cropper('getData', { rounded: true });
+            var cropdata = {
+                url: "",
+                cropper: data
+            };
+            self.setCurrentCropData(cropdata);
+            //self.setCroppedDataForId(cropperButtonIdcropButton.data('cropperButtonId'), cropdata);
+
+        },
+        getCropppersData : function() {
+            for (var i in self.options.croppers) {
+                var cropper = self.options.croppers[i];
+                var id = self.id + '-' + i;
+
+            }
+        },
         handlePostRender: function (callback) {
             var self = this;
             var el = this.getControlEl();
@@ -224,13 +243,19 @@
 
             var cropButton = $('<a href="#" class="alpaca-form-button">Crop</a>');//.appendTo($(el).parent());
             cropButton.click(function () {
+                /*
                 var data = $image.cropper('getData', { rounded: true });
                 var cropperId = cropButton.data('cropperId');
                 var cropopt = self.options.croppers[cropperId];
                 var postData = JSON.stringify({ url: el.val(), id: cropperId, crop: data, resize: cropopt });
+                */
+                var data = self.getCroppedData();
+                var postData = JSON.stringify({ url: el.val(), cropfolder : self.options.cropfolder, cropdata: data, croppers: self.options.croppers });
+
+                
                 $(cropButton).css('cursor', 'wait');
 
-                var action = "CropImage";
+                var action = "CropImages";
                 $.ajax({
                     type: "POST",
                     url: self.sf.getServiceRoot('OpenContent') + "DnnEntitiesAPI/" + action,
@@ -239,12 +264,23 @@
                     data: postData,
                     beforeSend: self.sf.setModuleHeaders
                 }).done(function (res) {
-                    //var $url = el.parent().find('.cropped_image_url');
-                    //$url.val(res.url);
-                    //$url.data('cropdata',data);
-
+                    /*
                     var cropdata = { url: res.url, cropper: data };
                     self.setCroppedDataForId(cropButton.data('cropperButtonId'), cropdata);
+                    */
+                    for (var i in self.options.croppers) {
+                        var cropper = self.options.croppers[i];
+                        var id = self.id + '-' + i;
+                        var $cropbutton = $('#' + id);
+
+                        var cropdata = { url: res.cropdata[i].url, cropper: data[i].crop };
+
+                        if (cropdata) {
+                            $cropbutton.data('cropdata', cropdata);
+                        }
+                        
+                    }
+
                     
                     setTimeout(function () {
                         $(cropButton).css('cursor', 'initial');
@@ -283,7 +319,7 @@
                     $(this).parent().find('.alpaca-form-tab').removeClass('active');
                     $(this).addClass('active');
 
-                    //$image.on('change.cropper', self.cropChange);
+                    $image.on('change.cropper', self ,self.cropChange);
 
                     return false;
                 });
@@ -306,7 +342,7 @@
                     var $image = $(parentel).find('.alpaca-image-display img.image');
                     $(this).cropper('setData', cropdata.cropper);
                 }
-                //$(this).on('change.cropper', self.cropChange);
+                $image.on('change.cropper', self, self.cropChange);
             });
             
             if (self.options.uploadhidden) {

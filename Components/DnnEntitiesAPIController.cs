@@ -10,6 +10,7 @@
 #region Using Statements
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -131,8 +132,8 @@ namespace Satrabel.OpenContent.Components
                 };
                 var folderManager = FolderManager.Instance;
                 var fileManager = FileManager.Instance;
-                
-                
+
+
                 string RawImageUrl = cropData.url;
                 if (RawImageUrl.IndexOf('?') > 0)
                 {
@@ -142,7 +143,7 @@ namespace Satrabel.OpenContent.Components
                 var file = fileManager.GetFile(ActiveModule.PortalID, RawImageUrl);
 
                 string cropfolder = "OpenContent/Files/" + ActiveModule.ModuleID;
-                                
+
                 if (!string.IsNullOrEmpty(cropData.cropfolder))
                 {
                     cropfolder = cropData.cropfolder;
@@ -169,14 +170,15 @@ namespace Satrabel.OpenContent.Components
                         res.crop.x = left;
                         res.crop.y = top;
                     }
-                    else { 
+                    else
+                    {
                         imageCropped = ImageUtils.Crop(image, cropData.crop.x, cropData.crop.y, cropData.crop.width, cropData.crop.height);
                         if (cropData.resize != null && cropData.resize.width > 0 && cropData.resize.height > 0)
                         {
                             imageCropped = ImageUtils.Resize(imageCropped, cropData.resize.width, cropData.resize.height);
                         }
                     }
-                    
+
                     Stream content = new MemoryStream();
                     ImageFormat imgFormat = ImageFormat.Bmp;
                     if (file.Extension.ToLowerInvariant() == "png")
@@ -217,6 +219,144 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
+        public HttpResponseMessage CropImages(CroppersDTO cropData)
+        {
+            FilesStatus fs = null;
+            try
+            {
+                var res = new CroppersResultDTO()
+                {
+                    /*
+                    crop = new CropDTO()
+                    {
+                        x = cropData.crop.x,
+                        y = cropData.crop.y,
+                        width = cropData.crop.width,
+                        height = cropData.crop.height
+                    }
+                     * */
+                };
+                var folderManager = FolderManager.Instance;
+                var fileManager = FileManager.Instance;
+
+                string RawImageUrl = cropData.url;
+                if (RawImageUrl.IndexOf('?') > 0)
+                {
+                    RawImageUrl = RawImageUrl.Substring(0, RawImageUrl.IndexOf('?'));
+                }
+                RawImageUrl = RawImageUrl.Replace(PortalSettings.HomeDirectory, "");
+                var file = fileManager.GetFile(ActiveModule.PortalID, RawImageUrl);
+                if (file != null)
+                {
+                    string cropfolder = "OpenContent/Files/" + ActiveModule.ModuleID;
+
+                    if (!string.IsNullOrEmpty(cropData.cropfolder))
+                    {
+                        cropfolder = cropData.cropfolder;
+                    }
+                    var userFolder = folderManager.GetFolder(PortalSettings.PortalId, cropfolder);
+                    if (userFolder == null)
+                    {
+                        userFolder = folderManager.AddFolder(PortalSettings.PortalId, cropfolder);
+                    }
+                    foreach (var cropper in cropData.croppers)
+                    {
+                        string key = cropper.Key;
+                        string newFilename = Path.GetFileNameWithoutExtension(file.FileName) + "-" + key + Path.GetExtension(file.FileName);
+                        var resizeInfo = cropper.Value;
+                        var cropInfo = cropData.cropdata[key].cropper;
+                        string url = CropFile(file, newFilename, cropInfo, resizeInfo, userFolder);
+                        var c = new CropResizeResultDTO()
+                        {
+
+                            crop = new CropDTO()
+                            {
+                                x = cropInfo.x,
+                                y = cropInfo.y,
+                                width = cropInfo.width,
+                                height = cropInfo.height
+                            },
+                            url = url
+                        };
+                        res.cropdata.Add(key, c);
+                    }
+                }
+                return Request.CreateResponse(HttpStatusCode.OK, res);
+            }
+            catch (Exception exc)
+            {
+                Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
+        private string CropFile(IFileInfo file, string newFilename, CropDTO crop, ResizeDTO resize, IFolderInfo userFolder)
+        {
+
+            var folderManager = FolderManager.Instance;
+            var fileManager = FileManager.Instance;
+
+            var folder = folderManager.GetFolder(file.FolderId);
+            var image = Image.FromFile(file.PhysicalPath);
+            Image imageCropped;
+            //int x = cropData.crop.x;
+            //int y = cropData.crop.y;
+            if (crop.x < 0 && crop.y < 0) // center
+            {
+                int left = 0;
+                int top = 0;
+                imageCropped = ImageUtils.SaveCroppedImage(image, crop.width, crop.height, out left, out top);
+                crop.x = left;
+                crop.y = top;
+            }
+            else
+            {
+                imageCropped = ImageUtils.Crop(image, crop.x, crop.y, crop.width, crop.height);
+                if (resize != null && resize.width > 0 && resize.height > 0)
+                {
+                    imageCropped = ImageUtils.Resize(imageCropped, resize.width, resize.height);
+                }
+            }
+
+            Stream content = new MemoryStream();
+            ImageFormat imgFormat = ImageFormat.Bmp;
+            if (file.Extension.ToLowerInvariant() == "png")
+            {
+                imgFormat = ImageFormat.Png;
+            }
+            else if (file.Extension.ToLowerInvariant() == "gif")
+            {
+                imgFormat = ImageFormat.Gif;
+            }
+            else if (file.Extension.ToLowerInvariant() == "jpg")
+            {
+                imgFormat = ImageFormat.Jpeg;
+            }
+            imageCropped.Save(content, imgFormat);
+            var newFile = fileManager.AddFile(userFolder, newFilename, content, true);
+
+            return FileManager.Instance.GetUrl(newFile);
+        }
+
+
+
+        public class CroppersDTO
+        {
+            public Dictionary<string, CroppperDTO> cropdata { get; set; }
+            public Dictionary<string, ResizeDTO> croppers { get; set; }
+            public string cropfolder { get; set; }
+            public string url { get; set; }
+        }
+
+        public class CroppersResultDTO
+        {
+            public CroppersResultDTO()
+            {
+                cropdata = new Dictionary<string, CropResizeResultDTO>();
+            }
+            public Dictionary<string, CropResizeResultDTO> cropdata { get; set; }
+            public string url { get; set; }
+        }
+
         public class CropResizeDTO
         {
             public string id { get; set; }
@@ -229,6 +369,12 @@ namespace Satrabel.OpenContent.Components
         {
             public string url { get; set; }
             public CropDTO crop { get; set; }
+        }
+
+        public class CroppperDTO
+        {
+            public string url { get; set; }
+            public CropDTO cropper { get; set; }
         }
         public class CropDTO
         {
