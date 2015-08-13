@@ -11,6 +11,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -265,6 +266,10 @@ namespace Satrabel.OpenContent.Components
                         string newFilename = Path.GetFileNameWithoutExtension(file.FileName) + "-" + key + Path.GetExtension(file.FileName);
                         var resizeInfo = cropper.Value;
                         var cropInfo = cropData.cropdata[key].cropper;
+                        if (cropInfo == null && Debugger.IsAttached)
+                        {
+                            Debugger.Break(); //this should never happen, but it does sometimes!!
+                        }
                         string url = CropFile(file, newFilename, cropInfo, resizeInfo, userFolder);
                         var c = new CropResizeResultDTO()
                         {
