@@ -272,31 +272,22 @@
                         var cropper = self.options.croppers[i];
                         var id = self.id + '-' + i;
                         var $cropbutton = $('#' + id);
-
-                        var cropdata = { url: res.cropdata[i].url, cropper: data[i].crop };
-
+                        var cropdata = { url: res.cropdata[i].url, cropper: res.cropdata[i].crop };
                         if (cropdata) {
                             $cropbutton.data('cropdata', cropdata);
                         }
-                        
                     }
-
-                    
                     setTimeout(function () {
                         $(cropButton).css('cursor', 'initial');
                     }, 500);
-
                 }).fail(function (xhr, result, status) {
                     alert("Uh-oh, something broke: " + status);
                     $(parentel).css('cursor', 'initial');
                 });
-
                 return false;
             });
 
-
             var firstCropButton;
-            
             for (var i in self.options.croppers) {
                 var cropper = self.options.croppers[i];
                 var id = self.id + '-' + i;
@@ -339,9 +330,9 @@
                 }
                 var cropdata = $(firstCropButton).data('cropdata');
                 if (cropdata) {
-                    var $image = $(parentel).find('.alpaca-image-display img.image');
                     $(this).cropper('setData', cropdata.cropper);
                 }
+                var $image = $(parentel).find('.alpaca-image-display img.image');
                 $image.on('change.cropper', self, self.cropChange);
             });
             

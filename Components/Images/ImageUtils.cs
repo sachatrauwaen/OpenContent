@@ -44,18 +44,19 @@ namespace Satrabel.OpenContent.Components.Images
             return targetImage;
         }
          */
-        public static Image SaveCroppedImage(Image image, int targetWidth, int targetHeight, out int left, out int top)
+        public static Image SaveCroppedImage(Image image, int targetWidth, int targetHeight, out int left, out int top, out int srcWidth, out int srcHeight)
         {
             ImageCodecInfo jpgInfo = ImageCodecInfo.GetImageEncoders().Where(codecInfo => codecInfo.MimeType == "image/jpeg").First();
             Image finalImage = image;
             System.Drawing.Bitmap bitmap = null;
             left = 0;
             top = 0;
+            srcWidth = 0;
+            srcHeight = 0;
             try
             {
-                
-                int srcWidth = targetWidth;
-                int srcHeight = targetHeight;
+                srcWidth = targetWidth;
+                srcHeight = targetHeight;
                 bitmap = new System.Drawing.Bitmap(targetWidth, targetHeight);
                 double croppedHeightToWidth = (double)targetHeight / targetWidth;
                 double croppedWidthToHeight = (double)targetWidth / targetHeight;

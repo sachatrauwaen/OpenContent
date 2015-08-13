@@ -11,7 +11,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -167,9 +166,13 @@ namespace Satrabel.OpenContent.Components
                     {
                         int left = 0;
                         int top = 0;
-                        imageCropped = ImageUtils.SaveCroppedImage(image, cropData.crop.width, cropData.crop.height, out left, out top);
+                        int width = 0;
+                        int height = 0;
+                        imageCropped = ImageUtils.SaveCroppedImage(image, cropData.crop.width, cropData.crop.height, out left, out top, out width, out height);
                         res.crop.x = left;
                         res.crop.y = top;
+                        res.crop.width = width;
+                        res.crop.height = height;
                     }
                     else
                     {
@@ -225,21 +228,9 @@ namespace Satrabel.OpenContent.Components
             FilesStatus fs = null;
             try
             {
-                var res = new CroppersResultDTO()
-                {
-                    /*
-                    crop = new CropDTO()
-                    {
-                        x = cropData.crop.x,
-                        y = cropData.crop.y,
-                        width = cropData.crop.width,
-                        height = cropData.crop.height
-                    }
-                     * */
-                };
+                var res = new CroppersResultDTO();
                 var folderManager = FolderManager.Instance;
                 var fileManager = FileManager.Instance;
-
                 string RawImageUrl = cropData.url;
                 if (RawImageUrl.IndexOf('?') > 0)
                 {
@@ -250,7 +241,6 @@ namespace Satrabel.OpenContent.Components
                 if (file != null)
                 {
                     string cropfolder = "OpenContent/Files/" + ActiveModule.ModuleID;
-
                     if (!string.IsNullOrEmpty(cropData.cropfolder))
                     {
                         cropfolder = cropData.cropfolder;
@@ -266,24 +256,8 @@ namespace Satrabel.OpenContent.Components
                         string newFilename = Path.GetFileNameWithoutExtension(file.FileName) + "-" + key + Path.GetExtension(file.FileName);
                         var resizeInfo = cropper.Value;
                         var cropInfo = cropData.cropdata[key].cropper;
-                        if (cropInfo == null && Debugger.IsAttached)
-                        {
-                            Debugger.Break(); //this should never happen, but it does sometimes!!
-                        }
-                        string url = CropFile(file, newFilename, cropInfo, resizeInfo, userFolder);
-                        var c = new CropResizeResultDTO()
-                        {
-
-                            crop = new CropDTO()
-                            {
-                                x = cropInfo.x,
-                                y = cropInfo.y,
-                                width = cropInfo.width,
-                                height = cropInfo.height
-                            },
-                            url = url
-                        };
-                        res.cropdata.Add(key, c);
+                        var cropResult = CropFile(file, newFilename, cropInfo, resizeInfo, userFolder);
+                        res.cropdata.Add(key, cropResult);
                     }
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, res);
@@ -294,26 +268,38 @@ namespace Satrabel.OpenContent.Components
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
-        private string CropFile(IFileInfo file, string newFilename, CropDTO crop, ResizeDTO resize, IFolderInfo userFolder)
+        private CropResizeResultDTO CropFile(IFileInfo file, string newFilename, CropDTO crop, ResizeDTO resize, IFolderInfo userFolder)
         {
+            var cropresult = new CropResizeResultDTO();
+            if (crop != null)
+            {
+                cropresult.crop = crop;
+            }
+            else
+            {
+                cropresult.crop = new CropDTO();
+            }
 
             var folderManager = FolderManager.Instance;
             var fileManager = FileManager.Instance;
 
             var folder = folderManager.GetFolder(file.FolderId);
             var image = Image.FromFile(file.PhysicalPath);
-            Image imageCropped;
-            //int x = cropData.crop.x;
-            //int y = cropData.crop.y;
-            if (crop.x < 0 && crop.y < 0) // center
+            Image imageCropped = null;
+            if (crop == null || crop.x < 0 || crop.y < 0) // center
             {
                 int left = 0;
                 int top = 0;
-                imageCropped = ImageUtils.SaveCroppedImage(image, crop.width, crop.height, out left, out top);
-                crop.x = left;
-                crop.y = top;
+                int width = 0;
+                int height = 0;
+                imageCropped = ImageUtils.SaveCroppedImage(image, resize.width, resize.height, out left, out top, out width, out height);
+                cropresult.crop.x = left;
+                cropresult.crop.y = top;
+                cropresult.crop.width = width;
+                cropresult.crop.height = height;
+
             }
-            else
+            else if (crop.width > 0 && crop.width > 0)
             {
                 imageCropped = ImageUtils.Crop(image, crop.x, crop.y, crop.width, crop.height);
                 if (resize != null && resize.width > 0 && resize.height > 0)
@@ -321,7 +307,6 @@ namespace Satrabel.OpenContent.Components
                     imageCropped = ImageUtils.Resize(imageCropped, resize.width, resize.height);
                 }
             }
-
             Stream content = new MemoryStream();
             ImageFormat imgFormat = ImageFormat.Bmp;
             if (file.Extension.ToLowerInvariant() == "png")
@@ -336,10 +321,14 @@ namespace Satrabel.OpenContent.Components
             {
                 imgFormat = ImageFormat.Jpeg;
             }
-            imageCropped.Save(content, imgFormat);
-            var newFile = fileManager.AddFile(userFolder, newFilename, content, true);
-
-            return FileManager.Instance.GetUrl(newFile);
+            if (imageCropped != null)
+            {
+                imageCropped.Save(content, imgFormat);
+                var newFile = fileManager.AddFile(userFolder, newFilename, content, true);
+                cropresult.url = FileManager.Instance.GetUrl(newFile);
+                return cropresult;
+            }
+            return null;
         }
 
 
