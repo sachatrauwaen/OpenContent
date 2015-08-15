@@ -255,7 +255,11 @@ namespace Satrabel.OpenContent.Components
                         string key = cropper.Key;
                         string newFilename = Path.GetFileNameWithoutExtension(file.FileName) + "-" + key + Path.GetExtension(file.FileName);
                         var resizeInfo = cropper.Value;
-                        var cropInfo = cropData.cropdata[key].cropper;
+                        CropDTO cropInfo = null;
+                        if (cropData.cropdata.ContainsKey(key))
+                        {
+                            cropInfo = cropData.cropdata[key].cropper;
+                        }
                         var cropResult = CropFile(file, newFilename, cropInfo, resizeInfo, userFolder);
                         res.cropdata.Add(key, cropResult);
                     }
