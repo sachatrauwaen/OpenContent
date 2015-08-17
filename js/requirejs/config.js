@@ -1,4 +1,4 @@
-﻿var oc_moduleRoot = dnn.getVar('oc_moduleRoot');
+﻿var oc_moduleRoot = dnn.getVar('oc_websiteRoot');
 
 function oc_loadmodules(options, callback) {
     var jsmodules = oc_modules(options);
@@ -46,12 +46,12 @@ function oc_fieldtypes(options) {
 }
 
 require.config({
-    baseUrl : oc_moduleRoot,
+    baseUrl : oc_moduleRoot + 'DesktopModules/OpenContent',
     paths: {
         'async': 'js/requirejs/async',
         'text': 'js/requirejs/text',
         'css': 'js/requirejs/css',
-        alpacafields: 'alpaca/js/fields/dnn',
+        'alpacafields': 'alpaca/js/fields/dnn',
         'cropper':'js/cropper/cropper'
     },
     shim: {

@@ -175,6 +175,7 @@ namespace Satrabel.OpenContent
                             scriptList.Items.Add(new ListItem("Template - " + Path.GetFileNameWithoutExtension(part.Value.Template), part.Value.Template));
                         }
                     }
+                    scriptList.Items.Add(new ListItem("Manifest", "manifest.json"));
                 }
                 else
                 {
