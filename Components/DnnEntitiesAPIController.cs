@@ -115,6 +115,9 @@ namespace Satrabel.OpenContent.Components
             return (Globals.glbImageFileTypes + ",").IndexOf(file.Extension.ToLower().Replace(".", "") + ",") > -1;
         }
 
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [HttpPost]
         public HttpResponseMessage CropImage(CropResizeDTO cropData)
         {
             FilesStatus fs = null;
@@ -223,6 +226,9 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [HttpPost]
         public HttpResponseMessage CropImages(CroppersDTO cropData)
         {
             FilesStatus fs = null;
@@ -231,13 +237,13 @@ namespace Satrabel.OpenContent.Components
                 var res = new CroppersResultDTO();
                 var folderManager = FolderManager.Instance;
                 var fileManager = FileManager.Instance;
-                string RawImageUrl = cropData.url;
-                if (RawImageUrl.IndexOf('?') > 0)
+                string rawImageUrl = cropData.url;
+                if (rawImageUrl.IndexOf('?') > 0)
                 {
-                    RawImageUrl = RawImageUrl.Substring(0, RawImageUrl.IndexOf('?'));
+                    rawImageUrl = rawImageUrl.Substring(0, rawImageUrl.IndexOf('?'));
                 }
-                RawImageUrl = RawImageUrl.Replace(PortalSettings.HomeDirectory, "");
-                var file = fileManager.GetFile(ActiveModule.PortalID, RawImageUrl);
+                rawImageUrl = rawImageUrl.Replace(PortalSettings.HomeDirectory, "");
+                var file = fileManager.GetFile(ActiveModule.PortalID, rawImageUrl);
                 if (file != null)
                 {
                     string cropfolder = "OpenContent/Files/" + ActiveModule.ModuleID;
