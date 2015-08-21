@@ -73,6 +73,13 @@
                 }).done(function (config) {
                     if (config.schema) {
                         var jsmodules = [];
+
+                        oc_loadmodules(config.options, function () {
+                            self.FormEdit(config);
+
+                        });
+
+                        /*
                         if (config.options) {
                             var types = self.GetFieldTypes(config.options);
                             if ($.inArray("address", types) != -1) {
@@ -87,6 +94,7 @@
                         else {
                             self.FormEdit(config);
                         }
+                        */
                     }
                     else {
                         $("#<%=cmdSave.ClientID%>").click(function () {
@@ -153,14 +161,14 @@
                 alert("Uh-oh, something broke: " + status + " " + xhr.responseText);
             });
        };
-
+        /*
            
             self.GetFieldTypes = function (options) {
                 var types = [];
                 if (options.fields) {
-                    fields = options.fields;
+                    var fields = options.fields;
                     for (var key in fields) {
-                        field = fields[key];
+                        var field = fields[key];
                         if (field.type) {
                             types.push(field.type);
                         }
@@ -170,6 +178,7 @@
                 }
                 return types;
             }
+        */
         self.CreateForm();
     }
 

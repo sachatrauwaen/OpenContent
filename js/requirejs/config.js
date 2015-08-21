@@ -29,9 +29,9 @@ function oc_modules(options) {
 function oc_fieldtypes(options) {
     var types = [];
     if (options.fields) {
-        fields = options.fields;
+        var fields = options.fields;
         for (var key in fields) {
-            field = fields[key];
+            var field = fields[key];
             if (field.type) {
                 types.push(field.type);
             }
