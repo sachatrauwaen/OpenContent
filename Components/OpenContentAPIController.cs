@@ -287,7 +287,8 @@ namespace Satrabel.OpenContent.Components
         [HttpPost]
         public HttpResponseMessage Lookup(LookupRequestDTO req)
         {
-            var module = ModuleController.Instance.GetModule(req.moduleid, req.tabid, false);
+            ModuleController mc = new ModuleController();
+            var module = mc.GetModule(req.moduleid, req.tabid, false);
             string Template = (string)module.ModuleSettings["template"];
             var manifest = OpenContentUtils.GetTemplateManifest(Template);
             bool ListMode = manifest != null && manifest.IsListTemplate;
