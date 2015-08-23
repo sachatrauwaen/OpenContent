@@ -22,6 +22,9 @@ function oc_modules(options) {
         if ($.inArray("imagecropper", types) != -1) {
             jsmodules.push('imagecropperfield');
         }
+        if ($.inArray("select2", types) != -1) {
+            jsmodules.push('select2field');
+        }
     }
     return jsmodules;
 }
@@ -52,7 +55,8 @@ require.config({
         'text': 'js/requirejs/text',
         'css': 'js/requirejs/css',
         'alpacafields': 'alpaca/js/fields/dnn',
-        'cropper':'js/cropper/cropper'
+        'cropper':'js/cropper/cropper',
+        'select2': 'js/select2/select2'
     },
     shim: {
 
@@ -68,7 +72,7 @@ define('gmaps', ['async!http://maps.google.com/maps/api/js?v=3&sensor=false'],
         return window.google.maps;
     });
 
-define('gmaps_places', ['async!https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places'],
+define('gmaps_places', ['async!https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places'],
     function () {        
         return window.google.maps;
     });
@@ -84,6 +88,9 @@ define('imagecropperfield', ['css!cropper', 'cropper', 'alpacafields/ImageCroppe
         return Alpaca.Fields.ImageCropperField;
     });
 
-
+define('select2field', ['css!select2', 'select2', 'alpacafields/Select2Field'],
+    function () {
+        return Alpaca.Fields.Select2Field;
+    });
 
     
