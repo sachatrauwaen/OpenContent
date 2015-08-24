@@ -264,12 +264,12 @@ namespace Satrabel.OpenContent
                         foreach (var item in dataList)
                         {
                             dynamic dyn = JsonUtils.JsonToDynamic(item.Json);
-                            dyn.Context = new
-                            {
-                                Id = item.ContentId,
-                                EditUrl = ModuleContext.EditUrl("id", item.ContentId.ToString()),
-                                DetailUrl = Globals.NavigateURL(ModuleContext.TabId, false, ModuleContext.PortalSettings, "", ModuleContext.PortalSettings.CultureCode, OpenContentUtils.CleanupUrl(item.Title), "id=" + item.ContentId.ToString())
-                            };
+                            dyn.Context = new ExpandoObject();
+
+                            dyn.Context.Id = item.ContentId;
+                            dyn.Context.EditUrl = ModuleContext.EditUrl("id", item.ContentId.ToString());
+                            dyn.Context.DetailUrl = Globals.NavigateURL(ModuleContext.TabId, false, ModuleContext.PortalSettings, "", ModuleContext.PortalSettings.CultureCode, OpenContentUtils.CleanupUrl(item.Title), "id=" + item.ContentId.ToString());
+
                             model.Items.Add(dyn);
                         }
                         CompleteModel(settingsJson, TemplateFolder, model, files);
@@ -339,12 +339,10 @@ namespace Satrabel.OpenContent
                 model.Settings = JsonUtils.JsonToDynamic(settingsJson);
             }
             // context
-            model.Context = new
-            {
-                ModuleId = ModuleContext.ModuleId,
-                IsEditable = ModuleContext.IsEditable,
-                PortalId = ModuleContext.PortalId
-            };
+            model.Context = new ExpandoObject();
+            model.Context.ModuleId = ModuleContext.ModuleId;
+            model.Context.IsEditable = ModuleContext.IsEditable;
+            model.Context.PortalId = ModuleContext.PortalId;
         }
         private string GenerateOutput(string TemplateVirtualFolder, TemplateFiles files, string dataJson, string settingsJson)
         {
@@ -401,12 +399,15 @@ namespace Satrabel.OpenContent
             string Template = TemplateVirtualFolder + "/" + files.Template;
             if (!File.Exists(TemplateFile))
                 Exceptions.ProcessModuleLoadException(this, new Exception(Template + " don't exist"));
-            foreach (var partial in files.PartialTemplates)
+            if (files.PartialTemplates != null)
             {
-                TemplateFile = TemplateFolder + "\\" + partial.Value.Template;
-                string PartialTemplate = TemplateVirtualFolder + "/" + partial.Value.Template;
-                if (!File.Exists(TemplateFile))
-                    Exceptions.ProcessModuleLoadException(this, new Exception(PartialTemplate + " don't exist"));
+                foreach (var partial in files.PartialTemplates)
+                {
+                    TemplateFile = TemplateFolder + "\\" + partial.Value.Template;
+                    string PartialTemplate = TemplateVirtualFolder + "/" + partial.Value.Template;
+                    if (!File.Exists(TemplateFile))
+                        Exceptions.ProcessModuleLoadException(this, new Exception(PartialTemplate + " don't exist"));
+                }
             }
             return Template;
         }
