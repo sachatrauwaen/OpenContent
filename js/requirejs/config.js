@@ -25,6 +25,9 @@ function oc_modules(options) {
         if ($.inArray("select2", types) != -1) {
             jsmodules.push('select2field');
         }
+        if ($.inArray("mltext", types) != -1) {
+            jsmodules.push('mltextfield');
+        }
     }
     return jsmodules;
 }
@@ -56,7 +59,7 @@ require.config({
         'css': 'js/requirejs/css',
         'alpacafields': 'alpaca/js/fields/dnn',
         'cropper':'js/cropper/cropper',
-        'select2': 'js/select2/select2'
+        'select2': 'js/select2/select2'        
     },
     shim: {
 
@@ -93,4 +96,7 @@ define('select2field', ['css!select2', 'select2', 'alpacafields/Select2Field'],
         return Alpaca.Fields.Select2Field;
     });
 
-    
+define('mltextfield', ['alpacafields/MLTextField'],
+    function () {
+        return Alpaca.Fields.MLTextField;
+    });

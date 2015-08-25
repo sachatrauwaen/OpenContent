@@ -195,8 +195,13 @@ namespace Satrabel.OpenContent
                     string TemplateVirtualFolder = Path.GetDirectoryName(Template);
                     string TemplateFolder = Server.MapPath(TemplateVirtualFolder);
                     if (!string.IsNullOrEmpty(dataJson))
-                    {
+                    {                        
+                        if (LocaleController.Instance.GetLocales(ModuleContext.PortalId).Count > 1)
+                        {
+                            dataJson = JsonUtils.SimplifyJson(dataJson, LocaleController.Instance.GetCurrentLocale(ModuleContext.PortalId).Code);
+                        }
                         dynamic model = JsonUtils.JsonToDynamic(dataJson);
+
                         CompleteModel(settingsJson, TemplateFolder, model, null);
                         if (Path.GetExtension(Template) != ".hbs")
                         {
@@ -263,7 +268,12 @@ namespace Satrabel.OpenContent
                         model.Items = new List<dynamic>();
                         foreach (var item in dataList)
                         {
-                            dynamic dyn = JsonUtils.JsonToDynamic(item.Json);
+                            string dataJson = item.Json;
+                            if (LocaleController.Instance.GetLocales(ModuleContext.PortalId).Count > 1)
+                            {
+                                dataJson = JsonUtils.SimplifyJson(dataJson, LocaleController.Instance.GetCurrentLocale(ModuleContext.PortalId).Code);
+                            }
+                            dynamic dyn = JsonUtils.JsonToDynamic(dataJson);
                             dyn.Context = new ExpandoObject();
 
                             dyn.Context.Id = item.ContentId;
@@ -355,6 +365,10 @@ namespace Satrabel.OpenContent
 
                     if (!string.IsNullOrEmpty(dataJson))
                     {
+                        if (LocaleController.Instance.GetLocales(ModuleContext.PortalId).Count > 1)
+                        {
+                            dataJson = JsonUtils.SimplifyJson(dataJson, LocaleController.Instance.GetCurrentLocale(ModuleContext.PortalId).Code);
+                        }
                         dynamic model = JsonUtils.JsonToDynamic(dataJson);
                         CompleteModel(settingsJson, TemplateFolder, model, files);
 
