@@ -64,7 +64,7 @@ namespace Satrabel.OpenContent
             TemplateManifest manifest = null;
             if (!string.IsNullOrEmpty(Template))
             {
-                TemplateFolder = Path.GetDirectoryName(Template).Replace("\\","/");
+                TemplateFolder = Path.GetDirectoryName(Template).Replace("\\", "/");
                 manifest = OpenContentUtils.GetTemplateManifest(Template);
                 if (manifest != null && manifest.Main != null)
                 {
@@ -195,9 +195,14 @@ namespace Satrabel.OpenContent
                     string TemplateVirtualFolder = Path.GetDirectoryName(Template);
                     string TemplateFolder = Server.MapPath(TemplateVirtualFolder);
                     if (!string.IsNullOrEmpty(dataJson))
-                    {
+                    {                        
+                        if (LocaleController.Instance.GetLocales(ModuleContext.PortalId).Count > 1)
+                        {
+                            dataJson = JsonUtils.SimplifyJson(dataJson, LocaleController.Instance.GetCurrentLocale(ModuleContext.PortalId).Code);
+                        }
                         dynamic model = JsonUtils.JsonToDynamic(dataJson);
-                        CompleteModel(settingsJson, TemplateFolder, model);
+
+                        CompleteModel(settingsJson, TemplateFolder, model, null);
                         if (Path.GetExtension(Template) != ".hbs")
                         {
                             return ExecuteRazor(Template, model);
@@ -263,16 +268,21 @@ namespace Satrabel.OpenContent
                         model.Items = new List<dynamic>();
                         foreach (var item in dataList)
                         {
-                            dynamic dyn = JsonUtils.JsonToDynamic(item.Json);
-                            dyn.Context = new
+                            string dataJson = item.Json;
+                            if (LocaleController.Instance.GetLocales(ModuleContext.PortalId).Count > 1)
                             {
-                                Id = item.ContentId,
-                                EditUrl = ModuleContext.EditUrl("id", item.ContentId.ToString()),
-                                DetailUrl = Globals.NavigateURL(ModuleContext.TabId, false, ModuleContext.PortalSettings, "", ModuleContext.PortalSettings.CultureCode, OpenContentUtils.CleanupUrl(item.Title), "id=" + item.ContentId.ToString())
-                            };
+                                dataJson = JsonUtils.SimplifyJson(dataJson, LocaleController.Instance.GetCurrentLocale(ModuleContext.PortalId).Code);
+                            }
+                            dynamic dyn = JsonUtils.JsonToDynamic(dataJson);
+                            dyn.Context = new ExpandoObject();
+
+                            dyn.Context.Id = item.ContentId;
+                            dyn.Context.EditUrl = ModuleContext.EditUrl("id", item.ContentId.ToString());
+                            dyn.Context.DetailUrl = Globals.NavigateURL(ModuleContext.TabId, false, ModuleContext.PortalSettings, "", ModuleContext.PortalSettings.CultureCode, OpenContentUtils.CleanupUrl(item.Title), "id=" + item.ContentId.ToString());
+
                             model.Items.Add(dyn);
                         }
-                        CompleteModel(settingsJson, TemplateFolder, model);
+                        CompleteModel(settingsJson, TemplateFolder, model, files);
                         return ExecuteTemplate(TemplateVirtualFolder, files, Template, model);
                     }
                 }
@@ -284,49 +294,54 @@ namespace Satrabel.OpenContent
             return "";
         }
 
-        private void CompleteModel(string settingsJson, string TemplateFolder, dynamic model)
+        private void CompleteModel(string settingsJson, string TemplateFolder, dynamic model, TemplateFiles manifest)
         {
-            // schema
-            string schemaFilename = TemplateFolder + "\\" + "schema.json";
-            try
+            if (manifest != null && manifest.SchemaInTemplate)
             {
-                dynamic schema = JsonUtils.JsonToDynamic(File.ReadAllText(schemaFilename));
-                model.Schema = schema;
-            }
-            catch (Exception ex)
-            {
-                Exceptions.ProcessModuleLoadException(string.Format("Invalid json-schema. Please verify file {0}.", schemaFilename), this, ex, true);
-            }
-            
-            // options
-            JToken optionsJson = null;
-            // default options
-            string optionsFilename = TemplateFolder + "\\" + "options.json";
-            if (File.Exists(optionsFilename))
-            {
-                string fileContent = File.ReadAllText(optionsFilename);
-                if (!string.IsNullOrWhiteSpace(fileContent))
+                // schema
+                string schemaFilename = TemplateFolder + "\\" + "schema.json";
+                try
                 {
-                    optionsJson = JObject.Parse(fileContent);
+                    dynamic schema = JsonUtils.JsonToDynamic(File.ReadAllText(schemaFilename));
+                    model.Schema = schema;
+                }
+                catch (Exception ex)
+                {
+                    Exceptions.ProcessModuleLoadException(string.Format("Invalid json-schema. Please verify file {0}.", schemaFilename), this, ex, true);
                 }
             }
-            // language options
-            optionsFilename = TemplateFolder + "\\" + "options." + ModuleContext.PortalSettings.CultureCode + ".json";
-            if (File.Exists(optionsFilename))
+            if (manifest != null && manifest.OptionsInTemplate)
             {
-                string fileContent = File.ReadAllText(optionsFilename);
-                if (!string.IsNullOrWhiteSpace(fileContent))
+                // options
+                JToken optionsJson = null;
+                // default options
+                string optionsFilename = TemplateFolder + "\\" + "options.json";
+                if (File.Exists(optionsFilename))
                 {
-                    if (optionsJson == null)
+                    string fileContent = File.ReadAllText(optionsFilename);
+                    if (!string.IsNullOrWhiteSpace(fileContent))
+                    {
                         optionsJson = JObject.Parse(fileContent);
-                    else
-                        optionsJson = optionsJson.JsonMerge(JObject.Parse(fileContent));
+                    }
                 }
-            }
-            if (optionsJson != null)
-            {
-                dynamic Options = JsonUtils.JsonToDynamic(optionsJson.ToString());
-                model.Options = Options;
+                // language options
+                optionsFilename = TemplateFolder + "\\" + "options." + ModuleContext.PortalSettings.CultureCode + ".json";
+                if (File.Exists(optionsFilename))
+                {
+                    string fileContent = File.ReadAllText(optionsFilename);
+                    if (!string.IsNullOrWhiteSpace(fileContent))
+                    {
+                        if (optionsJson == null)
+                            optionsJson = JObject.Parse(fileContent);
+                        else
+                            optionsJson = optionsJson.JsonMerge(JObject.Parse(fileContent));
+                    }
+                }
+                if (optionsJson != null)
+                {
+                    dynamic Options = JsonUtils.JsonToDynamic(optionsJson.ToString());
+                    model.Options = Options;
+                }
             }
             // settings
             if (settingsJson != null)
@@ -334,12 +349,10 @@ namespace Satrabel.OpenContent
                 model.Settings = JsonUtils.JsonToDynamic(settingsJson);
             }
             // context
-            model.Context = new
-            {
-                ModuleId = ModuleContext.ModuleId,
-                IsEditable = ModuleContext.IsEditable,
-                PortalId = ModuleContext.PortalId
-            };
+            model.Context = new ExpandoObject();
+            model.Context.ModuleId = ModuleContext.ModuleId;
+            model.Context.IsEditable = ModuleContext.IsEditable;
+            model.Context.PortalId = ModuleContext.PortalId;
         }
         private string GenerateOutput(string TemplateVirtualFolder, TemplateFiles files, string dataJson, string settingsJson)
         {
@@ -352,8 +365,12 @@ namespace Satrabel.OpenContent
 
                     if (!string.IsNullOrEmpty(dataJson))
                     {
+                        if (LocaleController.Instance.GetLocales(ModuleContext.PortalId).Count > 1)
+                        {
+                            dataJson = JsonUtils.SimplifyJson(dataJson, LocaleController.Instance.GetCurrentLocale(ModuleContext.PortalId).Code);
+                        }
                         dynamic model = JsonUtils.JsonToDynamic(dataJson);
-                        CompleteModel(settingsJson, TemplateFolder, model);
+                        CompleteModel(settingsJson, TemplateFolder, model, files);
 
                         return ExecuteTemplate(TemplateVirtualFolder, files, Template, model);
                     }
@@ -396,12 +413,15 @@ namespace Satrabel.OpenContent
             string Template = TemplateVirtualFolder + "/" + files.Template;
             if (!File.Exists(TemplateFile))
                 Exceptions.ProcessModuleLoadException(this, new Exception(Template + " don't exist"));
-            foreach (var partial in files.PartialTemplates)
+            if (files.PartialTemplates != null)
             {
-                TemplateFile = TemplateFolder + "\\" + partial.Value.Template;
-                string PartialTemplate = TemplateVirtualFolder + "/" + partial.Value.Template;
-                if (!File.Exists(TemplateFile))
-                    Exceptions.ProcessModuleLoadException(this, new Exception(PartialTemplate + " don't exist"));
+                foreach (var partial in files.PartialTemplates)
+                {
+                    TemplateFile = TemplateFolder + "\\" + partial.Value.Template;
+                    string PartialTemplate = TemplateVirtualFolder + "/" + partial.Value.Template;
+                    if (!File.Exists(TemplateFile))
+                        Exceptions.ProcessModuleLoadException(this, new Exception(PartialTemplate + " don't exist"));
+                }
             }
             return Template;
         }

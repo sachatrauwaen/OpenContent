@@ -91,15 +91,16 @@
 }
 
 .alpaca-control-container {
-    
     width: 45%;
-    max-width: 445px;    
-    float:left;
+    max-width: 445px;
+    float: left;
 }
+
 .alpaca-image-display,
 .dnnFormItem.alpaca-field.alpaca-field-image input[type=text],
-.dnnFormItem.alpaca-field.alpaca-field-image .twitter-typeahead 
-{
+.dnnFormItem.alpaca-field.alpaca-field-image .twitter-typeahead,
+.dnnFormItem.alpaca-field.alpaca-field-imagecropper input[type=text],
+.dnnFormItem.alpaca-field.alpaca-field-imagecropper .twitter-typeahead {
     /*
     padding-left:32%;
     margin-left:38px;
@@ -109,10 +110,24 @@
     width: 95%;
 }
 
+.dnnFormItem.alpaca-field.alpaca-field-imagecropper .alpaca-form-button {
+    padding: 5px;
+    margin: 5px;
+    border: solid 1px #aaa;
+}
+
+
+.dnnFormItem.alpaca-field.alpaca-field-imagecropper .alpaca-form-tab {
+    padding: 5px;
+    border: solid 1px #aaa;
+}
+
+    .dnnFormItem.alpaca-field.alpaca-field-imagecropper .alpaca-form-tab.active {
+        background-color: #ccc;
+    }
 
 .dnnFormItem.alpaca-field.alpaca-field-file input[type=text],
-.dnnFormItem.alpaca-field.alpaca-field-file .twitter-typeahead 
-{
+.dnnFormItem.alpaca-field.alpaca-field-file .twitter-typeahead {
     /*
     padding-left:32%;
     margin-left:38px;
@@ -126,9 +141,16 @@
     margin-bottom: 18px;
 }
 
-    .alpaca-image-display img {
-        max-height: 200px;
-    }
+.alpaca-field-imagecropper .alpaca-image-display img {
+    height: 300px;
+}
+
+
+.alpaca-image-display img {
+    max-height: 200px;
+    min-height: 100px;
+    max-height: 300px;
+}
 
 .alpaca-array-actionbar {
     /* padding-left:32%; */
@@ -302,4 +324,31 @@
         color: #fff;
         background-color: #0097cf;
     }
+
+.select2-container {
+    width: 47% !important;
+    max-width: 461px;
+    
+}
+.select2-container--default .select2-search--inline .select2-search__field {
+    margin-bottom: 0px;
+    padding: 0px;
+    border: 0 none;
+    border-radius:0;
+}
+
+.select2-container--default input[type="search"]:active, 
+.select2-container--default input[type="search"]:focus 
+{
+        border: 0 none;
+        -webkit-box-shadow: 0;
+    box-shadow: 0;
+    color: #666;
+}
+
+.alpaca-field-mltext img  {
+    margin-bottom: 18px;
+    margin-left: 5px;
+}
+
 

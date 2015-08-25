@@ -18,6 +18,7 @@ using DotNetNuke.Services.Localization;
 using System.IO;
 using DotNetNuke.Web.Client.ClientResourceManagement;
 using DotNetNuke.Web.Client;
+using System.Web.Hosting;
 
 
 #endregion
@@ -47,6 +48,8 @@ namespace Satrabel.OpenContent
             ServicesFramework.Instance.RequestAjaxAntiForgerySupport();
             JavaScript.RequestRegistration(CommonJs.DnnPlugins); // dnnPanels
             JavaScript.RequestRegistration(CommonJs.jQueryFileUpload); // image file upload
+            DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "oc_websiteRoot", HostingEnvironment.ApplicationVirtualPath, true);
+            
             if (File.Exists(Server.MapPath("~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js")))
             {
                 ClientResourceManager.RegisterScript(Page, "~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js",FileOrder.Js.DefaultPriority);

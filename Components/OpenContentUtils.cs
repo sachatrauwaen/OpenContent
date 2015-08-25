@@ -406,7 +406,7 @@ namespace Satrabel.OpenContent.Components
                 string TemplateFolder = Path.GetDirectoryName(Template);
                 string TemplateFile = Path.GetFileNameWithoutExtension(Template);
                 Manifest manifest = GetManifest(TemplateFolder);
-                if (manifest != null && manifest.Templates.ContainsKey(TemplateFile))
+                if (manifest != null && manifest.Templates != null && manifest.Templates.ContainsKey(TemplateFile))
                 {
                     templateManifest = manifest.Templates[TemplateFile];
                 }
@@ -425,6 +425,7 @@ namespace Satrabel.OpenContent.Components
         public TemplateFiles Main { get; set; }
         [JsonProperty(PropertyName = "detail")]
         public TemplateFiles Detail { get; set; }
+        
         public bool IsListTemplate
         {
             get
@@ -442,8 +443,15 @@ namespace Satrabel.OpenContent.Components
     {
         [JsonProperty(PropertyName = "template")]
         public string Template { get; set; }
+        
         [JsonProperty(PropertyName = "partialTemplates")]
         public Dictionary<string, PartialTemplate> PartialTemplates { get; set; }
+
+        [JsonProperty(PropertyName = "schemaInTemplate")]
+        public bool SchemaInTemplate { get; set; }
+
+        [JsonProperty(PropertyName = "optionsInTemplate")]
+        public bool OptionsInTemplate { get; set; }
     }
 
     public class Manifest

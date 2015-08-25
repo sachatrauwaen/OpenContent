@@ -26,6 +26,7 @@ using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Tabs;
 using DotNetNuke.Common;
 using DotNetNuke.Services.FileSystem;
+using System.Collections.Generic;
 
 #endregion
 
@@ -281,6 +282,81 @@ namespace Satrabel.OpenContent.Components
 
         }
 
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [HttpPost]
+        public HttpResponseMessage Lookup(LookupRequestDTO req)
+        {
+            ModuleController mc = new ModuleController();
+            var module = mc.GetModule(req.moduleid, req.tabid, false);
+            string Template = (string)module.ModuleSettings["template"];
+            var manifest = OpenContentUtils.GetTemplateManifest(Template);
+            bool ListMode = manifest != null && manifest.IsListTemplate;
+            //JToken json = new JObject();
+            List<LookupResultDTO> res = new List<LookupResultDTO>();
+            try
+            {
+                OpenContentController ctrl = new OpenContentController();
+                if (ListMode)
+                {
+                    var items = ctrl.GetContents(req.moduleid);
+                    if (items != null)
+                    {
+                        foreach (var item in items)
+                        {
+                            res.Add(new LookupResultDTO(){
+                                value = item.ContentId.ToString(),
+                                text = item.Title
+                            });
+                        }
+                    }
+                }
+                else
+                {
+                    var struc = ctrl.GetFirstContent(req.moduleid);
+                    if (struc != null)
+                    {
+
+                        JToken json = JObject.Parse(struc.Json);
+                        if (!string.IsNullOrEmpty(req.dataMember))
+                        {
+                            json = json[req.dataMember];
+                            if (json is JArray)
+                            {
+                                foreach (JToken item in (JArray)json)
+                                {
+                                    res.Add(new LookupResultDTO()
+                                    {
+                                        value = item[req.valueField] == null ? "": item[req.valueField].ToString(),
+                                        text = item[req.textField] == null ? "" : item[req.textField].ToString()
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }
+                return Request.CreateResponse(HttpStatusCode.OK, res);
+            }
+            catch (Exception exc)
+            {
+                Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
+    }
+
+    public class LookupRequestDTO
+    {
+        public int moduleid { get; set; }
+        public int tabid { get; set; }
+        public string dataMember { get; set; }
+        public string valueField { get; set; }
+        public string textField { get; set; }
+    }
+    public class LookupResultDTO
+    {
+        public string value { get; set; }
+        public string text { get; set; }
     }
 }
 

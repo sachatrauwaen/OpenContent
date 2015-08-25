@@ -8,34 +8,27 @@
      */
     {
         /**
-         * @see Alpaca.Fields.TextAreaField#getFieldType
+         * @see Alpaca.Fields.CKEditorField#getFieldType
          */
         getFieldType: function () {
             return "ckeditor";
         },
 
         /**
-         * @see Alpaca.Fields.TextAreaField#setup
+         * @see Alpaca.Fields.CKEditorField#setup
          */
         setup: function () {
             if (!this.data) {
                 this.data = "";
             }
-
             this.base();
-
-
-
-            
-
             if (typeof (this.options.ckeditor) == "undefined") {
                 this.options.ckeditor = {};
-                
             }
-
-            
+            if (typeof (this.options.configset) == "undefined") {
+                this.options.configset = "";
+            }
         },
-
         afterRenderControl: function (model, callback) {
             var self = this;
 
@@ -48,12 +41,11 @@
 
                         var defaultConfig = {
                             toolbar: [
-                                 
                                  { name: 'basicstyles', groups: ['basicstyles', 'cleanup'], items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'] },
                                  { name: 'styles', items: ['Styles', 'Format'] },
                                  { name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align'], items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', ] },
                                  { name: 'links', items: ['Link', 'Unlink'] },
-                                 
+
                                  { name: 'document', groups: ['mode', 'document', 'doctools'], items: ['Source'] },
                             ],
                             // Set the most common block elements.
@@ -70,20 +62,107 @@
                             //autoGrow_onStartup : true,
                             //autoGrow_minHeight : 100,
                             //autoGrow_maxHeight : 300,
-                            height : 150,
+                            height: 150,
                             //skin : 'flat',
 
                             customConfig: '',
                             stylesSet: []
                         };
+                        if (self.options.configset == "basic") {
+                            defaultConfig = {
+                                toolbar: [
+                                     { name: 'basicstyles', groups: ['basicstyles', 'cleanup'], items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'] },
+                                     { name: 'styles', items: ['Styles', 'Format'] },
+                                     { name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align'], items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', ] },
+                                     { name: 'links', items: ['Link', 'Unlink'] },
 
+                                     { name: 'document', groups: ['mode', 'document', 'doctools'], items: ['Source'] },
+                                ],
+                                // Set the most common block elements.
+                                format_tags: 'p;h1;h2;h3;pre',
+                                // Simplify the dialog windows.
+                                removeDialogTabs: 'image:advanced;link:advanced',
+                                // Remove one plugin.
+                                removePlugins: 'elementspath,resize',
+                                extraPlugins: 'dnnpages',
+                                //autoGrow_onStartup : true,
+                                //autoGrow_minHeight : 100,
+                                //autoGrow_maxHeight : 300,
+                                height: 150,
+                                //skin : 'flat',
+                                customConfig: '',
+                                stylesSet: []
+                            };
+                        } else if (self.options.configset == "standard") {
+                            defaultConfig = {
+                                toolbar: [
+                                     { name: 'basicstyles', groups: ['basicstyles', 'cleanup'], items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'] },
+                                     { name: 'styles', items: ['Styles', 'Format'] },
+                                     { name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align'], items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', ] },
+                                     { name: 'links', items: ['Link', 'Unlink'] },
 
+                                     { name: 'document', groups: ['mode', 'document', 'doctools'], items: ['Source'] },
+                                ],
+                                // Set the most common block elements.
+                                format_tags: 'p;h1;h2;h3;pre',
+                                // Simplify the dialog windows.
+                                removeDialogTabs: 'image:advanced;link:advanced',
+                                // Remove one plugin.
+                                removePlugins: 'elementspath,resize',
+                                extraPlugins: 'dnnpages',
+                                //autoGrow_onStartup : true,
+                                //autoGrow_minHeight : 100,
+                                //autoGrow_maxHeight : 300,
+                                height: 150,
+                                //skin : 'flat',
+                                customConfig: '',
+                                stylesSet: []
+                            };
+                        } else if (self.options.configset == "full") {
+                            defaultConfig = {
+                                toolbar: [
+                                    { name: 'document', items: ['Source', '-', 'Save', 'NewPage', 'DocProps', 'Preview', 'Print', '-', 'Templates'] },
+	                                { name: 'clipboard', items: ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'] },
+	                                { name: 'editing', items: ['Find', 'Replace', '-', 'SelectAll', '-', 'SpellChecker', 'Scayt'] },
+	                                {
+	                                    name: 'forms', items: ['Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton',
+                                            'HiddenField']
+	                                },
+	                                '/',
+	                                { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'] },
+	                                {
+	                                    name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv',
+                                        '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl']
+	                                },
+	                                { name: 'links', items: ['Link', 'Unlink', 'Anchor'] },
+	                                { name: 'insert', items: ['Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe'] },
+	                                '/',
+	                                { name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize'] },
+	                                { name: 'colors', items: ['TextColor', 'BGColor'] },
+	                                { name: 'tools', items: ['Maximize', 'ShowBlocks', '-', 'About'] }
+                                ],
+                                // Set the most common block elements.
+                                format_tags: 'p;h1;h2;h3;pre',
+                                // Simplify the dialog windows.
+                                removeDialogTabs: 'image:advanced;link:advanced',
+                                // Remove one plugin.
+                                removePlugins: 'elementspath,resize',
+                                extraPlugins: 'dnnpages',
+                                //autoGrow_onStartup : true,
+                                //autoGrow_minHeight : 100,
+                                //autoGrow_maxHeight : 300,
+                                height: 150,
+                                //skin : 'flat',
+                                customConfig: '',
+                                stylesSet: []
+                            };
+                        }
                         var config = $.extend({}, defaultConfig, self.options.ckeditor);
 
                         self.editor = CKEDITOR.replace($(self.control)[0], config);
                         //self.editor = CKEDITOR.replace($(self.control)[0], self.options.ckeditor);
 
-                    }, 600);
+                    }, 1600);
                 }
 
                 // if the ckeditor's dom element gets destroyed, make sure we clean up the editor instance
@@ -151,7 +230,7 @@
                 });
                 */
 
-            }, 800); // NOTE: odd timing dependencies
+            }, 1800); // NOTE: odd timing dependencies
         },
 
         setValue: function (value) {
@@ -194,7 +273,7 @@
         /* builder_helpers */
 
         /**
-         * @see Alpaca.Fields.TextAreaField#getTitle
+         * @see Alpaca.Fields.CKEditorField#getTitle
          */
         ,
         getTitle: function () {
@@ -202,7 +281,7 @@
         },
 
         /**
-         * @see Alpaca.Fields.TextAreaField#getDescription
+         * @see Alpaca.Fields.CKEditorField#getDescription
          */
         getDescription: function () {
             return "Provides an instance of a CK Editor control for use in editing HTML.";

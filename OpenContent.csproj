@@ -82,6 +82,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Net.Http, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\bin\System.Net.Http.dll</HintPath>
@@ -125,6 +126,7 @@
     <Compile Include="Components\FilesStatus.cs" />
     <Compile Include="Components\FileUploadController.cs" />
     <Compile Include="Components\Handlebars\HandlebarsEngine.cs" />
+    <Compile Include="Components\Images\ImageUtils.cs" />
     <Compile Include="Components\Json\JsonMergeExtensions.cs" />
     <Compile Include="Components\Json\JsonMergeOptionArrayHandling.cs" />
     <Compile Include="Components\Json\JsonMergeOptions.cs" />
@@ -212,10 +214,12 @@
     <Content Include="alpaca\css\img\Up_16X16_Standard.png" />
     <Content Include="alpaca\js\fields\dnn\AddressField.js" />
     <Content Include="alpaca\js\fields\dnn\CKEditorField.js" />
+    <Content Include="alpaca\js\fields\dnn\ImageCropperField.js" />
     <Content Include="alpaca\js\fields\dnn\NumberField.js" />
     <Content Include="alpaca\js\fields\dnn\DateField.js" />
     <Content Include="alpaca\js\fields\dnn\FileField.js" />
     <Content Include="alpaca\js\fields\dnn\ImageField.js" />
+    <Content Include="alpaca\js\fields\dnn\Select2Field.js" />
     <Content Include="alpaca\js\fields\dnn\UrlField.js" />
     <Content Include="alpaca\js\fields\dnn\wysihtmlField.js" />
     <Content Include="alpaca\js\views\dnnbootstrap.js" />
@@ -225,6 +229,7 @@
     <Content Include="alpaca\templates\dnn-edit\container.html" />
     <Content Include="alpaca\templates\dnn-edit\control-checkbox.html" />
     <Content Include="alpaca\templates\dnn-edit\control-file.html" />
+    <Content Include="alpaca\templates\dnn-edit\control-imagecropper.html" />
     <Content Include="alpaca\templates\dnn-edit\control-image.html" />
     <Content Include="alpaca\templates\dnn-edit\control-wysihtml.html" />
     <Content Include="alpaca\templates\dnn-edit\control.html" />
@@ -301,8 +306,66 @@
     <Content Include="js\CodeMirror\addon\mode\overlay.js" />
     <Content Include="js\CodeMirror\addon\mode\simple.js" />
     <Content Include="js\CodeMirror\mode\handlebars\handlebars.js" />
+    <Content Include="js\cropper\cropper.css" />
+    <Content Include="js\cropper\cropper.js" />
+    <Content Include="js\cropper\cropper.min.css" />
+    <Content Include="js\cropper\cropper.min.js" />
     <Content Include="js\opencontent.js" />
+    <Content Include="js\requirejs\async.js" />
+    <Content Include="js\requirejs\config.js" />
     <None Include="Scripts\_references.js" />
+    <Content Include="js\requirejs\css.js" />
+    <Content Include="js\requirejs\css.min.js" />
+    <Content Include="js\requirejs\googlemaps.js" />
+    <Content Include="js\requirejs\require.js" />
+    <Content Include="js\requirejs\text.js" />
+    <Content Include="js\select2\i18n\az.js" />
+    <Content Include="js\select2\i18n\bg.js" />
+    <Content Include="js\select2\i18n\ca.js" />
+    <Content Include="js\select2\i18n\cs.js" />
+    <Content Include="js\select2\i18n\da.js" />
+    <Content Include="js\select2\i18n\de.js" />
+    <Content Include="js\select2\i18n\en.js" />
+    <Content Include="js\select2\i18n\es.js" />
+    <Content Include="js\select2\i18n\et.js" />
+    <Content Include="js\select2\i18n\eu.js" />
+    <Content Include="js\select2\i18n\fa.js" />
+    <Content Include="js\select2\i18n\fi.js" />
+    <Content Include="js\select2\i18n\fr.js" />
+    <Content Include="js\select2\i18n\gl.js" />
+    <Content Include="js\select2\i18n\he.js" />
+    <Content Include="js\select2\i18n\hi.js" />
+    <Content Include="js\select2\i18n\hr.js" />
+    <Content Include="js\select2\i18n\hu.js" />
+    <Content Include="js\select2\i18n\id.js" />
+    <Content Include="js\select2\i18n\is.js" />
+    <Content Include="js\select2\i18n\it.js" />
+    <Content Include="js\select2\i18n\ko.js" />
+    <Content Include="js\select2\i18n\lt.js" />
+    <Content Include="js\select2\i18n\lv.js" />
+    <Content Include="js\select2\i18n\mk.js" />
+    <Content Include="js\select2\i18n\nb.js" />
+    <Content Include="js\select2\i18n\nl.js" />
+    <Content Include="js\select2\i18n\pl.js" />
+    <Content Include="js\select2\i18n\pt-BR.js" />
+    <Content Include="js\select2\i18n\pt.js" />
+    <Content Include="js\select2\i18n\ro.js" />
+    <Content Include="js\select2\i18n\ru.js" />
+    <Content Include="js\select2\i18n\sk.js" />
+    <Content Include="js\select2\i18n\sr.js" />
+    <Content Include="js\select2\i18n\sv.js" />
+    <Content Include="js\select2\i18n\th.js" />
+    <Content Include="js\select2\i18n\tr.js" />
+    <Content Include="js\select2\i18n\uk.js" />
+    <Content Include="js\select2\i18n\vi.js" />
+    <Content Include="js\select2\i18n\zh-CN.js" />
+    <Content Include="js\select2\i18n\zh-TW.js" />
+    <Content Include="js\select2\select2.css" />
+    <Content Include="js\select2\select2.full.js" />
+    <Content Include="js\select2\select2.full.min.js" />
+    <Content Include="js\select2\select2.js" />
+    <Content Include="js\select2\select2.min.css" />
+    <Content Include="js\select2\select2.min.js" />
     <Content Include="ShareTemplate.ascx" />
     <Content Include="EditData.ascx" />
     <Content Include="EditTemplate.ascx" />
@@ -459,6 +522,7 @@
   <ItemGroup>
     <Content Include="App_LocalResources\EditGlobalSettings.ascx.resx" />
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
