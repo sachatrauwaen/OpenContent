@@ -76,7 +76,7 @@
                                      { name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align'], items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', ] },
                                      { name: 'links', items: ['Link', 'Unlink'] },
 
-                                     { name: 'document', groups: ['mode', 'document', 'doctools'], items: ['Source'] },
+                                     { name: 'document', groups: ['mode', 'document', 'doctools'], items: ['Source', 'Maximize'] },
                                 ],
                                 // Set the most common block elements.
                                 format_tags: 'p;h1;h2;h3;pre',
@@ -101,10 +101,20 @@
                                      { name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align'], items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', ] },
                                      { name: 'links', items: ['Link', 'Unlink'] },
 
-                                     { name: 'document', groups: ['mode', 'document', 'doctools'], items: ['Source'] },
+                                     { name: 'document', groups: ['mode', 'document', 'doctools'], items: ['Source', 'Maximize'] }
                                 ],
                                 // Set the most common block elements.
-                                format_tags: 'p;h1;h2;h3;pre',
+                                format_tags: 'p;h1;h2;h3;pre;div',
+
+                                //http://docs.ckeditor.com/#!/guide/dev_allowed_content_rules
+                                extraAllowedContent:
+                                'table tr th td caption[*](*);' +
+                                'div span(*);' 
+                                //'a[!href](*);' 
+                                //'img[!src,alt,width,height](*);' +
+                                //'h1 h2 h3 p blockquote strong em(*);' +
+                                ,
+
                                 // Simplify the dialog windows.
                                 removeDialogTabs: 'image:advanced;link:advanced',
                                 // Remove one plugin.
@@ -125,8 +135,7 @@
 	                                { name: 'clipboard', items: ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'] },
 	                                { name: 'editing', items: ['Find', 'Replace', '-', 'SelectAll', '-', 'SpellChecker', 'Scayt'] },
 	                                {
-	                                    name: 'forms', items: ['Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton',
-                                            'HiddenField']
+	                                    name: 'forms', items: ['Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton', 'HiddenField']
 	                                },
 	                                '/',
 	                                { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'] },
@@ -142,7 +151,9 @@
 	                                { name: 'tools', items: ['Maximize', 'ShowBlocks', '-', 'About'] }
                                 ],
                                 // Set the most common block elements.
-                                format_tags: 'p;h1;h2;h3;pre',
+                                format_tags: 'p;h1;h2;h3;pre;div',
+                                //http://docs.ckeditor.com/#!/api/CKEDITOR.config-cfg-allowedContent
+                                allowedContentRules: true,
                                 // Simplify the dialog windows.
                                 removeDialogTabs: 'image:advanced;link:advanced',
                                 // Remove one plugin.
