@@ -15,6 +15,9 @@ using System.Web.Caching;
 using DotNetNuke.Common.Utilities;
 using DotNetNuke.ComponentModel.DataAnnotations;
 using DotNetNuke.Entities.Content;
+using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -33,5 +36,28 @@ namespace Satrabel.OpenContent.Components
         public int LastModifiedByUserId { get; set; }
         public DateTime CreatedOnDate { get; set; }
         public DateTime LastModifiedOnDate { get; set; }
+        public string VersionsJson { get; set; }
+        [IgnoreColumn]
+        public List<OpenContentVersion> Versions
+        {
+            get
+            {
+                List<OpenContentVersion> lst;
+                if (string.IsNullOrWhiteSpace(VersionsJson))
+                {
+                    lst = new List<OpenContentVersion>();
+                }
+                else
+                {
+                    lst = JsonConvert.DeserializeObject<List<OpenContentVersion>>(VersionsJson);
+                }
+                return lst;
+            }
+            set
+            {
+                VersionsJson = JsonConvert.SerializeObject(value);
+            }
+        }
+
     }
 }

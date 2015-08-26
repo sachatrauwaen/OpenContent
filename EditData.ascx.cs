@@ -10,6 +10,7 @@
 #region Using Statements
 
 using System;
+using System.Linq;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Common;
 using DotNetNuke.Framework.JavaScriptLibraries;
@@ -19,6 +20,7 @@ using DotNetNuke.Services.Localization;
 using System.IO;
 using Satrabel.OpenContent.Components;
 using Newtonsoft.Json.Linq;
+using System.Globalization;
 
 #endregion
 
@@ -40,6 +42,23 @@ namespace Satrabel.OpenContent
             //ServicesFramework.Instance.RequestAjaxScriptSupport();
             //ServicesFramework.Instance.RequestAjaxAntiForgerySupport();
             sourceList.SelectedIndexChanged += sourceList_SelectedIndexChanged;
+            ddlVersions.SelectedIndexChanged += ddlVersions_SelectedIndexChanged;
+        }
+
+        private void ddlVersions_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            
+            OpenContentController ctrl = new OpenContentController();
+            OpenContentInfo data = ctrl.GetFirstContent(ModuleId);
+            if (data != null)
+            {
+                var d = new DateTime(long.Parse(ddlVersions.SelectedValue));
+                    
+                    
+                var ver = data.Versions.Single(v => v.CreatedOnDate == d);
+                txtSource.Text = ver.Json.ToString();
+            }
+            
         }
         protected override void OnLoad(EventArgs e)
         {
@@ -68,6 +87,13 @@ namespace Satrabel.OpenContent
                     if (data != null)
                     {
                         json = data.Json;
+                        foreach (var ver in data.Versions)
+                        {
+                            ddlVersions.Items.Add(new ListItem() {
+                                Text = ver.CreatedOnDate.ToShortDateString() + " " + ver.CreatedOnDate.ToShortTimeString(),
+                                Value = ver.CreatedOnDate.Ticks.ToString()
+                            });
+                        }
                     }
                     break;
                 case cSettings:
@@ -159,7 +185,9 @@ namespace Satrabel.OpenContent
         private void sourceList_SelectedIndexChanged(object sender, EventArgs e)
         {
             //string template = ModuleContext.Settings["template"] as string;
+            phVersions.Visible = sourceList.SelectedValue == cData;            
             DisplayFile(sourceList.SelectedValue);
+
         }
         #endregion
 

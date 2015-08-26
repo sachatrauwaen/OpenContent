@@ -15,7 +15,7 @@
 <script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/wysihtmlField.js"></script>
 <script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/NumberField.js"></script>
 <dnncl:DnnJsInclude ID="DnnJsInclude3" runat="server" FilePath="~/DesktopModules/OpenContent/js/requirejs/require.js" Priority="110" ForceProvider="DnnFormBottomProvider" />
-<dnncl:DnnJsInclude ID="DnnJsInclude5" runat="server" FilePath="~/DesktopModules/OpenContent/js/requirejs/config.js" Priority="111"  ForceProvider="DnnFormBottomProvider" />
+<dnncl:DnnJsInclude ID="DnnJsInclude5" runat="server" FilePath="~/DesktopModules/OpenContent/js/requirejs/config.js" Priority="111" ForceProvider="DnnFormBottomProvider" />
 <dnncl:DnnCssInclude ID="DnnCssInclude1" runat="server" FilePath="~/DesktopModules/OpenContent/css/font-awesome/css/font-awesome.min.css" AddTag="false" />
 
 <asp:Panel ID="ScopeWrapper" runat="server">
@@ -25,10 +25,12 @@
             <asp:HyperLink ID="cmdSave" runat="server" class="dnnPrimaryAction" resourcekey="cmdSave" /></li>
         <li>
             <asp:HyperLink ID="hlCancel" runat="server" class="dnnSecondaryAction" resourcekey="cmdCancel" /></li>
+        <li style="padding-left: 10px;">
+            <asp:DropDownList ID="ddlVersions" runat="server" ClientIDMode="Static" />
+        </li>
     </ul>
 </asp:Panel>
 <asp:HiddenField ID="CKDNNporid" runat="server" ClientIDMode="Static" />
-
 
 <script type="text/javascript">
     $(document).ready(function () {
@@ -74,7 +76,7 @@
             data: getData,
             beforeSend: sf.setModuleHeaders
         }).done(function (config) {
-            
+
             oc_loadmodules(config.options, function () {
                 self.FormEdit(config);
             });
@@ -89,14 +91,27 @@
             connector.servicesFramework = sf;
             connector.culture = '<%=CurrentCulture%>';
             connector.numberDecimalSeparator = '<%=NumberDecimalSeparator%>';
+            if (config.versions){
+                $.each(config.versions, function (i, item) {
+                    $("#<%=ddlVersions.ClientID%>").append($('<option>', { 
+                        value: item.ticks,
+                        text : item.text 
+                    }));
+                    //$("#<%=ddlVersions.ClientID%>").data(item.CreatedOnDate, item.Json);
+                });
+            }
             
+            $.alpaca.setDefaultLocale(connector.culture.replace('-', '_'));
+            self.CreateForm(connector, config, config.data);
+            
+        };
 
-            $.alpaca.setDefaultLocale(connector.culture.replace('-','_'));
-
+        self.CreateForm = function(connector, config, data) {
+        
             $("#field1").alpaca({
                 "schema": config.schema,
                 "options": config.options,
-                "data": config.data,
+                "data": data,
                 "view": "dnn-edit",
                 "connector": connector,
                 "postRender": function (control) {
@@ -111,10 +126,21 @@
                         }
                         return false;
                     });
-                    //$('#field1').dnnPanels();
-                    //$('.dnnTooltip').dnnTooltip();
+
+                    $("#<%=ddlVersions.ClientID%>").change(function () {
+                        //var versions = config.versions;
+                        //var ver = $("#<%=ddlVersions.ClientID%>").data($(this).val());
+                        //$("#field1").empty();
+                        //$("#<%=cmdSave.ClientID%>").off("click");
+                        //self.CreateForm(connector, config, ver);
+                        //selfControl.setValue(ver);
+                        self.Version(itemId, $(this).val(), control);
+                        return false;
+                    });
+
                 }
             });
+        
         };
 
         self.FormSubmit = function (data, href) {
@@ -148,5 +174,27 @@
             });
         };
 
+        self.Version = function (id, ticks, control) {
+            if (!id) id = 0;
+            var postData = { id: id, ticks : ticks };
+            var action = "Version"; 
+
+            $.ajax({
+                type: "GET",
+                url: sf.getServiceRoot('OpenContent') + "OpenContentAPI/" + action,
+                //contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: postData,
+                beforeSend: sf.setModuleHeaders
+            }).done(function (data) {
+                //alert('ok:' + data);
+                control.setValue(data);
+            }).fail(function (xhr, result, status) {
+                alert("Uh-oh, something broke: " + status);
+            });
+        };
+
     });
+
+
 </script>

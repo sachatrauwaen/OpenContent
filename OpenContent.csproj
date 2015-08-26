@@ -138,6 +138,7 @@
     <Compile Include="Components\OpenContentAPIController.cs" />
     <Compile Include="Components\OpenContentRouteMapper.cs" />
     <Compile Include="Components\OpenContentUtils.cs" />
+    <Compile Include="Components\OpenContentVersion.cs" />
     <Compile Include="Components\Rss\FeedParser.cs" />
     <Compile Include="Components\Rss\FeedItem.cs" />
     <Compile Include="Components\TemplateHelper.cs" />
@@ -313,6 +314,7 @@
     <Content Include="js\opencontent.js" />
     <Content Include="js\requirejs\async.js" />
     <Content Include="js\requirejs\config.js" />
+    <Content Include="Providers\DataProviders\SqlDataProvider\01.04.01.SqlDataProvider" />
     <None Include="Scripts\_references.js" />
     <Content Include="js\requirejs\css.js" />
     <Content Include="js\requirejs\css.min.js" />
