@@ -132,7 +132,7 @@ namespace Satrabel.OpenContent
                         bool TemplateDefined = !string.IsNullOrEmpty(Template);
                         bool SettingsDefined = !string.IsNullOrEmpty(settingsData);
 
-                        string TemplateFilename = HostingEnvironment.MapPath("~/" + Template);
+                        string TemplateFilename = HostingEnvironment.MapPath("~/" + ddlTemplate.SelectedValue);
                         string prefix = Path.GetFileNameWithoutExtension(TemplateFilename) + "-";
                         string schemaFilename = Path.GetDirectoryName(TemplateFilename) + "\\" + prefix + "schema.json";
                         bool SettingsNeeded = File.Exists(schemaFilename);
@@ -146,6 +146,7 @@ namespace Satrabel.OpenContent
                         hlEditContent.CssClass = "dnnSecondaryAction";
                         //if (ModuleContext.PortalSettings.UserInfo.IsSuperUser)
                         hlEditSettings.Enabled = false;
+                        hlEditSettings.Visible = SettingsNeeded;
                         
                         if (TemplateDefined && ModuleContext.EditMode && SettingsNeeded)
                         {
@@ -153,10 +154,12 @@ namespace Satrabel.OpenContent
                             hlEditSettings.NavigateUrl = ModuleContext.EditUrl("EditSettings");
                             //hlTempleteExchange.Visible = true;
                             hlEditSettings.Enabled = true;
+                            
                             bSave.CssClass = "dnnSecondaryAction";
                             bSave.Enabled = false;
                             hlEditSettings.CssClass = "dnnPrimaryAction";
                             hlEditContent.CssClass = "dnnSecondaryAction";
+
                         }
                         hlEditContent.Enabled = false;
                         hlEditContent2.Enabled = false;
