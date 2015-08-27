@@ -39,7 +39,7 @@
             <asp:LinkButton ID="bSave" runat="server" CssClass="dnnPrimaryAction" ResourceKey="Save" OnClick="bSave_Click" />
         </li>
         <li>
-             <asp:HyperLink ID="hlEditSettings" runat="server" Enabled="false" CssClass="dnnSecondaryAction" >Template Settings</asp:HyperLink>
+             <asp:HyperLink ID="hlEditSettings" runat="server" Enabled="false"  CssClass="dnnSecondaryAction" >Template Settings</asp:HyperLink>
         </li>
         <li>
              <asp:HyperLink ID="hlEditContent" runat="server" Enabled="false" CssClass="dnnSecondaryAction" >Edit Content</asp:HyperLink>
