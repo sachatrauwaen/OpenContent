@@ -57,7 +57,7 @@ namespace Satrabel.OpenContent
 
             string settingsJson;
             string OutputString = "";
-            var Template = ModuleContext.Settings["template"] as string;
+            var Template = ModuleContext.Settings["template"] as string;            
             string SelectedTemplate = Template;
             bool dataExist = false;
             string TemplateFolder = "";
@@ -128,6 +128,54 @@ namespace Satrabel.OpenContent
                                 rblFrom_SelectedIndexChanged(null, null);
                             }
                         }
+                        string settingsData = ModuleContext.Settings["data"] as string;
+                        bool TemplateDefined = !string.IsNullOrEmpty(Template);
+                        bool SettingsDefined = !string.IsNullOrEmpty(settingsData);
+
+                        string TemplateFilename = HostingEnvironment.MapPath("~/" + ddlTemplate.SelectedValue);
+                        string prefix = Path.GetFileNameWithoutExtension(TemplateFilename) + "-";
+                        string schemaFilename = Path.GetDirectoryName(TemplateFilename) + "\\" + prefix + "schema.json";
+                        bool SettingsNeeded = File.Exists(schemaFilename);
+                        TemplateDefined = TemplateDefined &&
+                            (!ddlTemplate.Visible || (Template == ddlTemplate.SelectedValue));
+                        SettingsDefined = SettingsDefined || !SettingsNeeded;
+
+                        bSave.CssClass = "dnnPrimaryAction";
+                        bSave.Enabled = true;
+                        hlEditSettings.CssClass = "dnnSecondaryAction";
+                        hlEditContent.CssClass = "dnnSecondaryAction";
+                        //if (ModuleContext.PortalSettings.UserInfo.IsSuperUser)
+                        hlEditSettings.Enabled = false;
+                        hlEditSettings.Visible = SettingsNeeded;
+                        
+                        if (TemplateDefined && ModuleContext.EditMode && SettingsNeeded)
+                        {
+                            //hlTempleteExchange.NavigateUrl = ModuleContext.EditUrl("ShareTemplate");
+                            hlEditSettings.NavigateUrl = ModuleContext.EditUrl("EditSettings");
+                            //hlTempleteExchange.Visible = true;
+                            hlEditSettings.Enabled = true;
+                            
+                            bSave.CssClass = "dnnSecondaryAction";
+                            bSave.Enabled = false;
+                            hlEditSettings.CssClass = "dnnPrimaryAction";
+                            hlEditContent.CssClass = "dnnSecondaryAction";
+
+                        }
+                        hlEditContent.Enabled = false;
+                        hlEditContent2.Enabled = false;
+                        if (TemplateDefined && SettingsDefined && ModuleContext.EditMode)
+                        {
+                            hlEditContent.NavigateUrl = ModuleContext.EditUrl("Edit");
+                            hlEditContent.Enabled = true;
+                            hlEditContent2.NavigateUrl = ModuleContext.EditUrl("Edit");
+                            hlEditContent2.Enabled = true;
+                            bSave.CssClass = "dnnSecondaryAction";
+                            bSave.Enabled = false;
+                            hlEditSettings.CssClass = "dnnSecondaryAction";
+                            hlEditContent.CssClass = "dnnPrimaryAction";
+                        }
+
+
                         if (rblUseTemplate.SelectedIndex == 0)
                         {
                             Template = ddlTemplate.SelectedValue;
@@ -637,25 +685,12 @@ namespace Satrabel.OpenContent
                 int.TryParse(Page.Request.QueryString["id"], out ItemId);
             }
 
-            string Template = ModuleContext.Settings["template"] as string;
+            //string Template = ModuleContext.Settings["template"] as string;
+            //string settingsJson = ModuleContext.Settings["data"] as string;
             if (!Page.IsPostBack)
             {
             }
-            bool TemplateDefined = !string.IsNullOrEmpty(Template);
-            if (ModuleContext.PortalSettings.UserInfo.IsSuperUser)
-            {
-                //hlTempleteExchange.NavigateUrl = ModuleContext.EditUrl("ShareTemplate");
-                hlEditSettings.NavigateUrl = ModuleContext.EditUrl("EditSettings");
-                //hlTempleteExchange.Visible = true;
-                hlEditSettings.Visible = true;
-            }
-            if (TemplateDefined && ModuleContext.EditMode)
-            {
-                hlEditContent.NavigateUrl = ModuleContext.EditUrl("Edit");
-                hlEditContent.Visible = true;
-                hlEditContent2.NavigateUrl = ModuleContext.EditUrl("Edit");
-                hlEditContent2.Visible = true;
-            }
+            
         }
 
         private void IncludeResourses(string Template)
@@ -745,6 +780,7 @@ namespace Satrabel.OpenContent
                         mc.UpdateModuleSetting(ModuleContext.ModuleId, "template", Template);
                     }
                 }
+                mc.DeleteModuleSetting(ModuleContext.ModuleId, "data");
                 Response.Redirect(Globals.NavigateURL(), true);
             }
             catch (Exception exc)

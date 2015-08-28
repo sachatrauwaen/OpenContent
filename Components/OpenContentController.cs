@@ -12,6 +12,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using DotNetNuke.Data;
+using Newtonsoft.Json.Linq;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -19,6 +20,15 @@ namespace Satrabel.OpenContent.Components
     {
         public void AddContent(OpenContentInfo Content)
         {
+            OpenContentVersion ver = new OpenContentVersion()
+            {
+                Json = JObject.Parse(Content.Json),
+                CreatedByUserId = Content.LastModifiedByUserId,
+                CreatedOnDate = Content.LastModifiedOnDate
+            };
+            var versions = new List<OpenContentVersion>();
+            versions.Add(ver);
+            Content.Versions = versions;
             using (IDataContext ctx = DataContext.Instance())
             {
                 var rep = ctx.GetRepository<OpenContentInfo>();
@@ -73,6 +83,19 @@ namespace Satrabel.OpenContent.Components
 
         public void UpdateContent(OpenContentInfo Content)
         {
+            OpenContentVersion ver = new OpenContentVersion()
+            {
+                Json = JObject.Parse(Content.Json),
+                CreatedByUserId = Content.LastModifiedByUserId,
+                CreatedOnDate = Content.LastModifiedOnDate
+            };
+            var versions = Content.Versions;
+            versions.Insert(0, ver);
+            if (versions.Count > 5)
+            {
+                versions.RemoveAt(versions.Count - 1);
+            }
+            Content.Versions = versions;
             using (IDataContext ctx = DataContext.Instance())
             {
                 var rep = ctx.GetRepository<OpenContentInfo>();

@@ -76,7 +76,7 @@
                                      { name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align'], items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', ] },
                                      { name: 'links', items: ['Link', 'Unlink'] },
 
-                                     { name: 'document', groups: ['mode', 'document', 'doctools'], items: ['Source', 'Maximize'] },
+                                     { name: 'document', groups: ['mode', 'document', 'doctools'], items: ['Maximize', 'Source'] },
                                 ],
                                 // Set the most common block elements.
                                 format_tags: 'p;h1;h2;h3;pre',
@@ -99,21 +99,21 @@
                                      { name: 'basicstyles', groups: ['basicstyles', 'cleanup'], items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'] },
                                      { name: 'styles', items: ['Styles', 'Format'] },
                                      { name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align'], items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', ] },
-                                     { name: 'links', items: ['Link', 'Unlink'] },
-
-                                     { name: 'document', groups: ['mode', 'document', 'doctools'], items: ['Source', 'Maximize'] }
+                                     { name: 'links', items: ['Link', 'Unlink', 'Anchor'] },
+                                     { name: 'insert', items: [ 'Table', 'Smiley', 'SpecialChar',  'Iframe'] },
+                                     { name: 'document', groups: ['mode', 'document', 'doctools'], items: ['Maximize', 'ShowBlocks', 'Source'] }
                                 ],
                                 // Set the most common block elements.
                                 format_tags: 'p;h1;h2;h3;pre;div',
 
                                 //http://docs.ckeditor.com/#!/guide/dev_allowed_content_rules
-                                extraAllowedContent:
-                                'table tr th td caption[*](*);' +
-                                'div span(*);' 
-                                //'a[!href](*);' 
-                                //'img[!src,alt,width,height](*);' +
-                                //'h1 h2 h3 p blockquote strong em(*);' +
-                                ,
+                                //extraAllowedContent:
+                                //'table tr th td caption[*](*);' +
+                                //'div span(*);' 
+                                ////'a[!href](*);' 
+                                ////'img[!src,alt,width,height](*);' +
+                                ////'h1 h2 h3 p blockquote strong em(*);' +
+                                //,
 
                                 // Simplify the dialog windows.
                                 removeDialogTabs: 'image:advanced;link:advanced',
@@ -131,12 +131,10 @@
                         } else if (self.options.configset == "full") {
                             defaultConfig = {
                                 toolbar: [
-                                    { name: 'document', items: ['Source', '-', 'Save', 'NewPage', 'DocProps', 'Preview', 'Print', '-', 'Templates'] },
+                                    { name: 'document', items: ['Save', 'NewPage', 'DocProps', 'Preview', 'Print', '-', 'Templates'] },
 	                                { name: 'clipboard', items: ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'] },
 	                                { name: 'editing', items: ['Find', 'Replace', '-', 'SelectAll', '-', 'SpellChecker', 'Scayt'] },
-	                                {
-	                                    name: 'forms', items: ['Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton', 'HiddenField']
-	                                },
+	                                { name: 'forms', items: ['Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton', 'HiddenField'] },
 	                                '/',
 	                                { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'] },
 	                                {
@@ -148,7 +146,7 @@
 	                                '/',
 	                                { name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize'] },
 	                                { name: 'colors', items: ['TextColor', 'BGColor'] },
-	                                { name: 'tools', items: ['Maximize', 'ShowBlocks', '-', 'About'] }
+	                                { name: 'tools', items: ['Maximize', 'ShowBlocks', '-', 'About', '-', 'Source'] }
                                 ],
                                 // Set the most common block elements.
                                 format_tags: 'p;h1;h2;h3;pre;div',

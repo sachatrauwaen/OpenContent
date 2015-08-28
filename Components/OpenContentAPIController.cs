@@ -118,6 +118,7 @@ namespace Satrabel.OpenContent.Components
                         if (struc != null)
                         {
                             json["data"] = JObject.Parse(struc.Json);
+                            AddVersions(json, struc);
                         }
                     }
                 }
@@ -127,6 +128,7 @@ namespace Satrabel.OpenContent.Components
                     if (struc != null)
                     {
                         json["data"] = JObject.Parse(struc.Json);
+                        AddVersions(json, struc);
                     }
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, json);
@@ -137,6 +139,78 @@ namespace Satrabel.OpenContent.Components
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
+
+        private static void AddVersions(JObject json, OpenContentInfo struc)
+        {
+            if (!string.IsNullOrEmpty(struc.VersionsJson))
+            {
+                var verLst = new JArray();
+                foreach (var item in struc.Versions)
+                {
+                    var ver = new JObject();
+                    ver["text"] = item.CreatedOnDate.ToShortDateString() + " " + item.CreatedOnDate.ToShortTimeString();
+                    if (verLst.Count == 0) // first
+                    {
+                        ver["text"] = ver["text"] + " ( current )";
+                    }  
+                    ver["ticks"] = item.CreatedOnDate.Ticks.ToString();
+                    verLst.Add(ver);
+                }
+                json["versions"] = verLst;
+
+                //json["versions"] = JArray.Parse(struc.VersionsJson);
+            }
+        }
+
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [HttpGet]
+        public HttpResponseMessage Version(int id, string ticks)
+        {
+            string Template = (string)ActiveModule.ModuleSettings["template"];
+            var manifest = OpenContentUtils.GetTemplateManifest(Template);
+            bool ListMode = manifest != null && manifest.IsListTemplate;
+            JObject json = new JObject();
+            try
+            {
+                int ModuleId = ActiveModule.ModuleID;
+                OpenContentController ctrl = new OpenContentController();
+                if (ListMode)
+                {
+                    if (id > 0)
+                    {
+                        var struc = ctrl.GetContent(id, ModuleId);
+                        if (struc != null)
+                        {
+                            if (!string.IsNullOrEmpty(struc.VersionsJson))
+                            {
+                                var ver = struc.Versions.Single(v => v.CreatedOnDate.Ticks.ToString() == ticks);
+                                json = ver.Json;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    var struc = ctrl.GetFirstContent(ModuleId);
+                    if (struc != null)
+                    {
+                        if (!string.IsNullOrEmpty(struc.VersionsJson))
+                        {
+                            var ver = struc.Versions.Single(v => v.CreatedOnDate.Ticks.ToString() == ticks);
+                            json = ver.Json;
+                        }
+                    }
+                }
+                return Request.CreateResponse(HttpStatusCode.OK, json);
+            }
+            catch (Exception exc)
+            {
+                Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
+
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
         [HttpGet]
@@ -304,7 +378,8 @@ namespace Satrabel.OpenContent.Components
                     {
                         foreach (var item in items)
                         {
-                            res.Add(new LookupResultDTO(){
+                            res.Add(new LookupResultDTO()
+                            {
                                 value = item.ContentId.ToString(),
                                 text = item.Title
                             });
@@ -327,7 +402,7 @@ namespace Satrabel.OpenContent.Components
                                 {
                                     res.Add(new LookupResultDTO()
                                     {
-                                        value = item[req.valueField] == null ? "": item[req.valueField].ToString(),
+                                        value = item[req.valueField] == null ? "" : item[req.valueField].ToString(),
                                         text = item[req.textField] == null ? "" : item[req.textField].ToString()
                                     });
                                 }

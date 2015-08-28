@@ -123,4 +123,7 @@
   <data name="DataType.Text" xml:space="preserve">
     <value>Type of data</value>
   </data>
+  <data name="Versions.Text" xml:space="preserve">
+    <value>Versions</value>
+  </data>
 </root>
