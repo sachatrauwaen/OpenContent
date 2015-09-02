@@ -148,7 +148,11 @@ namespace Satrabel.OpenContent.Components.Handlebars
             {
                 if (parameters.Length == 1)
                 {
-                    string jsfilename = sourceFolder + parameters[0];
+                    string jsfilename = parameters[0].ToString();
+                    if (!jsfilename.StartsWith("/") && !jsfilename.Contains("//"))
+                    {
+                        jsfilename = sourceFolder + jsfilename;
+                    }
                     ClientResourceManager.RegisterScript(page, page.ResolveUrl(jsfilename), JSOrder++/*FileOrder.Js.DefaultPriority*/);
                     //writer.WriteSafeString(Page.ResolveUrl(jsfilename));
                 }
@@ -161,7 +165,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 if (parameters.Length == 1)
                 {
                     string cssfilename = parameters[0].ToString();
-                    if (!cssfilename.Contains("/"))
+                    if (!cssfilename.StartsWith("/") && !cssfilename.Contains("//"))
                     {
                         cssfilename = sourceFolder + cssfilename;
                     }
