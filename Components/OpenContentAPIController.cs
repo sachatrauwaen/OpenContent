@@ -55,19 +55,19 @@ namespace Satrabel.OpenContent.Components
         [HttpGet]
         public HttpResponseMessage Edit(int id)
         {
-            string Template = (string)ActiveModule.ModuleSettings["template"];
-            var manifest = OpenContentUtils.GetTemplateManifest(Template);
-            bool ListMode = manifest != null && manifest.IsListTemplate;
+            string template = OpenContentUtils.GetTemplateFolder(ActiveModule.ModuleSettings);
+            var manifest = OpenContentUtils.GetTemplateManifest(template);
+            bool listMode = manifest != null && manifest.IsListTemplate;
             JObject json = new JObject();
             try
             {
-                string TemplateFilename = HostingEnvironment.MapPath("~/" + Template);
+                string templateFilename = HostingEnvironment.MapPath("~/" + template);
                 // schema
-                string schemaFilename = Path.GetDirectoryName(TemplateFilename) + "\\" + "schema.json";
+                string schemaFilename = Path.GetDirectoryName(templateFilename) + "\\" + "schema.json";
                 JObject schemaJson = JObject.Parse(File.ReadAllText(schemaFilename));
                 json["schema"] = schemaJson;
                 // default options
-                string optionsFilename = Path.GetDirectoryName(TemplateFilename) + "\\" + "options.json";
+                string optionsFilename = Path.GetDirectoryName(templateFilename) + "\\" + "options.json";
                 if (File.Exists(optionsFilename))
                 {
                     string fileContent = File.ReadAllText(optionsFilename);
@@ -78,7 +78,7 @@ namespace Satrabel.OpenContent.Components
                     }
                 }
                 // language options
-                optionsFilename = Path.GetDirectoryName(TemplateFilename) + "\\" + "options." + PortalSettings.CultureCode + ".json";
+                optionsFilename = Path.GetDirectoryName(templateFilename) + "\\" + "options." + PortalSettings.CultureCode + ".json";
                 if (File.Exists(optionsFilename))
                 {
                     string fileContent = File.ReadAllText(optionsFilename);
@@ -89,7 +89,7 @@ namespace Satrabel.OpenContent.Components
                     }
                 }
                 // view
-                string viewFilename = Path.GetDirectoryName(TemplateFilename) + "\\" + "view.json";
+                string viewFilename = Path.GetDirectoryName(templateFilename) + "\\" + "view.json";
                 if (File.Exists(optionsFilename))
                 {
                     string fileContent = File.ReadAllText(viewFilename);
@@ -110,7 +110,7 @@ namespace Satrabel.OpenContent.Components
                  */
                 int ModuleId = ActiveModule.ModuleID;
                 OpenContentController ctrl = new OpenContentController();
-                if (ListMode)
+                if (listMode)
                 {
                     if (id > 0)
                     {
@@ -167,7 +167,7 @@ namespace Satrabel.OpenContent.Components
         [HttpGet]
         public HttpResponseMessage Version(int id, string ticks)
         {
-            string Template = (string)ActiveModule.ModuleSettings["template"];
+            string Template = OpenContentUtils.GetTemplateFolder(ActiveModule.ModuleSettings);
             var manifest = OpenContentUtils.GetTemplateManifest(Template);
             bool ListMode = manifest != null && manifest.IsListTemplate;
             JObject json = new JObject();
@@ -216,14 +216,15 @@ namespace Satrabel.OpenContent.Components
         [HttpGet]
         public HttpResponseMessage Settings(string Template)
         {
-            string Data = (string)ActiveModule.ModuleSettings["data"];
+            string data = (string)ActiveModule.ModuleSettings["data"];
             JObject json = new JObject();
             try
             {
-                string TemplateFilename = HostingEnvironment.MapPath("~/" + Template);
-                string prefix = Path.GetFileNameWithoutExtension(TemplateFilename) + "-";
+                //string templateFilename = HostingEnvironment.MapPath("~/" + Template);
+                string templateFilename = HostingEnvironment.MapPath(Template);
+                string prefix = Path.GetFileNameWithoutExtension(templateFilename) + "-";
                 // schema
-                string schemaFilename = Path.GetDirectoryName(TemplateFilename) + "\\" + prefix + "schema.json";
+                string schemaFilename = Path.GetDirectoryName(templateFilename) + "\\" + prefix + "schema.json";
                 /*
                 if (!File.Exists(schemaFilename))
                 {
@@ -234,34 +235,34 @@ namespace Satrabel.OpenContent.Components
                 {
                     JObject schemaJson = JObject.Parse(File.ReadAllText(schemaFilename));
                     json["schema"] = schemaJson;
-                    if (!string.IsNullOrEmpty(Data))
+                    if (!string.IsNullOrEmpty(data))
                     {
-                        json["data"] = JObject.Parse(Data);
+                        json["data"] = JObject.Parse(data);
                     }
                 }
                 // default options
-                string optionsFilename = Path.GetDirectoryName(TemplateFilename) + "\\" + prefix + "options.json";
+                string optionsFilename = Path.GetDirectoryName(templateFilename) + "\\" + prefix + "options.json";
                 if (File.Exists(optionsFilename))
                 {
                     JObject optionsJson = JObject.Parse(File.ReadAllText(optionsFilename));
                     json["options"] = optionsJson;
                 }
                 // language options
-                optionsFilename = Path.GetDirectoryName(TemplateFilename) + "\\" + prefix + "options." + PortalSettings.CultureCode + ".json";
+                optionsFilename = Path.GetDirectoryName(templateFilename) + "\\" + prefix + "options." + PortalSettings.CultureCode + ".json";
                 if (File.Exists(optionsFilename))
                 {
                     JObject optionsJson = JObject.Parse(File.ReadAllText(optionsFilename));
                     json["options"] = json["options"].JsonMerge(optionsJson);
                 }
-                if (!string.IsNullOrEmpty(Data))
+                if (!string.IsNullOrEmpty(data))
                 {
                     try
                     {
-                        json["data"] = JObject.Parse(Data);
+                        json["data"] = JObject.Parse(data);
                     }
                     catch (Exception ex)
                     {
-                        Logger.Error("Settings Json Data : " + Data, ex);
+                        Logger.Error("Settings Json Data : " + data, ex);
                     }
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, json);
@@ -280,7 +281,7 @@ namespace Satrabel.OpenContent.Components
             try
             {
                 int ModuleId = ActiveModule.ModuleID;
-                string Template = (string)ActiveModule.ModuleSettings["template"];
+                string Template = OpenContentUtils.GetTemplateFolder(ActiveModule.ModuleSettings);
                 var manifest = OpenContentUtils.GetTemplateManifest(Template);
                 bool ListMode = manifest != null && manifest.IsListTemplate;
                 OpenContentController ctrl = new OpenContentController();
@@ -339,12 +340,11 @@ namespace Satrabel.OpenContent.Components
             try
             {
                 int ModuleId = ActiveModule.ModuleID;
-
                 var data = json["data"].ToString();
                 var template = json["template"].ToString();
 
-                ModuleController mc = new ModuleController();
-                mc.UpdateModuleSetting(ModuleId, "template", template);
+                var mc = new ModuleController();
+                mc.UpdateModuleSetting(ModuleId, "template", OpenContentUtils.SetTemplateFolder(template));
                 mc.UpdateModuleSetting(ModuleId, "data", data);
                 return Request.CreateResponse(HttpStatusCode.OK, "");
             }
@@ -363,7 +363,7 @@ namespace Satrabel.OpenContent.Components
         {
             ModuleController mc = new ModuleController();
             var module = mc.GetModule(req.moduleid, req.tabid, false);
-            string Template = (string)module.ModuleSettings["template"];
+            string Template = OpenContentUtils.GetTemplateFolder(module.ModuleSettings);
             var manifest = OpenContentUtils.GetTemplateManifest(Template);
             bool ListMode = manifest != null && manifest.IsListTemplate;
             //JToken json = new JObject();

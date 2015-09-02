@@ -8,11 +8,12 @@
 <dnncl:DnnJsInclude ID="DnnJsInclude2" runat="server" FilePath="~/DesktopModules/OpenContent/js/alpaca-1.5.8/alpaca/web/alpaca.js" Priority="107" ForceProvider="DnnPageHeaderProvider" />
 <dnncl:DnnJsInclude ID="DnnJsInclude3" runat="server" FilePath="~/DesktopModules/OpenContent/js/ckeditor/ckeditor.js" Priority="108" ForceProvider="DnnPageHeaderProvider" />
 <dnncl:DnnJsInclude ID="DnnJsInclude4" runat="server" FilePath="~/DesktopModules/OpenContent/js/ckeditor/adapters/jquery.js" Priority="109" ForceProvider="DnnPageHeaderProvider" />
-<script src="<%=ControlPath %>js/wysihtml/wysihtml5x-toolbar.js"></script>
-<script src="<%=ControlPath %>js/wysihtml/parser_rules/advanced_and_extended.js"></script>
-<script type="text/javascript" src="<%=ControlPath %>alpaca/js/views/dnn.js"></script>
-<script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/ImageField.js"></script>
-<script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/wysihtmlField.js"></script>
+<dnncl:DnnJsInclude ID="DnnJsInclude11" runat="server" FilePath="~/DesktopModules/OpenContent/js/wysihtml/wysihtml5x-toolbar.js" Priority="109" ForceProvider="DnnPageHeaderProvider" />
+<dnncl:DnnJsInclude ID="DnnJsInclude12" runat="server" FilePath="~/DesktopModules/OpenContent/js/wysihtml/parser_rules/advanced_and_extended.js" Priority="109" ForceProvider="DnnPageHeaderProvider" />
+<dnncl:DnnJsInclude ID="DnnJsInclude7" runat="server" FilePath="~/DesktopModules/OpenContent/alpaca/js/fields/dnn/wysihtmlField.js" Priority="109" ForceProvider="DnnPageHeaderProvider" />
+
+<dnncl:DnnJsInclude ID="DnnJsInclude5" runat="server" FilePath="~/DesktopModules/OpenContent/alpaca/js/fields/dnn/ImageField.js" Priority="107" ForceProvider="DnnFormBottomProvider" />
+<dnncl:DnnJsInclude ID="DnnJsInclude9" runat="server" FilePath="~/DesktopModules/OpenContent/alpaca/js/views/dnndefault.js" Priority="107" ForceProvider="DnnFormBottomProvider" />
 
 <asp:Panel ID="ScopeWrapper" runat="server">
     <div class="dnnFormItem">

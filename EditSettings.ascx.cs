@@ -51,7 +51,7 @@ namespace Satrabel.OpenContent
             if (!Page.IsPostBack)
             {
                 hlTemplateExchange.NavigateUrl = EditUrl("ShareTemplate");
-                var scriptFileSetting = Settings["template"] as string;
+                var scriptFileSetting = OpenContentUtils.GetTemplateFolder(Settings);
                 scriptList.Items.AddRange(OpenContentUtils.GetTemplatesFiles(PortalSettings, ModuleId, scriptFileSetting, "OpenContent").ToArray());
             }
         }
@@ -60,7 +60,7 @@ namespace Satrabel.OpenContent
         {
             /*
             ModuleController mc = new ModuleController();
-            mc.UpdateModuleSetting(ModuleId, "template", scriptList.SelectedValue);
+            mc.UpdateModuleSetting(ModuleId, "template", OpenContentUtils.SetTemplateFolder(scriptList.SelectedValue));
             mc.UpdateModuleSetting(ModuleId, "data", HiddenField.Value);
             Response.Redirect(Globals.NavigateURL(), true);
              */

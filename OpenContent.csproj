@@ -224,7 +224,7 @@
     <Content Include="alpaca\js\fields\dnn\UrlField.js" />
     <Content Include="alpaca\js\fields\dnn\wysihtmlField.js" />
     <Content Include="alpaca\js\views\dnnbootstrap.js" />
-    <Content Include="alpaca\js\views\dnn.js" />
+    <Content Include="alpaca\js\views\dnndefault.js" />
     <Content Include="alpaca\templates\dnn-edit\container-array-actionbar.html" />
     <Content Include="alpaca\templates\dnn-edit\container-array.html" />
     <Content Include="alpaca\templates\dnn-edit\container.html" />

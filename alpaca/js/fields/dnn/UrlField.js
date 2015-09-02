@@ -2,6 +2,8 @@
 
     var Alpaca = $.alpaca;
 
+    var oc_websiteRoot = dnn.getVar('oc_websiteRoot');
+
     $.alpaca.Fields.DnnUrlField = $.alpaca.Fields.TextField.extend({
 
         setup: function () {
@@ -42,7 +44,7 @@
             */
                     
                 bloodHoundConfig.remote = {
-                    url: "/DesktopModules/OpenContent/API/DnnEntitiesAPI/Tabs?q=%QUERY",
+                    url: oc_websiteRoot + "/DesktopModules/OpenContent/API/DnnEntitiesAPI/Tabs?q=%QUERY",
                     ajax: {
                         beforeSend: connector.servicesFramework.setModuleHeaders,
                     }

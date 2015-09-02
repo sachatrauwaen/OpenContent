@@ -49,7 +49,7 @@ namespace Satrabel.OpenContent
 
         private void cmdCustom_Click(object sender, EventArgs e)
         {
-            string Template = ModuleContext.Settings["template"] as string;
+            string Template = OpenContentUtils.GetTemplateFolder(ModuleContext.Settings);
             string TemplateFolder = Path.GetDirectoryName(Template);
             string TemplateDir = Server.MapPath(TemplateFolder);
             string ModuleDir = Server.MapPath(ModuleTemplateDirectory);
@@ -67,7 +67,7 @@ namespace Satrabel.OpenContent
             }
             ModuleController mc = new ModuleController();
             Template = ModuleTemplateDirectory + "schema.json";
-            mc.UpdateModuleSetting(ModuleId, "template", Template);
+            mc.UpdateModuleSetting(ModuleId, "template", OpenContentUtils.SetTemplateFolder(Template));
             InitEditor(Template);
         }
 
@@ -76,7 +76,7 @@ namespace Satrabel.OpenContent
             base.OnLoad(e);
             if (!Page.IsPostBack)
             {
-                string Template = ModuleContext.Settings["template"] as string;
+                string Template = OpenContentUtils.GetTemplateFolder(ModuleContext.Settings);
                 InitEditor(Template);
             }
         }
@@ -91,13 +91,16 @@ namespace Satrabel.OpenContent
             }
         }
 
-        private void DisplayFile(string Template)
+        private void DisplayFile(string template)
         {
-            string TemplateFolder = Path.GetDirectoryName(Template);
-            TemplateFolder = OpenContentUtils.ReverseMapPath(TemplateFolder);
-            string scriptFile = TemplateFolder + "/" + scriptList.SelectedValue;
-            plSource.Text = scriptFile;
-            string srcFile = Server.MapPath(scriptFile);
+            //string TemplateFolder = Path.GetDirectoryName(template);
+            //TemplateFolder = OpenContentUtils.ReverseMapPath(TemplateFolder);
+            //string scriptFile = TemplateFolder + "/" + scriptList.SelectedValue;
+            //plSource.Text = scriptFile;
+            //string srcFile = Server.MapPath(scriptFile);
+            plSource.Text = template;
+            string srcFile = Server.MapPath(template);
+
             if (File.Exists(srcFile))
             {
                 txtSource.Text = File.ReadAllText(srcFile);
@@ -145,13 +148,13 @@ namespace Satrabel.OpenContent
             }
             DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "mimeType", mimeType, true);
         }
-        private void LoadFiles(string Template)
+        private void LoadFiles(string template)
         {
             scriptList.Items.Clear();
-            if (!(string.IsNullOrEmpty(Template)))
+            if (!(string.IsNullOrEmpty(template)))
             {
-                string TemplateFolder = Path.GetDirectoryName(Template);
-                TemplateManifest manifest = OpenContentUtils.GetTemplateManifest(Template);
+                //string templateFolder = Path.GetDirectoryName(Template);
+                TemplateManifest manifest = OpenContentUtils.GetTemplateManifest(template);
                 if (manifest != null )
                 {
                     if (manifest.Main != null){
@@ -179,15 +182,11 @@ namespace Satrabel.OpenContent
                 }
                 else
                 {
-                    scriptList.Items.Add(new ListItem("Template", Path.GetFileName(Template)));
+                    scriptList.Items.Add(new ListItem("Template", Path.GetFileName(template)));
                 }
 
-                
-
-
-
-                scriptList.Items.Add(new ListItem("Stylesheet", Path.GetFileNameWithoutExtension(Template) + ".css"));
-                scriptList.Items.Add(new ListItem("Javascript", Path.GetFileNameWithoutExtension(Template) + ".js"));
+                scriptList.Items.Add(new ListItem("Stylesheet", Path.GetFileNameWithoutExtension(template) + ".css"));
+                scriptList.Items.Add(new ListItem("Javascript", Path.GetFileNameWithoutExtension(template) + ".js"));
                 scriptList.Items.Add(new ListItem("Schema", "schema.json"));
                 scriptList.Items.Add(new ListItem("Layout Options", "options.json"));
                 //scriptList.Items.Add(new ListItem("Edit Layout Options - Template File Overides", "options." + Path.GetFileNameWithoutExtension(Template) + ".json"));
@@ -195,11 +194,11 @@ namespace Satrabel.OpenContent
                 {
                     scriptList.Items.Add(new ListItem("Layout Options - " + item.Code, "options." + item.Code + ".json"));
                 }
-                scriptList.Items.Add(new ListItem("Settings Schema", Path.GetFileNameWithoutExtension(Template) + "-schema.json"));
-                scriptList.Items.Add(new ListItem("Settings Layout Options", Path.GetFileNameWithoutExtension(Template) + "-options.json"));
+                scriptList.Items.Add(new ListItem("Settings Schema", Path.GetFileNameWithoutExtension(template) + "-schema.json"));
+                scriptList.Items.Add(new ListItem("Settings Layout Options", Path.GetFileNameWithoutExtension(template) + "-options.json"));
                 foreach (Locale item in LocaleController.Instance.GetLocales(PortalId).Values)
                 {
-                    scriptList.Items.Add(new ListItem("Settings Layout Options - " + item.Code, Path.GetFileNameWithoutExtension(Template) + "-options." + item.Code + ".json"));
+                    scriptList.Items.Add(new ListItem("Settings Layout Options - " + item.Code, Path.GetFileNameWithoutExtension(template) + "-options." + item.Code + ".json"));
                 }
             }
         }
@@ -216,9 +215,9 @@ namespace Satrabel.OpenContent
 
         private void Save()
         {
-            string Template = ModuleContext.Settings["template"] as string;
-            string TemplateFolder = Path.GetDirectoryName(Template);
-            string scriptFile = TemplateFolder + "/" + scriptList.SelectedValue;
+            string template = OpenContentUtils.GetTemplateFolder(ModuleContext.Settings);
+            string templateFolder = Path.GetDirectoryName(template);
+            string scriptFile = templateFolder + "/" + scriptList.SelectedValue;
             string srcFile = Server.MapPath(scriptFile);
             if (string.IsNullOrWhiteSpace(txtSource.Text))
             {
@@ -242,8 +241,8 @@ namespace Satrabel.OpenContent
 
         private void scriptList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string Template = ModuleContext.Settings["template"] as string;
-            DisplayFile(Template);
+            string template = OpenContentUtils.GetTemplateFolder(ModuleContext.Settings);
+            DisplayFile(template);
         }
         #endregion
     }

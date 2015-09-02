@@ -29,13 +29,10 @@
             <asp:Label ID="plSource" ControlName="txtSource" runat="server" />
         </div>
         <div class="dnnFormItem">
-
-
             <asp:Label ID="Label2" runat="server" />
         </div>
         <div>
             <asp:TextBox ID="txtSource" runat="server" TextMode="MultiLine" Rows="30" Columns="140" />
-
         </div>
     </fieldset>
     <ul class="dnnActions dnnClear">
@@ -45,7 +42,6 @@
             <asp:LinkButton ID="cmdSaveClose" resourcekey="cmdSaveClose" runat="server" CssClass="dnnSecondaryAction" /></li>
         <li>
             <asp:LinkButton ID="cmdCancel" resourcekey="cmdCancel" runat="server" CssClass="dnnSecondaryAction" CausesValidation="False" />
-
         </li>
         <li>
             <asp:LinkButton ID="cmdCustom" resourcekey="cmdCustom" runat="server" CssClass="dnnSecondaryAction" />

@@ -2,6 +2,8 @@
 
     var Alpaca = $.alpaca;
 
+    var oc_websiteRoot = dnn.getVar('oc_websiteRoot');
+
     Alpaca.Fields.Select2Field = Alpaca.Fields.ListField.extend(
     /**
      * @lends Alpaca.Fields.SelectField.prototype
@@ -180,7 +182,7 @@
                         self.options.dataService.action = "Lookup"
                     }
                     $.ajax({
-                        //url: "/DesktopModules/" + tModuleName + "/API/" + tController + "/Lookup?q=%QUERY",
+                        //url: oc_websiteRoot + "/DesktopModules/" + tModuleName + "/API/" + tController + "/Lookup?q=%QUERY",
                         url: self.sf.getServiceRoot(self.options.dataService.module) + self.options.dataService.controller + "/" + self.options.dataService.action,
                         //url: self.options.dataService.url,
                         beforeSend: self.sf.setModuleHeaders,

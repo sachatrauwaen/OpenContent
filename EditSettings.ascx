@@ -7,11 +7,10 @@
 <dnncl:DnnJsInclude ID="DnnJsInclude1" runat="server" FilePath="~/DesktopModules/OpenContent/js/alpaca-1.5.8/lib/handlebars/handlebars.js" Priority="106" ForceProvider="DnnPageHeaderProvider" />
 <dnncl:DnnJsInclude ID="DnnJsInclude2" runat="server" FilePath="~/DesktopModules/OpenContent/js/alpaca-1.5.8/alpaca/web/alpaca.js" Priority="107" ForceProvider="DnnPageHeaderProvider" />
 
-<script type="text/javascript" src="<%=ControlPath %>alpaca/js/views/dnn.js"></script>
-<script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/ImageField.js"></script>
-
+<dnncl:DnnJsInclude ID="DnnJsInclude7" runat="server" FilePath="~/DesktopModules/OpenContent/alpaca/js/fields/dnn/ImageField.js" Priority="109" ForceProvider="DnnFormBottomProvider" />
+<dnncl:DnnJsInclude ID="DnnJsInclude3" runat="server" FilePath="~/DesktopModules/OpenContent/alpaca/js/views/dnndefault.js" Priority="109" ForceProvider="DnnFormBottomProvider" />
 <dnncl:DnnJsInclude ID="DnnJsInclude4" runat="server" FilePath="~/DesktopModules/OpenContent/js/requirejs/require.js" Priority="110" ForceProvider="DnnFormBottomProvider" />
-<dnncl:DnnJsInclude ID="DnnJsInclude5" runat="server" FilePath="~/DesktopModules/OpenContent/js/requirejs/config.js" Priority="111"  ForceProvider="DnnFormBottomProvider" />
+<dnncl:DnnJsInclude ID="DnnJsInclude5" runat="server" FilePath="~/DesktopModules/OpenContent/js/requirejs/config.js" Priority="111" ForceProvider="DnnFormBottomProvider" />
 
 <asp:Panel ID="ScopeWrapper" runat="server" CssClass="dnnForm">
     <div class="dnnFormItem">
@@ -98,28 +97,29 @@
                     }
                     else {
                         $("#<%=cmdSave.ClientID%>").click(function () {
-                            var href = $(this).attr('href');
-                            self.FormSubmit("", href);
-                            return false;
-                        });
-                    }
+                        var href = $(this).attr('href');
+                        self.FormSubmit("", href);
+                        return false;
+                    });
+                }
                 }).fail(function (xhr, result, status) {
                     alert("Uh-oh, something broke: " + status);
                 });
             };
-            self.FormEdit = function (config) {
-                var ConnectorClass = Alpaca.getConnectorClass("default");
-                connector = new ConnectorClass("default");
-                connector.servicesFramework = sf;
-                $("#field1").alpaca({
-                    "schema": config.schema,
-                    "options": config.options,
-                    "data": config.data,
-                    "view": "dnn-edit",
-                    "connector": connector,
-                    "postRender": function (control) {
-                        var selfControl = control;
-                        $("#<%=cmdSave.ClientID%>").click(function () {
+
+        self.FormEdit = function (config) {
+            var ConnectorClass = Alpaca.getConnectorClass("default");
+            connector = new ConnectorClass("default");
+            connector.servicesFramework = sf;
+            $("#field1").alpaca({
+                "schema": config.schema,
+                "options": config.options,
+                "data": config.data,
+                "view": "dnn-edit",
+                "connector": connector,
+                "postRender": function (control) {
+                    var selfControl = control;
+                    $("#<%=cmdSave.ClientID%>").click(function () {
                         selfControl.refreshValidationState(true);
                         if (selfControl.isValid(true)) {
                             var value = selfControl.getValue();
@@ -131,56 +131,56 @@
                     });
                 }
             });
-        };
+            };
 
         self.FormSubmit = function (data, href) {
             var Template = $("#<%= scriptList.ClientID %>").val();
-           //var postData = { 'data': data, 'template': Template };
-           var postData = JSON.stringify({ 'data': data, 'template': Template });
-           var action = "UpdateSettings";
-           $.ajax({
-               type: "POST",
-               url: sf.getServiceRoot('OpenContent') + "OpenContentAPI/" + action,
-               contentType: "application/json; charset=utf-8",
-               dataType: "json",
-               data: postData,
-               beforeSend: sf.setModuleHeaders
-           }).done(function (data) {
+            //var postData = { 'data': data, 'template': Template };
+            var postData = JSON.stringify({ 'data': data, 'template': Template });
+            var action = "UpdateSettings";
+            $.ajax({
+                type: "POST",
+                url: sf.getServiceRoot('OpenContent') + "OpenContentAPI/" + action,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: postData,
+                beforeSend: sf.setModuleHeaders
+            }).done(function (data) {
 
-               var windowTop = parent; //needs to be assign to a varaible for Opera compatibility issues.
-               var popup = windowTop.jQuery("#iPopUp");
-               if (popup.length > 0) {
-                   windowTop.__doPostBack('dnn_ctr<%=ModuleId %>_View__UP', '');
-                   dnnModal.closePopUp(false, href);
-                }
-                else {
-                    window.location.href = href;
-                }
-
-            }).fail(function (xhr, result, status) {
-                alert("Uh-oh, something broke: " + status + " " + xhr.responseText);
-            });
-       };
-        /*
-           
-            self.GetFieldTypes = function (options) {
-                var types = [];
-                if (options.fields) {
-                    var fields = options.fields;
-                    for (var key in fields) {
-                        var field = fields[key];
-                        if (field.type) {
-                            types.push(field.type);
-                        }
-                        var subtypes = self.GetFieldTypes(field);
-                        types = types.concat(subtypes);
+                var windowTop = parent; //needs to be assign to a varaible for Opera compatibility issues.
+                var popup = windowTop.jQuery("#iPopUp");
+                if (popup.length > 0) {
+                    windowTop.__doPostBack('dnn_ctr<%=ModuleId %>_View__UP', '');
+                        dnnModal.closePopUp(false, href);
                     }
+                    else {
+                        window.location.href = href;
+                    }
+
+                }).fail(function (xhr, result, status) {
+                    alert("Uh-oh, something broke: " + status + " " + xhr.responseText);
+                });
+        };
+            /*
+               
+                self.GetFieldTypes = function (options) {
+                    var types = [];
+                    if (options.fields) {
+                        var fields = options.fields;
+                        for (var key in fields) {
+                            var field = fields[key];
+                            if (field.type) {
+                                types.push(field.type);
+                            }
+                            var subtypes = self.GetFieldTypes(field);
+                            types = types.concat(subtypes);
+                        }
+                    }
+                    return types;
                 }
-                return types;
-            }
-        */
-        self.CreateForm();
-    }
+            */
+            self.CreateForm();
+        }
 
         $(document).ready(function () {
 
@@ -188,13 +188,17 @@
             Sys.WebForms.PageRequestManager.getInstance().add_endRequest(function () {
                 setupStructSettings();
             });
+            //setTimeout(function () {
+
+            //}, 2000);
+
         });
 
     }(jQuery, window.Sys));
 
-var gminitializecallback;
-function gminitialize() {
-    if (gminitializecallback)
-        gminitializecallback();
-}
+    var gminitializecallback;
+    function gminitialize() {
+        if (gminitializecallback)
+            gminitializecallback();
+    }
 </script>

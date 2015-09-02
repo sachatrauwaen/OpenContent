@@ -32,7 +32,6 @@ namespace Satrabel.OpenContent
         {
             get
             {
-                //ModuleContext.Settings["template"]
                 return true;
             }
         }
@@ -64,7 +63,6 @@ namespace Satrabel.OpenContent
 
             if (!Page.IsPostBack)
             {
-                //txtField.Text = (string)Settings["field"];
 
             }
         }

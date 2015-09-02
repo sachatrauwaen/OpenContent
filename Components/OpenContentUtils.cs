@@ -8,6 +8,7 @@ using ICSharpCode.SharpZipLib.Zip;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -16,6 +17,7 @@ using System.Text;
 using System.Web;
 using System.Web.Hosting;
 using System.Web.UI.WebControls;
+using DotNetNuke.UI.Modules;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -38,6 +40,15 @@ namespace Satrabel.OpenContent.Components
         public static string GetSkinTemplateFolder(PortalSettings portalSettings, string moduleSubDir)
         {
             return portalSettings.ActiveTab.SkinPath + moduleSubDir + "/Templates/";
+        }
+        public static string GetTemplateFolder(Hashtable moduleSettings)
+        {
+            return HttpContext.Current.Request.ApplicationPath + moduleSettings["template"] as string;
+        }
+        public static string SetTemplateFolder(string templateFullpath)
+        {
+            if (string.IsNullOrEmpty(HttpContext.Current.Request.ApplicationPath)) return templateFullpath;
+            return templateFullpath.Remove(0, HttpContext.Current.Request.ApplicationPath.Length);
         }
         public static List<ListItem> GetTemplatesFiles(PortalSettings portalSettings, int ModuleId, string SelectedTemplate, string moduleSubDir)
         {
@@ -64,20 +75,20 @@ namespace Satrabel.OpenContent.Components
                     }
                 }
                 IEnumerable<string> files = null;
-                string TemplateVirtualFolder = ReverseMapPath(dir);
-                var manifest = GetManifest(TemplateVirtualFolder);
+                string templateVirtualFolder = ReverseMapPath(dir);
+                var manifest = GetManifest(templateVirtualFolder);
                 if (manifest != null && manifest.Templates != null)
                 {
                     files = manifest.Templates.Select(t => t.Key);
                     foreach (var template in manifest.Templates)
                     {
-                        string TemplateName = DirName;
+                        string templateName = DirName;
                         if (!string.IsNullOrEmpty(template.Value.Title))
                         {
-                            TemplateName = TemplateName + " - " + template.Value.Title; 
+                            templateName = templateName + " - " + template.Value.Title;
                         }
-                        string scriptPath = TemplateVirtualFolder + "/" + template.Key;
-                        var item = new ListItem(TemplateCat + " : "+ TemplateName, scriptPath);
+                        string scriptPath = templateVirtualFolder + "/" + template.Key;
+                        var item = new ListItem(TemplateCat + " : " + templateName, scriptPath);
                         if (!(string.IsNullOrEmpty(SelectedTemplate)) && scriptPath.ToLowerInvariant() == SelectedTemplate.ToLowerInvariant())
                         {
                             item.Selected = true;
@@ -113,7 +124,7 @@ namespace Satrabel.OpenContent.Components
                         lst.Add(item);
                     }
                 }
-                
+
             }
             // skin
             basePath = HostingEnvironment.MapPath(GetSkinTemplateFolder(portalSettings, moduleSubDir));
@@ -212,7 +223,7 @@ namespace Satrabel.OpenContent.Components
             string appPath = HostingEnvironment.MapPath("~");
             string res = string.Format("{0}", path.Replace(appPath, "").Replace("\\", "/"));
             if (!res.StartsWith("/")) res = "/" + res;
-            return res;
+            return HttpContext.Current.Request.ApplicationPath + res;
         }
 
         public static string CopyTemplate(int PortalId, string FromFolder, string NewTemplateName)
@@ -413,6 +424,9 @@ namespace Satrabel.OpenContent.Components
             }
             return templateManifest;
         }
+
+
+
     }
 
     public class TemplateManifest
@@ -425,7 +439,7 @@ namespace Satrabel.OpenContent.Components
         public TemplateFiles Main { get; set; }
         [JsonProperty(PropertyName = "detail")]
         public TemplateFiles Detail { get; set; }
-        
+
         public bool IsListTemplate
         {
             get
@@ -443,7 +457,7 @@ namespace Satrabel.OpenContent.Components
     {
         [JsonProperty(PropertyName = "template")]
         public string Template { get; set; }
-        
+
         [JsonProperty(PropertyName = "partialTemplates")]
         public Dictionary<string, PartialTemplate> PartialTemplates { get; set; }
 
