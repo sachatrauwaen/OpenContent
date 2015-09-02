@@ -90,12 +90,15 @@ namespace Satrabel.OpenContent.Components
                 CreatedOnDate = Content.LastModifiedOnDate
             };
             var versions = Content.Versions;
-            versions.Insert(0, ver);
-            if (versions.Count > 5)
+            if (versions.Count == 0 || versions[0].Json != ver.Json)
             {
-                versions.RemoveAt(versions.Count - 1);
+                versions.Insert(0, ver);
+                if (versions.Count > 5)
+                {
+                    versions.RemoveAt(versions.Count - 1);
+                }
+                Content.Versions = versions;
             }
-            Content.Versions = versions;
             using (IDataContext ctx = DataContext.Instance())
             {
                 var rep = ctx.GetRepository<OpenContentInfo>();
