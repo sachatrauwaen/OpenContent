@@ -52,7 +52,7 @@ function oc_fieldtypes(options) {
 }
 
 require.config({
-    baseUrl : oc_moduleRoot + 'DesktopModules/OpenContent',
+    baseUrl : oc_moduleRoot + '/DesktopModules/OpenContent',
     paths: {
         'async': 'js/requirejs/async',
         'text': 'js/requirejs/text',
