@@ -197,15 +197,15 @@
         "callbacks": callbacks,
         "styles": styles,
         "templates": {
-            "control": oc_websiteRoot + "/DesktopModules/OpenContent/alpaca/templates/dnn-edit/control.html",
-            "container": oc_websiteRoot + "/DesktopModules/OpenContent/alpaca/templates/dnn-edit/container.html",
-            //"container-array": oc_websiteRoot + "/DesktopModules/OpenContent/alpaca/templates/dnn-edit/container-array.html",
-            //"container-array-actionbar": oc_websiteRoot + "/DesktopModules/OpenContent/alpaca/templates/dnn-edit/container-array-actionbar.html",
-            "control-image": oc_websiteRoot + "/DesktopModules/OpenContent/alpaca/templates/dnn-edit/control-image.html",
-            "control-imagecropper": oc_websiteRoot + "/DesktopModules/OpenContent/alpaca/templates/dnn-edit/control-imagecropper.html",
-            "control-file": oc_websiteRoot + "/DesktopModules/OpenContent/alpaca/templates/dnn-edit/control-file.html",
-            "control-wysihtml": oc_websiteRoot + "/DesktopModules/OpenContent/alpaca/templates/dnn-edit/control-wysihtml.html",
-            "control-checkbox": oc_websiteRoot + "/DesktopModules/OpenContent/alpaca/templates/dnn-edit/control-checkbox.html"
+            "control": oc_websiteRoot + "DesktopModules/OpenContent/alpaca/templates/dnn-edit/control.html",
+            "container": oc_websiteRoot + "DesktopModules/OpenContent/alpaca/templates/dnn-edit/container.html",
+            //"container-array": oc_websiteRoot + "DesktopModules/OpenContent/alpaca/templates/dnn-edit/container-array.html",
+            //"container-array-actionbar": oc_websiteRoot + "DesktopModules/OpenContent/alpaca/templates/dnn-edit/container-array-actionbar.html",
+            "control-image": oc_websiteRoot + "DesktopModules/OpenContent/alpaca/templates/dnn-edit/control-image.html",
+            "control-imagecropper": oc_websiteRoot + "DesktopModules/OpenContent/alpaca/templates/dnn-edit/control-imagecropper.html",
+            "control-file": oc_websiteRoot + "DesktopModules/OpenContent/alpaca/templates/dnn-edit/control-file.html",
+            "control-wysihtml": oc_websiteRoot + "DesktopModules/OpenContent/alpaca/templates/dnn-edit/control-wysihtml.html",
+            "control-checkbox": oc_websiteRoot + "DesktopModules/OpenContent/alpaca/templates/dnn-edit/control-checkbox.html"
         }
     });
 

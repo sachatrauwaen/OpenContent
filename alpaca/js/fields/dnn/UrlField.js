@@ -44,7 +44,7 @@
             */
                     
                 bloodHoundConfig.remote = {
-                    url: oc_websiteRoot + "/DesktopModules/OpenContent/API/DnnEntitiesAPI/Tabs?q=%QUERY",
+                    url: oc_websiteRoot + "DesktopModules/OpenContent/API/DnnEntitiesAPI/Tabs?q=%QUERY",
                     ajax: {
                         beforeSend: connector.servicesFramework.setModuleHeaders,
                     }

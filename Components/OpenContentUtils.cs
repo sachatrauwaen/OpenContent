@@ -43,12 +43,14 @@ namespace Satrabel.OpenContent.Components
         }
         public static string GetTemplateFolder(Hashtable moduleSettings)
         {
-            return HttpContext.Current.Request.ApplicationPath + moduleSettings["template"] as string;
+            var template = moduleSettings["template"] as string;
+            if (string.IsNullOrEmpty(template) || HttpContext.Current.Request.ApplicationPath == "/") return template;
+            return HttpContext.Current.Request.ApplicationPath + template;
         }
         public static string SetTemplateFolder(string templateFullpath)
         {
             if (string.IsNullOrEmpty(HttpContext.Current.Request.ApplicationPath)) return templateFullpath;
-            return templateFullpath.Remove(0, HttpContext.Current.Request.ApplicationPath.Length);
+            return HttpContext.Current.Request.ApplicationPath=="/" ? templateFullpath : templateFullpath.Remove(0, HttpContext.Current.Request.ApplicationPath.Length);
         }
         public static List<ListItem> GetTemplatesFiles(PortalSettings portalSettings, int ModuleId, string SelectedTemplate, string moduleSubDir)
         {
@@ -223,7 +225,7 @@ namespace Satrabel.OpenContent.Components
             string appPath = HostingEnvironment.MapPath("~");
             string res = string.Format("{0}", path.Replace(appPath, "").Replace("\\", "/"));
             if (!res.StartsWith("/")) res = "/" + res;
-            return HttpContext.Current.Request.ApplicationPath + res;
+            return (HttpContext.Current.Request.ApplicationPath == "/") ? res : HttpContext.Current.Request.ApplicationPath + res;
         }
 
         public static string CopyTemplate(int PortalId, string FromFolder, string NewTemplateName)
@@ -400,14 +402,21 @@ namespace Satrabel.OpenContent.Components
 
         public static Manifest GetManifest(string folder)
         {
-            Manifest manifest = null;
-            string filename = HostingEnvironment.MapPath(folder + "/manifest.json");
-            if (File.Exists(filename))
+            try
             {
-                string content = File.ReadAllText(filename);
-                manifest = JsonConvert.DeserializeObject<Manifest>(content);
+                Manifest manifest = null;
+                string filename = HostingEnvironment.MapPath(folder + "/manifest.json");
+                if (File.Exists(filename))
+                {
+                    string content = File.ReadAllText(filename);
+                    manifest = JsonConvert.DeserializeObject<Manifest>(content);
+                }
+                return manifest;
             }
-            return manifest;
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
         public static TemplateManifest GetTemplateManifest(string Template)
         {
