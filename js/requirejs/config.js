@@ -1,4 +1,4 @@
-﻿var oc_moduleRoot = dnn.getVar('oc_websiteRoot');
+﻿var oc_websiteRoot = dnn.getVar('oc_websiteRoot');
 
 function oc_loadmodules(options, callback) {
     var jsmodules = oc_modules(options);
@@ -52,7 +52,7 @@ function oc_fieldtypes(options) {
 }
 
 require.config({
-    baseUrl : oc_moduleRoot + '/DesktopModules/OpenContent',
+    baseUrl : oc_websiteRoot + 'DesktopModules/OpenContent',
     paths: {
         'async': 'js/requirejs/async',
         'text': 'js/requirejs/text',

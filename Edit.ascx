@@ -8,10 +8,10 @@
 
 <dnncl:DnnJsInclude ID="DnnJsInclude14" runat="server" FilePath="~/DesktopModules/OpenContent/js/wysihtml/wysihtml-toolbar.js" Priority="107" ForceProvider="DnnPageHeaderProvider" />
 <dnncl:DnnJsInclude ID="DnnJsInclude6" runat="server" FilePath="~/DesktopModules/OpenContent/js/wysihtml/parser_rules/advanced_opencontent.js" Priority="107" ForceProvider="DnnPageHeaderProvider" />
-<dnncl:DnnJsInclude ID="DnnJsInclude11" runat="server" FilePath="~/DesktopModules/OpenContent/alpaca/js/fields/dnn/CKEditorField.js" Priority="107" ForceProvider="DnnPageHeaderProvider" />
 <dnncl:DnnJsInclude ID="DnnJsInclude12" runat="server" FilePath="~/DesktopModules/OpenContent/alpaca/js/fields/dnn/wysihtmlField.js" Priority="107" ForceProvider="DnnPageHeaderProvider" />
 <dnncl:DnnJsInclude ID="DnnJsInclude13" runat="server" FilePath="~/DesktopModules/OpenContent/alpaca/js/fields/dnn/NumberField.js" Priority="107" ForceProvider="DnnPageHeaderProvider" />
 
+<dnncl:DnnJsInclude ID="DnnJsInclude11" runat="server" FilePath="~/DesktopModules/OpenContent/alpaca/js/fields/dnn/CKEditorField.js" Priority="107" ForceProvider="DnnFormBottomProvider" />
 <dnncl:DnnJsInclude ID="DnnJsInclude9" runat="server" FilePath="~/DesktopModules/OpenContent/alpaca/js/fields/dnn/ImageField.js" Priority="107" ForceProvider="DnnFormBottomProvider" />
 <dnncl:DnnJsInclude ID="DnnJsInclude10" runat="server" FilePath="~/DesktopModules/OpenContent/alpaca/js/fields/dnn/FileField.js" Priority="107" ForceProvider="DnnFormBottomProvider" />
 <dnncl:dnnjsinclude id="DnnJsInclude8" runat="server" filepath="~/DesktopModules/OpenContent/alpaca/js/fields/dnn/UrlField.js" priority="108" forceprovider="DnnFormBottomProvider" />
