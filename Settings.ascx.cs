@@ -34,14 +34,14 @@ namespace Satrabel.Struct
         }
         public override void LoadSettings()
         {
-            var scriptFileSetting = OpenContentUtils.GetTemplateFolder(Settings);
+            var scriptFileSetting = OpenContentUtils.GetTemplate(Settings);
             scriptList.Items.AddRange(OpenContentUtils.GetTemplatesFiles(PortalSettings, ModuleId, scriptFileSetting, "OpenContent").ToArray());
             base.LoadSettings();
         }
         public override void UpdateSettings()
         {
             ModuleController mc = new ModuleController();
-            mc.UpdateModuleSetting(ModuleId, "template", OpenContentUtils.SetTemplateFolder(scriptList.SelectedValue));
+            mc.UpdateModuleSetting(ModuleId, "template", OpenContentUtils.SetTemplate(scriptList.SelectedValue));
             mc.UpdateModuleSetting(ModuleId, "data", HiddenField.Value);
         }
     }

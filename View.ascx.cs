@@ -58,7 +58,7 @@ namespace Satrabel.OpenContent
 
             string settingsJson;
             string outputString = "";
-            var template = OpenContentUtils.GetTemplateFolder(ModuleContext.Settings);            
+            var template = OpenContentUtils.GetTemplate(ModuleContext.Settings);            
             string selectedTemplate = template;
             bool dataExist = false;
             string templateFolder = "";
@@ -530,7 +530,7 @@ namespace Satrabel.OpenContent
                     dataJson = fileContent;
                 }
             }
-            if (template == (OpenContentUtils.GetTemplateFolder(ModuleContext.Settings)))
+            if (template == (OpenContentUtils.GetTemplate(ModuleContext.Settings)))
             {
                 settingsJson = ModuleContext.Settings["data"] as string;
             }
@@ -555,7 +555,7 @@ namespace Satrabel.OpenContent
             {
                 var Actions = new ModuleActionCollection();
 
-                string Template = OpenContentUtils.GetTemplateFolder(ModuleContext.Settings);
+                string Template = OpenContentUtils.GetTemplate(ModuleContext.Settings);
                 bool TemplateDefined = !string.IsNullOrEmpty(Template);
                 var manifest = OpenContentUtils.GetTemplateManifest(Template);
                 bool ListMode = manifest != null && manifest.IsListTemplate;
@@ -719,7 +719,7 @@ namespace Satrabel.OpenContent
             phFrom.Visible = rblUseTemplate.SelectedIndex == 1;
             phTemplateName.Visible = rblUseTemplate.SelectedIndex == 1;
             rblFrom.SelectedIndex = 0;
-            var scriptFileSetting = OpenContentUtils.GetTemplateFolder(ModuleContext.Settings);
+            var scriptFileSetting = OpenContentUtils.GetTemplate(ModuleContext.Settings);
             ddlTemplate.Items.Clear();
             if (rblUseTemplate.SelectedIndex == 0) // existing
             {
@@ -736,7 +736,7 @@ namespace Satrabel.OpenContent
             ddlTemplate.Items.Clear();
             if (rblFrom.SelectedIndex == 0) // site
             {
-                var scriptFileSetting = OpenContentUtils.GetTemplateFolder(ModuleContext.Settings);
+                var scriptFileSetting = OpenContentUtils.GetTemplate(ModuleContext.Settings);
                 ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplates(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, "OpenContent").ToArray());
 
                 //ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplatesFiles(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, "OpenContent").ToArray());
@@ -762,7 +762,7 @@ namespace Satrabel.OpenContent
                 ModuleController mc = new ModuleController();
                 if (rblUseTemplate.SelectedIndex == 0) // existing
                 {
-                    mc.UpdateModuleSetting(ModuleContext.ModuleId, "template",  OpenContentUtils.SetTemplateFolder(ddlTemplate.SelectedValue));
+                    mc.UpdateModuleSetting(ModuleContext.ModuleId, "template",  OpenContentUtils.SetTemplate(ddlTemplate.SelectedValue));
                     //mc.UpdateModuleSetting(ModuleId, "data", HiddenField.Value);
                 }
                 else if (rblUseTemplate.SelectedIndex == 1) // new
@@ -771,13 +771,13 @@ namespace Satrabel.OpenContent
                     {
                         string oldFolder = Server.MapPath(ddlTemplate.SelectedValue);
                         string Template = OpenContentUtils.CopyTemplate(ModuleContext.PortalId, oldFolder, tbTemplateName.Text);
-                        mc.UpdateModuleSetting(ModuleContext.ModuleId, "template", OpenContentUtils.SetTemplateFolder(Template));
+                        mc.UpdateModuleSetting(ModuleContext.ModuleId, "template", OpenContentUtils.SetTemplate(Template));
                     }
                     else if (rblFrom.SelectedIndex == 1) // web
                     {
                         string FileName = ddlTemplate.SelectedValue;
                         string Template = OpenContentUtils.ImportFromWeb(ModuleContext.PortalId, FileName, tbTemplateName.Text);
-                        mc.UpdateModuleSetting(ModuleContext.ModuleId, "template", OpenContentUtils.SetTemplateFolder(Template));
+                        mc.UpdateModuleSetting(ModuleContext.ModuleId, "template", OpenContentUtils.SetTemplate(Template));
                     }
                 }
                 mc.DeleteModuleSetting(ModuleContext.ModuleId, "data");

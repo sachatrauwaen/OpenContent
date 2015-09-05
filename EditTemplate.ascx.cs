@@ -49,7 +49,7 @@ namespace Satrabel.OpenContent
 
         private void cmdCustom_Click(object sender, EventArgs e)
         {
-            string Template = OpenContentUtils.GetTemplateFolder(ModuleContext.Settings);
+            string Template = OpenContentUtils.GetTemplate(ModuleContext.Settings);
             string TemplateFolder = Path.GetDirectoryName(Template);
             string TemplateDir = Server.MapPath(TemplateFolder);
             string ModuleDir = Server.MapPath(ModuleTemplateDirectory);
@@ -67,7 +67,7 @@ namespace Satrabel.OpenContent
             }
             ModuleController mc = new ModuleController();
             Template = ModuleTemplateDirectory + "schema.json";
-            mc.UpdateModuleSetting(ModuleId, "template", OpenContentUtils.SetTemplateFolder(Template));
+            mc.UpdateModuleSetting(ModuleId, "template", OpenContentUtils.SetTemplate(Template));
             InitEditor(Template);
         }
 
@@ -76,7 +76,7 @@ namespace Satrabel.OpenContent
             base.OnLoad(e);
             if (!Page.IsPostBack)
             {
-                string Template = OpenContentUtils.GetTemplateFolder(ModuleContext.Settings);
+                string Template = OpenContentUtils.GetTemplate(ModuleContext.Settings);
                 InitEditor(Template);
             }
         }
@@ -215,7 +215,7 @@ namespace Satrabel.OpenContent
 
         private void Save()
         {
-            string template = OpenContentUtils.GetTemplateFolder(ModuleContext.Settings);
+            string template = OpenContentUtils.GetTemplate(ModuleContext.Settings);
             string templateFolder = Path.GetDirectoryName(template);
             string scriptFile = templateFolder + "/" + scriptList.SelectedValue;
             string srcFile = Server.MapPath(scriptFile);
@@ -241,7 +241,7 @@ namespace Satrabel.OpenContent
 
         private void scriptList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string template = OpenContentUtils.GetTemplateFolder(ModuleContext.Settings);
+            string template = OpenContentUtils.GetTemplate(ModuleContext.Settings);
             DisplayFile(template);
         }
         #endregion

@@ -55,7 +55,7 @@ namespace Satrabel.OpenContent.Components
         [HttpGet]
         public HttpResponseMessage Edit(int id)
         {
-            string template = OpenContentUtils.GetTemplateFolder(ActiveModule.ModuleSettings);
+            string template = OpenContentUtils.GetTemplate(ActiveModule.ModuleSettings);
             var manifest = OpenContentUtils.GetTemplateManifest(template);
             bool listMode = manifest != null && manifest.IsListTemplate;
             JObject json = new JObject();
@@ -167,7 +167,7 @@ namespace Satrabel.OpenContent.Components
         [HttpGet]
         public HttpResponseMessage Version(int id, string ticks)
         {
-            string Template = OpenContentUtils.GetTemplateFolder(ActiveModule.ModuleSettings);
+            string Template = OpenContentUtils.GetTemplate(ActiveModule.ModuleSettings);
             var manifest = OpenContentUtils.GetTemplateManifest(Template);
             bool ListMode = manifest != null && manifest.IsListTemplate;
             JObject json = new JObject();
@@ -281,7 +281,7 @@ namespace Satrabel.OpenContent.Components
             try
             {
                 int ModuleId = ActiveModule.ModuleID;
-                string Template = OpenContentUtils.GetTemplateFolder(ActiveModule.ModuleSettings);
+                string Template = OpenContentUtils.GetTemplate(ActiveModule.ModuleSettings);
                 var manifest = OpenContentUtils.GetTemplateManifest(Template);
                 bool ListMode = manifest != null && manifest.IsListTemplate;
                 OpenContentController ctrl = new OpenContentController();
@@ -344,7 +344,7 @@ namespace Satrabel.OpenContent.Components
                 var template = json["template"].ToString();
 
                 var mc = new ModuleController();
-                mc.UpdateModuleSetting(ModuleId, "template", OpenContentUtils.SetTemplateFolder(template));
+                mc.UpdateModuleSetting(ModuleId, "template", OpenContentUtils.SetTemplate(template));
                 mc.UpdateModuleSetting(ModuleId, "data", data);
                 return Request.CreateResponse(HttpStatusCode.OK, "");
             }
@@ -363,7 +363,7 @@ namespace Satrabel.OpenContent.Components
         {
             ModuleController mc = new ModuleController();
             var module = mc.GetModule(req.moduleid, req.tabid, false);
-            string Template = OpenContentUtils.GetTemplateFolder(module.ModuleSettings);
+            string Template = OpenContentUtils.GetTemplate(module.ModuleSettings);
             var manifest = OpenContentUtils.GetTemplateManifest(Template);
             bool ListMode = manifest != null && manifest.IsListTemplate;
             //JToken json = new JObject();
