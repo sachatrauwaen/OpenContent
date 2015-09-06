@@ -30,7 +30,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
         }
         public string Execute(Page page, FileUri sourceFilename, dynamic model)
         {
-            string source = File.ReadAllText(sourceFilename.AbsoluteFilePath);
+            string source = File.ReadAllText(sourceFilename.AbsolutePsychicalFilePath);
             string sourceFolder = sourceFilename.DirectoryName.Replace("\\", "/") + "/";
             var hbs = HandlebarsDotNet.Handlebars.Create();
             RegisterDivideHelper(hbs);

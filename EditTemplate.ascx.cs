@@ -50,7 +50,7 @@ namespace Satrabel.OpenContent
         private void cmdCustom_Click(object sender, EventArgs e)
         {
             FileUri template = OpenContentUtils.GetTemplate(ModuleContext.Settings);
-            string templateFolder = Path.GetDirectoryName(template.RelativeFilePath);
+            string templateFolder = template.DirectoryName ;
             string templateDir = Server.MapPath(templateFolder);
             string moduleDir = Server.MapPath(ModuleTemplateDirectory);
             if (!Directory.Exists(moduleDir))
@@ -67,7 +67,7 @@ namespace Satrabel.OpenContent
             }
             ModuleController mc = new ModuleController();
             template = new FileUri(ModuleTemplateDirectory + "schema.json");
-            mc.UpdateModuleSetting(ModuleId, "template", template.RelativeFilePath);
+            mc.UpdateModuleSetting(ModuleId, "template", template.FilePath);
             InitEditor(template);
         }
 
@@ -85,7 +85,7 @@ namespace Satrabel.OpenContent
         {
             LoadFiles(template);
             DisplayFile(template);
-            if (template.RelativeFilePath.StartsWith(ModuleTemplateDirectory))
+            if (template.FilePath.StartsWith(ModuleTemplateDirectory))
             {
                 cmdCustom.Visible = false;
             }
@@ -98,8 +98,8 @@ namespace Satrabel.OpenContent
             //string scriptFile = TemplateFolder + "/" + scriptList.SelectedValue;
             //plSource.Text = scriptFile;
             //string srcFile = Server.MapPath(scriptFile);
-            plSource.Text = template.RelativeFilePath;
-            string srcFile = template.AbsoluteFilePath;
+            plSource.Text = template.FilePath;
+            string srcFile = template.AbsolutePsychicalFilePath;
 
             if (File.Exists(srcFile))
             {
@@ -216,7 +216,7 @@ namespace Satrabel.OpenContent
         private void Save()
         {
             FileUri template = OpenContentUtils.GetTemplate(ModuleContext.Settings);
-            string templateFolder = Path.GetDirectoryName(template.RelativeFilePath);
+            string templateFolder = Path.GetDirectoryName(template.FilePath);
             string scriptFile = templateFolder + "/" + scriptList.SelectedValue;
             string srcFile = Server.MapPath(scriptFile);
             if (string.IsNullOrWhiteSpace(txtSource.Text))

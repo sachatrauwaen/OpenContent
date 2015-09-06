@@ -63,7 +63,7 @@ namespace Satrabel.OpenContent
             bool dataExist = false;
             string templateFolder = "";
             TemplateManifest manifest = null;
-            if (!string.IsNullOrEmpty(template.RelativeFilePath))
+            if (!string.IsNullOrEmpty(template.FilePath))
             {
                 templateFolder = template.DirectoryName;
                 manifest = OpenContentUtils.GetTemplateManifest(template);
@@ -138,7 +138,7 @@ namespace Satrabel.OpenContent
                         string schemaFilename = Path.GetDirectoryName(templateFilename) + "\\" + prefix + "schema.json";
                         bool settingsNeeded = File.Exists(schemaFilename);
                         templateDefined = templateDefined &&
-                            (!ddlTemplate.Visible || (template.RelativeFilePath == ddlTemplate.SelectedValue));
+                            (!ddlTemplate.Visible || (template.FilePath == ddlTemplate.SelectedValue));
                         settingsDefined = settingsDefined || !settingsNeeded;
 
                         bSave.CssClass = "dnnPrimaryAction";
@@ -238,7 +238,7 @@ namespace Satrabel.OpenContent
             {
                 if (template.IsDefined())
                 {
-                    if (!template.FileExists(Server))
+                    if (!template.FileExists)
                         Exceptions.ProcessModuleLoadException(this, new Exception(template + " don't exist"));
 
                     string TemplateVirtualFolder = template.DirectoryName;
@@ -282,7 +282,7 @@ namespace Satrabel.OpenContent
 
         private string ExecuteRazor(FileUri template, dynamic model)
         {
-            string webConfig = Path.GetDirectoryName(template.AbsoluteFilePath);
+            string webConfig = Path.GetDirectoryName(template.AbsolutePsychicalFilePath);
             webConfig = webConfig.Remove(webConfig.LastIndexOf("\\")) + "\\web.config";
             if (!File.Exists(webConfig))
             {
@@ -291,7 +291,7 @@ namespace Satrabel.OpenContent
             }
             try
             {
-                var razorEngine = new RazorEngine(template.RelativeFilePath, ModuleContext, LocalResourceFile);
+                var razorEngine = new RazorEngine(template.FilePath, ModuleContext, LocalResourceFile);
                 var writer = new StringWriter();
                 RazorRender(razorEngine.Webpage, writer, model);
                 return writer.ToString();
@@ -521,7 +521,7 @@ namespace Satrabel.OpenContent
             dataJson = "";
             settingsJson = "";
             OpenContentController ctrl = new OpenContentController();
-            var dataFilename = template.AbsoluteDirectoryName + "\\" + "data.json";
+            var dataFilename = template.AbsolutePhysicalDirectoryName + "\\" + "data.json";
             if (File.Exists(dataFilename))
             {
                 string fileContent = File.ReadAllText(dataFilename);
@@ -536,7 +536,7 @@ namespace Satrabel.OpenContent
             }
             if (string.IsNullOrEmpty(settingsJson))
             {
-                var settingsFilename = template.AbsoluteDirectoryName + "\\" + template.FileNameWithoutExtension + "-data.json";
+                var settingsFilename = template.AbsolutePhysicalDirectoryName + "\\" + template.FileNameWithoutExtension + "-data.json";
                 if (File.Exists(settingsFilename))
                 {
                     string fileContent = File.ReadAllText(settingsFilename);
@@ -699,7 +699,7 @@ namespace Satrabel.OpenContent
             if (template.IsDefined())
             {
                 //JavaScript.RequestRegistration() 
-                string templateBase = template.RelativeFilePath.Replace("$.hbs", ".hbs");
+                string templateBase = template.FilePath.Replace("$.hbs", ".hbs");
                 string cssfilename = Path.ChangeExtension(templateBase, "css");
                 if (File.Exists(HostingEnvironment.MapPath(cssfilename)))
                 {
