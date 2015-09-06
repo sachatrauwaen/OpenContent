@@ -53,6 +53,16 @@ namespace Satrabel.OpenContent.Components
             return null;
         }
 
+        public static List<System.Web.UI.WebControls.ListItem> GetTemplates(PortalSettings portalSettings, int moduleId, string selectedTemplate, string moduleSubDir)
+        {
+            return GetTemplates(portalSettings, moduleId, new FileUri(selectedTemplate), moduleSubDir);
+        }
+        public static List<System.Web.UI.WebControls.ListItem> GetTemplatesFiles(PortalSettings portalSettings, int moduleId, string selectedTemplate, string moduleSubDir)
+        {
+            return GetTemplatesFiles(portalSettings, moduleId, new FileUri(selectedTemplate), moduleSubDir);
+        }
+        
+
         public static List<ListItem> GetTemplatesFiles(PortalSettings portalSettings, int moduleId, FileUri selectedTemplate, string moduleSubDir)
         {
             string basePath = HostingEnvironment.MapPath(GetSiteTemplateFolder(portalSettings, moduleSubDir));
@@ -431,6 +441,11 @@ namespace Satrabel.OpenContent.Components
             }
             return templateManifest;
         }
+        public static string ReverseMapPath(string path)
+        {
+            return FileUri.ReverseMapPath(path);
+        }
+
     }
     public class TemplateManifest
     {
