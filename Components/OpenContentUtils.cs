@@ -41,33 +41,15 @@ namespace Satrabel.OpenContent.Components
         {
             return portalSettings.ActiveTab.SkinPath + moduleSubDir + "/Templates/";
         }
-        public enum PathType
-        {
-            Relative = 0,
-            FileSystemRelative = 1,
-            UrlRelative = 2
-        }
-        public static string GetTemplate(Hashtable moduleSettings, PathType pathType = PathType.UrlRelative)
+
+
+        public static FileUri GetTemplate(Hashtable moduleSettings)
         {
             var template = moduleSettings["template"] as string;
-            if (pathType == PathType.Relative)
-                return template;
-            if (pathType == PathType.FileSystemRelative)
-                return template;
-            if (pathType == PathType.UrlRelative)
-            {
-                if (string.IsNullOrEmpty(template) || NormalizedApplicationPath == "/") return template;
-                return NormalizedApplicationPath + template;
-            }
-            throw new NotSupportedException();
+            return new FileUri(template);
         }
-        public static string SetTemplate(string templateFullpath)
-        {
-            if (string.IsNullOrEmpty(NormalizedApplicationPath)) return templateFullpath;
-            return NormalizedApplicationPath == "/" ? templateFullpath : templateFullpath.Remove(0, NormalizedApplicationPath.Length);
-        }
-
-        public static List<ListItem> GetTemplatesFiles(PortalSettings portalSettings, int moduleId, string selectedTemplate, string moduleSubDir)
+   
+        public static List<ListItem> GetTemplatesFiles(PortalSettings portalSettings, int moduleId, FileUri selectedTemplate, string moduleSubDir)
         {
             string basePath = HostingEnvironment.MapPath(GetSiteTemplateFolder(portalSettings, moduleSubDir));
             if (!Directory.Exists(basePath))
@@ -77,14 +59,14 @@ namespace Satrabel.OpenContent.Components
             List<ListItem> lst = new List<ListItem>();
             foreach (var dir in Directory.GetDirectories(basePath))
             {
-                string TemplateCat = "Site";
-                string DirName = Path.GetFileNameWithoutExtension(dir);
-                int ModId = -1;
-                if (int.TryParse(DirName, out ModId))
+                string templateCat = "Site";
+                string dirName = Path.GetFileNameWithoutExtension(dir);
+                int modId = -1;
+                if (int.TryParse(dirName, out modId))
                 {
-                    if (ModId == moduleId)
+                    if (modId == moduleId)
                     {
-                        TemplateCat = "Module";
+                        templateCat = "Module";
                     }
                     else
                     {
@@ -92,21 +74,21 @@ namespace Satrabel.OpenContent.Components
                     }
                 }
                 IEnumerable<string> files = null;
-                string templateVirtualFolder = ReverseMapPath(dir);
+                string templateVirtualFolder = FileUri.ReverseMapPath(dir);
                 var manifest = GetManifest(templateVirtualFolder);
                 if (manifest != null && manifest.Templates != null)
                 {
                     files = manifest.Templates.Select(t => t.Key);
                     foreach (var template in manifest.Templates)
                     {
-                        string templateName = DirName;
+                        string templateName = dirName;
                         if (!string.IsNullOrEmpty(template.Value.Title))
                         {
                             templateName = templateName + " - " + template.Value.Title;
                         }
                         string scriptPath = templateVirtualFolder + "/" + template.Key;
-                        var item = new ListItem(TemplateCat + " : " + templateName, scriptPath);
-                        if (!(string.IsNullOrEmpty(selectedTemplate)) && scriptPath.ToLowerInvariant() == selectedTemplate.ToLowerInvariant())
+                        var item = new ListItem(templateCat + " : " + templateName, scriptPath);
+                        if (selectedTemplate.IsDefined() && scriptPath.ToLowerInvariant() == selectedTemplate.RelativeFilePath.ToLowerInvariant())
                         {
                             item.Selected = true;
                         }
@@ -120,7 +102,7 @@ namespace Satrabel.OpenContent.Components
                     foreach (string script in files)
                     {
                         string scriptName = script.Remove(script.LastIndexOf(".")).Replace(basePath, "");
-                        if (TemplateCat == "Module")
+                        if (templateCat == "Module")
                         {
                             if (scriptName.ToLower().EndsWith("template"))
                                 scriptName = "";
@@ -132,9 +114,9 @@ namespace Satrabel.OpenContent.Components
                         else
                             scriptName = scriptName.Replace("\\", " - ");
 
-                        string scriptPath = ReverseMapPath(script);
-                        var item = new ListItem(TemplateCat + " : " + scriptName, scriptPath);
-                        if (!(string.IsNullOrEmpty(selectedTemplate)) && scriptPath.ToLowerInvariant() == selectedTemplate.ToLowerInvariant())
+                        string scriptPath = FileUri.ReverseMapPath(script);
+                        var item = new ListItem(templateCat + " : " + scriptName, scriptPath);
+                        if (selectedTemplate.IsDefined() && scriptPath.ToLowerInvariant() == selectedTemplate.RelativeFilePath.ToLowerInvariant())
                         {
                             item.Selected = true;
                         }
@@ -163,9 +145,9 @@ namespace Satrabel.OpenContent.Components
                         else
                             scriptName = scriptName.Replace("\\", " - ");
 
-                        string scriptPath = ReverseMapPath(script);
+                        string scriptPath = FileUri.ReverseMapPath(script);
                         var item = new ListItem(TemplateCat + " : " + scriptName, scriptPath);
-                        if (!(string.IsNullOrEmpty(selectedTemplate)) && scriptPath.ToLowerInvariant() == selectedTemplate.ToLowerInvariant())
+                        if (selectedTemplate.IsDefined() && scriptPath.ToLowerInvariant() == selectedTemplate.RelativeFilePath.ToLowerInvariant())
                         {
                             item.Selected = true;
                         }
@@ -175,7 +157,7 @@ namespace Satrabel.OpenContent.Components
             }
             return lst;
         }
-        public static List<ListItem> GetTemplates(PortalSettings portalSettings, int moduleId, string selectedTemplate, string moduleSubDir)
+        public static List<ListItem> GetTemplates(PortalSettings portalSettings, int moduleId, FileUri selectedTemplate, string moduleSubDir)
         {
             string basePath = HostingEnvironment.MapPath(GetSiteTemplateFolder(portalSettings, moduleSubDir));
             if (!Directory.Exists(basePath))
@@ -205,9 +187,9 @@ namespace Satrabel.OpenContent.Components
                 else
                     scriptName = TemplateCat + ":" + scriptName.Substring(scriptName.LastIndexOf("\\") + 1);
 
-                string scriptPath = ReverseMapPath(dir);
+                string scriptPath = FileUri.ReverseMapPath(dir);
                 var item = new ListItem(scriptName, scriptPath);
-                if (!(string.IsNullOrEmpty(selectedTemplate)) && scriptPath.ToLowerInvariant() == selectedTemplate.ToLowerInvariant())
+                if (selectedTemplate.IsDefined() && scriptPath.ToLowerInvariant() == selectedTemplate.RelativeFilePath.ToLowerInvariant())
                 {
                     item.Selected = true;
                 }
@@ -223,9 +205,9 @@ namespace Satrabel.OpenContent.Components
                     string DirName = Path.GetFileNameWithoutExtension(dir);
                     string scriptName = dir;
                     scriptName = TemplateCat + ":" + scriptName.Substring(scriptName.LastIndexOf("\\") + 1);
-                    string scriptPath = ReverseMapPath(dir);
+                    string scriptPath = FileUri.ReverseMapPath(dir);
                     var item = new ListItem(scriptName, scriptPath);
-                    if (!(string.IsNullOrEmpty(selectedTemplate)) && scriptPath.ToLowerInvariant() == selectedTemplate.ToLowerInvariant())
+                    if (selectedTemplate.IsDefined() && scriptPath.ToLowerInvariant() == selectedTemplate.RelativeFilePath.ToLowerInvariant())
                     {
                         item.Selected = true;
                     }
@@ -235,27 +217,6 @@ namespace Satrabel.OpenContent.Components
             return lst;
         }
 
-        public static string ReverseMapPath(string path)
-        {
-            string appPath = HostingEnvironment.MapPath("~");
-            string res = string.Format("{0}", path.Replace(appPath, "").Replace("\\", "/"));
-            if (!res.StartsWith("/")) res = "/" + res;
-            return (NormalizedApplicationPath == "/") ? res : NormalizedApplicationPath + res;
-        }
-        /// <summary>
-        /// Gets the normalized application path.
-        /// </summary>
-        /// <remarks>the return value of ApplicationVirtualPath doesn't always return a string that ends with /.</remarks>
-        /// <returns></returns>
-        public static string NormalizedApplicationPath
-        {
-            get
-            {
-                var path = "" + HostingEnvironment.ApplicationVirtualPath;
-                if (!path.EndsWith("/")) path += "/";
-                return path;
-            }
-        }
         public static string CopyTemplate(int PortalId, string FromFolder, string NewTemplateName)
         {
             string FolderName = "OpenContent/Templates/" + NewTemplateName;
@@ -357,12 +318,12 @@ namespace Satrabel.OpenContent.Components
                     Template = item;
                 }
             }
-            return ReverseMapPath(Template);
+            return FileUri.ReverseMapPath(Template);
         }
         /*
         public static bool IsListTemplate(string Template)
         {
-            return !string.IsNullOrEmpty(Template) && Template.EndsWith("$.hbs");
+            return template.IsDefined() && Template.EndsWith("$.hbs");
         }
         */
         public static string CleanupUrl(string Url)
@@ -446,22 +407,132 @@ namespace Satrabel.OpenContent.Components
                 return null;
             }
         }
-        public static TemplateManifest GetTemplateManifest(string Template)
+        public static TemplateManifest GetTemplateManifest(FileUri template)
         {
             TemplateManifest templateManifest = null;
-            if (!string.IsNullOrEmpty(Template))
+            if (template.IsDefined())
             {
-                string TemplateFolder = Path.GetDirectoryName(Template);
-                string TemplateFile = Path.GetFileNameWithoutExtension(Template);
-                Manifest manifest = GetManifest(TemplateFolder);
-                if (manifest != null && manifest.Templates != null && manifest.Templates.ContainsKey(TemplateFile))
+                string templateFolder = template.DirectoryName;
+                string templateFile = template.FileNameWithoutExtension;
+                Manifest manifest = GetManifest(templateFolder);
+                if (manifest != null && manifest.Templates != null && manifest.Templates.ContainsKey(templateFile))
                 {
-                    templateManifest = manifest.Templates[TemplateFile];
+                    templateManifest = manifest.Templates[templateFile];
                 }
             }
             return templateManifest;
         }
+    }
 
+    public class FileUri
+    {
+
+        //public enum PathType
+        //{
+        //    Relative = 0,  //  ~\portals
+        //    FileSystemRelative = 1,  // ~\portals
+        //    FileSystemAbsolute = 2, //  c:\....
+        //    UrlFull = 3, // [http://<host>]/..../...
+        //}
+
+        public FileUri(string relativePathToFile)
+        {
+            RelativeFilePath = relativePathToFile;
+        }
+
+        public string RelativeFilePath { get; private set; }
+
+        public string DirectoryName
+        {
+            get
+            {
+                return Path.GetDirectoryName(RelativeFilePath);
+            }
+        }
+
+        public string WebPath
+        {
+            get
+            {
+                if (NormalizedApplicationPath == "/") return RelativeFilePath;
+                return NormalizedApplicationPath + RelativeFilePath;
+            }
+        }
+        public string AbsoluteFilePath
+        {
+            get
+            {
+                return HostingEnvironment.MapPath(RelativeFilePath);
+            }
+        }
+        public string AbsoluteDirectoryName
+        {
+            get
+            {
+                return Path.GetDirectoryName(HostingEnvironment.MapPath(RelativeFilePath));
+            }
+        }
+        public bool FileExists(HttpServerUtility server)
+        {
+            return File.Exists(server.MapPath(RelativeFilePath));
+        }
+        public string FileName
+        {
+            get
+            {
+                return Path.GetFileName(RelativeFilePath);
+            }
+        }
+        public string FileNameWithoutExtension
+        {
+            get
+            {
+                return Path.GetFileNameWithoutExtension(RelativeFilePath);
+            }
+        }
+        public string Extension
+        {
+            get { return Path.GetExtension(RelativeFilePath); }
+        }
+        public bool IsEmpty()
+        {
+            return string.IsNullOrEmpty(RelativeFilePath);
+        }
+        public bool IsDefined()
+        {
+            return !string.IsNullOrEmpty(RelativeFilePath);
+        }
+
+        public static string ReverseMapPath(string path)
+        {
+            string appPath = HostingEnvironment.MapPath("~");
+            string res = String.Format("{0}", path.Replace(appPath, "").Replace("\\", "/"));
+            if (!res.StartsWith("/")) res = "/" + res;
+            return (NormalizedApplicationPath == "/") ? res : NormalizedApplicationPath + res;
+        }
+
+
+        //public static string SetTemplate(string templateFullpath)
+        //{
+        //    if (string.IsNullOrEmpty(FileUri.NormalizedApplicationPath)) return templateFullpath;
+        //    return FileUri.NormalizedApplicationPath == "/" ? templateFullpath : templateFullpath.Remove(0, FileUri.NormalizedApplicationPath.Length);
+        //}
+
+
+        /// <summary>
+        /// Gets the normalized application path.
+        /// </summary>
+        /// <remarks>the return value of ApplicationVirtualPath doesn't always return a string that ends with /.</remarks>
+        /// <returns></returns>
+        private static string NormalizedApplicationPath
+        {
+            get
+            {
+                var path = "" + HostingEnvironment.ApplicationVirtualPath;
+                if (!path.EndsWith("/")) path += "/";
+                return path;
+            }
+        }
 
 
     }

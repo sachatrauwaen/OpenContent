@@ -55,7 +55,7 @@ namespace Satrabel.OpenContent.Components
         [HttpGet]
         public HttpResponseMessage Edit(int id)
         {
-            string template = OpenContentUtils.GetTemplate(ActiveModule.ModuleSettings);
+            FileUri template = OpenContentUtils.GetTemplate(ActiveModule.ModuleSettings);
             var manifest = OpenContentUtils.GetTemplateManifest(template);
             bool listMode = manifest != null && manifest.IsListTemplate;
             JObject json = new JObject();
@@ -167,19 +167,19 @@ namespace Satrabel.OpenContent.Components
         [HttpGet]
         public HttpResponseMessage Version(int id, string ticks)
         {
-            string Template = OpenContentUtils.GetTemplate(ActiveModule.ModuleSettings);
-            var manifest = OpenContentUtils.GetTemplateManifest(Template);
-            bool ListMode = manifest != null && manifest.IsListTemplate;
+            FileUri template = OpenContentUtils.GetTemplate(ActiveModule.ModuleSettings);
+            var manifest = OpenContentUtils.GetTemplateManifest(template);
+            bool listMode = manifest != null && manifest.IsListTemplate;
             JObject json = new JObject();
             try
             {
-                int ModuleId = ActiveModule.ModuleID;
+                int moduleId = ActiveModule.ModuleID;
                 OpenContentController ctrl = new OpenContentController();
-                if (ListMode)
+                if (listMode)
                 {
                     if (id > 0)
                     {
-                        var struc = ctrl.GetContent(id, ModuleId);
+                        var struc = ctrl.GetContent(id, moduleId);
                         if (struc != null)
                         {
                             if (!string.IsNullOrEmpty(struc.VersionsJson))
@@ -192,7 +192,7 @@ namespace Satrabel.OpenContent.Components
                 }
                 else
                 {
-                    var struc = ctrl.GetFirstContent(ModuleId);
+                    var struc = ctrl.GetFirstContent(moduleId);
                     if (struc != null)
                     {
                         if (!string.IsNullOrEmpty(struc.VersionsJson))
@@ -280,30 +280,30 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
-                int ModuleId = ActiveModule.ModuleID;
-                string Template = OpenContentUtils.GetTemplate(ActiveModule.ModuleSettings);
-                var manifest = OpenContentUtils.GetTemplateManifest(Template);
-                bool ListMode = manifest != null && manifest.IsListTemplate;
+                int moduleId = ActiveModule.ModuleID;
+                FileUri template = OpenContentUtils.GetTemplate(ActiveModule.ModuleSettings);
+                var manifest = OpenContentUtils.GetTemplateManifest(template);
+                bool listMode = manifest != null && manifest.IsListTemplate;
                 OpenContentController ctrl = new OpenContentController();
                 OpenContentInfo content = null;
-                if (ListMode)
+                if (listMode)
                 {
                     int ItemId;
                     if (int.TryParse(json["id"].ToString(), out ItemId))
                     {
-                        content = ctrl.GetContent(ItemId, ModuleId);
+                        content = ctrl.GetContent(ItemId, moduleId);
                     }
                 }
                 else
                 {
-                    content = ctrl.GetFirstContent(ModuleId);
+                    content = ctrl.GetFirstContent(moduleId);
                 }
 
                 if (content == null)
                 {
                     content = new OpenContentInfo()
                     {
-                        ModuleId = ModuleId,
+                        ModuleId = moduleId,
                         Title = json["form"]["Title"] == null ? ActiveModule.ModuleTitle : json["form"]["Title"].ToString(),
                         Json = json["form"].ToString(),
                         CreatedByUserId = UserInfo.UserID,
@@ -339,13 +339,13 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
-                int ModuleId = ActiveModule.ModuleID;
+                int moduleId = ActiveModule.ModuleID;
                 var data = json["data"].ToString();
                 var template = json["template"].ToString();
 
                 var mc = new ModuleController();
-                mc.UpdateModuleSetting(ModuleId, "template", OpenContentUtils.SetTemplate(template));
-                mc.UpdateModuleSetting(ModuleId, "data", data);
+                mc.UpdateModuleSetting(moduleId, "template", template);
+                mc.UpdateModuleSetting(moduleId, "data", data);
                 return Request.CreateResponse(HttpStatusCode.OK, "");
             }
             catch (Exception exc)
@@ -363,15 +363,15 @@ namespace Satrabel.OpenContent.Components
         {
             ModuleController mc = new ModuleController();
             var module = mc.GetModule(req.moduleid, req.tabid, false);
-            string Template = OpenContentUtils.GetTemplate(module.ModuleSettings);
-            var manifest = OpenContentUtils.GetTemplateManifest(Template);
-            bool ListMode = manifest != null && manifest.IsListTemplate;
+            FileUri template = OpenContentUtils.GetTemplate(module.ModuleSettings);
+            var manifest = OpenContentUtils.GetTemplateManifest(template);
+            bool listMode = manifest != null && manifest.IsListTemplate;
             //JToken json = new JObject();
             List<LookupResultDTO> res = new List<LookupResultDTO>();
             try
             {
                 OpenContentController ctrl = new OpenContentController();
-                if (ListMode)
+                if (listMode)
                 {
                     var items = ctrl.GetContents(req.moduleid);
                     if (items != null)

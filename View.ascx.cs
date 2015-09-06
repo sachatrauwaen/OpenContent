@@ -59,17 +59,17 @@ namespace Satrabel.OpenContent
             string settingsJson;
             string outputString = "";
             var template = OpenContentUtils.GetTemplate(ModuleContext.Settings);            
-            string selectedTemplate = template;
+            FileUri selectedTemplate = template;
             bool dataExist = false;
             string templateFolder = "";
             TemplateManifest manifest = null;
-            if (!string.IsNullOrEmpty(template))
+            if (!string.IsNullOrEmpty(template.RelativeFilePath))
             {
-                templateFolder = Path.GetDirectoryName(template).Replace("\\", "/");
+                templateFolder = template.DirectoryName;
                 manifest = OpenContentUtils.GetTemplateManifest(template);
                 if (manifest != null && manifest.Main != null)
                 {
-                    template = templateFolder + "/" + manifest.Main.Template;
+                    template = new FileUri(templateFolder + "/" + manifest.Main.Template);
                 }
             }
             if (manifest != null && manifest.IsListTemplate)
@@ -113,7 +113,7 @@ namespace Satrabel.OpenContent
                 string dataJson;
                 if (ModuleContext.EditMode)
                 {
-                    if (string.IsNullOrEmpty(template) || ModuleContext.IsEditable)
+                    if (template.IsEmpty() || ModuleContext.IsEditable)
                     {
                         pHelp.Visible = true;
                         if (!Page.IsPostBack)
@@ -130,16 +130,16 @@ namespace Satrabel.OpenContent
                             }
                         }
                         string settingsData = ModuleContext.Settings["data"] as string;
-                        bool TemplateDefined = !string.IsNullOrEmpty(template);
-                        bool SettingsDefined = !string.IsNullOrEmpty(settingsData);
+                        bool templateDefined = template != null;
+                        bool settingsDefined = !string.IsNullOrEmpty(settingsData);
 
-                        string TemplateFilename = HostingEnvironment.MapPath("~/" + ddlTemplate.SelectedValue);
-                        string prefix = Path.GetFileNameWithoutExtension(TemplateFilename) + "-";
-                        string schemaFilename = Path.GetDirectoryName(TemplateFilename) + "\\" + prefix + "schema.json";
-                        bool SettingsNeeded = File.Exists(schemaFilename);
-                        TemplateDefined = TemplateDefined &&
-                            (!ddlTemplate.Visible || (template == ddlTemplate.SelectedValue));
-                        SettingsDefined = SettingsDefined || !SettingsNeeded;
+                        string templateFilename = HostingEnvironment.MapPath("~/" + ddlTemplate.SelectedValue);
+                        string prefix = Path.GetFileNameWithoutExtension(templateFilename) + "-";
+                        string schemaFilename = Path.GetDirectoryName(templateFilename) + "\\" + prefix + "schema.json";
+                        bool settingsNeeded = File.Exists(schemaFilename);
+                        templateDefined = templateDefined &&
+                            (!ddlTemplate.Visible || (template.RelativeFilePath == ddlTemplate.SelectedValue));
+                        settingsDefined = settingsDefined || !settingsNeeded;
 
                         bSave.CssClass = "dnnPrimaryAction";
                         bSave.Enabled = true;
@@ -147,9 +147,9 @@ namespace Satrabel.OpenContent
                         hlEditContent.CssClass = "dnnSecondaryAction";
                         //if (ModuleContext.PortalSettings.UserInfo.IsSuperUser)
                         hlEditSettings.Enabled = false;
-                        hlEditSettings.Visible = SettingsNeeded;
+                        hlEditSettings.Visible = settingsNeeded;
                         
-                        if (TemplateDefined && ModuleContext.EditMode && SettingsNeeded)
+                        if (templateDefined && ModuleContext.EditMode && settingsNeeded)
                         {
                             //hlTempleteExchange.NavigateUrl = ModuleContext.EditUrl("ShareTemplate");
                             hlEditSettings.NavigateUrl = ModuleContext.EditUrl("EditSettings");
@@ -164,7 +164,7 @@ namespace Satrabel.OpenContent
                         }
                         hlEditContent.Enabled = false;
                         hlEditContent2.Enabled = false;
-                        if (TemplateDefined && SettingsDefined && ModuleContext.EditMode)
+                        if (templateDefined && settingsDefined && ModuleContext.EditMode)
                         {
                             hlEditContent.NavigateUrl = ModuleContext.EditUrl("Edit");
                             hlEditContent.Enabled = true;
@@ -179,21 +179,21 @@ namespace Satrabel.OpenContent
 
                         if (rblUseTemplate.SelectedIndex == 0)
                         {
-                            template = ddlTemplate.SelectedValue;
+                            template = new FileUri(ddlTemplate.SelectedValue);
                             bool demoExist = GetDemoData(template, out dataJson, out settingsJson);
                             if (demoExist)
                             {
                                 manifest = OpenContentUtils.GetTemplateManifest(template);
                                 if (manifest != null && manifest.Main != null)
                                 {
-                                    templateFolder = Path.GetDirectoryName(template);
-                                    template = templateFolder + "/" + manifest.Main.Template;
+                                    templateFolder = template.DirectoryName;
+                                    template = new FileUri(templateFolder + "/" + manifest.Main.Template); 
                                 }
                                 outputString = GenerateOutput(template, dataJson, settingsJson);
                             }
                         }
                     }
-                    else if (!string.IsNullOrEmpty(template))
+                    else if (template.IsEmpty() )
                     {
                         bool demoExist = GetDemoData(template, out dataJson, out settingsJson);
                         if (demoExist)
@@ -202,7 +202,7 @@ namespace Satrabel.OpenContent
                         }
                     }
                 }
-                else if (!string.IsNullOrEmpty(template))
+                else if (template.IsDefined())
                 {
                     bool demoExist = GetDemoData(template, out dataJson, out settingsJson);
                     if (demoExist)
@@ -232,16 +232,16 @@ namespace Satrabel.OpenContent
         {
             base.OnInit(e);
         }
-        private string GenerateOutput(string Template, string dataJson, string settingsJson)
+        private string GenerateOutput(FileUri template, string dataJson, string settingsJson)
         {
             try
             {
-                if (!(string.IsNullOrEmpty(Template)))
+                if (template.IsDefined())
                 {
-                    if (!File.Exists(Server.MapPath(Template)))
-                        Exceptions.ProcessModuleLoadException(this, new Exception(Template + " don't exist"));
+                    if (!template.FileExists(Server))
+                        Exceptions.ProcessModuleLoadException(this, new Exception(template + " don't exist"));
 
-                    string TemplateVirtualFolder = Path.GetDirectoryName(Template);
+                    string TemplateVirtualFolder = template.DirectoryName;
                     string TemplateFolder = Server.MapPath(TemplateVirtualFolder);
                     if (!string.IsNullOrEmpty(dataJson))
                     {                        
@@ -252,14 +252,14 @@ namespace Satrabel.OpenContent
                         dynamic model = JsonUtils.JsonToDynamic(dataJson);
 
                         CompleteModel(settingsJson, TemplateFolder, model, null);
-                        if (Path.GetExtension(Template) != ".hbs")
+                        if (template.Extension != ".hbs")
                         {
-                            return ExecuteRazor(Template, model);
+                            return ExecuteRazor(template, model);
                         }
                         else
                         {
                             HandlebarsEngine hbEngine = new HandlebarsEngine();
-                            return hbEngine.Execute(Page, Template, model);
+                            return hbEngine.Execute(Page, template, model);
                         }
                     }
                     else
@@ -280,9 +280,9 @@ namespace Satrabel.OpenContent
             return "";
         }
 
-        private string ExecuteRazor(string Template, dynamic model)
+        private string ExecuteRazor(FileUri template, dynamic model)
         {
-            string webConfig = Path.GetDirectoryName(Server.MapPath(Template));
+            string webConfig = Path.GetDirectoryName(template.AbsoluteFilePath);
             webConfig = webConfig.Remove(webConfig.LastIndexOf("\\")) + "\\web.config";
             if (!File.Exists(webConfig))
             {
@@ -291,14 +291,14 @@ namespace Satrabel.OpenContent
             }
             try
             {
-                var razorEngine = new RazorEngine(Template, ModuleContext, LocalResourceFile);
+                var razorEngine = new RazorEngine(template.RelativeFilePath, ModuleContext, LocalResourceFile);
                 var writer = new StringWriter();
                 RazorRender(razorEngine.Webpage, writer, model);
                 return writer.ToString();
             }
             catch (Exception ex)
             {
-                Exceptions.ProcessModuleLoadException(string.Format("Error while loading template {0}", Template), this, ex);
+                Exceptions.ProcessModuleLoadException(string.Format("Error while loading template {0}", template), this, ex);
                 return "";
             }
         }
@@ -309,7 +309,7 @@ namespace Satrabel.OpenContent
                 if (!(string.IsNullOrEmpty(files.Template)))
                 {
                     string TemplateFolder = Server.MapPath(TemplateVirtualFolder);
-                    string Template = CheckFiles(TemplateVirtualFolder, files, TemplateFolder);
+                    FileUri Template = CheckFiles(TemplateVirtualFolder, files, TemplateFolder);
 
                     if (dataList != null && dataList.Any())
                     {
@@ -409,8 +409,8 @@ namespace Satrabel.OpenContent
             {
                 if (!(string.IsNullOrEmpty(files.Template)))
                 {
-                    string TemplateFolder = Server.MapPath(TemplateVirtualFolder);
-                    string Template = CheckFiles(TemplateVirtualFolder, files, TemplateFolder);
+                    string templateFolder = Server.MapPath(TemplateVirtualFolder);
+                    FileUri template = CheckFiles(TemplateVirtualFolder, files, templateFolder);
 
                     if (!string.IsNullOrEmpty(dataJson))
                     {
@@ -419,9 +419,9 @@ namespace Satrabel.OpenContent
                             dataJson = JsonUtils.SimplifyJson(dataJson, LocaleController.Instance.GetCurrentLocale(ModuleContext.PortalId).Code);
                         }
                         dynamic model = JsonUtils.JsonToDynamic(dataJson);
-                        CompleteModel(settingsJson, TemplateFolder, model, files);
+                        CompleteModel(settingsJson, templateFolder, model, files);
 
-                        return ExecuteTemplate(TemplateVirtualFolder, files, Template, model);
+                        return ExecuteTemplate(TemplateVirtualFolder, files, template, model);
                     }
                     else
                     {
@@ -440,11 +440,11 @@ namespace Satrabel.OpenContent
             return "";
         }
 
-        private string ExecuteTemplate(string TemplateVirtualFolder, TemplateFiles files, string Template, dynamic model)
+        private string ExecuteTemplate(string TemplateVirtualFolder, TemplateFiles files, FileUri template, dynamic model)
         {
-            if (Path.GetExtension(Template) != ".hbs")
+            if (template.Extension != ".hbs")
             {
-                return ExecuteRazor(Template, model);
+                return ExecuteRazor(template, model);
             }
             else
             {
@@ -452,27 +452,27 @@ namespace Satrabel.OpenContent
                 return hbEngine.Execute(Page, this, files, TemplateVirtualFolder, model);
             }
         }
-        private string CheckFiles(string TemplateVirtualFolder, TemplateFiles files, string TemplateFolder)
+        private FileUri CheckFiles(string templateVirtualFolder, TemplateFiles files, string templateFolder)
         {
             if (files == null)
             {
                 Exceptions.ProcessModuleLoadException(this, new Exception("Manifest.json missing or incomplete"));
             }
-            string TemplateFile = TemplateFolder + "\\" + files.Template;
-            string Template = TemplateVirtualFolder + "/" + files.Template;
-            if (!File.Exists(TemplateFile))
-                Exceptions.ProcessModuleLoadException(this, new Exception(Template + " don't exist"));
+            string templateFile = templateFolder + "\\" + files.Template;
+            string template = templateVirtualFolder + "/" + files.Template;
+            if (!File.Exists(templateFile))
+                Exceptions.ProcessModuleLoadException(this, new Exception(template + " don't exist"));
             if (files.PartialTemplates != null)
             {
                 foreach (var partial in files.PartialTemplates)
                 {
-                    TemplateFile = TemplateFolder + "\\" + partial.Value.Template;
-                    string PartialTemplate = TemplateVirtualFolder + "/" + partial.Value.Template;
-                    if (!File.Exists(TemplateFile))
-                        Exceptions.ProcessModuleLoadException(this, new Exception(PartialTemplate + " don't exist"));
+                    templateFile = templateFolder + "\\" + partial.Value.Template;
+                    string partialTemplate = templateVirtualFolder + "/" + partial.Value.Template;
+                    if (!File.Exists(templateFile))
+                        Exceptions.ProcessModuleLoadException(this, new Exception(partialTemplate + " don't exist"));
                 }
             }
-            return Template;
+            return new FileUri(template);
         }
 
         private bool GetData(out string dataJson, out string settingsJson)
@@ -516,12 +516,12 @@ namespace Satrabel.OpenContent
             }
             return false;
         }
-        private bool GetDemoData(string template, out string dataJson, out string settingsJson)
+        private bool GetDemoData(FileUri template, out string dataJson, out string settingsJson)
         {
             dataJson = "";
             settingsJson = "";
             OpenContentController ctrl = new OpenContentController();
-            var dataFilename = Path.GetDirectoryName(Server.MapPath(template)) + "\\" + "data.json";
+            var dataFilename = template.AbsoluteDirectoryName + "\\" + "data.json";
             if (File.Exists(dataFilename))
             {
                 string fileContent = File.ReadAllText(dataFilename);
@@ -536,7 +536,7 @@ namespace Satrabel.OpenContent
             }
             if (string.IsNullOrEmpty(settingsJson))
             {
-                var settingsFilename = Path.GetDirectoryName(Server.MapPath(template)) + "\\" + Path.GetFileNameWithoutExtension(template) + "-data.json";
+                var settingsFilename = template.AbsoluteDirectoryName + "\\" + template.FileNameWithoutExtension + "-data.json";
                 if (File.Exists(settingsFilename))
                 {
                     string fileContent = File.ReadAllText(settingsFilename);
@@ -555,23 +555,23 @@ namespace Satrabel.OpenContent
             {
                 var Actions = new ModuleActionCollection();
 
-                string Template = OpenContentUtils.GetTemplate(ModuleContext.Settings);
-                bool TemplateDefined = !string.IsNullOrEmpty(Template);
-                var manifest = OpenContentUtils.GetTemplateManifest(Template);
-                bool ListMode = manifest != null && manifest.IsListTemplate;
+                FileUri template = OpenContentUtils.GetTemplate(ModuleContext.Settings);
+                bool templateDefined = template.IsDefined();
+                var manifest = OpenContentUtils.GetTemplateManifest(template);
+                bool listMode = manifest != null && manifest.IsListTemplate;
                 if (Page.Request.QueryString["id"] != null)
                 {
                     int.TryParse(Page.Request.QueryString["id"], out _itemId);
                 }
 
-                if (TemplateDefined)
+                if (templateDefined)
                 {
                     Actions.Add(ModuleContext.GetNextActionID(),
-                        Localization.GetString((ListMode && _itemId == Null.NullInteger ? ModuleActionType.AddContent : ModuleActionType.EditContent), LocalResourceFile),
+                        Localization.GetString((listMode && _itemId == Null.NullInteger ? ModuleActionType.AddContent : ModuleActionType.EditContent), LocalResourceFile),
                                 ModuleActionType.AddContent,
                                 "",
                                 "",
-                                (ListMode && _itemId != Null.NullInteger ? ModuleContext.EditUrl("id", _itemId.ToString()) : ModuleContext.EditUrl()),
+                                (listMode && _itemId != Null.NullInteger ? ModuleContext.EditUrl("id", _itemId.ToString()) : ModuleContext.EditUrl()),
                                 false,
                                 SecurityAccessLevel.Edit,
                                 true,
@@ -604,7 +604,7 @@ namespace Satrabel.OpenContent
                          true,
                          false);
 
-                if (TemplateDefined)
+                if (templateDefined)
                     Actions.Add(ModuleContext.GetNextActionID(),
                                Localization.GetString("EditTemplate.Action", LocalResourceFile),
                                ModuleActionType.ContentOptions,
@@ -615,7 +615,7 @@ namespace Satrabel.OpenContent
                                SecurityAccessLevel.Host,
                                true,
                                false);
-                if (TemplateDefined && !ListMode)
+                if (templateDefined && !listMode)
                     Actions.Add(ModuleContext.GetNextActionID(),
                                Localization.GetString("EditData.Action", LocalResourceFile),
                                ModuleActionType.EditContent,
@@ -694,18 +694,18 @@ namespace Satrabel.OpenContent
             
         }
 
-        private void IncludeResourses(string Template)
+        private void IncludeResourses(FileUri template)
         {
-            if (!(string.IsNullOrEmpty(Template)))
+            if (template.IsDefined())
             {
                 //JavaScript.RequestRegistration() 
-                string TemplateBase = Template.Replace("$.hbs", ".hbs");
-                string cssfilename = Path.ChangeExtension(TemplateBase, "css");
+                string templateBase = template.RelativeFilePath.Replace("$.hbs", ".hbs");
+                string cssfilename = Path.ChangeExtension(templateBase, "css");
                 if (File.Exists(HostingEnvironment.MapPath(cssfilename)))
                 {
                     ClientResourceManager.RegisterStyleSheet(Page, Page.ResolveUrl(cssfilename), FileOrder.Css.PortalCss);
                 }
-                string jsfilename = Path.ChangeExtension(TemplateBase, "js");
+                string jsfilename = Path.ChangeExtension(templateBase, "js");
                 if (File.Exists(HostingEnvironment.MapPath(jsfilename)))
                 {
                     ClientResourceManager.RegisterScript(Page, Page.ResolveUrl(jsfilename), FileOrder.Js.DefaultPriority);
@@ -762,7 +762,7 @@ namespace Satrabel.OpenContent
                 ModuleController mc = new ModuleController();
                 if (rblUseTemplate.SelectedIndex == 0) // existing
                 {
-                    mc.UpdateModuleSetting(ModuleContext.ModuleId, "template",  OpenContentUtils.SetTemplate(ddlTemplate.SelectedValue));
+                    mc.UpdateModuleSetting(ModuleContext.ModuleId, "template", ddlTemplate.SelectedValue);
                     //mc.UpdateModuleSetting(ModuleId, "data", HiddenField.Value);
                 }
                 else if (rblUseTemplate.SelectedIndex == 1) // new
@@ -770,14 +770,14 @@ namespace Satrabel.OpenContent
                     if (rblFrom.SelectedIndex == 0) // site
                     {
                         string oldFolder = Server.MapPath(ddlTemplate.SelectedValue);
-                        string Template = OpenContentUtils.CopyTemplate(ModuleContext.PortalId, oldFolder, tbTemplateName.Text);
-                        mc.UpdateModuleSetting(ModuleContext.ModuleId, "template", OpenContentUtils.SetTemplate(Template));
+                        string template = OpenContentUtils.CopyTemplate(ModuleContext.PortalId, oldFolder, tbTemplateName.Text);
+                        mc.UpdateModuleSetting(ModuleContext.ModuleId, "template", template);
                     }
                     else if (rblFrom.SelectedIndex == 1) // web
                     {
-                        string FileName = ddlTemplate.SelectedValue;
-                        string Template = OpenContentUtils.ImportFromWeb(ModuleContext.PortalId, FileName, tbTemplateName.Text);
-                        mc.UpdateModuleSetting(ModuleContext.ModuleId, "template", OpenContentUtils.SetTemplate(Template));
+                        string fileName = ddlTemplate.SelectedValue;
+                        string template = OpenContentUtils.ImportFromWeb(ModuleContext.PortalId, fileName, tbTemplateName.Text);
+                        mc.UpdateModuleSetting(ModuleContext.ModuleId, "template", template);
                     }
                 }
                 mc.DeleteModuleSetting(ModuleContext.ModuleId, "data");

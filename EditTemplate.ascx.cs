@@ -49,26 +49,26 @@ namespace Satrabel.OpenContent
 
         private void cmdCustom_Click(object sender, EventArgs e)
         {
-            string Template = OpenContentUtils.GetTemplate(ModuleContext.Settings);
-            string TemplateFolder = Path.GetDirectoryName(Template);
-            string TemplateDir = Server.MapPath(TemplateFolder);
-            string ModuleDir = Server.MapPath(ModuleTemplateDirectory);
-            if (!Directory.Exists(ModuleDir))
+            FileUri template = OpenContentUtils.GetTemplate(ModuleContext.Settings);
+            string templateFolder = Path.GetDirectoryName(template.RelativeFilePath);
+            string templateDir = Server.MapPath(templateFolder);
+            string moduleDir = Server.MapPath(ModuleTemplateDirectory);
+            if (!Directory.Exists(moduleDir))
             {
-                Directory.CreateDirectory(ModuleDir);
+                Directory.CreateDirectory(moduleDir);
             }
-            foreach (var item in Directory.GetFiles(ModuleDir))
+            foreach (var item in Directory.GetFiles(moduleDir))
             {
                 File.Delete(item);
             }
-            foreach (var item in Directory.GetFiles(TemplateDir))
+            foreach (var item in Directory.GetFiles(templateDir))
             {
-                File.Copy(item, ModuleDir + Path.GetFileName(item));
+                File.Copy(item, moduleDir + Path.GetFileName(item));
             }
             ModuleController mc = new ModuleController();
-            Template = ModuleTemplateDirectory + "schema.json";
-            mc.UpdateModuleSetting(ModuleId, "template", OpenContentUtils.SetTemplate(Template));
-            InitEditor(Template);
+            template = new FileUri(ModuleTemplateDirectory + "schema.json");
+            mc.UpdateModuleSetting(ModuleId, "template", template.RelativeFilePath);
+            InitEditor(template);
         }
 
         protected override void OnLoad(EventArgs e)
@@ -76,30 +76,30 @@ namespace Satrabel.OpenContent
             base.OnLoad(e);
             if (!Page.IsPostBack)
             {
-                string Template = OpenContentUtils.GetTemplate(ModuleContext.Settings);
-                InitEditor(Template);
+                FileUri template = OpenContentUtils.GetTemplate(ModuleContext.Settings);
+                InitEditor(template);
             }
         }
 
-        private void InitEditor(string Template)
+        private void InitEditor(FileUri template)
         {
-            LoadFiles(Template);
-            DisplayFile(Template);
-            if (Template.StartsWith(ModuleTemplateDirectory))
+            LoadFiles(template);
+            DisplayFile(template);
+            if (template.RelativeFilePath.StartsWith(ModuleTemplateDirectory))
             {
                 cmdCustom.Visible = false;
             }
         }
 
-        private void DisplayFile(string template)
+        private void DisplayFile(FileUri template)
         {
-            //string TemplateFolder = Path.GetDirectoryName(template);
+            //string TemplateFolder = template.DirectoryName;
             //TemplateFolder = OpenContentUtils.ReverseMapPath(TemplateFolder);
             //string scriptFile = TemplateFolder + "/" + scriptList.SelectedValue;
             //plSource.Text = scriptFile;
             //string srcFile = Server.MapPath(scriptFile);
-            plSource.Text = template;
-            string srcFile = Server.MapPath(template);
+            plSource.Text = template.RelativeFilePath;
+            string srcFile = template.AbsoluteFilePath;
 
             if (File.Exists(srcFile))
             {
@@ -148,12 +148,12 @@ namespace Satrabel.OpenContent
             }
             DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "mimeType", mimeType, true);
         }
-        private void LoadFiles(string template)
+        private void LoadFiles(FileUri template)
         {
             scriptList.Items.Clear();
-            if (!(string.IsNullOrEmpty(template)))
+            if (template.IsDefined())
             {
-                //string templateFolder = Path.GetDirectoryName(Template);
+                //string templateFolder = template.DirectoryName;
                 TemplateManifest manifest = OpenContentUtils.GetTemplateManifest(template);
                 if (manifest != null )
                 {
@@ -182,23 +182,23 @@ namespace Satrabel.OpenContent
                 }
                 else
                 {
-                    scriptList.Items.Add(new ListItem("Template", Path.GetFileName(template)));
+                    scriptList.Items.Add(new ListItem("Template",template.FileName ));
                 }
 
-                scriptList.Items.Add(new ListItem("Stylesheet", Path.GetFileNameWithoutExtension(template) + ".css"));
-                scriptList.Items.Add(new ListItem("Javascript", Path.GetFileNameWithoutExtension(template) + ".js"));
+                scriptList.Items.Add(new ListItem("Stylesheet", template.FileNameWithoutExtension + ".css"));
+                scriptList.Items.Add(new ListItem("Javascript", template.FileNameWithoutExtension + ".js"));
                 scriptList.Items.Add(new ListItem("Schema", "schema.json"));
                 scriptList.Items.Add(new ListItem("Layout Options", "options.json"));
-                //scriptList.Items.Add(new ListItem("Edit Layout Options - Template File Overides", "options." + Path.GetFileNameWithoutExtension(Template) + ".json"));
+                //scriptList.Items.Add(new ListItem("Edit Layout Options - Template File Overides", "options." + template.FileNameWithoutExtension + ".json"));
                 foreach (Locale item in LocaleController.Instance.GetLocales(PortalId).Values)
                 {
                     scriptList.Items.Add(new ListItem("Layout Options - " + item.Code, "options." + item.Code + ".json"));
                 }
-                scriptList.Items.Add(new ListItem("Settings Schema", Path.GetFileNameWithoutExtension(template) + "-schema.json"));
-                scriptList.Items.Add(new ListItem("Settings Layout Options", Path.GetFileNameWithoutExtension(template) + "-options.json"));
+                scriptList.Items.Add(new ListItem("Settings Schema", template.FileNameWithoutExtension + "-schema.json"));
+                scriptList.Items.Add(new ListItem("Settings Layout Options", template.FileNameWithoutExtension + "-options.json"));
                 foreach (Locale item in LocaleController.Instance.GetLocales(PortalId).Values)
                 {
-                    scriptList.Items.Add(new ListItem("Settings Layout Options - " + item.Code, Path.GetFileNameWithoutExtension(template) + "-options." + item.Code + ".json"));
+                    scriptList.Items.Add(new ListItem("Settings Layout Options - " + item.Code, template.FileNameWithoutExtension + "-options." + item.Code + ".json"));
                 }
             }
         }
@@ -215,8 +215,8 @@ namespace Satrabel.OpenContent
 
         private void Save()
         {
-            string template = OpenContentUtils.GetTemplate(ModuleContext.Settings);
-            string templateFolder = Path.GetDirectoryName(template);
+            FileUri template = OpenContentUtils.GetTemplate(ModuleContext.Settings);
+            string templateFolder = Path.GetDirectoryName(template.RelativeFilePath);
             string scriptFile = templateFolder + "/" + scriptList.SelectedValue;
             string srcFile = Server.MapPath(scriptFile);
             if (string.IsNullOrWhiteSpace(txtSource.Text))
@@ -241,7 +241,7 @@ namespace Satrabel.OpenContent
 
         private void scriptList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string template = OpenContentUtils.GetTemplate(ModuleContext.Settings);
+            FileUri template = OpenContentUtils.GetTemplate(ModuleContext.Settings);
             DisplayFile(template);
         }
         #endregion
