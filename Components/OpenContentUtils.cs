@@ -46,7 +46,11 @@ namespace Satrabel.OpenContent.Components
         public static FileUri GetTemplate(Hashtable moduleSettings)
         {
             var template = moduleSettings["template"] as string;
-            return new FileUri(template);
+            if (!string.IsNullOrEmpty(template))
+            {
+                return new FileUri(template);
+            }
+            return null;
         }
 
         public static List<ListItem> GetTemplatesFiles(PortalSettings portalSettings, int moduleId, FileUri selectedTemplate, string moduleSubDir)
@@ -64,12 +68,15 @@ namespace Satrabel.OpenContent.Components
                 int modId = -1;
                 if (int.TryParse(dirName, out modId))
                 {
+                    // if numeric directory name --> module template
                     if (modId == moduleId)
                     {
+                        // this module -> show
                         templateCat = "Module";
                     }
                     else
                     {
+                        // if it's from an other module -> don't show
                         continue;
                     }
                 }
@@ -81,14 +88,15 @@ namespace Satrabel.OpenContent.Components
                     files = manifest.Templates.Select(t => t.Key);
                     foreach (var template in manifest.Templates)
                     {
+                        FileUri templateUri = new FileUri(templateVirtualFolder, dirName);
                         string templateName = dirName;
                         if (!string.IsNullOrEmpty(template.Value.Title))
                         {
                             templateName = templateName + " - " + template.Value.Title;
                         }
-                        string scriptPath = templateVirtualFolder + "/" + template.Key;
-                        var item = new ListItem(templateCat + " : " + templateName, scriptPath);
-                        if (selectedTemplate.IsDefined() && scriptPath.ToLowerInvariant() == selectedTemplate.FilePath.ToLowerInvariant())
+                        //string scriptPath = templateVirtualFolder + "/" + template.Key;
+                        var item = new ListItem(templateCat + " : " + templateName, templateUri.FilePath);
+                        if (selectedTemplate != null && templateUri.FilePath.ToLowerInvariant() == selectedTemplate.FilePath.ToLowerInvariant())
                         {
                             item.Selected = true;
                         }
@@ -101,6 +109,8 @@ namespace Satrabel.OpenContent.Components
                             .Where(s => s.EndsWith(".cshtml") || s.EndsWith(".vbhtml") || s.EndsWith(".hbs"));
                     foreach (string script in files)
                     {
+                        FileUri templateUri = FileUri.FromPath(script);
+                        
                         string scriptName = script.Remove(script.LastIndexOf(".")).Replace(basePath, "");
                         if (templateCat == "Module")
                         {
@@ -114,9 +124,9 @@ namespace Satrabel.OpenContent.Components
                         else
                             scriptName = scriptName.Replace("\\", " - ");
 
-                        string scriptPath = FileUri.ReverseMapPath(script);
-                        var item = new ListItem(templateCat + " : " + scriptName, scriptPath);
-                        if (selectedTemplate.IsDefined() && scriptPath.ToLowerInvariant() == selectedTemplate.FilePath.ToLowerInvariant())
+                        //string scriptPath = FileUri.ReverseMapPath(script);
+                        var item = new ListItem(templateCat + " : " + scriptName, templateUri.FilePath);
+                        if (selectedTemplate != null && templateUri.FilePath.ToLowerInvariant() == selectedTemplate.FilePath.ToLowerInvariant())
                         {
                             item.Selected = true;
                         }
@@ -135,11 +145,9 @@ namespace Satrabel.OpenContent.Components
                     string DirName = Path.GetFileNameWithoutExtension(dir);
                     var files = Directory.EnumerateFiles(dir, "*.*", SearchOption.AllDirectories)
                                 .Where(s => s.EndsWith(".cshtml") || s.EndsWith(".vbhtml") || s.EndsWith(".hbs"));
-                    files = files.Where(f => f.EndsWith("$.hbs") || !f.Contains("$"));
                     foreach (string script in files)
                     {
                         string scriptName = script.Remove(script.LastIndexOf(".")).Replace(basePath, "");
-                        scriptName = scriptName.Replace("$", "");
                         if (scriptName.ToLower().EndsWith("template"))
                             scriptName = scriptName.Remove(scriptName.LastIndexOf("\\"));
                         else
@@ -147,7 +155,7 @@ namespace Satrabel.OpenContent.Components
 
                         string scriptPath = FileUri.ReverseMapPath(script);
                         var item = new ListItem(TemplateCat + " : " + scriptName, scriptPath);
-                        if (selectedTemplate.IsDefined() && scriptPath.ToLowerInvariant() == selectedTemplate.FilePath.ToLowerInvariant())
+                        if (selectedTemplate != null && scriptPath.ToLowerInvariant() == selectedTemplate.FilePath.ToLowerInvariant())
                         {
                             item.Selected = true;
                         }
@@ -189,7 +197,7 @@ namespace Satrabel.OpenContent.Components
 
                 string scriptPath = FileUri.ReverseMapPath(dir);
                 var item = new ListItem(scriptName, scriptPath);
-                if (selectedTemplate.IsDefined() && scriptPath.ToLowerInvariant() == selectedTemplate.FilePath.ToLowerInvariant())
+                if (selectedTemplate != null && scriptPath.ToLowerInvariant() == selectedTemplate.FilePath.ToLowerInvariant())
                 {
                     item.Selected = true;
                 }
@@ -207,7 +215,7 @@ namespace Satrabel.OpenContent.Components
                     scriptName = TemplateCat + ":" + scriptName.Substring(scriptName.LastIndexOf("\\") + 1);
                     string scriptPath = FileUri.ReverseMapPath(dir);
                     var item = new ListItem(scriptName, scriptPath);
-                    if (selectedTemplate.IsDefined() && scriptPath.ToLowerInvariant() == selectedTemplate.FilePath.ToLowerInvariant())
+                    if (selectedTemplate != null && scriptPath.ToLowerInvariant() == selectedTemplate.FilePath.ToLowerInvariant())
                     {
                         item.Selected = true;
                     }
@@ -409,145 +417,21 @@ namespace Satrabel.OpenContent.Components
         }
         public static TemplateManifest GetTemplateManifest(FileUri template)
         {
-            TemplateManifest templateManifest = null;
-            if (template.IsDefined())
+            if (template == null)
             {
-                string templateFolder = template.DirectoryName;
-                string templateFile = template.FileNameWithoutExtension;
-                Manifest manifest = GetManifest(templateFolder);
-                if (manifest != null && manifest.Templates != null && manifest.Templates.ContainsKey(templateFile))
-                {
-                    templateManifest = manifest.Templates[templateFile];
-                }
+                throw new ArgumentNullException("template is null");
+            }
+            TemplateManifest templateManifest = null;
+            //string templateFolder = template.Directory;
+            string templateFile = template.FileNameWithoutExtension;
+            Manifest manifest = GetManifest(template.Directory);
+            if (manifest != null && manifest.Templates != null && manifest.Templates.ContainsKey(templateFile))
+            {
+                templateManifest = manifest.Templates[template.FileNameWithoutExtension];
             }
             return templateManifest;
         }
     }
-
-
-
-    public class FileUri
-    {
-        // 
-        //   fysiek <-> url      
-        // absoluut <-> relatief
-        //public enum PathType
-        //{
-        //    Relative File = 0,  //  ~\portals\0\o
-        //    Relative File URL = 0,  //  ~/portals/
-        //    FileSystemRelative = 1,  // ~\portals
-        //    FileSystemAbsolute = 2, //  c:\....
-        //    UrlFull = 3, // [http://<host>]/..../...
-        //    
-        //}
-
-        public FileUri(string pathToFile)
-        {
-            FilePath = pathToFile;
-        }
-
-        public string FilePath { get; private set; }
-
-        public string DirectoryName
-        {
-            get
-            {
-                return Path.GetDirectoryName(FilePath);
-            }
-        }
-        public string AbsolutePhysicalDirectoryName
-        {
-            get
-            {
-                return Path.GetDirectoryName(HostingEnvironment.MapPath(FilePath));
-            }
-        }
-
-        public string AbsolutePsychicalFilePath
-        {
-            get
-            {
-                return HostingEnvironment.MapPath(FilePath);
-            }
-        }
-
-        public bool FileExists
-        {
-            get
-            {
-                return File.Exists(HostingEnvironment.MapPath(FilePath));
-            }
-        }
-        public string FileName
-        {
-            get
-            {
-                return Path.GetFileName(FilePath);
-            }
-        }
-        public string FileNameWithoutExtension
-        {
-            get
-            {
-                return Path.GetFileNameWithoutExtension(FilePath);
-            }
-        }
-        public string Extension
-        {
-            get { return Path.GetExtension(FilePath); }
-        }
-        public bool IsEmpty()
-        {
-            return string.IsNullOrEmpty(FilePath);
-        }
-        public bool IsDefined()
-        {
-            return !string.IsNullOrEmpty(FilePath);
-        }
-
-        public static string ReverseMapPath(string path)
-        {
-            string appPath = HostingEnvironment.MapPath("~");
-            string res = String.Format("{0}", path.Replace(appPath, "").Replace("\\", "/"));
-            if (!res.StartsWith("/")) res = "/" + res;
-            return res;
-        }
-
-        public string UrlPath
-        {
-            get
-            {
-                if (NormalizedApplicationPath == "/") return FilePath;
-                return NormalizedApplicationPath + FilePath;
-            }
-        }
-
-
-        //public static string SetTemplate(string templateFullpath)
-        //{
-        //    if (string.IsNullOrEmpty(FileUri.NormalizedApplicationPath)) return templateFullpath;
-        //    return FileUri.NormalizedApplicationPath == "/" ? templateFullpath : templateFullpath.Remove(0, FileUri.NormalizedApplicationPath.Length);
-        //}
-
-
-        /// <summary>
-        /// Gets the normalized application path.
-        /// </summary>
-        /// <remarks>the return value of ApplicationVirtualPath doesn't always return a string that ends with /.</remarks>
-        /// <returns></returns>
-        private static string NormalizedApplicationPath
-        {
-            get
-            {
-                var path = "" + HostingEnvironment.ApplicationVirtualPath;
-                if (!path.EndsWith("/")) path += "/";
-                return path;
-            }
-        }
-
-
-    }
-
     public class TemplateManifest
     {
         [JsonProperty(PropertyName = "type")]

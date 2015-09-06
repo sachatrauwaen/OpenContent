@@ -50,7 +50,7 @@ namespace Satrabel.OpenContent
         private void cmdCustom_Click(object sender, EventArgs e)
         {
             FileUri template = OpenContentUtils.GetTemplate(ModuleContext.Settings);
-            string templateFolder = template.DirectoryName ;
+            string templateFolder = template.Directory ;
             string templateDir = Server.MapPath(templateFolder);
             string moduleDir = Server.MapPath(ModuleTemplateDirectory);
             if (!Directory.Exists(moduleDir))
@@ -99,7 +99,7 @@ namespace Satrabel.OpenContent
             //plSource.Text = scriptFile;
             //string srcFile = Server.MapPath(scriptFile);
             plSource.Text = template.FilePath;
-            string srcFile = template.AbsolutePsychicalFilePath;
+            string srcFile = template.PhysicalFilePath;
 
             if (File.Exists(srcFile))
             {
@@ -151,7 +151,7 @@ namespace Satrabel.OpenContent
         private void LoadFiles(FileUri template)
         {
             scriptList.Items.Clear();
-            if (template.IsDefined())
+            if (template != null)
             {
                 //string templateFolder = template.DirectoryName;
                 TemplateManifest manifest = OpenContentUtils.GetTemplateManifest(template);

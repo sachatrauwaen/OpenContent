@@ -61,13 +61,14 @@ namespace Satrabel.OpenContent.Components
             JObject json = new JObject();
             try
             {
-                string templateFilename = HostingEnvironment.MapPath("~/" + template);
+                string PhysicalTemplateFilename = template.PhysicalFilePath;
+                string PhysicalDirectoryName = template.PhysicalDirectoryName;
                 // schema
-                string schemaFilename = Path.GetDirectoryName(templateFilename) + "\\" + "schema.json";
+                string schemaFilename = PhysicalDirectoryName + "\\" + "schema.json";
                 JObject schemaJson = JObject.Parse(File.ReadAllText(schemaFilename));
                 json["schema"] = schemaJson;
                 // default options
-                string optionsFilename = Path.GetDirectoryName(templateFilename) + "\\" + "options.json";
+                string optionsFilename = PhysicalDirectoryName + "\\" + "options.json";
                 if (File.Exists(optionsFilename))
                 {
                     string fileContent = File.ReadAllText(optionsFilename);
@@ -78,7 +79,7 @@ namespace Satrabel.OpenContent.Components
                     }
                 }
                 // language options
-                optionsFilename = Path.GetDirectoryName(templateFilename) + "\\" + "options." + PortalSettings.CultureCode + ".json";
+                optionsFilename = PhysicalDirectoryName + "\\" + "options." + PortalSettings.CultureCode + ".json";
                 if (File.Exists(optionsFilename))
                 {
                     string fileContent = File.ReadAllText(optionsFilename);
@@ -89,7 +90,7 @@ namespace Satrabel.OpenContent.Components
                     }
                 }
                 // view
-                string viewFilename = Path.GetDirectoryName(templateFilename) + "\\" + "view.json";
+                string viewFilename = PhysicalDirectoryName + "\\" + "view.json";
                 if (File.Exists(optionsFilename))
                 {
                     string fileContent = File.ReadAllText(viewFilename);
@@ -220,11 +221,14 @@ namespace Satrabel.OpenContent.Components
             JObject json = new JObject();
             try
             {
+                FileUri TemplateUri = new FileUri(Template);
                 //string templateFilename = HostingEnvironment.MapPath("~/" + Template);
-                string templateFilename = HostingEnvironment.MapPath(Template);
-                string prefix = Path.GetFileNameWithoutExtension(templateFilename) + "-";
+                string PhysicalTemplateFilename = TemplateUri.PhysicalFilePath;
+                string PhysicalTemplateDirectoryName = TemplateUri.PhysicalDirectoryName;
+
+                string prefix = Path.GetFileNameWithoutExtension(PhysicalTemplateFilename) + "-";
                 // schema
-                string schemaFilename = Path.GetDirectoryName(templateFilename) + "\\" + prefix + "schema.json";
+                string schemaFilename = PhysicalTemplateDirectoryName + "\\" + prefix + "schema.json";
                 /*
                 if (!File.Exists(schemaFilename))
                 {
@@ -241,14 +245,14 @@ namespace Satrabel.OpenContent.Components
                     }
                 }
                 // default options
-                string optionsFilename = Path.GetDirectoryName(templateFilename) + "\\" + prefix + "options.json";
+                string optionsFilename = PhysicalTemplateDirectoryName + "\\" + prefix + "options.json";
                 if (File.Exists(optionsFilename))
                 {
                     JObject optionsJson = JObject.Parse(File.ReadAllText(optionsFilename));
                     json["options"] = optionsJson;
                 }
                 // language options
-                optionsFilename = Path.GetDirectoryName(templateFilename) + "\\" + prefix + "options." + PortalSettings.CultureCode + ".json";
+                optionsFilename = PhysicalTemplateDirectoryName + "\\" + prefix + "options." + PortalSettings.CultureCode + ".json";
                 if (File.Exists(optionsFilename))
                 {
                     JObject optionsJson = JObject.Parse(File.ReadAllText(optionsFilename));
