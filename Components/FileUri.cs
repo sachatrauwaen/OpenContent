@@ -45,8 +45,8 @@ namespace Satrabel.OpenContent.Components
         {
             get
             {
-                
-                return Path.GetDirectoryName(HostingEnvironment.MapPath(FilePath));
+
+                return Path.GetDirectoryName(HostingEnvironment.MapPath("~" + FilePath));
             }
         }
 
@@ -54,14 +54,14 @@ namespace Satrabel.OpenContent.Components
         {
             get
             {
-                return HostingEnvironment.MapPath(FilePath);
+                return HostingEnvironment.MapPath("~" + FilePath);
             }
         }
         public bool FileExists
         {
             get
             {
-                return File.Exists(HostingEnvironment.MapPath(FilePath));
+                return File.Exists(HostingEnvironment.MapPath("~" + FilePath));
             }
         }
         public string FileName
