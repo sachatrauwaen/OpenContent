@@ -39,7 +39,7 @@ namespace Satrabel.OpenContent
             JavaScript.RequestRegistration(CommonJs.DnnPlugins); ;
             JavaScript.RequestRegistration(CommonJs.jQueryFileUpload);
             //DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "oc_moduleRoot", ControlPath, true);
-            DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "oc_websiteRoot", HostingEnvironment.ApplicationVirtualPath, true);
+            DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "oc_websiteRoot", FileUri.NormalizedApplicationPath, true);
 
             //DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "PortalId", PortalId.ToString(), true);
             //CKDNNporid.Value = PortalId.ToString();

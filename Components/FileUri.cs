@@ -9,6 +9,7 @@ namespace Satrabel.OpenContent.Components
 {
     public class FileUri
     {
+        #region Constructors
 
         public FileUri(string pathToFile)
         {
@@ -27,6 +28,8 @@ namespace Satrabel.OpenContent.Components
             }
             FilePath = path + "/" + filename;
         }
+
+        #endregion
 
         public string FilePath { get; private set; }
 
@@ -54,7 +57,6 @@ namespace Satrabel.OpenContent.Components
                 return HostingEnvironment.MapPath(FilePath);
             }
         }
-
         public bool FileExists
         {
             get
@@ -80,6 +82,31 @@ namespace Satrabel.OpenContent.Components
         {
             get { return Path.GetExtension(FilePath); }
         }
+
+        public string UrlPath
+        {
+            get
+            {
+                if (NormalizedApplicationPath == "/") return FilePath;
+                return NormalizedApplicationPath + FilePath;
+            }
+        }
+
+        /// <summary>
+        /// Gets the normalized application path.
+        /// </summary>
+        /// <remarks>the return value of ApplicationVirtualPath doesn't always return a string that ends with /.</remarks>
+        /// <returns></returns>
+        public static string NormalizedApplicationPath
+        {
+            get
+            {
+                var path = "" + HostingEnvironment.ApplicationVirtualPath;
+                if (!path.EndsWith("/")) path += "/";
+                return path;
+            }
+        }
+
         public static FileUri FromPath(string path)
         {
             if (string.IsNullOrEmpty(path))
@@ -107,39 +134,5 @@ namespace Satrabel.OpenContent.Components
             if (!res.StartsWith("/")) res = "/" + res;
             return res;
         }
-
-        public string UrlPath
-        {
-            get
-            {
-                if (NormalizedApplicationPath == "/") return FilePath;
-                return NormalizedApplicationPath + FilePath;
-            }
-        }
-
-
-        //public static string SetTemplate(string templateFullpath)
-        //{
-        //    if (string.IsNullOrEmpty(FileUri.NormalizedApplicationPath)) return templateFullpath;
-        //    return FileUri.NormalizedApplicationPath == "/" ? templateFullpath : templateFullpath.Remove(0, FileUri.NormalizedApplicationPath.Length);
-        //}
-
-
-        /// <summary>
-        /// Gets the normalized application path.
-        /// </summary>
-        /// <remarks>the return value of ApplicationVirtualPath doesn't always return a string that ends with /.</remarks>
-        /// <returns></returns>
-        private static string NormalizedApplicationPath
-        {
-            get
-            {
-                var path = "" + HostingEnvironment.ApplicationVirtualPath;
-                if (!path.EndsWith("/")) path += "/";
-                return path;
-            }
-        }
-
-
     }
 }
