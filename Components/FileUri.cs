@@ -9,18 +9,6 @@ namespace Satrabel.OpenContent.Components
 {
     public class FileUri
     {
-        // 
-        //   fysiek <-> url      
-        // absoluut <-> relatief
-        //public enum PathType
-        //{
-        //    Relative File = 0,  //  ~\portals\0\o
-        //    Relative File URL = 0,  //  ~/portals/
-        //    FileSystemRelative = 1,  // ~\portals
-        //    FileSystemAbsolute = 2, //  c:\....
-        //    UrlFull = 3, // [http://<host>]/..../...
-        //    
-        //}
 
         public FileUri(string pathToFile)
         {
