@@ -104,12 +104,17 @@ namespace Satrabel.OpenContent
             }
             else
             {
+                TemplateFiles files = null;
+                if (manifest != null)
+                {
+                    files = manifest.Main;
+                }
                 // single item template
                 string dataJson;
                 dataExist = GetData(out dataJson, out settingsJson);
                 if (dataExist)
                 {
-                    outputString = GenerateOutput(template, dataJson, settingsJson);
+                    outputString = GenerateOutput(template, dataJson, settingsJson, files);
                 }
             }
             if (!dataExist)
@@ -195,7 +200,7 @@ namespace Satrabel.OpenContent
                                     //templateFolder = template.Directory;
                                     template = new FileUri(template.Directory + "/" + manifest.Main.Template); 
                                 }
-                                outputString = GenerateOutput(template, dataJson, settingsJson);
+                                outputString = GenerateOutput(template, dataJson, settingsJson, null);
                             }
                         }
                     }
@@ -204,7 +209,7 @@ namespace Satrabel.OpenContent
                         bool demoExist = GetDemoData(template, out dataJson, out settingsJson);
                         if (demoExist)
                         {
-                            outputString = GenerateOutput(template, dataJson, settingsJson);
+                            outputString = GenerateOutput(template, dataJson, settingsJson, null);
                         }
                     }
                 }
@@ -213,7 +218,7 @@ namespace Satrabel.OpenContent
                     bool demoExist = GetDemoData(template, out dataJson, out settingsJson);
                     if (demoExist)
                     {
-                        outputString = GenerateOutput(template, dataJson, settingsJson);
+                        outputString = GenerateOutput(template, dataJson, settingsJson, null);
                     }
                 }
             }
@@ -238,7 +243,7 @@ namespace Satrabel.OpenContent
         {
             base.OnInit(e);
         }
-        private string GenerateOutput(FileUri template, string dataJson, string settingsJson)
+        private string GenerateOutput(FileUri template, string dataJson, string settingsJson, TemplateFiles files)
         {
             try
             {
@@ -257,7 +262,7 @@ namespace Satrabel.OpenContent
                         }
                         dynamic model = JsonUtils.JsonToDynamic(dataJson);
 
-                        CompleteModel(settingsJson, TemplateFolder, model, null);
+                        CompleteModel(settingsJson, TemplateFolder, model, files);
                         if (template.Extension != ".hbs")
                         {
                             return ExecuteRazor(template, model);
@@ -562,7 +567,12 @@ namespace Satrabel.OpenContent
 
                 FileUri template = OpenContentUtils.GetTemplate(ModuleContext.Settings);
                 bool templateDefined = template != null;
-                var manifest = OpenContentUtils.GetTemplateManifest(template);
+                TemplateManifest manifest = null;
+                if (templateDefined)
+                {
+                    manifest = OpenContentUtils.GetTemplateManifest(template);
+                }
+                
                 bool listMode = manifest != null && manifest.IsListTemplate;
                 if (Page.Request.QueryString["id"] != null)
                 {
