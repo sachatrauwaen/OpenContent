@@ -302,7 +302,7 @@ namespace Satrabel.OpenContent
             }
             try
             {
-                var razorEngine = new RazorEngine(template.FilePath, ModuleContext, LocalResourceFile);
+                var razorEngine = new RazorEngine("~" + template.FilePath, ModuleContext, LocalResourceFile);
                 var writer = new StringWriter();
                 RazorRender(razorEngine.Webpage, writer, model);
                 return writer.ToString();
