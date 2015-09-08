@@ -38,7 +38,6 @@ namespace Satrabel.OpenContent.Components
             get
             {
                 return VirtualPathUtility.GetDirectory(FilePath);
-                //return Path.GetDirectoryName(FilePath);
             }
         }
         public string PhysicalDirectoryName
