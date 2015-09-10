@@ -196,7 +196,7 @@
         "callbacks": callbacks,
         "styles": styles,
         "templates": {
-            "control": "DesktopModules/OpenContent/alpaca/templates/dnn-edit/control.html",
+            "control": "/DesktopModules/OpenContent/alpaca/templates/dnn-edit/control.html",
             "container": "/DesktopModules/OpenContent/alpaca/templates/dnn-edit/container.html",
             //"container-array": "/DesktopModules/OpenContent/alpaca/templates/dnn-edit/container-array.html",
             //"container-array-actionbar": "/DesktopModules/OpenContent/alpaca/templates/dnn-edit/container-array-actionbar.html",
