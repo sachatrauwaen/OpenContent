@@ -159,6 +159,24 @@ namespace Satrabel.OpenContent
                         {
                             templateDefined = false;
                         }
+                        bool TemplateDefined = !string.IsNullOrEmpty(template.FilePath);
+                        bool SettingsDefined = !string.IsNullOrEmpty(settingsData);
+                        bool SettingsNeeded = false;
+
+                        if (rblUseTemplate.SelectedIndex == 0)
+                        {
+                            string templateFilename = HostingEnvironment.MapPath("~/" + ddlTemplate.SelectedValue);
+                            string prefix = Path.GetFileNameWithoutExtension(templateFilename) + "-";
+                            string schemaFilename = Path.GetDirectoryName(templateFilename) + "\\" + prefix + "schema.json";
+                            SettingsNeeded = File.Exists(schemaFilename);
+                            TemplateDefined = TemplateDefined &&
+                                (!ddlTemplate.Visible || (template.FilePath == ddlTemplate.SelectedValue));
+                            SettingsDefined = SettingsDefined || !SettingsNeeded;
+                        }
+                        else
+                        {
+                            TemplateDefined = false;
+                        }
 
                         bSave.CssClass = "dnnPrimaryAction";
                         bSave.Enabled = true;
