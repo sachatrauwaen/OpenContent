@@ -42,6 +42,7 @@ using DotNetNuke.Entities.Controllers;
 using Satrabel.OpenContent.Components.Rss;
 using System.Web.UI.WebControls;
 using DotNetNuke.Entities.Portals;
+using DotNetNuke.Entities.Tabs;
 
 #endregion
 
@@ -57,7 +58,7 @@ namespace Satrabel.OpenContent
 
             string settingsJson;
             string OutputString = "";
-            var Template = ModuleContext.Settings["template"] as string;            
+            var Template = ModuleContext.Settings["template"] as string;
             string SelectedTemplate = Template;
             bool dataExist = false;
             string TemplateFolder = "";
@@ -115,6 +116,7 @@ namespace Satrabel.OpenContent
                     if (string.IsNullOrEmpty(Template) || ModuleContext.IsEditable)
                     {
                         pHelp.Visible = true;
+
                         if (!Page.IsPostBack)
                         {
                             ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplatesFiles(ModuleContext.PortalSettings, ModuleContext.ModuleId, SelectedTemplate, "OpenContent").ToArray());
@@ -127,7 +129,20 @@ namespace Satrabel.OpenContent
                                 rblFrom.SelectedIndex = 1;
                                 rblFrom_SelectedIndexChanged(null, null);
                             }
+
+                            var modules = ModuleController.Instance.GetModules(ModuleContext.PortalId).Cast<ModuleInfo>();
+                            modules = modules.Where(m => m.ModuleDefinition.DefinitionName == "OpenContent" && m.IsDeleted == false);
+                            foreach (var item in modules)
+                            {
+                                var tc = new TabController();
+                                var Tab = tc.GetTab(item.TabID, ModuleContext.PortalId);
+                                ddlDataSource.Items.Add(new ListItem(Tab.TabName+" - "+item.ModuleTitle, item.TabModuleID.ToString()));
+                            }
+
+
                         }
+
+
                         string settingsData = ModuleContext.Settings["data"] as string;
                         bool TemplateDefined = !string.IsNullOrEmpty(Template);
                         bool SettingsDefined = !string.IsNullOrEmpty(settingsData);
@@ -157,14 +172,14 @@ namespace Satrabel.OpenContent
                         //if (ModuleContext.PortalSettings.UserInfo.IsSuperUser)
                         hlEditSettings.Enabled = false;
                         hlEditSettings.Visible = SettingsNeeded;
-                        
+
                         if (TemplateDefined && ModuleContext.EditMode && SettingsNeeded)
                         {
                             //hlTempleteExchange.NavigateUrl = ModuleContext.EditUrl("ShareTemplate");
                             hlEditSettings.NavigateUrl = ModuleContext.EditUrl("EditSettings");
                             //hlTempleteExchange.Visible = true;
                             hlEditSettings.Enabled = true;
-                            
+
                             bSave.CssClass = "dnnSecondaryAction";
                             bSave.Enabled = false;
                             hlEditSettings.CssClass = "dnnPrimaryAction";
@@ -253,7 +268,7 @@ namespace Satrabel.OpenContent
                     string TemplateVirtualFolder = Path.GetDirectoryName(Template);
                     string TemplateFolder = Server.MapPath(TemplateVirtualFolder);
                     if (!string.IsNullOrEmpty(dataJson))
-                    {                        
+                    {
                         if (LocaleController.Instance.GetLocales(ModuleContext.PortalId).Count > 1)
                         {
                             dataJson = JsonUtils.SimplifyJson(dataJson, LocaleController.Instance.GetCurrentLocale(ModuleContext.PortalId).Code);
@@ -700,7 +715,7 @@ namespace Satrabel.OpenContent
             if (!Page.IsPostBack)
             {
             }
-            
+
         }
 
         private void IncludeResourses(string Template)
@@ -812,6 +827,16 @@ namespace Satrabel.OpenContent
                     tbTemplateName.Text = Path.GetFileNameWithoutExtension(ddlTemplate.SelectedValue);
                 }
             }
+        }
+
+        protected void ddlDataSource_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        protected void rblDataSource_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

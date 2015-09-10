@@ -2,6 +2,21 @@
 
 <asp:Panel ID="pHelp" runat="server" Visible="false" CssClass="dnnForm">
     <fieldset>
+         <div class="dnnFormItem">
+            <asp:Label ID="lUseContent" runat="server" ControlName="rblDataSource" ResourceKey="lUseContent" CssClass="dnnLabel" />
+            <asp:RadioButtonList runat="server" ID="rblDataSource" AutoPostBack="true" OnSelectedIndexChanged="rblDataSource_SelectedIndexChanged"
+                RepeatDirection="Horizontal" CssClass="dnnFormRadioButtons">
+                <asp:ListItem Text="New content" Selected="True" />
+                <asp:ListItem Text="Existing content" />
+            </asp:RadioButtonList>
+        </div>
+         <asp:PlaceHolder ID="phDataSource" runat="server">
+            <div class="dnnFormItem">
+                <asp:Label runat="server" ControlName="ddlDataSource" ResourceKey="lDataSource" CssClass="dnnLabel" />
+                <asp:DropDownList runat="server" ID="ddlDataSource" AutoPostBack="true" OnSelectedIndexChanged="ddlDataSource_SelectedIndexChanged">
+                </asp:DropDownList>
+            </div>
+        </asp:PlaceHolder>
         <div class="dnnFormItem">
             <asp:Label ID="lUseTemplate" runat="server" ControlName="rblUseTemplate" ResourceKey="lUseTemplate" CssClass="dnnLabel" />
             <asp:RadioButtonList runat="server" ID="rblUseTemplate" AutoPostBack="true" OnSelectedIndexChanged="rblUseTemplate_SelectedIndexChanged"
