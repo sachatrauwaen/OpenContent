@@ -31,6 +31,15 @@ function oc_modules(options) {
         if ($.inArray("mlckeditor", types) != -1) {
             jsmodules.push('mlckeditorfield');
         }
+        if ($.inArray("mlurl", types) != -1) {
+            jsmodules.push('mlurlfield');
+        }
+        if ($.inArray("mlfile", types) != -1) {
+            jsmodules.push('mlfilefield');
+        }
+        if ($.inArray("mlimage", types) != -1) {
+            jsmodules.push('mlimagefield');
+        }
     }
     return jsmodules;
 }
@@ -104,7 +113,22 @@ define('mltextfield', ['alpacafields/MLTextField'],
         return Alpaca.Fields.MLTextField;
     });
 
-define('mlckeditorfield', ['alpacafields/MLCKEditorField'],
+define('mlckeditorfield', ['alpacafields/CKEditorField', 'alpacafields/MLCKEditorField'],
     function () {
         return Alpaca.Fields.CKEditorField;
+    });
+
+define('mlurlfield', ['alpacafields/MLUrlField'],
+    function () {
+        return Alpaca.Fields.MLUrlField;
+    });
+
+define('mlfilefield', ['alpacafields/MLFileField'],
+    function () {
+        return Alpaca.Fields.MLFileField;
+    });
+
+define('mlimagefield', ['alpacafields/MLImageField'],
+    function () {
+        return Alpaca.Fields.MLImageField;
     });

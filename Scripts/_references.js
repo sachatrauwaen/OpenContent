@@ -85,3 +85,6 @@
 /// <reference path="../alpaca/js/views/dnn.js" />
 /// <reference path="../alpaca/js/fields/dnn/mltextfield.js" />
 /// <reference path="../alpaca/js/fields/dnn/mlckeditorfield.js" />
+/// <reference path="../alpaca/js/fields/dnn/mlurlfield.js" />
+/// <reference path="../alpaca/js/fields/dnn/mlfilefield.js" />
+/// <reference path="../alpaca/js/fields/dnn/mlimagefield.js" />
