@@ -131,14 +131,24 @@ namespace Satrabel.OpenContent
                         string settingsData = ModuleContext.Settings["data"] as string;
                         bool TemplateDefined = !string.IsNullOrEmpty(Template);
                         bool SettingsDefined = !string.IsNullOrEmpty(settingsData);
+                        bool SettingsNeeded = false;
 
-                        string TemplateFilename = HostingEnvironment.MapPath("~/" + ddlTemplate.SelectedValue);
-                        string prefix = Path.GetFileNameWithoutExtension(TemplateFilename) + "-";
-                        string schemaFilename = Path.GetDirectoryName(TemplateFilename) + "\\" + prefix + "schema.json";
-                        bool SettingsNeeded = File.Exists(schemaFilename);
-                        TemplateDefined = TemplateDefined &&
-                            (!ddlTemplate.Visible || (Template == ddlTemplate.SelectedValue));
-                        SettingsDefined = SettingsDefined || !SettingsNeeded;
+                        if (rblUseTemplate.SelectedIndex == 0)
+                        {
+                            string templateFilename = HostingEnvironment.MapPath("~/" + ddlTemplate.SelectedValue);
+                            string prefix = Path.GetFileNameWithoutExtension(templateFilename) + "-";
+                            string schemaFilename = Path.GetDirectoryName(templateFilename) + "\\" + prefix + "schema.json";
+                            SettingsNeeded = File.Exists(schemaFilename);
+                            TemplateDefined = TemplateDefined &&
+                                (!ddlTemplate.Visible || (Template == ddlTemplate.SelectedValue));
+                            SettingsDefined = SettingsDefined || !SettingsNeeded;
+                        }
+                        else
+                        {
+                            TemplateDefined = false;
+                        }
+
+
 
                         bSave.CssClass = "dnnPrimaryAction";
                         bSave.Enabled = true;
