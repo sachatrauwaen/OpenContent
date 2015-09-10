@@ -83,3 +83,5 @@
 /// <reference path="../js/select2/select2.full.js" />
 /// <reference path="../js/select2/select2.js" />
 /// <reference path="../alpaca/js/views/dnn.js" />
+/// <reference path="../alpaca/js/fields/dnn/mltextfield.js" />
+/// <reference path="../alpaca/js/fields/dnn/mlckeditorfield.js" />

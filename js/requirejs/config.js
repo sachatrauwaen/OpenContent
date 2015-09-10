@@ -28,6 +28,9 @@ function oc_modules(options) {
         if ($.inArray("mltext", types) != -1) {
             jsmodules.push('mltextfield');
         }
+        if ($.inArray("mlckeditor", types) != -1) {
+            jsmodules.push('mlckeditorfield');
+        }
     }
     return jsmodules;
 }
@@ -99,4 +102,9 @@ define('select2field', ['css!select2', 'select2', 'alpacafields/Select2Field'],
 define('mltextfield', ['alpacafields/MLTextField'],
     function () {
         return Alpaca.Fields.MLTextField;
+    });
+
+define('mlckeditorfield', ['alpacafields/MLCKEditorField'],
+    function () {
+        return Alpaca.Fields.CKEditorField;
     });

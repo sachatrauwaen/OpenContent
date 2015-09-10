@@ -217,6 +217,8 @@
     <Content Include="alpaca\js\fields\dnn\AddressField.js" />
     <Content Include="alpaca\js\fields\dnn\CKEditorField.js" />
     <Content Include="alpaca\js\fields\dnn\ImageCropperField.js" />
+    <Content Include="alpaca\js\fields\dnn\MLCKEditorField.js" />
+    <Content Include="alpaca\js\fields\dnn\MLTextField.js" />
     <Content Include="alpaca\js\fields\dnn\NumberField.js" />
     <Content Include="alpaca\js\fields\dnn\DateField.js" />
     <Content Include="alpaca\js\fields\dnn\FileField.js" />
