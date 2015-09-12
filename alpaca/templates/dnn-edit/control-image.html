@@ -1,4 +1,4 @@
-﻿<script type="text/x-handlebars-template">
+﻿<script type="text/x-handlebars-template" id="dnn-edit-control-image">
     <div class="alpaca-control-container">
 
         <input type="file" id="{{id}}-file" {{#if options.size}} size="{{options.size}}" {{/if}} {{#if options.readonly}} readonly="readonly" {{/if}} style="margin-bottom:5px;" />
@@ -8,7 +8,7 @@
         <div class="alpaca-image-display">
             <img id="{{id}}-image" src="{{data}}">
         </div>
-        
+
     </div>
     <div style="clear:both;"></div>
 </script>

@@ -2,8 +2,6 @@
 
     var Alpaca = $.alpaca;
 
-    var oc_websiteRoot = dnn.getVar('oc_websiteRoot');
-
     Alpaca.Fields.FileField = Alpaca.Fields.TextField.extend(
     /**
      * @lends Alpaca.Fields.ImageField.prototype
@@ -174,7 +172,7 @@
                 */
 
                 bloodHoundConfig.remote = {
-                    url: oc_websiteRoot + "DesktopModules/OpenContent/API/DnnEntitiesAPI/Files?q=%QUERY&d=" + tFolder,
+                    url: self.sf.getServiceRoot('OpenContent') + "DnnEntitiesAPI/Files?q=%QUERY&d=" + tFolder,
                     ajax: {
                         beforeSend: connector.servicesFramework.setModuleHeaders,
                     }
