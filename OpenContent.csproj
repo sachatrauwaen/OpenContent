@@ -215,6 +215,12 @@
     <Content Include="alpaca\css\img\Up_16X16_Standard.png" />
     <Content Include="alpaca\js\fields\dnn\AddressField.js" />
     <Content Include="alpaca\js\fields\dnn\CKEditorField.js" />
+    <Content Include="alpaca\js\fields\dnn\fields-dnn.js">
+      <DependentUpon>fields-dnn.js.bundle</DependentUpon>
+    </Content>
+    <Content Include="alpaca\js\fields\dnn\fields-dnn.min.js">
+      <DependentUpon>fields-dnn.js</DependentUpon>
+    </Content>
     <Content Include="alpaca\js\fields\dnn\ImageCropperField.js" />
     <Content Include="alpaca\js\fields\dnn\NumberField.js" />
     <Content Include="alpaca\js\fields\dnn\DateField.js" />
@@ -234,6 +240,12 @@
     <Content Include="alpaca\templates\dnn-edit\control-image.html" />
     <Content Include="alpaca\templates\dnn-edit\control-wysihtml.html" />
     <Content Include="alpaca\templates\dnn-edit\control.html" />
+    <Content Include="alpaca\templates\dnn-edit\dnn-edit.html">
+      <DependentUpon>dnn-edit.html.bundle</DependentUpon>
+    </Content>
+    <Content Include="alpaca\templates\dnn-edit\dnn-edit.min.html">
+      <DependentUpon>dnn-edit.html</DependentUpon>
+    </Content>
     <Content Include="css\edit.css" />
     <Content Include="css\font-awesome\css\font-awesome.css" />
     <Content Include="css\font-awesome\css\font-awesome.min.css" />
@@ -315,6 +327,11 @@
     <Content Include="js\requirejs\async.js" />
     <Content Include="js\requirejs\config.js" />
     <Content Include="Providers\DataProviders\SqlDataProvider\01.04.01.SqlDataProvider" />
+    <Content Include="alpaca\templates\dnn-edit\dnn-edit.html.bundle" />
+    <Content Include="alpaca\js\fields\dnn\fields-dnn.js.bundle" />
+    <Content Include="alpaca\js\fields\dnn\fields-dnn.min.js.map">
+      <DependentUpon>fields-dnn.min.js</DependentUpon>
+    </Content>
     <None Include="Scripts\_references.js" />
     <Content Include="js\requirejs\css.js" />
     <Content Include="js\requirejs\css.min.js" />

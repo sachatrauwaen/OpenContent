@@ -39,15 +39,22 @@ namespace Satrabel.OpenContent.Components
         {
             return portalSettings.ActiveTab.SkinPath + moduleSubDir + "/Templates/";
         }
-        public static List<ListItem> GetTemplatesFiles(PortalSettings portalSettings, int ModuleId, string SelectedTemplate, string moduleSubDir)
+        public static List<ListItem> GetTemplatesFiles(PortalSettings portalSettings, int ModuleId, string SelectedTemplate, string moduleSubDir, string dsTemplate = "")
         {
             string basePath = HostingEnvironment.MapPath(GetSiteTemplateFolder(portalSettings, moduleSubDir));
+            var dirs = Directory.GetDirectories(basePath);
+            if (!string.IsNullOrEmpty(dsTemplate))
+            {
+                var selDir = Path.GetDirectoryName(HostingEnvironment.MapPath(dsTemplate));
+                dirs = new string[]{selDir};
+            }
+
             if (!Directory.Exists(basePath))
             {
                 Directory.CreateDirectory(basePath);
             }
             List<ListItem> lst = new List<ListItem>();
-            foreach (var dir in Directory.GetDirectories(basePath))
+            foreach (var dir in dirs)
             {
                 string TemplateCat = "Site";
                 string DirName = Path.GetFileNameWithoutExtension(dir);

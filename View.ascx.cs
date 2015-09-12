@@ -59,6 +59,19 @@ namespace Satrabel.OpenContent
             string settingsJson;
             string OutputString = "";
             var Template = ModuleContext.Settings["template"] as string;
+            var sTabId = ModuleContext.Settings["tabid"] as string;
+            var sModuleId = ModuleContext.Settings["moduleid"] as string;
+            int dsTabId = -1;
+            int dsModuleId = -1;
+            string dsTemplate = "";
+            string dsSettings = "";
+            if (sTabId != null && sModuleId != null)
+            {
+                dsTabId = int.Parse(sTabId);
+                dsModuleId = int.Parse(sModuleId);
+                var dsModule = ModuleController.Instance.GetModule(dsModuleId, dsTabId, false);
+                dsTemplate = dsModule.ModuleSettings["template"] as string;
+            }
             string SelectedTemplate = Template;
             bool dataExist = false;
             string TemplateFolder = "";
@@ -116,10 +129,30 @@ namespace Satrabel.OpenContent
                     if (string.IsNullOrEmpty(Template) || ModuleContext.IsEditable)
                     {
                         pHelp.Visible = true;
-
-                        if (!Page.IsPostBack)
+                        phDataSource.Visible = rblDataSource.SelectedIndex == 1;
+                        if (phDataSource.Visible && ddlDataSource.Items.Count == 0)
                         {
-                            ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplatesFiles(ModuleContext.PortalSettings, ModuleContext.ModuleId, SelectedTemplate, "OpenContent").ToArray());
+                            var modules = ModuleController.Instance.GetModules(ModuleContext.PortalId).Cast<ModuleInfo>();
+                            modules = modules.Where(m => m.ModuleDefinition.DefinitionName == "OpenContent" && m.IsDeleted == false);
+                            foreach (var item in modules)
+                            {
+                                var tc = new TabController();
+                                var Tab = tc.GetTab(item.TabID, ModuleContext.PortalId);
+                                ddlDataSource.Items.Add(new ListItem(Tab.TabName + " - " + item.ModuleTitle, item.TabModuleID.ToString()));
+                            }
+                        }
+                        if (phDataSource.Visible)
+                        {
+                            var dsModule = ModuleController.Instance.GetTabModule(int.Parse(ddlDataSource.SelectedValue));
+                            dsTemplate = dsModule.ModuleSettings["template"] as string;
+                            dsModuleId = dsModule.ModuleID;
+                            dsTabId = dsModule.TabID;
+                            dsSettings = dsModule.ModuleSettings["data"] as string;
+                        }
+                        if (ddlTemplate.Items.Count == 0)
+                        {
+                            ddlTemplate.Items.Clear();
+                            ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplatesFiles(ModuleContext.PortalSettings, ModuleContext.ModuleId, SelectedTemplate, "OpenContent", dsTemplate).ToArray());
                             if (ddlTemplate.Items.Count == 0)
                             {
                                 rblUseTemplate.Items[0].Enabled = false;
@@ -129,19 +162,7 @@ namespace Satrabel.OpenContent
                                 rblFrom.SelectedIndex = 1;
                                 rblFrom_SelectedIndexChanged(null, null);
                             }
-
-                            var modules = ModuleController.Instance.GetModules(ModuleContext.PortalId).Cast<ModuleInfo>();
-                            modules = modules.Where(m => m.ModuleDefinition.DefinitionName == "OpenContent" && m.IsDeleted == false);
-                            foreach (var item in modules)
-                            {
-                                var tc = new TabController();
-                                var Tab = tc.GetTab(item.TabID, ModuleContext.PortalId);
-                                ddlDataSource.Items.Add(new ListItem(Tab.TabName+" - "+item.ModuleTitle, item.TabModuleID.ToString()));
-                            }
-
-
                         }
-
 
                         string settingsData = ModuleContext.Settings["data"] as string;
                         bool TemplateDefined = !string.IsNullOrEmpty(Template);
@@ -162,9 +183,6 @@ namespace Satrabel.OpenContent
                         {
                             TemplateDefined = false;
                         }
-
-
-
                         bSave.CssClass = "dnnPrimaryAction";
                         bSave.Enabled = true;
                         hlEditSettings.CssClass = "dnnSecondaryAction";
@@ -201,19 +219,41 @@ namespace Satrabel.OpenContent
                         }
 
 
-                        if (rblUseTemplate.SelectedIndex == 0)
+                        if (rblUseTemplate.SelectedIndex == 0) // existing template
                         {
                             Template = ddlTemplate.SelectedValue;
-                            bool demoExist = GetDemoData(Template, out dataJson, out settingsJson);
-                            if (demoExist)
+                            if (rblDataSource.SelectedIndex == 0) // this module
                             {
-                                manifest = OpenContentUtils.GetTemplateManifest(Template);
-                                if (manifest != null && manifest.Main != null)
+                                bool demoExist = GetDemoData(Template, out dataJson, out settingsJson);
+                                if (demoExist)
                                 {
-                                    TemplateFolder = Path.GetDirectoryName(Template);
-                                    Template = TemplateFolder + "/" + manifest.Main.Template;
+                                    manifest = OpenContentUtils.GetTemplateManifest(Template);
+                                    if (manifest != null && manifest.Main != null)
+                                    {
+                                        TemplateFolder = Path.GetDirectoryName(Template);
+                                        Template = TemplateFolder + "/" + manifest.Main.Template;
+                                    }
+                                    OutputString = GenerateOutput(Template, dataJson, settingsJson);
                                 }
-                                OutputString = GenerateOutput(Template, dataJson, settingsJson);
+                            }
+                            else // other module
+                            {
+                                bool dsDataExist = GetModuleDemoData(dsModuleId, Template, out dataJson, out settingsJson);
+                                if (dsDataExist)
+                                {
+                                    manifest = OpenContentUtils.GetTemplateManifest(Template);
+                                    if (manifest != null && manifest.Main != null)
+                                    {
+                                        TemplateFolder = Path.GetDirectoryName(Template);
+                                        Template = TemplateFolder + "/" + manifest.Main.Template;
+                                    }
+                                    if (dsTemplate == Template && !string.IsNullOrEmpty(dsSettings))
+                                    {
+                                        settingsJson = dsSettings;
+                                    }
+
+                                    OutputString = GenerateOutput(Template, dataJson, settingsJson);
+                                }
                             }
                         }
                     }
@@ -513,6 +553,36 @@ namespace Satrabel.OpenContent
             }
             return false;
         }
+        private bool GetModuleDemoData(int moduleid, string Template, out string dataJson, out string settingsJson)
+        {
+            dataJson = "";
+            settingsJson = "";
+            OpenContentController ctrl = new OpenContentController();
+            var struc = ctrl.GetFirstContent(moduleid);
+            if (struc != null)
+            {
+                dataJson = struc.Json;
+                if (Template == (ModuleContext.Settings["template"] as string))
+                {
+                    settingsJson = ModuleContext.Settings["data"] as string;
+                }
+                if (string.IsNullOrEmpty(settingsJson))
+                {
+                    var settingsFilename = Path.GetDirectoryName(Server.MapPath(Template)) + "\\" + Path.GetFileNameWithoutExtension(Template) + "-data.json";
+                    if (File.Exists(settingsFilename))
+                    {
+                        string fileContent = File.ReadAllText(settingsFilename);
+                        if (!string.IsNullOrWhiteSpace(fileContent))
+                        {
+                            settingsJson = fileContent;
+                        }
+                    }
+                }
+
+                return true;
+            }
+            return false;
+        }
         private bool GetData(int ContentId, out string dataJson, out string settingsJson)
         {
             dataJson = "";
@@ -784,6 +854,19 @@ namespace Satrabel.OpenContent
             try
             {
                 ModuleController mc = new ModuleController();
+
+                if (rblDataSource.SelectedIndex == 0) // this module
+                {
+                    mc.DeleteModuleSetting(ModuleContext.ModuleId, "tabid");
+                    mc.DeleteModuleSetting(ModuleContext.ModuleId, "moduleid");
+                }
+                else // other module
+                {
+                    var dsModule = ModuleController.Instance.GetTabModule(int.Parse(ddlDataSource.SelectedValue));
+                    mc.UpdateModuleSetting(ModuleContext.ModuleId, "tabid", dsModule.TabID.ToString());
+                    mc.UpdateModuleSetting(ModuleContext.ModuleId, "moduleid", dsModule.ModuleID.ToString());
+                }
+
                 if (rblUseTemplate.SelectedIndex == 0) // existing
                 {
                     mc.UpdateModuleSetting(ModuleContext.ModuleId, "template", ddlTemplate.SelectedValue);
@@ -831,12 +914,12 @@ namespace Satrabel.OpenContent
 
         protected void ddlDataSource_SelectedIndexChanged(object sender, EventArgs e)
         {
-
+            ddlTemplate.Items.Clear();
         }
 
         protected void rblDataSource_SelectedIndexChanged(object sender, EventArgs e)
         {
-
+            ddlTemplate.Items.Clear();
         }
     }
 }

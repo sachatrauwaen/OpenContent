@@ -83,3 +83,4 @@
 /// <reference path="../js/requirejs/text.js" />
 /// <reference path="../js/select2/select2.full.js" />
 /// <reference path="../js/select2/select2.js" />
+/// <reference path="../alpaca/js/fields/dnn/fields-dnn.js" />

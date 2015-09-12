@@ -7,16 +7,15 @@
 <dnncl:DnnJsInclude ID="DnnJsInclude4" runat="server" FilePath="~/DesktopModules/OpenContent/js/alpaca-1.5.8/lib/typeahead.js/dist/typeahead.bundle.min.js" Priority="106" ForceProvider="DnnPageHeaderProvider" />
 <script src="<%=ControlPath %>js/wysihtml/wysihtml-toolbar.js"></script>
 <script src="<%=ControlPath %>js/wysihtml/parser_rules/advanced_opencontent.js"></script>
+
 <script type="text/javascript" src="<%=ControlPath %>alpaca/js/views/dnn.js"></script>
-<script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/ImageField.js"></script>
-<script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/FileField.js"></script>
-<script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/UrlField.js"></script>
-<script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/CKEditorField.js"></script>
-<script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/wysihtmlField.js"></script>
-<script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/NumberField.js"></script>
+
+<script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/fields-dnn.js"></script>
 <dnncl:DnnJsInclude ID="DnnJsInclude3" runat="server" FilePath="~/DesktopModules/OpenContent/js/requirejs/require.js" Priority="110" ForceProvider="DnnFormBottomProvider" />
 <dnncl:DnnJsInclude ID="DnnJsInclude5" runat="server" FilePath="~/DesktopModules/OpenContent/js/requirejs/config.js" Priority="111" ForceProvider="DnnFormBottomProvider" />
 <dnncl:DnnCssInclude ID="DnnCssInclude1" runat="server" FilePath="~/DesktopModules/OpenContent/css/font-awesome/css/font-awesome.min.css" AddTag="false" />
+
+<!-- #include file ="~/DesktopModules/OpenContent/alpaca/templates/dnn-edit/dnn-edit.html" -->
 
 <asp:Panel ID="ScopeWrapper" runat="server">
     <div id="field1" class="alpaca"></div>

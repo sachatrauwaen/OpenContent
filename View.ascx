@@ -6,8 +6,8 @@
             <asp:Label ID="lUseContent" runat="server" ControlName="rblDataSource" ResourceKey="lUseContent" CssClass="dnnLabel" />
             <asp:RadioButtonList runat="server" ID="rblDataSource" AutoPostBack="true" OnSelectedIndexChanged="rblDataSource_SelectedIndexChanged"
                 RepeatDirection="Horizontal" CssClass="dnnFormRadioButtons">
-                <asp:ListItem Text="New content" Selected="True" />
-                <asp:ListItem Text="Existing content" />
+                <asp:ListItem Text="This module" Selected="True" />
+                <asp:ListItem Text="Other module" />
             </asp:RadioButtonList>
         </div>
          <asp:PlaceHolder ID="phDataSource" runat="server">
