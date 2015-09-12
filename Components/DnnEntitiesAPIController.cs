@@ -30,6 +30,7 @@ using DotNetNuke.Services.FileSystem;
 using System.Drawing;
 using Satrabel.OpenContent.Components.Images;
 using System.Drawing.Imaging;
+using DotNetNuke.Entities.Portals;
 
 #endregion
 
@@ -43,11 +44,11 @@ namespace Satrabel.OpenContent.Components
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
         [HttpGet]
-        public HttpResponseMessage Tabs(string q)
+        public HttpResponseMessage Tabs(string q, string l)
         {
             try
             {
-                var tabs = TabController.GetTabsBySortOrder(PortalSettings.PortalId).Where(t => t.ParentId != PortalSettings.AdminTabId).Where(t => t.TabName.ToLower().Contains(q.ToLower())).Select(t => new { name = t.TabName + " (" + t.TabPath.Replace("//", "/").Replace("/" + t.TabName + "/", "") + ")", value = (new Uri(Globals.NavigateURL(t.TabID))).PathAndQuery });
+                var tabs = TabController.GetTabsBySortOrder(PortalSettings.PortalId).Where(t => t.ParentId != PortalSettings.AdminTabId).Where(t => t.TabName.ToLower().Contains(q.ToLower())).Select(t => new { name = t.TabName + " (" + t.TabPath.Replace("//", "/").Replace("/" + t.TabName + "/", "") + " " + l + ")", value = (new Uri(NavigateUrl(t, l, PortalSettings))).PathAndQuery });
                 return Request.CreateResponse(HttpStatusCode.OK, tabs);
             }
             catch (Exception exc)
@@ -55,6 +56,11 @@ namespace Satrabel.OpenContent.Components
                 Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
+        }
+
+        private static string NavigateUrl(TabInfo t, string culture, PortalSettings portalsettings)
+        {
+            return Globals.NavigateURL(t.TabID, false, portalsettings, "", culture);
         }
 
         [ValidateAntiForgeryToken]

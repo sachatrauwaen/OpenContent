@@ -283,8 +283,9 @@
 .twitter-typeahead {
     float: left;
     width: 45%;
-    max-width: 445px;
+    max-width: 462px;
     display: inline-block;
+    margin : 0 !important;
 }
 
     .twitter-typeahead .tt-dropdown-menu {

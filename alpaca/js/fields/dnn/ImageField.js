@@ -1,7 +1,12 @@
 ﻿(function ($) {
 
     var Alpaca = $.alpaca;
-
+    
+    var oc_websiteRoot = "/";
+    var ctl = dnn.dom.getById('__dnnVariable');
+    if (ctl != null) {
+        oc_websiteRoot = dnn.getVar('oc_websiteRoot');
+    }
     Alpaca.Fields.ImageField = Alpaca.Fields.TextField.extend(
     /**
      * @lends Alpaca.Fields.ImageField.prototype
@@ -193,7 +198,7 @@
                 */
 
                 bloodHoundConfig.remote = {
-                    url: "/DesktopModules/OpenContent/API/DnnEntitiesAPI/Images?q=%QUERY&d=" + tFolder,
+                    url: oc_websiteRoot + "DesktopModules/OpenContent/API/DnnEntitiesAPI/Images?q=%QUERY&d=" + tFolder,
                     ajax: {
                         beforeSend: connector.servicesFramework.setModuleHeaders,
 

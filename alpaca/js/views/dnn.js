@@ -21,6 +21,11 @@
 
     var Alpaca = $.alpaca;
 
+    var oc_websiteRoot = "/";
+    var ctl = dnn.dom.getById('__dnnVariable');
+    if (ctl != null) {
+        oc_websiteRoot = dnn.getVar('oc_websiteRoot');
+    }
 
     // custom styles
     var styles = {};
@@ -85,7 +90,7 @@
         }
 
         $(fieldEl).find("input[type=file]").addClass("normalFileUpload");
-        
+
 
 
         // any checkbox inputs get the "checkbox" class on their checkbox
@@ -161,7 +166,7 @@
                 $(this).css("cursor", "pointer");
             })
 
-            
+
 
         }
         $(fieldEl).dnnPanels();
@@ -205,6 +210,15 @@
             "control-file": "/DesktopModules/OpenContent/alpaca/templates/dnn-edit/control-file.html",
             "control-wysihtml": "/DesktopModules/OpenContent/alpaca/templates/dnn-edit/control-wysihtml.html",
             "control-checkbox": "/DesktopModules/OpenContent/alpaca/templates/dnn-edit/control-checkbox.html"
+            "control": oc_websiteRoot + "DesktopModules/OpenContent/alpaca/templates/dnn-edit/control.html",
+            "container": oc_websiteRoot + "DesktopModules/OpenContent/alpaca/templates/dnn-edit/container.html",
+            //"container-array": oc_websiteRoot + "DesktopModules/OpenContent/alpaca/templates/dnn-edit/container-array.html",
+            //"container-array-actionbar": oc_websiteRoot + "DesktopModules/OpenContent/alpaca/templates/dnn-edit/container-array-actionbar.html",
+            "control-image": oc_websiteRoot + "DesktopModules/OpenContent/alpaca/templates/dnn-edit/control-image.html",
+            "control-imagecropper": oc_websiteRoot + "DesktopModules/OpenContent/alpaca/templates/dnn-edit/control-imagecropper.html",
+            "control-file": oc_websiteRoot + "DesktopModules/OpenContent/alpaca/templates/dnn-edit/control-file.html",
+            "control-wysihtml": oc_websiteRoot + "DesktopModules/OpenContent/alpaca/templates/dnn-edit/control-wysihtml.html",
+            "control-checkbox": oc_websiteRoot + "DesktopModules/OpenContent/alpaca/templates/dnn-edit/control-checkbox.html"
         }
     });
 

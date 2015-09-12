@@ -33,15 +33,15 @@ namespace Satrabel.OpenContent
         {
             base.OnInit(e);
             //string AddEditControl = PortalController.GetPortalSetting("OpenContent_AddEditControl", ModuleContext.PortalId, "");
-            var Template = ModuleContext.Settings["template"] as string;
-            if (!string.IsNullOrEmpty(Template))
+            var template = OpenContentUtils.GetTemplate(ModuleContext.Settings);
+            if (template != null)
             {
-                string TemplateFolder = Path.GetDirectoryName(Template).Replace("\\", "/");
-                var manifest = OpenContentUtils.GetManifest(TemplateFolder);
-                string AddEditControl = manifest.AdditionalEditControl;
-                if (!string.IsNullOrEmpty(AddEditControl))
+                string templateFolder = template.Directory;
+                var manifest = OpenContentUtils.GetManifest(templateFolder);
+                string addEditControl = manifest.AdditionalEditControl;
+                if (!string.IsNullOrEmpty(addEditControl))
                 {
-                    var contr = LoadControl(AddEditControl);
+                    var contr = LoadControl(addEditControl);
                     PortalModuleBase mod = contr as PortalModuleBase;
                     if (mod != null)
                     {

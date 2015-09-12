@@ -184,7 +184,6 @@ namespace Satrabel.OpenContent
 
         private void sourceList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            //string template = ModuleContext.Settings["template"] as string;
             phVersions.Visible = sourceList.SelectedValue == cData;            
             DisplayFile(sourceList.SelectedValue);
 

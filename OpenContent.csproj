@@ -125,6 +125,7 @@
     <Compile Include="Components\FeatureController.cs" />
     <Compile Include="Components\FilesStatus.cs" />
     <Compile Include="Components\FileUploadController.cs" />
+    <Compile Include="Components\FileUri.cs" />
     <Compile Include="Components\Handlebars\HandlebarsEngine.cs" />
     <Compile Include="Components\Images\ImageUtils.cs" />
     <Compile Include="Components\Json\JsonMergeExtensions.cs" />
@@ -216,6 +217,11 @@
     <Content Include="alpaca\js\fields\dnn\AddressField.js" />
     <Content Include="alpaca\js\fields\dnn\CKEditorField.js" />
     <Content Include="alpaca\js\fields\dnn\ImageCropperField.js" />
+    <Content Include="alpaca\js\fields\dnn\MLCKEditorField.js" />
+    <Content Include="alpaca\js\fields\dnn\MLImageField.js" />
+    <Content Include="alpaca\js\fields\dnn\MLFileField.js" />
+    <Content Include="alpaca\js\fields\dnn\MLUrlField.js" />
+    <Content Include="alpaca\js\fields\dnn\MLTextField.js" />
     <Content Include="alpaca\js\fields\dnn\NumberField.js" />
     <Content Include="alpaca\js\fields\dnn\DateField.js" />
     <Content Include="alpaca\js\fields\dnn\FileField.js" />

@@ -19,7 +19,7 @@ using System.IO;
 using DotNetNuke.Web.Client.ClientResourceManagement;
 using DotNetNuke.Web.Client;
 using System.Web.Hosting;
-
+using Satrabel.OpenContent.Components;
 
 #endregion
 
@@ -32,7 +32,6 @@ namespace Satrabel.OpenContent
         {
             get
             {
-                //ModuleContext.Settings["template"]
                 return true;
             }
         }
@@ -48,11 +47,11 @@ namespace Satrabel.OpenContent
             ServicesFramework.Instance.RequestAjaxAntiForgerySupport();
             JavaScript.RequestRegistration(CommonJs.DnnPlugins); // dnnPanels
             JavaScript.RequestRegistration(CommonJs.jQueryFileUpload); // image file upload
-            DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "oc_websiteRoot", HostingEnvironment.ApplicationVirtualPath, true);
-            
+            DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "oc_websiteRoot", FileUri.NormalizedApplicationPath, true);
+
             if (File.Exists(Server.MapPath("~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js")))
             {
-                ClientResourceManager.RegisterScript(Page, "~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js",FileOrder.Js.DefaultPriority);
+                ClientResourceManager.RegisterScript(Page, "~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js", FileOrder.Js.DefaultPriority);
                 DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "PortalId", PortalId.ToString(), true);
                 CKDNNporid.Value = PortalId.ToString();
             }
@@ -64,7 +63,6 @@ namespace Satrabel.OpenContent
 
             if (!Page.IsPostBack)
             {
-                //txtField.Text = (string)Settings["field"];
 
             }
         }
