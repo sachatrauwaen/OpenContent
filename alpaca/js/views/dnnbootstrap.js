@@ -21,6 +21,8 @@
 
     var Alpaca = $.alpaca;
     
+    var oc_websiteRoot = dnn.getVar('oc_websiteRoot');
+
     Alpaca.registerView({
         "id": "dnnbootstrap-display",
         "parent": "bootstrap-display",
@@ -45,10 +47,10 @@
         "title": "Bootstrap Edit View for DNN",
         "displayReadonly": false,
         "templates": {
-            "control-image": "/DesktopModules/OpenContent/alpaca/templates/dnn-edit/control-image.html",
-            "control-imagecropper": "/DesktopModules/OpenContent/alpaca/templates/dnn-edit/control-imagecropper.html",
-            "control-file": "/DesktopModules/OpenContent/alpaca/templates/dnn-edit/control-file.html",
-            "control-wysihtml": "/DesktopModules/OpenContent/alpaca/templates/dnn-edit/control-wysihtml.html"
+            "control-image": oc_websiteRoot + "DesktopModules/OpenContent/alpaca/templates/dnn-edit/control-image.html",
+            "control-imagecropper": oc_websiteRoot + "DesktopModules/OpenContent/alpaca/templates/dnn-edit/control-imagecropper.html",
+            "control-file": oc_websiteRoot + "DesktopModules/OpenContent/alpaca/templates/dnn-edit/control-file.html",
+            "control-wysihtml": oc_websiteRoot + "DesktopModules/OpenContent/alpaca/templates/dnn-edit/control-wysihtml.html"
         }
     });
 

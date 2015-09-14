@@ -5,17 +5,21 @@
 <dnncl:DnnJsInclude ID="DnnJsInclude1" runat="server" FilePath="~/DesktopModules/OpenContent/js/alpaca-1.5.8/lib/handlebars/handlebars.js" Priority="106" ForceProvider="DnnPageHeaderProvider" />
 <dnncl:DnnJsInclude ID="DnnJsInclude2" runat="server" FilePath="~/DesktopModules/OpenContent/js/alpaca-1.5.8/alpaca/web/alpaca.js" Priority="107" ForceProvider="DnnPageHeaderProvider" />
 <dnncl:DnnJsInclude ID="DnnJsInclude4" runat="server" FilePath="~/DesktopModules/OpenContent/js/alpaca-1.5.8/lib/typeahead.js/dist/typeahead.bundle.min.js" Priority="106" ForceProvider="DnnPageHeaderProvider" />
-<script src="<%=ControlPath %>js/wysihtml/wysihtml-toolbar.js"></script>
-<script src="<%=ControlPath %>js/wysihtml/parser_rules/advanced_opencontent.js"></script>
 
-<script type="text/javascript" src="<%=ControlPath %>alpaca/js/views/dnn.js"></script>
+<dnncl:DnnJsInclude ID="DnnJsInclude14" runat="server" FilePath="~/DesktopModules/OpenContent/js/wysihtml/wysihtml-toolbar.js" Priority="107"  />
+<dnncl:DnnJsInclude ID="DnnJsInclude6" runat="server" FilePath="~/DesktopModules/OpenContent/js/wysihtml/parser_rules/advanced_opencontent.js" Priority="107"  />
 
-<script type="text/javascript" src="<%=ControlPath %>alpaca/js/fields/dnn/fields-dnn.js"></script>
+<dnncl:DnnJsInclude ID="DnnJsInclude12" runat="server" FilePath="~/DesktopModules/OpenContent/alpaca/js/fields/dnn/wysihtmlField.js" Priority="108" ForceProvider="DnnPageHeaderProvider" />
+<dnncl:DnnJsInclude ID="DnnJsInclude13" runat="server" FilePath="~/DesktopModules/OpenContent/alpaca/js/fields/dnn/NumberField.js" Priority="108" ForceProvider="DnnPageHeaderProvider" />
+
+<dnncl:DnnJsInclude ID="DnnJsInclude11" runat="server" FilePath="~/DesktopModules/OpenContent/alpaca/js/fields/dnn/CKEditorField.js" Priority="108" ForceProvider="DnnFormBottomProvider" />
+<dnncl:DnnJsInclude ID="DnnJsInclude9" runat="server" FilePath="~/DesktopModules/OpenContent/alpaca/js/fields/dnn/ImageField.js" Priority="108" ForceProvider="DnnFormBottomProvider" />
+<dnncl:DnnJsInclude ID="DnnJsInclude10" runat="server" FilePath="~/DesktopModules/OpenContent/alpaca/js/fields/dnn/FileField.js" Priority="108" ForceProvider="DnnFormBottomProvider" />
+<dnncl:dnnjsinclude id="DnnJsInclude8" runat="server" filepath="~/DesktopModules/OpenContent/alpaca/js/fields/dnn/UrlField.js" priority="108" forceprovider="DnnFormBottomProvider" />
+<dnncl:DnnJsInclude ID="DnnJsInclude7" runat="server" FilePath="~/DesktopModules/OpenContent/alpaca/js/views/dnn.js" Priority="107" ForceProvider="DnnFormBottomProvider" />
 <dnncl:DnnJsInclude ID="DnnJsInclude3" runat="server" FilePath="~/DesktopModules/OpenContent/js/requirejs/require.js" Priority="110" ForceProvider="DnnFormBottomProvider" />
 <dnncl:DnnJsInclude ID="DnnJsInclude5" runat="server" FilePath="~/DesktopModules/OpenContent/js/requirejs/config.js" Priority="111" ForceProvider="DnnFormBottomProvider" />
 <dnncl:DnnCssInclude ID="DnnCssInclude1" runat="server" FilePath="~/DesktopModules/OpenContent/css/font-awesome/css/font-awesome.min.css" AddTag="false" />
-
-<!-- #include file ="~/DesktopModules/OpenContent/alpaca/templates/dnn-edit/dnn-edit.html" -->
 
 <asp:Panel ID="ScopeWrapper" runat="server">
     <div id="field1" class="alpaca"></div>
@@ -90,23 +94,23 @@
             connector.servicesFramework = sf;
             connector.culture = '<%=CurrentCulture%>';
             connector.numberDecimalSeparator = '<%=NumberDecimalSeparator%>';
-            if (config.versions){
+            if (config.versions) {
                 $.each(config.versions, function (i, item) {
-                    $("#<%=ddlVersions.ClientID%>").append($('<option>', { 
+                    $("#<%=ddlVersions.ClientID%>").append($('<option>', {
                         value: item.ticks,
-                        text : item.text 
+                        text: item.text
                     }));
                     //$("#<%=ddlVersions.ClientID%>").data(item.CreatedOnDate, item.Json);
                 });
             }
-            
+
             $.alpaca.setDefaultLocale(connector.culture.replace('-', '_'));
             self.CreateForm(connector, config, config.data);
-            
+
         };
 
-        self.CreateForm = function(connector, config, data) {
-        
+        self.CreateForm = function (connector, config, data) {
+
             $("#field1").alpaca({
                 "schema": config.schema,
                 "options": config.options,
@@ -139,7 +143,7 @@
 
                 }
             });
-        
+
         };
 
         self.FormSubmit = function (data, href) {
@@ -175,8 +179,8 @@
 
         self.Version = function (id, ticks, control) {
             if (!id) id = 0;
-            var postData = { id: id, ticks : ticks };
-            var action = "Version"; 
+            var postData = { id: id, ticks: ticks };
+            var action = "Version";
 
             $.ajax({
                 type: "GET",

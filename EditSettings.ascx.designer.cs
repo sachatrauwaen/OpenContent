@@ -49,6 +49,24 @@ namespace Satrabel.OpenContent {
         protected global::DotNetNuke.Web.Client.ClientResourceManagement.DnnJsInclude DnnJsInclude2;
         
         /// <summary>
+        /// DnnJsInclude7 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::DotNetNuke.Web.Client.ClientResourceManagement.DnnJsInclude DnnJsInclude7;
+        
+        /// <summary>
+        /// DnnJsInclude3 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::DotNetNuke.Web.Client.ClientResourceManagement.DnnJsInclude DnnJsInclude3;
+        
+        /// <summary>
         /// DnnJsInclude4 control.
         /// </summary>
         /// <remarks>

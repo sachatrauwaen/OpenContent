@@ -125,6 +125,7 @@
     <Compile Include="Components\FeatureController.cs" />
     <Compile Include="Components\FilesStatus.cs" />
     <Compile Include="Components\FileUploadController.cs" />
+    <Compile Include="Components\FileUri.cs" />
     <Compile Include="Components\Handlebars\HandlebarsEngine.cs" />
     <Compile Include="Components\Images\ImageUtils.cs" />
     <Compile Include="Components\Json\JsonMergeExtensions.cs" />
@@ -137,11 +138,13 @@
     <Compile Include="Components\OpenContentInfo.cs" />
     <Compile Include="Components\OpenContentAPIController.cs" />
     <Compile Include="Components\OpenContentRouteMapper.cs" />
+    <Compile Include="Components\OpenContentSettings.cs" />
     <Compile Include="Components\OpenContentUtils.cs" />
     <Compile Include="Components\OpenContentVersion.cs" />
     <Compile Include="Components\Rss\FeedParser.cs" />
     <Compile Include="Components\Rss\FeedItem.cs" />
     <Compile Include="Components\TemplateHelper.cs" />
+    <Compile Include="Components\TemplateInfo.cs" />
     <Compile Include="EditGlobalSettings.ascx.cs">
       <DependentUpon>EditGlobalSettings.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -222,6 +225,11 @@
       <DependentUpon>fields-dnn.js</DependentUpon>
     </Content>
     <Content Include="alpaca\js\fields\dnn\ImageCropperField.js" />
+    <Content Include="alpaca\js\fields\dnn\MLCKEditorField.js" />
+    <Content Include="alpaca\js\fields\dnn\MLImageField.js" />
+    <Content Include="alpaca\js\fields\dnn\MLFileField.js" />
+    <Content Include="alpaca\js\fields\dnn\MLUrlField.js" />
+    <Content Include="alpaca\js\fields\dnn\MLTextField.js" />
     <Content Include="alpaca\js\fields\dnn\NumberField.js" />
     <Content Include="alpaca\js\fields\dnn\DateField.js" />
     <Content Include="alpaca\js\fields\dnn\FileField.js" />

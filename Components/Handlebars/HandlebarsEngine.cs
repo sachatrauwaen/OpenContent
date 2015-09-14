@@ -28,10 +28,10 @@ namespace Satrabel.OpenContent.Components.Handlebars
             var result = template(model);
             return result;
         }
-        public string Execute(Page page, string sourceFilename, dynamic model)
+        public string Execute(Page page, FileUri sourceFilename, dynamic model)
         {
-            string source = File.ReadAllText(System.Web.Hosting.HostingEnvironment.MapPath(sourceFilename));
-            string sourceFolder = Path.GetDirectoryName(sourceFilename).Replace("\\", "/") + "/";
+            string source = File.ReadAllText(sourceFilename.PhysicalFilePath);
+            string sourceFolder = sourceFilename.Directory.Replace("\\", "/") + "/";
             var hbs = HandlebarsDotNet.Handlebars.Create();
             RegisterDivideHelper(hbs);
             RegisterMultiplyHelper(hbs);

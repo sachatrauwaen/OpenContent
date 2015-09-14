@@ -10,7 +10,7 @@
                 <asp:ListItem Text="Other module" />
             </asp:RadioButtonList>
         </div>
-         <asp:PlaceHolder ID="phDataSource" runat="server">
+         <asp:PlaceHolder ID="phDataSource" runat="server" Visible="false">
             <div class="dnnFormItem">
                 <asp:Label runat="server" ControlName="ddlDataSource" ResourceKey="lDataSource" CssClass="dnnLabel" />
                 <asp:DropDownList runat="server" ID="ddlDataSource" AutoPostBack="true" OnSelectedIndexChanged="ddlDataSource_SelectedIndexChanged">

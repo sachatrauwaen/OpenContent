@@ -34,8 +34,8 @@ namespace Satrabel.Struct
         }
         public override void LoadSettings()
         {
-            var scriptFileSetting = Settings["template"] as string;
-            scriptList.Items.AddRange(OpenContentUtils.GetTemplatesFiles(PortalSettings, ModuleId, scriptFileSetting, "OpenContent").ToArray());
+            var template = OpenContentUtils.GetTemplate(Settings);
+            scriptList.Items.AddRange(OpenContentUtils.GetTemplatesFiles(PortalSettings, ModuleId, template, "OpenContent").ToArray());
             base.LoadSettings();
         }
         public override void UpdateSettings()

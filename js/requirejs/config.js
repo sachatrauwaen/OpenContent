@@ -1,4 +1,4 @@
-﻿var oc_moduleRoot = dnn.getVar('oc_websiteRoot');
+﻿var oc_websiteRoot = dnn.getVar('oc_websiteRoot');
 
 function oc_loadmodules(options, callback) {
     var jsmodules = oc_modules(options);
@@ -28,6 +28,18 @@ function oc_modules(options) {
         if ($.inArray("mltext", types) != -1) {
             jsmodules.push('mltextfield');
         }
+        if ($.inArray("mlckeditor", types) != -1) {
+            jsmodules.push('mlckeditorfield');
+        }
+        if ($.inArray("mlurl", types) != -1) {
+            jsmodules.push('mlurlfield');
+        }
+        if ($.inArray("mlfile", types) != -1) {
+            jsmodules.push('mlfilefield');
+        }
+        if ($.inArray("mlimage", types) != -1) {
+            jsmodules.push('mlimagefield');
+        }
     }
     return jsmodules;
 }
@@ -52,7 +64,7 @@ function oc_fieldtypes(options) {
 }
 
 require.config({
-    baseUrl : oc_moduleRoot + 'DesktopModules/OpenContent',
+    baseUrl : oc_websiteRoot + 'DesktopModules/OpenContent',
     paths: {
         'async': 'js/requirejs/async',
         'text': 'js/requirejs/text',
@@ -99,4 +111,24 @@ define('select2field', ['css!select2', 'select2', 'alpacafields/Select2Field'],
 define('mltextfield', ['alpacafields/MLTextField'],
     function () {
         return Alpaca.Fields.MLTextField;
+    });
+
+define('mlckeditorfield', ['alpacafields/CKEditorField', 'alpacafields/MLCKEditorField'],
+    function () {
+        return Alpaca.Fields.CKEditorField;
+    });
+
+define('mlurlfield', ['alpacafields/MLUrlField'],
+    function () {
+        return Alpaca.Fields.MLUrlField;
+    });
+
+define('mlfilefield', ['alpacafields/MLFileField'],
+    function () {
+        return Alpaca.Fields.MLFileField;
+    });
+
+define('mlimagefield', ['alpacafields/MLImageField'],
+    function () {
+        return Alpaca.Fields.MLImageField;
     });

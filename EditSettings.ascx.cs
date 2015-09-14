@@ -39,7 +39,7 @@ namespace Satrabel.OpenContent
             JavaScript.RequestRegistration(CommonJs.DnnPlugins); ;
             JavaScript.RequestRegistration(CommonJs.jQueryFileUpload);
             //DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "oc_moduleRoot", ControlPath, true);
-            DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "oc_websiteRoot", HostingEnvironment.ApplicationVirtualPath, true);
+            DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "oc_websiteRoot", FileUri.NormalizedApplicationPath, true);
 
             //DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "PortalId", PortalId.ToString(), true);
             //CKDNNporid.Value = PortalId.ToString();
@@ -51,8 +51,8 @@ namespace Satrabel.OpenContent
             if (!Page.IsPostBack)
             {
                 hlTemplateExchange.NavigateUrl = EditUrl("ShareTemplate");
-                var scriptFileSetting = Settings["template"] as string;
-                scriptList.Items.AddRange(OpenContentUtils.GetTemplatesFiles(PortalSettings, ModuleId, scriptFileSetting, "OpenContent").ToArray());
+                var template = OpenContentUtils.GetTemplate(Settings);
+                scriptList.Items.AddRange(OpenContentUtils.GetTemplatesFiles(PortalSettings, ModuleId, template, "OpenContent").ToArray());
             }
         }
 
@@ -60,7 +60,7 @@ namespace Satrabel.OpenContent
         {
             /*
             ModuleController mc = new ModuleController();
-            mc.UpdateModuleSetting(ModuleId, "template", scriptList.SelectedValue);
+            mc.UpdateModuleSetting(ModuleId, "template", OpenContentUtils.SetTemplateFolder(scriptList.SelectedValue));
             mc.UpdateModuleSetting(ModuleId, "data", HiddenField.Value);
             Response.Redirect(Globals.NavigateURL(), true);
              */
