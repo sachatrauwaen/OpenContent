@@ -212,7 +212,7 @@ namespace Satrabel.OpenContent
                 string schemaFilename = Path.GetDirectoryName(templateFilename) + "\\" + prefix + "schema.json";
                 settingsNeeded = File.Exists(schemaFilename);
                 templateDefined = templateDefined &&
-                    (!ddlTemplate.Visible || (info.Template.FilePath == ddlTemplate.SelectedValue));
+                    (!ddlTemplate.Visible || (settings.Template.FilePath == ddlTemplate.SelectedValue));
                 settingsDefined = settingsDefined || !settingsNeeded;
             }
             else // new template
