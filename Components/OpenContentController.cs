@@ -13,6 +13,7 @@ using System.Linq;
 using System.Collections.Generic;
 using DotNetNuke.Data;
 using Newtonsoft.Json.Linq;
+using Satrabel.OpenContent.Components.Json;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -22,7 +23,7 @@ namespace Satrabel.OpenContent.Components
         {
             OpenContentVersion ver = new OpenContentVersion()
             {
-                Json = JObject.Parse(Content.Json),
+                Json = Content.Json.ToJObject("Adding Content"),
                 CreatedByUserId = Content.LastModifiedByUserId,
                 CreatedOnDate = Content.LastModifiedOnDate
             };
@@ -85,7 +86,7 @@ namespace Satrabel.OpenContent.Components
         {
             OpenContentVersion ver = new OpenContentVersion()
             {
-                Json = JObject.Parse(Content.Json),
+                Json = Content.Json.ToJObject("UpdateContent"),
                 CreatedByUserId = Content.LastModifiedByUserId,
                 CreatedOnDate = Content.LastModifiedOnDate
             };

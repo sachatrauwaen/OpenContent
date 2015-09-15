@@ -62,10 +62,10 @@ namespace Satrabel.OpenContent.Components
             try
             {
                 // schema
-                var schemaFilename = new FileUri(template.Directory +  "schema.json");
+                var schemaFilename = new FileUri(template.Directory + "schema.json");
                 if (schemaFilename.FileExists)
                 {
-                    JObject schemaJson = JObject.Parse(File.ReadAllText(schemaFilename.PhysicalFilePath));
+                    JObject schemaJson = schemaFilename.ToJObject();
                     json["schema"] = schemaJson;
                 }
                 else
@@ -73,38 +73,23 @@ namespace Satrabel.OpenContent.Components
                     //return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "schema.json missing for template " + Template);
                 }
                 // default options
-                var optionsFilename = new FileUri(template.Directory + "options.json"); 
-                if (optionsFilename.FileExists)
-                {
-                    string fileContent = File.ReadAllText(optionsFilename.PhysicalFilePath);
-                    if (!string.IsNullOrWhiteSpace(fileContent))
-                    {
-                        JObject optionsJson = JObject.Parse(fileContent);
-                        json["options"] = optionsJson;
-                    }
-                }
+                var optionsFilename = new FileUri(template.Directory + "options.json");
+                var optionsJson = optionsFilename.ToJObject();
+                if (optionsJson != null)
+                    json["options"] = optionsJson;
+
                 // language options
                 optionsFilename = new FileUri(template.Directory + "options." + PortalSettings.CultureCode + ".json");
-                if (optionsFilename.FileExists)
-                {
-                    string fileContent = File.ReadAllText(optionsFilename.PhysicalFilePath);
-                    if (!string.IsNullOrWhiteSpace(fileContent))
-                    {
-                        JObject optionsJson = JObject.Parse(fileContent);
-                        json["options"] = json["options"].JsonMerge(optionsJson);
-                    }
-                }
+                optionsJson = optionsFilename.ToJObject();
+                if (optionsJson != null)
+                    json["options"] = json["options"].JsonMerge(optionsJson);
+
                 // view
                 var viewFilename = new FileUri(template.Directory + "view.json");
-                if (optionsFilename.FileExists)
-                {
-                    string fileContent = File.ReadAllText(viewFilename.PhysicalFilePath);
-                    if (!string.IsNullOrWhiteSpace(fileContent))
-                    {
-                        JObject optionsJson = JObject.Parse(fileContent);
-                        json["view"] = optionsJson;
-                    }
-                }
+                optionsJson = viewFilename.ToJObject();
+                if (optionsJson != null)
+                    json["view"] = optionsJson;
+
                 // template options
                 /*
                 optionsFilename = Path.GetDirectoryName(TemplateFilename) + "\\" + "options." + Path.GetFileNameWithoutExtension(TemplateFilename) + ".json";
@@ -123,7 +108,7 @@ namespace Satrabel.OpenContent.Components
                         var struc = ctrl.GetContent(id, moduleId);
                         if (struc != null)
                         {
-                            json["data"] = JObject.Parse(struc.Json);
+                            json["data"] = struc.Json.ToJObject("GetContent " + id);
                             AddVersions(json, struc);
                         }
                     }
@@ -133,7 +118,7 @@ namespace Satrabel.OpenContent.Components
                     var struc = ctrl.GetFirstContent(moduleId);
                     if (struc != null)
                     {
-                        json["data"] = JObject.Parse(struc.Json);
+                        json["data"] = struc.Json.ToJObject("GetFirstContent " + id);
                         AddVersions(json, struc);
                     }
                 }
@@ -158,7 +143,7 @@ namespace Satrabel.OpenContent.Components
                     if (verLst.Count == 0) // first
                     {
                         ver["text"] = ver["text"] + " ( current )";
-                    }  
+                    }
                     ver["ticks"] = item.CreatedOnDate.Ticks.ToString();
                     verLst.Add(ver);
                 }
@@ -231,44 +216,27 @@ namespace Satrabel.OpenContent.Components
 
                 // schema
                 var schemaFilename = new FileUri(templateUri.Directory + prefix + "schema.json");
-                if (schemaFilename.FileExists)
-                {
-                    JObject schemaJson = JObject.Parse(File.ReadAllText(schemaFilename.PhysicalFilePath));
+                JObject schemaJson = schemaFilename.ToJObject();
+                if (schemaJson != null)
                     json["schema"] = schemaJson;
-                    if (!string.IsNullOrEmpty(data))
-                    {
-                        json["data"] = JObject.Parse(data);
-                    }
-                }
-                else 
-                {
-                    //return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "schema.json missing for template " + Template);
-                }
+
                 // default options
-                var optionsFilename = new FileUri(templateUri.Directory +  prefix + "options.json");
-                if (optionsFilename.FileExists)
-                {
-                    JObject optionsJson = JObject.Parse(File.ReadAllText(optionsFilename.PhysicalFilePath));
+                var optionsFilename = new FileUri(templateUri.Directory + prefix + "options.json");
+                JObject optionsJson = optionsFilename.ToJObject();
+                if (optionsJson != null)
                     json["options"] = optionsJson;
-                }
+
                 // language options
                 optionsFilename = new FileUri(templateUri.Directory + prefix + "options." + PortalSettings.CultureCode + ".json");
-                if (optionsFilename.FileExists)
-                {
-                    JObject optionsJson = JObject.Parse(File.ReadAllText(optionsFilename.PhysicalFilePath));
+                optionsJson = optionsFilename.ToJObject();
+                if (optionsJson != null)
                     json["options"] = json["options"].JsonMerge(optionsJson);
-                }
-                if (!string.IsNullOrEmpty(data))
-                {
-                    try
-                    {
-                        json["data"] = JObject.Parse(data);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Error("Settings Json Data : " + data, ex);
-                    }
-                }
+
+
+                JObject dataJson = data.ToJObject("Raw settings json");
+                if (dataJson != null)
+                    json["data"] = dataJson;
+
                 return Request.CreateResponse(HttpStatusCode.OK, json);
             }
             catch (Exception exc)
@@ -396,7 +364,7 @@ namespace Satrabel.OpenContent.Components
                     if (struc != null)
                     {
 
-                        JToken json = JObject.Parse(struc.Json);
+                        JToken json = struc.Json.ToJObject("GetFirstContent data of moduleId " + req.moduleid);
                         if (!string.IsNullOrEmpty(req.dataMember))
                         {
                             json = json[req.dataMember];

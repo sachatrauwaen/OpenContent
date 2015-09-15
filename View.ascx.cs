@@ -406,7 +406,7 @@ namespace Satrabel.OpenContent
                     string fileContent = File.ReadAllText(optionsFilename);
                     if (!string.IsNullOrWhiteSpace(fileContent))
                     {
-                        optionsJson = JObject.Parse(fileContent);
+                        optionsJson = fileContent.ToJObject("Options");
                     }
                 }
                 // language options
@@ -416,10 +416,11 @@ namespace Satrabel.OpenContent
                     string fileContent = File.ReadAllText(optionsFilename);
                     if (!string.IsNullOrWhiteSpace(fileContent))
                     {
+                        var extraJson = fileContent.ToJObject("Options cultureSpecific");
                         if (optionsJson == null)
-                            optionsJson = JObject.Parse(fileContent);
+                            optionsJson = extraJson;
                         else
-                            optionsJson = optionsJson.JsonMerge(JObject.Parse(fileContent));
+                            optionsJson = optionsJson.JsonMerge(extraJson);
                     }
                 }
                 if (optionsJson != null)
