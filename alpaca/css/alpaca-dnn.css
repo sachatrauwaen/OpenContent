@@ -285,7 +285,7 @@
     width: 45%;
     max-width: 462px;
     display: inline-block;
-    margin : 0 !important;
+    margin: 0 !important;
 }
 
     .twitter-typeahead .tt-dropdown-menu {
@@ -294,7 +294,7 @@
         padding: 10px;
         color: #999;
         width: 100%;
-        padding-bottom: 0px;
+        padding-bottom: 0;
     }
 
         .twitter-typeahead .tt-dropdown-menu P {
@@ -329,27 +329,24 @@
 .select2-container {
     width: 47% !important;
     max-width: 461px;
-    
-}
-.select2-container--default .select2-search--inline .select2-search__field {
-    margin-bottom: 0px;
-    padding: 0px;
-    border: 0 none;
-    border-radius:0;
 }
 
-.select2-container--default input[type="search"]:active, 
-.select2-container--default input[type="search"]:focus 
-{
-        border: 0 none;
-        -webkit-box-shadow: 0;
-    box-shadow: 0;
+.select2-container--default .select2-search--inline .select2-search__field {
+    margin-bottom: 0;
+    padding: 0;
+    border: 0 none;
+    border-radius: 0;
+}
+
+.select2-container--default input[type="search"]:active,
+.select2-container--default input[type="search"]:focus {
+    border: 0 none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
     color: #666;
 }
 
-.alpaca-field-text img  {
+.alpaca-field-text img {
     margin-bottom: 18px;
     margin-left: 5px;
 }
-
-
