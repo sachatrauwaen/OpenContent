@@ -20,13 +20,7 @@
 (function ($) {
 
     var Alpaca = $.alpaca;
-
-    var oc_websiteRoot = "/";
-    var ctl = dnn.dom.getById('__dnnVariable');
-    if (ctl != null) {
-        oc_websiteRoot = dnn.getVar('oc_websiteRoot');
-    }
-
+       
     // custom styles
     var styles = {};
     styles["commonIcon"] = "";

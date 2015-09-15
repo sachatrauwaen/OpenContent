@@ -53,18 +53,24 @@ namespace Satrabel.OpenContent.Components.Alpaca
             //<dnncl:DnnJsInclude ID="DnnJsInclude5" runat="server" FilePath="~/DesktopModules/OpenContent/js/requirejs/config.js" Priority="111" ForceProvider="DnnFormBottomProvider" />
             //<dnncl:DnnCssInclude ID="DnnCssInclude1" runat="server" FilePath="~/DesktopModules/OpenContent/css/font-awesome/css/font-awesome.min.css" AddTag="false" />
 
-            ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/alpaca/css/alpaca-dnn.css", FileOrder.Css.DefaultPriority);
+
+
             ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/alpaca-1.5.8/lib/handlebars/handlebars.js", FileOrder.Js.DefaultPriority);
             ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/alpaca-1.5.8/lib/typeahead.js/dist/typeahead.bundle.min.js", FileOrder.Js.DefaultPriority);
-            ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/alpaca-1.5.8/alpaca/web/alpaca.js", FileOrder.Js.DefaultPriority + 1);
+
+
             ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/wysihtml/wysihtml-toolbar.js", FileOrder.Js.DefaultPriority + 1);
             ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/wysihtml/parser_rules/advanced_opencontent.js", FileOrder.Js.DefaultPriority + 1);
             if (bootstrap)
             {
+                ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/alpaca-1.5.8/alpaca/bootstrap/alpaca.css", FileOrder.Css.DefaultPriority);
+                ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/alpaca-1.5.8/alpaca/bootstrap/alpaca.js", FileOrder.Js.DefaultPriority + 1);
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/alpaca/js/views/dnnbootstrap.js", FileOrder.Js.DefaultPriority + 2);
             }
             else
             {
+                ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/alpaca/css/alpaca-dnn.css", FileOrder.Css.DefaultPriority);
+                ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/alpaca-1.5.8/alpaca/web/alpaca.js", FileOrder.Js.DefaultPriority + 1);
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/alpaca/js/views/dnn.js", FileOrder.Js.DefaultPriority + 2);
             }
             ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/alpaca/js/fields/dnn/dnnfields.js", FileOrder.Js.DefaultPriority + 3);
@@ -106,21 +112,38 @@ namespace Satrabel.OpenContent.Components.Alpaca
 
         private void RegisterFields()
         {
-            JToken options = GetOptions();
-            var fieldTypes = FieldTypes(options);
-            if (fieldTypes.Contains("address"))
+            bool allFields = string.IsNullOrEmpty(VirtualDirectory);
+            List<string> fieldTypes = null;
+            if (!allFields)
+            {
+                JToken options = GetOptions();
+                fieldTypes = FieldTypes(options);
+            }
+            if (allFields || fieldTypes.Contains("address"))
             {
                 ClientResourceManager.RegisterScript(Page, "//maps.googleapis.com/maps/api/js?v=3.exp&libraries=places", FileOrder.Js.DefaultPriority);
             }
-            if (fieldTypes.Contains("imagecropper"))
+            if (allFields || fieldTypes.Contains("imagecropper"))
             {
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/cropper/cropper.js", FileOrder.Js.DefaultPriority);
                 ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/cropper/cropper.css", FileOrder.Css.DefaultPriority);
             }
-            if (fieldTypes.Contains("select2"))
+            if (allFields || fieldTypes.Contains("select2"))
             {
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/select2/select2.js", FileOrder.Js.DefaultPriority);
                 ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/select2/select2.css", FileOrder.Css.DefaultPriority);
+            }
+
+            //<!-- bootstrap datetimepicker for date, time and datetime controls -->
+            //<dnncl:DnnJsInclude ID="DnnJsInclude13" runat="server" FilePath="~/DesktopModules/OpenContent/js/alpaca-1.5.8/lib/moment/min/moment-with-locales.min.js" Priority="106" ForceProvider="DnnPageHeaderProvider" />
+            //<dnncl:DnnJsInclude ID="DnnJsInclude14" runat="server" FilePath="~/DesktopModules/OpenContent/js/alpaca-1.5.8/lib/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js" Priority="106" ForceProvider="DnnPageHeaderProvider" />
+            //<dnncl:DnnCssInclude ID="DnnCssInclude2" runat="server" FilePath="~/DesktopModules/OpenContent/js/alpaca-1.5.8/lib/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css" AddTag="false" />
+
+            if (allFields || fieldTypes.Contains("date") || fieldTypes.Contains("datetime") || fieldTypes.Contains("time"))
+            {
+                ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/alpaca-1.5.8/lib/moment/min/moment-with-locales.min.js", FileOrder.Js.DefaultPriority, "DnnPageHeaderProvider");
+                ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/alpaca-1.5.8/lib/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js", FileOrder.Js.DefaultPriority + 1, "DnnPageHeaderProvider");
+                ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/alpaca-1.5.8/lib/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css", FileOrder.Css.DefaultPriority);
             }
         }
 

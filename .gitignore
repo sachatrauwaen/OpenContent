@@ -35,3 +35,6 @@ obj/
 build-local.log
 Tests/bin/
 OpenContent.csproj.user
+Package/
+OpenContent_01.04.01_Install.zip
+Resources.zip
