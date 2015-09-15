@@ -1,13 +1,27 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 
 namespace Satrabel.OpenContent.Components.Json
 {
-    public class JsonUtils
+    public static class JsonUtils
     {
+        public static JObject ToJObject(this FileUri file)
+        {
+            try
+            {
+                var result = JObject.Parse(File.ReadAllText(file.PhysicalFilePath));
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(string.Format("Error while parsing file {0}", file.FilePath), ex);
+            }
+        }
+
         public static dynamic JsonToDynamic(string json)
         {
             var dynamicObject = System.Web.Helpers.Json.Decode(json);

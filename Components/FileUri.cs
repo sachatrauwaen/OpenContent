@@ -18,6 +18,7 @@ namespace Satrabel.OpenContent.Components
                 throw new ArgumentNullException("pathToFile is null");
             }
             FilePath = pathToFile;
+            FilePath = NormalizePath(FilePath);
         }
 
         public FileUri(string path, string filename)
@@ -27,6 +28,14 @@ namespace Satrabel.OpenContent.Components
                 throw new ArgumentNullException("pathToFile is null");
             }
             FilePath = path + "/" + filename;
+            FilePath = NormalizePath(FilePath);
+        }
+
+        private string NormalizePath(string filePath)
+        {
+            if (filePath.StartsWith("~/")) filePath = filePath.Substring(2);
+            filePath=filePath.Replace("\\","/");
+            return filePath;
         }
 
         #endregion
