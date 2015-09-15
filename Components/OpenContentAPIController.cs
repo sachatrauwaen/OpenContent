@@ -65,7 +65,7 @@ namespace Satrabel.OpenContent.Components
                 var schemaFilename = new FileUri(template.Directory + "schema.json");
                 if (schemaFilename.FileExists)
                 {
-                    JObject schemaJson = JObject.Parse(File.ReadAllText(schemaFilename.PhysicalFilePath));
+                    JObject schemaJson = schemaFilename.ToJObject();
                     json["schema"] = schemaJson;
                 }
                 else
