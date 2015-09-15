@@ -235,7 +235,7 @@ namespace Satrabel.OpenContent.Components
 
                 JObject dataJson = data.ToJObject("Raw settings json");
                 if (dataJson != null)
-                    json["options"] = dataJson;
+                    json["data"] = dataJson;
 
                 return Request.CreateResponse(HttpStatusCode.OK, json);
             }
