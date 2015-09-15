@@ -21,6 +21,8 @@ using System.IO;
 using Satrabel.OpenContent.Components;
 using Newtonsoft.Json.Linq;
 using System.Globalization;
+using DotNetNuke.Common.Utilities;
+using Satrabel.OpenContent.Components.Json;
 
 #endregion
 
@@ -140,7 +142,7 @@ namespace Satrabel.OpenContent
             }
             else
             {
-                JObject json = JObject.Parse(txtSource.Text);
+                JObject json = txtSource.Text.ToJObject("Saving txtSource");
                 if (data == null)
                 {
                     data = new OpenContentInfo()
