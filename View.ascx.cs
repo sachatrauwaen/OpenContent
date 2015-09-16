@@ -43,6 +43,7 @@ using Satrabel.OpenContent.Components.Rss;
 using System.Web.UI.WebControls;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Entities.Tabs;
+using Satrabel.OpenContent.Components.Dynamic;
 
 #endregion
 
@@ -429,12 +430,28 @@ namespace Satrabel.OpenContent
                         model.Items = new List<dynamic>();
                         foreach (var item in dataList)
                         {
+                            
+
+                            //info.DataList = info.DataList.Where(i => i.Json.ToJObject("").SelectToken("Category", false).Any(c=> c.ToString() == "Category1"));
+
                             string dataJson = item.Json;
                             if (LocaleController.Instance.GetLocales(ModuleContext.PortalId).Count > 1)
                             {
                                 dataJson = JsonUtils.SimplifyJson(dataJson, LocaleController.Instance.GetCurrentLocale(ModuleContext.PortalId).Code);
                             }
                             dynamic dyn = JsonUtils.JsonToDynamic(dataJson);
+
+                            if (Request.QueryString["cat"] != null)
+                            {
+                                string value = Request.QueryString["cat"];
+
+                                if (!Filter(dyn, "Category", value))
+                                {
+                                    continue;
+                                }
+                                //info.DataList = info.DataList.Where(i => Filter(i.Json, key, value));
+                            }
+
                             dyn.Context = new ExpandoObject();
 
                             dyn.Context.Id = item.ContentId;
@@ -664,11 +681,44 @@ namespace Satrabel.OpenContent
             info.DataList = ctrl.GetContents(info.ModuleId);
             if (info.DataList != null && info.DataList.Any())
             {
+               
                 info.SettingsJson = settings.Data;
                 info.DataExist = true;
             }
 
         }
+
+        private bool Filter(string json, string key, string value)
+        {
+            bool accept = true;
+            JObject obj = json.ToJObject("query string filter");
+            JToken member = obj.SelectToken(key, false);
+            if (member is JArray)
+            {
+                accept = member.Any(c => c.ToString() == value);
+            }
+            else if (member is JValue)
+            {
+                accept = member.ToString() == value;
+            }
+            return accept;
+        }
+
+        private bool Filter(dynamic obj, string key, string value)
+        {
+            bool accept = true;
+            Object member = DynamicUtils.GetMemberValue(obj, key);
+            if (member is IEnumerable<Object>)
+            {
+                accept = ((IEnumerable<Object>)member).Any(c => c.ToString() == value);
+            }
+            else if (member is string)
+            {
+                accept = (string)member == value;
+            }
+            return accept;
+        }
+
         private bool GetDemoData(TemplateInfo info, OpenContentSettings settings)
         {
             info.DataJson = "";

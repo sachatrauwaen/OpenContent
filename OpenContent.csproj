@@ -122,6 +122,7 @@
     <Compile Include="AddEdit.ascx.designer.cs">
       <DependentUpon>AddEdit.ascx</DependentUpon>
     </Compile>
+    <Compile Include="Components\Dynamic\DynamicHelper.cs" />
     <Compile Include="Components\FeatureController.cs" />
     <Compile Include="Components\FilesStatus.cs" />
     <Compile Include="Components\FileUploadController.cs" />
