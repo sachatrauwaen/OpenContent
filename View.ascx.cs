@@ -159,7 +159,7 @@ namespace Satrabel.OpenContent
                         {
                             templateDefined = false;
                         }
-                        bool TemplateDefined = !string.IsNullOrEmpty(template.FilePath);
+                        bool TemplateDefined = template != null;
                         bool SettingsDefined = !string.IsNullOrEmpty(settingsData);
                         bool SettingsNeeded = false;
 
