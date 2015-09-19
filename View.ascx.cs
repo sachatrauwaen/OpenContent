@@ -276,7 +276,7 @@ namespace Satrabel.OpenContent
                 if (template != null)
                 {
                     if (!template.FileExists)
-                        Exceptions.ProcessModuleLoadException(this, new Exception(template + " don't exist"));
+                        Exceptions.ProcessModuleLoadException(this, new Exception(template.FilePath + " don't exist"));
 
                     string TemplateVirtualFolder = template.Directory;
                     string TemplateFolder = Server.MapPath(TemplateVirtualFolder);

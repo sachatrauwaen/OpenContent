@@ -98,7 +98,7 @@ namespace Satrabel.OpenContent.Components
                     files = manifest.Templates.Select(t => t.Key);
                     foreach (var template in manifest.Templates)
                     {
-                        FileUri templateUri = new FileUri(templateVirtualFolder, dirName);
+                        FileUri templateUri = new FileUri(templateVirtualFolder, template.Key);
                         string templateName = dirName;
                         if (!string.IsNullOrEmpty(template.Value.Title))
                         {
