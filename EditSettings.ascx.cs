@@ -51,8 +51,9 @@ namespace Satrabel.OpenContent
             if (!Page.IsPostBack)
             {
                 hlTemplateExchange.NavigateUrl = EditUrl("ShareTemplate");
-                var template = OpenContentUtils.GetTemplate(Settings);
-                scriptList.Items.AddRange(OpenContentUtils.GetTemplatesFiles(PortalSettings, ModuleId, template, "OpenContent").ToArray());
+                //var template = OpenContentUtils.GetTemplate(Settings);
+                var settings = new OpenContentSettings(ModuleContext.Settings);
+                scriptList.Items.AddRange(OpenContentUtils.GetTemplatesFiles(PortalSettings, ModuleId, settings.Template, "OpenContent", (settings.IsOtherModule ? settings.Template : null)).ToArray());
             }
         }
 

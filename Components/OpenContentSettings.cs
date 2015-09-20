@@ -33,5 +33,12 @@ namespace Satrabel.OpenContent.Components
         public int ModuleId { get; set; }
         public FileUri Template { get; set; }
         public string Data { get; set; }
+        public bool IsOtherModule
+        {
+            get
+            {
+                return TabId > 0 && ModuleId > 0;
+            }
+        }
     }
 }
