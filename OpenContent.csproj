@@ -129,6 +129,7 @@
     <Compile Include="Components\FileUri.cs" />
     <Compile Include="Components\Handlebars\HandlebarsEngine.cs" />
     <Compile Include="Components\Images\ImageUtils.cs" />
+    <Compile Include="Components\Json\JsonExtensions.cs" />
     <Compile Include="Components\Json\JsonMergeExtensions.cs" />
     <Compile Include="Components\Json\JsonMergeOptionArrayHandling.cs" />
     <Compile Include="Components\Json\JsonMergeOptions.cs" />
