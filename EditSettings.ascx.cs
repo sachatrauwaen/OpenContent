@@ -16,6 +16,9 @@ using DotNetNuke.Framework.JavaScriptLibraries;
 using DotNetNuke.Framework;
 using Satrabel.OpenContent.Components;
 using System.Web.Hosting;
+using System.Web;
+using Satrabel.OpenContent.Components.Alpaca;
+using System.IO;
 
 
 #endregion
@@ -34,13 +37,20 @@ namespace Satrabel.OpenContent
             hlCancel.NavigateUrl = Globals.NavigateURL();
             cmdSave.NavigateUrl = Globals.NavigateURL();
 
+            string template = Settings["template"] as string;
+            string templateFolder = VirtualPathUtility.GetDirectory(template);
+            AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext);
+            alpaca.VirtualDirectory = templateFolder;
+            alpaca.Prefix = Path.GetFileNameWithoutExtension(VirtualPathUtility.GetFileName(template));
+            alpaca.RegisterAll();
+
+            /*
             ServicesFramework.Instance.RequestAjaxScriptSupport();
             ServicesFramework.Instance.RequestAjaxAntiForgerySupport();
             JavaScript.RequestRegistration(CommonJs.DnnPlugins); ;
             JavaScript.RequestRegistration(CommonJs.jQueryFileUpload);
-            //DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "oc_moduleRoot", ControlPath, true);
             DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "oc_websiteRoot", FileUri.NormalizedApplicationPath, true);
-
+            */
             //DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "PortalId", PortalId.ToString(), true);
             //CKDNNporid.Value = PortalId.ToString();
         }

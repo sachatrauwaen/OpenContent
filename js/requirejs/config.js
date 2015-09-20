@@ -17,7 +17,7 @@ function oc_modules(options) {
     if (options) {
         var types = oc_fieldtypes(options);
         if ($.inArray("address", types) != -1) {
-            jsmodules.push('addressfield');
+            //jsmodules.push('addressfield');
         }
         if ($.inArray("imagecropper", types) != -1) {
             jsmodules.push('imagecropperfield');

@@ -1,0 +1,203 @@
+﻿<script type="text/x-handlebars-template" id="dnn-edit-container">
+
+    <div class="dnnForm">
+        
+        {{#if options.label}}
+            
+        <div class="{{#if options.labelClass}}{{options.labelClass}}{{/if}} alpaca-container-label">
+        </div>   
+             
+            {{#if options.collapsible}}
+            <h2 id="{{id}}" class="dnnFormSectionHead">
+                <a href="#">
+            {{else}}
+                    <h2>
+            {{/if}}
+                    
+                        {{{options.label}}}
+                    
+            {{#if options.collapsible}}
+                </a>
+            </h2>
+            {{else}}
+            </h2>
+            {{/if}}
+        {{/if}}
+        
+        {{#if options.label}}
+        <fieldset>
+            {{/if}}
+
+            {{#if options.helper}}
+            <p class="alpaca-helper help-block {{#if options.helperClass}}{{options.helperClass}}{{/if}}">
+                <i class="alpaca-icon-16 glyphicon glyphicon-info-sign"></i>
+                {{{options.helper}}}
+            </p>
+            {{/if}}
+
+            {{#container}}{{/container}}
+
+            {{#if options.label}}
+        </fieldset>
+        {{/if}}
+    </div>
+
+</script>
+<script type="text/x-handlebars-template" id="dnn-edit-control-checkbox">
+
+    {{#if options.multiple}}
+    <div>
+        {{#each checkboxOptions}}
+
+
+
+        <label>
+
+            <input type="checkbox" data-checkbox-index="{{@index}}" data-checkbox-value="{{value}}" {{#if ../../options.readonly}} readonly="readonly" {{/if}} {{#if name}} name="{{name}}" {{/if}} {{#each ../../options.data}} data-{{@key}}="{{value}}" {{/each}} />
+            {{{text}}}
+
+        </label>
+
+
+        {{/each}}
+    </div>
+    {{else}}
+
+    <div>
+
+        <label>
+
+            <input type="checkbox" {{#if options.readonly}} readonly="readonly" {{/if}} {{#if name}} name="{{name}}" {{/if}} {{#each options.data}} data-{{@key}}="{{value}}" {{/each}} />
+
+            {{{options.rightLabel}}}
+        </label>
+
+    </div>
+
+    {{/if}}
+
+</script>
+<script type="text/x-handlebars-template" id="dnn-edit-control-file">
+    <div class="alpaca-control-container">
+        <input type="file" id="{{id}}-file" {{#if options.size}} size="{{options.size}}" {{/if}} {{#if options.readonly}} readonly="readonly" {{/if}} style="margin-bottom:5px;" />
+        <input type="text" id="{{id}}" {{#if options.placeholder}} placeholder="{{options.placeholder}}" {{/if}} {{#if options.size}} size="{{options.size}}" {{/if}} {{#if options.readonly}} readonly="readonly" {{/if}} {{#if name}} name="{{name}}" {{/if}} {{#each options.data}} data-{{@key}}="{{this}}" {{/each}} />
+    </div>
+</script>
+<script type="text/x-handlebars-template" id="dnn-edit-control-image">
+    <div class="alpaca-control-container">
+
+        <input type="file" id="{{id}}-file" {{#if options.size}} size="{{options.size}}" {{/if}} {{#if options.readonly}} readonly="readonly" {{/if}} style="margin-bottom:5px;" />
+
+        <input type="text" id="{{id}}" {{#if options.placeholder}} placeholder="{{options.placeholder}}" {{/if}} {{#if options.size}} size="{{options.size}}" {{/if}} {{#if options.readonly}} readonly="readonly" {{/if}} {{#if name}} name="{{name}}" {{/if}} {{#each options.data}} data-{{@key}}="{{this}}" {{/each}} />
+
+        <div class="alpaca-image-display">
+            <img id="{{id}}-image" src="{{data}}">
+        </div>
+
+    </div>
+    <div style="clear:both;"></div>
+</script>
+<script type="text/x-handlebars-template" id="dnn-edit-control-imagecropper">
+    <div class="alpaca-control-container">
+
+        <input type="file" id="{{id}}-file" {{#if options.size}} size="{{options.size}}" {{/if}} {{#if options.readonly}} readonly="readonly" {{/if}} style="margin-bottom:5px;" />
+
+        <input type="text" id="{{id}}" {{#if options.placeholder}} placeholder="{{options.placeholder}}" {{/if}} {{#if options.size}} size="{{options.size}}" {{/if}} {{#if options.readonly}} readonly="readonly" {{/if}} {{#if name}} name="{{name}}" {{/if}} {{#each options.data}} data-{{@key}}="{{this}}" {{/each}} />
+
+        <div class="alpaca-image-display">
+            <img id="{{id}}-image" src="{{data.url}}" class="image">
+        </div>
+
+
+
+    </div>
+</script>
+<script type="text/x-handlebars-template" id="dnn-edit-control-wysihtml">
+
+    <div>
+        <div id="{{id}}-toolbar" style="display: none;" class="toolbar">
+            <a data-wysihtml5-command="bold"><i class="fa fa-bold"></i></a>
+            <a data-wysihtml5-command="italic"><i class="fa fa-italic"></i></a>
+            <a data-wysihtml5-command="underline"><i class="fa fa-underline"></i></a>
+
+            <a data-wysihtml5-command="createHeader"><i class="fa fa-header"></i></a>
+
+            <a data-wysihtml5-command="insertBlockQuote"><i class="fa fa-file-text-o"></i></a>
+
+            <a data-wysihtml5-command="createLink"><i class="fa fa-link"></i></a>
+
+            <a data-wysihtml5-command="removeLink"><i class="fa fa-chain-broken"></i></a>
+            <div class="block">
+                <a data-wysihtml5-command="alignLeftStyle"><i class="fa fa-align-left"></i></a>
+                <a data-wysihtml5-command="alignRightStyle"><i class="fa fa-align-right"></i></a>
+                <a data-wysihtml5-command="alignCenterStyle"><i class="fa fa-align-center"></i></a>
+                <a data-wysihtml5-command="justifyFull"><i class="fa fa-align-justify"></i></a>
+            </div>
+            <div class="block">
+                <a data-wysihtml5-command="insertUnorderedList"><i class="fa fa-list-ul"></i></a>
+                <a data-wysihtml5-command="insertOrderedList"><i class="fa fa-list-ol"></i></a>
+            </div>
+            <div class="block">
+                <a data-wysihtml5-command="outdentList"><i class="fa fa-outdent"></i></a>
+                <a data-wysihtml5-command="indentList"><i class="fa fa-indent"></i></a>
+            </div>
+            <div class="block">
+                <a data-wysihtml5-action="change_view"><i class="fa fa-file-code-o"></i></a>
+            </div>
+            <div data-wysihtml5-dialog="createHeader" style="display: none;" class="dialog">
+                <a data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h1"><i class="fa fa-header"></i>1</a>
+                <a data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h2"><i class="fa fa-header"></i>2</a>
+                <a data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h3"><i class="fa fa-header"></i>3</a>
+                <a data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h4"><i class="fa fa-header"></i>4</a>
+                <a data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h5"><i class="fa fa-header"></i>5</a>
+                <a data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h6"><i class="fa fa-header"></i>6</a>
+                <a data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="p"><i class="fa fa-paragraph"></i></a>
+                <a data-wysihtml5-command="formatBlock" data-wysihtml5-command-blank-value="true"><i class="fa fa-minus"></i></a>
+            </div>
+
+
+            <div data-wysihtml5-dialog="createLink" style="display: none;" class="dialog">
+
+                <label>
+                    Link:
+                    <input data-wysihtml5-dialog-field="href" value="http://" class="text">
+                    <select data-wysihtml5-dialog-field="target" style="padding:0;margin:0;width:100px;z-index:10;">
+                        <option value=""></option>
+                        <option value="_blank">new window</option>
+                    </select>
+                </label>
+                <a data-wysihtml5-dialog-action="save">OK</a>
+            </div>
+
+        </div>
+        <div id="{{id}}" data-placeholder="Go on, start editing..." class="editor editable"></div>
+    </div>
+</script>
+<script type="text/x-handlebars-template" id="dnn-edit-control">
+
+    <div class="dnnFormItem">
+
+        {{#if options.label}}
+        <div class="dnnLabel" style="position: relative;">
+            <label class="{{#if options.labelClass}}{{options.labelClass}}{{/if}} control-label alpaca-control-label" for="{{id}}">
+                <span>{{{options.label}}}</span>
+            </label>
+            {{#if options.helper}}
+            <a tabindex="-1" class="dnnFormHelp" href="#"></a>
+            <div class="dnnTooltip">
+                <div class="dnnFormHelpContent dnnClear" style="visibility: hidden;">
+                    <span class="dnnHelpText">{{{options.helper}}}</span>
+                    <a href="#" class="pinHelp"></a>
+                </div>
+            </div>
+            {{/if}}
+        </div>
+        {{/if}}
+
+        {{#control}}{{/control}}
+
+
+
+    </div>
+
+</script>

@@ -220,7 +220,7 @@
                     //var input = $("<input type='textbox' id='" + mapSearchId + "' class='alpaca-field-address-mapsearch'></div>").prependTo(container)[0];
                     var input = $(".alpaca-field.googlesearch input.alpaca-control", container)[0];
                     //var input = document.getElementById(mapSearchId);
-                    if (input) {
+                    if (input && (typeof google != "undefined") && google && google.maps) {
                         var searchBox = new google.maps.places.SearchBox(input);
                         google.maps.event.addListener(searchBox, 'places_changed', function () {
                             var places = searchBox.getPlaces();
