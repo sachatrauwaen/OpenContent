@@ -122,6 +122,7 @@
     <Compile Include="AddEdit.ascx.designer.cs">
       <DependentUpon>AddEdit.ascx</DependentUpon>
     </Compile>
+    <Compile Include="Components\Alpaca\AlpacaEngine.cs" />
     <Compile Include="Components\FeatureController.cs" />
     <Compile Include="Components\FilesStatus.cs" />
     <Compile Include="Components\FileUploadController.cs" />
@@ -216,6 +217,12 @@
     <Content Include="alpaca\css\img\Up_16X16_Standard.png" />
     <Content Include="alpaca\js\fields\dnn\AddressField.js" />
     <Content Include="alpaca\js\fields\dnn\CKEditorField.js" />
+    <Content Include="alpaca\js\fields\dnn\dnnfields.js">
+      <DependentUpon>dnnfields.js.bundle</DependentUpon>
+    </Content>
+    <Content Include="alpaca\js\fields\dnn\dnnfields.min.js">
+      <DependentUpon>dnnfields.js</DependentUpon>
+    </Content>
     <Content Include="alpaca\js\fields\dnn\ImageCropperField.js" />
     <Content Include="alpaca\js\fields\dnn\MLCKEditorField.js" />
     <Content Include="alpaca\js\fields\dnn\MLImageField.js" />
@@ -231,8 +238,6 @@
     <Content Include="alpaca\js\fields\dnn\wysihtmlField.js" />
     <Content Include="alpaca\js\views\dnnbootstrap.js" />
     <Content Include="alpaca\js\views\dnn.js" />
-    <Content Include="alpaca\templates\dnn-edit\container-array-actionbar.html" />
-    <Content Include="alpaca\templates\dnn-edit\container-array.html" />
     <Content Include="alpaca\templates\dnn-edit\container.html" />
     <Content Include="alpaca\templates\dnn-edit\control-checkbox.html" />
     <Content Include="alpaca\templates\dnn-edit\control-file.html" />
@@ -240,6 +245,12 @@
     <Content Include="alpaca\templates\dnn-edit\control-image.html" />
     <Content Include="alpaca\templates\dnn-edit\control-wysihtml.html" />
     <Content Include="alpaca\templates\dnn-edit\control.html" />
+    <Content Include="alpaca\templates\dnn-edit\dnntemplates.html">
+      <DependentUpon>dnntemplates.html.bundle</DependentUpon>
+    </Content>
+    <Content Include="alpaca\templates\dnn-edit\dnntemplates.min.html">
+      <DependentUpon>dnntemplates.html</DependentUpon>
+    </Content>
     <Content Include="css\edit.css" />
     <Content Include="css\font-awesome\css\font-awesome.css" />
     <Content Include="css\font-awesome\css\font-awesome.min.css" />
@@ -261,6 +272,98 @@
     <Content Include="EditGlobalSettings.ascx" />
     <Content Include="EditSettings.ascx" />
     <Content Include="images\icon_extensions.png" />
+    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\build\css\bootstrap-datetimepicker.css" />
+    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\build\css\bootstrap-datetimepicker.min.css" />
+    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\build\js\bootstrap-datetimepicker.min.js" />
+    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\Gruntfile.js" />
+    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\src\js\bootstrap-datetimepicker.js" />
+    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\src\nuget\NuGet.exe" />
+    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\tasks\bump_version.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\benchmarks\clone.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\af.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\ar-ma.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\ar-sa.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\ar.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\az.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\be.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\bg.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\bn.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\bo.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\br.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\bs.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\ca.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\cs.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\cv.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\cy.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\da.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\de-at.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\de.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\el.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\en-au.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\en-ca.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\en-gb.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\eo.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\es.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\et.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\eu.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\fa.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\fi.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\fo.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\fr-ca.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\fr.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\gl.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\he.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\hi.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\hr.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\hu.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\hy-am.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\id.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\is.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\it.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\ja.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\ka.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\km.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\ko.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\lb.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\lt.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\lv.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\mk.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\ml.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\mr.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\ms-my.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\my.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\nb.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\ne.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\nl.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\nn.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\pl.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\pt-br.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\pt.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\ro.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\ru.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\sk.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\sl.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\sq.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\sr-cyrl.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\sr.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\sv.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\ta.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\th.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\tl-ph.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\tr.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\tzm-latn.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\tzm.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\uk.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\uz.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\vi.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\zh-cn.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\zh-tw.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\min\locales.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\min\locales.min.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\min\moment-with-locales.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\min\moment-with-locales.min.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\min\moment.min.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\moment.js" />
     <Content Include="js\alpaca-1.5.8\lib\typeahead.js\dist\bloodhound.js" />
     <Content Include="js\alpaca-1.5.8\lib\typeahead.js\dist\bloodhound.min.js" />
     <Content Include="js\alpaca-1.5.8\lib\typeahead.js\dist\typeahead.bundle.js" />
@@ -321,6 +424,30 @@
     <Content Include="js\requirejs\async.js" />
     <Content Include="js\requirejs\config.js" />
     <Content Include="Providers\DataProviders\SqlDataProvider\01.04.01.SqlDataProvider" />
+    <Content Include="alpaca\js\fields\dnn\dnnfields.js.bundle" />
+    <Content Include="alpaca\js\fields\dnn\dnnfields.min.js.map">
+      <DependentUpon>dnnfields.min.js</DependentUpon>
+    </Content>
+    <Content Include="alpaca\templates\dnn-edit\dnntemplates.html.bundle" />
+    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\bower.json" />
+    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\build\nuget\Bootstrap.v3.Datetimepicker.4.0.0.nupkg" />
+    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\build\nuget\Bootstrap.v3.Datetimepicker.CSS.4.0.0.nupkg" />
+    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\component.json" />
+    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\composer.json" />
+    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\CONTRIBUTING.md" />
+    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\LICENSE" />
+    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\package.json" />
+    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\README.md" />
+    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\src\less\bootstrap-datetimepicker-build.less" />
+    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\src\less\bootstrap-datetimepicker.less" />
+    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\src\less\_bootstrap-datetimepicker.less" />
+    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\src\nuget\Bootstrap.v3.Datetimepicker.CSS.nuspec" />
+    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\src\nuget\Bootstrap.v3.Datetimepicker.nuspec" />
+    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\src\nuget\install.ps1" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\bower.json" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\CHANGELOG.md" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\LICENSE" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\README.md" />
     <None Include="Scripts\_references.js" />
     <Content Include="js\requirejs\css.js" />
     <Content Include="js\requirejs\css.min.js" />

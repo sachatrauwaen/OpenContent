@@ -1,28 +1,28 @@
-﻿<script type="text/x-handlebars-template">
-    
-        <div class="dnnFormItem">
+﻿<script type="text/x-handlebars-template" id="dnn-edit-control">
 
-            {{#if options.label}}
-            <div class="dnnLabel" style="position: relative;">
-                <label class="{{#if options.labelClass}}{{options.labelClass}}{{/if}} control-label alpaca-control-label" for="{{id}}">
-                    <span>{{{options.label}}}</span>
-                </label>
-                {{#if options.helper}}
-                <a tabindex="-1" class="dnnFormHelp" href="#"></a>
-                <div class="dnnTooltip">
-                    <div class="dnnFormHelpContent dnnClear" style="visibility: hidden;">
-                        <span class="dnnHelpText">{{{options.helper}}}</span>
-                        <a href="#" class="pinHelp"></a>
-                    </div>
+    <div class="dnnFormItem">
+
+        {{#if options.label}}
+        <div class="dnnLabel" style="position: relative;">
+            <label class="{{#if options.labelClass}}{{options.labelClass}}{{/if}} control-label alpaca-control-label" for="{{id}}">
+                <span>{{{options.label}}}</span>
+            </label>
+            {{#if options.helper}}
+            <a tabindex="-1" class="dnnFormHelp" href="#"></a>
+            <div class="dnnTooltip">
+                <div class="dnnFormHelpContent dnnClear" style="visibility: hidden;">
+                    <span class="dnnHelpText">{{{options.helper}}}</span>
+                    <a href="#" class="pinHelp"></a>
                 </div>
-                {{/if}}
             </div>
             {{/if}}
-
-            {{#control}}{{/control}}
-
-           
-
         </div>
+        {{/if}}
+
+        {{#control}}{{/control}}
+
+
+
+    </div>
 
 </script>

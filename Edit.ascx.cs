@@ -20,6 +20,8 @@ using DotNetNuke.Web.Client.ClientResourceManagement;
 using DotNetNuke.Web.Client;
 using System.Web.Hosting;
 using Satrabel.OpenContent.Components;
+using Satrabel.OpenContent.Components.Alpaca;
+using System.Web;
 
 #endregion
 
@@ -43,11 +45,21 @@ namespace Satrabel.OpenContent
             base.OnInit(e);
             hlCancel.NavigateUrl = Globals.NavigateURL();
             cmdSave.NavigateUrl = Globals.NavigateURL();
+
+            string template = Settings["template"] as string;
+            string templateFolder = VirtualPathUtility.GetDirectory(template);
+            AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext);
+            alpaca.VirtualDirectory = templateFolder;
+            alpaca.RegisterAll();
+
+            /*
             ServicesFramework.Instance.RequestAjaxScriptSupport();
             ServicesFramework.Instance.RequestAjaxAntiForgerySupport();
             JavaScript.RequestRegistration(CommonJs.DnnPlugins); // dnnPanels
             JavaScript.RequestRegistration(CommonJs.jQueryFileUpload); // image file upload
             DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "oc_websiteRoot", FileUri.NormalizedApplicationPath, true);
+
+            
 
             if (File.Exists(Server.MapPath("~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js")))
             {
@@ -55,6 +67,7 @@ namespace Satrabel.OpenContent
                 DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "PortalId", PortalId.ToString(), true);
                 CKDNNporid.Value = PortalId.ToString();
             }
+             */ 
         }
 
         protected override void OnLoad(EventArgs e)
