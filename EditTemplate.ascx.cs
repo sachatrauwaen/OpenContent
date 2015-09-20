@@ -85,7 +85,9 @@ namespace Satrabel.OpenContent
         {
             LoadFiles(template);
             //var scriptFile = new FileUri(template.Directory + "/" + scriptList.SelectedValue);
-            DisplayFile(template);
+            
+            var scriptFile = new FileUri(template.Directory + "/" + scriptList.SelectedValue);
+            DisplayFile(scriptFile);
             if (template.FilePath.StartsWith(ModuleTemplateDirectory))
             {
                 cmdCustom.Visible = false;
