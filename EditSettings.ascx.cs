@@ -37,11 +37,14 @@ namespace Satrabel.OpenContent
             hlCancel.NavigateUrl = Globals.NavigateURL();
             cmdSave.NavigateUrl = Globals.NavigateURL();
 
-            string template = Settings["template"] as string;
-            string templateFolder = VirtualPathUtility.GetDirectory(template);
+            FileUri template = OpenContentUtils.GetTemplate(Settings);
             AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext);
-            alpaca.VirtualDirectory = templateFolder;
-            alpaca.Prefix = Path.GetFileNameWithoutExtension(VirtualPathUtility.GetFileName(template));
+            if (template != null && template.FileExists)
+            {
+                string templateFolder = template.Directory;
+                alpaca.VirtualDirectory = templateFolder;
+                alpaca.Prefix = Path.GetFileNameWithoutExtension(template.FileName);
+            }
             alpaca.RegisterAll();
 
             /*
