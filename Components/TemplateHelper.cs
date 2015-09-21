@@ -1,4 +1,5 @@
-﻿using DotNetNuke.Web.Client;
+﻿using DotNetNuke.Services.FileSystem;
+using DotNetNuke.Web.Client;
 using DotNetNuke.Web.Client.ClientResourceManagement;
 using DotNetNuke.Web.Razor;
 using System;
@@ -77,6 +78,14 @@ namespace Satrabel.OpenContent.Components
             if (value.GetType() == "".GetType()) return value ?? defaultValue; //Resharper says value is never Null. 
             return value.ToString();
         }
+
+        public static string FileUrl(int fileid)
+        {
+            var fileManager = FileManager.Instance;
+            IFileInfo File = fileManager.GetFile(fileid);
+            return fileManager.GetUrl(File);
+        }
+
         #endregion
 
     }

@@ -18,6 +18,7 @@
     <file>/alpaca/js/fields/dnn/ImageField.js</file>
     <file>/alpaca/js/fields/dnn/NumberField.js</file>
     <file>/alpaca/js/fields/dnn/Select2Field.js</file>
+    <file>/alpaca/js/fields/dnn/Image2Field.js</file>
     <file>/alpaca/js/fields/dnn/UrlField.js</file>
     <file>/alpaca/js/fields/dnn/wysihtmlField.js</file>
     <file>/alpaca/js/fields/dnn/MLCKEditorField.js</file>
