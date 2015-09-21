@@ -305,6 +305,47 @@ namespace Satrabel.OpenContent.Components
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
+
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public HttpResponseMessage Delete(JObject json)
+        {
+            try
+            {
+                OpenContentSettings settings = new OpenContentSettings(ActiveModule.ModuleSettings);
+                int moduleId = settings.ModuleId > 0 ? settings.ModuleId : ActiveModule.ModuleID;
+                var manifest = OpenContentUtils.GetTemplateManifest(settings.Template);
+                bool listMode = manifest != null && manifest.IsListTemplate;
+                OpenContentController ctrl = new OpenContentController();
+                OpenContentInfo content = null;
+                if (listMode)
+                {
+                    int ItemId;
+                    if (int.TryParse(json["id"].ToString(), out ItemId))
+                    {
+                        content = ctrl.GetContent(ItemId, moduleId);
+                        
+                        
+                    }
+                }
+                else
+                {
+                    content = ctrl.GetFirstContent(moduleId);
+                }
+                if (content != null)
+                {
+                    ctrl.DeleteContent(content);
+                }
+                return Request.CreateResponse(HttpStatusCode.OK, "");
+            }
+            catch (Exception exc)
+            {
+                Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
+
         public HttpResponseMessage UpdateSettings(JObject json)
         {
             try

@@ -7,6 +7,8 @@
             <asp:HyperLink ID="cmdSave" runat="server" class="dnnPrimaryAction" resourcekey="cmdSave" /></li>
         <li>
             <asp:HyperLink ID="hlCancel" runat="server" class="dnnSecondaryAction" resourcekey="cmdCancel" /></li>
+        <li>
+            <asp:HyperLink ID="hlDelete" runat="server" class="dnnSecondaryAction" resourcekey="cmdDelete" /></li>
         <li style="padding-left: 10px;">
             <asp:DropDownList ID="ddlVersions" runat="server" ClientIDMode="Static" />
         </li>
@@ -36,6 +38,42 @@
             });
             $("#<%=hlCancel.ClientID%>").click(function () {
                 dnnModal.closePopUp(false, "");
+                return false;
+            });
+
+            if (!itemId) {
+                $("#<%=hlDelete.ClientID%>").hide();
+            }
+
+            $("#<%=hlDelete.ClientID%>").click(function () {
+
+                var postData = JSON.stringify({ id: itemId });
+                var action = "Delete"; //self.getUpdateAction();
+                $.ajax({
+                    type: "POST",
+                    url: sf.getServiceRoot('OpenContent') + "OpenContentAPI/" + action,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: postData,
+                    beforeSend: sf.setModuleHeaders
+                }).done(function (data) {
+                    dnnModal.closePopUp(false, "");
+                    var href = $("#<%=cmdSave.ClientID%>").attr('href');
+                    var windowTop = parent; //needs to be assign to a varaible for Opera compatibility issues.
+                    var popup = windowTop.jQuery("#iPopUp");
+                    if (popup.length > 0) {
+                        windowTop.__doPostBack('dnn_ctr<%=ModuleId %>_View__UP', '');
+                        dnnModal.closePopUp(false, href);
+                    }
+                    else {
+                        window.location.href = href;
+                    }
+
+                }).fail(function (xhr, result, status) {
+                    alert("Uh-oh, something broke: " + status);
+                });
+
+                
                 return false;
             });
             //$(popup).height(windowTop.innerHeight-111);
@@ -83,6 +121,8 @@
                     }));
                     //$("#<%=ddlVersions.ClientID%>").data(item.CreatedOnDate, item.Json);
                 });
+            } else {
+                $("#<%=ddlVersions.ClientID%>").hide();
             }
 
             $.alpaca.setDefaultLocale(connector.culture.replace('-', '_'));
