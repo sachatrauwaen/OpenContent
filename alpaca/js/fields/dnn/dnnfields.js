@@ -1,4 +1,4 @@
-﻿///#source 1 1 /alpaca/js/fields/dnn/AddressField.js
+﻿///#source 1 1 AddressField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -221,7 +221,7 @@
                     //var input = $("<input type='textbox' id='" + mapSearchId + "' class='alpaca-field-address-mapsearch'></div>").prependTo(container)[0];
                     var input = $(".alpaca-field.googlesearch input.alpaca-control", container)[0];
                     //var input = document.getElementById(mapSearchId);
-                    if (input) {
+                    if (input && (typeof google != "undefined") && google && google.maps) {
                         var searchBox = new google.maps.places.SearchBox(input);
                         google.maps.event.addListener(searchBox, 'places_changed', function () {
                             var places = searchBox.getPlaces();
@@ -378,7 +378,7 @@
     Alpaca.registerFieldClass("address", Alpaca.Fields.AddressField);
 
 })(jQuery);
-///#source 1 1 /alpaca/js/fields/dnn/CKEditorField.js
+///#source 1 1 CKEditorField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -713,7 +713,7 @@
     Alpaca.registerFieldClass("ckeditor", Alpaca.Fields.CKEditorField);
 
 })(jQuery);
-///#source 1 1 /alpaca/js/fields/dnn/DateField.js
+///#source 1 1 DateField.js
 (function ($) {
 
     // NOTE: this requires bootstrap-datetimepicker.js
@@ -1049,7 +1049,7 @@
     Alpaca.registerDefaultFormatFieldMapping("date", "date");
 
 })(jQuery);
-///#source 1 1 /alpaca/js/fields/dnn/FileField.js
+///#source 1 1 FileField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -1320,7 +1320,7 @@
     Alpaca.registerFieldClass("file", Alpaca.Fields.FileField);
 
 })(jQuery);
-///#source 1 1 /alpaca/js/fields/dnn/ImageCropperField.js
+///#source 1 1 ImageCropperField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -1864,7 +1864,7 @@
     Alpaca.registerFieldClass("imagecropper", Alpaca.Fields.ImageCropperField);
 
 })(jQuery);
-///#source 1 1 /alpaca/js/fields/dnn/ImageField.js
+///#source 1 1 ImageField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -2157,7 +2157,7 @@
     Alpaca.registerFieldClass("image", Alpaca.Fields.ImageField);
 
 })(jQuery);
-///#source 1 1 /alpaca/js/fields/dnn/NumberField.js
+///#source 1 1 NumberField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -2639,7 +2639,7 @@
     Alpaca.registerDefaultSchemaFieldMapping("number", "number");
 
 })(jQuery);
-///#source 1 1 /alpaca/js/fields/dnn/Select2Field.js
+///#source 1 1 Select2Field.js
 (function($) {
 
     var Alpaca = $.alpaca;
@@ -3184,7 +3184,7 @@
     Alpaca.registerFieldClass("select2", Alpaca.Fields.Select2Field);
 
 })(jQuery);
-///#source 1 1 /alpaca/js/fields/dnn/UrlField.js
+///#source 1 1 UrlField.js
 (function($) {
 
     var Alpaca = $.alpaca;
@@ -3323,7 +3323,7 @@
     Alpaca.registerFieldClass("url", Alpaca.Fields.DnnUrlField);
 
 })(jQuery);
-///#source 1 1 /alpaca/js/fields/dnn/wysihtmlField.js
+///#source 1 1 wysihtmlField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -3472,7 +3472,7 @@
     Alpaca.registerFieldClass("wysihtml", Alpaca.Fields.wysihtmlField);
 
 })(jQuery);
-///#source 1 1 /alpaca/js/fields/dnn/MLCKEditorField.js
+///#source 1 1 MLCKEditorField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -3612,7 +3612,7 @@
     Alpaca.registerFieldClass("mlckeditor", Alpaca.Fields.MLCKEditorField);
 
 })(jQuery);
-///#source 1 1 /alpaca/js/fields/dnn/MLFileField.js
+///#source 1 1 MLFileField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -3754,7 +3754,7 @@
     Alpaca.registerFieldClass("mlfile", Alpaca.Fields.MLFileField);
 
 })(jQuery);
-///#source 1 1 /alpaca/js/fields/dnn/MLImageField.js
+///#source 1 1 MLImageField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -3896,7 +3896,7 @@
     Alpaca.registerFieldClass("mlimage", Alpaca.Fields.MLImageField);
 
 })(jQuery);
-///#source 1 1 /alpaca/js/fields/dnn/MLTextField.js
+///#source 1 1 MLTextField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -4059,7 +4059,7 @@
     Alpaca.registerFieldClass("mltext", Alpaca.Fields.MLTextField);
 
 })(jQuery);
-///#source 1 1 /alpaca/js/fields/dnn/MLUrlField.js
+///#source 1 1 MLUrlField.js
 (function ($) {
 
     var Alpaca = $.alpaca;

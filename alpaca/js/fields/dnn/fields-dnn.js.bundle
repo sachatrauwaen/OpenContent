@@ -10,15 +10,15 @@
   </settings>
   <!--The order of the <file> elements determines the order of the files in the bundle.-->
   <files>
-    <file>/alpaca/js/fields/dnn/AddressField.js</file>
-    <file>/alpaca/js/fields/dnn/CKEditorField.js</file>
-    <file>/alpaca/js/fields/dnn/DateField.js</file>
-    <file>/alpaca/js/fields/dnn/FileField.js</file>
-    <file>/alpaca/js/fields/dnn/ImageCropperField.js</file>
-    <file>/alpaca/js/fields/dnn/ImageField.js</file>
-    <file>/alpaca/js/fields/dnn/NumberField.js</file>
-    <file>/alpaca/js/fields/dnn/Select2Field.js</file>
-    <file>/alpaca/js/fields/dnn/UrlField.js</file>
-    <file>/alpaca/js/fields/dnn/wysihtmlField.js</file>
+    <file>AddressField.js</file>
+    <file>CKEditorField.js</file>
+    <file>DateField.js</file>
+    <file>FileField.js</file>
+    <file>ImageCropperField.js</file>
+    <file>ImageField.js</file>
+    <file>NumberField.js</file>
+    <file>Select2Field.js</file>
+    <file>UrlField.js</file>
+    <file>wysihtmlField.js</file>
   </files>
 </bundle>

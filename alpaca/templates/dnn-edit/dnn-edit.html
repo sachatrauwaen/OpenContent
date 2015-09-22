@@ -25,7 +25,7 @@
 
 </script>
 
-<script type="text/x-handlebars-template">
+<script type="text/x-handlebars-template" id="dnn-edit-container">
 
     <div class="dnnForm">
         
@@ -70,7 +70,7 @@
     </div>
 
 </script>
-<script type="text/x-handlebars-template">
+<script type="text/x-handlebars-template" id="dnn-edit-control-checkbox">
 
     {{#if options.multiple}}
     <div>
@@ -104,7 +104,7 @@
     {{/if}}
 
 </script>
-<script type="text/x-handlebars-template">
+<script type="text/x-handlebars-template" id="dnn-edit-control-file">
     <div class="alpaca-control-container">
         <input type="file" id="{{id}}-file" {{#if options.size}} size="{{options.size}}" {{/if}} {{#if options.readonly}} readonly="readonly" {{/if}} style="margin-bottom:5px;" />
         <input type="text" id="{{id}}" {{#if options.placeholder}} placeholder="{{options.placeholder}}" {{/if}} {{#if options.size}} size="{{options.size}}" {{/if}} {{#if options.readonly}} readonly="readonly" {{/if}} {{#if name}} name="{{name}}" {{/if}} {{#each options.data}} data-{{@key}}="{{this}}" {{/each}} />
@@ -120,11 +120,11 @@
         <div class="alpaca-image-display">
             <img id="{{id}}-image" src="{{data}}">
         </div>
-        
+
     </div>
     <div style="clear:both;"></div>
 </script>
-<script type="text/x-handlebars-template">
+<script type="text/x-handlebars-template" id="dnn-edit-control-imagecropper">
     <div class="alpaca-control-container">
 
         <input type="file" id="{{id}}-file" {{#if options.size}} size="{{options.size}}" {{/if}} {{#if options.readonly}} readonly="readonly" {{/if}} style="margin-bottom:5px;" />
@@ -132,14 +132,14 @@
         <input type="text" id="{{id}}" {{#if options.placeholder}} placeholder="{{options.placeholder}}" {{/if}} {{#if options.size}} size="{{options.size}}" {{/if}} {{#if options.readonly}} readonly="readonly" {{/if}} {{#if name}} name="{{name}}" {{/if}} {{#each options.data}} data-{{@key}}="{{this}}" {{/each}} />
 
         <div class="alpaca-image-display">
-            <img id="{{id}}-image" src="{{data.url}}" class="image">      
+            <img id="{{id}}-image" src="{{data.url}}" class="image">
         </div>
-        
+
 
 
     </div>
 </script>
-<script type="text/x-handlebars-template">
+<script type="text/x-handlebars-template" id="dnn-edit-control-wysihtml">
 
     <div>
         <div id="{{id}}-toolbar" style="display: none;" class="toolbar">
@@ -148,7 +148,7 @@
             <a data-wysihtml5-command="underline"><i class="fa fa-underline"></i></a>
 
             <a data-wysihtml5-command="createHeader"><i class="fa fa-header"></i></a>
-                        
+
             <a data-wysihtml5-command="insertBlockQuote"><i class="fa fa-file-text-o"></i></a>
 
             <a data-wysihtml5-command="createLink"><i class="fa fa-link"></i></a>
@@ -182,7 +182,7 @@
                 <a data-wysihtml5-command="formatBlock" data-wysihtml5-command-blank-value="true"><i class="fa fa-minus"></i></a>
             </div>
 
-          
+
             <div data-wysihtml5-dialog="createLink" style="display: none;" class="dialog">
 
                 <label>
@@ -200,31 +200,31 @@
         <div id="{{id}}" data-placeholder="Go on, start editing..." class="editor editable"></div>
     </div>
 </script>
-<script type="text/x-handlebars-template">
-    
-        <div class="dnnFormItem">
+<script type="text/x-handlebars-template" id="dnn-edit-control">
 
-            {{#if options.label}}
-            <div class="dnnLabel" style="position: relative;">
-                <label class="{{#if options.labelClass}}{{options.labelClass}}{{/if}} control-label alpaca-control-label" for="{{id}}">
-                    <span>{{{options.label}}}</span>
-                </label>
-                {{#if options.helper}}
-                <a tabindex="-1" class="dnnFormHelp" href="#"></a>
-                <div class="dnnTooltip">
-                    <div class="dnnFormHelpContent dnnClear" style="visibility: hidden;">
-                        <span class="dnnHelpText">{{{options.helper}}}</span>
-                        <a href="#" class="pinHelp"></a>
-                    </div>
+    <div class="dnnFormItem">
+
+        {{#if options.label}}
+        <div class="dnnLabel" style="position: relative;">
+            <label class="{{#if options.labelClass}}{{options.labelClass}}{{/if}} control-label alpaca-control-label" for="{{id}}">
+                <span>{{{options.label}}}</span>
+            </label>
+            {{#if options.helper}}
+            <a tabindex="-1" class="dnnFormHelp" href="#"></a>
+            <div class="dnnTooltip">
+                <div class="dnnFormHelpContent dnnClear" style="visibility: hidden;">
+                    <span class="dnnHelpText">{{{options.helper}}}</span>
+                    <a href="#" class="pinHelp"></a>
                 </div>
-                {{/if}}
             </div>
             {{/if}}
-
-            {{#control}}{{/control}}
-
-           
-
         </div>
+        {{/if}}
+
+        {{#control}}{{/control}}
+
+
+
+    </div>
 
 </script>
