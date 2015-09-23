@@ -123,4 +123,7 @@
   <data name="cmdCancel.Text" xml:space="preserve">
     <value>Cancel</value>
   </data>
+  <data name="cmdDelete.Text" xml:space="preserve">
+    <value>Delete</value>
+  </data>
 </root>

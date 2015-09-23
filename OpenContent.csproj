@@ -237,6 +237,7 @@
     <Content Include="alpaca\js\fields\dnn\DateField.js" />
     <Content Include="alpaca\js\fields\dnn\FileField.js" />
     <Content Include="alpaca\js\fields\dnn\ImageField.js" />
+    <Content Include="alpaca\js\fields\dnn\Image2Field.js" />
     <Content Include="alpaca\js\fields\dnn\Select2Field.js" />
     <Content Include="alpaca\js\fields\dnn\UrlField.js" />
     <Content Include="alpaca\js\fields\dnn\wysihtmlField.js" />

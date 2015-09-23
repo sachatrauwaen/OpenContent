@@ -456,8 +456,8 @@ namespace Satrabel.OpenContent
 
                             dyn.Context.Id = item.ContentId;
                             dyn.Context.EditUrl = ModuleContext.EditUrl("id", item.ContentId.ToString());
-                            dyn.Context.DetailUrl = Globals.NavigateURL(ModuleContext.TabId, false, ModuleContext.PortalSettings, "", ModuleContext.PortalSettings.CultureCode, OpenContentUtils.CleanupUrl(item.Title), "id=" + item.ContentId.ToString());
-                            dyn.Context.MainUrl = Globals.NavigateURL(ModuleContext.TabId, false, ModuleContext.PortalSettings, "", ModuleContext.PortalSettings.CultureCode, OpenContentUtils.CleanupUrl(item.Title));
+                            dyn.Context.DetailUrl = Globals.NavigateURL(ModuleContext.TabId, false, ModuleContext.PortalSettings, "", ModuleContext.PortalSettings.CultureCode, OpenContentUtils.CleanupUrl(dyn.Title), "id=" + item.ContentId.ToString());
+                            dyn.Context.MainUrl = Globals.NavigateURL(ModuleContext.TabId, false, ModuleContext.PortalSettings, "", ModuleContext.PortalSettings.CultureCode, OpenContentUtils.CleanupUrl(dyn.Title));
 
                             
                             model.Items.Add(dyn);
@@ -553,6 +553,16 @@ namespace Satrabel.OpenContent
                             dataJson = JsonUtils.SimplifyJson(dataJson, LocaleController.Instance.GetCurrentLocale(ModuleContext.PortalId).Code);
                         }
                         dynamic model = JsonUtils.JsonToDynamic(dataJson);
+
+                        Page.Title = model.Title + " | " + ModuleContext.PortalSettings.PortalName;
+                        var container = Globals.FindControlRecursive(this, "ctr" + ModuleContext.ModuleId);
+                        Control ctl = DotNetNuke.Common.Globals.FindControlRecursiveDown(container, "titleLabel");
+                        if ((ctl != null))
+                        {
+                            ((Label)ctl).Text = model.Title;
+                        }
+                
+
                         CompleteModel(settingsJson, PhysicalTemplateFolder, model, files);
                         return ExecuteTemplate(TemplateVirtualFolder, files, template, model);
                     }
@@ -671,13 +681,7 @@ namespace Satrabel.OpenContent
             {
                 info.DataJson = struc.Json;
                 info.SettingsJson = settings.Data;
-                Page.Title = struc.Title + " | " + ModuleContext.PortalSettings.PortalName;
-                var container = Globals.FindControlRecursive(this, "ctr" + ModuleContext.ModuleId);
-                Control ctl = DotNetNuke.Common.Globals.FindControlRecursiveDown(container, "titleLabel");
-                if ((ctl != null))
-                {
-                    ((Label)ctl).Text = struc.Title;
-                }
+                
                 
                 info.DataExist = true;
             }

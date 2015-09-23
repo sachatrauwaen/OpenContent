@@ -92,6 +92,50 @@ namespace Satrabel.OpenContent.Components
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
         [HttpGet]
+        public HttpResponseMessage ImagesLookup(string q, string d)
+        {
+            try
+            {
+                var folderManager = FolderManager.Instance;
+                var fileManager = FileManager.Instance;
+                var portalFolder = folderManager.GetFolder(PortalSettings.PortalId, d ?? "");
+                var files = folderManager.GetFiles(portalFolder, true);
+                files = files.Where(f => IsImageFile(f));
+                if (q != "*" && !string.IsNullOrEmpty(q))
+                {
+                    files = files.Where(f => f.FileName.ToLower().Contains(q.ToLower()));
+                }
+                //files = files.Where(f => IsImageFile(f)).Where(f => f.FileName.ToLower().Contains(q.ToLower()));
+                var res = files.Select(f => new { value = f.FileId.ToString(), url = fileManager.GetUrl(f), text = f.FileName + " (" + f.Folder + ")" });
+                return Request.CreateResponse(HttpStatusCode.OK, res);
+            }
+            catch (Exception exc)
+            {
+                Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [HttpGet]
+        public HttpResponseMessage FileUrl(int fileid)
+        {
+            try
+            {
+                var fileManager = FileManager.Instance;
+                IFileInfo File = fileManager.GetFile(fileid);
+                return Request.CreateResponse(HttpStatusCode.OK, fileManager.GetUrl(File));
+            }
+            catch (Exception exc)
+            {
+                Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
+
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [HttpGet]
         public HttpResponseMessage Files(string q, string d)
         {
             try

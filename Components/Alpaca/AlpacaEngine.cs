@@ -79,11 +79,17 @@ namespace Satrabel.OpenContent.Components.Alpaca
         }
         public void RegisterTemplates()
         {
-            string templates = File.ReadAllText(HostingEnvironment.MapPath("~/DesktopModules/OpenContent/alpaca/templates/dnn-edit/dnntemplates.html"));
-            var lit = new LiteralControl(templates);
-            lit.ID = "oc-dnntemplates";
+            
             var body = (HtmlGenericControl)Page.FindControl("Body");
-            body.Controls.Add(lit);
+            if (body.FindControl("oc-dnntemplates") == null)
+            {
+                string templates = File.ReadAllText(HostingEnvironment.MapPath("~/DesktopModules/OpenContent/alpaca/templates/dnn-edit/dnntemplates.html"));
+                var lit = new LiteralControl(templates);
+                lit.ID = "oc-dnntemplates";
+            
+                body.Controls.Add(lit);
+            }
+            
         }
 
         public void RegisterScripts(bool bootstrap)
@@ -96,17 +102,20 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
             JavaScript.RequestRegistration(CommonJs.jQueryFileUpload); // image file upload
             DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "oc_websiteRoot", FileUri.NormalizedApplicationPath, true);
-
-            if (File.Exists(HostingEnvironment.MapPath("~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js")))
+            var form = Page.FindControl("Form");
+            if (form.FindControl("oc-dnntemplates") == null)
             {
-                ClientResourceManager.RegisterScript(Page, "~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js", FileOrder.Js.DefaultPriority);
-                DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "PortalId", ModuleContext.PortalId.ToString(), true);
-                var CKDNNporid = new HiddenField();
-                CKDNNporid.ID = "CKDNNporid";
-                CKDNNporid.ClientIDMode = ClientIDMode.Static;
-                var form = Page.FindControl("Form");
-                form.Controls.Add(CKDNNporid);
-                CKDNNporid.Value = ModuleContext.PortalId.ToString();
+                if (File.Exists(HostingEnvironment.MapPath("~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js")))
+                {
+                    ClientResourceManager.RegisterScript(Page, "~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js", FileOrder.Js.DefaultPriority);
+                    DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "PortalId", ModuleContext.PortalId.ToString(), true);
+                    var CKDNNporid = new HiddenField();
+                    CKDNNporid.ID = "CKDNNporid";
+                    CKDNNporid.ClientIDMode = ClientIDMode.Static;
+                    
+                    form.Controls.Add(CKDNNporid);
+                    CKDNNporid.Value = ModuleContext.PortalId.ToString();
+                }
             }
         }
 
@@ -128,7 +137,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/cropper/cropper.js", FileOrder.Js.DefaultPriority);
                 ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/cropper/cropper.css", FileOrder.Css.DefaultPriority);
             }
-            if (allFields || fieldTypes.Contains("select2"))
+            if (allFields || fieldTypes.Contains("select2") || fieldTypes.Contains("image2"))
             {
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/select2/select2.js", FileOrder.Js.DefaultPriority);
                 ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/select2/select2.css", FileOrder.Css.DefaultPriority);
