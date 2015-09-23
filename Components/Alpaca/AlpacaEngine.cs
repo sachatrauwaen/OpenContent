@@ -79,17 +79,17 @@ namespace Satrabel.OpenContent.Components.Alpaca
         }
         public void RegisterTemplates()
         {
-            
+
             var body = (HtmlGenericControl)Page.FindControl("Body");
             if (body.FindControl("oc-dnntemplates") == null)
             {
                 string templates = File.ReadAllText(HostingEnvironment.MapPath("~/DesktopModules/OpenContent/alpaca/templates/dnn-edit/dnntemplates.html"));
                 var lit = new LiteralControl(templates);
                 lit.ID = "oc-dnntemplates";
-            
+
                 body.Controls.Add(lit);
             }
-            
+
         }
 
         public void RegisterScripts(bool bootstrap)
@@ -103,7 +103,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
             JavaScript.RequestRegistration(CommonJs.jQueryFileUpload); // image file upload
             DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "oc_websiteRoot", FileUri.NormalizedApplicationPath, true);
             var form = Page.FindControl("Form");
-            if (form.FindControl("oc-dnntemplates") == null)
+            if (form.FindControl("CKDNNporid") == null)
             {
                 if (File.Exists(HostingEnvironment.MapPath("~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js")))
                 {
@@ -112,7 +112,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     var CKDNNporid = new HiddenField();
                     CKDNNporid.ID = "CKDNNporid";
                     CKDNNporid.ClientIDMode = ClientIDMode.Static;
-                    
+
                     form.Controls.Add(CKDNNporid);
                     CKDNNporid.Value = ModuleContext.PortalId.ToString();
                 }
@@ -122,11 +122,14 @@ namespace Satrabel.OpenContent.Components.Alpaca
         private void RegisterFields()
         {
             bool allFields = string.IsNullOrEmpty(VirtualDirectory);
-            List<string> fieldTypes = null;
+            List<string> fieldTypes = new List<string>();
             if (!allFields)
             {
                 JToken options = GetOptions();
-                fieldTypes = FieldTypes(options);
+                if (options != null)
+                {
+                    fieldTypes = FieldTypes(options);
+                }
             }
             if (allFields || fieldTypes.Contains("address"))
             {
