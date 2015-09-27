@@ -456,8 +456,8 @@ namespace Satrabel.OpenContent
 
                             dyn.Context.Id = item.ContentId;
                             dyn.Context.EditUrl = ModuleContext.EditUrl("id", item.ContentId.ToString());
-                            dyn.Context.DetailUrl = Globals.NavigateURL(ModuleContext.TabId, false, ModuleContext.PortalSettings, "", ModuleContext.PortalSettings.CultureCode, OpenContentUtils.CleanupUrl(dyn.Title), "id=" + item.ContentId.ToString());
-                            dyn.Context.MainUrl = Globals.NavigateURL(ModuleContext.TabId, false, ModuleContext.PortalSettings, "", ModuleContext.PortalSettings.CultureCode, OpenContentUtils.CleanupUrl(dyn.Title));
+                            dyn.Context.DetailUrl = Globals.NavigateURL(ModuleContext.TabId, false, ModuleContext.PortalSettings, "", ModuleContext.PortalSettings.CultureCode, /*OpenContentUtils.CleanupUrl(dyn.Title)*/"", "id=" + item.ContentId.ToString());
+                            dyn.Context.MainUrl = Globals.NavigateURL(ModuleContext.TabId, false, ModuleContext.PortalSettings, "", ModuleContext.PortalSettings.CultureCode, /*OpenContentUtils.CleanupUrl(dyn.Title)*/"");
 
                             
                             model.Items.Add(dyn);
@@ -843,7 +843,7 @@ namespace Satrabel.OpenContent
                                SecurityAccessLevel.Host,
                                true,
                                false);
-                if (templateDefined && !listMode)
+                if (templateDefined /*&& !listMode*/)
                     Actions.Add(ModuleContext.GetNextActionID(),
                                Localization.GetString("EditData.Action", LocalResourceFile),
                                ModuleActionType.EditContent,

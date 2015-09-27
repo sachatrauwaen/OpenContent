@@ -103,6 +103,8 @@
             var ConnectorClass = Alpaca.getConnectorClass("default");
             connector = new ConnectorClass("default");
             connector.servicesFramework = sf;
+            connector.culture = '<%=CurrentCulture%>';
+            connector.numberDecimalSeparator = '<%=NumberDecimalSeparator%>';
             $("#field1").alpaca({
                 "schema": config.schema,
                 "options": config.options,

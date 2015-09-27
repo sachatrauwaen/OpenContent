@@ -19,6 +19,7 @@ using System.Web.Hosting;
 using System.Web;
 using Satrabel.OpenContent.Components.Alpaca;
 using System.IO;
+using DotNetNuke.Services.Localization;
 
 
 #endregion
@@ -88,7 +89,20 @@ namespace Satrabel.OpenContent
 
         #endregion
 
-
+        public string CurrentCulture
+        {
+            get
+            {
+                return LocaleController.Instance.GetCurrentLocale(PortalId).Code;
+            }
+        }
+        public string NumberDecimalSeparator
+        {
+            get
+            {
+                return LocaleController.Instance.GetCurrentLocale(PortalId).Culture.NumberFormat.NumberDecimalSeparator;
+            }
+        }
     }
 }
 

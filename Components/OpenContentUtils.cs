@@ -71,17 +71,17 @@ namespace Satrabel.OpenContent.Components
         public static List<ListItem> GetTemplatesFiles(PortalSettings portalSettings, int moduleId, FileUri selectedTemplate, string moduleSubDir, FileUri otherModuleTemplate)
         {
             string basePath = HostingEnvironment.MapPath(GetSiteTemplateFolder(portalSettings, moduleSubDir));
-            
+            if (!Directory.Exists(basePath))
+            {
+                Directory.CreateDirectory(basePath);
+            }
             var dirs = Directory.GetDirectories(basePath);
             if (otherModuleTemplate != null)
             {
                 var selDir = otherModuleTemplate.PhysicalDirectoryName;
                 dirs = new string[] { selDir };
             }
-            if (!Directory.Exists(basePath))
-            {
-                Directory.CreateDirectory(basePath);
-            }
+            
             List<ListItem> lst = new List<ListItem>();
             foreach (var dir in dirs)
             {
