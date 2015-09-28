@@ -367,8 +367,8 @@
     z-index:1100 !important;
 }
 
-.dnnFormPopup {
-    z-index: 1200 !important;
+.ocFormPopup {
+    z-index: 1200;
 }
 
 select.oc-ddl-versions {

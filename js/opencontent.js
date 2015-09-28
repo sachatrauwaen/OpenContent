@@ -1,8 +1,5 @@
 ﻿/*globals jQuery, window, Sys */
 (function ($, Sys) {
-        
-
-    
     /*
     var myString = $(this).closest("div[class*='DnnModule-']").attr('class');
     var myRegexp = /DnnModule-(\d+)/g;
@@ -25,8 +22,6 @@
     });
 
 }(jQuery, window.Sys));
-
-
 
 function openContent($, settings) {
         
@@ -53,7 +48,7 @@ function openContent($, settings) {
             autoOpen: false,
             //height: 600,
             //width: 960,
-            dialogClass: "dnnFormPopup",
+            dialogClass: "dnnFormPopup ocFormPopup",
             //position: { my: "center", at: "center" },
             //minWidth: width,
             //minHeight: height,
