@@ -259,7 +259,7 @@ namespace Satrabel.OpenContent.Components
                 if (listMode)
                 {
                     int ItemId;
-                    if (int.TryParse(json["id"].ToString(), out ItemId))
+                    if (json["id"]!= null && int.TryParse(json["id"].ToString(), out ItemId))
                     {
                         content = ctrl.GetContent(ItemId, moduleId);
                     }

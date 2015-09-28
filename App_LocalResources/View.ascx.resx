@@ -162,4 +162,7 @@
   <data name="lDataSource.Text" xml:space="preserve">
     <value>Page - Module</value>
   </data>
+  <data name="cmdSave.Text" xml:space="preserve">
+    <value>Save</value>
+  </data>
 </root>

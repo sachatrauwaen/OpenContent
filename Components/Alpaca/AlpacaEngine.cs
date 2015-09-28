@@ -102,21 +102,6 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
             JavaScript.RequestRegistration(CommonJs.jQueryFileUpload); // image file upload
             DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "oc_websiteRoot", FileUri.NormalizedApplicationPath, true);
-            var form = Page.FindControl("Form");
-            if (form.FindControl("CKDNNporid") == null)
-            {
-                if (File.Exists(HostingEnvironment.MapPath("~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js")))
-                {
-                    ClientResourceManager.RegisterScript(Page, "~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js", FileOrder.Js.DefaultPriority);
-                    DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "PortalId", ModuleContext.PortalId.ToString(), true);
-                    var CKDNNporid = new HiddenField();
-                    CKDNNporid.ID = "CKDNNporid";
-                    CKDNNporid.ClientIDMode = ClientIDMode.Static;
-
-                    form.Controls.Add(CKDNNporid);
-                    CKDNNporid.Value = ModuleContext.PortalId.ToString();
-                }
-            }
         }
 
         private void RegisterFields()
@@ -157,6 +142,26 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/alpaca-1.5.8/lib/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js", FileOrder.Js.DefaultPriority + 1, "DnnPageHeaderProvider");
                 ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/alpaca-1.5.8/lib/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css", FileOrder.Css.DefaultPriority);
             }
+            if (allFields || fieldTypes.Contains("ckeditor"))
+            {
+                var form = Page.FindControl("Form");
+                if (form.FindControl("CKDNNporid") == null)
+                {
+                    if (File.Exists(HostingEnvironment.MapPath("~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js")))
+                    {
+                        ClientResourceManager.RegisterScript(Page, "~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js", FileOrder.Js.DefaultPriority);
+                        DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "PortalId", ModuleContext.PortalId.ToString(), true);
+                        var CKDNNporid = new HiddenField();
+                        CKDNNporid.ID = "CKDNNporid";
+                        CKDNNporid.ClientIDMode = ClientIDMode.Static;
+
+                        form.Controls.Add(CKDNNporid);
+                        CKDNNporid.Value = ModuleContext.PortalId.ToString();
+                    }
+                }
+                
+            }
+
         }
 
         private JToken GetOptions()
