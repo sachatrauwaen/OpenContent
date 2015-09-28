@@ -1,4 +1,4 @@
-﻿///#source 1 1 AddressField.js
+﻿///#source 1 1 /alpaca/js/fields/dnn/AddressField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -109,8 +109,6 @@
             if (Alpaca.isEmpty(this.options.addressValidation)) {
                 this.options.addressValidation = true;
             }
-
-            
         },
 
         /**
@@ -145,10 +143,10 @@
                     address += value.state + " ";
                 }
                 if (value.postalcode) {
-                    address += value.postalcode +  " ";
+                    address += value.postalcode;
                 }
                 if (value.country) {
-                    address += countryName(value.country);
+                    address += value.country;
                 }
             }
 
@@ -223,7 +221,7 @@
                     //var input = $("<input type='textbox' id='" + mapSearchId + "' class='alpaca-field-address-mapsearch'></div>").prependTo(container)[0];
                     var input = $(".alpaca-field.googlesearch input.alpaca-control", container)[0];
                     //var input = document.getElementById(mapSearchId);
-                    if (input && (typeof google != "undefined") && google && google.maps) {
+                    if (input) {
                         var searchBox = new google.maps.places.SearchBox(input);
                         google.maps.event.addListener(searchBox, 'places_changed', function () {
                             var places = searchBox.getPlaces();
@@ -360,7 +358,6 @@
     var countries = [{ "countryName": "Afghanistan", "iso2": "AF", "iso3": "AFG", "phoneCode": "93" }, { "countryName": "Albania", "iso2": "AL", "iso3": "ALB", "phoneCode": "355" }, { "countryName": "Algeria", "iso2": "DZ", "iso3": "DZA", "phoneCode": "213" }, { "countryName": "American Samoa", "iso2": "AS", "iso3": "ASM", "phoneCode": "1 684" }, { "countryName": "Andorra", "iso2": "AD", "iso3": "AND", "phoneCode": "376" }, { "countryName": "Angola", "iso2": "AO", "iso3": "AGO", "phoneCode": "244" }, { "countryName": "Anguilla", "iso2": "AI", "iso3": "AIA", "phoneCode": "1 264" }, { "countryName": "Antarctica", "iso2": "AQ", "iso3": "ATA", "phoneCode": "672" }, { "countryName": "Antigua and Barbuda", "iso2": "AG", "iso3": "ATG", "phoneCode": "1 268" }, { "countryName": "Argentina", "iso2": "AR", "iso3": "ARG", "phoneCode": "54" }, { "countryName": "Armenia", "iso2": "AM", "iso3": "ARM", "phoneCode": "374" }, { "countryName": "Aruba", "iso2": "AW", "iso3": "ABW", "phoneCode": "297" }, { "countryName": "Australia", "iso2": "AU", "iso3": "AUS", "phoneCode": "61" }, { "countryName": "Austria", "iso2": "AT", "iso3": "AUT", "phoneCode": "43" }, { "countryName": "Azerbaijan", "iso2": "AZ", "iso3": "AZE", "phoneCode": "994" }, { "countryName": "Bahamas", "iso2": "BS", "iso3": "BHS", "phoneCode": "1 242" }, { "countryName": "Bahrain", "iso2": "BH", "iso3": "BHR", "phoneCode": "973" }, { "countryName": "Bangladesh", "iso2": "BD", "iso3": "BGD", "phoneCode": "880" }, { "countryName": "Barbados", "iso2": "BB", "iso3": "BRB", "phoneCode": "1 246" }, { "countryName": "Belarus", "iso2": "BY", "iso3": "BLR", "phoneCode": "375" }, { "countryName": "Belgium", "iso2": "BE", "iso3": "BEL", "phoneCode": "32" }, { "countryName": "Belize", "iso2": "BZ", "iso3": "BLZ", "phoneCode": "501" }, { "countryName": "Benin", "iso2": "BJ", "iso3": "BEN", "phoneCode": "229" }, { "countryName": "Bermuda", "iso2": "BM", "iso3": "BMU", "phoneCode": "1 441" }, { "countryName": "Bhutan", "iso2": "BT", "iso3": "BTN", "phoneCode": "975" }, { "countryName": "Bolivia", "iso2": "BO", "iso3": "BOL", "phoneCode": "591" }, { "countryName": "Bosnia and Herzegovina", "iso2": "BA", "iso3": "BIH", "phoneCode": "387" }, { "countryName": "Botswana", "iso2": "BW", "iso3": "BWA", "phoneCode": "267" }, { "countryName": "Brazil", "iso2": "BR", "iso3": "BRA", "phoneCode": "55" }, { "countryName": "British Indian Ocean Territory", "iso2": "IO", "iso3": "IOT", "phoneCode": "" }, { "countryName": "British Virgin Islands", "iso2": "VG", "iso3": "VGB", "phoneCode": "1 284" }, { "countryName": "Brunei", "iso2": "BN", "iso3": "BRN", "phoneCode": "673" }, { "countryName": "Bulgaria", "iso2": "BG", "iso3": "BGR", "phoneCode": "359" }, { "countryName": "Burkina Faso", "iso2": "BF", "iso3": "BFA", "phoneCode": "226" }, { "countryName": "Burma (Myanmar)", "iso2": "MM", "iso3": "MMR", "phoneCode": "95" }, { "countryName": "Burundi", "iso2": "BI", "iso3": "BDI", "phoneCode": "257" }, { "countryName": "Cambodia", "iso2": "KH", "iso3": "KHM", "phoneCode": "855" }, { "countryName": "Cameroon", "iso2": "CM", "iso3": "CMR", "phoneCode": "237" }, { "countryName": "Canada", "iso2": "CA", "iso3": "CAN", "phoneCode": "1" }, { "countryName": "Cape Verde", "iso2": "CV", "iso3": "CPV", "phoneCode": "238" }, { "countryName": "Cayman Islands", "iso2": "KY", "iso3": "CYM", "phoneCode": "1 345" }, { "countryName": "Central African Republic", "iso2": "CF", "iso3": "CAF", "phoneCode": "236" }, { "countryName": "Chad", "iso2": "TD", "iso3": "TCD", "phoneCode": "235" }, { "countryName": "Chile", "iso2": "CL", "iso3": "CHL", "phoneCode": "56" }, { "countryName": "China", "iso2": "CN", "iso3": "CHN", "phoneCode": "86" }, { "countryName": "Christmas Island", "iso2": "CX", "iso3": "CXR", "phoneCode": "61" }, { "countryName": "Cocos (Keeling) Islands", "iso2": "CC", "iso3": "CCK", "phoneCode": "61" }, { "countryName": "Colombia", "iso2": "CO", "iso3": "COL", "phoneCode": "57" }, { "countryName": "Comoros", "iso2": "KM", "iso3": "COM", "phoneCode": "269" }, { "countryName": "Cook Islands", "iso2": "CK", "iso3": "COK", "phoneCode": "682" }, { "countryName": "Costa Rica", "iso2": "CR", "iso3": "CRC", "phoneCode": "506" }, { "countryName": "Croatia", "iso2": "HR", "iso3": "HRV", "phoneCode": "385" }, { "countryName": "Cuba", "iso2": "CU", "iso3": "CUB", "phoneCode": "53" }, { "countryName": "Cyprus", "iso2": "CY", "iso3": "CYP", "phoneCode": "357" }, { "countryName": "Czech Republic", "iso2": "CZ", "iso3": "CZE", "phoneCode": "420" }, { "countryName": "Democratic Republic of the Congo", "iso2": "CD", "iso3": "COD", "phoneCode": "243" }, { "countryName": "Denmark", "iso2": "DK", "iso3": "DNK", "phoneCode": "45" }, { "countryName": "Djibouti", "iso2": "DJ", "iso3": "DJI", "phoneCode": "253" }, { "countryName": "Dominica", "iso2": "DM", "iso3": "DMA", "phoneCode": "1 767" }, { "countryName": "Dominican Republic", "iso2": "DO", "iso3": "DOM", "phoneCode": "1 809" }, { "countryName": "Ecuador", "iso2": "EC", "iso3": "ECU", "phoneCode": "593" }, { "countryName": "Egypt", "iso2": "EG", "iso3": "EGY", "phoneCode": "20" }, { "countryName": "El Salvador", "iso2": "SV", "iso3": "SLV", "phoneCode": "503" }, { "countryName": "Equatorial Guinea", "iso2": "GQ", "iso3": "GNQ", "phoneCode": "240" }, { "countryName": "Eritrea", "iso2": "ER", "iso3": "ERI", "phoneCode": "291" }, { "countryName": "Estonia", "iso2": "EE", "iso3": "EST", "phoneCode": "372" }, { "countryName": "Ethiopia", "iso2": "ET", "iso3": "ETH", "phoneCode": "251" }, { "countryName": "Falkland Islands", "iso2": "FK", "iso3": "FLK", "phoneCode": "500" }, { "countryName": "Faroe Islands", "iso2": "FO", "iso3": "FRO", "phoneCode": "298" }, { "countryName": "Fiji", "iso2": "FJ", "iso3": "FJI", "phoneCode": "679" }, { "countryName": "Finland", "iso2": "FI", "iso3": "FIN", "phoneCode": "358" }, { "countryName": "France", "iso2": "FR", "iso3": "FRA", "phoneCode": "33" }, { "countryName": "French Polynesia", "iso2": "PF", "iso3": "PYF", "phoneCode": "689" }, { "countryName": "Gabon", "iso2": "GA", "iso3": "GAB", "phoneCode": "241" }, { "countryName": "Gambia", "iso2": "GM", "iso3": "GMB", "phoneCode": "220" }, { "countryName": "Gaza Strip", "iso2": "", "iso3": "", "phoneCode": "970" }, { "countryName": "Georgia", "iso2": "GE", "iso3": "GEO", "phoneCode": "995" }, { "countryName": "Germany", "iso2": "DE", "iso3": "DEU", "phoneCode": "49" }, { "countryName": "Ghana", "iso2": "GH", "iso3": "GHA", "phoneCode": "233" }, { "countryName": "Gibraltar", "iso2": "GI", "iso3": "GIB", "phoneCode": "350" }, { "countryName": "Greece", "iso2": "GR", "iso3": "GRC", "phoneCode": "30" }, { "countryName": "Greenland", "iso2": "GL", "iso3": "GRL", "phoneCode": "299" }, { "countryName": "Grenada", "iso2": "GD", "iso3": "GRD", "phoneCode": "1 473" }, { "countryName": "Guam", "iso2": "GU", "iso3": "GUM", "phoneCode": "1 671" }, { "countryName": "Guatemala", "iso2": "GT", "iso3": "GTM", "phoneCode": "502" }, { "countryName": "Guinea", "iso2": "GN", "iso3": "GIN", "phoneCode": "224" }, { "countryName": "Guinea-Bissau", "iso2": "GW", "iso3": "GNB", "phoneCode": "245" }, { "countryName": "Guyana", "iso2": "GY", "iso3": "GUY", "phoneCode": "592" }, { "countryName": "Haiti", "iso2": "HT", "iso3": "HTI", "phoneCode": "509" }, { "countryName": "Holy See (Vatican City)", "iso2": "VA", "iso3": "VAT", "phoneCode": "39" }, { "countryName": "Honduras", "iso2": "HN", "iso3": "HND", "phoneCode": "504" }, { "countryName": "Hong Kong", "iso2": "HK", "iso3": "HKG", "phoneCode": "852" }, { "countryName": "Hungary", "iso2": "HU", "iso3": "HUN", "phoneCode": "36" }, { "countryName": "Iceland", "iso2": "IS", "iso3": "IS", "phoneCode": "354" }, { "countryName": "India", "iso2": "IN", "iso3": "IND", "phoneCode": "91" }, { "countryName": "Indonesia", "iso2": "ID", "iso3": "IDN", "phoneCode": "62" }, { "countryName": "Iran", "iso2": "IR", "iso3": "IRN", "phoneCode": "98" }, { "countryName": "Iraq", "iso2": "IQ", "iso3": "IRQ", "phoneCode": "964" }, { "countryName": "Ireland", "iso2": "IE", "iso3": "IRL", "phoneCode": "353" }, { "countryName": "Isle of Man", "iso2": "IM", "iso3": "IMN", "phoneCode": "44" }, { "countryName": "Israel", "iso2": "IL", "iso3": "ISR", "phoneCode": "972" }, { "countryName": "Italy", "iso2": "IT", "iso3": "ITA", "phoneCode": "39" }, { "countryName": "Ivory Coast", "iso2": "CI", "iso3": "CIV", "phoneCode": "225" }, { "countryName": "Jamaica", "iso2": "JM", "iso3": "JAM", "phoneCode": "1 876" }, { "countryName": "Japan", "iso2": "JP", "iso3": "JPN", "phoneCode": "81" }, { "countryName": "Jersey", "iso2": "JE", "iso3": "JEY", "phoneCode": "" }, { "countryName": "Jordan", "iso2": "JO", "iso3": "JOR", "phoneCode": "962" }, { "countryName": "Kazakhstan", "iso2": "KZ", "iso3": "KAZ", "phoneCode": "7" }, { "countryName": "Kenya", "iso2": "KE", "iso3": "KEN", "phoneCode": "254" }, { "countryName": "Kiribati", "iso2": "KI", "iso3": "KIR", "phoneCode": "686" }, { "countryName": "Kosovo", "iso2": "", "iso3": "", "phoneCode": "381" }, { "countryName": "Kuwait", "iso2": "KW", "iso3": "KWT", "phoneCode": "965" }, { "countryName": "Kyrgyzstan", "iso2": "KG", "iso3": "KGZ", "phoneCode": "996" }, { "countryName": "Laos", "iso2": "LA", "iso3": "LAO", "phoneCode": "856" }, { "countryName": "Latvia", "iso2": "LV", "iso3": "LVA", "phoneCode": "371" }, { "countryName": "Lebanon", "iso2": "LB", "iso3": "LBN", "phoneCode": "961" }, { "countryName": "Lesotho", "iso2": "LS", "iso3": "LSO", "phoneCode": "266" }, { "countryName": "Liberia", "iso2": "LR", "iso3": "LBR", "phoneCode": "231" }, { "countryName": "Libya", "iso2": "LY", "iso3": "LBY", "phoneCode": "218" }, { "countryName": "Liechtenstein", "iso2": "LI", "iso3": "LIE", "phoneCode": "423" }, { "countryName": "Lithuania", "iso2": "LT", "iso3": "LTU", "phoneCode": "370" }, { "countryName": "Luxembourg", "iso2": "LU", "iso3": "LUX", "phoneCode": "352" }, { "countryName": "Macau", "iso2": "MO", "iso3": "MAC", "phoneCode": "853" }, { "countryName": "Macedonia", "iso2": "MK", "iso3": "MKD", "phoneCode": "389" }, { "countryName": "Madagascar", "iso2": "MG", "iso3": "MDG", "phoneCode": "261" }, { "countryName": "Malawi", "iso2": "MW", "iso3": "MWI", "phoneCode": "265" }, { "countryName": "Malaysia", "iso2": "MY", "iso3": "MYS", "phoneCode": "60" }, { "countryName": "Maldives", "iso2": "MV", "iso3": "MDV", "phoneCode": "960" }, { "countryName": "Mali", "iso2": "ML", "iso3": "MLI", "phoneCode": "223" }, { "countryName": "Malta", "iso2": "MT", "iso3": "MLT", "phoneCode": "356" }, { "countryName": "Marshall Islands", "iso2": "MH", "iso3": "MHL", "phoneCode": "692" }, { "countryName": "Mauritania", "iso2": "MR", "iso3": "MRT", "phoneCode": "222" }, { "countryName": "Mauritius", "iso2": "MU", "iso3": "MUS", "phoneCode": "230" }, { "countryName": "Mayotte", "iso2": "YT", "iso3": "MYT", "phoneCode": "262" }, { "countryName": "Mexico", "iso2": "MX", "iso3": "MEX", "phoneCode": "52" }, { "countryName": "Micronesia", "iso2": "FM", "iso3": "FSM", "phoneCode": "691" }, { "countryName": "Moldova", "iso2": "MD", "iso3": "MDA", "phoneCode": "373" }, { "countryName": "Monaco", "iso2": "MC", "iso3": "MCO", "phoneCode": "377" }, { "countryName": "Mongolia", "iso2": "MN", "iso3": "MNG", "phoneCode": "976" }, { "countryName": "Montenegro", "iso2": "ME", "iso3": "MNE", "phoneCode": "382" }, { "countryName": "Montserrat", "iso2": "MS", "iso3": "MSR", "phoneCode": "1 664" }, { "countryName": "Morocco", "iso2": "MA", "iso3": "MAR", "phoneCode": "212" }, { "countryName": "Mozambique", "iso2": "MZ", "iso3": "MOZ", "phoneCode": "258" }, { "countryName": "Namibia", "iso2": "NA", "iso3": "NAM", "phoneCode": "264" }, { "countryName": "Nauru", "iso2": "NR", "iso3": "NRU", "phoneCode": "674" }, { "countryName": "Nepal", "iso2": "NP", "iso3": "NPL", "phoneCode": "977" }, { "countryName": "Netherlands", "iso2": "NL", "iso3": "NLD", "phoneCode": "31" }, { "countryName": "Netherlands Antilles", "iso2": "AN", "iso3": "ANT", "phoneCode": "599" }, { "countryName": "New Caledonia", "iso2": "NC", "iso3": "NCL", "phoneCode": "687" }, { "countryName": "New Zealand", "iso2": "NZ", "iso3": "NZL", "phoneCode": "64" }, { "countryName": "Nicaragua", "iso2": "NI", "iso3": "NIC", "phoneCode": "505" }, { "countryName": "Niger", "iso2": "NE", "iso3": "NER", "phoneCode": "227" }, { "countryName": "Nigeria", "iso2": "NG", "iso3": "NGA", "phoneCode": "234" }, { "countryName": "Niue", "iso2": "NU", "iso3": "NIU", "phoneCode": "683" }, { "countryName": "Norfolk Island", "iso2": "", "iso3": "NFK", "phoneCode": "672" }, { "countryName": "North Korea", "iso2": "KP", "iso3": "PRK", "phoneCode": "850" }, { "countryName": "Northern Mariana Islands", "iso2": "MP", "iso3": "MNP", "phoneCode": "1 670" }, { "countryName": "Norway", "iso2": "NO", "iso3": "NOR", "phoneCode": "47" }, { "countryName": "Oman", "iso2": "OM", "iso3": "OMN", "phoneCode": "968" }, { "countryName": "Pakistan", "iso2": "PK", "iso3": "PAK", "phoneCode": "92" }, { "countryName": "Palau", "iso2": "PW", "iso3": "PLW", "phoneCode": "680" }, { "countryName": "Panama", "iso2": "PA", "iso3": "PAN", "phoneCode": "507" }, { "countryName": "Papua New Guinea", "iso2": "PG", "iso3": "PNG", "phoneCode": "675" }, { "countryName": "Paraguay", "iso2": "PY", "iso3": "PRY", "phoneCode": "595" }, { "countryName": "Peru", "iso2": "PE", "iso3": "PER", "phoneCode": "51" }, { "countryName": "Philippines", "iso2": "PH", "iso3": "PHL", "phoneCode": "63" }, { "countryName": "Pitcairn Islands", "iso2": "PN", "iso3": "PCN", "phoneCode": "870" }, { "countryName": "Poland", "iso2": "PL", "iso3": "POL", "phoneCode": "48" }, { "countryName": "Portugal", "iso2": "PT", "iso3": "PRT", "phoneCode": "351" }, { "countryName": "Puerto Rico", "iso2": "PR", "iso3": "PRI", "phoneCode": "1" }, { "countryName": "Qatar", "iso2": "QA", "iso3": "QAT", "phoneCode": "974" }, { "countryName": "Republic of the Congo", "iso2": "CG", "iso3": "COG", "phoneCode": "242" }, { "countryName": "Romania", "iso2": "RO", "iso3": "ROU", "phoneCode": "40" }, { "countryName": "Russia", "iso2": "RU", "iso3": "RUS", "phoneCode": "7" }, { "countryName": "Rwanda", "iso2": "RW", "iso3": "RWA", "phoneCode": "250" }, { "countryName": "Saint Barthelemy", "iso2": "BL", "iso3": "BLM", "phoneCode": "590" }, { "countryName": "Saint Helena", "iso2": "SH", "iso3": "SHN", "phoneCode": "290" }, { "countryName": "Saint Kitts and Nevis", "iso2": "KN", "iso3": "KNA", "phoneCode": "1 869" }, { "countryName": "Saint Lucia", "iso2": "LC", "iso3": "LCA", "phoneCode": "1 758" }, { "countryName": "Saint Martin", "iso2": "MF", "iso3": "MAF", "phoneCode": "1 599" }, { "countryName": "Saint Pierre and Miquelon", "iso2": "PM", "iso3": "SPM", "phoneCode": "508" }, { "countryName": "Saint Vincent and the Grenadines", "iso2": "VC", "iso3": "VCT", "phoneCode": "1 784" }, { "countryName": "Samoa", "iso2": "WS", "iso3": "WSM", "phoneCode": "685" }, { "countryName": "San Marino", "iso2": "SM", "iso3": "SMR", "phoneCode": "378" }, { "countryName": "Sao Tome and Principe", "iso2": "ST", "iso3": "STP", "phoneCode": "239" }, { "countryName": "Saudi Arabia", "iso2": "SA", "iso3": "SAU", "phoneCode": "966" }, { "countryName": "Senegal", "iso2": "SN", "iso3": "SEN", "phoneCode": "221" }, { "countryName": "Serbia", "iso2": "RS", "iso3": "SRB", "phoneCode": "381" }, { "countryName": "Seychelles", "iso2": "SC", "iso3": "SYC", "phoneCode": "248" }, { "countryName": "Sierra Leone", "iso2": "SL", "iso3": "SLE", "phoneCode": "232" }, { "countryName": "Singapore", "iso2": "SG", "iso3": "SGP", "phoneCode": "65" }, { "countryName": "Slovakia", "iso2": "SK", "iso3": "SVK", "phoneCode": "421" }, { "countryName": "Slovenia", "iso2": "SI", "iso3": "SVN", "phoneCode": "386" }, { "countryName": "Solomon Islands", "iso2": "SB", "iso3": "SLB", "phoneCode": "677" }, { "countryName": "Somalia", "iso2": "SO", "iso3": "SOM", "phoneCode": "252" }, { "countryName": "South Africa", "iso2": "ZA", "iso3": "ZAF", "phoneCode": "27" }, { "countryName": "South Korea", "iso2": "KR", "iso3": "KOR", "phoneCode": "82" }, { "countryName": "Spain", "iso2": "ES", "iso3": "ESP", "phoneCode": "34" }, { "countryName": "Sri Lanka", "iso2": "LK", "iso3": "LKA", "phoneCode": "94" }, { "countryName": "Sudan", "iso2": "SD", "iso3": "SDN", "phoneCode": "249" }, { "countryName": "Suriname", "iso2": "SR", "iso3": "SUR", "phoneCode": "597" }, { "countryName": "Svalbard", "iso2": "SJ", "iso3": "SJM", "phoneCode": "" }, { "countryName": "Swaziland", "iso2": "SZ", "iso3": "SWZ", "phoneCode": "268" }, { "countryName": "Sweden", "iso2": "SE", "iso3": "SWE", "phoneCode": "46" }, { "countryName": "Switzerland", "iso2": "CH", "iso3": "CHE", "phoneCode": "41" }, { "countryName": "Syria", "iso2": "SY", "iso3": "SYR", "phoneCode": "963" }, { "countryName": "Taiwan", "iso2": "TW", "iso3": "TWN", "phoneCode": "886" }, { "countryName": "Tajikistan", "iso2": "TJ", "iso3": "TJK", "phoneCode": "992" }, { "countryName": "Tanzania", "iso2": "TZ", "iso3": "TZA", "phoneCode": "255" }, { "countryName": "Thailand", "iso2": "TH", "iso3": "THA", "phoneCode": "66" }, { "countryName": "Timor-Leste", "iso2": "TL", "iso3": "TLS", "phoneCode": "670" }, { "countryName": "Togo", "iso2": "TG", "iso3": "TGO", "phoneCode": "228" }, { "countryName": "Tokelau", "iso2": "TK", "iso3": "TKL", "phoneCode": "690" }, { "countryName": "Tonga", "iso2": "TO", "iso3": "TON", "phoneCode": "676" }, { "countryName": "Trinidad and Tobago", "iso2": "TT", "iso3": "TTO", "phoneCode": "1 868" }, { "countryName": "Tunisia", "iso2": "TN", "iso3": "TUN", "phoneCode": "216" }, { "countryName": "Turkey", "iso2": "TR", "iso3": "TUR", "phoneCode": "90" }, { "countryName": "Turkmenistan", "iso2": "TM", "iso3": "TKM", "phoneCode": "993" }, { "countryName": "Turks and Caicos Islands", "iso2": "TC", "iso3": "TCA", "phoneCode": "1 649" }, { "countryName": "Tuvalu", "iso2": "TV", "iso3": "TUV", "phoneCode": "688" }, { "countryName": "Uganda", "iso2": "UG", "iso3": "UGA", "phoneCode": "256" }, { "countryName": "Ukraine", "iso2": "UA", "iso3": "UKR", "phoneCode": "380" }, { "countryName": "United Arab Emirates", "iso2": "AE", "iso3": "ARE", "phoneCode": "971" }, { "countryName": "United Kingdom", "iso2": "GB", "iso3": "GBR", "phoneCode": "44" }, { "countryName": "United States", "iso2": "US", "iso3": "USA", "phoneCode": "1" }, { "countryName": "Uruguay", "iso2": "UY", "iso3": "URY", "phoneCode": "598" }, { "countryName": "US Virgin Islands", "iso2": "VI", "iso3": "VIR", "phoneCode": "1 340" }, { "countryName": "Uzbekistan", "iso2": "UZ", "iso3": "UZB", "phoneCode": "998" }, { "countryName": "Vanuatu", "iso2": "VU", "iso3": "VUT", "phoneCode": "678" }, { "countryName": "Venezuela", "iso2": "VE", "iso3": "VEN", "phoneCode": "58" }, { "countryName": "Vietnam", "iso2": "VN", "iso3": "VNM", "phoneCode": "84" }, { "countryName": "Wallis and Futuna", "iso2": "WF", "iso3": "WLF", "phoneCode": "681" }, { "countryName": "West Bank", "iso2": "", "iso3": "", "phoneCode": "970" }, { "countryName": "Western Sahara", "iso2": "EH", "iso3": "ESH", "phoneCode": "" }, { "countryName": "Yemen", "iso2": "YE", "iso3": "YEM", "phoneCode": "967" }, { "countryName": "Zambia", "iso2": "ZM", "iso3": "ZMB", "phoneCode": "260" }, { "countryName": "Zimbabwe", "iso2": "ZW", "iso3": "ZWE", "phoneCode": "263" }];
 
     function countryISO2(iso3) {
-        iso2 = iso2.toUpperCase();
         for (index = 0; index < countries.length; ++index) {
             if (countries[index].iso3 === iso3) {
                 return countries[index].iso2;
@@ -370,7 +367,6 @@
     }
 
     function countryISO3(iso2) {
-        iso2 = iso2.toUpperCase();
         for (index = 0; index < countries.length; ++index) {
             if (countries[index].iso2 === iso2) {
                 return countries[index].iso3.toLowerCase();
@@ -379,20 +375,10 @@
         return "";
     }
 
-    function countryName(iso3) {
-        iso3 = iso3.toUpperCase();
-        for (index = 0; index < countries.length; ++index) {
-            if (countries[index].iso3 === iso3) {
-                return countries[index].countryName;
-            }
-        }
-        return "";
-    }
-
     Alpaca.registerFieldClass("address", Alpaca.Fields.AddressField);
 
 })(jQuery);
-///#source 1 1 CKEditorField.js
+///#source 1 1 /alpaca/js/fields/dnn/CKEditorField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -727,7 +713,7 @@
     Alpaca.registerFieldClass("ckeditor", Alpaca.Fields.CKEditorField);
 
 })(jQuery);
-///#source 1 1 DateField.js
+///#source 1 1 /alpaca/js/fields/dnn/DateField.js
 (function ($) {
 
     // NOTE: this requires bootstrap-datetimepicker.js
@@ -1063,7 +1049,7 @@
     Alpaca.registerDefaultFormatFieldMapping("date", "date");
 
 })(jQuery);
-///#source 1 1 FileField.js
+///#source 1 1 /alpaca/js/fields/dnn/FileField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -1073,7 +1059,8 @@
      * @lends Alpaca.Fields.ImageField.prototype
      */
     {
-        constructor: function (container, data, options, schema, view, connector) {
+        constructor: function(container, data, options, schema, view, connector)
+        {
             var self = this;
             this.base(container, data, options, schema, view, connector);
             this.sf = connector.servicesFramework;
@@ -1123,7 +1110,7 @@
                     el.val(value);
                 }
             }
-
+            
             // be sure to call into base method
             //this.base(value);
 
@@ -1138,7 +1125,7 @@
             //var el = $(this.control.get(0)).find('input[type=text]');
             var el = this.getControlEl();
             if (el && el.length > 0) {
-                value = el.val();
+                    value = el.val();
             }
             return value;
         },
@@ -1157,12 +1144,12 @@
             //var el = this.control;
             var el = this.getControlEl();
 
-
+                       
             $(this.control.get(0)).find('input[type=file]').fileupload({
                 dataType: 'json',
                 url: self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
                 maxFileSize: 25000000,
-                formData: { uploadfolder: self.options.uploadfolder },
+                formData: { uploadfolder : self.options.uploadfolder },
                 beforeSend: self.sf.setModuleHeaders,
                 add: function (e, data) {
                     //data.context = $(opts.progressContextSelector);
@@ -1189,7 +1176,7 @@
                     }
                 }
             }).data('loaded', true);
-
+                                   
             callback();
         },
         applyTypeAhead: function () {
@@ -1238,9 +1225,10 @@
                 */
 
                 bloodHoundConfig.remote = {
-                    url: self.sf.getServiceRoot('OpenContent') + "DnnEntitiesAPI/Files?q=%QUERY&d=" + tFolder,
+                    url: "/DesktopModules/OpenContent/API/DnnEntitiesAPI/Files?q=%QUERY&d=" + tFolder,
                     ajax: {
                         beforeSend: connector.servicesFramework.setModuleHeaders,
+
                     }
                 };
 
@@ -1334,7 +1322,7 @@
     Alpaca.registerFieldClass("file", Alpaca.Fields.FileField);
 
 })(jQuery);
-///#source 1 1 ImageCropperField.js
+///#source 1 1 /alpaca/js/fields/dnn/ImageCropperField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -1779,7 +1767,7 @@
                 */
 
                 bloodHoundConfig.remote = {
-                    url: self.sf.getServiceRoot('OpenContent') + "DnnEntitiesAPI/Images?q=%QUERY&d=" + tFolder,
+                    url: "/DesktopModules/OpenContent/API/DnnEntitiesAPI/Images?q=%QUERY&d=" + tFolder,
                     ajax: {
                         beforeSend: connector.servicesFramework.setModuleHeaders,
 
@@ -1878,11 +1866,11 @@
     Alpaca.registerFieldClass("imagecropper", Alpaca.Fields.ImageCropperField);
 
 })(jQuery);
-///#source 1 1 ImageField.js
+///#source 1 1 /alpaca/js/fields/dnn/ImageField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
-    
+
     Alpaca.Fields.ImageField = Alpaca.Fields.TextField.extend(
     /**
      * @lends Alpaca.Fields.ImageField.prototype
@@ -2074,7 +2062,7 @@
                 */
 
                 bloodHoundConfig.remote = {
-                    url: self.sf.getServiceRoot('OpenContent') + "DnnEntitiesAPI/Images?q=%QUERY&d=" + tFolder,
+                    url: "/DesktopModules/OpenContent/API/DnnEntitiesAPI/Images?q=%QUERY&d=" + tFolder,
                     ajax: {
                         beforeSend: connector.servicesFramework.setModuleHeaders,
 
@@ -2171,7 +2159,7 @@
     Alpaca.registerFieldClass("image", Alpaca.Fields.ImageField);
 
 })(jQuery);
-///#source 1 1 NumberField.js
+///#source 1 1 /alpaca/js/fields/dnn/NumberField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -2653,12 +2641,11 @@
     Alpaca.registerDefaultSchemaFieldMapping("number", "number");
 
 })(jQuery);
-///#source 1 1 Select2Field.js
+///#source 1 1 /alpaca/js/fields/dnn/Select2Field.js
 (function($) {
 
     var Alpaca = $.alpaca;
 
-    
     Alpaca.Fields.Select2Field = Alpaca.Fields.ListField.extend(
     /**
      * @lends Alpaca.Fields.SelectField.prototype
@@ -2837,7 +2824,9 @@
                         self.options.dataService.action = "Lookup"
                     }
                     $.ajax({
-                        url: self.sf.getServiceRoot(self.options.dataService.module) + self.options.dataService.controller + "/" + self.options.dataService.action,                        
+                        //url: "/DesktopModules/" + tModuleName + "/API/" + tController + "/Lookup?q=%QUERY",
+                        url: self.sf.getServiceRoot(self.options.dataService.module) + self.options.dataService.controller + "/" + self.options.dataService.action,
+                        //url: self.options.dataService.url,
                         beforeSend: self.sf.setModuleHeaders,
                         type: "post",
                         dataType: "json",
@@ -3198,594 +3187,12 @@
     Alpaca.registerFieldClass("select2", Alpaca.Fields.Select2Field);
 
 })(jQuery);
-///#source 1 1 Image2Field.js
-(function($) {
-
-    var Alpaca = $.alpaca;
-
-    
-    Alpaca.Fields.Image2Field = Alpaca.Fields.ListField.extend(
-    /**
-     * @lends Alpaca.Fields.Image2Field.prototype
-     */
-    {
-        constructor: function (container, data, options, schema, view, connector) {
-            var self = this;
-            this.base(container, data, options, schema, view, connector);
-            this.sf = connector.servicesFramework;
-            this.dataSource = {};
-        },
-        /**
-         * @see Alpaca.Field#getFieldType
-         */
-        getFieldType: function()
-        {
-            return "select";
-        },
-
-        /**
-         * @see Alpaca.Fields.Image2Field#setup
-         */
-        setup: function()
-        {
-            var self = this;
-            if (self.schema["type"] && self.schema["type"] === "array") {
-                self.options.multiple = true;
-                self.options.removeDefaultNone = true;
-                //self.options.hideNone = true;
-            }
-            this.base();
-        },
-
-        getValue: function () {
-            if (this.control && this.control.length > 0) {
-                var val = this._getControlVal(true);
-                if (typeof (val) === "undefined") {
-                    val = this.data;
-                }
-                else if (Alpaca.isArray(val)) {
-                    for (var i = 0; i < val.length; i++) {
-                        val[i] = this.ensureProperType(val[i]);
-                    }
-                }
-
-                return this.base(val);
-            }
-        },
-
-        /**
-         * @see Alpaca.Field#setValue
-         */
-        setValue: function(val)
-        {
-            if (Alpaca.isArray(val))
-            {
-                if (!Alpaca.compareArrayContent(val, this.getValue()))
-                {
-                    if (!Alpaca.isEmpty(val) && this.control)
-                    {
-                        this.control.val(val);
-                    }
-
-                    this.base(val);
-                }
-            }
-            else
-            {
-                if (val !== this.getValue())
-                {
-                    /*
-                    if (!Alpaca.isEmpty(val) && this.control)
-                    {
-                        this.control.val(val);
-                    }
-                    */
-                    if (this.control && typeof(val) != "undefined" && val != null)
-                    {
-                        this.control.val(val);
-                    }
-
-                    this.base(val);
-                }
-            }
-        },
-
-        /**
-         * @see Alpaca.Image2Field#getEnum
-         */
-        getEnum: function()
-        {
-            if (this.schema)
-            {
-                if (this.schema["enum"])
-                {
-                    return this.schema["enum"];
-                }
-                else if (this.schema["type"] && this.schema["type"] === "array" && this.schema["items"] && this.schema["items"]["enum"])
-                {
-                    return this.schema["items"]["enum"];
-                }
-            }
-        },
-
-        initControlEvents: function()
-        {
-            var self = this;
-
-            self.base();
-
-            if (self.options.multiple)
-            {
-                var button = this.control.parent().find(".select2-search__field");
-
-                button.focus(function(e) {
-                    if (!self.suspendBlurFocus)
-                    {
-                        self.onFocus.call(self, e);
-                        self.trigger("focus", e);
-                    }
-                });
-
-                button.blur(function(e) {
-                    if (!self.suspendBlurFocus)
-                    {
-                        self.onBlur.call(self, e);
-                        self.trigger("blur", e);
-                    }
-                });
-
-                this.control.on("change", function (e) {
-                    self.onChange.call(self, e);
-                    self.trigger("change", e);
-
-                });
-            }
-        },
-
-        beforeRenderControl: function(model, callback)
-        {
-            var self = this;
-
-            this.base(model, function() {
-
-                
-
-                
-
-                    self.selectOptions = [];
-
-                    var completionFunction = function () {
-                        self.schema.enum = [];
-                        self.options.optionLabels = [];
-
-                        for (var i = 0; i < self.selectOptions.length; i++) {
-                            self.schema.enum.push(self.selectOptions[i].value);
-                            self.options.optionLabels.push(self.selectOptions[i].text);
-                        }
-
-                        // push back to model
-                        model.selectOptions = self.selectOptions;
-
-                        callback();
-                    };
-
-                    var postData = { q : "*", d : "" };
-                    $.ajax({
-                        url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "ImagesLookup",
-                        beforeSend: self.sf.setModuleHeaders,
-                        type: "get",
-                        dataType: "json",
-                        //contentType: "application/json; charset=utf-8",
-                        data: postData,
-                        success: function (jsonDocument) {
-                            
-                            var ds = jsonDocument;
-
-                            if (self.options.dsTransformer && Alpaca.isFunction(self.options.dsTransformer)) {
-                                ds = self.options.dsTransformer(ds);
-                            }
-
-                            if (ds) {
-                                if (Alpaca.isObject(ds)) {
-                                    // for objects, we walk through one key at a time
-                                    // the insertion order is the order of the keys from the map
-                                    // to preserve order, consider using an array as below
-                                    $.each(ds, function (key, value) {
-                                        self.selectOptions.push({
-                                            "value": key,
-                                            "text": value
-                                        });
-                                    });
-
-                                    completionFunction();
-                                }
-                                else if (Alpaca.isArray(ds)) {
-                                    // for arrays, we walk through one index at a time
-                                    // the insertion order is dictated by the order of the indices into the array
-                                    // this preserves order
-                                    $.each(ds, function (index, value) {
-                                        self.selectOptions.push({
-                                            "value": value.value,
-                                            "text": value.text
-                                        });
-                                        self.dataSource[value.value] = value;
-                                    });
-
-                                    completionFunction();
-                                }
-                            }
-                        },
-                        "error": function (jqXHR, textStatus, errorThrown) {
-
-                            self.errorCallback({
-                                "message": "Unable to load data from uri : " + self.options.dataSource,
-                                "stage": "DATASOURCE_LOADING_ERROR",
-                                "details": {
-                                    "jqXHR": jqXHR,
-                                    "textStatus": textStatus,
-                                    "errorThrown": errorThrown
-                                }
-                            });
-                        }
-                    });
-                
-                    //callback();
-                
-
-            });
-        },
-
-        prepareControlModel: function(callback)
-        {
-            var self = this;
-
-            this.base(function(model) {
-
-                model.selectOptions = self.selectOptions;
-
-                callback(model);
-            });
-        },
-
-        afterRenderControl: function(model, callback)
-        {
-            var self = this;
-
-            this.base(model, function() {
-
-                // if emptySelectFirst and nothing currently checked, then pick first item in the value list
-                // set data and visually select it
-                if (Alpaca.isUndefined(self.data) && self.options.emptySelectFirst && self.selectOptions && self.selectOptions.length > 0)
-                {
-                    self.data = self.selectOptions[0].value;
-                }
-
-                // do this little trick so that if we have a default value, it gets set during first render
-                // this causes the state of the control
-                if (self.data)
-                {
-                    self.setValue(self.data);
-                }
-
-                // if we are in multiple mode and the bootstrap multiselect plugin is available, bind it in
-                //if (self.options.multiple && $.fn.multiselect)
-                if ($.fn.select2)
-                {
-                    var settings = null;
-                    if (self.options.select2) {
-                        settings = self.options.select2;
-                    }
-                    else
-                    {
-                        settings = {};
-                    }
-                    /*
-                    if (!settings.nonSelectedText)
-                    {
-                        settings.nonSelectedText = "None";
-                        if (self.options.noneLabel)
-                        {
-                            settings.nonSelectedText = self.options.noneLabel;
-                        }
-                    }
-                    if (self.options.hideNone)
-                    {
-                        delete settings.nonSelectedText;
-                    }
-                    */
-
-                    settings.templateResult = function (state) {
-                        if (!state.id) { return state.text; }
-                        
-                        var $state = $(
-                          '<span><img src="' + self.dataSource[state.id].url + '" style="height: 30px;width: 36px;"  /> ' + state.text + '</span>'
-                        );
-                        return $state;
-                    };
-
-                    settings.templateSelection = function (state) {
-                        if (!state.id) { return state.text; }
-                        
-                        var $state = $(
-                          '<span><img src="' + self.dataSource[state.id].url + '" style="height: 15px;width: 18px;"  /> ' + state.text + '</span>'
-                        );
-                        return $state;
-                    };
-
-                    $(self.getControlEl()).select2(settings);
-                }
-
-                callback();
-
-            });
-        },
-
-        getFileUrl : function(fileid){
-
-            var postData = { fileid: fileid };
-            $.ajax({
-                url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "FileUrl",
-                beforeSend: self.sf.setModuleHeaders,
-                type: "get",
-                asych : false,
-                dataType: "json",
-                //contentType: "application/json; charset=utf-8",
-                data: postData,
-                success: function (data) {
-                    return data;
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    return "";
-                }
-            });
-
-        },
-
-        /**
-         * Validate against enum property.
-         *
-         * @returns {Boolean} True if the element value is part of the enum list, false otherwise.
-         */
-        _validateEnum: function()
-        {
-            var _this = this;
-
-            if (this.schema["enum"])
-            {
-                var val = this.data;
-
-                if (!this.isRequired() && Alpaca.isValEmpty(val))
-                {
-                    return true;
-                }
-
-                if (this.options.multiple)
-                {
-                    var isValid = true;
-
-                    if (!val)
-                    {
-                        val = [];
-                    }
-
-                    if (!Alpaca.isArray(val) && !Alpaca.isObject(val))
-                    {
-                        val = [val];
-                    }
-
-                    $.each(val, function(i,v) {
-
-                        if ($.inArray(v, _this.schema["enum"]) <= -1)
-                        {
-                            isValid = false;
-                            return false;
-                        }
-
-                    });
-
-                    return isValid;
-                }
-                else
-                {
-                    return ($.inArray(val, this.schema["enum"]) > -1);
-                }
-            }
-            else
-            {
-                return true;
-            }
-        },
-
-        /**
-         * @see Alpaca.Field#onChange
-         */
-        onChange: function(e)
-        {
-            this.base(e);
-
-            var _this = this;
-
-            Alpaca.later(25, this, function() {
-                var v = _this.getValue();
-                _this.setValue(v);
-                _this.refreshValidationState();
-            });
-        },
-
-        /**
-         * Validates if number of items has been less than minItems.
-         * @returns {Boolean} true if number of items has been less than minItems
-         */
-        _validateMinItems: function()
-        {
-            if (this.schema.items && this.schema.items.minItems)
-            {
-                if ($(":selected",this.control).length < this.schema.items.minItems)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        },
-
-        /**
-         * Validates if number of items has been over maxItems.
-         * @returns {Boolean} true if number of items has been over maxItems
-         */
-        _validateMaxItems: function()
-        {
-            if (this.schema.items && this.schema.items.maxItems)
-            {
-                if ($(":selected",this.control).length > this.schema.items.maxItems)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        },
-
-        /**
-         * @see Alpaca.ContainerField#handleValidate
-         */
-        handleValidate: function()
-        {
-            var baseStatus = this.base();
-
-            var valInfo = this.validation;
-
-            var status = this._validateMaxItems();
-            valInfo["tooManyItems"] = {
-                "message": status ? "" : Alpaca.substituteTokens(this.getMessage("tooManyItems"), [this.schema.items.maxItems]),
-                "status": status
-            };
-
-            status = this._validateMinItems();
-            valInfo["notEnoughItems"] = {
-                "message": status ? "" : Alpaca.substituteTokens(this.getMessage("notEnoughItems"), [this.schema.items.minItems]),
-                "status": status
-            };
-
-            return baseStatus && valInfo["tooManyItems"]["status"] && valInfo["notEnoughItems"]["status"];
-        },
-
-        /**
-         * @see Alpaca.Field#focus
-         */
-        focus: function(onFocusCallback)
-        {
-            if (this.control && this.control.length > 0)
-            {
-                // set focus onto the select
-                var el = $(this.control).get(0);
-
-                el.focus();
-
-                if (onFocusCallback)
-                {
-                    onFocusCallback(this);
-                }
-            }
-        }
-
-        /* builder_helpers */
-        ,
-
-        /**
-         * @see Alpaca.Field#getTitle
-         */
-        getTitle: function() {
-            return "Select Field";
-        },
-
-        /**
-         * @see Alpaca.Field#getDescription
-         */
-        getDescription: function() {
-            return "Select Field";
-        },
-
-        /**
-         * @private
-         * @see Alpaca.Fields.Image2Field#getSchemaOfOptions
-         */
-        getSchemaOfOptions: function() {
-            return Alpaca.merge(this.base(), {
-                "properties": {
-                    "multiple": {
-                        "title": "Mulitple Selection",
-                        "description": "Allow multiple selection if true.",
-                        "type": "boolean",
-                        "default": false
-                    },
-                    "size": {
-                        "title": "Displayed Options",
-                        "description": "Number of options to be shown.",
-                        "type": "number"
-                    },
-                    "emptySelectFirst": {
-                        "title": "Empty Select First",
-                        "description": "If the data is empty, then automatically select the first item in the list.",
-                        "type": "boolean",
-                        "default": false
-                    },
-                    "multiselect": {
-                        "title": "Multiselect Plugin Settings",
-                        "description": "Multiselect plugin properties - http://davidstutz.github.io/bootstrap-multiselect",
-                        "type": "any"
-                    }
-                }
-            });
-        },
-
-        /**
-         * @private
-         * @see Alpaca.Fields.Image2Field#getOptionsForOptions
-         */
-        getOptionsForOptions: function() {
-            return Alpaca.merge(this.base(), {
-                "fields": {
-                    "multiple": {
-                        "rightLabel": "Allow multiple selection ?",
-                        "helper": "Allow multiple selection if checked",
-                        "type": "checkbox"
-                    },
-                    "size": {
-                        "type": "integer"
-                    },
-                    "emptySelectFirst": {
-                        "type": "checkbox",
-                        "rightLabel": "Empty Select First"
-                    },
-                    "multiselect": {
-                        "type": "object",
-                        "rightLabel": "Multiselect plugin properties - http://davidstutz.github.io/bootstrap-multiselect"
-                    }
-                }
-            });
-        }
-
-        /* end_builder_helpers */
-
-    });
-
-    Alpaca.registerFieldClass("image2", Alpaca.Fields.Image2Field);
-
-})(jQuery);
-///#source 1 1 UrlField.js
+///#source 1 1 /alpaca/js/fields/dnn/UrlField.js
 (function($) {
 
     var Alpaca = $.alpaca;
 
     $.alpaca.Fields.DnnUrlField = $.alpaca.Fields.TextField.extend({
-
-        constructor: function (container, data, options, schema, view, connector) {
-            var self = this;
-            this.base(container, data, options, schema, view, connector);
-            this.culture = connector.culture;
-            this.sf = connector.servicesFramework;
-        },
 
         setup: function () {
             this.base();
@@ -3825,9 +3232,9 @@
             */
                     
                 bloodHoundConfig.remote = {
-                    url: self.sf.getServiceRoot('OpenContent') + "DnnEntitiesAPI/Tabs?q=%QUERY&l="+self.culture,
+                    url: "/DesktopModules/OpenContent/API/DnnEntitiesAPI/Tabs?q=%QUERY",
                     ajax: {
-                        beforeSend: self.sf.setModuleHeaders,
+                        beforeSend: connector.servicesFramework.setModuleHeaders,
                     }
                 };
 
@@ -3912,7 +3319,7 @@
     Alpaca.registerFieldClass("url", Alpaca.Fields.DnnUrlField);
 
 })(jQuery);
-///#source 1 1 wysihtmlField.js
+///#source 1 1 /alpaca/js/fields/dnn/wysihtmlField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -4059,734 +3466,5 @@
     });
 
     Alpaca.registerFieldClass("wysihtml", Alpaca.Fields.wysihtmlField);
-
-})(jQuery);
-///#source 1 1 MLCKEditorField.js
-(function ($) {
-
-    var Alpaca = $.alpaca;
-
-    Alpaca.Fields.MLCKEditorField = Alpaca.Fields.CKEditorField.extend(
-    /**
-     * @lends Alpaca.Fields.CKEditorField.prototype
-     */
-    {
-
-        constructor: function (container, data, options, schema, view, connector) {
-            var self = this;
-            this.base(container, data, options, schema, view, connector);
-            this.culture = connector.culture;
-        },
-
-        /**
-         * @see Alpaca.Fields.CKEditorField#setup
-         */
-        setup: function () {
-            if (this.data && Alpaca.isObject(this.data)) {
-                this.olddata = this.data;
-            }
-            this.base();
-        },
-        /**
-         * @see Alpaca.Fields.CKEditorField#getValue
-         */
-        getValue: function () {
-            var val = this.base();
-            var self = this;
-            var o = {};
-            if (this.olddata && Alpaca.isObject(this.olddata)) {
-                $.each(this.olddata, function (key, value) {
-                    var v = Alpaca.copyOf(value);
-                    if (key != self.culture) {
-                        o[key] = v;
-                    }
-                });
-            }
-            if (val != "") {
-                o[self.culture] = val;
-            }
-            if ($.isEmptyObject(o)) {
-                return "";
-            }
-            return o;
-        },
-
-        /**
-         * @see Alpaca.Fields.CKEditorField#setValue
-         */
-        setValue: function (val) {
-            if (val === "") {
-                return;
-            }
-            if (!val) {
-                this.base("");
-                return;
-            }
-            if (Alpaca.isObject(val)) {
-                var v = val[this.culture];
-                if (!v) {
-                    this.base("");
-                    return;
-                }
-                this.base(v);
-            }
-            else
-            {
-                this.base(val);
-            }
-        },
-        afterRenderControl: function (model, callback) {
-            var self = this;
-            this.base(model, function () {
-                self.handlePostRender(function () {
-                    callback();
-                });
-            });
-        },
-        handlePostRender: function (callback) {
-            var self = this;
-            var el = this.getControlEl();
-            $(this.control.get(0)).after('<img src="/images/Flags/'+this.culture+'.gif" />');
-            callback();
-        },
-        
-        /**
-         * @see Alpaca.Fields.CKEditorField#getTitle
-         */
-        getTitle: function () {
-            return "Multi Language CKEditor Field";
-        },
-
-        /**
-         * @see Alpaca.Fields.CKEditorField#getDescription
-         */
-        getDescription: function () {
-            return "Multi Language CKEditor field .";
-        },
-
-        /**
-         * @private
-         * @see Alpaca.Fields.CKEditorField#getSchemaOfOptions
-         */
-        getSchemaOfOptions: function () {
-            return Alpaca.merge(this.base(), {
-                "properties": {
-                    "separator": {
-                        "title": "Separator",
-                        "description": "Separator used to split tags.",
-                        "type": "string",
-                        "default": ","
-                    }
-                }
-            });
-        },
-
-        /**
-         * @private
-         * @see Alpaca.Fields.CKEditorField#getOptionsForOptions
-         */
-        getOptionsForOptions: function () {
-            return Alpaca.merge(this.base(), {
-                "fields": {
-                    "separator": {
-                        "type": "text"
-                    }
-                }
-            });
-        }
-
-        /* end_builder_helpers */
-    });
-
-    Alpaca.registerFieldClass("mlckeditor", Alpaca.Fields.MLCKEditorField);
-
-})(jQuery);
-///#source 1 1 MLFileField.js
-(function ($) {
-
-    var Alpaca = $.alpaca;
-
-    Alpaca.Fields.MLUrlField = Alpaca.Fields.FileField.extend(
-    /**
-     * @lends Alpaca.Fields.MLFileField.prototype
-     */
-    {
-        constructor: function (container, data, options, schema, view, connector) {
-            var self = this;
-            this.base(container, data, options, schema, view, connector);
-            this.culture = connector.culture;
-        },
-
-        /**
-         * @see Alpaca.Fields.MLFileField#setup
-         */
-        setup: function () {
-
-            if (this.data && Alpaca.isObject(this.data)) {
-             
-                this.olddata = this.data;
-            }
-
-            this.base();
-        },
-        /**
-         * @see Alpaca.Fields.MLFileField#getValue
-         */
-        getValue: function () {
-            var val = this.base();
-            var self = this;
-            var o = {};
-            if (this.olddata && Alpaca.isObject(this.olddata)) {
-                $.each(this.olddata, function (key, value) {
-                    var v = Alpaca.copyOf(value);
-                    if (key != self.culture) {
-                        o[key] = v;
-                    }
-                });
-            }
-            if (val != "") {
-                o[self.culture] = val;
-            }
-            if ($.isEmptyObject(o)) {
-                return "";
-            }
-            return o;
-        },
-
-        /**
-         * @see Alpaca.Fields.MLFileField#setValue
-         */
-        setValue: function (val) {
-            if (val === "") {
-                return;
-            }
-            if (!val) {
-                this.base("");
-                return;
-            }
-            if (Alpaca.isObject(val)) {
-                var v = val[this.culture];
-                if (!v) {
-                    this.base("");
-                    return;
-                }
-                this.base(v);
-            }
-            else
-            {
-                this.base(val);
-            }
-        },
-        afterRenderControl: function (model, callback) {
-            var self = this;
-            this.base(model, function () {
-                self.handlePostRender(function () {
-                    callback();
-                });
-            });
-        },
-        handlePostRender: function (callback) {
-            var self = this;
-            var el = this.getControlEl();
-            $(this.control.get(0)).after('<img src="/images/Flags/'+this.culture+'.gif" />');
-            callback();
-        },
-        
-        /**
-         * @see Alpaca.Fields.MLFileField#getTitle
-         */
-        getTitle: function () {
-            return "Multi Language Url Field";
-        },
-
-        /**
-         * @see Alpaca.Fields.MLFileField#getDescription
-         */
-        getDescription: function () {
-            return "Multi Language Url field .";
-        },
-
-        /**
-         * @private
-         * @see Alpaca.Fields.MLFileField#getSchemaOfOptions
-         */
-        getSchemaOfOptions: function () {
-            return Alpaca.merge(this.base(), {
-                "properties": {
-                    "separator": {
-                        "title": "Separator",
-                        "description": "Separator used to split tags.",
-                        "type": "string",
-                        "default": ","
-                    }
-                }
-            });
-        },
-
-        /**
-         * @private
-         * @see Alpaca.Fields.MLFileField#getOptionsForOptions
-         */
-        getOptionsForOptions: function () {
-            return Alpaca.merge(this.base(), {
-                "fields": {
-                    "separator": {
-                        "type": "text"
-                    }
-                }
-            });
-        }
-
-        /* end_builder_helpers */
-    });
-
-    Alpaca.registerFieldClass("mlfile", Alpaca.Fields.MLFileField);
-
-})(jQuery);
-///#source 1 1 MLImageField.js
-(function ($) {
-
-    var Alpaca = $.alpaca;
-
-    Alpaca.Fields.MLUrlField = Alpaca.Fields.ImageField.extend(
-    /**
-     * @lends Alpaca.Fields.MLImageField.prototype
-     */
-    {
-        constructor: function (container, data, options, schema, view, connector) {
-            var self = this;
-            this.base(container, data, options, schema, view, connector);
-            this.culture = connector.culture;
-        },
-
-        /**
-         * @see Alpaca.Fields.MLImageField#setup
-         */
-        setup: function () {
-
-            if (this.data && Alpaca.isObject(this.data)) {
-             
-                this.olddata = this.data;
-            }
-
-            this.base();
-        },
-        /**
-         * @see Alpaca.Fields.MLImageField#getValue
-         */
-        getValue: function () {
-            var val = this.base();
-            var self = this;
-            var o = {};
-            if (this.olddata && Alpaca.isObject(this.olddata)) {
-                $.each(this.olddata, function (key, value) {
-                    var v = Alpaca.copyOf(value);
-                    if (key != self.culture) {
-                        o[key] = v;
-                    }
-                });
-            }
-            if (val != "") {
-                o[self.culture] = val;
-            }
-            if ($.isEmptyObject(o)) {
-                return "";
-            }
-            return o;
-        },
-
-        /**
-         * @see Alpaca.Fields.MLImageField#setValue
-         */
-        setValue: function (val) {
-            if (val === "") {
-                return;
-            }
-            if (!val) {
-                this.base("");
-                return;
-            }
-            if (Alpaca.isObject(val)) {
-                var v = val[this.culture];
-                if (!v) {
-                    this.base("");
-                    return;
-                }
-                this.base(v);
-            }
-            else
-            {
-                this.base(val);
-            }
-        },
-        afterRenderControl: function (model, callback) {
-            var self = this;
-            this.base(model, function () {
-                self.handlePostRender(function () {
-                    callback();
-                });
-            });
-        },
-        handlePostRender: function (callback) {
-            var self = this;
-            var el = this.getControlEl();
-            $(this.control.get(0)).after('<img src="/images/Flags/'+this.culture+'.gif" />');
-            callback();
-        },
-        
-        /**
-         * @see Alpaca.Fields.MLImageField#getTitle
-         */
-        getTitle: function () {
-            return "Multi Language Url Field";
-        },
-
-        /**
-         * @see Alpaca.Fields.MLImageField#getDescription
-         */
-        getDescription: function () {
-            return "Multi Language Url field .";
-        },
-
-        /**
-         * @private
-         * @see Alpaca.Fields.MLImageField#getSchemaOfOptions
-         */
-        getSchemaOfOptions: function () {
-            return Alpaca.merge(this.base(), {
-                "properties": {
-                    "separator": {
-                        "title": "Separator",
-                        "description": "Separator used to split tags.",
-                        "type": "string",
-                        "default": ","
-                    }
-                }
-            });
-        },
-
-        /**
-         * @private
-         * @see Alpaca.Fields.MLImageField#getOptionsForOptions
-         */
-        getOptionsForOptions: function () {
-            return Alpaca.merge(this.base(), {
-                "fields": {
-                    "separator": {
-                        "type": "text"
-                    }
-                }
-            });
-        }
-
-        /* end_builder_helpers */
-    });
-
-    Alpaca.registerFieldClass("mlimage", Alpaca.Fields.MLImageField);
-
-})(jQuery);
-///#source 1 1 MLTextField.js
-(function ($) {
-
-    var Alpaca = $.alpaca;
-
-    Alpaca.Fields.MLTextField = Alpaca.Fields.TextField.extend(
-    /**
-     * @lends Alpaca.Fields.TagField.prototype
-     */
-    {
-        constructor: function (container, data, options, schema, view, connector) {
-            var self = this;
-            this.base(container, data, options, schema, view, connector);
-            this.culture = connector.culture;
-        },
-        /**
-         * @see Alpaca.Fields.TextField#getFieldType
-        */
-        /*
-        getFieldType: function () {
-            return "text";
-        },
-        */
-
-        /**
-         * @see Alpaca.Fields.TextField#setup
-         */
-        setup: function () {
-
-            if (this.data && Alpaca.isObject(this.data)) {
-             
-                this.olddata = this.data;
-            }
-
-            this.base();
-            /*
-            Alpaca.mergeObject(this.options, {
-                "fieldClass": "flag-"+this.culture
-            });
-            */
-        },
-        /**
-         * @see Alpaca.Fields.TextField#getValue
-         */
-        getValue: function () {
-            var val = this.base();
-            var self = this;
-            /*
-            if (val === "") {
-                return [];
-            }
-            */
-
-            var o = {};
-            if (this.olddata && Alpaca.isObject(this.olddata)) {
-                $.each(this.olddata, function (key, value) {
-                    var v = Alpaca.copyOf(value);
-                    if (key != self.culture) {
-                        o[key] = v;
-                    }
-                });
-            }
-            if (val != "") {
-                o[self.culture] = val;
-            }
-            if ($.isEmptyObject(o)) {
-                return "";
-            }
-            //o["_type"] = "languages";
-            return o;
-        },
-
-        /**
-         * @see Alpaca.Fields.TextField#setValue
-         */
-        setValue: function (val) {
-            if (val === "") {
-                return;
-            }
-            if (!val) {
-                this.base("");
-                return;
-            }
-            if (Alpaca.isObject(val)) {
-                var v = val[this.culture];
-                if (!v) {
-                    this.base("");
-                    return;
-                }
-                this.base(v);
-            }
-            else
-            {
-                this.base(val);
-            }
-        },
-        afterRenderControl: function (model, callback) {
-            var self = this;
-            this.base(model, function () {
-                self.handlePostRender(function () {
-                    callback();
-                });
-            });
-        },
-        handlePostRender: function (callback) {
-            var self = this;
-            var el = this.getControlEl();
-            $(this.control.get(0)).after('<img src="/images/Flags/'+this.culture+'.gif" />');
-            //$(this.control.get(0)).after('<div style="background:#eee;margin-bottom: 18px;display:inline-block;padding-bottom:8px;"><span>' + this.culture + '</span></div>');
-            callback();
-        },
-        
-        /**
-         * @see Alpaca.Fields.TextField#getTitle
-         */
-        getTitle: function () {
-            return "Multi Language Text Field";
-        },
-
-        /**
-         * @see Alpaca.Fields.TextField#getDescription
-         */
-        getDescription: function () {
-            return "Multi Language Text field .";
-        },
-
-        /**
-         * @private
-         * @see Alpaca.Fields.TextField#getSchemaOfOptions
-         */
-        getSchemaOfOptions: function () {
-            return Alpaca.merge(this.base(), {
-                "properties": {
-                    "separator": {
-                        "title": "Separator",
-                        "description": "Separator used to split tags.",
-                        "type": "string",
-                        "default": ","
-                    }
-                }
-            });
-        },
-
-        /**
-         * @private
-         * @see Alpaca.Fields.TextField#getOptionsForOptions
-         */
-        getOptionsForOptions: function () {
-            return Alpaca.merge(this.base(), {
-                "fields": {
-                    "separator": {
-                        "type": "text"
-                    }
-                }
-            });
-        }
-
-        /* end_builder_helpers */
-    });
-
-    Alpaca.registerFieldClass("mltext", Alpaca.Fields.MLTextField);
-
-})(jQuery);
-///#source 1 1 MLUrlField.js
-(function ($) {
-
-    var Alpaca = $.alpaca;
-
-    Alpaca.Fields.MLUrlField = Alpaca.Fields.DnnUrlField.extend(
-    /**
-     * @lends Alpaca.Fields.MLUrlField.prototype
-     */
-    {
-        constructor: function (container, data, options, schema, view, connector) {
-            var self = this;
-            this.base(container, data, options, schema, view, connector);
-            this.culture = connector.culture;
-        },
-
-        /**
-         * @see Alpaca.Fields.MLUrlField#setup
-         */
-        setup: function () {
-
-            if (this.data && Alpaca.isObject(this.data)) {
-             
-                this.olddata = this.data;
-            }
-
-            this.base();
-        },
-        /**
-         * @see Alpaca.Fields.MLUrlField#getValue
-         */
-        getValue: function () {
-            var val = this.base();
-            var self = this;
-            var o = {};
-            if (this.olddata && Alpaca.isObject(this.olddata)) {
-                $.each(this.olddata, function (key, value) {
-                    var v = Alpaca.copyOf(value);
-                    if (key != self.culture) {
-                        o[key] = v;
-                    }
-                });
-            }
-            if (val != "") {
-                o[self.culture] = val;
-            }
-            if ($.isEmptyObject(o)) {
-                return "";
-            }
-            return o;
-        },
-
-        /**
-         * @see Alpaca.Fields.MLUrlField#setValue
-         */
-        setValue: function (val) {
-            if (val === "") {
-                return;
-            }
-            if (!val) {
-                this.base("");
-                return;
-            }
-            if (Alpaca.isObject(val)) {
-                var v = val[this.culture];
-                if (!v) {
-                    this.base("");
-                    return;
-                }
-                this.base(v);
-            }
-            else
-            {
-                this.base(val);
-            }
-        },
-        afterRenderControl: function (model, callback) {
-            var self = this;
-            this.base(model, function () {
-                self.handlePostRender(function () {
-                    callback();
-                });
-            });
-        },
-        handlePostRender: function (callback) {
-            var self = this;
-            var el = this.getControlEl();
-            $(this.control.get(0)).after('<img src="/images/Flags/'+this.culture+'.gif" />');
-            callback();
-        },
-        
-        /**
-         * @see Alpaca.Fields.MLUrlField#getTitle
-         */
-        getTitle: function () {
-            return "Multi Language Url Field";
-        },
-
-        /**
-         * @see Alpaca.Fields.MLUrlField#getDescription
-         */
-        getDescription: function () {
-            return "Multi Language Url field .";
-        },
-
-        /**
-         * @private
-         * @see Alpaca.Fields.MLUrlField#getSchemaOfOptions
-         */
-        getSchemaOfOptions: function () {
-            return Alpaca.merge(this.base(), {
-                "properties": {
-                    "separator": {
-                        "title": "Separator",
-                        "description": "Separator used to split tags.",
-                        "type": "string",
-                        "default": ","
-                    }
-                }
-            });
-        },
-
-        /**
-         * @private
-         * @see Alpaca.Fields.MLUrlField#getOptionsForOptions
-         */
-        getOptionsForOptions: function () {
-            return Alpaca.merge(this.base(), {
-                "fields": {
-                    "separator": {
-                        "type": "text"
-                    }
-                }
-            });
-        }
-
-        /* end_builder_helpers */
-    });
-
-    Alpaca.registerFieldClass("mlurl", Alpaca.Fields.MLUrlField);
 
 })(jQuery);

@@ -156,4 +156,13 @@
   <data name="EditContent.Action" xml:space="preserve">
     <value>Edit Content</value>
   </data>
+  <data name="lUseContent.Text" xml:space="preserve">
+    <value>Source of content</value>
+  </data>
+  <data name="lDataSource.Text" xml:space="preserve">
+    <value>Page - Module</value>
+  </data>
+  <data name="cmdSave.Text" xml:space="preserve">
+    <value>Save</value>
+  </data>
 </root>

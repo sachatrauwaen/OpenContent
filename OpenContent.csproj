@@ -123,6 +123,7 @@
       <DependentUpon>AddEdit.ascx</DependentUpon>
     </Compile>
     <Compile Include="Components\Alpaca\AlpacaEngine.cs" />
+    <Compile Include="Components\Dynamic\DynamicHelper.cs" />
     <Compile Include="Components\FeatureController.cs" />
     <Compile Include="Components\FilesStatus.cs" />
     <Compile Include="Components\FileUploadController.cs" />
@@ -140,11 +141,13 @@
     <Compile Include="Components\OpenContentInfo.cs" />
     <Compile Include="Components\OpenContentAPIController.cs" />
     <Compile Include="Components\OpenContentRouteMapper.cs" />
+    <Compile Include="Components\OpenContentSettings.cs" />
     <Compile Include="Components\OpenContentUtils.cs" />
     <Compile Include="Components\OpenContentVersion.cs" />
     <Compile Include="Components\Rss\FeedParser.cs" />
     <Compile Include="Components\Rss\FeedItem.cs" />
     <Compile Include="Components\TemplateHelper.cs" />
+    <Compile Include="Components\TemplateInfo.cs" />
     <Compile Include="EditGlobalSettings.ascx.cs">
       <DependentUpon>EditGlobalSettings.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -234,6 +237,7 @@
     <Content Include="alpaca\js\fields\dnn\DateField.js" />
     <Content Include="alpaca\js\fields\dnn\FileField.js" />
     <Content Include="alpaca\js\fields\dnn\ImageField.js" />
+    <Content Include="alpaca\js\fields\dnn\Image2Field.js" />
     <Content Include="alpaca\js\fields\dnn\Select2Field.js" />
     <Content Include="alpaca\js\fields\dnn\UrlField.js" />
     <Content Include="alpaca\js\fields\dnn\wysihtmlField.js" />

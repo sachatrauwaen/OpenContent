@@ -91,7 +91,7 @@ namespace Satrabel.OpenContent.Components
                 CreatedOnDate = Content.LastModifiedOnDate
             };
             var versions = Content.Versions;
-            if (versions.Count == 0 || versions[0].Json != ver.Json)
+            if (versions.Count == 0 || versions[0].Json.ToString() != Content.Json)
             {
                 versions.Insert(0, ver);
                 if (versions.Count > 5)

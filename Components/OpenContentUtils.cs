@@ -57,21 +57,33 @@ namespace Satrabel.OpenContent.Components
         {
             return GetTemplates(portalSettings, moduleId, new FileUri(selectedTemplate), moduleSubDir);
         }
+
+
         public static List<System.Web.UI.WebControls.ListItem> GetTemplatesFiles(PortalSettings portalSettings, int moduleId, string selectedTemplate, string moduleSubDir)
         {
             return GetTemplatesFiles(portalSettings, moduleId, new FileUri(selectedTemplate), moduleSubDir);
         }
-        
-
         public static List<ListItem> GetTemplatesFiles(PortalSettings portalSettings, int moduleId, FileUri selectedTemplate, string moduleSubDir)
+        {
+            return GetTemplatesFiles(portalSettings, moduleId, selectedTemplate, moduleSubDir, null);
+        }
+
+        public static List<ListItem> GetTemplatesFiles(PortalSettings portalSettings, int moduleId, FileUri selectedTemplate, string moduleSubDir, FileUri otherModuleTemplate)
         {
             string basePath = HostingEnvironment.MapPath(GetSiteTemplateFolder(portalSettings, moduleSubDir));
             if (!Directory.Exists(basePath))
             {
                 Directory.CreateDirectory(basePath);
             }
+            var dirs = Directory.GetDirectories(basePath);
+            if (otherModuleTemplate != null)
+            {
+                var selDir = otherModuleTemplate.PhysicalDirectoryName;
+                dirs = new string[] { selDir };
+            }
+            
             List<ListItem> lst = new List<ListItem>();
-            foreach (var dir in Directory.GetDirectories(basePath))
+            foreach (var dir in dirs)
             {
                 string templateCat = "Site";
                 string dirName = Path.GetFileNameWithoutExtension(dir);

@@ -4,27 +4,20 @@
     <!--Determines if the bundle file should be automatically optimized after creation/update.-->
     <minify>true</minify>
     <!--Determine whether to generate/re-generate this bundle on building the solution.-->
-    <runOnBuild>true</runOnBuild>
+    <runOnBuild>false</runOnBuild>
     <!--Specifies a custom subfolder to save files to. By default, compiled output will be placed in the same folder and nested under the original file.-->
     <outputDirectory />
   </settings>
   <!--The order of the <file> elements determines the order of the files in the bundle.-->
   <files>
-    <file>AddressField.js</file>
-    <file>CKEditorField.js</file>
-    <file>DateField.js</file>
-    <file>FileField.js</file>
-    <file>ImageCropperField.js</file>
-    <file>ImageField.js</file>
-    <file>NumberField.js</file>
-    <file>Select2Field.js</file>
-    <file>Image2Field.js</file>
-    <file>UrlField.js</file>
-    <file>wysihtmlField.js</file>
-    <file>MLCKEditorField.js</file>
-    <file>MLFileField.js</file>
-    <file>MLImageField.js</file>
-    <file>MLTextField.js</file>
-    <file>MLUrlField.js</file>
+    <file>container-array-actionbar.html</file>
+    <file>container-array.html</file>
+    <file>container.html</file>
+    <file>control-checkbox.html</file>
+    <file>control-file.html</file>
+    <file>control-image.html</file>
+    <file>control-imagecropper.html</file>
+    <file>control-wysihtml.html</file>
+    <file>control.html</file>
   </files>
 </bundle>

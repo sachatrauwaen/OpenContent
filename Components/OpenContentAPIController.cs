@@ -55,14 +55,16 @@ namespace Satrabel.OpenContent.Components
         [HttpGet]
         public HttpResponseMessage Edit(int id)
         {
-            FileUri template = OpenContentUtils.GetTemplate(ActiveModule.ModuleSettings);
-            var manifest = OpenContentUtils.GetTemplateManifest(template);
+            //FileUri template = OpenContentUtils.GetTemplate(ActiveModule.ModuleSettings);
+            OpenContentSettings settings = new OpenContentSettings(ActiveModule.ModuleSettings);
+            int moduleId = settings.ModuleId > 0 ? settings.ModuleId : ActiveModule.ModuleID;
+            var manifest = OpenContentUtils.GetTemplateManifest(settings.Template);
             bool listMode = manifest != null && manifest.IsListTemplate;
             JObject json = new JObject();
             try
             {
                 // schema
-                var schemaFilename = new FileUri(template.Directory + "schema.json");
+                var schemaFilename = new FileUri(settings.Template.Directory + "schema.json");
                 if (schemaFilename.FileExists)
                 {
                     JObject schemaJson = schemaFilename.ToJObject();
@@ -73,33 +75,25 @@ namespace Satrabel.OpenContent.Components
                     //return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "schema.json missing for template " + Template);
                 }
                 // default options
-                var optionsFilename = new FileUri(template.Directory + "options.json");
+
+                var optionsFilename = new FileUri(settings.Template.Directory + "options.json");
                 var optionsJson = optionsFilename.ToJObject();
                 if (optionsJson != null)
                     json["options"] = optionsJson;
 
                 // language options
-                optionsFilename = new FileUri(template.Directory + "options." + PortalSettings.CultureCode + ".json");
+                optionsFilename = new FileUri(settings.Template.Directory + "options." + PortalSettings.CultureCode + ".json");
                 optionsJson = optionsFilename.ToJObject();
                 if (optionsJson != null)
                     json["options"] = json["options"].JsonMerge(optionsJson);
 
                 // view
-                var viewFilename = new FileUri(template.Directory + "view.json");
+                var viewFilename = new FileUri(settings.Template.Directory + "view.json");
                 optionsJson = viewFilename.ToJObject();
                 if (optionsJson != null)
                     json["view"] = optionsJson;
 
-                // template options
-                /*
-                optionsFilename = Path.GetDirectoryName(TemplateFilename) + "\\" + "options." + Path.GetFileNameWithoutExtension(TemplateFilename) + ".json";
-                if (File.Exists(optionsFilename))
-                {
-                    JObject optionsJson = JObject.Parse(File.ReadAllText(optionsFilename));
-                    json["options"] = json["options"].JsonMerge(optionsJson);
-                }
-                 */
-                int moduleId = ActiveModule.ModuleID;
+                
                 OpenContentController ctrl = new OpenContentController();
                 if (listMode)
                 {
@@ -158,13 +152,15 @@ namespace Satrabel.OpenContent.Components
         [HttpGet]
         public HttpResponseMessage Version(int id, string ticks)
         {
-            FileUri template = OpenContentUtils.GetTemplate(ActiveModule.ModuleSettings);
-            var manifest = OpenContentUtils.GetTemplateManifest(template);
+            //FileUri template = OpenContentUtils.GetTemplate(ActiveModule.ModuleSettings);
+            OpenContentSettings settings = new OpenContentSettings(ActiveModule.ModuleSettings);
+            int moduleId = settings.ModuleId > 0 ? settings.ModuleId : ActiveModule.ModuleID;
+            var manifest = OpenContentUtils.GetTemplateManifest(settings.Template);
             bool listMode = manifest != null && manifest.IsListTemplate;
             JObject json = new JObject();
             try
             {
-                int moduleId = ActiveModule.ModuleID;
+                //int moduleId = ActiveModule.ModuleID;
                 OpenContentController ctrl = new OpenContentController();
                 if (listMode)
                 {
@@ -252,16 +248,18 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
-                int moduleId = ActiveModule.ModuleID;
-                FileUri template = OpenContentUtils.GetTemplate(ActiveModule.ModuleSettings);
-                var manifest = OpenContentUtils.GetTemplateManifest(template);
+                //int moduleId = ActiveModule.ModuleID;
+                //FileUri template = OpenContentUtils.GetTemplate(ActiveModule.ModuleSettings);
+                OpenContentSettings settings = new OpenContentSettings(ActiveModule.ModuleSettings);
+                int moduleId = settings.ModuleId > 0 ? settings.ModuleId : ActiveModule.ModuleID;
+                var manifest = OpenContentUtils.GetTemplateManifest(settings.Template);
                 bool listMode = manifest != null && manifest.IsListTemplate;
                 OpenContentController ctrl = new OpenContentController();
                 OpenContentInfo content = null;
                 if (listMode)
                 {
                     int ItemId;
-                    if (int.TryParse(json["id"].ToString(), out ItemId))
+                    if (json["id"]!= null && int.TryParse(json["id"].ToString(), out ItemId))
                     {
                         content = ctrl.GetContent(ItemId, moduleId);
                     }
@@ -307,6 +305,47 @@ namespace Satrabel.OpenContent.Components
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
+
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public HttpResponseMessage Delete(JObject json)
+        {
+            try
+            {
+                OpenContentSettings settings = new OpenContentSettings(ActiveModule.ModuleSettings);
+                int moduleId = settings.ModuleId > 0 ? settings.ModuleId : ActiveModule.ModuleID;
+                var manifest = OpenContentUtils.GetTemplateManifest(settings.Template);
+                bool listMode = manifest != null && manifest.IsListTemplate;
+                OpenContentController ctrl = new OpenContentController();
+                OpenContentInfo content = null;
+                if (listMode)
+                {
+                    int ItemId;
+                    if (int.TryParse(json["id"].ToString(), out ItemId))
+                    {
+                        content = ctrl.GetContent(ItemId, moduleId);
+                        
+                        
+                    }
+                }
+                else
+                {
+                    content = ctrl.GetFirstContent(moduleId);
+                }
+                if (content != null)
+                {
+                    ctrl.DeleteContent(content);
+                }
+                return Request.CreateResponse(HttpStatusCode.OK, "");
+            }
+            catch (Exception exc)
+            {
+                Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
+
         public HttpResponseMessage UpdateSettings(JObject json)
         {
             try

@@ -19,6 +19,7 @@ using System.Web.Hosting;
 using System.Web;
 using Satrabel.OpenContent.Components.Alpaca;
 using System.IO;
+using DotNetNuke.Services.Localization;
 
 
 #endregion
@@ -37,11 +38,14 @@ namespace Satrabel.OpenContent
             hlCancel.NavigateUrl = Globals.NavigateURL();
             cmdSave.NavigateUrl = Globals.NavigateURL();
 
-            string template = Settings["template"] as string;
-            string templateFolder = VirtualPathUtility.GetDirectory(template);
+            FileUri template = OpenContentUtils.GetTemplate(Settings);
             AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext);
-            alpaca.VirtualDirectory = templateFolder;
-            alpaca.Prefix = Path.GetFileNameWithoutExtension(VirtualPathUtility.GetFileName(template));
+            if (template != null && template.FileExists)
+            {
+                string templateFolder = template.Directory;
+                alpaca.VirtualDirectory = templateFolder;
+                alpaca.Prefix = Path.GetFileNameWithoutExtension(template.FileName);
+            }
             alpaca.RegisterAll();
 
             /*
@@ -61,8 +65,9 @@ namespace Satrabel.OpenContent
             if (!Page.IsPostBack)
             {
                 hlTemplateExchange.NavigateUrl = EditUrl("ShareTemplate");
-                var template = OpenContentUtils.GetTemplate(Settings);
-                scriptList.Items.AddRange(OpenContentUtils.GetTemplatesFiles(PortalSettings, ModuleId, template, "OpenContent").ToArray());
+                //var template = OpenContentUtils.GetTemplate(Settings);
+                var settings = new OpenContentSettings(ModuleContext.Settings);
+                scriptList.Items.AddRange(OpenContentUtils.GetTemplatesFiles(PortalSettings, ModuleId, settings.Template, "OpenContent", (settings.IsOtherModule ? settings.Template : null)).ToArray());
             }
         }
 
@@ -84,7 +89,20 @@ namespace Satrabel.OpenContent
 
         #endregion
 
-
+        public string CurrentCulture
+        {
+            get
+            {
+                return LocaleController.Instance.GetCurrentLocale(PortalId).Code;
+            }
+        }
+        public string NumberDecimalSeparator
+        {
+            get
+            {
+                return LocaleController.Instance.GetCurrentLocale(PortalId).Culture.NumberFormat.NumberDecimalSeparator;
+            }
+        }
     }
 }
 
