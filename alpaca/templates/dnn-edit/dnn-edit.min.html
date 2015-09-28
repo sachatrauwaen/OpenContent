@@ -1,19 +1,5 @@
 <script type="text/x-handlebars-template">
 
-    <div class="alpaca-array-actionbar" data-alpaca-array-actionbar-field-id="{{fieldId}}" data-alpaca-array-actionbar-item-index="{{itemIndex}}">
-        
-        {{#each actions}}
-        <button class="alpaca-array-actionbar-action btn btn-default btn-sm" data-alpaca-array-actionbar-action="{{action}}">
-            {{#if this.iconClass}}
-            <img src="/Icons/Sigma/{{this.iconClass}}" alt="" />
-            {{/if}}
-            {{#if label}}{{{label}}}{{/if}}
-        </button>
-        {{/each}}
-    </div>
-
-</script><script type="text/x-handlebars-template">
-
     <div class="alpaca-array">
         {{#each items}}
             {{@index}}

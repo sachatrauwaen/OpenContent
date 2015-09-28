@@ -10,7 +10,6 @@
   </settings>
   <!--The order of the <file> elements determines the order of the files in the bundle.-->
   <files>
-    <file>container-array-actionbar.html</file>
     <file>container-array.html</file>
     <file>container.html</file>
     <file>control-checkbox.html</file>
