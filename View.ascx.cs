@@ -331,12 +331,13 @@ namespace Satrabel.OpenContent
                 if (manifest != null)
                 {
                     files = manifest.Main;
+                    info.Template = new FileUri(settings.Template.Directory, files.Template);
                 }
                 // single item template
                 GetData(info, settings);
                 if (info.DataExist)
                 {
-                    info.OutputString = GenerateOutput(settings.Template, info.DataJson, info.SettingsJson, files);
+                    info.OutputString = GenerateOutput(info.Template, info.DataJson, info.SettingsJson, files);
                 }
             }
         }
