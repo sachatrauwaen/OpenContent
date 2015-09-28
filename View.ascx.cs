@@ -44,6 +44,7 @@ using System.Web.UI.WebControls;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Entities.Tabs;
 using Satrabel.OpenContent.Components.Dynamic;
+using Satrabel.OpenContent.Components.Alpaca;
 
 #endregion
 
@@ -97,7 +98,8 @@ namespace Satrabel.OpenContent
                 Controls.Add(lit);
                 //bool EditWitoutPostback = HostController.Instance.GetBoolean("EditWitoutPostback", false);
                 var mst = OpenContentUtils.GetManifest(info.Template.Directory);
-                bool EditWitoutPostback = mst != null && mst.EditWitoutPostback;
+                //bool EditWitoutPostback = mst != null && mst.EditWitoutPostback;
+                bool EditWitoutPostback = true;
                 if (ModuleContext.PortalSettings.EnablePopUps && ModuleContext.IsEditable && EditWitoutPostback)
                 {
                     AJAX.WrapUpdatePanelControl(lit, true);
@@ -345,6 +347,22 @@ namespace Satrabel.OpenContent
         protected override void OnInit(EventArgs e)
         {
             base.OnInit(e);
+
+            hlCancel.NavigateUrl = Globals.NavigateURL();
+            cmdSave.NavigateUrl = Globals.NavigateURL();
+            if (ModuleContext.IsEditable)
+            {
+                string template = ModuleContext.Settings["template"] as string;
+                if (template != null)
+                {
+                    string templateFolder = VirtualPathUtility.GetDirectory(template);
+                    AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext);
+                    alpaca.VirtualDirectory = templateFolder;
+                    alpaca.RegisterAll();
+
+                    phEdit.Visible = true;
+                }
+            }
         }
         private string GenerateOutput(FileUri template, string dataJson, string settingsJson, TemplateFiles files)
         {
@@ -430,7 +448,7 @@ namespace Satrabel.OpenContent
                         model.Items = new List<dynamic>();
                         foreach (var item in dataList)
                         {
-                            
+
 
                             //info.DataList = info.DataList.Where(i => i.Json.ToJObject("").SelectToken("Category", false).Any(c=> c.ToString() == "Category1"));
 
@@ -455,11 +473,12 @@ namespace Satrabel.OpenContent
                             dyn.Context = new ExpandoObject();
 
                             dyn.Context.Id = item.ContentId;
-                            dyn.Context.EditUrl = ModuleContext.EditUrl("id", item.ContentId.ToString());
+                            //dyn.Context.EditUrl = ModuleContext.EditUrl("id", item.ContentId.ToString());
+                            dyn.Context.EditUrl = "javascript:document.openContent" + ModuleId + "(" + item.ContentId.ToString() + ")";
                             dyn.Context.DetailUrl = Globals.NavigateURL(ModuleContext.TabId, false, ModuleContext.PortalSettings, "", ModuleContext.PortalSettings.CultureCode, /*OpenContentUtils.CleanupUrl(dyn.Title)*/"", "id=" + item.ContentId.ToString());
                             dyn.Context.MainUrl = Globals.NavigateURL(ModuleContext.TabId, false, ModuleContext.PortalSettings, "", ModuleContext.PortalSettings.CultureCode, /*OpenContentUtils.CleanupUrl(dyn.Title)*/"");
 
-                            
+
                             model.Items.Add(dyn);
                         }
                         CompleteModel(settingsJson, PhysicalTemplateFolder, model, files);
@@ -561,7 +580,7 @@ namespace Satrabel.OpenContent
                         {
                             ((Label)ctl).Text = model.Title;
                         }
-                
+
 
                         CompleteModel(settingsJson, PhysicalTemplateFolder, model, files);
                         return ExecuteTemplate(TemplateVirtualFolder, files, template, model);
@@ -681,8 +700,8 @@ namespace Satrabel.OpenContent
             {
                 info.DataJson = struc.Json;
                 info.SettingsJson = settings.Data;
-                
-                
+
+
                 info.DataExist = true;
             }
 
@@ -695,7 +714,7 @@ namespace Satrabel.OpenContent
             info.DataList = ctrl.GetContents(info.ModuleId);
             if (info.DataList != null && info.DataList.Any())
             {
-               
+
                 info.SettingsJson = settings.Data;
                 info.DataExist = true;
             }
@@ -799,7 +818,8 @@ namespace Satrabel.OpenContent
                                 ModuleActionType.AddContent,
                                 "",
                                 "",
-                                (listMode && _itemId != Null.NullInteger ? ModuleContext.EditUrl("id", _itemId.ToString()) : ModuleContext.EditUrl()),
+                                //(listMode && _itemId != Null.NullInteger ? ModuleContext.EditUrl("id", _itemId.ToString()) : ModuleContext.EditUrl()),
+                                (listMode && _itemId != Null.NullInteger ? "javascript:document.openContent" + ModuleId + "(" + _itemId.ToString() + ")" : "javascript:document.openContent" + ModuleId + "()"),
                                 false,
                                 SecurityAccessLevel.Edit,
                                 true,
@@ -1086,5 +1106,28 @@ namespace Satrabel.OpenContent
 
 
         }
+
+        public int ModuleId
+        {
+            get
+            {
+                return ModuleContext.ModuleId;
+            }
+        }
+        public string CurrentCulture
+        {
+            get
+            {
+                return LocaleController.Instance.GetCurrentLocale(ModuleContext.PortalId).Code;
+            }
+        }
+        public string NumberDecimalSeparator
+        {
+            get
+            {
+                return LocaleController.Instance.GetCurrentLocale(ModuleContext.PortalId).Culture.NumberFormat.NumberDecimalSeparator;
+            }
+        }
+
     }
 }

@@ -70,6 +70,7 @@
         var controlEl = this.getControlEl();
 
         // all controls get the "form-control" class injected
+        /*
         $(fieldEl).find("input").addClass("form-control");
         $(fieldEl).find("textarea").addClass("form-control");
         $(fieldEl).find("select").addClass("form-control");
@@ -82,11 +83,11 @@
         if (this.inputType === "color") {
             $(fieldEl).find("input").removeClass("form-control");
         }
-
+        */
         $(fieldEl).find("input[type=file]").addClass("normalFileUpload");
 
 
-
+        /*
         // any checkbox inputs get the "checkbox" class on their checkbox
         $(fieldEl).find("input[type=checkbox]").parent().parent().addClass("checkbox");
         // any radio inputs get the "radio" class on their radio
@@ -116,6 +117,7 @@
 
             $(fieldEl).append("<div style='clear:both;'></div>");
         }
+        */
     };
     callbacks["container"] = function () {
         var containerEl = this.getContainerEl();

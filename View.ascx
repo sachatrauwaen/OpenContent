@@ -2,7 +2,7 @@
 
 <asp:Panel ID="pHelp" runat="server" Visible="false" CssClass="dnnForm">
     <fieldset>
-         <div class="dnnFormItem">
+        <div class="dnnFormItem">
             <asp:Label ID="lUseContent" runat="server" ControlName="rblDataSource" ResourceKey="lUseContent" CssClass="dnnLabel" />
             <asp:RadioButtonList runat="server" ID="rblDataSource" AutoPostBack="true" OnSelectedIndexChanged="rblDataSource_SelectedIndexChanged"
                 RepeatDirection="Horizontal" CssClass="dnnFormRadioButtons">
@@ -10,7 +10,7 @@
                 <asp:ListItem Text="Other module" />
             </asp:RadioButtonList>
         </div>
-         <asp:PlaceHolder ID="phDataSource" runat="server" Visible="false">
+        <asp:PlaceHolder ID="phDataSource" runat="server" Visible="false">
             <div class="dnnFormItem">
                 <asp:Label runat="server" ControlName="ddlDataSource" ResourceKey="lDataSource" CssClass="dnnLabel" />
                 <asp:DropDownList runat="server" ID="ddlDataSource" AutoPostBack="true" OnSelectedIndexChanged="ddlDataSource_SelectedIndexChanged">
@@ -54,10 +54,10 @@
             <asp:LinkButton ID="bSave" runat="server" CssClass="dnnPrimaryAction" ResourceKey="Save" OnClick="bSave_Click" />
         </li>
         <li>
-             <asp:HyperLink ID="hlEditSettings" runat="server" Enabled="false"  CssClass="dnnSecondaryAction" >Template Settings</asp:HyperLink>
+            <asp:HyperLink ID="hlEditSettings" runat="server" Enabled="false" CssClass="dnnSecondaryAction">Template Settings</asp:HyperLink>
         </li>
         <li>
-             <asp:HyperLink ID="hlEditContent" runat="server" Enabled="false" CssClass="dnnSecondaryAction" >Edit Content</asp:HyperLink>
+            <asp:HyperLink ID="hlEditContent" runat="server" Enabled="false" CssClass="dnnSecondaryAction">Edit Content</asp:HyperLink>
         </li>
     </ul>
 </asp:Panel>
@@ -68,3 +68,36 @@
     </p>
 </asp:Panel>
 
+
+<asp:PlaceHolder ID="phEdit" runat="server" Visible="false">
+    <asp:Panel ID="ScopeWrapper" runat="server">
+        <div class="alpaca oc-form"></div>
+        <ul class="dnnActions dnnClear" style="display: block; padding-left: 35%">
+            <li>
+                <asp:HyperLink ID="cmdSave" runat="server" class="dnnPrimaryAction oc-btn-save" resourcekey="cmdSave" /></li>
+            <li>
+                <asp:HyperLink ID="hlCancel" runat="server" class="dnnSecondaryAction oc-btn-cancel" resourcekey="cmdCancel" /></li>
+            <li>
+                <asp:HyperLink ID="hlDelete" runat="server" class="dnnSecondaryAction oc-btn-delete" resourcekey="cmdDelete" /></li>
+            <li style="padding-left: 10px;">
+                <asp:DropDownList ID="ddlVersions" runat="server" CssClass="oc-ddl-versions" />
+            </li>
+        </ul>
+    </asp:Panel>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //var itemId = "<%=Page.Request.QueryString["id"]%>";
+            var moduleScope = $('#<%=ScopeWrapper.ClientID %>'),
+            self = moduleScope;
+            self.oc = new openContent($, { 
+                moduleId : <%=ModuleId %>, 
+                culture : '<%=CurrentCulture%>', 
+                numberDecimalSeparator : '<%=NumberDecimalSeparator%>'
+            });
+            self.oc.init(moduleScope);
+            document['openContent<%=ModuleId %>'] = function(itemId){
+                self.oc.open(itemId);
+            };
+        });
+    </script>
+</asp:PlaceHolder>
