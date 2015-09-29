@@ -13,8 +13,8 @@ namespace Satrabel.OpenContent.Components
             SettingsJson = "";
             DataJson = "";
             OutputString = "";
-            TemplateManifest = null;
-            Manifest = null;
+            this.TemplateManifest = null;
+            this.Manifest = null;
             Files = null;
         }
         public FileUri Template { get; set; }

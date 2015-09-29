@@ -132,7 +132,7 @@ namespace Satrabel.OpenContent
             {
                 rblDataSource.SelectedIndex = (settings.TabId > 0 && settings.ModuleId > 0 ? 1 : 0);
                 BindOtherModules(settings.TabId, settings.ModuleId);
-                BindTemplates(info.Template, (info.IsOtherModule ? info.Template : null));
+                BindTemplates(settings.Template, (info.IsOtherModule ? info.Template : null));
             }
             if (rblDataSource.SelectedIndex == 1) // other module
             {
@@ -569,13 +569,14 @@ namespace Satrabel.OpenContent
                         dynamic model = JsonUtils.JsonToDynamic(dataJson);
 
                         Page.Title = model.Title + " | " + ModuleContext.PortalSettings.PortalName;
+                        /*
                         var container = Globals.FindControlRecursive(this, "ctr" + ModuleContext.ModuleId);
                         Control ctl = DotNetNuke.Common.Globals.FindControlRecursiveDown(container, "titleLabel");
-                        if ((ctl != null))
+                        if (ctl != null && ctl is Label)
                         {
                             ((Label)ctl).Text = model.Title;
                         }
-                
+                        */
 
                         CompleteModel(settingsJson, PhysicalTemplateFolder, model, files);
                         return ExecuteTemplate(TemplateVirtualFolder, files, template, model);

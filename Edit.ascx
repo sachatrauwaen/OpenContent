@@ -10,7 +10,7 @@
         <li>
             <asp:HyperLink ID="hlDelete" runat="server" class="dnnSecondaryAction" resourcekey="cmdDelete" /></li>
         <li style="padding-left: 10px;">
-            <asp:DropDownList ID="ddlVersions" runat="server" ClientIDMode="Static" />
+            <asp:DropDownList ID="ddlVersions" runat="server" ClientIDMode="Static" CssClass="oc-ddl-versions" />
         </li>
     </ul>
 </asp:Panel>
