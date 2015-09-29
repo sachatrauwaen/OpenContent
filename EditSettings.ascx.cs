@@ -42,8 +42,7 @@ namespace Satrabel.OpenContent
             AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext);
             if (template != null && template.FileExists)
             {
-                string templateFolder = template.Directory;
-                alpaca.VirtualDirectory = templateFolder;
+                alpaca.VirtualDirectory =  template.Directory;
                 alpaca.Prefix = Path.GetFileNameWithoutExtension(template.FileName);
             }
             alpaca.RegisterAll();

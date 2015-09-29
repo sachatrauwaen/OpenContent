@@ -159,18 +159,18 @@ namespace Satrabel.OpenContent.Components.Alpaca
                         CKDNNporid.Value = ModuleContext.PortalId.ToString();
                     }
                 }
-                
+
             }
 
         }
 
         private JToken GetOptions()
         {
-            string PhysicalDirectory = HostingEnvironment.MapPath(VirtualDirectory);
+            string physicalDirectory = HostingEnvironment.MapPath("~" + VirtualDirectory);
 
             JToken optionsJson = null;
             // default options
-            string optionsFilename = PhysicalDirectory + "\\" + (string.IsNullOrEmpty(Prefix) ? "" : Prefix + "-") + "options.json";
+            string optionsFilename = physicalDirectory + "\\" + (string.IsNullOrEmpty(Prefix) ? "" : Prefix + "-") + "options.json";
             if (File.Exists(optionsFilename))
             {
                 string fileContent = File.ReadAllText(optionsFilename);
@@ -180,7 +180,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 }
             }
             // language options
-            optionsFilename = PhysicalDirectory + "\\" + (string.IsNullOrEmpty(Prefix) ? "" : Prefix + "-") + "options." + ModuleContext.PortalSettings.CultureCode + ".json";
+            optionsFilename = physicalDirectory + "\\" + (string.IsNullOrEmpty(Prefix) ? "" : Prefix + "-") + "options." + ModuleContext.PortalSettings.CultureCode + ".json";
             if (File.Exists(optionsFilename))
             {
                 string fileContent = File.ReadAllText(optionsFilename);
