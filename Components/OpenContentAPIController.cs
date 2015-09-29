@@ -278,25 +278,27 @@ namespace Satrabel.OpenContent.Components
                 string editRole = manifest == null ? "" : manifest.EditRole;
 
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
-                int CreatedByUserid = -1;
+                int createdByUserid = -1;
                 OpenContentController ctrl = new OpenContentController();
                 OpenContentInfo content = null;
                 if (listMode)
                 {
-                    int ItemId;
-                    if (json["id"] != null && int.TryParse(json["id"].ToString(), out ItemId))
+                    int itemId;
+                    if (json["id"] != null && int.TryParse(json["id"].ToString(), out itemId))
                     {
-                        content = ctrl.GetContent(ItemId, module.ModuleID);
-                        CreatedByUserid = content.CreatedByUserId;
+                        content = ctrl.GetContent(itemId, module.ModuleID);
+                        if (content != null)
+                            createdByUserid = content.CreatedByUserId;
                     }
                 }
                 else
                 {
                     content = ctrl.GetFirstContent(module.ModuleID);
-                    CreatedByUserid = content.CreatedByUserId;
+                    if (content != null)
+                        createdByUserid = content.CreatedByUserId;
                 }
 
-                if (!OpenContentUtils.HasEditPermissions(PortalSettings, module, editRole, CreatedByUserid))
+                if (!OpenContentUtils.HasEditPermissions(PortalSettings, module, editRole, createdByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
