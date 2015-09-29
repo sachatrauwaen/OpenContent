@@ -44,6 +44,7 @@ using System.Web.UI.WebControls;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Entities.Tabs;
 using Satrabel.OpenContent.Components.Dynamic;
+using DotNetNuke.Security.Permissions;
 
 #endregion
 
@@ -52,25 +53,28 @@ namespace Satrabel.OpenContent
     public partial class View : RazorModuleBase, IActionable
     {
         private int _itemId = Null.NullInteger;
+        private TemplateInfo info = new TemplateInfo();
+        private OpenContentSettings settings;
 
         protected override void OnPreRender(EventArgs e)
         {
             //base.OnPreRender(e);
             pHelp.Visible = false;
-            var settings = new OpenContentSettings(ModuleContext.Settings);
-            var info = new TemplateInfo();
+            
             info.Template = settings.Template;
             info.ItemId = _itemId;
             if (settings.TabId > 0 && settings.ModuleId > 0) // other module
             {
                 info.TabId = settings.TabId;
                 info.ModuleId = settings.ModuleId;
+                info.Module = ModuleController.Instance.GetModule(info.ModuleId, info.TabId, false);
             }
             else // this module
             {
                 info.ModuleId = ModuleContext.ModuleId;
+                info.Module = ModuleContext.Configuration;
             }
-            InitTemplateInfo(settings, info);
+            InitTemplateInfo();
             if (!info.DataExist)
             {
                 // no data exist and ... -> show initialization
@@ -79,16 +83,16 @@ namespace Satrabel.OpenContent
                     // edit mode
                     if (settings.Template == null || ModuleContext.IsEditable)
                     {
-                        RenderInitForm(settings, info);
+                        RenderInitForm();
                     }
                     else if (info.Template != null)
                     {
-                        RenderDemoData(settings, info);
+                        RenderDemoData();
                     }
                 }
                 else if (info.Template != null)
                 {
-                    RenderDemoData(settings, info);
+                    RenderDemoData();
                 }
             }
             if (!string.IsNullOrEmpty(info.OutputString))
@@ -107,7 +111,7 @@ namespace Satrabel.OpenContent
             }
         }
 
-        private void RenderDemoData(OpenContentSettings settings, TemplateInfo info)
+        private void RenderDemoData()
         {
             bool demoExist = GetDemoData(info, settings);
             if (demoExist)
@@ -121,7 +125,7 @@ namespace Satrabel.OpenContent
             }
         }
 
-        private void RenderInitForm(OpenContentSettings settings, TemplateInfo info)
+        private void RenderInitForm()
         {
             pHelp.Visible = true;
             if (!Page.IsPostBack)
@@ -138,6 +142,8 @@ namespace Satrabel.OpenContent
                 info.OtherModuleTemplate = dsSettings.Template;
                 info.TabId = dsModule.TabID;
                 info.ModuleId = dsModule.ModuleID;
+
+
             }
             BindButtons(settings, info);
             if (rblUseTemplate.SelectedIndex == 0) // existing template
@@ -145,11 +151,11 @@ namespace Satrabel.OpenContent
                 info.Template = new FileUri(ddlTemplate.SelectedValue);
                 if (rblDataSource.SelectedIndex == 0) // this module
                 {
-                    RenderDemoData(settings, info);
+                    RenderDemoData();
                 }
                 else // other module
                 {
-                    RenderOtherModuleDemoData(settings, info);
+                    RenderOtherModuleDemoData();
                 }
             }
             else // new template
@@ -157,37 +163,37 @@ namespace Satrabel.OpenContent
                 info.Template = new FileUri(ddlTemplate.SelectedValue);
                 if (rblFrom.SelectedIndex == 0) // site
                 {
-                    RenderDemoData(settings, info);
+                    RenderDemoData();
                 }
             }
         }
 
-        private void RenderOtherModuleDemoData(OpenContentSettings settings, TemplateInfo info)
+        private void RenderOtherModuleDemoData()
         {
 
-            TemplateManifest manifest = OpenContentUtils.GetTemplateManifest(info.Template);
-            if (manifest != null && manifest.IsListTemplate)
+            TemplateManifest TemplateManifest = OpenContentUtils.GetTemplateManifest(info.Template);
+            if (TemplateManifest != null && TemplateManifest.IsListTemplate)
             {
                 // Multi items Template
                 if (info.ItemId == Null.NullInteger)
                 {
                     // List template
-                    if (manifest.Main != null)
+                    if (TemplateManifest.Main != null)
                     {
                         // for list templates a main template need to be defined
                         GetDataList(info, settings);
                         if (info.DataExist)
                         {
-                            info.OutputString = GenerateListOutput(info.Template.Directory, manifest.Main, info.DataList, info.SettingsJson);
+                            info.OutputString = GenerateListOutput(info.Template.Directory, TemplateManifest.Main, info.DataList, info.SettingsJson);
                         }
                     }
                 }
             }
             else
             {
-                if (manifest != null && manifest.Main != null)
+                if (TemplateManifest != null && TemplateManifest.Main != null)
                 {
-                    info.Template = new FileUri(info.Template.Directory + "/" + manifest.Main.Template);
+                    info.Template = new FileUri(info.Template.Directory + "/" + TemplateManifest.Main.Template);
                 }
                 bool dsDataExist = GetModuleDemoData(info, settings);
                 if (dsDataExist)
@@ -282,45 +288,49 @@ namespace Satrabel.OpenContent
                 }
             }
         }
-
-        private void InitTemplateInfo(OpenContentSettings settings, TemplateInfo info)
+        private void InitTemplateInfo()
         {
-            TemplateManifest manifest = null;
+
+            
             if (settings.Template != null)
             {
                 // if there is a manifest and Main section exist , use it as template
-                manifest = OpenContentUtils.GetTemplateManifest(settings.Template);
-                if (manifest != null && manifest.Main != null)
+                info.Manifest = OpenContentUtils.GetManifest(settings.Template.Directory);
+                if (info.Manifest != null)
                 {
-                    info.Template = new FileUri(settings.Template.Directory, manifest.Main.Template);
+                    info.TemplateManifest = info.Manifest.GetTemplateManifest(settings.Template);
+                }
+                if (info.TemplateManifest != null && info.TemplateManifest.Main != null)
+                {
+                    info.Template = new FileUri(settings.Template.Directory, info.TemplateManifest.Main.Template);
                 }
             }
-            if (manifest != null && manifest.IsListTemplate)
+            if (info.TemplateManifest != null && info.TemplateManifest.IsListTemplate)
             {
                 // Multi items Template
                 if (_itemId == Null.NullInteger)
                 {
                     // List template
-                    if (manifest.Main != null)
+                    if (info.TemplateManifest.Main != null)
                     {
                         // for list templates a main template need to be defined
 
                         GetDataList(info, settings);
                         if (info.DataExist)
                         {
-                            info.OutputString = GenerateListOutput(settings.Template.Directory, manifest.Main, info.DataList, info.SettingsJson);
+                            info.OutputString = GenerateListOutput(settings.Template.Directory, info.TemplateManifest.Main, info.DataList, info.SettingsJson);
                         }
                     }
                 }
                 else
                 {
                     // detail template
-                    if (manifest.Detail != null)
+                    if (info.TemplateManifest.Detail != null)
                     {
                         GetDetailData(info, settings);
                         if (info.DataExist)
                         {
-                            info.OutputString = GenerateOutput(settings.Template.Directory, manifest.Detail, info.DataJson, info.SettingsJson);
+                            info.OutputString = GenerateOutput(settings.Template.Directory, info.TemplateManifest.Detail, info.DataJson, info.SettingsJson);
                         }
                     }
                 }
@@ -328,9 +338,9 @@ namespace Satrabel.OpenContent
             else
             {
                 TemplateFiles files = null;
-                if (manifest != null)
+                if (info.TemplateManifest != null)
                 {
-                    files = manifest.Main;
+                    files = info.TemplateManifest.Main;
                     info.Template = new FileUri(settings.Template.Directory, files.Template);
                 }
                 // single item template
@@ -346,6 +356,7 @@ namespace Satrabel.OpenContent
         protected override void OnInit(EventArgs e)
         {
             base.OnInit(e);
+            settings = new OpenContentSettings(ModuleContext.Settings);
         }
         private string GenerateOutput(FileUri template, string dataJson, string settingsJson, TemplateFiles files)
         {
@@ -427,21 +438,19 @@ namespace Satrabel.OpenContent
                     FileUri Template = CheckFiles(TemplateVirtualFolder, files, PhysicalTemplateFolder);
                     if (dataList != null && dataList.Any())
                     {
+                        string editRole = info.Manifest == null ? "" : info.Manifest.EditRole;
                         dynamic model = new ExpandoObject();
                         model.Items = new List<dynamic>();
                         foreach (var item in dataList)
                         {
-                            
-
                             //info.DataList = info.DataList.Where(i => i.Json.ToJObject("").SelectToken("Category", false).Any(c=> c.ToString() == "Category1"));
-
                             string dataJson = item.Json;
                             if (LocaleController.Instance.GetLocales(ModuleContext.PortalId).Count > 1)
                             {
                                 dataJson = JsonUtils.SimplifyJson(dataJson, LocaleController.Instance.GetCurrentLocale(ModuleContext.PortalId).Code);
                             }
                             dynamic dyn = JsonUtils.JsonToDynamic(dataJson);
-
+                            /*
                             if (Request.QueryString["cat"] != null)
                             {
                                 string value = Request.QueryString["cat"];
@@ -452,11 +461,12 @@ namespace Satrabel.OpenContent
                                 }
                                 //info.DataList = info.DataList.Where(i => Filter(i.Json, key, value));
                             }
-
+                            */
                             dyn.Context = new ExpandoObject();
-
                             dyn.Context.Id = item.ContentId;
                             dyn.Context.EditUrl = ModuleContext.EditUrl("id", item.ContentId.ToString());
+                            dyn.Context.IsEditable = ModuleContext.IsEditable ||
+                                OpenContentUtils.HasEditPermissions(ModuleContext.PortalSettings, info.Module, editRole, item.CreatedByUserId);
                             dyn.Context.DetailUrl = Globals.NavigateURL(ModuleContext.TabId, false, ModuleContext.PortalSettings, "", ModuleContext.PortalSettings.CultureCode, /*OpenContentUtils.CleanupUrl(dyn.Title)*/"", "id=" + item.ContentId.ToString());
                             dyn.Context.MainUrl = Globals.NavigateURL(ModuleContext.TabId, false, ModuleContext.PortalSettings, "", ModuleContext.PortalSettings.CultureCode, /*OpenContentUtils.CleanupUrl(dyn.Title)*/"");
 
@@ -530,10 +540,13 @@ namespace Satrabel.OpenContent
             {
                 model.Settings = JsonUtils.JsonToDynamic(settingsJson);
             }
+            string editRole = info.Manifest == null ? "" : info.Manifest.EditRole;
             // context
             model.Context = new ExpandoObject();
             model.Context.ModuleId = ModuleContext.ModuleId;
-            model.Context.IsEditable = ModuleContext.IsEditable;
+            model.Context.AddUrl = ModuleContext.EditUrl();
+            model.Context.IsEditable = ModuleContext.IsEditable ||
+                                        OpenContentUtils.HasEditPermissions(ModuleContext.PortalSettings, info.Module, editRole, -1); 
             model.Context.PortalId = ModuleContext.PortalId;
             model.Context.MainUrl = Globals.NavigateURL(ModuleContext.TabId, false, ModuleContext.PortalSettings, "", ModuleContext.PortalSettings.CultureCode);
 

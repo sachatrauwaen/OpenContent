@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DotNetNuke.Entities.Modules;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -12,6 +13,9 @@ namespace Satrabel.OpenContent.Components
             SettingsJson = "";
             DataJson = "";
             OutputString = "";
+            TemplateManifest = null;
+            Manifest = null;
+            Files = null;
         }
         public FileUri Template { get; set; }
         public string SettingsJson { get; set; }
@@ -32,5 +36,10 @@ namespace Satrabel.OpenContent.Components
         }
         public FileUri OtherModuleTemplate { get; set; }
         public string OtherModuleSettingsJson { get; set; }
+
+        public ModuleInfo Module { get; set; }
+        public TemplateManifest TemplateManifest { get; set; }
+        public Manifest Manifest { get; set; }
+        public TemplateFiles Files { get; set; }
     }
 }
