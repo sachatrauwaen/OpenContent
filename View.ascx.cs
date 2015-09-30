@@ -344,7 +344,7 @@ namespace Satrabel.OpenContent
                     info.Template = new FileUri(settings.Template.Directory, files.Template);
                 }
                 // single item template
-                GetData(info, settings);
+                GetData();
                 if (info.DataExist)
                 {
                     info.OutputString = GenerateOutput(info.Template, info.DataJson, info.SettingsJson, files);
@@ -633,7 +633,7 @@ namespace Satrabel.OpenContent
             return new FileUri(template);
         }
 
-        private void GetData(TemplateInfo info, OpenContentSettings settings)
+        private void GetData()
         {
             info.DataExist = false;
             info.DataJson = "";
