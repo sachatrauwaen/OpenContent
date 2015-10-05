@@ -142,8 +142,6 @@ namespace Satrabel.OpenContent
                 _info.OtherModuleTemplate = dsSettings.Template;
                 _info.TabId = dsModule.TabID;
                 _info.ModuleId = dsModule.ModuleID;
-
-
             }
             BindButtons(_settings, _info);
             if (rblUseTemplate.SelectedIndex == 0) // existing template
