@@ -20,6 +20,10 @@
          * @see Alpaca.Fields.ObjectField#setup
          */
         setup: function () {
+            /// <summary>
+            /// s this instance.
+            /// </summary>
+            /// <returns></returns>
             this.base();
 
             if (this.data === undefined) {
