@@ -100,6 +100,13 @@ namespace Satrabel.OpenContent
                 return LocaleController.Instance.GetCurrentLocale(PortalId).Code;
             }
         }
+        public string DefaultCulture
+        {
+            get
+            {
+                return LocaleController.Instance.GetDefaultLocale(PortalId).Code;
+            }
+        }
         public string NumberDecimalSeparator
         {
             get

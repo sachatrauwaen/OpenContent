@@ -104,6 +104,7 @@
             connector = new ConnectorClass("default");
             connector.servicesFramework = sf;
             connector.culture = '<%=CurrentCulture%>';
+            connector.defaultCulture = '<%=DefaultCulture%>';
             connector.numberDecimalSeparator = '<%=NumberDecimalSeparator%>';
             $("#field1").alpaca({
                 "schema": config.schema,

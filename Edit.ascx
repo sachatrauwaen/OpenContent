@@ -112,6 +112,7 @@
             connector = new ConnectorClass("default");
             connector.servicesFramework = sf;
             connector.culture = '<%=CurrentCulture%>';
+            connector.defaultCulture = '<%=DefaultCulture%>';
             connector.numberDecimalSeparator = '<%=NumberDecimalSeparator%>';
             if (config.versions) {
                 $.each(config.versions, function (i, item) {
