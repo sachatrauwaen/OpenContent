@@ -401,6 +401,9 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
+        [ValidateAntiForgeryToken]
+        [HttpPost]
         public HttpResponseMessage UpdateSettings(JObject json)
         {
             try
