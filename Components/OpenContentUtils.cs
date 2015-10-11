@@ -510,6 +510,8 @@ namespace Satrabel.OpenContent.Components
 
     public class Manifest
     {
+        [JsonProperty(PropertyName = "developmentPath")]
+        public bool DevelopmentPath { get; set; }
         [JsonProperty(PropertyName = "editWitoutPostback")]
         public bool EditWitoutPostback { get; set; }
         [JsonProperty(PropertyName = "templates")]

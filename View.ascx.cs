@@ -265,7 +265,7 @@ namespace Satrabel.OpenContent
         {
             var modules = ModuleController.Instance.GetModules(ModuleContext.PortalId).Cast<ModuleInfo>();
             modules = modules.Where(m => m.ModuleDefinition.DefinitionName == "OpenContent" && m.IsDeleted == false);
-            rblDataSource.Items[1].Enabled = modules.Count() > 0;
+            rblDataSource.Items[1].Enabled = modules.Any();
             phDataSource.Visible = rblDataSource.SelectedIndex == 1; // other module
             if (rblDataSource.SelectedIndex == 1) // other module
             {
@@ -288,8 +288,6 @@ namespace Satrabel.OpenContent
         }
         private void InitTemplateInfo()
         {
-
-            
             if (_settings.Template != null)
             {
                 // if there is a manifest and Main section exist , use it as template
