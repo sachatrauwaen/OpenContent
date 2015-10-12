@@ -17,6 +17,8 @@ using DotNetNuke.Framework;
 using Satrabel.OpenContent.Components;
 using DotNetNuke.Entities.Controllers;
 using DotNetNuke.Entities.Portals;
+using System.Web.UI.WebControls;
+using DotNetNuke.Security.Roles;
 
 
 #endregion
@@ -38,16 +40,32 @@ namespace Satrabel.OpenContent
 			base.OnLoad(e);
 			if (!Page.IsPostBack)
 			{
-                var hc = HostController.Instance;
-                cbEditWitoutPostback.Checked = hc.GetBoolean("EditWitoutPostback", false);
-                tbAddEditControl.Text = PortalController.GetPortalSetting("OpenContent_AddEditControl", ModuleContext.PortalId, "");
+                var pc = PortalController.Instance;
+                ddlRoles.Items.Add(new ListItem("None", "-1"));
+                RoleController rc = new RoleController();
+                foreach (var role in rc.GetRoles(PortalId))
+                {
+                    ddlRoles.Items.Add(new ListItem(role.RoleName, role.RoleID.ToString()));
+                }
+
+                string OpenContent_EditorsRoleId = PortalController.GetPortalSetting("OpenContent_EditorsRoleId", ModuleContext.PortalId, "");
+                if (!string.IsNullOrEmpty(OpenContent_EditorsRoleId))
+                {
+                    var li = ddlRoles.Items.FindByValue(OpenContent_EditorsRoleId);
+                    if (li != null)
+                    {
+                        li.Selected = true;
+                    }
+                }
 			}
 		}
 		protected void cmdSave_Click(object sender, EventArgs e)
 		{
-            var hc = HostController.Instance;
-            hc.Update("EditWitoutPostback", cbEditWitoutPostback.Checked.ToString(),true);
-            PortalController.UpdatePortalSetting(PortalId,"OpenContent_AddEditControl", tbAddEditControl.Text, true);
+            if (ddlRoles.SelectedIndex > 0)
+                PortalController.UpdatePortalSetting(PortalId, "OpenContent_EditorsRoleId", ddlRoles.SelectedValue, true);
+            else
+                PortalController.DeletePortalSetting(PortalId, "OpenContent_EditorsRoleId");
+
             Response.Redirect(Globals.NavigateURL(), true);
 		}
 		protected void cmdCancel_Click(object sender, EventArgs e)

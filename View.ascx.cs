@@ -45,6 +45,8 @@ using DotNetNuke.Entities.Portals;
 using DotNetNuke.Entities.Tabs;
 using Satrabel.OpenContent.Components.Dynamic;
 using DotNetNuke.Security.Permissions;
+using DotNetNuke.Security.Roles;
+using DotNetNuke.Entities.Users;
 
 #endregion
 
@@ -60,7 +62,7 @@ namespace Satrabel.OpenContent
         {
             //base.OnPreRender(e);
             pHelp.Visible = false;
-            
+
             _info.Template = _settings.Template;
             _info.ItemId = _itemId;
             if (_settings.TabId > 0 && _settings.ModuleId > 0) // other module
@@ -466,7 +468,7 @@ namespace Satrabel.OpenContent
                             dyn.Context.DetailUrl = Globals.NavigateURL(ModuleContext.TabId, false, ModuleContext.PortalSettings, "", ModuleContext.PortalSettings.CultureCode, /*OpenContentUtils.CleanupUrl(dyn.Title)*/"", "id=" + item.ContentId.ToString());
                             dyn.Context.MainUrl = Globals.NavigateURL(ModuleContext.TabId, false, ModuleContext.PortalSettings, "", ModuleContext.PortalSettings.CultureCode, /*OpenContentUtils.CleanupUrl(dyn.Title)*/"");
 
-                            
+
                             model.Items.Add(dyn);
                         }
                         CompleteModel(settingsJson, PhysicalTemplateFolder, model, files);
@@ -542,7 +544,7 @@ namespace Satrabel.OpenContent
             model.Context.ModuleId = ModuleContext.ModuleId;
             model.Context.AddUrl = ModuleContext.EditUrl();
             model.Context.IsEditable = ModuleContext.IsEditable ||
-                                        OpenContentUtils.HasEditPermissions(ModuleContext.PortalSettings, _info.Module, editRole, -1); 
+                                        OpenContentUtils.HasEditPermissions(ModuleContext.PortalSettings, _info.Module, editRole, -1);
             model.Context.PortalId = ModuleContext.PortalId;
             model.Context.MainUrl = Globals.NavigateURL(ModuleContext.TabId, false, ModuleContext.PortalSettings, "", ModuleContext.PortalSettings.CultureCode);
 
@@ -692,8 +694,8 @@ namespace Satrabel.OpenContent
             {
                 info.DataJson = struc.Json;
                 info.SettingsJson = settings.Data;
-                
-                
+
+
                 info.DataExist = true;
             }
 
@@ -706,7 +708,7 @@ namespace Satrabel.OpenContent
             info.DataList = ctrl.GetContents(info.ModuleId);
             if (info.DataList != null && info.DataList.Any())
             {
-               
+
                 info.SettingsJson = settings.Data;
                 info.DataExist = true;
             }
@@ -876,6 +878,17 @@ namespace Satrabel.OpenContent
                            SecurityAccessLevel.Host,
                            true,
                            false);
+
+                Actions.Add(ModuleContext.GetNextActionID(),
+                           Localization.GetString("EditGlobalSettings.Action", LocalResourceFile),
+                           ModuleActionType.ContentOptions,
+                           "",
+                           "~/DesktopModules/OpenContent/images/exchange.png",
+                           ModuleContext.EditUrl("EditGlobalSettings"),
+                           false,
+                           SecurityAccessLevel.Admin,
+                           true,
+                           false);
                 /*
                 Actions.Add(ModuleContext.GetNextActionID(),
                            Localization.GetString("EditGlobalSettings.Action", LocalResourceFile),
@@ -915,7 +928,7 @@ namespace Satrabel.OpenContent
             if (Webpage != null)
                 Webpage.ExecutePageHierarchy(new WebPageContext(HttpContext, Webpage, null), writer, Webpage);
         }
-
+        
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
@@ -929,8 +942,64 @@ namespace Satrabel.OpenContent
             //string settingsJson = ModuleContext.Settings["data"] as string;
             if (!Page.IsPostBack)
             {
-            }
+                //if (ModuleContext.EditMode && !ModuleContext.IsEditable)
+                if (ModuleContext.PortalSettings.UserId > 0)
+                {
+                    string OpenContent_EditorsRoleId = PortalController.GetPortalSetting("OpenContent_EditorsRoleId", ModuleContext.PortalId, "");
+                    if (!string.IsNullOrEmpty(OpenContent_EditorsRoleId))
+                    {
+                        int roleId = int.Parse(OpenContent_EditorsRoleId);
+                        var objModule = ModuleContext.Configuration;
+                        var perm = objModule.ModulePermissions.Where(tp => tp.RoleID == roleId).SingleOrDefault();
+                        if (perm == null)
+                        {
+                            /*
+                            var rc = new DotNetNuke.Security.Roles.RoleController();
+                            RoleInfo role = rc.GetRoleByName(ModuleContext.PortalId, EDITORS_ROLE_NAME);
+                            
+                            if (role == null)
+                            {
+                                role = new RoleInfo();
+                                role.RoleName = EDITORS_ROLE_NAME;
+                                role.Description = "Content Editors";
+                                role.PortalID = ModuleContext.PortalId;
+                                role.RoleGroupID = -1;
+                                role.BillingPeriod = -1;
+                                role.TrialPeriod = -1;
+                                role.ServiceFee = 0;
+                                role.BillingFrequency = "N";
+                                role.TrialFrequency = "N";
+                                role.TrialFee = 0;
+                                role.SecurityMode = SecurityMode.SecurityRole;
+                                role.Status = RoleStatus.Approved;
+                                roleId = rc.AddRole(role);
+                            }
+                            else
+                            {
+                                roleId = role.RoleID;
+                            }
+                            */
+                            var permissionController = new PermissionController();
+                            var arrSystemModuleViewPermissions = permissionController.GetPermissionByCodeAndKey("SYSTEM_MODULE_DEFINITION", "EDIT");
+                            var permission = (PermissionInfo)arrSystemModuleViewPermissions[0];
+                            var objModulePermission = new ModulePermissionInfo
+                            {
+                                ModuleID = ModuleContext.Configuration.ModuleID,
+                                //ModuleDefID = permission.ModuleDefID,
+                                //PermissionCode = permission.PermissionCode,
+                                PermissionID = permission.PermissionID,
+                                PermissionKey = permission.PermissionKey,
+                                RoleID = roleId,
+                                //UserID = userId,
+                                AllowAccess = true
+                            };
 
+                            objModule.ModulePermissions.Add(objModulePermission);
+                            ModulePermissionController.SaveModulePermissions(objModule);
+                        }
+                    }
+                }
+            }
         }
 
         private void IncludeResourses(FileUri template)
