@@ -107,7 +107,7 @@ namespace Satrabel.OpenContent.Components
                 }
                 //files = files.Where(f => IsImageFile(f)).Where(f => f.FileName.ToLower().Contains(q.ToLower()));
                 int folderLength = d.Length;
-                var res = files.Select(f => new { value = f.FileId.ToString(), url = fileManager.GetUrl(f), text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName  });
+                var res = files.Select(f => new { value = f.FileId.ToString(), url = fileManager.GetUrl(f), text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName });
                 return Request.CreateResponse(HttpStatusCode.OK, res);
             }
             catch (Exception exc)
@@ -142,6 +142,30 @@ namespace Satrabel.OpenContent.Components
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
+
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [HttpGet]
+        public HttpResponseMessage TabsLookup(string q, string l)
+        {
+            try
+            {
+                var tabs = TabController.GetTabsBySortOrder(PortalSettings.PortalId)
+                            .Where(t => t.ParentId != PortalSettings.AdminTabId);
+                if (q != "*" && !string.IsNullOrEmpty(q))
+                {
+                    tabs = tabs.Where(t => t.TabName.ToLower().Contains(q.ToLower()));
+                }
+                var tabsDtos = tabs.Select(t => new { value = t.TabID.ToString(), text = t.TabName + " (" + t.TabPath.Replace("//", "/").Replace("/" + t.TabName + "/", "") + " " + l + ")", url = (new Uri(NavigateUrl(t, l, PortalSettings))).PathAndQuery });
+                return Request.CreateResponse(HttpStatusCode.OK, tabsDtos);
+            }
+            catch (Exception exc)
+            {
+                Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
+
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
         [HttpGet]

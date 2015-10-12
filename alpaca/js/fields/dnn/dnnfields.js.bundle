@@ -20,6 +20,7 @@
     <file>Select2Field.js</file>
     <file>Image2Field.js</file>
     <file>File2Field.js</file>
+    <file>Url2Field.js</file>
     <file>UrlField.js</file>
     <file>wysihtmlField.js</file>
     <file>MLCKEditorField.js</file>
