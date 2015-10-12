@@ -3,9 +3,9 @@
     var Alpaca = $.alpaca;
 
     
-    Alpaca.Fields.Image2Field = Alpaca.Fields.ListField.extend(
+    Alpaca.Fields.File2Field = Alpaca.Fields.ListField.extend(
     /**
-     * @lends Alpaca.Fields.Image2Field.prototype
+     * @lends Alpaca.Fields.File2Field.prototype
      */
     {
         constructor: function (container, data, options, schema, view, connector) {
@@ -23,7 +23,7 @@
         },
 
         /**
-         * @see Alpaca.Fields.Image2Field#setup
+         * @see Alpaca.Fields.File2Field#setup
          */
         setup: function()
         {
@@ -68,7 +68,6 @@
                     {
                         this.control.val(val);
                     }
-
                     this.base(val);
                 }
             }
@@ -86,14 +85,13 @@
                     {
                         this.control.val(val);
                     }
-
                     this.base(val);
                 }
             }
         },
 
         /**
-         * @see Alpaca.Image2Field#getEnum
+         * @see Alpaca.File2Field#getEnum
          */
         getEnum: function()
         {
@@ -135,7 +133,6 @@
                         self.trigger("blur", e);
                     }
                 });
-
                 this.control.on("change", function (e) {
                     self.onChange.call(self, e);
                     self.trigger("change", e);
@@ -147,8 +144,10 @@
         beforeRenderControl: function(model, callback)
         {
             var self = this;
+
             this.base(model, function() {
                     self.selectOptions = [];
+
                     var completionFunction = function () {
                         self.schema.enum = [];
                         self.options.optionLabels = [];
@@ -160,24 +159,20 @@
                         model.selectOptions = self.selectOptions;
                         callback();
                     };
-
-                    var postData = { q: "*", d: self.options.folder };
-                    
+                    var postData = { q : "*", d : self.options.folder };
                     $.ajax({
-                        url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "ImagesLookup",
+                        url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "FilesLookup",
                         beforeSend: self.sf.setModuleHeaders,
                         type: "get",
                         dataType: "json",
                         //contentType: "application/json; charset=utf-8",
                         data: postData,
                         success: function (jsonDocument) {
-                            
                             var ds = jsonDocument;
 
                             if (self.options.dsTransformer && Alpaca.isFunction(self.options.dsTransformer)) {
                                 ds = self.options.dsTransformer(ds);
                             }
-
                             if (ds) {
                                 if (Alpaca.isObject(ds)) {
                                     // for objects, we walk through one key at a time
@@ -219,15 +214,21 @@
                             });
                         }
                     });
+                
                     //callback();
+                
+
             });
         },
 
         prepareControlModel: function(callback)
         {
             var self = this;
+
             this.base(function(model) {
+
                 model.selectOptions = self.selectOptions;
+
                 callback(model);
             });
         },
@@ -235,13 +236,16 @@
         afterRenderControl: function(model, callback)
         {
             var self = this;
+
             this.base(model, function() {
+
                 // if emptySelectFirst and nothing currently checked, then pick first item in the value list
                 // set data and visually select it
                 if (Alpaca.isUndefined(self.data) && self.options.emptySelectFirst && self.selectOptions && self.selectOptions.length > 0)
                 {
                     self.data = self.selectOptions[0].value;
                 }
+
                 // do this little trick so that if we have a default value, it gets set during first render
                 // this causes the state of the control
                 if (self.data)
@@ -280,7 +284,7 @@
                         if (!state.id) { return state.text; }
                         
                         var $state = $(
-                          '<span><img src="' + self.dataSource[state.id].url + '" style="height: 30px;width: 36px;"  /> ' + state.text + '</span>'
+                          '<span>' + state.text + '</span>'
                         );
                         return $state;
                     };
@@ -289,7 +293,7 @@
                         if (!state.id) { return state.text; }
                         
                         var $state = $(
-                          '<span><img src="' + self.dataSource[state.id].url + '" style="height: 15px;width: 18px;"  /> ' + state.text + '</span>'
+                          '<span>' + state.text + '</span>'
                         );
                         return $state;
                     };
@@ -478,19 +482,19 @@
          * @see Alpaca.Field#getTitle
          */
         getTitle: function() {
-            return "Select Field";
+            return "Select File Field";
         },
 
         /**
          * @see Alpaca.Field#getDescription
          */
         getDescription: function() {
-            return "Select Field";
+            return "Select File Field";
         },
 
         /**
          * @private
-         * @see Alpaca.Fields.Image2Field#getSchemaOfOptions
+         * @see Alpaca.Fields.File2Field#getSchemaOfOptions
          */
         getSchemaOfOptions: function() {
             return Alpaca.merge(this.base(), {
@@ -523,7 +527,7 @@
 
         /**
          * @private
-         * @see Alpaca.Fields.Image2Field#getOptionsForOptions
+         * @see Alpaca.Fields.File2Field#getOptionsForOptions
          */
         getOptionsForOptions: function() {
             return Alpaca.merge(this.base(), {
@@ -552,6 +556,6 @@
 
     });
 
-    Alpaca.registerFieldClass("image2", Alpaca.Fields.Image2Field);
+    Alpaca.registerFieldClass("file2", Alpaca.Fields.File2Field);
 
 })(jQuery);
