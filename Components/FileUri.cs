@@ -33,8 +33,9 @@ namespace Satrabel.OpenContent.Components
 
         private string NormalizePath(string filePath)
         {
-            if (filePath.StartsWith("~/")) filePath = filePath.Substring(2);
-            filePath=filePath.Replace("\\","/");
+            filePath = filePath.Replace("\\", "/");
+            filePath = filePath.Trim('~');
+            filePath = filePath.Trim('/');
             return filePath;
         }
 
@@ -138,9 +139,22 @@ namespace Satrabel.OpenContent.Components
                 throw new ArgumentNullException("path is null");
             }
             string appPath = HostingEnvironment.MapPath("~");
-            string res = String.Format("{0}", path.Replace(appPath, "").Replace("\\", "/"));
+            string res = string.Format("{0}", path.Replace(appPath, "").Replace("\\", "/"));
             if (!res.StartsWith("/")) res = "/" + res;
             return res;
         }
+
+        public bool GetDnnFileObject(int portalid, out IFileInfo fileRequested)
+        {
+            var pf = (new PortalController()).GetPortal(portalid).HomeDirectory;
+            if (FilePath.StartsWith(pf))
+            {
+                fileRequested = FileManager.Instance.GetFile(portalid, FilePath.Substring(pf.Length + 1));
+                return fileRequested != null;
+            }
+            fileRequested = null;
+            return false;
+        }
+
     }
 }
