@@ -146,17 +146,15 @@ namespace Satrabel.OpenContent.Components
             return res;
         }
 
-        public bool GetDnnFileObject(int portalid, out IFileInfo fileRequested)
+        public IFileInfo ToIFileInfo(int portalid)
         {
+            IFileInfo fileRequested = null;
             var pf = (new PortalController()).GetPortal(portalid).HomeDirectory;
             if (FilePath.StartsWith(pf))
             {
                 fileRequested = FileManager.Instance.GetFile(portalid, FilePath.Substring(pf.Length + 1));
-                return fileRequested != null;
             }
-            fileRequested = null;
-            return false;
+            return fileRequested;
         }
-
     }
 }

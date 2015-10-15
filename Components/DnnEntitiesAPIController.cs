@@ -30,6 +30,8 @@ using DotNetNuke.Services.FileSystem;
 using System.Drawing;
 using Satrabel.OpenContent.Components.Images;
 using System.Drawing.Imaging;
+using DotNetNuke.Entities.Content.Common;
+using DotNetNuke.Entities.Modules.Definitions;
 using DotNetNuke.Entities.Portals;
 
 #endregion
@@ -104,7 +106,6 @@ namespace Satrabel.OpenContent.Components
                 }
 
                 var folderManager = FolderManager.Instance;
-                var fileManager = FileManager.Instance;
                 var portalFolder = folderManager.GetFolder(PortalSettings.PortalId, d ?? "");
                 var files = folderManager.GetFiles(portalFolder, true);
                 files = files.Where(f => IsImageFile(f));
@@ -113,7 +114,8 @@ namespace Satrabel.OpenContent.Components
                     files = files.Where(f => f.FileName.ToLower().Contains(q.ToLower()));
                 }
                 int folderLength = d.Length;
-                var res = files.Select(f => new { value = f.FileId.ToString(), url = fileManager.GetUrl(f), text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName });
+
+                var res = files.Select(f => new { value = f.FileId.ToString(), url = ImageUtils.GetImageUrl(f, new Ratio(15, 15)), text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName }).Take(100);
 
                 return Request.CreateResponse(HttpStatusCode.OK, res);
             }
@@ -123,6 +125,8 @@ namespace Satrabel.OpenContent.Components
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
+
+
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
         [HttpGet]

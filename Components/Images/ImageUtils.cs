@@ -3,11 +3,61 @@ using System.Linq;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using DotNetNuke.Entities.Content.Common;
+using DotNetNuke.Entities.Modules.Definitions;
+using DotNetNuke.Services.FileSystem;
+using Newtonsoft.Json.Linq;
 
 namespace Satrabel.OpenContent.Components.Images
 {
     public static class ImageUtils
     {
+        public static string ToUrl(this IFileInfo file)
+        {
+            return FileManager.Instance.GetUrl(file);
+        }
+
+        public static string GetImageUrl(IFileInfo file, Ratio ratio)
+        {
+            var url = file.ToUrl();
+            
+            if (url.Contains("LinkClick.aspx")) return url;
+            if (ModuleDefinitionController.GetModuleDefinitionByFriendlyName("OpenDocument") == null) return url;
+
+            //remove any query parameters
+            int qIndex = url.IndexOf('?');
+            if (qIndex >= 0) url = url.Remove(qIndex);
+
+            if (file.ContentItemID > 0)
+            {
+                var contentItem = Util.GetContentController().GetContentItem(file.ContentItemID);
+                if (contentItem != null)
+                {
+                    JObject content = JObject.Parse(contentItem.Content);
+                    var crop = content["crop"];
+                    if (crop != null)
+                    {
+                        foreach (var cropperobj in crop["croppers"].Children())
+                        {
+                            var cropper = cropperobj.Children().First();
+                            int x = int.Parse(cropper["x"].ToString());
+                            int y = int.Parse(cropper["y"].ToString());
+                            int w = int.Parse(cropper["width"].ToString());
+                            int h = int.Parse(cropper["height"].ToString());
+                            var cropratio = new Ratio(w, h);
+                            if (Math.Abs(cropratio.AsFloat - ratio.AsFloat) < 0.02) //allow 2% margin
+                            {
+                                return url + string.Format("?crop={0},{1},{2},{3}", x, y, w, h);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return url + string.Format("?width={0}&height={1}&mode=crop", ratio.Width, ratio.Height);
+        }
+
+
         public static Image Resize(Image image, int scaledWidth, int scaledHeight)
         {
             return new Bitmap(image, scaledWidth, scaledHeight);
@@ -102,7 +152,7 @@ namespace Satrabel.OpenContent.Components.Images
                 finalImage = bitmap;
             }
             catch { }
-            
+
             /*
             try
             {
