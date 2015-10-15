@@ -98,7 +98,7 @@ namespace Satrabel.OpenContent.Components
             {
                 if (string.IsNullOrEmpty(d))
                 {
-                    var exc = new ArgumentException("Folder path not specified. Missing 'folder'='FolderPath' in optionfile? ");
+                    var exc = new ArgumentException("Folder path not specified. Missing ['folder': 'FolderPath'] in optionfile? ");
                     Logger.Error(exc);
                     return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
                 }
