@@ -96,6 +96,13 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
+                if (string.IsNullOrEmpty(d))
+                {
+                    var exc = new ArgumentException("Folder path not specified. Missing 'folder'='FolderPath' in optionfile? ");
+                    Logger.Error(exc);
+                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+                }
+
                 var folderManager = FolderManager.Instance;
                 var fileManager = FileManager.Instance;
                 var portalFolder = folderManager.GetFolder(PortalSettings.PortalId, d ?? "");
@@ -105,9 +112,9 @@ namespace Satrabel.OpenContent.Components
                 {
                     files = files.Where(f => f.FileName.ToLower().Contains(q.ToLower()));
                 }
-                //files = files.Where(f => IsImageFile(f)).Where(f => f.FileName.ToLower().Contains(q.ToLower()));
                 int folderLength = d.Length;
                 var res = files.Select(f => new { value = f.FileId.ToString(), url = fileManager.GetUrl(f), text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName });
+
                 return Request.CreateResponse(HttpStatusCode.OK, res);
             }
             catch (Exception exc)
