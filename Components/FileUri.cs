@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Hosting;
+using DotNetNuke.Entities.Portals;
+using DotNetNuke.Services.FileSystem;
 
 namespace Satrabel.OpenContent.Components
 {
