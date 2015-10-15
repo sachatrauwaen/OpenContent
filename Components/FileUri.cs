@@ -37,7 +37,7 @@ namespace Satrabel.OpenContent.Components
         {
             filePath = filePath.Replace("\\", "/");
             filePath = filePath.Trim('~');
-            filePath = filePath.Trim('/');
+            //filePath = filePath.Trim('/');
             return filePath;
         }
 
