@@ -150,9 +150,9 @@ namespace Satrabel.OpenContent.Components
         {
             IFileInfo fileRequested = null;
             var pf = (new PortalController()).GetPortal(portalid).HomeDirectory;
-            if (FilePath.StartsWith(pf))
+            if (FilePath.StartsWith("/" + pf))
             {
-                fileRequested = FileManager.Instance.GetFile(portalid, FilePath.Substring(pf.Length + 1));
+                fileRequested = FileManager.Instance.GetFile(portalid, FilePath.Substring(pf.Length + 2));
             }
             return fileRequested;
         }
