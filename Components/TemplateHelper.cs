@@ -8,6 +8,7 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.WebPages;
+using Satrabel.OpenContent.Components.Images;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -34,6 +35,44 @@ namespace Satrabel.OpenContent.Components
             JSOrder++;
         }
 
+        /// <summary>
+        /// Gets the image URL.
+        /// </summary>
+        /// <param name="fileId">The file identifier.</param>
+        /// <param name="columnWidth">Width of the column in 1/12 (decimal).</param>
+        /// <param name="ratioString">The ratio string. (eg '1x1', '5x8')</param>
+        /// <param name="isMobile">if set to <c>true</c> [is mobile].</param>
+        /// <returns>Url of image with appropriate measurements for the current context</returns>
+        public static string GetImageUrl(int fileId, float columnWidth, string ratioString, bool isMobile)
+        {
+            if (columnWidth < 0 || columnWidth > 1) columnWidth = 1;
+            if (string.IsNullOrEmpty(ratioString)) ratioString = "1x1";
+            var ratio = new Ratio(ratioString);
+            var maxWidth = ImageUtils.CalculateMaxPixels(columnWidth, isMobile);
+            ratio.SetWidth(maxWidth);
+            return ImageUtils.GetImageUrl(FileInfo(fileId), ratio);
+        }
+        public static string GetImageUrl(int fileId, int portalid, string ratioString, float columnHeight, bool isMobile)
+        {
+            if (columnHeight < 0 || columnHeight > 1) columnHeight = 1;
+            if (string.IsNullOrEmpty(ratioString)) ratioString = "1x1";
+            var ratio = new Ratio(ratioString);
+            var maxHeight = ImageUtils.CalculateMaxPixels(columnHeight, isMobile);
+            ratio.SetHeight(maxHeight);
+            return ImageUtils.GetImageUrl(FileInfo(fileId), ratio);
+        }
+
+        public static string FileUrl(int fileid)
+        {
+            var fileManager = FileManager.Instance;
+            IFileInfo file = fileManager.GetFile(fileid);
+            return fileManager.GetUrl(file);
+        }
+
+        public static IFileInfo FileInfo(int fileid)
+        {
+            return FileManager.Instance.GetFile(fileid);
+        }
 
         #region NormalizeDynamic
         /// <summary>
@@ -77,13 +116,6 @@ namespace Satrabel.OpenContent.Components
             if (value == null) return defaultValue;
             if (value.GetType() == "".GetType()) return value ?? defaultValue; //Resharper says value is never Null. 
             return value.ToString();
-        }
-
-        public static string FileUrl(int fileid)
-        {
-            var fileManager = FileManager.Instance;
-            IFileInfo File = fileManager.GetFile(fileid);
-            return fileManager.GetUrl(File);
         }
 
         #endregion

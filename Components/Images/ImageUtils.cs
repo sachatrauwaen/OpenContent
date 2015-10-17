@@ -12,6 +12,27 @@ namespace Satrabel.OpenContent.Components.Images
 {
     public static class ImageUtils
     {
+        /// <summary>
+        /// Gets the image URL.
+        /// </summary>
+        /// <param name="columnWidth">Size of the image. In Bootstrap 12th</param>
+        /// <param name="isMobile"></param>
+        /// <param name="retina"></param>
+        /// <returns></returns>
+        public static int CalculateMaxPixels(float columnWidth, bool isMobile, bool retina = true)
+        {
+            if (columnWidth < 0 || columnWidth > 1) columnWidth = 1;
+            if (isMobile && retina)
+            {
+                return Convert.ToInt32(2 * 768 * columnWidth);
+            }
+            if (isMobile && !retina)
+            {
+                return Convert.ToInt32(2 * 480 * columnWidth);
+            }
+            return Convert.ToInt32(2 * 1200 * columnWidth);
+        }
+
         public static string ToUrl(this IFileInfo file)
         {
             return FileManager.Instance.GetUrl(file);
@@ -20,13 +41,11 @@ namespace Satrabel.OpenContent.Components.Images
         public static string GetImageUrl(IFileInfo file, Ratio ratio)
         {
             var url = file.ToUrl();
-            
+
             if (url.Contains("LinkClick.aspx")) return url;
             if (ModuleDefinitionController.GetModuleDefinitionByFriendlyName("OpenDocument") == null) return url;
 
-            //remove any query parameters
-            int qIndex = url.IndexOf('?');
-            if (qIndex >= 0) url = url.Remove(qIndex);
+            url = url.RemoveQueryParams();
 
             if (file.ContentItemID > 0)
             {

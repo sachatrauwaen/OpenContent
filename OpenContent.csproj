@@ -149,6 +149,7 @@
     <Compile Include="Components\Rss\FeedItem.cs" />
     <Compile Include="Components\TemplateHelper.cs" />
     <Compile Include="Components\TemplateInfo.cs" />
+    <Compile Include="Components\Utils.cs" />
     <Compile Include="EditGlobalSettings.ascx.cs">
       <DependentUpon>EditGlobalSettings.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
