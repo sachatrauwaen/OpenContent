@@ -107,6 +107,12 @@ namespace Satrabel.OpenContent.Components
 
                 var folderManager = FolderManager.Instance;
                 var portalFolder = folderManager.GetFolder(PortalSettings.PortalId, d ?? "");
+                if (portalFolder==null)
+                {
+                    var exc = new ArgumentException("Folder path not found. Adjust ['folder': 'FolderPath'] in optionfile. ");
+                    Logger.Error(exc);
+                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+                }
                 var files = folderManager.GetFiles(portalFolder, true);
                 files = files.Where(f => IsImageFile(f));
                 if (q != "*" && !string.IsNullOrEmpty(q))
@@ -118,6 +124,13 @@ namespace Satrabel.OpenContent.Components
                 var res = files.Select(f => new { value = f.FileId.ToString(), url = ImageUtils.GetImageUrl(f, new Ratio(15, 15)), text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName }).Take(100);
 
                 return Request.CreateResponse(HttpStatusCode.OK, res);
+
+                if (false)
+                {
+                    var exc = new ArgumentException("Folder path not specified. Missing ['folder': 'FolderPath'] in optionfile? ");
+                    Logger.Error(exc);
+                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+                }
             }
             catch (Exception exc)
             {
