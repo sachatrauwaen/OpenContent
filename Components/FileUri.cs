@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Web;
 using System.Web.Hosting;
 using DotNetNuke.Entities.Portals;
@@ -37,7 +35,6 @@ namespace Satrabel.OpenContent.Components
         {
             filePath = filePath.Replace("\\", "/");
             filePath = filePath.Trim('~');
-            //filePath = filePath.Trim('/');
             return filePath;
         }
 
@@ -150,9 +147,10 @@ namespace Satrabel.OpenContent.Components
         {
             IFileInfo fileRequested = null;
             var pf = (new PortalController()).GetPortal(portalid).HomeDirectory;
-            if (FilePath.StartsWith("/" + pf))
+            var pos = FilePath.IndexOf("/" + pf, StringComparison.Ordinal);
+            if (pos > -1)
             {
-                fileRequested = FileManager.Instance.GetFile(portalid, FilePath.Substring(pf.Length + 2));
+                fileRequested = FileManager.Instance.GetFile(portalid, FilePath.Substring(pos + pf.Length + 2));
             }
             return fileRequested;
         }

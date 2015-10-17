@@ -1,9 +1,9 @@
 ﻿using DotNetNuke.Services.FileSystem;
 using DotNetNuke.Web.Client;
 using DotNetNuke.Web.Client.ClientResourceManagement;
-using DotNetNuke.Web.Razor;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
@@ -50,16 +50,20 @@ namespace Satrabel.OpenContent.Components
             var ratio = new Ratio(ratioString);
             var maxWidth = ImageUtils.CalculateMaxPixels(columnWidth, isMobile);
             ratio.SetWidth(maxWidth);
-            return ImageUtils.GetImageUrl(FileInfo(fileId), ratio);
+            var iFile = FileInfo(fileId);
+            if (iFile == null) throw new NoNullAllowedException(string.Format("File [{0}] not found", fileId));
+            return ImageUtils.GetImageUrl(iFile, ratio);
         }
-        public static string GetImageUrl(int fileId, int portalid, string ratioString, float columnHeight, bool isMobile)
+        public static string GetImageUrl(int fileId,  string ratioString, float columnHeight, bool isMobile)
         {
             if (columnHeight < 0 || columnHeight > 1) columnHeight = 1;
             if (string.IsNullOrEmpty(ratioString)) ratioString = "1x1";
             var ratio = new Ratio(ratioString);
             var maxHeight = ImageUtils.CalculateMaxPixels(columnHeight, isMobile);
             ratio.SetHeight(maxHeight);
-            return ImageUtils.GetImageUrl(FileInfo(fileId), ratio);
+            var iFile = FileInfo(fileId);
+            if (iFile == null) throw new NoNullAllowedException(string.Format("File [{0}] not found", fileId));
+            return ImageUtils.GetImageUrl(iFile, ratio);
         }
 
         public static string FileUrl(int fileid)
