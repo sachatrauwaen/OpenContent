@@ -43,40 +43,6 @@ namespace Satrabel.OpenContent.Components
         /// <param name="ratioString">The ratio string. (eg '1x1', '5x8')</param>
         /// <param name="isMobile">if set to <c>true</c> [is mobile].</param>
         /// <returns>Url of image with appropriate measurements for the current context</returns>
-        public static string GetImageUrl(int fileId, float columnWidth, string ratioString, bool isMobile)
-        {
-            if (columnWidth < 0 || columnWidth > 1) columnWidth = 1;
-            if (string.IsNullOrEmpty(ratioString)) ratioString = "1x1";
-            var ratio = new Ratio(ratioString);
-            var maxWidth = ImageUtils.CalculateMaxPixels(columnWidth, isMobile);
-            ratio.SetWidth(maxWidth);
-            var iFile = FileInfo(fileId);
-            if (iFile == null) throw new NoNullAllowedException(string.Format("File [{0}] not found", fileId));
-            return ImageUtils.GetImageUrl(iFile, ratio);
-        }
-        public static string GetImageUrl(int fileId,  string ratioString, float columnHeight, bool isMobile)
-        {
-            if (columnHeight < 0 || columnHeight > 1) columnHeight = 1;
-            if (string.IsNullOrEmpty(ratioString)) ratioString = "1x1";
-            var ratio = new Ratio(ratioString);
-            var maxHeight = ImageUtils.CalculateMaxPixels(columnHeight, isMobile);
-            ratio.SetHeight(maxHeight);
-            var iFile = FileInfo(fileId);
-            if (iFile == null) throw new NoNullAllowedException(string.Format("File [{0}] not found", fileId));
-            return ImageUtils.GetImageUrl(iFile, ratio);
-        }
-
-        public static string FileUrl(int fileid)
-        {
-            var fileManager = FileManager.Instance;
-            IFileInfo file = fileManager.GetFile(fileid);
-            return fileManager.GetUrl(file);
-        }
-
-        public static IFileInfo FileInfo(int fileid)
-        {
-            return FileManager.Instance.GetFile(fileid);
-        }
 
         #region NormalizeDynamic
         /// <summary>

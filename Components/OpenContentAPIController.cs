@@ -62,7 +62,7 @@ namespace Satrabel.OpenContent.Components
             {
                 module = ModuleController.Instance.GetModule(settings.ModuleId, settings.TabId, false);
             }
-            var manifest = OpenContentUtils.GetManifest(settings.Template.Directory);
+            var manifest = OpenContentUtils.GetManifest(settings.Template.UrlDirectory);
             TemplateManifest templateManifest = null;
             if (manifest != null)
             {
@@ -74,7 +74,7 @@ namespace Satrabel.OpenContent.Components
             try
             {
                 // schema
-                var schemaFilename = new FileUri(settings.Template.Directory + "schema.json");
+                var schemaFilename = new FileUri(settings.Template.UrlDirectory + "schema.json");
                 if (schemaFilename.FileExists)
                 {
                     JObject schemaJson = schemaFilename.ToJObject();
@@ -85,19 +85,19 @@ namespace Satrabel.OpenContent.Components
                     //return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "schema.json missing for template " + Template);
                 }
                 // default options
-                var optionsFilename = new FileUri(settings.Template.Directory + "options.json");
+                var optionsFilename = new FileUri(settings.Template.UrlDirectory + "options.json");
                 var optionsJson = optionsFilename.ToJObject();
                 if (optionsJson != null)
                     json["options"] = optionsJson;
 
                 // language options
-                optionsFilename = new FileUri(settings.Template.Directory + "options." + PortalSettings.CultureCode + ".json");
+                optionsFilename = new FileUri(settings.Template.UrlDirectory + "options." + PortalSettings.CultureCode + ".json");
                 optionsJson = optionsFilename.ToJObject();
                 if (optionsJson != null)
                     json["options"] = json["options"].JsonMerge(optionsJson);
 
                 // view
-                var viewFilename = new FileUri(settings.Template.Directory + "view.json");
+                var viewFilename = new FileUri(settings.Template.UrlDirectory + "view.json");
                 optionsJson = viewFilename.ToJObject();
                 if (optionsJson != null)
                     json["view"] = optionsJson;
@@ -177,7 +177,7 @@ namespace Satrabel.OpenContent.Components
             {
                 module = ModuleController.Instance.GetModule(settings.ModuleId, settings.TabId, false);
             }
-            var manifest = OpenContentUtils.GetManifest(settings.Template.Directory);
+            var manifest = OpenContentUtils.GetManifest(settings.Template.UrlDirectory);
             TemplateManifest templateManifest = null;
             if (manifest != null)
             {
@@ -226,19 +226,19 @@ namespace Satrabel.OpenContent.Components
                 string prefix = templateUri.FileNameWithoutExtension + "-";
 
                 // schema
-                var schemaFilename = new FileUri(templateUri.Directory + prefix + "schema.json");
+                var schemaFilename = new FileUri(templateUri.UrlDirectory + prefix + "schema.json");
                 JObject schemaJson = schemaFilename.ToJObject();
                 if (schemaJson != null)
                     json["schema"] = schemaJson;
 
                 // default options
-                var optionsFilename = new FileUri(templateUri.Directory + prefix + "options.json");
+                var optionsFilename = new FileUri(templateUri.UrlDirectory + prefix + "options.json");
                 JObject optionsJson = optionsFilename.ToJObject();
                 if (optionsJson != null)
                     json["options"] = optionsJson;
 
                 // language options
-                optionsFilename = new FileUri(templateUri.Directory + prefix + "options." + PortalSettings.CultureCode + ".json");
+                optionsFilename = new FileUri(templateUri.UrlDirectory + prefix + "options." + PortalSettings.CultureCode + ".json");
                 optionsJson = optionsFilename.ToJObject();
                 if (optionsJson != null)
                     json["options"] = json["options"].JsonMerge(optionsJson);
@@ -269,7 +269,7 @@ namespace Satrabel.OpenContent.Components
                 {
                     module = ModuleController.Instance.GetModule(settings.ModuleId, settings.TabId, false);
                 }
-                var manifest = OpenContentUtils.GetManifest(settings.Template.Directory);
+                var manifest = OpenContentUtils.GetManifest(settings.Template.UrlDirectory);
                 TemplateManifest templateManifest = null;
                 if (manifest != null)
                 {
@@ -353,7 +353,7 @@ namespace Satrabel.OpenContent.Components
                 {
                     module = ModuleController.Instance.GetModule(settings.ModuleId, settings.TabId, false);
                 }
-                var manifest = OpenContentUtils.GetManifest(settings.Template.Directory);
+                var manifest = OpenContentUtils.GetManifest(settings.Template.UrlDirectory);
                 TemplateManifest templateManifest = null;
                 if (manifest != null)
                 {

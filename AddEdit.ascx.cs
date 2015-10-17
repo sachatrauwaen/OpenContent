@@ -36,7 +36,7 @@ namespace Satrabel.OpenContent
             var template = OpenContentUtils.GetTemplate(ModuleContext.Settings);
             if (template != null)
             {
-                string templateFolder = template.Directory;
+                string templateFolder = template.UrlDirectory;
                 var manifest = OpenContentUtils.GetManifest(templateFolder);
                 string addEditControl = manifest.AdditionalEditControl;
                 if (!string.IsNullOrEmpty(addEditControl))

@@ -50,7 +50,7 @@ namespace Satrabel.OpenContent
         private void cmdCustom_Click(object sender, EventArgs e)
         {
             FileUri template = OpenContentUtils.GetTemplate(ModuleContext.Settings);
-            string templateFolder = template.Directory ;
+            string templateFolder = template.UrlDirectory ;
             string templateDir = Server.MapPath(templateFolder);
             string moduleDir = Server.MapPath(ModuleTemplateDirectory);
             if (!Directory.Exists(moduleDir))
@@ -86,7 +86,7 @@ namespace Satrabel.OpenContent
             LoadFiles(template);
             //var scriptFile = new FileUri(template.Directory + "/" + scriptList.SelectedValue);
             
-            var scriptFile = new FileUri(template.Directory + "/" + scriptList.SelectedValue);
+            var scriptFile = new FileUri(template.UrlDirectory + "/" + scriptList.SelectedValue);
             DisplayFile(scriptFile);
             if (template.FilePath.StartsWith(ModuleTemplateDirectory))
             {
@@ -245,7 +245,7 @@ namespace Satrabel.OpenContent
         private void scriptList_SelectedIndexChanged(object sender, EventArgs e)
         {
             FileUri template = OpenContentUtils.GetTemplate(ModuleContext.Settings);
-            var scriptFile = new FileUri(template.Directory + "/" + scriptList.SelectedValue);
+            var scriptFile = new FileUri(template.UrlDirectory + "/" + scriptList.SelectedValue);
             DisplayFile(scriptFile); 
         }
         #endregion

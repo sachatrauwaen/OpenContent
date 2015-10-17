@@ -80,7 +80,7 @@ namespace Satrabel.OpenContent.Components
             var dirs = Directory.GetDirectories(basePath);
             if (otherModuleTemplate != null)
             {
-                var selDir = otherModuleTemplate.PhysicalDirectoryName;
+                var selDir = otherModuleTemplate.PhysicalFullDirectory;
                 dirs = new string[] { selDir };
             }
             
@@ -446,7 +446,7 @@ namespace Satrabel.OpenContent.Components
                 throw new ArgumentNullException("template is null");
             }
             TemplateManifest templateManifest = null;
-            Manifest manifest = GetManifest(template.Directory);
+            Manifest manifest = GetManifest(template.UrlDirectory);
             if (manifest != null) { 
                 templateManifest = manifest.GetTemplateManifest(template);
             }

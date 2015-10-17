@@ -130,6 +130,7 @@
     <Compile Include="Components\FileUri.cs" />
     <Compile Include="Components\Handlebars\HandlebarsEngine.cs" />
     <Compile Include="Components\Images\ImageUtils.cs" />
+    <Compile Include="Components\Images\ImageUri.cs" />
     <Compile Include="Components\Images\Ratio.cs" />
     <Compile Include="Components\Json\JsonExtensions.cs" />
     <Compile Include="Components\Json\JsonMergeExtensions.cs" />
