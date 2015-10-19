@@ -13,6 +13,17 @@ namespace Satrabel.OpenContent.Components.Images
     {
         #region Constructors
 
+        public ImageUri(int fileId)
+            : base(fileId)
+        {
+        }
+
+        public ImageUri(string pathToFile, int portalid)
+            : base(pathToFile)
+        {
+            FileInfo = ToIFileInfo(portalid);
+        }
+
         private ImageUri(string pathToFile)
             : base(pathToFile)
         {
@@ -22,20 +33,16 @@ namespace Satrabel.OpenContent.Components.Images
         private ImageUri(string path, string filename)
             : base(path, filename)
         {
-        }
-
-        public ImageUri(int fileId)
-            : base(fileId)
-        {
-        }
-
-        public ImageUri(string filename, int portalid)
-            : base(filename)
-        {
-            FileInfo = ToIFileInfo(portalid);
+            //Don't use this constructor in this class
         }
 
         #endregion
+
+        public string GetImageUrl(int width, int height)
+        {
+            var ratio = new Ratio(width,  height);
+            return ImageUtils.GetImageUrl(FileInfo, ratio);
+        }
 
         public string GetImageUrl(float columnWidth, string ratioString, bool isMobile)
         {

@@ -23,7 +23,7 @@ using DotNetNuke.Security;
 
 namespace Satrabel.OpenContent.Components
 {
-    public class OpenContentUtils
+    public static class OpenContentUtils
     {
         public static void UpdateModuleTitle(ModuleInfo Module, string ModuleTitle)
         {

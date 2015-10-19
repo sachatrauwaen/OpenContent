@@ -46,10 +46,9 @@ namespace Satrabel.OpenContent
             hlCancel.NavigateUrl = Globals.NavigateURL();
             cmdSave.NavigateUrl = Globals.NavigateURL();
 
-            string template = Settings["template"] as string;
-            string templateFolder = VirtualPathUtility.GetDirectory(template);
+            var template = OpenContentUtils.GetTemplate(Settings);
             AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext);
-            alpaca.VirtualDirectory = templateFolder;
+            alpaca.VirtualDirectory = template.UrlDirectory;
             alpaca.RegisterAll();
 
             /*
