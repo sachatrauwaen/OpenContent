@@ -39,7 +39,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
             {
                 if (string.IsNullOrEmpty(_prefix))
                 {
-                    if(Debugger.IsAttached)
+                    if(Debugger.IsAttached)  //is empty normal?
                         Debugger.Break();
                     //throw new ArgumentNullException("Prefix must NOT be Null (AlpacaEngine)");
                 }

@@ -6,6 +6,7 @@ using System.Web;
 using DotNetNuke.Common;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Services.FileSystem;
+using Satrabel.OpenContent.Components.Common;
 
 namespace Satrabel.OpenContent.Components.Images
 {
@@ -40,7 +41,7 @@ namespace Satrabel.OpenContent.Components.Images
 
         public string GetImageUrl(int width, int height)
         {
-            var ratio = new Ratio(width,  height);
+            var ratio = new Ratio(width, height);
             return ImageUtils.GetImageUrl(FileInfo, ratio);
         }
 
@@ -65,12 +66,21 @@ namespace Satrabel.OpenContent.Components.Images
         }
 
 
+        public string EditLink(string urlFileManager, string culture)
+        {
+            var tabId = DnnUtils.GetDnnTabByUrl(urlFileManager, culture).TabID; //todo sacha
+            return EditLink(tabId);
+        }
+
         public string EditLink(int tabFileManager)
         {
             {
                 if (tabFileManager <= 0) return "";
                 var url = Globals.NavigateURL(tabFileManager);
-                return string.Format("javascript:dnnModal.show('{0}/ctl/FileProperties/mid/1420?popUp=true&fileId={1}')",url, FileInfo.FileId);
+                var dnnFileManagerModule = DnnUtils.GetDnnModulesByFriendlyName("filemanager").FirstOrDefault(); //todo sacha
+                //var modId = dnnFileManagerModule.ModuleControlId; 1420; //todo sacha
+                var modId = 1420; //todo sacha
+                return string.Format("javascript:dnnModal.show('{0}/ctl/FileProperties/mid/{2}?popUp=true&fileId={1}')", url, FileInfo.FileId, modId);
             }
         }
 

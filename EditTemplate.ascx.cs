@@ -50,7 +50,7 @@ namespace Satrabel.OpenContent
         private void cmdCustom_Click(object sender, EventArgs e)
         {
             FileUri template = OpenContentUtils.GetTemplate(ModuleContext.Settings);
-            string templateFolder = template.UrlDirectory ;
+            string templateFolder = template.UrlDirectory;
             string templateDir = Server.MapPath(templateFolder);
             string moduleDir = Server.MapPath(ModuleTemplateDirectory);
             if (!Directory.Exists(moduleDir))
@@ -85,7 +85,7 @@ namespace Satrabel.OpenContent
         {
             LoadFiles(template);
             //var scriptFile = new FileUri(template.Directory + "/" + scriptList.SelectedValue);
-            
+
             var scriptFile = new FileUri(template.UrlDirectory + "/" + scriptList.SelectedValue);
             DisplayFile(scriptFile);
             if (template.FilePath.StartsWith(ModuleTemplateDirectory))
@@ -158,34 +158,35 @@ namespace Satrabel.OpenContent
             {
                 //string templateFolder = template.DirectoryName;
                 TemplateManifest manifest = OpenContentUtils.GetTemplateManifest(template);
-                if (manifest != null )
+                if (manifest != null)
                 {
-                    if (manifest.Main != null){
-                        scriptList.Items.Add(new ListItem("Template", manifest.Main.Template));
-                    }
-                    if (manifest.Main.PartialTemplates != null)
+                    if (manifest.Main != null)
                     {
-                        foreach (var part in manifest.Main.PartialTemplates)
+                        scriptList.Items.Add(new ListItem("Template", manifest.Main.Template));
+                        if (manifest.Main.PartialTemplates != null)
                         {
-                            scriptList.Items.Add(new ListItem("Template - " + Path.GetFileNameWithoutExtension(part.Value.Template), part.Value.Template));
+                            foreach (var part in manifest.Main.PartialTemplates)
+                            {
+                                scriptList.Items.Add(new ListItem("Template - " + Path.GetFileNameWithoutExtension(part.Value.Template), part.Value.Template));
+                            }
                         }
                     }
                     if (manifest.Detail != null)
                     {
                         scriptList.Items.Add(new ListItem("Template - " + Path.GetFileNameWithoutExtension(manifest.Detail.Template), manifest.Detail.Template));
-                    }
-                    if (manifest.Detail.PartialTemplates != null)
-                    {
-                        foreach (var part in manifest.Detail.PartialTemplates)
+                        if (manifest.Detail.PartialTemplates != null)
                         {
-                            scriptList.Items.Add(new ListItem("Template - " + Path.GetFileNameWithoutExtension(part.Value.Template), part.Value.Template));
+                            foreach (var part in manifest.Detail.PartialTemplates)
+                            {
+                                scriptList.Items.Add(new ListItem("Template - " + Path.GetFileNameWithoutExtension(part.Value.Template), part.Value.Template));
+                            }
                         }
                     }
                     scriptList.Items.Add(new ListItem("Manifest", "manifest.json"));
                 }
                 else
                 {
-                    scriptList.Items.Add(new ListItem("Template",template.FileName ));
+                    scriptList.Items.Add(new ListItem("Template", template.FileName));
                 }
 
                 scriptList.Items.Add(new ListItem("Stylesheet", template.FileNameWithoutExtension + ".css"));
@@ -246,7 +247,7 @@ namespace Satrabel.OpenContent
         {
             FileUri template = OpenContentUtils.GetTemplate(ModuleContext.Settings);
             var scriptFile = new FileUri(template.UrlDirectory + "/" + scriptList.SelectedValue);
-            DisplayFile(scriptFile); 
+            DisplayFile(scriptFile);
         }
         #endregion
     }
