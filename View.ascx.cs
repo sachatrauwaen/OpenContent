@@ -302,50 +302,51 @@ namespace Satrabel.OpenContent
                 {
                     _info.Template = new FileUri(_settings.Template.UrlDirectory, _info.TemplateManifest.Main.Template);
                 }
-            }
-            if (_info.TemplateManifest != null && _info.TemplateManifest.IsListTemplate)
-            {
-                // Multi items Template
-                if (_itemId == Null.NullInteger)
+                
+                if (_info.TemplateManifest != null && _info.TemplateManifest.IsListTemplate)
                 {
-                    // List template
-                    if (_info.TemplateManifest.Main != null)
+                    // Multi items Template
+                    if (_itemId == Null.NullInteger)
                     {
-                        // for list templates a main template need to be defined
-
-                        GetDataList(_info, _settings);
-                        if (_info.DataExist)
+                        // List template
+                        if (_info.TemplateManifest.Main != null)
                         {
-                            _info.OutputString = GenerateListOutput(_settings.Template.UrlDirectory, _info.TemplateManifest.Main, _info.DataList, _info.SettingsJson);
+                            // for list templates a main template need to be defined
+
+                            GetDataList(_info, _settings);
+                            if (_info.DataExist)
+                            {
+                                _info.OutputString = GenerateListOutput(_settings.Template.UrlDirectory, _info.TemplateManifest.Main, _info.DataList, _info.SettingsJson);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // detail template
+                        if (_info.TemplateManifest.Detail != null)
+                        {
+                            GetDetailData(_info, _settings);
+                            if (_info.DataExist)
+                            {
+                                _info.OutputString = GenerateOutput(_settings.Template.UrlDirectory, _info.TemplateManifest.Detail, _info.DataJson, _info.SettingsJson);
+                            }
                         }
                     }
                 }
                 else
                 {
-                    // detail template
-                    if (_info.TemplateManifest.Detail != null)
+                    TemplateFiles files = null;
+                    if (_info.TemplateManifest != null)
                     {
-                        GetDetailData(_info, _settings);
-                        if (_info.DataExist)
-                        {
-                            _info.OutputString = GenerateOutput(_settings.Template.UrlDirectory, _info.TemplateManifest.Detail, _info.DataJson, _info.SettingsJson);
-                        }
+                        files = _info.TemplateManifest.Main;
+                        _info.Template = new FileUri(_settings.Template.UrlDirectory, files.Template);
                     }
-                }
-            }
-            else
-            {
-                TemplateFiles files = null;
-                if (_info.TemplateManifest != null)
-                {
-                    files = _info.TemplateManifest.Main;
-                    _info.Template = new FileUri(_settings.Template.UrlDirectory, files.Template);
-                }
-                // single item template
-                GetData();
-                if (_info.DataExist)
-                {
-                    _info.OutputString = GenerateOutput(_info.Template, _info.DataJson, _info.SettingsJson, files);
+                    // single item template
+                    GetData();
+                    if (_info.DataExist)
+                    {
+                        _info.OutputString = GenerateOutput(_info.Template, _info.DataJson, _info.SettingsJson, files);
+                    }
                 }
             }
         }
@@ -841,7 +842,7 @@ namespace Satrabel.OpenContent
                          "~/DesktopModules/OpenContent/images/settings.gif",
                          ModuleContext.EditUrl("EditSettings"),
                          false,
-                         SecurityAccessLevel.Host,
+                         SecurityAccessLevel.Admin,
                          true,
                          false);
 
