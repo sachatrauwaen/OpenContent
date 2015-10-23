@@ -74,44 +74,35 @@ namespace Satrabel.OpenContent.Components
             try
             {
                 // schema
-                var schemaFilename = new FileUri(settings.Template.UrlDirectory + "schema.json");
-                if (schemaFilename.FileExists)
-                {
-                    JObject schemaJson = schemaFilename.ToJObject();
+                var schemaJson = JsonUtils.LoadJsonFromFile(settings.Template.UrlDirectory + "schema.json");
+                if (schemaJson != null)
                     json["schema"] = schemaJson;
-                }
-                else
-                {
-                    //return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "schema.json missing for template " + Template);
-                }
+
                 // default options
-                var optionsFilename = new FileUri(settings.Template.UrlDirectory + "options.json");
-                var optionsJson = optionsFilename.ToJObject();
+                var optionsJson = JsonUtils.LoadJsonFromFile(settings.Template.UrlDirectory + "options.json");
                 if (optionsJson != null)
                     json["options"] = optionsJson;
 
                 // language options
-                optionsFilename = new FileUri(settings.Template.UrlDirectory + "options." + PortalSettings.CultureCode + ".json");
-                optionsJson = optionsFilename.ToJObject();
+                optionsJson = JsonUtils.LoadJsonFromFile(settings.Template.UrlDirectory + "options." + PortalSettings.CultureCode + ".json");
                 if (optionsJson != null)
                     json["options"] = json["options"].JsonMerge(optionsJson);
 
                 // view
-                var viewFilename = new FileUri(settings.Template.UrlDirectory + "view.json");
-                optionsJson = viewFilename.ToJObject();
+                 optionsJson = JsonUtils.LoadJsonFromFile(settings.Template.UrlDirectory + "view.json");
                 if (optionsJson != null)
                     json["view"] = optionsJson;
 
-                int CreatedByUserid = -1;
+                int createdByUserid = -1;
                 var content = GetContent(module.ModuleID, listMode, id);
                 if (content != null)
                 {
                     json["data"] = content.Json.ToJObject("GetContent " + id);
                     AddVersions(json, content);
-                    CreatedByUserid = content.CreatedByUserId;
+                    createdByUserid = content.CreatedByUserId;
                 }
 
-                if (!OpenContentUtils.HasEditPermissions(PortalSettings, module, editRole, CreatedByUserid))
+                if (!OpenContentUtils.HasEditPermissions(PortalSettings, module, editRole, createdByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
@@ -226,20 +217,17 @@ namespace Satrabel.OpenContent.Components
                 string prefix = templateUri.FileNameWithoutExtension + "-";
 
                 // schema
-                var schemaFilename = new FileUri(templateUri.UrlDirectory + prefix + "schema.json");
-                JObject schemaJson = schemaFilename.ToJObject();
+                var schemaJson = JsonUtils.LoadJsonFromFile(templateUri.UrlDirectory + prefix + "schema.json");
                 if (schemaJson != null)
                     json["schema"] = schemaJson;
 
                 // default options
-                var optionsFilename = new FileUri(templateUri.UrlDirectory + prefix + "options.json");
-                JObject optionsJson = optionsFilename.ToJObject();
+                var optionsJson = JsonUtils.LoadJsonFromFile(templateUri.UrlDirectory + prefix + "options.json");
                 if (optionsJson != null)
                     json["options"] = optionsJson;
 
                 // language options
-                optionsFilename = new FileUri(templateUri.UrlDirectory + prefix + "options." + PortalSettings.CultureCode + ".json");
-                optionsJson = optionsFilename.ToJObject();
+                optionsJson = JsonUtils.LoadJsonFromFile(templateUri.UrlDirectory + prefix + "options." + PortalSettings.CultureCode + ".json");
                 if (optionsJson != null)
                     json["options"] = json["options"].JsonMerge(optionsJson);
 
