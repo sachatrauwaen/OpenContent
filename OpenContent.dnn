@@ -138,7 +138,7 @@
                     <controlSrc>DesktopModules/OpenContent/EditGlobalSettings.ascx</controlSrc>
                     <supportsPartialRendering>False</supportsPartialRendering>
                     <controlTitle>Global Settings</controlTitle>
-                    <controlType>Admin</controlType>
+                    <controlType>Host</controlType>
                     <iconFile />
                     <helpUrl />
                     <viewOrder>0</viewOrder>

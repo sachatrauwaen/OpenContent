@@ -887,7 +887,7 @@ namespace Satrabel.OpenContent
                            "~/DesktopModules/OpenContent/images/exchange.png",
                            ModuleContext.EditUrl("EditGlobalSettings"),
                            false,
-                           SecurityAccessLevel.Admin,
+                           SecurityAccessLevel.Host,
                            true,
                            false);
                 /*
