@@ -8,6 +8,7 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.WebPages;
+using Satrabel.OpenContent.Components.Common;
 using Satrabel.OpenContent.Components.Images;
 
 namespace Satrabel.OpenContent.Components
@@ -63,7 +64,7 @@ namespace Satrabel.OpenContent.Components
             if (value.GetType() == 0.GetType()) return value ?? defaultValue; //Resharper says value is never Null. 
 
             int retVal = 0;
-            if (!Int32.TryParse(value, out retVal))
+            if (!int.TryParse(value, out retVal))
             {
                 retVal = defaultValue;
             }
@@ -87,7 +88,19 @@ namespace Satrabel.OpenContent.Components
             if (value.GetType() == "".GetType()) return value ?? defaultValue; //Resharper says value is never Null. 
             return value.ToString();
         }
+        public static DateTime? NormalizeDynamic(dynamic value, DateTime defaultValue)
+        {
+            if (value == null && defaultValue == DateTime.MinValue) return null;
+            if (value == null) return defaultValue as DateTime?;
+            if (value.GetType() == DateTime.MinValue.GetType()) return value as DateTime?;
 
+            DateTime? retval = null;
+            if (value.GetType() == "".GetType())
+            {
+                retval = DateTimeExtensions.ToDateTime(value.ToString());
+            }
+            return retval as DateTime?;
+        }
         #endregion
 
     }

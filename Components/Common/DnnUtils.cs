@@ -15,9 +15,10 @@ namespace Satrabel.OpenContent.Components.Common
         /// Gets the list of the DNN modules by friendlyName.
         /// </summary>
         /// <param name="friendlyName">Friendly name of the module.</param>
+        /// <param name="tabFileManager"></param>
         /// <returns></returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        public static List<ModuleInfo> GetDnnModulesByFriendlyName(string friendlyName)
+        public static List<ModuleInfo> GetDnnModulesByFriendlyName(string friendlyName, int tabFileManager)
         {
             throw new NotImplementedException();
         }
@@ -31,7 +32,6 @@ namespace Satrabel.OpenContent.Components.Common
         /// <exception cref="System.NotImplementedException"></exception>
         public static TabInfo GetDnnTabByUrl(string pageUrl, string culture)
         {
-
             var alternativeLocale = LocaleController.Instance.GetLocale(culture);
             var alternativeTab = TabController.Instance.GetTabByCulture(PortalSettings.Current.ActiveTab.TabID, PortalSettings.Current.PortalId, alternativeLocale);
             throw new NotImplementedException();

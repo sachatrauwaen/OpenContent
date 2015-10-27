@@ -123,6 +123,7 @@
       <DependentUpon>AddEdit.ascx</DependentUpon>
     </Compile>
     <Compile Include="Components\Alpaca\AlpacaEngine.cs" />
+    <Compile Include="Components\Common\DateTimeExtensions.cs" />
     <Compile Include="Components\Common\DnnUtils.cs" />
     <Compile Include="Components\Dynamic\DynamicHelper.cs" />
     <Compile Include="Components\FeatureController.cs" />

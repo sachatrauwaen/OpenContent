@@ -918,7 +918,7 @@ namespace Satrabel.OpenContent
             }
         }
 
-        public void RazorRender(WebPageBase Webpage, TextWriter writer, dynamic model)
+        private void RazorRender(WebPageBase Webpage, TextWriter writer, dynamic model)
         {
             var HttpContext = new HttpContextWrapper(System.Web.HttpContext.Current);
             if ((Webpage) is DotNetNukeWebPage<dynamic>)
