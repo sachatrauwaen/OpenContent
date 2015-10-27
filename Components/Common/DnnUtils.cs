@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Entities.Tabs;
 using DotNetNuke.Services.Localization;
 
-namespace Satrabel.OpenContent.Components.Common
+namespace Satrabel.OpenContent.Components
 {
     public static class DnnUtils
     {

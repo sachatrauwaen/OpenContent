@@ -1,14 +1,14 @@
 ﻿using System;
-using System.Linq;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.Linq;
 using DotNetNuke.Entities.Content.Common;
 using DotNetNuke.Entities.Modules.Definitions;
 using DotNetNuke.Services.FileSystem;
 using Newtonsoft.Json.Linq;
 
-namespace Satrabel.OpenContent.Components.Images
+namespace Satrabel.OpenContent.Components
 {
     public static class ImageUtils
     {

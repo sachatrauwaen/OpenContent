@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Satrabel.OpenContent.Components.Images
+namespace Satrabel.OpenContent.Components
 {
     public class Ratio
     {

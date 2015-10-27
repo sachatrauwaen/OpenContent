@@ -28,7 +28,6 @@ using DotNetNuke.Entities.Tabs;
 using DotNetNuke.Common;
 using DotNetNuke.Services.FileSystem;
 using System.Drawing;
-using Satrabel.OpenContent.Components.Images;
 using System.Drawing.Imaging;
 using DotNetNuke.Entities.Content.Common;
 using DotNetNuke.Entities.Modules.Definitions;

@@ -8,8 +8,6 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.WebPages;
-using Satrabel.OpenContent.Components.Common;
-using Satrabel.OpenContent.Components.Images;
 
 namespace Satrabel.OpenContent.Components
 {

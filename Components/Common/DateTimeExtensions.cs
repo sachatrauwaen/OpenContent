@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Satrabel.OpenContent.Components.Common
+namespace Satrabel.OpenContent.Components
 {
     public static class DateTimeExtensions
     {

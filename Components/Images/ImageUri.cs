@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
 using System.Linq;
-using System.Web;
 using DotNetNuke.Common;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Services.FileSystem;
-using Satrabel.OpenContent.Components.Common;
 
-namespace Satrabel.OpenContent.Components.Images
+namespace Satrabel.OpenContent.Components
 {
     public class ImageUri : FileUri
     {
