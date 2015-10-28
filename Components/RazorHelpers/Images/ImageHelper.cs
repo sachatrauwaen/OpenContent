@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -8,9 +9,9 @@ using DotNetNuke.Entities.Modules.Definitions;
 using DotNetNuke.Services.FileSystem;
 using Newtonsoft.Json.Linq;
 
-namespace Satrabel.OpenContent.Components
+namespace Satrabel.OpenContent.Components.RazorHelpers
 {
-    public static class ImageUtils
+    public static class ImageHelper
     {
         /// <summary>
         /// Gets the image URL.
@@ -33,15 +34,13 @@ namespace Satrabel.OpenContent.Components
             return Convert.ToInt32(2 * 1200 * columnWidth);
         }
 
-        public static string ToUrl(this IFileInfo file)
-        {
-            return FileManager.Instance.GetUrl(file);
-        }
+
 
         public static string GetImageUrl(IFileInfo file, Ratio ratio)
         {
-            var url = file.ToUrl();
+            if (file == null) throw new NoNullAllowedException("FileInfo should not be null");
 
+            var url = file.ToUrl();
             if (url.Contains("LinkClick.aspx")) return url;
             if (ModuleDefinitionController.GetModuleDefinitionByFriendlyName("OpenDocument") == null) return url;
 
@@ -54,7 +53,7 @@ namespace Satrabel.OpenContent.Components
                 {
                     JObject content = JObject.Parse(contentItem.Content);
                     var crop = content["crop"];
-                    if (crop != null)
+                    if (crop is JObject)
                     {
                         foreach (var cropperobj in crop["croppers"].Children())
                         {

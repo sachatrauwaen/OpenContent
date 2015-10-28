@@ -4,7 +4,7 @@ using DotNetNuke.Common;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Services.FileSystem;
 
-namespace Satrabel.OpenContent.Components
+namespace Satrabel.OpenContent.Components.RazorHelpers
 {
     public class ImageUri : FileUri
     {
@@ -38,7 +38,7 @@ namespace Satrabel.OpenContent.Components
         public string GetImageUrl(int width, int height)
         {
             var ratio = new Ratio(width, height);
-            return ImageUtils.GetImageUrl(FileInfo, ratio);
+            return ImageHelper.GetImageUrl(FileInfo, ratio);
         }
 
         public string GetImageUrl(float columnWidth, string ratioString, bool isMobile)
@@ -46,9 +46,9 @@ namespace Satrabel.OpenContent.Components
             if (columnWidth < 0 || columnWidth > 1) columnWidth = 1;
             if (string.IsNullOrEmpty(ratioString)) ratioString = "1x1";
             var ratio = new Ratio(ratioString);
-            var maxWidth = ImageUtils.CalculateMaxPixels(columnWidth, isMobile);
+            var maxWidth = ImageHelper.CalculateMaxPixels(columnWidth, isMobile);
             ratio.SetWidth(maxWidth);
-            return ImageUtils.GetImageUrl(FileInfo, ratio);
+            return ImageHelper.GetImageUrl(FileInfo, ratio);
         }
 
         public string GetImageUrl(string ratioString, float columnHeight, bool isMobile)
@@ -56,9 +56,9 @@ namespace Satrabel.OpenContent.Components
             if (columnHeight < 0 || columnHeight > 1) columnHeight = 1;
             if (string.IsNullOrEmpty(ratioString)) ratioString = "1x1";
             var ratio = new Ratio(ratioString);
-            var maxHeight = ImageUtils.CalculateMaxPixels(columnHeight, isMobile);
+            var maxHeight = ImageHelper.CalculateMaxPixels(columnHeight, isMobile);
             ratio.SetHeight(maxHeight);
-            return ImageUtils.GetImageUrl(FileInfo, ratio);
+            return ImageHelper.GetImageUrl(FileInfo, ratio);
         }
 
 

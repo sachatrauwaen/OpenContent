@@ -32,6 +32,7 @@ using System.Drawing.Imaging;
 using DotNetNuke.Entities.Content.Common;
 using DotNetNuke.Entities.Modules.Definitions;
 using DotNetNuke.Entities.Portals;
+using Satrabel.OpenContent.Components.RazorHelpers;
 
 #endregion
 
@@ -120,7 +121,7 @@ namespace Satrabel.OpenContent.Components
                 }
                 int folderLength = d.Length;
 
-                var res = files.Select(f => new { value = f.FileId.ToString(), url = ImageUtils.GetImageUrl(f, new Ratio(15, 15)), text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName }).Take(100);
+                var res = files.Select(f => new { value = f.FileId.ToString(), url = ImageHelper.GetImageUrl(f, new Ratio(15, 15)), text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName }).Take(100);
 
                 return Request.CreateResponse(HttpStatusCode.OK, res);
 
@@ -295,7 +296,7 @@ namespace Satrabel.OpenContent.Components
                         int top = 0;
                         int width = 0;
                         int height = 0;
-                        imageCropped = ImageUtils.SaveCroppedImage(image, cropData.crop.width, cropData.crop.height, out left, out top, out width, out height);
+                        imageCropped = ImageHelper.SaveCroppedImage(image, cropData.crop.width, cropData.crop.height, out left, out top, out width, out height);
                         res.crop.x = left;
                         res.crop.y = top;
                         res.crop.width = width;
@@ -303,10 +304,10 @@ namespace Satrabel.OpenContent.Components
                     }
                     else
                     {
-                        imageCropped = ImageUtils.Crop(image, cropData.crop.x, cropData.crop.y, cropData.crop.width, cropData.crop.height);
+                        imageCropped = ImageHelper.Crop(image, cropData.crop.x, cropData.crop.y, cropData.crop.width, cropData.crop.height);
                         if (cropData.resize != null && cropData.resize.width > 0 && cropData.resize.height > 0)
                         {
-                            imageCropped = ImageUtils.Resize(imageCropped, cropData.resize.width, cropData.resize.height);
+                            imageCropped = ImageHelper.Resize(imageCropped, cropData.resize.width, cropData.resize.height);
                         }
                     }
 
@@ -426,7 +427,7 @@ namespace Satrabel.OpenContent.Components
                 int top = 0;
                 int width = 0;
                 int height = 0;
-                imageCropped = ImageUtils.SaveCroppedImage(image, resize.width, resize.height, out left, out top, out width, out height);
+                imageCropped = ImageHelper.SaveCroppedImage(image, resize.width, resize.height, out left, out top, out width, out height);
                 cropresult.crop.x = left;
                 cropresult.crop.y = top;
                 cropresult.crop.width = width;
@@ -435,10 +436,10 @@ namespace Satrabel.OpenContent.Components
             }
             else if (crop.width > 0 && crop.width > 0)
             {
-                imageCropped = ImageUtils.Crop(image, crop.x, crop.y, crop.width, crop.height);
+                imageCropped = ImageHelper.Crop(image, crop.x, crop.y, crop.width, crop.height);
                 if (resize != null && resize.width > 0 && resize.height > 0)
                 {
-                    imageCropped = ImageUtils.Resize(imageCropped, resize.width, resize.height);
+                    imageCropped = ImageHelper.Resize(imageCropped, resize.width, resize.height);
                 }
             }
             Stream content = new MemoryStream();

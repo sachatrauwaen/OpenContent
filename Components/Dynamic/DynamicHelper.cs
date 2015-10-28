@@ -10,7 +10,7 @@ using Microsoft.CSharp.RuntimeBinder;
 
 namespace Satrabel.OpenContent.Components.Dynamic
 {
-    public class DynamicUtils
+    internal class DynamicUtils
     {
         public static bool TryGetMemberValue(object obj, string memberName, out object result)
         {

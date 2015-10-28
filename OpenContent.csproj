@@ -131,9 +131,9 @@
     <Compile Include="Components\FileUploadController.cs" />
     <Compile Include="Components\FileUri.cs" />
     <Compile Include="Components\Handlebars\HandlebarsEngine.cs" />
-    <Compile Include="Components\Images\ImageUtils.cs" />
-    <Compile Include="Components\Images\ImageUri.cs" />
-    <Compile Include="Components\Images\Ratio.cs" />
+    <Compile Include="Components\RazorHelpers\Images\ImageHelper.cs" />
+    <Compile Include="Components\RazorHelpers\Images\ImageUri.cs" />
+    <Compile Include="Components\RazorHelpers\Images\Ratio.cs" />
     <Compile Include="Components\Json\JsonExtensions.cs" />
     <Compile Include="Components\Json\JsonMergeExtensions.cs" />
     <Compile Include="Components\Json\JsonMergeOptionArrayHandling.cs" />
@@ -148,11 +148,12 @@
     <Compile Include="Components\OpenContentSettings.cs" />
     <Compile Include="Components\OpenContentUtils.cs" />
     <Compile Include="Components\OpenContentVersion.cs" />
+    <Compile Include="Components\OpenContentWebPage.cs" />
+    <Compile Include="Components\RazorHelpers\Normalizers.cs" />
     <Compile Include="Components\Rss\FeedParser.cs" />
     <Compile Include="Components\Rss\FeedItem.cs" />
-    <Compile Include="Components\TemplateHelper.cs" />
     <Compile Include="Components\TemplateInfo.cs" />
-    <Compile Include="Components\Utils.cs" />
+    <Compile Include="Components\Common\Utils.cs" />
     <Compile Include="EditGlobalSettings.ascx.cs">
       <DependentUpon>EditGlobalSettings.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

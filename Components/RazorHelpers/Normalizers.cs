@@ -1,48 +1,12 @@
-﻿using DotNetNuke.Services.FileSystem;
-using DotNetNuke.Web.Client;
-using DotNetNuke.Web.Client.ClientResourceManagement;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Web;
-using System.Web.UI;
-using System.Web.WebPages;
 
-namespace Satrabel.OpenContent.Components
+namespace Satrabel.OpenContent.Components.RazorHelpers
 {
-    public static class TemplateHelper
+    public static class Normalize
     {
-        static int JSOrder = (int)FileOrder.Js.DefaultPriority;
-        static int CSSOrder = (int)FileOrder.Css.ModuleCss;
-
-        public static void RegisterStyleSheet(this WebPageBase page, string filePath)
-        {
-            if (!filePath.StartsWith("http") && !filePath.StartsWith("/"))
-                filePath = page.VirtualPath + filePath;
-
-            ClientResourceManager.RegisterStyleSheet((Page)HttpContext.Current.CurrentHandler, filePath, CSSOrder);
-            CSSOrder++;
-        }
-
-        public static void RegisterScript(this WebPageBase page, string filePath)
-        {
-            if (!filePath.StartsWith("http") && !filePath.StartsWith("/"))
-                filePath = page.VirtualPath + filePath;
-
-            ClientResourceManager.RegisterScript((Page)HttpContext.Current.CurrentHandler, filePath, JSOrder);
-            JSOrder++;
-        }
-
-        /// <summary>
-        /// Gets the image URL.
-        /// </summary>
-        /// <param name="fileId">The file identifier.</param>
-        /// <param name="columnWidth">Width of the column in 1/12 (decimal).</param>
-        /// <param name="ratioString">The ratio string. (eg '1x1', '5x8')</param>
-        /// <param name="isMobile">if set to <c>true</c> [is mobile].</param>
-        /// <returns>Url of image with appropriate measurements for the current context</returns>
-
         #region NormalizeDynamic
         /// <summary>
         /// Normalizes a setting from a Alpaca form field
@@ -56,7 +20,7 @@ namespace Satrabel.OpenContent.Components
         /// <param name="value">The value.</param>
         /// <param name="defaultValue">The default value.</param>
         /// <returns></returns>
-        public static int NormalizeDynamic(dynamic value, int defaultValue)
+        public static int DynamicValue(dynamic value, int defaultValue)
         {
             if (value == null) return defaultValue;
             if (value.GetType() == 0.GetType()) return value ?? defaultValue; //Resharper says value is never Null. 
@@ -68,7 +32,7 @@ namespace Satrabel.OpenContent.Components
             }
             return retVal;
         }
-        public static bool NormalizeDynamic(dynamic value, bool defaultValue)
+        public static bool DynamicValue(dynamic value, bool defaultValue)
         {
             if (value == null) return defaultValue;
             if (value.GetType() == true.GetType()) return value ?? defaultValue; //Resharper says value is never Null. 
@@ -80,13 +44,13 @@ namespace Satrabel.OpenContent.Components
             }
             return retVal;
         }
-        public static string NormalizeDynamic(dynamic value, string defaultValue)
+        public static string DynamicValue(dynamic value, string defaultValue)
         {
             if (value == null) return defaultValue;
             if (value.GetType() == "".GetType()) return value ?? defaultValue; //Resharper says value is never Null. 
             return value.ToString();
         }
-        public static DateTime? NormalizeDynamic(dynamic value, DateTime defaultValue)
+        public static DateTime? DynamicValue(dynamic value, DateTime defaultValue)
         {
             if (value == null && defaultValue == DateTime.MinValue) return null;
             if (value == null) return defaultValue as DateTime?;
