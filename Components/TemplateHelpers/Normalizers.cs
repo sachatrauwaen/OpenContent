@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
-namespace Satrabel.OpenContent.Components.RazorHelpers
+namespace Satrabel.OpenContent.Components.TemplateHelpers
 {
     public static class Normalize
     {

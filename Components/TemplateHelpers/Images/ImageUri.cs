@@ -4,7 +4,7 @@ using DotNetNuke.Common;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Services.FileSystem;
 
-namespace Satrabel.OpenContent.Components.RazorHelpers
+namespace Satrabel.OpenContent.Components.TemplateHelpers
 {
     public class ImageUri : FileUri
     {

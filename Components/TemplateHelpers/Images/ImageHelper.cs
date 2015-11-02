@@ -9,7 +9,7 @@ using DotNetNuke.Entities.Modules.Definitions;
 using DotNetNuke.Services.FileSystem;
 using Newtonsoft.Json.Linq;
 
-namespace Satrabel.OpenContent.Components.RazorHelpers
+namespace Satrabel.OpenContent.Components.TemplateHelpers
 {
     public static class ImageHelper
     {

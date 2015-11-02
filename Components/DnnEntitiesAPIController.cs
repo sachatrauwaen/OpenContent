@@ -32,7 +32,7 @@ using System.Drawing.Imaging;
 using DotNetNuke.Entities.Content.Common;
 using DotNetNuke.Entities.Modules.Definitions;
 using DotNetNuke.Entities.Portals;
-using Satrabel.OpenContent.Components.RazorHelpers;
+using Satrabel.OpenContent.Components.TemplateHelpers;
 
 #endregion
 

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Satrabel.OpenContent.Components.RazorHelpers
+namespace Satrabel.OpenContent.Components.TemplateHelpers
 {
     public class Ratio
     {
