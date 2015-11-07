@@ -506,13 +506,13 @@
                                 format_tags: 'p;h1;h2;h3;pre;div',
 
                                 //http://docs.ckeditor.com/#!/guide/dev_allowed_content_rules
-                                //extraAllowedContent:
-                                //'table tr th td caption[*](*);' +
-                                //'div span(*);' 
-                                ////'a[!href](*);' 
-                                ////'img[!src,alt,width,height](*);' +
-                                ////'h1 h2 h3 p blockquote strong em(*);' +
-                                //,
+                                extraAllowedContent:
+                                'table tr th td caption[*](*);' +
+                                'div span(*);' 
+                                //'a[!href](*);' 
+                                //'img[!src,alt,width,height](*);' +
+                                //'h1 h2 h3 p blockquote strong em(*);' +
+                                ,
 
                                 // Simplify the dialog windows.
                                 removeDialogTabs: 'image:advanced;link:advanced',
