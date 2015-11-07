@@ -17,8 +17,15 @@ namespace Satrabel.OpenContent.Components
 
         public void RegisterStyleSheet(string filePath)
         {
-            if (!filePath.StartsWith("http") && !filePath.StartsWith("/"))
-                filePath = this.VirtualPath + filePath;
+            if (!filePath.StartsWith("http") && !filePath.Contains("/"))
+            {
+                filePath = VirtualPath + filePath;
+            }
+            if (!filePath.StartsWith("http"))
+            {
+                var file = new FileUri(filePath);
+                filePath = file.UrlFilePath;
+            }
 
             ClientResourceManager.RegisterStyleSheet((Page)HttpContext.Current.CurrentHandler, filePath, CSSOrder);
             CSSOrder++;
@@ -26,8 +33,15 @@ namespace Satrabel.OpenContent.Components
 
         public void RegisterScript(string filePath)
         {
-            if (!filePath.StartsWith("http") && !filePath.StartsWith("/"))
-                filePath = this.VirtualPath + filePath;
+            if (!filePath.StartsWith("http") && !filePath.Contains("/"))
+            {
+                filePath = VirtualPath + filePath;
+            }
+            if (!filePath.StartsWith("http"))
+            {
+                var file = new FileUri(filePath);
+                filePath = file.UrlFilePath;
+            }
 
             ClientResourceManager.RegisterScript((Page)HttpContext.Current.CurrentHandler, filePath, JSOrder);
             JSOrder++;
