@@ -6,6 +6,10 @@
         <dnn:Label ID="lRoles" ControlName="ddlRoles" runat="server" />
         <asp:DropDownList ID="ddlRoles" runat="server"></asp:DropDownList>
     </div>
+    <div class="dnnFormItem">
+        <dnn:Label ID="lMLContent" ControlName="cbMLContent" runat="server" />
+        <asp:CheckBox ID="cbMLContent" runat="server" />
+    </div>
     <ul class="dnnActions dnnClear" style="display: block; padding-left: 35%">
         <li>
             <asp:LinkButton ID="cmdSave" runat="server" class="dnnPrimaryAction" resourcekey="cmdSave" />
