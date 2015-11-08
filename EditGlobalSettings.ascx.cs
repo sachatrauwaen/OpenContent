@@ -57,6 +57,8 @@ namespace Satrabel.OpenContent
                         li.Selected = true;
                     }
                 }
+                string OpenContent_AutoAttach = PortalController.GetPortalSetting("OpenContent_AutoAttach", ModuleContext.PortalId, "False");
+                cbMLContent.Checked = bool.Parse(OpenContent_AutoAttach);
 			}
 		}
 		protected void cmdSave_Click(object sender, EventArgs e)
@@ -65,6 +67,8 @@ namespace Satrabel.OpenContent
                 PortalController.UpdatePortalSetting(PortalId, "OpenContent_EditorsRoleId", ddlRoles.SelectedValue, true);
             else
                 PortalController.DeletePortalSetting(PortalId, "OpenContent_EditorsRoleId");
+
+            PortalController.UpdatePortalSetting(PortalId, "OpenContent_AutoAttach", cbMLContent.Checked.ToString(), true);
 
             Response.Redirect(Globals.NavigateURL(), true);
 		}

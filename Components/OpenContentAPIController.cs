@@ -44,7 +44,6 @@ namespace Satrabel.OpenContent.Components
             }
         }
         [ValidateAntiForgeryToken]
-
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         [HttpGet]
         public HttpResponseMessage Edit()

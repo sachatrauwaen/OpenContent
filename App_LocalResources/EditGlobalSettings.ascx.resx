@@ -126,4 +126,7 @@
   <data name="lRoles.Text" xml:space="preserve">
     <value>Auto Module Edit Role</value>
   </data>
+  <data name="lMLContent.Text" xml:space="preserve">
+    <value>Auto attach modules (Multi language)</value>
+  </data>
 </root>

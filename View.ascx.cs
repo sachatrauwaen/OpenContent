@@ -354,7 +354,35 @@ namespace Satrabel.OpenContent
         protected override void OnInit(EventArgs e)
         {
             base.OnInit(e);
-            _settings = new OpenContentSettings(ModuleContext.Settings);
+            var modSettings = ModuleContext.Settings;
+            // auto attach module 
+            string OpenContent_AutoAttach = PortalController.GetPortalSetting("OpenContent_AutoAttach", ModuleContext.PortalId, "False");
+            bool AutoAttach = bool.Parse(OpenContent_AutoAttach);
+            if (AutoAttach)
+            {
+                //var module = ModuleController.Instance.GetModule(ModuleContext.ModuleId, ModuleContext.TabId, false);
+                var module = ModuleContext.Configuration;
+                var defaultModule = module.DefaultLanguageModule;
+                if (defaultModule != null)
+                {
+                    if (ModuleContext.ModuleId != defaultModule.ModuleID)
+                    {
+                        var mc = ModuleController.Instance;
+                        mc.DeLocalizeModule(module);
+
+                        mc.ClearCache(defaultModule.TabID);
+                        mc.ClearCache(module.TabID);
+                        DataCache.RemoveCache(string.Format(DataCache.ModuleSettingsCacheKey, defaultModule.TabID));
+                        DataCache.RemoveCache(string.Format(DataCache.ModuleSettingsCacheKey, module.TabID));
+
+                        //DataCache.ClearCache();
+                        module = ModuleController.Instance.GetModule(defaultModule.ModuleID, ModuleContext.TabId, true);
+                        modSettings = module.ModuleSettings;
+                    }
+                }
+            }
+
+            _settings = new OpenContentSettings(modSettings);
         }
         private string GenerateOutput(FileUri template, string dataJson, string settingsJson, TemplateFiles files)
         {
@@ -928,7 +956,7 @@ namespace Satrabel.OpenContent
             if (Webpage != null)
                 Webpage.ExecutePageHierarchy(new WebPageContext(HttpContext, Webpage, null), writer, Webpage);
         }
-        
+
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
@@ -998,10 +1026,11 @@ namespace Satrabel.OpenContent
                             ModulePermissionController.SaveModulePermissions(objModule);
                         }
                     }
+                    
+
                 }
             }
         }
-
         private void IncludeResourses(FileUri template)
         {
             if (template != null)
