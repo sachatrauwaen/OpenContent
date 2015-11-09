@@ -123,10 +123,10 @@
   <data name="cmdCancel.Text" xml:space="preserve">
     <value>Cancel</value>
   </data>
-  <data name="lEditWitoutPostback.Text" xml:space="preserve">
-    <value>Edit Without Postback (all modules on all portals)</value>
+  <data name="lRoles.Text" xml:space="preserve">
+    <value>Auto Module Edit Role</value>
   </data>
-  <data name="lAddEditControl.Text" xml:space="preserve">
-    <value>Additional Edit Control</value>
+  <data name="lMLContent.Text" xml:space="preserve">
+    <value>Auto attach modules (Multi language)</value>
   </data>
 </root>

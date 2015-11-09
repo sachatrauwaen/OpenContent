@@ -1,21 +1,21 @@
 ﻿(function($) {
 
     var Alpaca = $.alpaca;
-
     
-    Alpaca.Fields.Image2Field = Alpaca.Fields.ListField.extend(
+    Alpaca.Fields.Url2Field = Alpaca.Fields.ListField.extend(
     /**
-     * @lends Alpaca.Fields.Image2Field.prototype
+     * @lends Alpaca.Fields.Url2Field.prototype
      */
     {
         constructor: function (container, data, options, schema, view, connector) {
             var self = this;
             this.base(container, data, options, schema, view, connector);
             this.sf = connector.servicesFramework;
+            this.culture = connector.culture;
             this.dataSource = {};
         },
         /**
-         * @see Alpaca.Field#getFieldType
+         * @see Alpaca.Url2Field#getFieldType
          */
         getFieldType: function()
         {
@@ -23,7 +23,7 @@
         },
 
         /**
-         * @see Alpaca.Fields.Image2Field#setup
+         * @see Alpaca.Fields.Url2Field#setup
          */
         setup: function()
         {
@@ -32,9 +32,6 @@
                 self.options.multiple = true;
                 self.options.removeDefaultNone = true;
                 //self.options.hideNone = true;
-            }
-            if (!this.options.folder) {
-                this.options.folder = "";
             }
             this.base();
         },
@@ -68,7 +65,6 @@
                     {
                         this.control.val(val);
                     }
-
                     this.base(val);
                 }
             }
@@ -86,14 +82,13 @@
                     {
                         this.control.val(val);
                     }
-
                     this.base(val);
                 }
             }
         },
 
         /**
-         * @see Alpaca.Image2Field#getEnum
+         * @see Alpaca.Url2Field#getEnum
          */
         getEnum: function()
         {
@@ -135,7 +130,6 @@
                         self.trigger("blur", e);
                     }
                 });
-
                 this.control.on("change", function (e) {
                     self.onChange.call(self, e);
                     self.trigger("change", e);
@@ -160,24 +154,20 @@
                         model.selectOptions = self.selectOptions;
                         callback();
                     };
-
-                    var postData = { q: "*", d: self.options.folder };
-                    
+                    var postData = { q: "*", l: self.culture };
                     $.ajax({
-                        url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "ImagesLookup",
+                        url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "TabsLookup",
                         beforeSend: self.sf.setModuleHeaders,
                         type: "get",
                         dataType: "json",
                         //contentType: "application/json; charset=utf-8",
                         data: postData,
                         success: function (jsonDocument) {
-                            
                             var ds = jsonDocument;
 
                             if (self.options.dsTransformer && Alpaca.isFunction(self.options.dsTransformer)) {
                                 ds = self.options.dsTransformer(ds);
                             }
-
                             if (ds) {
                                 if (Alpaca.isObject(ds)) {
                                     // for objects, we walk through one key at a time
@@ -235,13 +225,16 @@
         afterRenderControl: function(model, callback)
         {
             var self = this;
+
             this.base(model, function() {
+
                 // if emptySelectFirst and nothing currently checked, then pick first item in the value list
                 // set data and visually select it
                 if (Alpaca.isUndefined(self.data) && self.options.emptySelectFirst && self.selectOptions && self.selectOptions.length > 0)
                 {
                     self.data = self.selectOptions[0].value;
                 }
+
                 // do this little trick so that if we have a default value, it gets set during first render
                 // this causes the state of the control
                 if (self.data)
@@ -280,7 +273,7 @@
                         if (!state.id) { return state.text; }
                         
                         var $state = $(
-                          '<span><img src="' + self.dataSource[state.id].url + '" style="height: 30px;width: 36px;"  /> ' + state.text + '</span>'
+                          '<span>' + state.text + '</span>'
                         );
                         return $state;
                     };
@@ -289,7 +282,7 @@
                         if (!state.id) { return state.text; }
                         
                         var $state = $(
-                          '<span><img src="' + self.dataSource[state.id].url + '" style="height: 15px;width: 18px;"  /> ' + state.text + '</span>'
+                          '<span>' + state.text + '</span>'
                         );
                         return $state;
                     };
@@ -300,27 +293,6 @@
                 callback();
 
             });
-        },
-
-        getFileUrl : function(fileid){
-
-            var postData = { fileid: fileid };
-            $.ajax({
-                url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "FileUrl",
-                beforeSend: self.sf.setModuleHeaders,
-                type: "get",
-                asych : false,
-                dataType: "json",
-                //contentType: "application/json; charset=utf-8",
-                data: postData,
-                success: function (data) {
-                    return data;
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    return "";
-                }
-            });
-
         },
 
         /**
@@ -478,19 +450,19 @@
          * @see Alpaca.Field#getTitle
          */
         getTitle: function() {
-            return "Select Field";
+            return "Select File Field";
         },
 
         /**
          * @see Alpaca.Field#getDescription
          */
         getDescription: function() {
-            return "Select Field";
+            return "Select File Field";
         },
 
         /**
          * @private
-         * @see Alpaca.Fields.Image2Field#getSchemaOfOptions
+         * @see Alpaca.Fields.Url2Field#getSchemaOfOptions
          */
         getSchemaOfOptions: function() {
             return Alpaca.merge(this.base(), {
@@ -523,7 +495,7 @@
 
         /**
          * @private
-         * @see Alpaca.Fields.Image2Field#getOptionsForOptions
+         * @see Alpaca.Fields.Url2Field#getOptionsForOptions
          */
         getOptionsForOptions: function() {
             return Alpaca.merge(this.base(), {
@@ -552,6 +524,6 @@
 
     });
 
-    Alpaca.registerFieldClass("image2", Alpaca.Fields.Image2Field);
+    Alpaca.registerFieldClass("url2", Alpaca.Fields.Url2Field);
 
 })(jQuery);

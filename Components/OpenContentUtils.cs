@@ -18,10 +18,12 @@ using System.Web;
 using System.Web.Hosting;
 using System.Web.UI.WebControls;
 using DotNetNuke.UI.Modules;
+using DotNetNuke.Security.Permissions;
+using DotNetNuke.Security;
 
 namespace Satrabel.OpenContent.Components
 {
-    public class OpenContentUtils
+    public static class OpenContentUtils
     {
         public static void UpdateModuleTitle(ModuleInfo Module, string ModuleTitle)
         {
@@ -78,7 +80,7 @@ namespace Satrabel.OpenContent.Components
             var dirs = Directory.GetDirectories(basePath);
             if (otherModuleTemplate != null)
             {
-                var selDir = otherModuleTemplate.PhysicalDirectoryName;
+                var selDir = otherModuleTemplate.PhysicalFullDirectory;
                 dirs = new string[] { selDir };
             }
             
@@ -444,18 +446,25 @@ namespace Satrabel.OpenContent.Components
                 throw new ArgumentNullException("template is null");
             }
             TemplateManifest templateManifest = null;
-            //string templateFolder = template.Directory;
-            string templateFile = template.FileNameWithoutExtension;
-            Manifest manifest = GetManifest(template.Directory);
-            if (manifest != null && manifest.Templates != null && manifest.Templates.ContainsKey(templateFile))
-            {
-                templateManifest = manifest.Templates[template.FileNameWithoutExtension];
+            Manifest manifest = GetManifest(template.UrlDirectory);
+            if (manifest != null) { 
+                templateManifest = manifest.GetTemplateManifest(template);
             }
             return templateManifest;
         }
+
+        
         public static string ReverseMapPath(string path)
         {
             return FileUri.ReverseMapPath(path);
+        }
+
+        public static bool HasEditPermissions(PortalSettings portalSettings, ModuleInfo module, string editrole, int CreatedByUserId) 
+        {
+            return portalSettings.UserInfo.IsSuperUser ||
+                    portalSettings.UserInfo.IsInRole(portalSettings.AdministratorRoleName) ||
+                    ModulePermissionController.HasModuleAccess(SecurityAccessLevel.Edit, "CONTENT", module) ||
+                    (!string.IsNullOrEmpty(editrole) && portalSettings.UserInfo.IsInRole(editrole) && (CreatedByUserId == -1 || portalSettings.UserId == CreatedByUserId));
         }
 
     }
@@ -477,6 +486,7 @@ namespace Satrabel.OpenContent.Components
                 return Type == "multiple";
             }
         }
+       
     }
     public class PartialTemplate
     {
@@ -500,12 +510,25 @@ namespace Satrabel.OpenContent.Components
 
     public class Manifest
     {
+        [JsonProperty(PropertyName = "developmentPath")]
+        public bool DevelopmentPath { get; set; }
         [JsonProperty(PropertyName = "editWitoutPostback")]
         public bool EditWitoutPostback { get; set; }
         [JsonProperty(PropertyName = "templates")]
         public Dictionary<string, TemplateManifest> Templates { get; set; }
         [JsonProperty(PropertyName = "additionalEditControl")]
         public string AdditionalEditControl { get; set; }
+        [JsonProperty(PropertyName = "editRole")]
+        public string EditRole { get; set; }
+
+        public TemplateManifest GetTemplateManifest(FileUri template)
+        {
+            if (Templates != null && Templates.ContainsKey(template.FileNameWithoutExtension))
+            {
+                return Templates[template.FileNameWithoutExtension];
+            }
+            return null;
+        }
     }
 
 }

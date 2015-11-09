@@ -1,13 +1,81 @@
 ﻿using System;
-using System.Linq;
+using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.Linq;
+using DotNetNuke.Entities.Content.Common;
+using DotNetNuke.Entities.Modules.Definitions;
+using DotNetNuke.Services.FileSystem;
+using Newtonsoft.Json.Linq;
 
-namespace Satrabel.OpenContent.Components.Images
+namespace Satrabel.OpenContent.Components.TemplateHelpers
 {
-    public static class ImageUtils
+    public static class ImageHelper
     {
+        /// <summary>
+        /// Gets the image URL.
+        /// </summary>
+        /// <param name="columnWidth">Size of the image. In Bootstrap 12th</param>
+        /// <param name="isMobile"></param>
+        /// <param name="retina"></param>
+        /// <returns></returns>
+        public static int CalculateMaxPixels(float columnWidth, bool isMobile, bool retina = true)
+        {
+            if (columnWidth < 0 || columnWidth > 1) columnWidth = 1;
+            if (isMobile && retina)
+            {
+                return Convert.ToInt32(2 * 768 * columnWidth);
+            }
+            if (isMobile && !retina)
+            {
+                return Convert.ToInt32(2 * 480 * columnWidth);
+            }
+            return Convert.ToInt32(2 * 1200 * columnWidth);
+        }
+
+
+
+        public static string GetImageUrl(IFileInfo file, Ratio ratio)
+        {
+            if (file == null) throw new NoNullAllowedException("FileInfo should not be null");
+
+            var url = file.ToUrl();
+            if (url.Contains("LinkClick.aspx")) return url;
+            if (ModuleDefinitionController.GetModuleDefinitionByFriendlyName("OpenDocument") == null) return url;
+
+            url = url.RemoveQueryParams();
+
+            if (file.ContentItemID > 0)
+            {
+                var contentItem = Util.GetContentController().GetContentItem(file.ContentItemID);
+                if (contentItem != null)
+                {
+                    JObject content = JObject.Parse(contentItem.Content);
+                    var crop = content["crop"];
+                    if (crop is JObject)
+                    {
+                        foreach (var cropperobj in crop["croppers"].Children())
+                        {
+                            var cropper = cropperobj.Children().First();
+                            int x = int.Parse(cropper["x"].ToString());
+                            int y = int.Parse(cropper["y"].ToString());
+                            int w = int.Parse(cropper["width"].ToString());
+                            int h = int.Parse(cropper["height"].ToString());
+                            var cropratio = new Ratio(w, h);
+                            if (Math.Abs(cropratio.AsFloat - ratio.AsFloat) < 0.02) //allow 2% margin
+                            {
+                                return url + string.Format("?crop={0},{1},{2},{3}", x, y, w, h);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return url + string.Format("?width={0}&height={1}&mode=crop", ratio.Width, ratio.Height);
+        }
+
+
         public static Image Resize(Image image, int scaledWidth, int scaledHeight)
         {
             return new Bitmap(image, scaledWidth, scaledHeight);
@@ -102,7 +170,7 @@ namespace Satrabel.OpenContent.Components.Images
                 finalImage = bitmap;
             }
             catch { }
-            
+
             /*
             try
             {

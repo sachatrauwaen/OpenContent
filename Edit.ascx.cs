@@ -46,10 +46,9 @@ namespace Satrabel.OpenContent
             hlCancel.NavigateUrl = Globals.NavigateURL();
             cmdSave.NavigateUrl = Globals.NavigateURL();
 
-            string template = Settings["template"] as string;
-            string templateFolder = VirtualPathUtility.GetDirectory(template);
+            var template = OpenContentUtils.GetTemplate(Settings);
             AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext);
-            alpaca.VirtualDirectory = templateFolder;
+            alpaca.VirtualDirectory = template.UrlDirectory;
             alpaca.RegisterAll();
 
             /*
@@ -98,6 +97,13 @@ namespace Satrabel.OpenContent
             get
             {
                 return LocaleController.Instance.GetCurrentLocale(PortalId).Code;
+            }
+        }
+        public string DefaultCulture
+        {
+            get
+            {
+                return LocaleController.Instance.GetDefaultLocale(PortalId).Code;
             }
         }
         public string NumberDecimalSeparator

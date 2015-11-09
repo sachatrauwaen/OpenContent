@@ -42,8 +42,7 @@ namespace Satrabel.OpenContent
             AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext);
             if (template != null && template.FileExists)
             {
-                string templateFolder = template.Directory;
-                alpaca.VirtualDirectory = templateFolder;
+                alpaca.VirtualDirectory =  template.UrlDirectory;
                 alpaca.Prefix = Path.GetFileNameWithoutExtension(template.FileName);
             }
             alpaca.RegisterAll();
@@ -94,6 +93,13 @@ namespace Satrabel.OpenContent
             get
             {
                 return LocaleController.Instance.GetCurrentLocale(PortalId).Code;
+            }
+        }
+        public string DefaultCulture
+        {
+            get
+            {
+                return LocaleController.Instance.GetDefaultLocale(PortalId).Code;
             }
         }
         public string NumberDecimalSeparator

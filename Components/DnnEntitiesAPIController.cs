@@ -28,9 +28,11 @@ using DotNetNuke.Entities.Tabs;
 using DotNetNuke.Common;
 using DotNetNuke.Services.FileSystem;
 using System.Drawing;
-using Satrabel.OpenContent.Components.Images;
 using System.Drawing.Imaging;
+using DotNetNuke.Entities.Content.Common;
+using DotNetNuke.Entities.Modules.Definitions;
 using DotNetNuke.Entities.Portals;
+using Satrabel.OpenContent.Components.TemplateHelpers;
 
 #endregion
 
@@ -96,17 +98,66 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
+                if (string.IsNullOrEmpty(d))
+                {
+                    var exc = new ArgumentException("Folder path not specified. Missing ['folder': 'FolderPath'] in optionfile? ");
+                    Logger.Error(exc);
+                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+                }
+
                 var folderManager = FolderManager.Instance;
-                var fileManager = FileManager.Instance;
                 var portalFolder = folderManager.GetFolder(PortalSettings.PortalId, d ?? "");
+                if (portalFolder==null)
+                {
+                    var exc = new ArgumentException("Folder path not found. Adjust ['folder': 'FolderPath'] in optionfile. ");
+                    Logger.Error(exc);
+                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+                }
                 var files = folderManager.GetFiles(portalFolder, true);
                 files = files.Where(f => IsImageFile(f));
                 if (q != "*" && !string.IsNullOrEmpty(q))
                 {
                     files = files.Where(f => f.FileName.ToLower().Contains(q.ToLower()));
                 }
-                //files = files.Where(f => IsImageFile(f)).Where(f => f.FileName.ToLower().Contains(q.ToLower()));
-                var res = files.Select(f => new { value = f.FileId.ToString(), url = fileManager.GetUrl(f), text = f.FileName + " (" + f.Folder + ")" });
+                int folderLength = d.Length;
+
+                var res = files.Select(f => new { value = f.FileId.ToString(), url = ImageHelper.GetImageUrl(f, new Ratio(15, 15)), text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName }).Take(100);
+
+                return Request.CreateResponse(HttpStatusCode.OK, res);
+
+                if (false)
+                {
+                    var exc = new ArgumentException("Folder path not specified. Missing ['folder': 'FolderPath'] in optionfile? ");
+                    Logger.Error(exc);
+                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+                }
+            }
+            catch (Exception exc)
+            {
+                Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
+
+
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [HttpGet]
+        public HttpResponseMessage FilesLookup(string q, string d)
+        {
+            try
+            {
+                var folderManager = FolderManager.Instance;
+                var fileManager = FileManager.Instance;
+                var portalFolder = folderManager.GetFolder(PortalSettings.PortalId, d ?? "");
+                var files = folderManager.GetFiles(portalFolder, true);
+                //files = files.Where(f => IsImageFile(f));
+                if (q != "*" && !string.IsNullOrEmpty(q))
+                {
+                    files = files.Where(f => f.FileName.ToLower().Contains(q.ToLower()));
+                }
+                int folderLength = d.Length;
+                var res = files.Select(f => new { value = f.FileId.ToString(), url = fileManager.GetUrl(f), text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName /*+ (string.IsNullOrEmpty(f.Folder) ? "" : " (" + f.Folder.Trim('/') + ")")*/ });
                 return Request.CreateResponse(HttpStatusCode.OK, res);
             }
             catch (Exception exc)
@@ -115,6 +166,30 @@ namespace Satrabel.OpenContent.Components
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
+
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [HttpGet]
+        public HttpResponseMessage TabsLookup(string q, string l)
+        {
+            try
+            {
+                var tabs = TabController.GetTabsBySortOrder(PortalSettings.PortalId)
+                            .Where(t => t.ParentId != PortalSettings.AdminTabId);
+                if (q != "*" && !string.IsNullOrEmpty(q))
+                {
+                    tabs = tabs.Where(t => t.TabName.ToLower().Contains(q.ToLower()));
+                }
+                var tabsDtos = tabs.Select(t => new { value = t.TabID.ToString(), text = t.TabName + " (" + t.TabPath.Replace("//", "/").Replace("/" + t.TabName + "/", "") + " " + l + ")", url = (new Uri(NavigateUrl(t, l, PortalSettings))).PathAndQuery });
+                return Request.CreateResponse(HttpStatusCode.OK, tabsDtos);
+            }
+            catch (Exception exc)
+            {
+                Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
+
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
         [HttpGet]
@@ -221,7 +296,7 @@ namespace Satrabel.OpenContent.Components
                         int top = 0;
                         int width = 0;
                         int height = 0;
-                        imageCropped = ImageUtils.SaveCroppedImage(image, cropData.crop.width, cropData.crop.height, out left, out top, out width, out height);
+                        imageCropped = ImageHelper.SaveCroppedImage(image, cropData.crop.width, cropData.crop.height, out left, out top, out width, out height);
                         res.crop.x = left;
                         res.crop.y = top;
                         res.crop.width = width;
@@ -229,10 +304,10 @@ namespace Satrabel.OpenContent.Components
                     }
                     else
                     {
-                        imageCropped = ImageUtils.Crop(image, cropData.crop.x, cropData.crop.y, cropData.crop.width, cropData.crop.height);
+                        imageCropped = ImageHelper.Crop(image, cropData.crop.x, cropData.crop.y, cropData.crop.width, cropData.crop.height);
                         if (cropData.resize != null && cropData.resize.width > 0 && cropData.resize.height > 0)
                         {
-                            imageCropped = ImageUtils.Resize(imageCropped, cropData.resize.width, cropData.resize.height);
+                            imageCropped = ImageHelper.Resize(imageCropped, cropData.resize.width, cropData.resize.height);
                         }
                     }
 
@@ -352,7 +427,7 @@ namespace Satrabel.OpenContent.Components
                 int top = 0;
                 int width = 0;
                 int height = 0;
-                imageCropped = ImageUtils.SaveCroppedImage(image, resize.width, resize.height, out left, out top, out width, out height);
+                imageCropped = ImageHelper.SaveCroppedImage(image, resize.width, resize.height, out left, out top, out width, out height);
                 cropresult.crop.x = left;
                 cropresult.crop.y = top;
                 cropresult.crop.width = width;
@@ -361,10 +436,10 @@ namespace Satrabel.OpenContent.Components
             }
             else if (crop.width > 0 && crop.width > 0)
             {
-                imageCropped = ImageUtils.Crop(image, crop.x, crop.y, crop.width, crop.height);
+                imageCropped = ImageHelper.Crop(image, crop.x, crop.y, crop.width, crop.height);
                 if (resize != null && resize.width > 0 && resize.height > 0)
                 {
-                    imageCropped = ImageUtils.Resize(imageCropped, resize.width, resize.height);
+                    imageCropped = ImageHelper.Resize(imageCropped, resize.width, resize.height);
                 }
             }
             Stream content = new MemoryStream();

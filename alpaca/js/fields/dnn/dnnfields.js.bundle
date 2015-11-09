@@ -4,7 +4,7 @@
     <!--Determines if the bundle file should be automatically optimized after creation/update.-->
     <minify>true</minify>
     <!--Determine whether to generate/re-generate this bundle on building the solution.-->
-    <runOnBuild>true</runOnBuild>
+    <runOnBuild>false</runOnBuild>
     <!--Specifies a custom subfolder to save files to. By default, compiled output will be placed in the same folder and nested under the original file.-->
     <outputDirectory />
   </settings>
@@ -19,6 +19,8 @@
     <file>NumberField.js</file>
     <file>Select2Field.js</file>
     <file>Image2Field.js</file>
+    <file>File2Field.js</file>
+    <file>Url2Field.js</file>
     <file>UrlField.js</file>
     <file>wysihtmlField.js</file>
     <file>MLCKEditorField.js</file>

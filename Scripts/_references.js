@@ -177,3 +177,5 @@
 /// <reference path="../js/alpaca-1.5.8/lib/moment/min/moment-with-locales.js" />
 /// <reference path="../js/alpaca-1.5.8/lib/moment/min/moment.min.js" />
 /// <reference path="../alpaca/js/fields/dnn/image2field.js" />
+/// <reference path="../alpaca/js/fields/dnn/file2field.js" />
+/// <reference path="../alpaca/js/fields/dnn/url2field.js" />

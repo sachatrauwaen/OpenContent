@@ -2,6 +2,7 @@
 using DotNetNuke.Web.Client.ClientResourceManagement;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -19,8 +20,33 @@ namespace Satrabel.OpenContent.Components.Alpaca
 {
     public class AlpacaEngine
     {
-        public string VirtualDirectory { get; set; }
-        public string Prefix { get; set; }
+        private string _prefix;
+        private string _virtualDirectory;
+
+        public string VirtualDirectory
+        {
+            get
+            {
+                return _virtualDirectory; 
+            }
+            set { _virtualDirectory = value; }
+        }
+
+        public string Prefix
+        {
+            get { return _prefix; }
+            set
+            {
+                if (string.IsNullOrEmpty(_prefix))
+                {
+                    if(Debugger.IsAttached)  //is empty normal?
+                        Debugger.Break();
+                    //throw new ArgumentNullException("Prefix must NOT be Null (AlpacaEngine)");
+                }
+                _prefix = value;
+            }
+        }
+
         public Page Page { get; private set; }
         public ModuleInstanceContext ModuleContext { get; private set; }
 
@@ -125,7 +151,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/cropper/cropper.js", FileOrder.Js.DefaultPriority);
                 ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/cropper/cropper.css", FileOrder.Css.DefaultPriority);
             }
-            if (allFields || fieldTypes.Contains("select2") || fieldTypes.Contains("image2"))
+            if (allFields || fieldTypes.Contains("select2") || fieldTypes.Contains("image2") || fieldTypes.Contains("file2") || fieldTypes.Contains("url2"))
             {
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/select2/select2.js", FileOrder.Js.DefaultPriority);
                 ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/select2/select2.css", FileOrder.Css.DefaultPriority);
@@ -142,7 +168,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/alpaca-1.5.8/lib/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js", FileOrder.Js.DefaultPriority + 1, "DnnPageHeaderProvider");
                 ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/alpaca-1.5.8/lib/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css", FileOrder.Css.DefaultPriority);
             }
-            if (allFields || fieldTypes.Contains("ckeditor"))
+            if (allFields || fieldTypes.Contains("ckeditor") || fieldTypes.Contains("mlckeditor"))
             {
                 var form = Page.FindControl("Form");
                 if (form.FindControl("CKDNNporid") == null)
@@ -159,18 +185,18 @@ namespace Satrabel.OpenContent.Components.Alpaca
                         CKDNNporid.Value = ModuleContext.PortalId.ToString();
                     }
                 }
-                
+
             }
 
         }
 
         private JToken GetOptions()
         {
-            string PhysicalDirectory = HostingEnvironment.MapPath(VirtualDirectory);
+            string physicalDirectory = HostingEnvironment.MapPath("~" + VirtualDirectory);
 
             JToken optionsJson = null;
             // default options
-            string optionsFilename = PhysicalDirectory + "\\" + (string.IsNullOrEmpty(Prefix) ? "" : Prefix + "-") + "options.json";
+            string optionsFilename = physicalDirectory + "\\" + (string.IsNullOrEmpty(Prefix) ? "" : Prefix + "-") + "options.json";
             if (File.Exists(optionsFilename))
             {
                 string fileContent = File.ReadAllText(optionsFilename);
@@ -180,7 +206,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 }
             }
             // language options
-            optionsFilename = PhysicalDirectory + "\\" + (string.IsNullOrEmpty(Prefix) ? "" : Prefix + "-") + "options." + ModuleContext.PortalSettings.CultureCode + ".json";
+            optionsFilename = physicalDirectory + "\\" + (string.IsNullOrEmpty(Prefix) ? "" : Prefix + "-") + "options." + ModuleContext.PortalSettings.CultureCode + ".json";
             if (File.Exists(optionsFilename))
             {
                 string fileContent = File.ReadAllText(optionsFilename);

@@ -1,15 +1,15 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Web;
+﻿using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace Satrabel.OpenContent.Components.Json
 {
     public class JsonUtils
     {
-        
+        public static JObject LoadJsonFromFile(string filename)
+        {
+            return new FileUri(filename).ToJObject();
+        }
+
         public static dynamic JsonToDynamic(string json)
         {
             var dynamicObject = System.Web.Helpers.Json.Decode(json);

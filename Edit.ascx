@@ -10,7 +10,7 @@
         <li>
             <asp:HyperLink ID="hlDelete" runat="server" class="dnnSecondaryAction" resourcekey="cmdDelete" /></li>
         <li style="padding-left: 10px;">
-            <asp:DropDownList ID="ddlVersions" runat="server" ClientIDMode="Static" />
+            <asp:DropDownList ID="ddlVersions" runat="server" ClientIDMode="Static" CssClass="oc-ddl-versions" />
         </li>
     </ul>
 </asp:Panel>
@@ -112,6 +112,7 @@
             connector = new ConnectorClass("default");
             connector.servicesFramework = sf;
             connector.culture = '<%=CurrentCulture%>';
+            connector.defaultCulture = '<%=DefaultCulture%>';
             connector.numberDecimalSeparator = '<%=NumberDecimalSeparator%>';
             if (config.versions) {
                 $.each(config.versions, function (i, item) {

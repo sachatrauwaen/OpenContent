@@ -123,13 +123,17 @@
       <DependentUpon>AddEdit.ascx</DependentUpon>
     </Compile>
     <Compile Include="Components\Alpaca\AlpacaEngine.cs" />
+    <Compile Include="Components\Common\DateTimeExtensions.cs" />
+    <Compile Include="Components\Common\DnnUtils.cs" />
     <Compile Include="Components\Dynamic\DynamicHelper.cs" />
     <Compile Include="Components\FeatureController.cs" />
     <Compile Include="Components\FilesStatus.cs" />
     <Compile Include="Components\FileUploadController.cs" />
     <Compile Include="Components\FileUri.cs" />
     <Compile Include="Components\Handlebars\HandlebarsEngine.cs" />
-    <Compile Include="Components\Images\ImageUtils.cs" />
+    <Compile Include="Components\TemplateHelpers\Images\ImageHelper.cs" />
+    <Compile Include="Components\TemplateHelpers\Images\ImageUri.cs" />
+    <Compile Include="Components\TemplateHelpers\Images\Ratio.cs" />
     <Compile Include="Components\Json\JsonExtensions.cs" />
     <Compile Include="Components\Json\JsonMergeExtensions.cs" />
     <Compile Include="Components\Json\JsonMergeOptionArrayHandling.cs" />
@@ -144,10 +148,12 @@
     <Compile Include="Components\OpenContentSettings.cs" />
     <Compile Include="Components\OpenContentUtils.cs" />
     <Compile Include="Components\OpenContentVersion.cs" />
+    <Compile Include="Components\OpenContentWebPage.cs" />
+    <Compile Include="Components\TemplateHelpers\Normalizers.cs" />
     <Compile Include="Components\Rss\FeedParser.cs" />
     <Compile Include="Components\Rss\FeedItem.cs" />
-    <Compile Include="Components\TemplateHelper.cs" />
     <Compile Include="Components\TemplateInfo.cs" />
+    <Compile Include="Components\Common\Utils.cs" />
     <Compile Include="EditGlobalSettings.ascx.cs">
       <DependentUpon>EditGlobalSettings.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -227,6 +233,8 @@
     <Content Include="alpaca\js\fields\dnn\dnnfields.min.js">
       <DependentUpon>dnnfields.js</DependentUpon>
     </Content>
+    <Content Include="alpaca\js\fields\dnn\Url2Field.js" />
+    <Content Include="alpaca\js\fields\dnn\File2Field.js" />
     <Content Include="alpaca\js\fields\dnn\ImageCropperField.js" />
     <Content Include="alpaca\js\fields\dnn\MLCKEditorField.js" />
     <Content Include="alpaca\js\fields\dnn\MLImageField.js" />

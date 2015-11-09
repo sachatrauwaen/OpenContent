@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Web;
 using System.Web.Hosting;
+using DotNetNuke.Entities.Portals;
+using DotNetNuke.Services.FileSystem;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -31,47 +31,79 @@ namespace Satrabel.OpenContent.Components
             FilePath = NormalizePath(FilePath);
         }
 
-        private string NormalizePath(string filePath)
+        protected FileUri(int fileId)
         {
-            if (filePath.StartsWith("~/")) filePath = filePath.Substring(2);
-            filePath=filePath.Replace("\\","/");
-            return filePath;
+            FileInfo = FileManager.Instance.GetFile(fileId);
+            if (FileInfo == null)
+                throw new ArgumentNullException(string.Format("iFileInfo not found for id [{0}]", fileId));
+            FilePath = FileManager.Instance.GetUrl(FileInfo);
+            FilePath = NormalizePath(FilePath);
         }
 
         #endregion
 
+        /// <summary>
+        /// Gets or sets the Dnn file information object.
+        /// </summary>
+        /// <value>
+        /// The Dnn file information object.
+        /// </value>
+        /// <remarks>This is only available for files under the Dnn Portal Directory</remarks>
+        public IFileInfo FileInfo { get; protected set; }
+
+        /// <summary>
+        /// Gets the file path relative to the Application. No leading /.
+        /// </summary>
+        /// <value>
+        /// The file path.
+        /// </value>
         public string FilePath { get; private set; }
 
-        public string Directory
+        public string UrlFilePath
         {
             get
             {
-                return VirtualPathUtility.GetDirectory(FilePath);
+                if (NormalizedApplicationPath == "/" && FilePath.StartsWith("/")) return FilePath;
+                return NormalizedApplicationPath + FilePath;
             }
         }
-        public string PhysicalDirectoryName
+
+        /// <summary>
+        /// Gets the URL directory relative to the root of the webserver. With leading /.
+        /// </summary>
+        /// <value>
+        /// The URL directory.
+        /// </value>
+        public string UrlDirectory
+        {
+            get
+            {
+                return VirtualPathUtility.GetDirectory(UrlFilePath);
+            }
+        }
+        public string PhysicalFullDirectory
         {
             get
             {
 
-                return Path.GetDirectoryName(HostingEnvironment.MapPath("~" + FilePath));
+                return Path.GetDirectoryName(PhysicalFilePath);
             }
         }
 
+        /// <summary>
+        /// Gets the full physical file path.
+        /// </summary>
+        /// <value>
+        /// The physical file path.
+        /// </value>
         public string PhysicalFilePath
         {
             get
             {
-                return HostingEnvironment.MapPath("~" + FilePath);
+                return HostingEnvironment.MapPath("~/" + FilePath);
             }
         }
-        public bool FileExists
-        {
-            get
-            {
-                return File.Exists(HostingEnvironment.MapPath("~" + FilePath));
-            }
-        }
+
         public string FileName
         {
             get
@@ -91,12 +123,11 @@ namespace Satrabel.OpenContent.Components
             get { return Path.GetExtension(FilePath); }
         }
 
-        public string UrlPath
+        public bool FileExists
         {
             get
             {
-                if (NormalizedApplicationPath == "/") return FilePath;
-                return NormalizedApplicationPath + FilePath;
+                return File.Exists(PhysicalFilePath);
             }
         }
 
@@ -115,6 +146,8 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
+        #region Static Utils
+
         public static FileUri FromPath(string path)
         {
             if (string.IsNullOrEmpty(path))
@@ -122,11 +155,11 @@ namespace Satrabel.OpenContent.Components
                 throw new ArgumentNullException("path is null");
             }
             string appPath = HostingEnvironment.MapPath("~");
-            string res = String.Format("{0}", path.Replace(appPath, "").Replace("\\", "/"));
-            if (!res.StartsWith("/")) res = "/" + res;
-            if (res != null)
+            string file = string.Format("{0}", path.Replace(appPath, "").Replace("\\", "/"));
+            //if (!res.StartsWith("/")) res = "/" + res;
+            if (file != null)
             {
-                return new FileUri(res);
+                return new FileUri(file);
             }
             return null;
         }
@@ -138,9 +171,24 @@ namespace Satrabel.OpenContent.Components
                 throw new ArgumentNullException("path is null");
             }
             string appPath = HostingEnvironment.MapPath("~");
-            string res = String.Format("{0}", path.Replace(appPath, "").Replace("\\", "/"));
-            if (!res.StartsWith("/")) res = "/" + res;
-            return res;
+            string file = string.Format("{0}", path.Replace(appPath, "").Replace("\\", "/"));
+            if (!file.StartsWith("/")) file = "/" + file;
+            return file;
         }
+
+        #endregion
+
+        #region Private Methods
+
+        private string NormalizePath(string filePath)
+        {
+            filePath = filePath.Replace("\\", "/");
+            filePath = filePath.Trim('~');
+            filePath = filePath.TrimStart(NormalizedApplicationPath);
+            filePath = filePath.Trim('/');
+            return filePath;
+        }
+
+        #endregion
     }
 }

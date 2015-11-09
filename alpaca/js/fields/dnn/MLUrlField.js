@@ -11,18 +11,19 @@
             var self = this;
             this.base(container, data, options, schema, view, connector);
             this.culture = connector.culture;
+            this.defaultCulture = connector.defaultCulture;
         },
 
         /**
          * @see Alpaca.Fields.MLUrlField#setup
          */
         setup: function () {
-
             if (this.data && Alpaca.isObject(this.data)) {
-             
                 this.olddata = this.data;
+            } else if (this.data) {
+                this.olddata = {};
+                this.olddata[this.defaultCulture] = this.data;
             }
-
             this.base();
         },
         /**

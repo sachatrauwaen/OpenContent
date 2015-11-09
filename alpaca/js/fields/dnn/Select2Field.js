@@ -303,6 +303,12 @@
                     }
                     */
                     $(self.getControlEl()).select2(settings);
+
+                    /*
+                    if (self.options.manageurl) {
+                        var manageButton = $('<a href="' + self.options.manageurl + '" target="_blank" class="alpaca-form-button">Manage files</a>').appendTo($(el).parent());
+                    }
+                    */
                 }
 
                 callback();
