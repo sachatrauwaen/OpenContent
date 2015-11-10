@@ -47,6 +47,8 @@ using Satrabel.OpenContent.Components.Dynamic;
 using DotNetNuke.Security.Permissions;
 using DotNetNuke.Security.Roles;
 using DotNetNuke.Entities.Users;
+using DotNetNuke.Instrumentation;
+using DotNetNuke.Services.Installer.Log;
 
 #endregion
 
@@ -54,6 +56,8 @@ namespace Satrabel.OpenContent
 {
     public partial class View : RazorModuleBase, IActionable
     {
+        private static readonly ILog Logger = LoggerSource.Instance.GetLogger(typeof(View));
+
         private int _itemId = Null.NullInteger;
         private readonly TemplateInfo _info = new TemplateInfo();
         private OpenContentSettings _settings;
@@ -979,35 +983,11 @@ namespace Satrabel.OpenContent
                     {
                         int roleId = int.Parse(OpenContent_EditorsRoleId);
                         var objModule = ModuleContext.Configuration;
-                        var perm = objModule.ModulePermissions.Where(tp => tp.RoleID == roleId).SingleOrDefault();
+                        var perms = objModule.ModulePermissions.Where(tp => tp.RoleID == roleId);
+                        var perm = perms.FirstOrDefault();
+
                         if (perm == null)
                         {
-                            /*
-                            var rc = new DotNetNuke.Security.Roles.RoleController();
-                            RoleInfo role = rc.GetRoleByName(ModuleContext.PortalId, EDITORS_ROLE_NAME);
-                            
-                            if (role == null)
-                            {
-                                role = new RoleInfo();
-                                role.RoleName = EDITORS_ROLE_NAME;
-                                role.Description = "Content Editors";
-                                role.PortalID = ModuleContext.PortalId;
-                                role.RoleGroupID = -1;
-                                role.BillingPeriod = -1;
-                                role.TrialPeriod = -1;
-                                role.ServiceFee = 0;
-                                role.BillingFrequency = "N";
-                                role.TrialFrequency = "N";
-                                role.TrialFee = 0;
-                                role.SecurityMode = SecurityMode.SecurityRole;
-                                role.Status = RoleStatus.Approved;
-                                roleId = rc.AddRole(role);
-                            }
-                            else
-                            {
-                                roleId = role.RoleID;
-                            }
-                            */
                             var permissionController = new PermissionController();
                             var arrSystemModuleViewPermissions = permissionController.GetPermissionByCodeAndKey("SYSTEM_MODULE_DEFINITION", "EDIT");
                             var permission = (PermissionInfo)arrSystemModuleViewPermissions[0];
@@ -1025,6 +1005,10 @@ namespace Satrabel.OpenContent
 
                             objModule.ModulePermissions.Add(objModulePermission);
                             ModulePermissionController.SaveModulePermissions(objModule);
+                        }
+                        else if (perms!=null && perms.Count() > 1)
+                        {
+                            Logger.ErrorFormat("Module with dubble Permissions!?! TabId=[{0}], ModuleId=[{1}], RoleId=[{2}]", ModuleContext.Configuration.TabID, ModuleContext.Configuration.ModuleID, roleId);
                         }
                     }
                     
