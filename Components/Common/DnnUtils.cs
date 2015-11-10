@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Portals;
@@ -20,6 +21,23 @@ namespace Satrabel.OpenContent.Components
         internal static List<ModuleInfo> GetDnnModulesByFriendlyName(string friendlyName, int tabFileManager)
         {
             throw new NotImplementedException();
+        }
+        internal static ModuleInfo GetLastModuleByFriendlyName(string friendlyName)
+        {
+            //DesktopModuleController dmc = new DesktopModuleController();
+            //DesktopModuleController.GetDesktopModuleByFriendlyName
+            int portalid = PortalSettings.Current.PortalId;
+            string culture = PortalSettings.Current.CultureCode;
+            var modules = ModuleController.Instance.GetModulesByDefinition(portalid, friendlyName).Cast<ModuleInfo>().OrderByDescending(m=> m.ModuleID);
+            foreach (var mod in modules)
+            {
+                var tab = TabController.Instance.GetTab(mod.TabID, portalid);
+                if (tab.CultureCode == culture || tab.CultureCode == null)
+                {
+                    return mod;
+                }
+            }
+            return modules.FirstOrDefault();
         }
 
         /// <summary>

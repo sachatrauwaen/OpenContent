@@ -67,17 +67,24 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             var tabId = DnnUtils.GetDnnTabByUrl(urlFileManager, culture).TabID; //todo sacha
             return EditLink(tabId);
         }
-
         public string EditLink(int tabFileManager)
         {
-            {
-                if (tabFileManager <= 0) return "";
-                var url = Globals.NavigateURL(tabFileManager);
-                var dnnFileManagerModule = DnnUtils.GetDnnModulesByFriendlyName("filemanager", tabFileManager).FirstOrDefault(); //todo sacha
-                //var modId = dnnFileManagerModule.ModuleControlId; 1420; //todo sacha
-                var modId = 1420; //todo sacha
-                return string.Format("javascript:dnnModal.show('{0}/ctl/FileProperties/mid/{2}?popUp=true&fileId={1}')", url, FileInfo.FileId, modId);
-            }
+            if (tabFileManager <= 0) return "";
+
+            return EditLink();
+        }
+
+        public string EditLink()
+        {
+            //var url = Globals.NavigateURL(tabFileManager);
+            //var dnnFileManagerModule = DnnUtils.GetDnnModulesByFriendlyName("filemanager", tabFileManager).OrderByDescending(m=> m.ModuleID).FirstOrDefault();
+            var dnnFileManagerModule = DnnUtils.GetLastModuleByFriendlyName("Digital Asset Management");
+            var modId = dnnFileManagerModule.ModuleID;
+            //var modId = 1420; 
+            var url = Globals.NavigateURL(dnnFileManagerModule.TabID, "FileProperties", "mid=" + modId, "popUp=true", "fileId=" + FileInfo.FileId);
+            return string.Format("javascript:dnnModal.show('{0}',/*showReturn*/false,550,950,true,'')", url);
+            //javascript:dnnModal.show('http://localhost:54068/en-us/OpenDocument/ctl/Module/ModuleId/487/view/gridview/pageSize/10?ReturnURL=/en-us/OpenDocument?folderId=42&popUp=true',/*showReturn*/false,550,950,true,'')
+            //return string.Format("javascript:dnnModal.show('{0}/ctl/FileProperties/mid/{2}?popUp=true&fileId={1}')", url, FileInfo.FileId, modId);
         }
 
         #region Private Methods
