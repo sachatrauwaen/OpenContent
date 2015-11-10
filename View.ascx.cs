@@ -983,14 +983,14 @@ namespace Satrabel.OpenContent
                     {
                         int roleId = int.Parse(OpenContent_EditorsRoleId);
                         var objModule = ModuleContext.Configuration;
-                        var perm = objModule.ModulePermissions.Where(tp => tp.RoleID == roleId).FirstOrDefault();
-
-                        if (perm == null)
+                        var permExist = objModule.ModulePermissions.Where(tp => tp.RoleID == roleId).Any();
+                        if (!permExist)
                         {
                             //todo sacha: add two permissions, read and write; Or better still add all permissions that are available. eg if you installed extra permissions
 
                             var permissionController = new PermissionController();
-                            var arrSystemModuleViewPermissions = permissionController.GetPermissionByCodeAndKey("SYSTEM_MODULE_DEFINITION", "EDIT");
+                            // view permission
+                            var arrSystemModuleViewPermissions = permissionController.GetPermissionByCodeAndKey("SYSTEM_MODULE_DEFINITION", "VIEW");
                             var permission = (PermissionInfo)arrSystemModuleViewPermissions[0];
                             var objModulePermission = new ModulePermissionInfo
                             {
@@ -1003,7 +1003,21 @@ namespace Satrabel.OpenContent
                                 //UserID = userId,
                                 AllowAccess = true
                             };
-
+                            objModule.ModulePermissions.Add(objModulePermission);
+                            // edit permission
+                            arrSystemModuleViewPermissions = permissionController.GetPermissionByCodeAndKey("SYSTEM_MODULE_DEFINITION", "EDIT");
+                            permission = (PermissionInfo)arrSystemModuleViewPermissions[0];
+                            objModulePermission = new ModulePermissionInfo
+                            {
+                                ModuleID = ModuleContext.Configuration.ModuleID,
+                                //ModuleDefID = permission.ModuleDefID,
+                                //PermissionCode = permission.PermissionCode,
+                                PermissionID = permission.PermissionID,
+                                PermissionKey = permission.PermissionKey,
+                                RoleID = roleId,
+                                //UserID = userId,
+                                AllowAccess = true
+                            };
                             objModule.ModulePermissions.Add(objModulePermission);
                             ModulePermissionController.SaveModulePermissions(objModule);
                         }
