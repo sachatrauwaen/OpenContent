@@ -983,11 +983,12 @@ namespace Satrabel.OpenContent
                     {
                         int roleId = int.Parse(OpenContent_EditorsRoleId);
                         var objModule = ModuleContext.Configuration;
-                        var perms = objModule.ModulePermissions.Where(tp => tp.RoleID == roleId);
-                        var perm = perms.FirstOrDefault();
+                        var perm = objModule.ModulePermissions.Where(tp => tp.RoleID == roleId).FirstOrDefault();
 
                         if (perm == null)
                         {
+                            //todo sacha: add two permissions, read and write; Or better still add all permissions that are available. eg if you installed extra permissions
+
                             var permissionController = new PermissionController();
                             var arrSystemModuleViewPermissions = permissionController.GetPermissionByCodeAndKey("SYSTEM_MODULE_DEFINITION", "EDIT");
                             var permission = (PermissionInfo)arrSystemModuleViewPermissions[0];
@@ -1006,13 +1007,7 @@ namespace Satrabel.OpenContent
                             objModule.ModulePermissions.Add(objModulePermission);
                             ModulePermissionController.SaveModulePermissions(objModule);
                         }
-                        else if (perms!=null && perms.Count() > 1)
-                        {
-                            Logger.ErrorFormat("Module with dubble Permissions!?! TabId=[{0}], ModuleId=[{1}], RoleId=[{2}]", ModuleContext.Configuration.TabID, ModuleContext.Configuration.ModuleID, roleId);
-                        }
                     }
-                    
-
                 }
             }
         }
