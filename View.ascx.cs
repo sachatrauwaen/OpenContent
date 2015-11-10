@@ -1008,6 +1008,8 @@ namespace Satrabel.OpenContent
                             ModulePermissionController.SaveModulePermissions(objModule);
                         }
                     }
+                    
+
                 }
             }
         }
