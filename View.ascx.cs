@@ -159,7 +159,7 @@ namespace Satrabel.OpenContent
                 }
                 else // other module
                 {
-                   // RenderOtherModuleDemoData();
+                   RenderOtherModuleDemoData();
                 }
             }
             else // new template
@@ -197,7 +197,7 @@ namespace Satrabel.OpenContent
             {
                 if (TemplateManifest != null && TemplateManifest.Main != null)
                 {
-                    _info.Template = new FileUri(_info.Template.UrlDirectory + "/" + TemplateManifest.Main.Template);
+                    _info.Template = new FileUri(_info.Template.UrlDirectory + TemplateManifest.Main.Template);
                 }
                 bool dsDataExist = GetModuleDemoData(_info, _settings);
                 if (dsDataExist)

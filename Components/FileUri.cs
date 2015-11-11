@@ -85,7 +85,7 @@ namespace Satrabel.OpenContent.Components
         {
             get
             {
-                return FilePath.Replace(Path.GetFileName(FilePath), "").Trim('/');
+                return FilePath.Replace(Path.GetFileName(FilePath), "");
             }
         }
         public string PhysicalFullDirectory
