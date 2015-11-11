@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Linq;
 using DotNetNuke.Common;
+using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Services.FileSystem;
+using DotNetNuke.UI.Modules;
 
 namespace Satrabel.OpenContent.Components.TemplateHelpers
 {
@@ -61,7 +63,15 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             return ImageHelper.GetImageUrl(FileInfo, ratio);
         }
 
-        public string EditImageLink()
+        public string EditImageUrl(ModuleInfo module)
+        {
+            if(module==null) return string.Empty;
+            var mc = new ModuleInstanceContext { Configuration = module };
+            if (!mc.IsEditable) return string.Empty;
+            return EditImageUrl();
+        }
+       
+        public string EditImageUrl()
         {
             //var url = Globals.NavigateURL(tabFileManager);
             //var dnnFileManagerModule = DnnUtils.GetDnnModulesByFriendlyName("filemanager", tabFileManager).OrderByDescending(m=> m.ModuleID).FirstOrDefault();
