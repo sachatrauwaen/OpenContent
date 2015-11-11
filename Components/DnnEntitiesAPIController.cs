@@ -73,7 +73,6 @@ namespace Satrabel.OpenContent.Components
             try
             {
                 var folderManager = FolderManager.Instance;
-                var fileManager = FileManager.Instance;
                 var portalFolder = folderManager.GetFolder(PortalSettings.PortalId, d ?? "");
                 var files = folderManager.GetFiles(portalFolder, true);
                 files = files.Where(f => IsImageFile(f));

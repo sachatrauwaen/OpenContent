@@ -61,20 +61,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             return ImageHelper.GetImageUrl(FileInfo, ratio);
         }
 
-
-        public string EditLink(string urlFileManager, string culture)
-        {
-            var tabId = DnnUtils.GetDnnTabByUrl(urlFileManager, culture).TabID; //todo sacha
-            return EditLink(tabId);
-        }
-        public string EditLink(int tabFileManager)
-        {
-            if (tabFileManager <= 0) return "";
-
-            return EditLink();
-        }
-
-        public string EditLink()
+        public string EditImageLink()
         {
             //var url = Globals.NavigateURL(tabFileManager);
             //var dnnFileManagerModule = DnnUtils.GetDnnModulesByFriendlyName("filemanager", tabFileManager).OrderByDescending(m=> m.ModuleID).FirstOrDefault();
@@ -102,21 +89,6 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         }
 
         #endregion
-
-        //public static string FileUrl(int fileId)
-        //{
-        //    if (fileId < 0) return "";
-        //    var fileManager = FileManager.Instance;
-        //    IFileInfo iFile = fileManager.GetFile(fileId);
-        //    if (iFile == null) throw new NoNullAllowedException(string.Format("iFileInfo not found for id [{0}]", fileId));
-        //    return fileManager.GetUrl(iFile);
-        //}
-
-        //public static IFileInfo FileInfo(int fileid)
-        //{
-        //    return FileManager.Instance.GetFile(fileid);
-        //}
-
 
     }
 }
