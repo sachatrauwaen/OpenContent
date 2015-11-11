@@ -5438,7 +5438,7 @@
 
     var Alpaca = $.alpaca;
 
-    Alpaca.Fields.MLUrlField = Alpaca.Fields.ImageField.extend(
+    Alpaca.Fields.MLImageField = Alpaca.Fields.ImageField.extend(
     /**
      * @lends Alpaca.Fields.MLImageField.prototype
      */
