@@ -69,53 +69,53 @@
         // controlEl
         var controlEl = this.getControlEl();
 
-        // all controls get the "form-control" class injected
-        $(fieldEl).find("input").addClass("form-control");
-        $(fieldEl).find("textarea").addClass("form-control");
-        $(fieldEl).find("select").addClass("form-control");
-        // except for the following
-        $(fieldEl).find("input[type=checkbox]").removeClass("form-control");
-        $(fieldEl).find("input[type=file]").removeClass("form-control");
-        $(fieldEl).find("input[type=radio]").removeClass("form-control");
+        //// all controls get the "form-control" class injected
+        //$(fieldEl).find("input").addClass("form-control");
+        //$(fieldEl).find("textarea").addClass("form-control");
+        //$(fieldEl).find("select").addClass("form-control");
+        //// except for the following
+        //$(fieldEl).find("input[type=checkbox]").removeClass("form-control");
+        //$(fieldEl).find("input[type=file]").removeClass("form-control");
+        //$(fieldEl).find("input[type=radio]").removeClass("form-control");
 
-        // special case for type == color, remove form-control
-        if (this.inputType === "color") {
-            $(fieldEl).find("input").removeClass("form-control");
-        }
+        //// special case for type == color, remove form-control
+        //if (this.inputType === "color") {
+        //    $(fieldEl).find("input").removeClass("form-control");
+        //}
 
         $(fieldEl).find("input[type=file]").addClass("normalFileUpload");
 
 
 
-        // any checkbox inputs get the "checkbox" class on their checkbox
-        $(fieldEl).find("input[type=checkbox]").parent().parent().addClass("checkbox");
-        // any radio inputs get the "radio" class on their radio
-        $(fieldEl).find("input[type=radio]").parent().parent().addClass("radio");
+        //// any checkbox inputs get the "checkbox" class on their checkbox
+        //$(fieldEl).find("input[type=checkbox]").parent().parent().addClass("checkbox");
+        //// any radio inputs get the "radio" class on their radio
+        //$(fieldEl).find("input[type=radio]").parent().parent().addClass("radio");
 
-        // if form has "form-inline" class, then radio and checkbox labels get inline classes
-        if ($(fieldEl).parents("form").hasClass("form-inline")) {
-            // checkboxes
-            $(fieldEl).find("input[type=checkbox]").parent().addClass("checkbox-inline");
+        //// if form has "form-inline" class, then radio and checkbox labels get inline classes
+        //if ($(fieldEl).parents("form").hasClass("form-inline")) {
+        //    // checkboxes
+        //    $(fieldEl).find("input[type=checkbox]").parent().addClass("checkbox-inline");
 
-            // radios
-            $(fieldEl).find("input[type=radio]").parent().addClass("radio-inline");
-        }
+        //    // radios
+        //    $(fieldEl).find("input[type=radio]").parent().addClass("radio-inline");
+        //}
 
-        // all control labels get class "control-label"
-        $(fieldEl).find("label.alpaca-control-label").addClass("control-label");
+        //// all control labels get class "control-label"
+        //$(fieldEl).find("label.alpaca-control-label").addClass("control-label");
 
-        // if in horizontal mode, add a wrapper div (col-sm-9) and label gets (col-sm-3)
-        if (this.view.horizontal) {
-            $(fieldEl).find("label.alpaca-control-label").addClass("col-sm-3");
+        //// if in horizontal mode, add a wrapper div (col-sm-9) and label gets (col-sm-3)
+        //if (this.view.horizontal) {
+        //    $(fieldEl).find("label.alpaca-control-label").addClass("col-sm-3");
 
-            var wrapper = $("<div></div>");
-            wrapper.addClass("col-sm-9");
+        //    var wrapper = $("<div></div>");
+        //    wrapper.addClass("col-sm-9");
 
-            $(controlEl).after(wrapper);
-            wrapper.append(controlEl);
+        //    $(controlEl).after(wrapper);
+        //    wrapper.append(controlEl);
 
-            $(fieldEl).append("<div style='clear:both;'></div>");
-        }
+        //    $(fieldEl).append("<div style='clear:both;'></div>");
+        //}
     };
     callbacks["container"] = function () {
         var containerEl = this.getContainerEl();
