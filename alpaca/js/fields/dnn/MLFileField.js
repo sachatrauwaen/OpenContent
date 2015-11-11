@@ -2,7 +2,7 @@
 
     var Alpaca = $.alpaca;
 
-    Alpaca.Fields.MLUrlField = Alpaca.Fields.FileField.extend(
+    Alpaca.Fields.MLFileField = Alpaca.Fields.FileField.extend(
     /**
      * @lends Alpaca.Fields.MLFileField.prototype
      */

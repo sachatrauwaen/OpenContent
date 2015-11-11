@@ -5295,7 +5295,7 @@
 
     var Alpaca = $.alpaca;
 
-    Alpaca.Fields.MLUrlField = Alpaca.Fields.FileField.extend(
+    Alpaca.Fields.MLFileField = Alpaca.Fields.FileField.extend(
     /**
      * @lends Alpaca.Fields.MLFileField.prototype
      */
@@ -5511,15 +5511,16 @@
                 this.base(val);
             }
         },
+        
         afterRenderControl: function (model, callback) {
             var self = this;
             this.base(model, function () {
-                self.handlePostRender(function () {
+                self.handlePostRender2(function () {
                     callback();
                 });
             });
         },
-        handlePostRender: function (callback) {
+        handlePostRender2: function (callback) {
             var self = this;
             var el = this.getControlEl();
             $(this.control.get(0)).after('<img src="/images/Flags/'+this.culture+'.gif" />');
