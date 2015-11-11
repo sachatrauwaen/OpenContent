@@ -20,40 +20,31 @@ namespace Satrabel.OpenContent.Components.Alpaca
 {
     public class AlpacaEngine
     {
-        private string _prefix;
         private string _virtualDirectory;
 
-        public string VirtualDirectory
+        private string VirtualDirectory
         {
             get
             {
-                return _virtualDirectory; 
+                return _virtualDirectory;
             }
-            set { _virtualDirectory = value; }
-        }
-
-        public string Prefix
-        {
-            get { return _prefix; }
             set
             {
-                if (string.IsNullOrEmpty(_prefix))
-                {
-                    if(Debugger.IsAttached)  //is empty normal?
-                        Debugger.Break();
-                    //throw new ArgumentNullException("Prefix must NOT be Null (AlpacaEngine)");
-                }
-                _prefix = value;
+                _virtualDirectory = value.TrimStart('\\');
             }
         }
+
+        private string Prefix { get; set; }
 
         public Page Page { get; private set; }
         public ModuleInstanceContext ModuleContext { get; private set; }
 
-        public AlpacaEngine(Page Page, ModuleInstanceContext ModuleContext)
+        public AlpacaEngine(Page Page, ModuleInstanceContext moduleContext, string virtualDir, string filePrefix)
         {
             this.Page = Page;
-            this.ModuleContext = ModuleContext;
+            this.ModuleContext = moduleContext;
+            VirtualDirectory = virtualDir;
+            Prefix = filePrefix;
         }
 
         public void RegisterAll(bool bootstrap = false)
@@ -66,24 +57,8 @@ namespace Satrabel.OpenContent.Components.Alpaca
 
         private void RegisterAlpaca(bool bootstrap)
         {
-            //<dnncl:DnnCssInclude ID="customJS" runat="server" FilePath="~/DesktopModules/OpenContent/alpaca/css/alpaca-dnn.css" AddTag="false" />
-            //<dnncl:DnnJsInclude ID="DnnJsInclude1" runat="server" FilePath="~/DesktopModules/OpenContent/js/alpaca-1.5.8/lib/handlebars/handlebars.js" Priority="106" ForceProvider="DnnPageHeaderProvider" />
-            //<dnncl:DnnJsInclude ID="DnnJsInclude2" runat="server" FilePath="~/DesktopModules/OpenContent/js/alpaca-1.5.8/alpaca/web/alpaca.js" Priority="107" ForceProvider="DnnPageHeaderProvider" />
-            //<dnncl:DnnJsInclude ID="DnnJsInclude4" runat="server" FilePath="~/DesktopModules/OpenContent/js/alpaca-1.5.8/lib/typeahead.js/dist/typeahead.bundle.min.js" Priority="106" ForceProvider="DnnPageHeaderProvider" />
-            //<dnncl:DnnJsInclude ID="DnnJsInclude14" runat="server" FilePath="~/DesktopModules/OpenContent/js/wysihtml/wysihtml-toolbar.js" Priority="107"  />
-            //<dnncl:DnnJsInclude ID="DnnJsInclude6" runat="server" FilePath="~/DesktopModules/OpenContent/js/wysihtml/parser_rules/advanced_opencontent.js" Priority="107"  />
-
-            //<dnncl:dnnjsinclude id="DnnJsInclude15" runat="server" filepath="~/DesktopModules/OpenContent/alpaca/js/fields/dnn/dnnfields.js" priority="108" forceprovider="DnnFormBottomProvider" />
-            //<dnncl:DnnJsInclude ID="DnnJsInclude7" runat="server" FilePath="~/DesktopModules/OpenContent/alpaca/js/views/dnn.js" Priority="107" ForceProvider="DnnFormBottomProvider" />
-            //<dnncl:DnnJsInclude ID="DnnJsInclude3" runat="server" FilePath="~/DesktopModules/OpenContent/js/requirejs/require.js" Priority="110" ForceProvider="DnnFormBottomProvider" />
-            //<dnncl:DnnJsInclude ID="DnnJsInclude5" runat="server" FilePath="~/DesktopModules/OpenContent/js/requirejs/config.js" Priority="111" ForceProvider="DnnFormBottomProvider" />
-            //<dnncl:DnnCssInclude ID="DnnCssInclude1" runat="server" FilePath="~/DesktopModules/OpenContent/css/font-awesome/css/font-awesome.min.css" AddTag="false" />
-
-
-
             ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/alpaca-1.5.8/lib/handlebars/handlebars.js", FileOrder.Js.DefaultPriority);
             ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/alpaca-1.5.8/lib/typeahead.js/dist/typeahead.bundle.min.js", FileOrder.Js.DefaultPriority);
-
 
             ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/wysihtml/wysihtml-toolbar.js", FileOrder.Js.DefaultPriority + 1);
             ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/wysihtml/parser_rules/advanced_opencontent.js", FileOrder.Js.DefaultPriority + 1);
@@ -192,7 +167,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
 
         private JToken GetOptions()
         {
-            string physicalDirectory = HostingEnvironment.MapPath("~" + VirtualDirectory);
+            string physicalDirectory = HostingEnvironment.MapPath("~\\" + VirtualDirectory);
 
             JToken optionsJson = null;
             // default options

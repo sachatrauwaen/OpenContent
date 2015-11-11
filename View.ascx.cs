@@ -159,7 +159,7 @@ namespace Satrabel.OpenContent
                 }
                 else // other module
                 {
-                    RenderOtherModuleDemoData();
+                   // RenderOtherModuleDemoData();
                 }
             }
             else // new template

@@ -81,11 +81,17 @@ namespace Satrabel.OpenContent.Components
                 return VirtualPathUtility.GetDirectory(UrlFilePath);
             }
         }
+        public string PhysicalRelativeDirectory
+        {
+            get
+            {
+                return FilePath.Replace(Path.GetFileName(FilePath), "").Trim('/');
+            }
+        }
         public string PhysicalFullDirectory
         {
             get
             {
-
                 return Path.GetDirectoryName(PhysicalFilePath);
             }
         }

@@ -39,23 +39,12 @@ namespace Satrabel.OpenContent
             cmdSave.NavigateUrl = Globals.NavigateURL();
 
             FileUri template = OpenContentUtils.GetTemplate(Settings);
-            AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext);
             if (template != null && template.FileExists)
             {
-                alpaca.VirtualDirectory =  template.UrlDirectory;
-                alpaca.Prefix = Path.GetFileNameWithoutExtension(template.FileName);
+                AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, template.PhysicalRelativeDirectory, Path.GetFileNameWithoutExtension(template.FileName));
+                alpaca.RegisterAll();
             }
-            alpaca.RegisterAll();
-
-            /*
-            ServicesFramework.Instance.RequestAjaxScriptSupport();
-            ServicesFramework.Instance.RequestAjaxAntiForgerySupport();
-            JavaScript.RequestRegistration(CommonJs.DnnPlugins); ;
-            JavaScript.RequestRegistration(CommonJs.jQueryFileUpload);
-            DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "oc_websiteRoot", FileUri.NormalizedApplicationPath, true);
-            */
-            //DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "PortalId", PortalId.ToString(), true);
-            //CKDNNporid.Value = PortalId.ToString();
+   
         }
 
         protected override void OnLoad(EventArgs e)

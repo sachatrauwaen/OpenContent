@@ -47,26 +47,9 @@ namespace Satrabel.OpenContent
             cmdSave.NavigateUrl = Globals.NavigateURL();
 
             var template = OpenContentUtils.GetTemplate(Settings);
-            AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext);
-            alpaca.VirtualDirectory = template.UrlDirectory;
+            AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, template.PhysicalRelativeDirectory, "");
             alpaca.RegisterAll();
 
-            /*
-            ServicesFramework.Instance.RequestAjaxScriptSupport();
-            ServicesFramework.Instance.RequestAjaxAntiForgerySupport();
-            JavaScript.RequestRegistration(CommonJs.DnnPlugins); // dnnPanels
-            JavaScript.RequestRegistration(CommonJs.jQueryFileUpload); // image file upload
-            DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "oc_websiteRoot", FileUri.NormalizedApplicationPath, true);
-
-            
-
-            if (File.Exists(Server.MapPath("~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js")))
-            {
-                ClientResourceManager.RegisterScript(Page, "~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js", FileOrder.Js.DefaultPriority);
-                DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "PortalId", PortalId.ToString(), true);
-                CKDNNporid.Value = PortalId.ToString();
-            }
-             */ 
         }
 
         protected override void OnLoad(EventArgs e)
