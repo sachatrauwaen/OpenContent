@@ -84,9 +84,7 @@ namespace Satrabel.OpenContent
         private void InitEditor(FileUri template)
         {
             LoadFiles(template);
-            //var scriptFile = new FileUri(template.Directory + "/" + scriptList.SelectedValue);
-
-            var scriptFile = new FileUri(template.UrlDirectory + "/" + scriptList.SelectedValue);
+            var scriptFile = new FileUri(template.UrlDirectory + scriptList.SelectedValue);
             DisplayFile(scriptFile);
             if (template.FilePath.StartsWith(ModuleTemplateDirectory))
             {
@@ -246,7 +244,7 @@ namespace Satrabel.OpenContent
         private void scriptList_SelectedIndexChanged(object sender, EventArgs e)
         {
             FileUri template = OpenContentUtils.GetTemplate(ModuleContext.Settings);
-            var scriptFile = new FileUri(template.UrlDirectory + "/" + scriptList.SelectedValue);
+            var scriptFile = new FileUri(template.UrlDirectory + scriptList.SelectedValue);
             DisplayFile(scriptFile);
         }
         #endregion

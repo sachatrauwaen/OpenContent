@@ -125,7 +125,7 @@ namespace Satrabel.OpenContent
                 TemplateManifest manifest = OpenContentUtils.GetTemplateManifest(_info.Template);
                 if (manifest != null && manifest.Main != null)
                 {
-                    _info.Template = new FileUri(_info.Template.UrlDirectory + "/" + manifest.Main.Template);
+                    _info.Template = new FileUri(_info.Template.UrlDirectory + manifest.Main.Template);
                 }
                 _info.OutputString = GenerateOutput(_info.Template, _info.DataJson, _info.SettingsJson, null);
             }
