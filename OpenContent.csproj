@@ -434,8 +434,6 @@
     <Content Include="js\cropper\cropper.min.css" />
     <Content Include="js\cropper\cropper.min.js" />
     <Content Include="js\opencontent.js" />
-    <Content Include="js\requirejs\async.js" />
-    <Content Include="js\requirejs\config.js" />
     <Content Include="Providers\DataProviders\SqlDataProvider\01.04.01.SqlDataProvider" />
     <Content Include="alpaca\js\fields\dnn\dnnfields.js.bundle" />
     <Content Include="alpaca\js\fields\dnn\dnnfields.min.js.map">
@@ -462,11 +460,6 @@
     <Content Include="js\alpaca-1.5.8\lib\moment\LICENSE" />
     <Content Include="js\alpaca-1.5.8\lib\moment\README.md" />
     <None Include="Scripts\_references.js" />
-    <Content Include="js\requirejs\css.js" />
-    <Content Include="js\requirejs\css.min.js" />
-    <Content Include="js\requirejs\googlemaps.js" />
-    <Content Include="js\requirejs\require.js" />
-    <Content Include="js\requirejs\text.js" />
     <Content Include="js\select2\i18n\az.js" />
     <Content Include="js\select2\i18n\bg.js" />
     <Content Include="js\select2\i18n\ca.js" />
