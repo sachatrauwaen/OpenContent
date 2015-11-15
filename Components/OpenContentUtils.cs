@@ -54,17 +54,37 @@ namespace Satrabel.OpenContent.Components
             }
             return null;
         }
+        public static FileUri GetTemplate(Hashtable moduleSettings, out Manifest manifest)
+        {
+            FileUri templateUri = null;
+            manifest = null;
+            var template = moduleSettings["template"] as string;
+            if (!string.IsNullOrEmpty(template))
+            {
+                templateUri = new FileUri(template);
+            }
+            if (templateUri == null) return null;
+
+            if (!templateUri.FileExists)
+            {
+                //maybe it is a manifest
+                manifest = GetManifest(template);
+                if (manifest != null)
+                    templateUri = new FileUri(GetTemplateManifest(templateUri).Main.Template);
+            }
+            return templateUri;
+        }
 
         public static List<System.Web.UI.WebControls.ListItem> GetTemplates(PortalSettings portalSettings, int moduleId, string selectedTemplate, string moduleSubDir)
         {
             return GetTemplates(portalSettings, moduleId, new FileUri(selectedTemplate), moduleSubDir);
         }
 
-
         public static List<System.Web.UI.WebControls.ListItem> GetTemplatesFiles(PortalSettings portalSettings, int moduleId, string selectedTemplate, string moduleSubDir)
         {
             return GetTemplatesFiles(portalSettings, moduleId, new FileUri(selectedTemplate), moduleSubDir);
         }
+
         public static List<ListItem> GetTemplatesFiles(PortalSettings portalSettings, int moduleId, FileUri selectedTemplate, string moduleSubDir)
         {
             return GetTemplatesFiles(portalSettings, moduleId, selectedTemplate, moduleSubDir, null);
@@ -426,16 +446,17 @@ namespace Satrabel.OpenContent.Components
             try
             {
                 Manifest manifest = null;
-                string filename = HostingEnvironment.MapPath(folder + "/manifest.json");
-                if (File.Exists(filename))
+                var file = new FileUri(folder + "/manifest.json");
+                if (file.FileExists)
                 {
-                    string content = File.ReadAllText(filename);
+                    string content = File.ReadAllText(file.FilePath);
                     manifest = JsonConvert.DeserializeObject<Manifest>(content);
                 }
                 return manifest;
             }
             catch (Exception ex)
             {
+                //we should log this
                 return null;
             }
         }

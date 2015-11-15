@@ -38,13 +38,15 @@ namespace Satrabel.OpenContent
             hlCancel.NavigateUrl = Globals.NavigateURL();
             cmdSave.NavigateUrl = Globals.NavigateURL();
 
-            FileUri template = OpenContentUtils.GetTemplate(Settings);
+            Manifest manifest;
+            FileUri template = OpenContentUtils.GetTemplate(Settings, out manifest);
+
             if (template != null && template.FileExists)
             {
                 AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, template.PhysicalRelativeDirectory, Path.GetFileNameWithoutExtension(template.FileName));
                 alpaca.RegisterAll();
             }
-   
+
         }
 
         protected override void OnLoad(EventArgs e)
