@@ -263,7 +263,7 @@ namespace Satrabel.OpenContent.Components
                 File.Copy(item, folder.PhysicalPath + Path.GetFileName(item));
 
             }
-            return GetDefaultTemlate(folder.PhysicalPath);
+            return GetDefaultTemplate(folder.PhysicalPath);
         }
 
         public static string ImportFromWeb(int PortalId, string FileName, string NewTemplateName)
@@ -295,7 +295,7 @@ namespace Satrabel.OpenContent.Components
                     Stream stream = req.GetResponse().GetResponseStream();
 
                     FileSystemUtils.UnzipResources(new ZipInputStream(stream), folder.PhysicalPath);
-                    return GetDefaultTemlate(folder.PhysicalPath);
+                    return GetDefaultTemplate(folder.PhysicalPath);
                 }
             }
             catch (PermissionsNotMetException)
@@ -325,7 +325,7 @@ namespace Satrabel.OpenContent.Components
             return "";
         }
 
-        public static string GetDefaultTemlate(string FromFolder)
+        public static string GetDefaultTemplate(string FromFolder)
         {
             string Template = "";
             foreach (var item in Directory.GetFiles(FromFolder))
