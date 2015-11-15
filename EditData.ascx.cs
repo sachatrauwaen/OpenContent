@@ -85,13 +85,16 @@ namespace Satrabel.OpenContent
             {
                 case cData:
                     OpenContentController ctrl = new OpenContentController();
-                    TemplateManifest manifest = null;
+                    Manifest manifest = null;
+                    TemplateManifest template = null;
                     OpenContentSettings settings = new OpenContentSettings(Settings);
-                    if (settings.Template != null)
+
+                    if (settings.TemplateAvailable)
                     {
-                        manifest = OpenContentUtils.GetTemplateManifest(settings.Template);
+                        OpenContentUtils.GetTemplate(settings, out manifest, out template);
+                        //template = OpenContentUtils.GetTemplateManifest(settings.Template);
                     }
-                    if (manifest != null && manifest.IsListTemplate)
+                    if (template != null && template.IsListTemplate)
                     {
                         var dataList = ctrl.GetContents(ModuleId);
                         if (dataList != null)
@@ -156,13 +159,14 @@ namespace Satrabel.OpenContent
         private void SaveData()
         {
             OpenContentController ctrl = new OpenContentController();
-            TemplateManifest manifest = null;
+            TemplateManifest template = null;
             OpenContentSettings settings = new OpenContentSettings(Settings);
-            if (settings.Template != null)
+            if (settings.TemplateAvailable)
             {
-                manifest = OpenContentUtils.GetTemplateManifest(settings.Template);
+                Manifest manifest = null;
+                OpenContentUtils.GetTemplate(settings, out manifest, out template);
             }
-            if (manifest != null && manifest.IsListTemplate)
+            if (template != null && template.IsListTemplate)
             {
                 JArray lst = null;
                 if (!string.IsNullOrEmpty(txtSource.Text))

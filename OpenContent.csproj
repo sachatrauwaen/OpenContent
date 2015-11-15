@@ -129,6 +129,7 @@
     <Compile Include="Components\FeatureController.cs" />
     <Compile Include="Components\FilesStatus.cs" />
     <Compile Include="Components\FileUploadController.cs" />
+    <Compile Include="Components\FolderUri.cs" />
     <Compile Include="Components\FileUri.cs" />
     <Compile Include="Components\Handlebars\HandlebarsEngine.cs" />
     <Compile Include="Components\TemplateHelpers\Images\ImageHelper.cs" />

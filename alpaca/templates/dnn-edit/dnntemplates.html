@@ -14,7 +14,7 @@
                     <h2>
             {{/if}}
                     
-                        {{{options.label}}}
+            {{{options.label}}}
                     
             {{#if options.collapsible}}
                 </a>
@@ -49,8 +49,6 @@
     <div>
         {{#each checkboxOptions}}
 
-
-
         <label>
 
             <input type="checkbox" data-checkbox-index="{{@index}}" data-checkbox-value="{{value}}" {{#if ../../options.readonly}} readonly="readonly" {{/if}} {{#if name}} name="{{name}}" {{/if}} {{#each ../../options.data}} data-{{@key}}="{{value}}" {{/each}} />
@@ -58,15 +56,14 @@
 
         </label>
 
-
         {{/each}}
     </div>
+
     {{else}}
 
     <div>
 
         <label>
-
             <input type="checkbox" {{#if options.readonly}} readonly="readonly" {{/if}} {{#if name}} name="{{name}}" {{/if}} {{#each options.data}} data-{{@key}}="{{value}}" {{/each}} />
 
             {{{options.rightLabel}}}
@@ -107,8 +104,6 @@
         <div class="alpaca-image-display">
             <img id="{{id}}-image" src="{{data.url}}" class="image">
         </div>
-
-
 
     </div>
 </script>
@@ -155,7 +150,6 @@
                 <a data-wysihtml5-command="formatBlock" data-wysihtml5-command-blank-value="true"><i class="fa fa-minus"></i></a>
             </div>
 
-
             <div data-wysihtml5-dialog="createLink" style="display: none;" class="dialog">
 
                 <label>
@@ -195,8 +189,6 @@
         {{/if}}
 
         {{#control}}{{/control}}
-
-
 
     </div>
 

@@ -7,37 +7,44 @@ using DotNetNuke.Services.FileSystem;
 
 namespace Satrabel.OpenContent.Components
 {
-    public class FileUri
+    public class FileUri : FolderUri
     {
         #region Constructors
 
-        public FileUri(string pathToFile)
+        public FileUri(string pathToFile) : base(Path.GetDirectoryName(pathToFile))
         {
             if (string.IsNullOrEmpty(pathToFile))
             {
                 throw new ArgumentNullException("pathToFile is null");
             }
-            FilePath = pathToFile;
-            FilePath = NormalizePath(FilePath);
+            FileName = Path.GetFileName(NormalizePath(pathToFile));
         }
 
         public FileUri(string path, string filename)
+            : base(path)
         {
             if (string.IsNullOrEmpty(filename))
             {
-                throw new ArgumentNullException("pathToFile is null");
+                throw new ArgumentNullException("filename is null");
             }
-            FilePath = path + "/" + filename;
-            FilePath = NormalizePath(FilePath);
+            FileName = filename;
         }
 
-        protected FileUri(int fileId)
+        protected FileUri(int fileId) : base(GetFileInfo(fileId))
         {
-            FileInfo = FileManager.Instance.GetFile(fileId);
-            if (FileInfo == null)
+            FileInfo = GetFileInfo(fileId);
+            var filePath = FileManager.Instance.GetUrl(FileInfo);
+            filePath = NormalizePath(filePath);
+            FileName = Path.GetFileName(filePath);
+        }
+
+        private static IFileInfo GetFileInfo(int fileId)
+        {
+            var fileInfo = FileManager.Instance.GetFile(fileId);
+            if (fileInfo == null)
                 throw new ArgumentNullException(string.Format("iFileInfo not found for id [{0}]", fileId));
-            FilePath = FileManager.Instance.GetUrl(FileInfo);
-            FilePath = NormalizePath(FilePath);
+
+            return fileInfo;
         }
 
         #endregion
@@ -57,44 +64,10 @@ namespace Satrabel.OpenContent.Components
         /// <value>
         /// The file path.
         /// </value>
-        public string FilePath { get; private set; }
+        public string FilePath { get { return base.FolderPath + "/" + FileName; } }
 
-        public string UrlFilePath
-        {
-            get
-            {
-                if (NormalizedApplicationPath == "/" && FilePath.StartsWith("/")) return FilePath;
-                return NormalizedApplicationPath + FilePath;
-            }
-        }
+        public string UrlFilePath { get { return base.UrlFolderPath + "/" + FileName; } }
 
-        /// <summary>
-        /// Gets the URL directory relative to the root of the webserver. With leading /.
-        /// </summary>
-        /// <value>
-        /// The URL directory.
-        /// </value>
-        public string UrlDirectory
-        {
-            get
-            {
-                return VirtualPathUtility.GetDirectory(UrlFilePath);
-            }
-        }
-        public string PhysicalRelativeDirectory
-        {
-            get
-            {
-                return FilePath.Replace(Path.GetFileName(FilePath), "");
-            }
-        }
-        public string PhysicalFullDirectory
-        {
-            get
-            {
-                return Path.GetDirectoryName(PhysicalFilePath);
-            }
-        }
 
         /// <summary>
         /// Gets the full physical file path.
@@ -110,13 +83,8 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
-        public string FileName
-        {
-            get
-            {
-                return Path.GetFileName(FilePath);
-            }
-        }
+        public string FileName { get; private set; }
+
         public string FileNameWithoutExtension
         {
             get
@@ -137,21 +105,6 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
-        /// <summary>
-        /// Gets the normalized application path.
-        /// </summary>
-        /// <remarks>the return value of ApplicationVirtualPath doesn't always return a string that ends with /.</remarks>
-        /// <returns></returns>
-        public static string NormalizedApplicationPath
-        {
-            get
-            {
-                var path = "" + HostingEnvironment.ApplicationVirtualPath;
-                if (!path.EndsWith("/")) path += "/";
-                return path;
-            }
-        }
-
         #region Static Utils
 
         public static FileUri FromPath(string path)
@@ -168,18 +121,6 @@ namespace Satrabel.OpenContent.Components
                 return new FileUri(file);
             }
             return null;
-        }
-
-        public static string ReverseMapPath(string path)
-        {
-            if (string.IsNullOrEmpty(path))
-            {
-                throw new ArgumentNullException("path is null");
-            }
-            string appPath = HostingEnvironment.MapPath("~");
-            string file = string.Format("{0}", path.Replace(appPath, "").Replace("\\", "/"));
-            if (!file.StartsWith("/")) file = "/" + file;
-            return file;
         }
 
         #endregion

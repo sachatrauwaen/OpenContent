@@ -10,6 +10,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -45,7 +46,7 @@ namespace Satrabel.OpenContent.Components
         }
 
 
-        public static FileUri GetTemplate(Hashtable moduleSettings)
+        public static FileUri GetTemplateOld(Hashtable moduleSettings)
         {
             var template = moduleSettings["template"] as string;
             if (!string.IsNullOrEmpty(template))
@@ -54,25 +55,82 @@ namespace Satrabel.OpenContent.Components
             }
             return null;
         }
-        public static FileUri GetTemplate(Hashtable moduleSettings, out Manifest manifest)
+
+
+        public static FileUri GetTemplate(Hashtable moduleSettings)
+        {
+            OpenContentSettings settings = new OpenContentSettings(moduleSettings);
+            Manifest deepManifest;
+            TemplateManifest deepTemplateManifest;
+            var retval = GetTemplate(settings, out deepManifest, out deepTemplateManifest);
+            return retval;
+        }
+
+        public static FileUri GetTemplate(Hashtable moduleSettings, out Manifest manifest, out TemplateManifest templateManifest)
+        {
+            OpenContentSettings settings = new OpenContentSettings(moduleSettings);
+            Manifest deepManifest;
+            TemplateManifest deepTemplateManifest;
+            var retval = GetTemplate(settings,out deepManifest,out deepTemplateManifest);
+            manifest = deepManifest;
+            templateManifest = deepTemplateManifest;
+            return retval;
+        }
+
+        public static FileUri GetTemplate(OpenContentSettings settings, out Manifest manifest, out TemplateManifest templateManifest)
         {
             FileUri templateUri = null;
             manifest = null;
-            var template = moduleSettings["template"] as string;
-            if (!string.IsNullOrEmpty(template))
-            {
-                templateUri = new FileUri(template);
-            }
-            if (templateUri == null) return null;
+            templateManifest = null;
+            if (!settings.TemplateAvailable) return null;
 
-            if (!templateUri.FileExists)
+            manifest = GetManifest(settings.TemplateDir);
+            if (manifest != null)
             {
-                //maybe it is a manifest
-                manifest = GetManifest(template);
-                if (manifest != null)
-                    templateUri = new FileUri(GetTemplateManifest(templateUri).Main.Template);
+                //get the requested template key
+                templateManifest = manifest.GetTemplateManifest(settings.TemplateName);
+                templateUri = new FileUri(settings.TemplateDir.FolderPath, templateManifest.Main.Template);
+                return templateUri;
             }
+
+            templateUri = new FileUri(settings.TemplateName);
             return templateUri;
+        }
+
+        public static Manifest GetManifest(FolderUri folder)
+        {
+            try
+            {
+                Manifest manifest = null;
+                var file = new FileUri(folder.UrlDirectory + "/manifest.json");
+                if (file.FileExists)
+                {
+                    string content = File.ReadAllText(file.PhysicalFilePath);
+                    manifest = JsonConvert.DeserializeObject<Manifest>(content);
+                }
+                return manifest;
+            }
+            catch (Exception ex)
+            {
+                //we should log this
+                if (Debugger.IsAttached) Debugger.Break();
+                return null;
+            }
+        }
+
+        public static TemplateManifest GetTemplateManifest(FileUri template)  //todo - dit bestaat ook als methode van een classe
+        {
+            if (template == null)
+            {
+                throw new ArgumentNullException("template is null");
+            }
+            TemplateManifest templateManifest = null;
+            Manifest manifest = GetManifest(template);
+            if (manifest != null)
+            {
+                templateManifest = manifest.GetTemplateManifest(template);
+            }
+            return templateManifest;
         }
 
         public static List<System.Web.UI.WebControls.ListItem> GetTemplates(PortalSettings portalSettings, int moduleId, string selectedTemplate, string moduleSubDir)
@@ -103,7 +161,7 @@ namespace Satrabel.OpenContent.Components
                 var selDir = otherModuleTemplate.PhysicalFullDirectory;
                 dirs = new string[] { selDir };
             }
-            
+
             List<ListItem> lst = new List<ListItem>();
             foreach (var dir in dirs)
             {
@@ -125,8 +183,8 @@ namespace Satrabel.OpenContent.Components
                     }
                 }
                 IEnumerable<string> files = null;
-                string templateVirtualFolder = FileUri.ReverseMapPath(dir);
-                var manifest = GetManifest(templateVirtualFolder);
+                string templateVirtualFolder = FolderUri.ReverseMapPath(dir);
+                var manifest = GetManifest(new FolderUri(templateVirtualFolder));
                 if (manifest != null && manifest.Templates != null)
                 {
                     files = manifest.Templates.Select(t => t.Key);
@@ -138,7 +196,6 @@ namespace Satrabel.OpenContent.Components
                         {
                             templateName = templateName + " - " + template.Value.Title;
                         }
-                        //string scriptPath = templateVirtualFolder + "/" + template.Key;
                         var item = new ListItem(templateCat + " : " + templateName, templateUri.FilePath);
                         if (selectedTemplate != null && templateUri.FilePath.ToLowerInvariant() == selectedTemplate.FilePath.ToLowerInvariant())
                         {
@@ -154,7 +211,7 @@ namespace Satrabel.OpenContent.Components
                     foreach (string script in files)
                     {
                         FileUri templateUri = FileUri.FromPath(script);
-                        
+
                         string scriptName = script.Remove(script.LastIndexOf(".")).Replace(basePath, "");
                         if (templateCat == "Module")
                         {
@@ -168,7 +225,6 @@ namespace Satrabel.OpenContent.Components
                         else
                             scriptName = scriptName.Replace("\\", " - ");
 
-                        //string scriptPath = FileUri.ReverseMapPath(script);
                         var item = new ListItem(templateCat + " : " + scriptName, templateUri.FilePath);
                         if (selectedTemplate != null && templateUri.FilePath.ToLowerInvariant() == selectedTemplate.FilePath.ToLowerInvariant())
                         {
@@ -441,46 +497,13 @@ namespace Satrabel.OpenContent.Components
             return result.ToString();
         }
 
-        public static Manifest GetManifest(string folder)
-        {
-            try
-            {
-                Manifest manifest = null;
-                var file = new FileUri(folder + "/manifest.json");
-                if (file.FileExists)
-                {
-                    string content = File.ReadAllText(file.FilePath);
-                    manifest = JsonConvert.DeserializeObject<Manifest>(content);
-                }
-                return manifest;
-            }
-            catch (Exception ex)
-            {
-                //we should log this
-                return null;
-            }
-        }
-        public static TemplateManifest GetTemplateManifest(FileUri template)
-        {
-            if (template == null)
-            {
-                throw new ArgumentNullException("template is null");
-            }
-            TemplateManifest templateManifest = null;
-            Manifest manifest = GetManifest(template.UrlDirectory);
-            if (manifest != null) { 
-                templateManifest = manifest.GetTemplateManifest(template);
-            }
-            return templateManifest;
-        }
 
-        
         public static string ReverseMapPath(string path)
         {
             return FileUri.ReverseMapPath(path);
         }
 
-        public static bool HasEditPermissions(PortalSettings portalSettings, ModuleInfo module, string editrole, int CreatedByUserId) 
+        public static bool HasEditPermissions(PortalSettings portalSettings, ModuleInfo module, string editrole, int CreatedByUserId)
         {
             return portalSettings.UserInfo.IsSuperUser ||
                     portalSettings.UserInfo.IsInRole(portalSettings.AdministratorRoleName) ||
@@ -507,7 +530,7 @@ namespace Satrabel.OpenContent.Components
                 return Type == "multiple";
             }
         }
-       
+
     }
     public class PartialTemplate
     {
@@ -547,6 +570,14 @@ namespace Satrabel.OpenContent.Components
             if (Templates != null && Templates.ContainsKey(template.FileNameWithoutExtension))
             {
                 return Templates[template.FileNameWithoutExtension];
+            }
+            return null;
+        }
+        public TemplateManifest GetTemplateManifest(string templateKey)
+        {
+            if (Templates != null && Templates.ContainsKey(templateKey))
+            {
+                return Templates[templateKey];
             }
             return null;
         }

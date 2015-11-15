@@ -46,10 +46,9 @@ namespace Satrabel.OpenContent
             hlCancel.NavigateUrl = Globals.NavigateURL();
             cmdSave.NavigateUrl = Globals.NavigateURL();
 
-            var template = OpenContentUtils.GetTemplate(Settings);
-            AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, template.PhysicalRelativeDirectory, "");
+            OpenContentSettings settings = new OpenContentSettings(Settings);
+            AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext,settings.Template.PhysicalRelativeDirectory, "");
             alpaca.RegisterAll();
-
         }
 
         protected override void OnLoad(EventArgs e)

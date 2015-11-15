@@ -49,7 +49,9 @@ namespace Satrabel.OpenContent
 
         private void cmdCustom_Click(object sender, EventArgs e)
         {
-            FileUri template = OpenContentUtils.GetTemplate(ModuleContext.Settings);
+            Manifest manifest;
+            TemplateManifest templateManifest;
+            FileUri template = OpenContentUtils.GetTemplate(ModuleContext.Settings, out manifest, out templateManifest);
             string templateFolder = template.UrlDirectory;
             string templateDir = Server.MapPath(templateFolder);
             string moduleDir = Server.MapPath(ModuleTemplateDirectory);

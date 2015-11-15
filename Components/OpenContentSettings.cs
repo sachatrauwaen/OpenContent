@@ -10,7 +10,7 @@ namespace Satrabel.OpenContent.Components
     {
         public OpenContentSettings(Hashtable moduleSettings)
         {
-            var template = moduleSettings["template"] as string;
+            var template = moduleSettings["template"] as string;    //path+file  of //manifestpath+key
             if (!string.IsNullOrEmpty(template))
             {
                 Template = new FileUri(template);
@@ -19,7 +19,7 @@ namespace Satrabel.OpenContent.Components
             var sModuleId = moduleSettings["moduleid"] as string;
             TabId = -1;
             ModuleId = -1;
-            
+
             if (sTabId != null && sModuleId != null)
             {
                 TabId = int.Parse(sTabId);
@@ -31,8 +31,12 @@ namespace Satrabel.OpenContent.Components
 
         public int TabId { get; set; }
         public int ModuleId { get; set; }
-        public FileUri Template { get; set; }
-        public string Data { get; set; }
+
+        public FolderUri TemplateDir { get { return Template; } }
+        public string TemplateName { get { return Template == null ? "" : Template.FileNameWithoutExtension; } }
+
+        internal FileUri Template { get; private set; }
+        public string Data { get; private set; }
         public bool IsOtherModule
         {
             get
@@ -40,5 +44,7 @@ namespace Satrabel.OpenContent.Components
                 return TabId > 0 && ModuleId > 0;
             }
         }
+
+        public bool TemplateAvailable { get { return Template != null; } }
     }
 }

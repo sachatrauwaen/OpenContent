@@ -38,15 +38,12 @@ namespace Satrabel.OpenContent
             hlCancel.NavigateUrl = Globals.NavigateURL();
             cmdSave.NavigateUrl = Globals.NavigateURL();
 
-            Manifest manifest;
-            FileUri template = OpenContentUtils.GetTemplate(Settings, out manifest);
-
-            if (template != null && template.FileExists)
+            var settings = new OpenContentSettings(ModuleContext.Settings);
+            if (settings.TemplateAvailable)
             {
-                AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, template.PhysicalRelativeDirectory, Path.GetFileNameWithoutExtension(template.FileName));
+                AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, settings.TemplateDir.PhysicalRelativeDirectory, settings.TemplateName );
                 alpaca.RegisterAll();
             }
-
         }
 
         protected override void OnLoad(EventArgs e)
@@ -71,7 +68,6 @@ namespace Satrabel.OpenContent
              */
             //DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "Update Successful", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.GreenSuccess);
         }
-
 
         protected void cmdCancel_Click(object sender, EventArgs e)
         {

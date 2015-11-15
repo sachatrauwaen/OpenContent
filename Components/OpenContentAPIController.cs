@@ -61,7 +61,7 @@ namespace Satrabel.OpenContent.Components
             {
                 module = ModuleController.Instance.GetModule(settings.ModuleId, settings.TabId, false);
             }
-            var manifest = OpenContentUtils.GetManifest(settings.Template.UrlDirectory);
+            var manifest = OpenContentUtils.GetManifest(settings.Template);
             TemplateManifest templateManifest = null;
             if (manifest != null)
             {
@@ -167,7 +167,7 @@ namespace Satrabel.OpenContent.Components
             {
                 module = ModuleController.Instance.GetModule(settings.ModuleId, settings.TabId, false);
             }
-            var manifest = OpenContentUtils.GetManifest(settings.Template.UrlDirectory);
+            var manifest = OpenContentUtils.GetManifest(settings.Template);
             TemplateManifest templateManifest = null;
             if (manifest != null)
             {
@@ -256,7 +256,7 @@ namespace Satrabel.OpenContent.Components
                 {
                     module = ModuleController.Instance.GetModule(settings.ModuleId, settings.TabId, false);
                 }
-                var manifest = OpenContentUtils.GetManifest(settings.Template.UrlDirectory);
+                var manifest = OpenContentUtils.GetManifest(settings.Template);
                 TemplateManifest templateManifest = null;
                 if (manifest != null)
                 {
@@ -340,7 +340,7 @@ namespace Satrabel.OpenContent.Components
                 {
                     module = ModuleController.Instance.GetModule(settings.ModuleId, settings.TabId, false);
                 }
-                var manifest = OpenContentUtils.GetManifest(settings.Template.UrlDirectory);
+                var manifest = OpenContentUtils.GetManifest(settings.Template);
                 TemplateManifest templateManifest = null;
                 if (manifest != null)
                 {
@@ -419,9 +419,10 @@ namespace Satrabel.OpenContent.Components
         {
             ModuleController mc = new ModuleController();
             var module = mc.GetModule(req.moduleid, req.tabid, false);
-            FileUri template = OpenContentUtils.GetTemplate(module.ModuleSettings);
-            var manifest = OpenContentUtils.GetTemplateManifest(template);
-            bool listMode = manifest != null && manifest.IsListTemplate;
+            Manifest manifest;
+            TemplateManifest templateManifest;
+            FileUri template = OpenContentUtils.GetTemplate(module.ModuleSettings, out manifest, out templateManifest);
+            bool listMode = templateManifest != null && templateManifest.IsListTemplate;
             //JToken json = new JObject();
             List<LookupResultDTO> res = new List<LookupResultDTO>();
             try

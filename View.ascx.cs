@@ -106,7 +106,7 @@ namespace Satrabel.OpenContent
                 var lit = new LiteralControl(Server.HtmlDecode(_info.OutputString));
                 Controls.Add(lit);
                 //bool EditWitoutPostback = HostController.Instance.GetBoolean("EditWitoutPostback", false);
-                var mst = OpenContentUtils.GetManifest(_info.Template.UrlDirectory);
+                var mst = OpenContentUtils.GetManifest(_info.Template);
                 bool EditWitoutPostback = mst != null && mst.EditWitoutPostback;
                 if (ModuleContext.PortalSettings.EnablePopUps && ModuleContext.IsEditable && EditWitoutPostback)
                 {
@@ -297,7 +297,7 @@ namespace Satrabel.OpenContent
             if (_settings.Template != null)
             {
                 // if there is a manifest and Main section exist , use it as template
-                _info.Manifest = OpenContentUtils.GetManifest(_settings.Template.UrlDirectory);
+                _info.Manifest = OpenContentUtils.GetManifest(_settings.Template);
                 if (_info.Manifest != null)
                 {
                     _info.TemplateManifest = _info.Manifest.GetTemplateManifest(_settings.Template);
@@ -824,15 +824,16 @@ namespace Satrabel.OpenContent
             {
                 var Actions = new ModuleActionCollection();
 
-                FileUri template = OpenContentUtils.GetTemplate(ModuleContext.Settings);
+                TemplateManifest templateManifest = null;
+                Manifest manifest;
+                FileUri template = OpenContentUtils.GetTemplate(ModuleContext.Settings, out manifest, out templateManifest);
                 bool templateDefined = template != null;
-                TemplateManifest manifest = null;
                 if (templateDefined)
                 {
-                    manifest = OpenContentUtils.GetTemplateManifest(template);
+                    templateManifest = OpenContentUtils.GetTemplateManifest(template);
                 }
 
-                bool listMode = manifest != null && manifest.IsListTemplate;
+                bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 if (Page.Request.QueryString["id"] != null)
                 {
                     int.TryParse(Page.Request.QueryString["id"], out _itemId);
