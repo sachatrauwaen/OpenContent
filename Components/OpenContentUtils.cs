@@ -85,15 +85,15 @@ namespace Satrabel.OpenContent.Components
             if (!settings.TemplateAvailable) return null;
 
             manifest = GetManifest(settings.TemplateDir);
-            if (manifest != null)
+            if (manifest != null && manifest.HasTemplates)
             {
                 //get the requested template key
                 templateManifest = manifest.GetTemplateManifest(settings.TemplateName);
-                templateUri = new FileUri(settings.TemplateDir.FolderPath, templateManifest.Main.Template);
+                templateUri = new FileUri(settings.TemplateDir, templateManifest.Main.Template); //always main?
                 return templateUri;
             }
 
-            templateUri = new FileUri(settings.TemplateName);
+            templateUri = new FileUri(settings.TemplateDir, settings.TemplateName);
             return templateUri;
         }
 
@@ -185,7 +185,7 @@ namespace Satrabel.OpenContent.Components
                 IEnumerable<string> files = null;
                 string templateVirtualFolder = FolderUri.ReverseMapPath(dir);
                 var manifest = GetManifest(new FolderUri(templateVirtualFolder));
-                if (manifest != null && manifest.Templates != null)
+                if (manifest != null && manifest.HasTemplates)
                 {
                     files = manifest.Templates.Select(t => t.Key);
                     foreach (var template in manifest.Templates)
@@ -564,6 +564,8 @@ namespace Satrabel.OpenContent.Components
         public string AdditionalEditControl { get; set; }
         [JsonProperty(PropertyName = "editRole")]
         public string EditRole { get; set; }
+
+        public bool HasTemplates { get { return (Templates != null); } }
 
         public TemplateManifest GetTemplateManifest(FileUri template)
         {

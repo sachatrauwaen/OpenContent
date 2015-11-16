@@ -29,6 +29,14 @@ namespace Satrabel.OpenContent.Components
             }
             FileName = filename;
         }
+        public FileUri(FolderUri path, string filename) : base(path.FolderPath)
+        {
+            if (string.IsNullOrEmpty(filename))
+            {
+                throw new ArgumentNullException("filename is null");
+            }
+            FileName = filename;
+        }
 
         protected FileUri(int fileId) : base(GetFileInfo(fileId))
         {
