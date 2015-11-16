@@ -83,7 +83,7 @@ namespace Satrabel.OpenContent.Components
                     json["options"] = optionsJson;
 
                 // language options
-                optionsJson = JsonUtils.LoadJsonFromFile(settings.Template.UrlDirectory + "options." + PortalSettings.CultureCode + ".json");
+                optionsJson = JsonUtils.LoadJsonFromFile(settings.Template.UrlDirectory + "options." + DnnUtils.GetCurrentCultureCode() + ".json");
                 if (optionsJson != null)
                     json["options"] = json["options"].JsonMerge(optionsJson);
 
@@ -226,7 +226,7 @@ namespace Satrabel.OpenContent.Components
                     json["options"] = optionsJson;
 
                 // language options
-                optionsJson = JsonUtils.LoadJsonFromFile(templateUri.UrlDirectory + prefix + "options." + PortalSettings.CultureCode + ".json");
+                optionsJson = JsonUtils.LoadJsonFromFile(templateUri.UrlDirectory + prefix + "options." + DnnUtils.GetCurrentCultureCode() + ".json");
                 if (optionsJson != null)
                     json["options"] = json["options"].JsonMerge(optionsJson);
 

@@ -58,5 +58,16 @@ namespace Satrabel.OpenContent.Components
         {
             return FileManager.Instance.GetUrl(file);
         }
+
+        public static string GetCurrentCultureCode()
+        {
+            //strange issues with getting the correct culture.
+            if (PortalSettings.Current.ActiveTab != null && PortalSettings.Current.ActiveTab.IsNeutralCulture)
+                return PortalSettings.Current.CultureCode;
+            if (PortalSettings.Current.ActiveTab != null )
+                return PortalSettings.Current.ActiveTab.CultureCode;
+                
+            return LocaleController.Instance.GetCurrentLocale(PortalSettings.Current.PortalId).Code;
+        }
     }
 }

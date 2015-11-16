@@ -498,8 +498,8 @@ namespace Satrabel.OpenContent
                             dyn.Context.EditUrl = ModuleContext.EditUrl("id", item.ContentId.ToString());
                             dyn.Context.IsEditable = ModuleContext.IsEditable ||
                                 OpenContentUtils.HasEditPermissions(ModuleContext.PortalSettings, _info.Module, editRole, item.CreatedByUserId);
-                            dyn.Context.DetailUrl = Globals.NavigateURL(ModuleContext.TabId, false, ModuleContext.PortalSettings, "", ModuleContext.PortalSettings.CultureCode, /*OpenContentUtils.CleanupUrl(dyn.Title)*/"", "id=" + item.ContentId.ToString());
-                            dyn.Context.MainUrl = Globals.NavigateURL(ModuleContext.TabId, false, ModuleContext.PortalSettings, "", ModuleContext.PortalSettings.CultureCode, /*OpenContentUtils.CleanupUrl(dyn.Title)*/"");
+                            dyn.Context.DetailUrl = Globals.NavigateURL(ModuleContext.TabId, false, ModuleContext.PortalSettings, "", DnnUtils.GetCurrentCultureCode(), /*OpenContentUtils.CleanupUrl(dyn.Title)*/"", "id=" + item.ContentId.ToString());
+                            dyn.Context.MainUrl = Globals.NavigateURL(ModuleContext.TabId, false, ModuleContext.PortalSettings, "", DnnUtils.GetCurrentCultureCode(), /*OpenContentUtils.CleanupUrl(dyn.Title)*/"");
 
 
                             model.Items.Add(dyn);
@@ -547,7 +547,7 @@ namespace Satrabel.OpenContent
                     }
                 }
                 // language options
-                optionsFilename = PhysicalTemplateFolder + "\\" + "options." + ModuleContext.PortalSettings.CultureCode + ".json";
+                optionsFilename = PhysicalTemplateFolder + "\\" + "options." + DnnUtils.GetCurrentCultureCode() + ".json";
                 if (File.Exists(optionsFilename))
                 {
                     string fileContent = File.ReadAllText(optionsFilename);
@@ -579,7 +579,7 @@ namespace Satrabel.OpenContent
             model.Context.IsEditable = ModuleContext.IsEditable ||
                                         OpenContentUtils.HasEditPermissions(ModuleContext.PortalSettings, _info.Module, editRole, -1);
             model.Context.PortalId = ModuleContext.PortalId;
-            model.Context.MainUrl = Globals.NavigateURL(ModuleContext.TabId, false, ModuleContext.PortalSettings, "", ModuleContext.PortalSettings.CultureCode);
+            model.Context.MainUrl = Globals.NavigateURL(ModuleContext.TabId, false, ModuleContext.PortalSettings, "", DnnUtils.GetCurrentCultureCode());
 
         }
         private string GenerateOutput(string TemplateVirtualFolder, TemplateFiles files, string dataJson, string settingsJson)

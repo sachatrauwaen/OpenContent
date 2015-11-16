@@ -181,7 +181,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 }
             }
             // language options
-            optionsFilename = physicalDirectory + "\\" + (string.IsNullOrEmpty(Prefix) ? "" : Prefix + "-") + "options." + ModuleContext.PortalSettings.CultureCode + ".json";
+            optionsFilename = physicalDirectory + "\\" + (string.IsNullOrEmpty(Prefix) ? "" : Prefix + "-") + "options." + DnnUtils.GetCurrentCultureCode() + ".json";
             if (File.Exists(optionsFilename))
             {
                 string fileContent = File.ReadAllText(optionsFilename);
