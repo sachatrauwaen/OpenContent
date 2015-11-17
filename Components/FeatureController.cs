@@ -18,6 +18,8 @@ using System.Xml;
 using DotNetNuke.Common;
 using System;
 using DotNetNuke.Services.Search.Entities;
+using Newtonsoft.Json.Linq;
+using System.Text.RegularExpressions;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -69,13 +71,61 @@ namespace Satrabel.OpenContent.Components
                     PortalId = modInfo.PortalID,
                     Title = modInfo.ModuleTitle,
                     Description = content.Title,
-                    Body = content.Json,
+                    Body = JsonToSearchableString(content.Json),
                     ModifiedTimeUtc = content.LastModifiedOnDate.ToUniversalTime()
                 };
                 searchDocuments.Add(searchDoc);
             }
             return searchDocuments;
         }
+
+        protected static string JsonToSearchableString(string json)
+        {
+            dynamic data = JToken.Parse(json);
+            string result = JsonToSearchableString(data);
+            return result;
+        }
+
+        protected static string JsonToSearchableString(JToken data)
+        {
+            string tagPattern = @"<(.|\n)*?>";
+            string result = "";
+
+            if (data.Type == JTokenType.Object)
+            {
+                foreach (JProperty item in data.Children<JProperty>())
+                {
+                    result += JsonToSearchableString(item);
+                }
+            }
+            else if (data.Type == JTokenType.Array)
+            {
+                foreach (JToken item in data.Children())
+                {
+                    result += JsonToSearchableString(item);
+                }
+            }
+            else if (data.Type == JTokenType.Property)
+            {
+                var item = (JProperty)data;
+
+                if (item.Value.Type == JTokenType.String)
+                {
+                    result += Regex.Replace(item.Value.ToString(), tagPattern, string.Empty) + " ... ";
+                }
+                else
+                {
+                    result += JsonToSearchableString(item.Value);
+                }
+            }
+            else
+            {
+                result += Regex.Replace(data.ToString(), tagPattern, string.Empty) + " ... ";
+            }
+
+            return result;
+        }
+
         #endregion
         /// -----------------------------------------------------------------------------
         /// <summary>
