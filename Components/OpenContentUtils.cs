@@ -92,9 +92,7 @@ namespace Satrabel.OpenContent.Components
                 templateUri = new FileUri(settings.TemplateDir, templateManifest.Main.Template); //always main?
                 return templateUri;
             }
-
-            templateUri = new FileUri(settings.TemplateDir, settings.TemplateName);
-            return templateUri;
+            return settings.Template;
         }
 
         public static Manifest GetManifest(FolderUri folder)
