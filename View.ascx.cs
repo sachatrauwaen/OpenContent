@@ -940,7 +940,7 @@ namespace Satrabel.OpenContent
                           ModuleActionType.ContentOptions,
                           "",
                           "~/DesktopModules/OpenContent/images/help.png",
-                          "https://opencontent.codeplex.com/documentation",
+                          "https://opencontent.readme.io",
                           false,
                           SecurityAccessLevel.Host,
                           true,
