@@ -17,7 +17,7 @@ namespace Satrabel.OpenContent.Components
             {
                 throw new ArgumentNullException("pathToFolder is null");
             }
-            FolderPath = NormalizePath(pathToFolder);
+            Path = NormalizePath(pathToFolder);
         }
 
         protected FolderUri(IFileInfo pathToFolder)
@@ -26,7 +26,7 @@ namespace Satrabel.OpenContent.Components
             {
                 throw new ArgumentNullException("pathToFolder is null");
             }
-            FolderPath = NormalizePath(pathToFolder.Folder);
+            Path = NormalizePath(pathToFolder.Folder);
         }
 
         #endregion
@@ -46,35 +46,35 @@ namespace Satrabel.OpenContent.Components
         /// <value>
         /// The file path.
         /// </value>
-        public string FolderPath { get; private set; }
+        public string Path { get; private set; }
 
-        protected string UrlFolderPath
+        protected string UrlPath
         {
             get
             {
-                if (NormalizedApplicationPath == "/" && FolderPath.StartsWith("/")) return FolderPath;
-                return NormalizedApplicationPath + FolderPath;
+                if (NormalizedApplicationPath == "/" && Path.StartsWith("/")) return Path;
+                return NormalizedApplicationPath + Path;
             }
         }
 
         /// <summary>
-        /// Gets the URL directory relative to the root of the webserver. With leading /.
+        /// Gets the URL directory relative to the root of the webserver. With leading / and trailing /.
         /// </summary>
         /// <value>
-        /// The URL directory.
+        /// The URL folder.
         /// </value>
-        public string UrlDirectory
+        public string UrlFolder
         {
             get
             {
-                return UrlFolderPath + "/";
+                return UrlPath + "/";
             }
         }
         public string PhysicalFullDirectory
         {
             get
             {
-                return HostingEnvironment.MapPath("~/" + FolderPath);
+                return HostingEnvironment.MapPath("~/" + Path);
             }
         }
 

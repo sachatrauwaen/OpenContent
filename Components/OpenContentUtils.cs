@@ -100,7 +100,7 @@ namespace Satrabel.OpenContent.Components
             try
             {
                 Manifest manifest = null;
-                var file = new FileUri(folder.UrlDirectory + "/manifest.json");
+                var file = new FileUri(folder.UrlFolder , "manifest.json");
                 if (file.FileExists)
                 {
                     string content = File.ReadAllText(file.PhysicalFilePath);

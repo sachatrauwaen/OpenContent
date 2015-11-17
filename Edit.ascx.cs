@@ -47,7 +47,7 @@ namespace Satrabel.OpenContent
             cmdSave.NavigateUrl = Globals.NavigateURL();
 
             OpenContentSettings settings = new OpenContentSettings(Settings);
-            AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext,settings.Template.FolderPath, "");
+            AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext,settings.Template.Path, "");
             alpaca.RegisterAll();
         }
 

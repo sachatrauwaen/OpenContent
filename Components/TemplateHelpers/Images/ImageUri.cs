@@ -17,20 +17,17 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         {
         }
 
-        public ImageUri(string pathToFile, int portalid)
-            : base(pathToFile)
+        public ImageUri(string pathToFile, int portalid) : base(pathToFile)
         {
             FileInfo = ToIFileInfo(portalid);
         }
 
-        private ImageUri(string pathToFile)
-            : base(pathToFile)
+        private ImageUri(string pathToFile) : base(pathToFile)
         {
             //Don't use this constructor in this class
         }
 
-        private ImageUri(string path, string filename)
-            : base(path, filename)
+        private ImageUri(string path, string filename) : base(path, filename)
         {
             //Don't use this constructor in this class
         }

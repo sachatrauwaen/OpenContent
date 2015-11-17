@@ -11,17 +11,16 @@ namespace Satrabel.OpenContent.Components
     {
         #region Constructors
 
-        public FileUri(string pathToFile) : base(Path.GetDirectoryName(pathToFile))
+        public FileUri(string pathToFile) : base(System.IO.Path.GetDirectoryName(pathToFile))
         {
             if (string.IsNullOrEmpty(pathToFile))
             {
                 throw new ArgumentNullException("pathToFile is null");
             }
-            FileName = Path.GetFileName(NormalizePath(pathToFile));
+            FileName = System.IO.Path.GetFileName(NormalizePath(pathToFile));
         }
 
-        public FileUri(string path, string filename)
-            : base(path)
+        public FileUri(string path, string filename) : base(path)
         {
             if (string.IsNullOrEmpty(filename))
             {
@@ -29,7 +28,7 @@ namespace Satrabel.OpenContent.Components
             }
             FileName = filename;
         }
-        public FileUri(FolderUri path, string filename) : base(path.FolderPath)
+        public FileUri(FolderUri path, string filename) : base(path.Path)
         {
             if (string.IsNullOrEmpty(filename))
             {
@@ -43,7 +42,7 @@ namespace Satrabel.OpenContent.Components
             FileInfo = GetFileInfo(fileId);
             var filePath = FileManager.Instance.GetUrl(FileInfo);
             filePath = NormalizePath(filePath);
-            FileName = Path.GetFileName(filePath);
+            FileName = System.IO.Path.GetFileName(filePath);
         }
 
         private static IFileInfo GetFileInfo(int fileId)
@@ -72,9 +71,9 @@ namespace Satrabel.OpenContent.Components
         /// <value>
         /// The file path.
         /// </value>
-        public string FilePath { get { return base.FolderPath + "/" + FileName; } }
+        public string FilePath { get { return base.Path + "/" + FileName; } }
 
-        public string UrlFilePath { get { return base.UrlFolderPath + "/" + FileName; } }
+        public string UrlFilePath { get { return base.UrlPath + "/" + FileName; } }
 
 
         /// <summary>
@@ -97,12 +96,12 @@ namespace Satrabel.OpenContent.Components
         {
             get
             {
-                return Path.GetFileNameWithoutExtension(FilePath);
+                return System.IO.Path.GetFileNameWithoutExtension(FilePath);
             }
         }
         public string Extension
         {
-            get { return Path.GetExtension(FilePath); }
+            get { return System.IO.Path.GetExtension(FilePath); }
         }
 
         public bool FileExists

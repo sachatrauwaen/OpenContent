@@ -125,7 +125,7 @@ namespace Satrabel.OpenContent
                 TemplateManifest manifest = OpenContentUtils.GetTemplateManifest(_info.Template);
                 if (manifest != null && manifest.Main != null)
                 {
-                    _info.Template = new FileUri(_info.Template.UrlDirectory + manifest.Main.Template);
+                    _info.Template = new FileUri(_info.Template.UrlFolder, manifest.Main.Template);
                 }
                 _info.OutputString = GenerateOutput(_info.Template, _info.DataJson, _info.SettingsJson, null);
             }
@@ -188,7 +188,7 @@ namespace Satrabel.OpenContent
                         GetDataList(_info, _settings);
                         if (_info.DataExist)
                         {
-                            _info.OutputString = GenerateListOutput(_info.Template.UrlDirectory, TemplateManifest.Main, _info.DataList, _info.SettingsJson);
+                            _info.OutputString = GenerateListOutput(_info.Template.UrlFolder, TemplateManifest.Main, _info.DataList, _info.SettingsJson);
                         }
                     }
                 }
@@ -197,7 +197,7 @@ namespace Satrabel.OpenContent
             {
                 if (TemplateManifest != null && TemplateManifest.Main != null)
                 {
-                    _info.Template = new FileUri(_info.Template.UrlDirectory + TemplateManifest.Main.Template);
+                    _info.Template = new FileUri(_info.Template.UrlFolder, TemplateManifest.Main.Template);
                 }
                 bool dsDataExist = GetModuleDemoData(_info, _settings);
                 if (dsDataExist)
@@ -307,7 +307,7 @@ namespace Satrabel.OpenContent
                 }
                 if (_info.TemplateManifest != null && _info.TemplateManifest.Main != null)
                 {
-                    _info.Template = new FileUri(_settings.Template.UrlDirectory, _info.TemplateManifest.Main.Template);
+                    _info.Template = new FileUri(_settings.Template.UrlFolder, _info.TemplateManifest.Main.Template);
                 }
 
                 if (_info.TemplateManifest != null && _info.TemplateManifest.IsListTemplate)
@@ -323,7 +323,7 @@ namespace Satrabel.OpenContent
                             GetDataList(_info, _settings);
                             if (_info.DataExist)
                             {
-                                _info.OutputString = GenerateListOutput(_settings.Template.UrlDirectory, _info.TemplateManifest.Main, _info.DataList, _info.SettingsJson);
+                                _info.OutputString = GenerateListOutput(_settings.Template.UrlFolder, _info.TemplateManifest.Main, _info.DataList, _info.SettingsJson);
                             }
                         }
                     }
@@ -335,7 +335,7 @@ namespace Satrabel.OpenContent
                             GetDetailData(_info, _settings);
                             if (_info.DataExist)
                             {
-                                _info.OutputString = GenerateOutput(_settings.Template.UrlDirectory, _info.TemplateManifest.Detail, _info.DataJson, _info.SettingsJson);
+                                _info.OutputString = GenerateOutput(_settings.Template.UrlFolder, _info.TemplateManifest.Detail, _info.DataJson, _info.SettingsJson);
                             }
                         }
                     }
@@ -346,7 +346,7 @@ namespace Satrabel.OpenContent
                     if (_info.TemplateManifest != null)
                     {
                         files = _info.TemplateManifest.Main;
-                        _info.Template = new FileUri(_settings.Template.UrlDirectory, files.Template);
+                        _info.Template = new FileUri(_settings.Template.UrlFolder, files.Template);
                     }
                     // single item template
                     GetData();
@@ -401,7 +401,7 @@ namespace Satrabel.OpenContent
                     if (!template.FileExists)
                         Exceptions.ProcessModuleLoadException(this, new Exception(template.FilePath + " don't exist"));
 
-                    string TemplateVirtualFolder = template.UrlDirectory;
+                    string TemplateVirtualFolder = template.UrlFolder;
                     string TemplateFolder = Server.MapPath(TemplateVirtualFolder);
                     if (!string.IsNullOrEmpty(dataJson))
                     {

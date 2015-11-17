@@ -73,22 +73,22 @@ namespace Satrabel.OpenContent.Components
             try
             {
                 // schema
-                var schemaJson = JsonUtils.LoadJsonFromFile(settings.Template.UrlDirectory + "schema.json");
+                var schemaJson = JsonUtils.LoadJsonFromFile(settings.Template.UrlFolder + "schema.json");
                 if (schemaJson != null)
                     json["schema"] = schemaJson;
 
                 // default options
-                var optionsJson = JsonUtils.LoadJsonFromFile(settings.Template.UrlDirectory + "options.json");
+                var optionsJson = JsonUtils.LoadJsonFromFile(settings.Template.UrlFolder + "options.json");
                 if (optionsJson != null)
                     json["options"] = optionsJson;
 
                 // language options
-                optionsJson = JsonUtils.LoadJsonFromFile(settings.Template.UrlDirectory + "options." + DnnUtils.GetCurrentCultureCode() + ".json");
+                optionsJson = JsonUtils.LoadJsonFromFile(settings.Template.UrlFolder + "options." + DnnUtils.GetCurrentCultureCode() + ".json");
                 if (optionsJson != null)
                     json["options"] = json["options"].JsonMerge(optionsJson);
 
                 // view
-                 optionsJson = JsonUtils.LoadJsonFromFile(settings.Template.UrlDirectory + "view.json");
+                 optionsJson = JsonUtils.LoadJsonFromFile(settings.Template.UrlFolder + "view.json");
                 if (optionsJson != null)
                     json["view"] = optionsJson;
 
@@ -216,17 +216,17 @@ namespace Satrabel.OpenContent.Components
                 string prefix = templateUri.FileNameWithoutExtension + "-";
 
                 // schema
-                var schemaJson = JsonUtils.LoadJsonFromFile(templateUri.UrlDirectory + prefix + "schema.json");
+                var schemaJson = JsonUtils.LoadJsonFromFile(templateUri.UrlFolder + prefix + "schema.json");
                 if (schemaJson != null)
                     json["schema"] = schemaJson;
 
                 // default options
-                var optionsJson = JsonUtils.LoadJsonFromFile(templateUri.UrlDirectory + prefix + "options.json");
+                var optionsJson = JsonUtils.LoadJsonFromFile(templateUri.UrlFolder + prefix + "options.json");
                 if (optionsJson != null)
                     json["options"] = optionsJson;
 
                 // language options
-                optionsJson = JsonUtils.LoadJsonFromFile(templateUri.UrlDirectory + prefix + "options." + DnnUtils.GetCurrentCultureCode() + ".json");
+                optionsJson = JsonUtils.LoadJsonFromFile(templateUri.UrlFolder + prefix + "options." + DnnUtils.GetCurrentCultureCode() + ".json");
                 if (optionsJson != null)
                     json["options"] = json["options"].JsonMerge(optionsJson);
 
