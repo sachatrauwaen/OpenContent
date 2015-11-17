@@ -167,7 +167,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
 
         private JToken GetOptions()
         {
-            string physicalDirectory = HostingEnvironment.MapPath("~\\" + VirtualDirectory);
+            string physicalDirectory = HostingEnvironment.MapPath("~/" + VirtualDirectory);
 
             JToken optionsJson = null;
             // default options

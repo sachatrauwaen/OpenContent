@@ -88,7 +88,7 @@ namespace Satrabel.OpenContent.Components
             if (manifest != null && manifest.HasTemplates)
             {
                 //get the requested template key
-                templateManifest = manifest.GetTemplateManifest(settings.TemplateName);
+                templateManifest = manifest.GetTemplateManifest(settings.TemplateKey);
                 templateUri = new FileUri(settings.TemplateDir, templateManifest.Main.Template); //always main?
                 return templateUri;
             }

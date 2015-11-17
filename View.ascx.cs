@@ -159,7 +159,7 @@ namespace Satrabel.OpenContent
                 }
                 else // other module
                 {
-                   RenderOtherModuleDemoData();
+                    RenderOtherModuleDemoData();
                 }
             }
             else // new template
@@ -266,7 +266,6 @@ namespace Satrabel.OpenContent
                 hlEditContent.CssClass = "dnnPrimaryAction";
             }
         }
-
         private void BindOtherModules(int TabId, int ModuleId)
         {
             var modules = ModuleController.Instance.GetModules(ModuleContext.PortalId).Cast<ModuleInfo>();
@@ -277,18 +276,22 @@ namespace Satrabel.OpenContent
             {
                 rblUseTemplate.SelectedIndex = 0; // existing template
                 phFrom.Visible = false;
+                phTemplateName.Visible = false;
             }
             rblUseTemplate.Items[1].Enabled = rblDataSource.SelectedIndex == 0; // this module
             ddlDataSource.Items.Clear();
             foreach (var item in modules)
             {
-                var tc = new TabController();
-                var Tab = tc.GetTab(item.TabID, ModuleContext.PortalId);
-                var li = new ListItem(Tab.TabName + " - " + item.ModuleTitle, item.TabModuleID.ToString());
-                ddlDataSource.Items.Add(li);
-                if (item.TabID == TabId && item.ModuleID == ModuleId)
+                if (item.TabModuleID != ModuleContext.TabModuleId)
                 {
-                    li.Selected = true;
+                    var tc = new TabController();
+                    var Tab = tc.GetTab(item.TabID, ModuleContext.PortalId);
+                    var li = new ListItem(Tab.TabName + " - " + item.ModuleTitle, item.TabModuleID.ToString());
+                    ddlDataSource.Items.Add(li);
+                    if (item.TabID == TabId && item.ModuleID == ModuleId)
+                    {
+                        li.Selected = true;
+                    }
                 }
             }
         }
@@ -306,7 +309,7 @@ namespace Satrabel.OpenContent
                 {
                     _info.Template = new FileUri(_settings.Template.UrlDirectory, _info.TemplateManifest.Main.Template);
                 }
-                
+
                 if (_info.TemplateManifest != null && _info.TemplateManifest.IsListTemplate)
                 {
                     // Multi items Template
@@ -1023,7 +1026,7 @@ namespace Satrabel.OpenContent
                             ModulePermissionController.SaveModulePermissions(objModule);
                         }
                     }
-                    
+
 
                 }
             }
@@ -1178,19 +1181,17 @@ namespace Satrabel.OpenContent
         {
             if (rblDataSource.SelectedIndex == 1) // other module
             {
+                //BindOtherModules(dsModule.TabID, dsModule.ModuleID);
+                BindOtherModules(-1, -1);
                 var dsModule = ModuleController.Instance.GetTabModule(int.Parse(ddlDataSource.SelectedValue));
                 var dsSettings = new OpenContentSettings(dsModule.ModuleSettings);
-                BindOtherModules(dsModule.TabID, dsModule.ModuleID);
                 BindTemplates(dsSettings.Template, dsSettings.Template);
-
             }
             else // this module
             {
                 BindOtherModules(-1, -1);
                 BindTemplates(null, null);
             }
-
-
         }
     }
 }

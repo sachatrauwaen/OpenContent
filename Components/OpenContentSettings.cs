@@ -33,7 +33,7 @@ namespace Satrabel.OpenContent.Components
         public int ModuleId { get; set; }
 
         public FolderUri TemplateDir { get { return Template; } }
-        public string TemplateName { get { return Template == null ? "" : Template.FileNameWithoutExtension; } }
+        public string TemplateKey { get { return Template == null ? "" : Template.FileNameWithoutExtension; } }
 
         internal FileUri Template { get; private set; }
         public string Data { get; private set; }

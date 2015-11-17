@@ -41,7 +41,7 @@ namespace Satrabel.OpenContent.Components
         public IFolderInfo FolderInfo { get; protected set; }
 
         /// <summary>
-        /// Gets the file path relative to the Application. No leading /.
+        /// Gets the folder path relative to the Application. No leading /.
         /// </summary>
         /// <value>
         /// The file path.
@@ -68,13 +68,6 @@ namespace Satrabel.OpenContent.Components
             get
             {
                 return UrlFolderPath + "/";
-            }
-        }
-        public string PhysicalRelativeDirectory
-        {
-            get
-            {
-                return FolderPath.Replace(Path.GetFileName(FolderPath), "");
             }
         }
         public string PhysicalFullDirectory
