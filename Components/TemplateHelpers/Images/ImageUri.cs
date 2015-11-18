@@ -17,17 +17,20 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         {
         }
 
-        public ImageUri(string pathToFile, int portalid) : base(pathToFile)
+        public ImageUri(string pathToFile, int portalid)
+            : base(pathToFile)
         {
             FileInfo = ToIFileInfo(portalid);
         }
 
-        private ImageUri(string pathToFile) : base(pathToFile)
+        private ImageUri(string pathToFile)
+            : base(pathToFile)
         {
             //Don't use this constructor in this class
         }
 
-        private ImageUri(string path, string filename) : base(path, filename)
+        private ImageUri(string path, string filename)
+            : base(path, filename)
         {
             //Don't use this constructor in this class
         }
@@ -60,14 +63,26 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             return ImageHelper.GetImageUrl(FileInfo, ratio);
         }
 
+        /// <summary>
+        /// Gets an optimial image for facebook.
+        /// Based on the Facebook best practices https://developers.facebook.com/docs/sharing/best-practices#images
+        /// Prefereably 1200 x 630 or larger, minimal 600 x 315 and not smaller then 200 x 200
+        /// </summary>
+        /// <returns></returns>
+        public string GetFacebookImageUrl()
+        {
+            return ImageHelper.GetFacebookImageUrl(FileInfo);
+        }
+
+
         public string EditImageUrl(ModuleInfo module)
         {
-            if(module==null) return string.Empty;
+            if (module == null) return string.Empty;
             var mc = new ModuleInstanceContext { Configuration = module };
             if (!mc.IsEditable) return string.Empty;
             return EditImageUrl();
         }
-       
+
         public string EditImageUrl()
         {
             //var url = Globals.NavigateURL(tabFileManager);

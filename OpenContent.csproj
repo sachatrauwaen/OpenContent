@@ -153,6 +153,7 @@
     <Compile Include="Components\TemplateHelpers\Normalizers.cs" />
     <Compile Include="Components\Rss\FeedParser.cs" />
     <Compile Include="Components\Rss\FeedItem.cs" />
+    <Compile Include="Components\TemplateHelpers\MetaTags.cs" />
     <Compile Include="Components\TemplateInfo.cs" />
     <Compile Include="Components\Common\Utils.cs" />
     <Compile Include="EditGlobalSettings.ascx.cs">
