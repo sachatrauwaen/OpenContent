@@ -222,6 +222,26 @@ namespace Satrabel.OpenContent.Components.Alpaca
             return types;
         }
 
-
+        public static string AlpacaCulture(string CultureCode)
+        {
+            string[] alpacaLocales = { "zh_CN", "hr_HR", "fr_FR", "de_AT", "it_IT", "ja_JP", "pl_PL", "pt_BR", "es_ES" };
+            string lang = CultureCode.Replace("-", "_");
+            foreach (var item in alpacaLocales)
+            {
+                if (item == lang)
+                {
+                    return lang;
+                }
+            }
+            string lang2 = lang.Substring(0, 2);
+            foreach (var item in alpacaLocales)
+            {
+                if (item.Substring(0, 2) == lang2)
+                {
+                    return lang;
+                }
+            }
+            return "en_US";
+        }
     }
 }

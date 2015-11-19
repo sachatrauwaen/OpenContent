@@ -126,7 +126,7 @@
                 $("#<%=ddlVersions.ClientID%>").hide();
             }
 
-            $.alpaca.setDefaultLocale(connector.culture.replace('-', '_'));
+            $.alpaca.setDefaultLocale("<%= AlpacaCulture %>");
             self.CreateForm(connector, config, config.data);
 
         };

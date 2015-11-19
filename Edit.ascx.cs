@@ -95,6 +95,14 @@ namespace Satrabel.OpenContent
                 return LocaleController.Instance.GetCurrentLocale(PortalId).Culture.NumberFormat.NumberDecimalSeparator;
             }
         }
+        public string AlpacaCulture
+        {
+            get
+            {
+                string cultureCode = LocaleController.Instance.GetCurrentLocale(PortalId).Code;
+                return AlpacaEngine.AlpacaCulture(cultureCode);
+            }
+        }
     }
 }
 
