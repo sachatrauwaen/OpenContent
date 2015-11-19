@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.HtmlControls;
@@ -16,6 +17,8 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         public static void SetPageTitle(HttpContextBase context, string title)
         {
             if (context == null) return;
+            title = Utils.HtmlDecodeIfNeeded(title);
+            title = Utils.HtmlRemoval.StripTagsRegexCompiled(title);
             if (string.IsNullOrWhiteSpace(title)) return;
             var dnnpage = context.DnnPage();
             if (dnnpage != null)
@@ -28,11 +31,13 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         /// <summary>
         /// Sets the page description. Works from Razor too.
         /// </summary>
-        /// <param name="page">The page.</param>
+        /// <param name="context"></param>
         /// <param name="description">The description.</param>
         public static void SetPageDescription(HttpContextBase context, string description)
         {
             if (context == null) return;
+            description = Utils.HtmlDecodeIfNeeded(description);
+            description = Utils.HtmlRemoval.StripTagsRegexCompiled(description);
             if (string.IsNullOrWhiteSpace(description)) return;
             var dnnpage = context.DnnPage();
             if (dnnpage != null)
@@ -61,6 +66,57 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         }
         #endregion
 
+        public static void SetSocialMetaTwitter(HttpContextBase context, string twitterAccount)
+        {
+            var dnnpage = context.CurrentHandler as DotNetNuke.Framework.CDefault;
+            if (dnnpage != null)
+            {
+                var placeholder = (System.Web.UI.WebControls.PlaceHolder)dnnpage.FindControl("Head").FindControl("SocialMeta");
+                if (placeholder != null)
+                {
+                    placeholder.Controls.Add(AddPropertyToMeta(new HtmlMeta
+                    {
+                        Name = "twitter:domain",
+                        Content = HostName()
+                    }, "og:site_name"));
+
+                    placeholder.Controls.Add(new HtmlMeta
+                    {
+                        Name = "twitter:site",
+                        Content = twitterAccount
+                    });
+                    placeholder.Controls.Add(new HtmlMeta
+                    {
+                        Name = "twitter:creator",
+                        Content = twitterAccount
+                    });
+                }
+            }
+        }
+        public static void SetSocialMetaGeneral(HttpContextBase context)
+        {
+            var dnnpage = context.CurrentHandler as DotNetNuke.Framework.CDefault;
+            if (dnnpage != null)
+            {
+                var placeholder = (System.Web.UI.WebControls.PlaceHolder)dnnpage.FindControl("Head").FindControl("SocialMeta");
+                if (placeholder != null)
+                {
+
+                    placeholder.Controls.Add(AddPropertyToMeta(new HtmlMeta
+                    {
+                        Content = DnnUtils.GetCurrentCultureCode()
+                    }, "og:locale"));
+
+                    placeholder.Controls.Add(AddPropertyToMeta(new HtmlMeta
+                    {
+                        Content = GetCurrentUrl()
+                    }, "og:url"));
+
+                    // indien beschikbaar datum laatst aangepast
+                    // <meta property="og:updated_time" content="20150125" />
+                }
+            }
+        }
 
         #region Articles
 
@@ -252,6 +308,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
 
         #endregion
 
+        #region Private Methods
 
         private static HtmlMeta AddPropertyToMeta(HtmlMeta meta, string value)
         {
@@ -271,5 +328,22 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             var pageObj = context.CurrentHandler as DotNetNuke.Framework.CDefault;
             return pageObj;
         }
+        private static string GetCurrentUrl()
+        {
+            if (HttpContext.Current == null) return "";
+
+            return HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + HttpContext.Current.Request.RawUrl;
+        }
+        private static string HostName()
+        {
+            if (HttpContext.Current == null) return "";
+
+            var host = HttpContext.Current.Request.Url.Host;
+            var hostNameSplit = host.Split('.');
+            return hostNameSplit.Length > 1 ? string.Concat(hostNameSplit[hostNameSplit.Length - 2], ".", hostNameSplit[hostNameSplit.Length - 1]) : host;
+        }
+
+
+        #endregion
     }
 }
