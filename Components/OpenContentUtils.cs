@@ -21,6 +21,7 @@ using System.Web.UI.WebControls;
 using DotNetNuke.UI.Modules;
 using DotNetNuke.Security.Permissions;
 using DotNetNuke.Security;
+using Satrabel.OpenContent.Components.Uri;
 
 namespace Satrabel.OpenContent.Components
 {

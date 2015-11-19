@@ -49,6 +49,7 @@ using DotNetNuke.Security.Roles;
 using DotNetNuke.Entities.Users;
 using DotNetNuke.Instrumentation;
 using DotNetNuke.Services.Installer.Log;
+using Satrabel.OpenContent.Components.Uri;
 
 #endregion
 

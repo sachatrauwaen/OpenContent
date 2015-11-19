@@ -1,19 +1,18 @@
 ﻿using System;
-using System.Linq;
 using DotNetNuke.Common;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Services.FileSystem;
 using DotNetNuke.UI.Modules;
+using Satrabel.OpenContent.Components.Uri;
 
 namespace Satrabel.OpenContent.Components.TemplateHelpers
 {
-    public class ImageUri : FileUri
+    public class ImageUri : PortalFileUri
     {
         #region Constructors
 
-        public ImageUri(int fileId)
-            : base(fileId)
+        public ImageUri(int fileId) : base(fileId)
         {
         }
 
