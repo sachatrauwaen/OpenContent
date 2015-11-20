@@ -500,7 +500,8 @@ namespace Satrabel.OpenContent
                             dyn.Context.Id = item.ContentId;
                             dyn.Context.EditUrl = ModuleContext.EditUrl("id", item.ContentId.ToString());
                             dyn.Context.IsEditable = ModuleContext.IsEditable ||
-                                OpenContentUtils.HasEditPermissions(ModuleContext.PortalSettings, _info.Module, editRole, item.CreatedByUserId);
+                                (! string.IsNullOrEmpty(editRole) &&
+                                OpenContentUtils.HasEditPermissions(ModuleContext.PortalSettings, _info.Module, editRole, item.CreatedByUserId));
                             dyn.Context.DetailUrl = Globals.NavigateURL(ModuleContext.TabId, false, ModuleContext.PortalSettings, "", DnnUtils.GetCurrentCultureCode(), /*OpenContentUtils.CleanupUrl(dyn.Title)*/"", "id=" + item.ContentId.ToString());
                             dyn.Context.MainUrl = Globals.NavigateURL(ModuleContext.TabId, false, ModuleContext.PortalSettings, "", DnnUtils.GetCurrentCultureCode(), /*OpenContentUtils.CleanupUrl(dyn.Title)*/"");
 
@@ -580,7 +581,8 @@ namespace Satrabel.OpenContent
             model.Context.ModuleId = ModuleContext.ModuleId;
             model.Context.AddUrl = ModuleContext.EditUrl();
             model.Context.IsEditable = ModuleContext.IsEditable ||
-                                        OpenContentUtils.HasEditPermissions(ModuleContext.PortalSettings, _info.Module, editRole, -1);
+                                      (!string.IsNullOrEmpty(editRole) &&
+                                        OpenContentUtils.HasEditPermissions(ModuleContext.PortalSettings, _info.Module, editRole, -1));
             model.Context.PortalId = ModuleContext.PortalId;
             model.Context.MainUrl = Globals.NavigateURL(ModuleContext.TabId, false, ModuleContext.PortalSettings, "", DnnUtils.GetCurrentCultureCode());
 

@@ -515,8 +515,6 @@ namespace Satrabel.OpenContent.Components
 
         public static bool HasEditPermissions(PortalSettings portalSettings, ModuleInfo module, string editrole, int CreatedByUserId)
         {
-            if (string.IsNullOrEmpty(editrole)) return false;
-
             return portalSettings.UserInfo.IsSuperUser ||
                     portalSettings.UserInfo.IsInRole(portalSettings.AdministratorRoleName) ||
                     ModulePermissionController.HasModuleAccess(SecurityAccessLevel.Edit, "CONTENT", module) ||
