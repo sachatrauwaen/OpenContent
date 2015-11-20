@@ -10,7 +10,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         public int Height { get; private set; }
         public float AsFloat
         {
-            get { return (float)Width / (float)Height); }
+            get { return (float)Width / (float)Height; }
         }
 
         public Ratio(string ratioString)
