@@ -72,7 +72,7 @@ namespace Satrabel.OpenContent.Components
             OpenContentSettings settings = new OpenContentSettings(moduleSettings);
             Manifest deepManifest;
             TemplateManifest deepTemplateManifest;
-            var retval = GetTemplate(settings,out deepManifest,out deepTemplateManifest);
+            var retval = GetTemplate(settings, out deepManifest, out deepTemplateManifest);
             manifest = deepManifest;
             templateManifest = deepTemplateManifest;
             return retval;
@@ -101,7 +101,7 @@ namespace Satrabel.OpenContent.Components
             try
             {
                 Manifest manifest = null;
-                var file = new FileUri(folder.UrlFolder , "manifest.json");
+                var file = new FileUri(folder.UrlFolder, "manifest.json");
                 if (file.FileExists)
                 {
                     string content = File.ReadAllText(file.PhysicalFilePath);
@@ -400,29 +400,41 @@ namespace Satrabel.OpenContent.Components
             return "";
         }
 
-        public static string GetDefaultTemplate(string FromFolder)
+        public static string GetDefaultTemplate(string PhysicalFolder)
         {
             string Template = "";
-            foreach (var item in Directory.GetFiles(FromFolder))
+            FolderUri folder = new FolderUri(FolderUri.ReverseMapPath(PhysicalFolder));
+            var manifest = GetManifest(folder);
+            if (manifest != null && manifest.HasTemplates)
             {
-                string FileName = Path.GetFileName(item).ToLower();
-                if (FileName == "template.hbs")
+                //get the requested template key
+                //var templateManifest = manifest.Templates.First().Value;
+                //var templateUri = new FileUri(folder, templateManifest.Main.Template);
+                Template = folder.Path+"/"+manifest.Templates.First().Key;
+            }
+            else
+            {
+                foreach (var item in Directory.GetFiles(PhysicalFolder))
                 {
-                    Template = item;
-                    break;
-                }
-                else if (FileName == "template.cshtml")
-                {
-                    Template = item;
-                    break;
-                }
-                if (FileName.EndsWith(".hbs"))
-                {
-                    Template = item;
-                }
-                if (FileName.EndsWith(".cshtml"))
-                {
-                    Template = item;
+                    string FileName = Path.GetFileName(item).ToLower();
+                    if (FileName == "template.hbs")
+                    {
+                        Template = item;
+                        break;
+                    }
+                    else if (FileName == "template.cshtml")
+                    {
+                        Template = item;
+                        break;
+                    }
+                    if (FileName.EndsWith(".hbs"))
+                    {
+                        Template = item;
+                    }
+                    if (FileName.EndsWith(".cshtml"))
+                    {
+                        Template = item;
+                    }
                 }
             }
             return FileUri.ReverseMapPath(Template);

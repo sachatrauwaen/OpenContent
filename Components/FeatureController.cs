@@ -51,6 +51,7 @@ namespace Satrabel.OpenContent.Components
                 CreatedOnDate = DateTime.Now,
                 LastModifiedByUserId = UserID,
                 LastModifiedOnDate = DateTime.Now,
+                Title = "",
                 Html = ""
             };
             ctrl.AddContent(content);

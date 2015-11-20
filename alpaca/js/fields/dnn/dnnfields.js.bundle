@@ -28,5 +28,6 @@
     <file>MLImageField.js</file>
     <file>MLTextField.js</file>
     <file>MLUrlField.js</file>
+    <file>mlwysihtmlField.js</file>
   </files>
 </bundle>

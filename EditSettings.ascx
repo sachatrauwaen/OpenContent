@@ -100,6 +100,7 @@
             };
 
         self.FormEdit = function (config) {
+            $.alpaca.setDefaultLocale("<%= AlpacaCulture %>");
             var ConnectorClass = Alpaca.getConnectorClass("default");
             connector = new ConnectorClass("default");
             connector.servicesFramework = sf;

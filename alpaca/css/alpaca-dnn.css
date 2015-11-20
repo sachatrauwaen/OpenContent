@@ -162,7 +162,7 @@
 
 .alpaca-field-wysihtml .alpaca-control {
     width: 45%;
-    max-width: 445px;
+    max-width: 461px;
     display: inline-block;
 }
 
@@ -201,7 +201,7 @@
     box-shadow: 0px 1px 0px 0px rgba(255, 255, 255, 0.8), inset 0px 1px 2px 0px rgba(0, 0, 0, 0.1);
     color: #333;
     font-size: 12px;
-    width: 100%;
+    /*width: 100%;*/
 }
 
 .alpaca-field-wysihtml .toolbar {
@@ -350,7 +350,9 @@
     color: #666;
 }
 
-.alpaca-field-text img {
+.alpaca-field-text img,
+.alpaca-field-wysihtml > img
+ {
     margin-bottom: 18px;
     margin-left: 5px;
 }
