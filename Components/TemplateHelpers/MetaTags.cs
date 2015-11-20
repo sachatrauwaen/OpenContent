@@ -124,6 +124,11 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         {
             public OgArticle(string title, string description, string imageUrl)
             {
+                title = Utils.HtmlDecodeIfNeeded(title);
+                title = Utils.HtmlRemoval.StripTagsRegexCompiled(title);
+                description = Utils.HtmlDecodeIfNeeded(description);
+                description = Utils.HtmlRemoval.StripTagsRegexCompiled(description);
+
                 Title = title;
                 Description = description;
                 ImageUrl = imageUrl;
@@ -134,7 +139,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             public string ImageUrl { get; private set; }
         }
 
-        public static void SetSocialGraphArticle(Page page, OgArticle ogArticle)
+        public static void SetOpenGraphArticle(Page page, OgArticle ogArticle)
         {
             var dnnpage = page as DotNetNuke.Framework.CDefault;
             if (dnnpage != null)
@@ -176,12 +181,12 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             }
         }
 
-        public static void SetSocialGraphArticle(HttpContextBase context, OgArticle ogArticle)
+        public static void SetOpenGraphArticle(HttpContextBase context, OgArticle ogArticle)
         {
             var pageObj = context.CurrentHandler as System.Web.UI.Page;
             if (pageObj != null)
             {
-                SetSocialGraphArticle(pageObj, ogArticle);
+                SetOpenGraphArticle(pageObj, ogArticle);
             }
         }
 
@@ -202,7 +207,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             public bool InStock { get; set; }
         }
 
-        public static void SetSocialGraphProduct(Page page, string retailerName, Product product)
+        public static void SetOpenGraphProduct(Page page, string retailerName, Product product)
         {
             var dnnpage = page as DotNetNuke.Framework.CDefault;
             if (dnnpage != null)
@@ -297,12 +302,12 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             }
         }
 
-        public static void SetSocialGraphProduct(HttpContextBase context, string retailerName, Product product)
+        public static void SetOpenGraphProduct(HttpContextBase context, string retailerName, Product product)
         {
             var pageObj = context.CurrentHandler as System.Web.UI.Page;
             if (pageObj != null)
             {
-                SetSocialGraphProduct(pageObj, retailerName, product);
+                SetOpenGraphProduct(pageObj, retailerName, product);
             }
         }
 

@@ -1619,11 +1619,11 @@
                         }
                     }
                     setTimeout(function () {
-                        $(cropButton).css('cursor', 'initial');
+                        $(cropButton).css('cursor', 'default');
                     }, 500);
                 }).fail(function (xhr, result, status) {
                     alert("Uh-oh, something broke: " + status);
-                    $(parentel).css('cursor', 'initial');
+                    $(parentel).css('cursor', 'default');
                 });
                 return false;
             });
