@@ -13,51 +13,6 @@ namespace Satrabel.OpenContent {
     public partial class Edit {
         
         /// <summary>
-        /// customJS control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::DotNetNuke.Web.Client.ClientResourceManagement.DnnCssInclude customJS;
-        
-        /// <summary>
-        /// DnnJsInclude1 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::DotNetNuke.Web.Client.ClientResourceManagement.DnnJsInclude DnnJsInclude1;
-        
-        /// <summary>
-        /// DnnJsInclude2 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::DotNetNuke.Web.Client.ClientResourceManagement.DnnJsInclude DnnJsInclude2;
-        
-        /// <summary>
-        /// DnnJsInclude4 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::DotNetNuke.Web.Client.ClientResourceManagement.DnnJsInclude DnnJsInclude4;
-        
-        /// <summary>
-        /// DnnCssInclude1 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::DotNetNuke.Web.Client.ClientResourceManagement.DnnCssInclude DnnCssInclude1;
-        
-        /// <summary>
         /// ScopeWrapper control.
         /// </summary>
         /// <remarks>
@@ -85,12 +40,21 @@ namespace Satrabel.OpenContent {
         protected global::System.Web.UI.WebControls.HyperLink hlCancel;
         
         /// <summary>
-        /// CKDNNporid control.
+        /// hlDelete control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.HiddenField CKDNNporid;
+        protected global::System.Web.UI.WebControls.HyperLink hlDelete;
+        
+        /// <summary>
+        /// ddlVersions control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlVersions;
     }
 }

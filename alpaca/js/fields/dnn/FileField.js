@@ -7,8 +7,7 @@
      * @lends Alpaca.Fields.ImageField.prototype
      */
     {
-        constructor: function(container, data, options, schema, view, connector)
-        {
+        constructor: function (container, data, options, schema, view, connector) {
             var self = this;
             this.base(container, data, options, schema, view, connector);
             this.sf = connector.servicesFramework;
@@ -58,7 +57,7 @@
                     el.val(value);
                 }
             }
-            
+
             // be sure to call into base method
             //this.base(value);
 
@@ -73,7 +72,7 @@
             //var el = $(this.control.get(0)).find('input[type=text]');
             var el = this.getControlEl();
             if (el && el.length > 0) {
-                    value = el.val();
+                value = el.val();
             }
             return value;
         },
@@ -92,12 +91,12 @@
             //var el = this.control;
             var el = this.getControlEl();
 
-                       
+
             $(this.control.get(0)).find('input[type=file]').fileupload({
                 dataType: 'json',
                 url: self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
                 maxFileSize: 25000000,
-                formData: { uploadfolder : self.options.uploadfolder },
+                formData: { uploadfolder: self.options.uploadfolder },
                 beforeSend: self.sf.setModuleHeaders,
                 add: function (e, data) {
                     //data.context = $(opts.progressContextSelector);
@@ -124,7 +123,7 @@
                     }
                 }
             }).data('loaded', true);
-                                   
+
             callback();
         },
         applyTypeAhead: function () {
@@ -173,10 +172,9 @@
                 */
 
                 bloodHoundConfig.remote = {
-                    url: "/DesktopModules/OpenContent/API/DnnEntitiesAPI/Files?q=%QUERY&d=" + tFolder,
+                    url: self.sf.getServiceRoot('OpenContent') + "DnnEntitiesAPI/Files?q=%QUERY&d=" + tFolder,
                     ajax: {
                         beforeSend: connector.servicesFramework.setModuleHeaders,
-
                     }
                 };
 

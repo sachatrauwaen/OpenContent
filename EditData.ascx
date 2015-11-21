@@ -20,9 +20,9 @@
             <dnn:Label id="DataType" runat="Server" controlname="scriptList" />
             <asp:DropDownList ID="sourceList" runat="server" AutoPostBack="true" />
         </div>
+
         <div>
             <asp:TextBox ID="txtSource" runat="server" TextMode="MultiLine" Rows="30" Columns="140" />
-
         </div>
     </fieldset>
     <ul class="dnnActions dnnClear">
@@ -32,6 +32,13 @@
         <li>
             <asp:LinkButton ID="cmdCancel" resourcekey="cmdCancel" runat="server" CssClass="dnnSecondaryAction" CausesValidation="False" />
         </li>
+
+        <asp:PlaceHolder ID="phVersions" runat="server">
+            <li style="padding-left: 10px;">
+                <asp:DropDownList ID="ddlVersions" runat="server" AutoPostBack="true" />
+            </li>
+        </asp:PlaceHolder>
+
     </ul>
 </div>
 <script type="text/javascript">

@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AddContent.Action" xml:space="preserve">
-    <value>Edit Content</value>
+    <value>Add Content</value>
   </data>
   <data name="EditData.Action" xml:space="preserve">
     <value>Edit Raw Data</value>
@@ -152,5 +152,17 @@
   </data>
   <data name="lTemplateName.Text" xml:space="preserve">
     <value>New Template Name</value>
+  </data>
+  <data name="EditContent.Action" xml:space="preserve">
+    <value>Edit Content</value>
+  </data>
+  <data name="lUseContent.Text" xml:space="preserve">
+    <value>Source of content</value>
+  </data>
+  <data name="lDataSource.Text" xml:space="preserve">
+    <value>Page - Module</value>
+  </data>
+  <data name="cmdSave.Text" xml:space="preserve">
+    <value>Save</value>
   </data>
 </root>

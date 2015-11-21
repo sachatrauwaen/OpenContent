@@ -10,6 +10,7 @@
 #region Using Statements
 
 using System;
+using System.Linq;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Common;
 using DotNetNuke.Framework.JavaScriptLibraries;
@@ -19,6 +20,9 @@ using DotNetNuke.Services.Localization;
 using System.IO;
 using Satrabel.OpenContent.Components;
 using Newtonsoft.Json.Linq;
+using System.Globalization;
+using DotNetNuke.Common.Utilities;
+using Satrabel.OpenContent.Components.Json;
 
 #endregion
 
@@ -40,6 +44,23 @@ namespace Satrabel.OpenContent
             //ServicesFramework.Instance.RequestAjaxScriptSupport();
             //ServicesFramework.Instance.RequestAjaxAntiForgerySupport();
             sourceList.SelectedIndexChanged += sourceList_SelectedIndexChanged;
+            ddlVersions.SelectedIndexChanged += ddlVersions_SelectedIndexChanged;
+        }
+
+        private void ddlVersions_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+            OpenContentController ctrl = new OpenContentController();
+            OpenContentInfo data = ctrl.GetFirstContent(ModuleId);
+            if (data != null)
+            {
+                var d = new DateTime(long.Parse(ddlVersions.SelectedValue));
+
+
+                var ver = data.Versions.Single(v => v.CreatedOnDate == d);
+                txtSource.Text = ver.Json.ToString();
+            }
+
         }
         protected override void OnLoad(EventArgs e)
         {
@@ -64,10 +85,45 @@ namespace Satrabel.OpenContent
             {
                 case cData:
                     OpenContentController ctrl = new OpenContentController();
-                    OpenContentInfo data = ctrl.GetFirstContent(ModuleId);
-                    if (data != null)
+                    Manifest manifest = null;
+                    TemplateManifest template = null;
+                    OpenContentSettings settings = new OpenContentSettings(Settings);
+
+                    if (settings.TemplateAvailable)
                     {
-                        json = data.Json;
+                        OpenContentUtils.GetTemplate(settings, out manifest, out template);
+                        //template = OpenContentUtils.GetTemplateManifest(settings.Template);
+                    }
+                    if (template != null && template.IsListTemplate)
+                    {
+                        var dataList = ctrl.GetContents(ModuleId);
+                        if (dataList != null)
+                        {
+
+                            JArray lst = new JArray();
+
+                            foreach (var item in dataList)
+                            {
+                                lst.Add(JObject.Parse(item.Json));
+                            }
+                            json = lst.ToString();
+                        }
+                    }
+                    else
+                    {
+                        OpenContentInfo data = ctrl.GetFirstContent(ModuleId);
+                        if (data != null)
+                        {
+                            json = data.Json;
+                            foreach (var ver in data.Versions)
+                            {
+                                ddlVersions.Items.Add(new ListItem()
+                                {
+                                    Text = ver.CreatedOnDate.ToShortDateString() + " " + ver.CreatedOnDate.ToShortTimeString(),
+                                    Value = ver.CreatedOnDate.Ticks.ToString()
+                                });
+                            }
+                        }
                     }
                     break;
                 case cSettings:
@@ -103,48 +159,93 @@ namespace Satrabel.OpenContent
         private void SaveData()
         {
             OpenContentController ctrl = new OpenContentController();
-            var data = ctrl.GetFirstContent(ModuleId);
-
-            if (string.IsNullOrEmpty(txtSource.Text))
+            TemplateManifest template = null;
+            OpenContentSettings settings = new OpenContentSettings(Settings);
+            if (settings.TemplateAvailable)
             {
-                if (data != null)
+                Manifest manifest = null;
+                OpenContentUtils.GetTemplate(settings, out manifest, out template);
+            }
+            if (template != null && template.IsListTemplate)
+            {
+                JArray lst = null;
+                if (!string.IsNullOrEmpty(txtSource.Text))
                 {
-                    ctrl.DeleteContent(data);
+                    lst = JArray.Parse(txtSource.Text);
+                }
+
+                var dataList = ctrl.GetContents(ModuleId);
+                foreach (var item in dataList)
+                {
+                    ctrl.DeleteContent(item);
+                }
+                if (lst != null)
+                {
+                    foreach (JObject json in lst)
+                    {
+                        var data = new OpenContentInfo()
+                        {
+                            ModuleId = ModuleId,
+                            Title = json["Title"] == null ? ModuleContext.Configuration.ModuleTitle : json["Title"].ToString(),
+                            CreatedByUserId = UserInfo.UserID,
+                            CreatedOnDate = DateTime.Now,
+                            LastModifiedByUserId = UserInfo.UserID,
+                            LastModifiedOnDate = DateTime.Now,
+                            Html = "",
+                            Json = json.ToString()
+                        };
+                        ctrl.AddContent(data);
+                    }
                 }
             }
             else
             {
-                JObject json = JObject.Parse(txtSource.Text);
-                if (data == null)
+                var data = ctrl.GetFirstContent(ModuleId);
+
+                if (string.IsNullOrEmpty(txtSource.Text))
                 {
-                    data = new OpenContentInfo()
+                    if (data != null)
                     {
-                        ModuleId = ModuleId,
-                        Title = json["Title"] == null ? ModuleContext.Configuration.ModuleTitle : json["Title"].ToString(),
-                        CreatedByUserId = UserInfo.UserID,
-                        CreatedOnDate = DateTime.Now,
-                        LastModifiedByUserId = UserInfo.UserID,
-                        LastModifiedOnDate = DateTime.Now,
-                        Html = "",
-                        Json = txtSource.Text
-                    };
-                    ctrl.AddContent(data);
+                        ctrl.DeleteContent(data);
+                    }
                 }
                 else
                 {
-                    data.Title = json["Title"] == null ? ModuleContext.Configuration.ModuleTitle : json["Title"].ToString();
-                    data.LastModifiedByUserId = UserInfo.UserID;
-                    data.LastModifiedOnDate = DateTime.Now;
-                    data.Json = txtSource.Text;
-                    ctrl.UpdateContent(data);
-                }
+                    JObject json = txtSource.Text.ToJObject("Saving txtSource");
+                    if (data == null)
+                    {
+                        data = new OpenContentInfo()
+                        {
+                            ModuleId = ModuleId,
+                            Title = json["Title"] == null ? ModuleContext.Configuration.ModuleTitle : json["Title"].ToString(),
+                            CreatedByUserId = UserInfo.UserID,
+                            CreatedOnDate = DateTime.Now,
+                            LastModifiedByUserId = UserInfo.UserID,
+                            LastModifiedOnDate = DateTime.Now,
+                            Html = "",
+                            Json = txtSource.Text
+                        };
+                        ctrl.AddContent(data);
+                    }
+                    else
+                    {
+                        data.Title = json["Title"] == null ? ModuleContext.Configuration.ModuleTitle : json["Title"].ToString();
+                        data.LastModifiedByUserId = UserInfo.UserID;
+                        data.LastModifiedOnDate = DateTime.Now;
+                        data.Json = txtSource.Text;
+                        ctrl.UpdateContent(data);
+                    }
 
-                if (json["ModuleTitle"] != null && json["ModuleTitle"].Type == JTokenType.String)
-                {
-                    string ModuleTitle = json["ModuleTitle"].ToString();
-                    OpenContentUtils.UpdateModuleTitle(ModuleContext.Configuration, ModuleTitle);
+                    if (json["ModuleTitle"] != null && json["ModuleTitle"].Type == JTokenType.String)
+                    {
+                        string ModuleTitle = json["ModuleTitle"].ToString();
+                        OpenContentUtils.UpdateModuleTitle(ModuleContext.Configuration, ModuleTitle);
+                    }
                 }
             }
+
+
+            
         }
         private void SaveSettings()
         {
@@ -158,8 +259,9 @@ namespace Satrabel.OpenContent
 
         private void sourceList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            //string template = ModuleContext.Settings["template"] as string;
+            phVersions.Visible = sourceList.SelectedValue == cData;
             DisplayFile(sourceList.SelectedValue);
+
         }
         #endregion
 

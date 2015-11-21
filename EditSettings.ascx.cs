@@ -15,6 +15,11 @@ using DotNetNuke.Common;
 using DotNetNuke.Framework.JavaScriptLibraries;
 using DotNetNuke.Framework;
 using Satrabel.OpenContent.Components;
+using System.Web.Hosting;
+using System.Web;
+using Satrabel.OpenContent.Components.Alpaca;
+using System.IO;
+using DotNetNuke.Services.Localization;
 
 
 #endregion
@@ -22,59 +27,83 @@ using Satrabel.OpenContent.Components;
 namespace Satrabel.OpenContent
 {
 
-	public partial class EditSettings : PortalModuleBase
-	{
+    public partial class EditSettings : PortalModuleBase
+    {
 
-		#region Event Handlers
+        #region Event Handlers
 
-		protected override void OnInit(EventArgs e)
-		{
-			base.OnInit(e);
+        protected override void OnInit(EventArgs e)
+        {
+            base.OnInit(e);
             hlCancel.NavigateUrl = Globals.NavigateURL();
             cmdSave.NavigateUrl = Globals.NavigateURL();
 
-			//cmdSave.Click += cmdSave_Click;
-			//cmdCancel.Click += cmdCancel_Click;
-            
-            ServicesFramework.Instance.RequestAjaxScriptSupport();
-            ServicesFramework.Instance.RequestAjaxAntiForgerySupport();
-            //JavaScript.RequestRegistration(CommonJs.DnnPlugins); ;
-            //JavaScript.RequestRegistration(CommonJs.jQueryFileUpload);
+            var settings = new OpenContentSettings(ModuleContext.Settings);
+            if (settings.TemplateAvailable)
+            {
+                AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, settings.TemplateDir.Path, settings.TemplateKey );
+                alpaca.RegisterAll();
+            }
+        }
 
-            //DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "PortalId", PortalId.ToString(), true);
-            //CKDNNporid.Value = PortalId.ToString();
-		}
-
-		protected override void OnLoad(EventArgs e)
-		{
-			base.OnLoad(e);
-			if (!Page.IsPostBack)
-			{
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+            if (!Page.IsPostBack)
+            {
                 hlTemplateExchange.NavigateUrl = EditUrl("ShareTemplate");
-                var scriptFileSetting = Settings["template"] as string;
-                scriptList.Items.AddRange(OpenContentUtils.GetTemplatesFiles(PortalSettings, ModuleId, scriptFileSetting, "OpenContent").ToArray());
-			}
-		}
-		
-		protected void cmdSave_Click(object sender, EventArgs e)
-		{
+                //var template = OpenContentUtils.GetTemplate(Settings);
+                var settings = new OpenContentSettings(ModuleContext.Settings);
+                scriptList.Items.AddRange(OpenContentUtils.GetTemplatesFiles(PortalSettings, ModuleId, settings.Template, "OpenContent", (settings.IsOtherModule ? settings.Template : null)).ToArray());
+            }
+        }
+
+        protected void cmdSave_Click(object sender, EventArgs e)
+        {
             /*
             ModuleController mc = new ModuleController();
-            mc.UpdateModuleSetting(ModuleId, "template", scriptList.SelectedValue);
+            mc.UpdateModuleSetting(ModuleId, "template", OpenContentUtils.SetTemplateFolder(scriptList.SelectedValue));
             mc.UpdateModuleSetting(ModuleId, "data", HiddenField.Value);
             Response.Redirect(Globals.NavigateURL(), true);
              */
             //DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "Update Successful", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.GreenSuccess);
-		}
+        }
 
+        protected void cmdCancel_Click(object sender, EventArgs e)
+        {
+        }
 
-		protected void cmdCancel_Click(object sender, EventArgs e)
-		{
-		}
+        #endregion
 
-		#endregion
-
-
-	}
+        public string CurrentCulture
+        {
+            get
+            {
+                return LocaleController.Instance.GetCurrentLocale(PortalId).Code;
+            }
+        }
+        public string DefaultCulture
+        {
+            get
+            {
+                return LocaleController.Instance.GetDefaultLocale(PortalId).Code;
+            }
+        }
+        public string NumberDecimalSeparator
+        {
+            get
+            {
+                return LocaleController.Instance.GetCurrentLocale(PortalId).Culture.NumberFormat.NumberDecimalSeparator;
+            }
+        }
+        public string AlpacaCulture
+        {
+            get
+            {
+                string cultureCode = LocaleController.Instance.GetCurrentLocale(PortalId).Code;
+                return AlpacaEngine.AlpacaCulture(cultureCode);
+            }
+        }
+    }
 }
 

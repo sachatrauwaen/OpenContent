@@ -26,6 +26,7 @@ using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Tabs;
 using DotNetNuke.Common;
 using DotNetNuke.Services.FileSystem;
+using System.Collections.Generic;
 
 #endregion
 
@@ -43,67 +44,155 @@ namespace Satrabel.OpenContent.Components
             }
         }
         [ValidateAntiForgeryToken]
-        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         [HttpGet]
         public HttpResponseMessage Edit()
         {
-            string Template = (string)ActiveModule.ModuleSettings["template"];
+            return Edit(-1);
+        }
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
+        [HttpGet]
+        public HttpResponseMessage Edit(int id)
+        {
+            OpenContentSettings settings = new OpenContentSettings(ActiveModule.ModuleSettings);
+            ModuleInfo module = ActiveModule;
+            if (settings.ModuleId > 0)
+            {
+                module = ModuleController.Instance.GetModule(settings.ModuleId, settings.TabId, false);
+            }
+            var manifest = OpenContentUtils.GetManifest(settings.Template);
+            TemplateManifest templateManifest = null;
+            if (manifest != null)
+            {
+                templateManifest = manifest.GetTemplateManifest(settings.Template);
+            }
+            string editRole = manifest == null ? "" : manifest.EditRole;
+            bool listMode = templateManifest != null && templateManifest.IsListTemplate;
             JObject json = new JObject();
             try
             {
-                string TemplateFilename = HostingEnvironment.MapPath("~/" + Template);
                 // schema
-                string schemaFilename = Path.GetDirectoryName(TemplateFilename) + "\\" + "schema.json";
-                JObject schemaJson = JObject.Parse(File.ReadAllText(schemaFilename));
-                json["schema"] = schemaJson;
+                var schemaJson = JsonUtils.LoadJsonFromFile(settings.Template.UrlFolder + "schema.json");
+                if (schemaJson != null)
+                    json["schema"] = schemaJson;
+
                 // default options
-                string optionsFilename = Path.GetDirectoryName(TemplateFilename) + "\\" + "options.json";
-                if (File.Exists(optionsFilename))
-                {
-                    string fileContent = File.ReadAllText(optionsFilename);
-                    if (!string.IsNullOrWhiteSpace(fileContent))
-                    {
-                        JObject optionsJson = JObject.Parse(fileContent);
-                        json["options"] = optionsJson;
-                    }
-                }
+                var optionsJson = JsonUtils.LoadJsonFromFile(settings.Template.UrlFolder + "options.json");
+                if (optionsJson != null)
+                    json["options"] = optionsJson;
+
                 // language options
-                optionsFilename = Path.GetDirectoryName(TemplateFilename) + "\\" + "options." + PortalSettings.CultureCode + ".json";
-                if (File.Exists(optionsFilename))
-                {
-                    string fileContent = File.ReadAllText(optionsFilename);
-                    if (!string.IsNullOrWhiteSpace(fileContent))
-                    {
-                        JObject optionsJson = JObject.Parse(fileContent);
-                        json["options"] = json["options"].JsonMerge(optionsJson);
-                    }
-                }
-                // view
-                string viewFilename = Path.GetDirectoryName(TemplateFilename) + "\\" + "view.json";
-                if (File.Exists(optionsFilename))
-                {
-                    string fileContent = File.ReadAllText(viewFilename);
-                    if (!string.IsNullOrWhiteSpace(fileContent))
-                    {
-                        JObject optionsJson = JObject.Parse(fileContent);
-                        json["view"] = optionsJson;
-                    }
-                }
-                // template options
-                /*
-                optionsFilename = Path.GetDirectoryName(TemplateFilename) + "\\" + "options." + Path.GetFileNameWithoutExtension(TemplateFilename) + ".json";
-                if (File.Exists(optionsFilename))
-                {
-                    JObject optionsJson = JObject.Parse(File.ReadAllText(optionsFilename));
+                optionsJson = JsonUtils.LoadJsonFromFile(settings.Template.UrlFolder + "options." + DnnUtils.GetCurrentCultureCode() + ".json");
+                if (optionsJson != null)
                     json["options"] = json["options"].JsonMerge(optionsJson);
-                }
-                 */
-                int ModuleId = ActiveModule.ModuleID;
-                OpenContentController ctrl = new OpenContentController();
-                var struc = ctrl.GetFirstContent(ModuleId);
-                if (struc != null)
+
+                // view
+                 optionsJson = JsonUtils.LoadJsonFromFile(settings.Template.UrlFolder + "view.json");
+                if (optionsJson != null)
+                    json["view"] = optionsJson;
+
+                int createdByUserid = -1;
+                var content = GetContent(module.ModuleID, listMode, id);
+                if (content != null)
                 {
-                    json["data"] = JObject.Parse(struc.Json);
+                    json["data"] = content.Json.ToJObject("GetContent " + id);
+                    AddVersions(json, content);
+                    createdByUserid = content.CreatedByUserId;
+                }
+
+                if (!OpenContentUtils.HasEditPermissions(PortalSettings, module, editRole, createdByUserid))
+                {
+                    return Request.CreateResponse(HttpStatusCode.Unauthorized);
+                }
+
+                return Request.CreateResponse(HttpStatusCode.OK, json);
+            }
+            catch (Exception exc)
+            {
+                Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
+
+        private OpenContentInfo GetContent(int moduleId, bool listMode, int id)
+        {
+            OpenContentController ctrl = new OpenContentController();
+            if (listMode)
+            {
+                if (id > 0)
+                {
+                    return ctrl.GetContent(id, moduleId);
+                }
+            }
+            else
+            {
+                return ctrl.GetFirstContent(moduleId);
+
+            }
+            return null;
+        }
+
+        private static void AddVersions(JObject json, OpenContentInfo struc)
+        {
+            if (!string.IsNullOrEmpty(struc.VersionsJson))
+            {
+                var verLst = new JArray();
+                foreach (var item in struc.Versions)
+                {
+                    var ver = new JObject();
+                    ver["text"] = item.CreatedOnDate.ToShortDateString() + " " + item.CreatedOnDate.ToShortTimeString();
+                    if (verLst.Count == 0) // first
+                    {
+                        ver["text"] = ver["text"] + " ( current )";
+                    }
+                    ver["ticks"] = item.CreatedOnDate.Ticks.ToString();
+                    verLst.Add(ver);
+                }
+                json["versions"] = verLst;
+
+                //json["versions"] = JArray.Parse(struc.VersionsJson);
+            }
+        }
+
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
+        [HttpGet]
+        public HttpResponseMessage Version(int id, string ticks)
+        {
+            //FileUri template = OpenContentUtils.GetTemplate(ActiveModule.ModuleSettings);
+            OpenContentSettings settings = new OpenContentSettings(ActiveModule.ModuleSettings);
+            ModuleInfo module = ActiveModule;
+            if (settings.ModuleId > 0)
+            {
+                module = ModuleController.Instance.GetModule(settings.ModuleId, settings.TabId, false);
+            }
+            var manifest = OpenContentUtils.GetManifest(settings.Template);
+            TemplateManifest templateManifest = null;
+            if (manifest != null)
+            {
+                templateManifest = manifest.GetTemplateManifest(settings.Template);
+            }
+            string editRole = manifest == null ? "" : manifest.EditRole;
+            bool listMode = templateManifest != null && templateManifest.IsListTemplate;
+            JObject json = new JObject();
+            try
+            {
+                int CreatedByUserid = -1;
+                var content = GetContent(module.ModuleID, listMode, id);
+                if (content != null)
+                {
+                    if (!string.IsNullOrEmpty(content.VersionsJson))
+                    {
+                        var ver = content.Versions.Single(v => v.CreatedOnDate.Ticks.ToString() == ticks);
+                        json = ver.Json;
+
+                    }
+                    CreatedByUserid = content.CreatedByUserId;
+                }
+                if (!OpenContentUtils.HasEditPermissions(PortalSettings, module, editRole, CreatedByUserid))
+                {
+                    return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, json);
             }
@@ -113,59 +202,39 @@ namespace Satrabel.OpenContent.Components
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
+
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
         [HttpGet]
         public HttpResponseMessage Settings(string Template)
         {
-            string Data = (string)ActiveModule.ModuleSettings["data"];
+            string data = (string)ActiveModule.ModuleSettings["data"];
             JObject json = new JObject();
             try
             {
-                string TemplateFilename = HostingEnvironment.MapPath("~/" + Template);
-                string prefix = Path.GetFileNameWithoutExtension(TemplateFilename) + "-";
+                var templateUri = new FileUri(Template);
+                string prefix = templateUri.FileNameWithoutExtension + "-";
+
                 // schema
-                string schemaFilename = Path.GetDirectoryName(TemplateFilename) + "\\" + prefix + "schema.json";
-                /*
-                if (!File.Exists(schemaFilename))
-                {
-                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "schema.json missing for template " + Template);
-                }
-                 */
-                if (File.Exists(schemaFilename))
-                {
-                    JObject schemaJson = JObject.Parse(File.ReadAllText(schemaFilename));
+                var schemaJson = JsonUtils.LoadJsonFromFile(templateUri.UrlFolder + prefix + "schema.json");
+                if (schemaJson != null)
                     json["schema"] = schemaJson;
-                    if (!string.IsNullOrEmpty(Data))
-                    {
-                        json["data"] = JObject.Parse(Data);
-                    }
-                }
+
                 // default options
-                string optionsFilename = Path.GetDirectoryName(TemplateFilename) + "\\" + prefix + "options.json";
-                if (File.Exists(optionsFilename))
-                {
-                    JObject optionsJson = JObject.Parse(File.ReadAllText(optionsFilename));
+                var optionsJson = JsonUtils.LoadJsonFromFile(templateUri.UrlFolder + prefix + "options.json");
+                if (optionsJson != null)
                     json["options"] = optionsJson;
-                }
+
                 // language options
-                optionsFilename = Path.GetDirectoryName(TemplateFilename) + "\\" + prefix + "options." + PortalSettings.CultureCode + ".json";
-                if (File.Exists(optionsFilename))
-                {
-                    JObject optionsJson = JObject.Parse(File.ReadAllText(optionsFilename));
+                optionsJson = JsonUtils.LoadJsonFromFile(templateUri.UrlFolder + prefix + "options." + DnnUtils.GetCurrentCultureCode() + ".json");
+                if (optionsJson != null)
                     json["options"] = json["options"].JsonMerge(optionsJson);
-                }
-                if (!string.IsNullOrEmpty(Data))
-                {
-                    try
-                    {
-                        json["data"] = JObject.Parse(Data);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Error("Settings Json Data : " + Data, ex);
-                    }
-                }
+
+
+                JObject dataJson = data.ToJObject("Raw settings json");
+                if (dataJson != null)
+                    json["data"] = dataJson;
+
                 return Request.CreateResponse(HttpStatusCode.OK, json);
             }
             catch (Exception exc)
@@ -174,21 +243,58 @@ namespace Satrabel.OpenContent.Components
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
-        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public HttpResponseMessage Update(JObject json)
         {
             try
             {
-                int ModuleId = ActiveModule.ModuleID;
+                OpenContentSettings settings = new OpenContentSettings(ActiveModule.ModuleSettings);
+                ModuleInfo module = ActiveModule;
+                if (settings.ModuleId > 0)
+                {
+                    module = ModuleController.Instance.GetModule(settings.ModuleId, settings.TabId, false);
+                }
+                var manifest = OpenContentUtils.GetManifest(settings.Template);
+                TemplateManifest templateManifest = null;
+                if (manifest != null)
+                {
+                    templateManifest = manifest.GetTemplateManifest(settings.Template);
+                }
+                string editRole = manifest == null ? "" : manifest.EditRole;
+
+                bool listMode = templateManifest != null && templateManifest.IsListTemplate;
+                int createdByUserid = -1;
                 OpenContentController ctrl = new OpenContentController();
-                var content = ctrl.GetFirstContent(ModuleId);
+                OpenContentInfo content = null;
+                if (listMode)
+                {
+                    int itemId;
+                    if (json["id"] != null && int.TryParse(json["id"].ToString(), out itemId))
+                    {
+                        content = ctrl.GetContent(itemId, module.ModuleID);
+                        if (content != null)
+                            createdByUserid = content.CreatedByUserId;
+                    }
+                }
+                else
+                {
+                    content = ctrl.GetFirstContent(module.ModuleID);
+                    if (content != null)
+                        createdByUserid = content.CreatedByUserId;
+                }
+
+                if (!OpenContentUtils.HasEditPermissions(PortalSettings, module, editRole, createdByUserid))
+                {
+                    return Request.CreateResponse(HttpStatusCode.Unauthorized);
+                }
+
                 if (content == null)
                 {
                     content = new OpenContentInfo()
                     {
-                        ModuleId = ModuleId,
+                        ModuleId = module.ModuleID,
                         Title = json["form"]["Title"] == null ? ActiveModule.ModuleTitle : json["form"]["Title"].ToString(),
                         Json = json["form"].ToString(),
                         CreatedByUserId = UserInfo.UserID,
@@ -212,8 +318,6 @@ namespace Satrabel.OpenContent.Components
                     string ModuleTitle = json["form"]["ModuleTitle"].ToString();
                     OpenContentUtils.UpdateModuleTitle(ActiveModule, ModuleTitle);
                 }
-
-
                 return Request.CreateResponse(HttpStatusCode.OK, "");
             }
             catch (Exception exc)
@@ -221,26 +325,84 @@ namespace Satrabel.OpenContent.Components
                 Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
-
-
         }
 
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public HttpResponseMessage Delete(JObject json)
+        {
+            try
+            {
+                OpenContentSettings settings = new OpenContentSettings(ActiveModule.ModuleSettings);
+                ModuleInfo module = ActiveModule;
+                if (settings.ModuleId > 0)
+                {
+                    module = ModuleController.Instance.GetModule(settings.ModuleId, settings.TabId, false);
+                }
+                var manifest = OpenContentUtils.GetManifest(settings.Template);
+                TemplateManifest templateManifest = null;
+                if (manifest != null)
+                {
+                    templateManifest = manifest.GetTemplateManifest(settings.Template);
+                }
+                string editRole = manifest == null ? "" : manifest.EditRole;
+                bool listMode = templateManifest != null && templateManifest.IsListTemplate;
+                int CreatedByUserid = -1;
+                OpenContentController ctrl = new OpenContentController();
+                OpenContentInfo content = null;
+                if (listMode)
+                {
+                    int ItemId;
+                    if (int.TryParse(json["id"].ToString(), out ItemId))
+                    {
+                        content = ctrl.GetContent(ItemId, module.ModuleID);
+                        if (content != null)
+                        {
+                            CreatedByUserid = content.CreatedByUserId;
+                        }
+                    }
+                }
+                else
+                {
+                    content = ctrl.GetFirstContent(module.ModuleID);
+                    if (content != null)
+                    {
+                        CreatedByUserid = content.CreatedByUserId;
+                    }
+                }
+                if (!OpenContentUtils.HasEditPermissions(PortalSettings, module, editRole, CreatedByUserid))
+                {
+                    return Request.CreateResponse(HttpStatusCode.Unauthorized);
+                }
+                if (content != null)
+                {
+                    ctrl.DeleteContent(content);
+                }
+                return Request.CreateResponse(HttpStatusCode.OK, "");
+            }
+            catch (Exception exc)
+            {
+                Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
+
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
+        [ValidateAntiForgeryToken]
+        [HttpPost]
         public HttpResponseMessage UpdateSettings(JObject json)
         {
             try
             {
-                int ModuleId = ActiveModule.ModuleID;
-
+                int moduleId = ActiveModule.ModuleID;
                 var data = json["data"].ToString();
                 var template = json["template"].ToString();
 
-                ModuleController mc = new ModuleController();
-                mc.UpdateModuleSetting(ModuleId, "template", template);
-                mc.UpdateModuleSetting(ModuleId, "data", data);
-
-
+                var mc = new ModuleController();
+                mc.UpdateModuleSetting(moduleId, "template", template);
+                mc.UpdateModuleSetting(moduleId, "data", data);
                 return Request.CreateResponse(HttpStatusCode.OK, "");
-
             }
             catch (Exception exc)
             {
@@ -250,6 +412,83 @@ namespace Satrabel.OpenContent.Components
 
         }
 
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [HttpPost]
+        public HttpResponseMessage Lookup(LookupRequestDTO req)
+        {
+            ModuleController mc = new ModuleController();
+            var module = mc.GetModule(req.moduleid, req.tabid, false);
+            Manifest manifest;
+            TemplateManifest templateManifest;
+            FileUri template = OpenContentUtils.GetTemplate(module.ModuleSettings, out manifest, out templateManifest);
+            bool listMode = templateManifest != null && templateManifest.IsListTemplate;
+            //JToken json = new JObject();
+            List<LookupResultDTO> res = new List<LookupResultDTO>();
+            try
+            {
+                OpenContentController ctrl = new OpenContentController();
+                if (listMode)
+                {
+                    var items = ctrl.GetContents(req.moduleid);
+                    if (items != null)
+                    {
+                        foreach (var item in items)
+                        {
+                            res.Add(new LookupResultDTO()
+                            {
+                                value = item.ContentId.ToString(),
+                                text = item.Title
+                            });
+                        }
+                    }
+                }
+                else
+                {
+                    var struc = ctrl.GetFirstContent(req.moduleid);
+                    if (struc != null)
+                    {
+
+                        JToken json = struc.Json.ToJObject("GetFirstContent data of moduleId " + req.moduleid);
+                        if (!string.IsNullOrEmpty(req.dataMember))
+                        {
+                            json = json[req.dataMember];
+                            if (json is JArray)
+                            {
+                                foreach (JToken item in (JArray)json)
+                                {
+                                    res.Add(new LookupResultDTO()
+                                    {
+                                        value = item[req.valueField] == null ? "" : item[req.valueField].ToString(),
+                                        text = item[req.textField] == null ? "" : item[req.textField].ToString()
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }
+                return Request.CreateResponse(HttpStatusCode.OK, res);
+            }
+            catch (Exception exc)
+            {
+                Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
+    }
+
+    public class LookupRequestDTO
+    {
+        public int moduleid { get; set; }
+        public int tabid { get; set; }
+        public string dataMember { get; set; }
+        public string valueField { get; set; }
+        public string textField { get; set; }
+    }
+    public class LookupResultDTO
+    {
+        public string value { get; set; }
+        public string text { get; set; }
     }
 }
 

@@ -20,7 +20,7 @@
 (function ($) {
 
     var Alpaca = $.alpaca;
-
+       
     // custom styles
     var styles = {};
     styles["commonIcon"] = "";
@@ -69,6 +69,7 @@
         // controlEl
         var controlEl = this.getControlEl();
 
+        /*
         // all controls get the "form-control" class injected
         $(fieldEl).find("input").addClass("form-control");
         $(fieldEl).find("textarea").addClass("form-control");
@@ -82,11 +83,11 @@
         if (this.inputType === "color") {
             $(fieldEl).find("input").removeClass("form-control");
         }
-
+        */
         $(fieldEl).find("input[type=file]").addClass("normalFileUpload");
-        
 
 
+        /*
         // any checkbox inputs get the "checkbox" class on their checkbox
         $(fieldEl).find("input[type=checkbox]").parent().parent().addClass("checkbox");
         // any radio inputs get the "radio" class on their radio
@@ -116,6 +117,7 @@
 
             $(fieldEl).append("<div style='clear:both;'></div>");
         }
+        */
     };
     callbacks["container"] = function () {
         var containerEl = this.getContainerEl();
@@ -160,7 +162,7 @@
                 $(this).css("cursor", "pointer");
             })
 
-            
+
 
         }
         $(fieldEl).dnnPanels();
@@ -195,13 +197,13 @@
         "callbacks": callbacks,
         "styles": styles,
         "templates": {
-            "control": "/DesktopModules/OpenContent/alpaca/templates/dnn-edit/control.html",
-            "container": "/DesktopModules/OpenContent/alpaca/templates/dnn-edit/container.html",
-            //"container-array": "/DesktopModules/OpenContent/alpaca/templates/dnn-edit/container-array.html",
-            //"container-array-actionbar": "/DesktopModules/OpenContent/alpaca/templates/dnn-edit/container-array-actionbar.html",
-            "control-image": "/DesktopModules/OpenContent/alpaca/templates/dnn-edit/control-image.html",
-            "control-file": "/DesktopModules/OpenContent/alpaca/templates/dnn-edit/control-file.html",
-            "control-wysihtml": "/DesktopModules/OpenContent/alpaca/templates/dnn-edit/control-wysihtml.html"
+            "control": "#dnn-edit-control",
+            "container": "#dnn-edit-container",
+            "control-image": "#dnn-edit-control-image",
+            "control-imagecropper": "#dnn-edit-control-imagecropper",
+            "control-file": "#dnn-edit-control-file",
+            "control-wysihtml": "#dnn-edit-control-wysihtml",
+            "control-checkbox": "#dnn-edit-control-checkbox"
         }
     });
 

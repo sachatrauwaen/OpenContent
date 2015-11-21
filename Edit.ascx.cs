@@ -18,7 +18,10 @@ using DotNetNuke.Services.Localization;
 using System.IO;
 using DotNetNuke.Web.Client.ClientResourceManagement;
 using DotNetNuke.Web.Client;
-
+using System.Web.Hosting;
+using Satrabel.OpenContent.Components;
+using Satrabel.OpenContent.Components.Alpaca;
+using System.Web;
 
 #endregion
 
@@ -27,6 +30,13 @@ namespace Satrabel.OpenContent
 
     public partial class Edit : PortalModuleBase
     {
+        public bool ListMode
+        {
+            get
+            {
+                return true;
+            }
+        }
 
         #region Event Handlers
 
@@ -35,16 +45,10 @@ namespace Satrabel.OpenContent
             base.OnInit(e);
             hlCancel.NavigateUrl = Globals.NavigateURL();
             cmdSave.NavigateUrl = Globals.NavigateURL();
-            ServicesFramework.Instance.RequestAjaxScriptSupport();
-            ServicesFramework.Instance.RequestAjaxAntiForgerySupport();
-            JavaScript.RequestRegistration(CommonJs.DnnPlugins); // dnnPanels
-            JavaScript.RequestRegistration(CommonJs.jQueryFileUpload); // image file upload
-            if (File.Exists(Server.MapPath("~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js")))
-            {
-                ClientResourceManager.RegisterScript(Page, "~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js",FileOrder.Js.DefaultPriority);
-                DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "PortalId", PortalId.ToString(), true);
-                CKDNNporid.Value = PortalId.ToString();
-            }
+
+            OpenContentSettings settings = new OpenContentSettings(Settings);
+            AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext,settings.Template.Path, "");
+            alpaca.RegisterAll();
         }
 
         protected override void OnLoad(EventArgs e)
@@ -53,7 +57,6 @@ namespace Satrabel.OpenContent
 
             if (!Page.IsPostBack)
             {
-                //txtField.Text = (string)Settings["field"];
 
             }
         }
@@ -76,6 +79,28 @@ namespace Satrabel.OpenContent
             get
             {
                 return LocaleController.Instance.GetCurrentLocale(PortalId).Code;
+            }
+        }
+        public string DefaultCulture
+        {
+            get
+            {
+                return LocaleController.Instance.GetDefaultLocale(PortalId).Code;
+            }
+        }
+        public string NumberDecimalSeparator
+        {
+            get
+            {
+                return LocaleController.Instance.GetCurrentLocale(PortalId).Culture.NumberFormat.NumberDecimalSeparator;
+            }
+        }
+        public string AlpacaCulture
+        {
+            get
+            {
+                string cultureCode = LocaleController.Instance.GetCurrentLocale(PortalId).Code;
+                return AlpacaEngine.AlpacaCulture(cultureCode);
             }
         }
     }

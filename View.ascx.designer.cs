@@ -22,6 +22,42 @@ namespace Satrabel.OpenContent {
         protected global::System.Web.UI.WebControls.Panel pHelp;
         
         /// <summary>
+        /// lUseContent control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lUseContent;
+        
+        /// <summary>
+        /// rblDataSource control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RadioButtonList rblDataSource;
+        
+        /// <summary>
+        /// phDataSource control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.PlaceHolder phDataSource;
+        
+        /// <summary>
+        /// ddlDataSource control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlDataSource;
+        
+        /// <summary>
         /// lUseTemplate control.
         /// </summary>
         /// <remarks>
