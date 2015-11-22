@@ -66,7 +66,32 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         }
         #endregion
 
-        public static void SetSocialMetaTwitter(HttpContextBase context, string twitterAccount)
+        public static void SetOpenGraphGeneral(HttpContextBase context)
+        {
+            var dnnpage = context.CurrentHandler as DotNetNuke.Framework.CDefault;
+            if (dnnpage != null)
+            {
+                var placeholder = (System.Web.UI.WebControls.PlaceHolder)dnnpage.FindControl("Head").FindControl(cMETAHANDLE);
+                if (placeholder != null)
+                {
+
+                    placeholder.Controls.Add(AddPropertyToMeta(new HtmlMeta
+                    {
+                        Content = DnnUtils.GetCurrentCultureCode().Replace('-','_')
+                    }, "og:locale"));
+
+                    placeholder.Controls.Add(AddPropertyToMeta(new HtmlMeta
+                    {
+                        Content = GetCurrentUrl()
+                    }, "og:url"));
+
+                    // indien beschikbaar datum laatst aangepast
+                    // <meta property="og:updated_time" content="20150125" />
+                }
+            }
+        }
+
+        public static void SetOpenGraphTwitter(HttpContextBase context, string twitterAccount)
         {
             var dnnpage = context.CurrentHandler as DotNetNuke.Framework.CDefault;
             if (dnnpage != null)
@@ -93,32 +118,8 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
                 }
             }
         }
-        public static void SetSocialMetaGeneral(HttpContextBase context)
-        {
-            var dnnpage = context.CurrentHandler as DotNetNuke.Framework.CDefault;
-            if (dnnpage != null)
-            {
-                var placeholder = (System.Web.UI.WebControls.PlaceHolder)dnnpage.FindControl("Head").FindControl("SocialMeta");
-                if (placeholder != null)
-                {
 
-                    placeholder.Controls.Add(AddPropertyToMeta(new HtmlMeta
-                    {
-                        Content = DnnUtils.GetCurrentCultureCode()
-                    }, "og:locale"));
-
-                    placeholder.Controls.Add(AddPropertyToMeta(new HtmlMeta
-                    {
-                        Content = GetCurrentUrl()
-                    }, "og:url"));
-
-                    // indien beschikbaar datum laatst aangepast
-                    // <meta property="og:updated_time" content="20150125" />
-                }
-            }
-        }
-
-        #region Articles
+        #region OpenGraph Articles
 
         public class OgArticle
         {
@@ -145,7 +146,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             if (dnnpage != null)
             {
                 var head = (HtmlHead)dnnpage.FindControl("Head");
-                var placeholder = (System.Web.UI.WebControls.PlaceHolder)head.FindControl("metaPanel");
+                var placeholder = (System.Web.UI.WebControls.PlaceHolder)head.FindControl(cMETAHANDLE);
                 if (placeholder != null)
                 {
                     head.Attributes.Add("prefix", "og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#");
@@ -193,7 +194,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         #endregion
 
 
-        #region Products
+        #region OpenGraph Products
 
         public class Product
         {
@@ -213,7 +214,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             if (dnnpage != null)
             {
                 var head = (HtmlHead)dnnpage.FindControl("Head");
-                var placeholder = (System.Web.UI.WebControls.PlaceHolder)head.FindControl("metaPanel");
+                var placeholder = (System.Web.UI.WebControls.PlaceHolder)head.FindControl(cMETAHANDLE);
                 if (placeholder != null)
                 {
                     head.Attributes.Add("prefix", "og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# business: http://ogp.me/ns/business# product: http://ogp.me/ns/product#");
@@ -314,6 +315,8 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         #endregion
 
         #region Private Methods
+
+        private const string cMETAHANDLE = "metaPanel";
 
         private static HtmlMeta AddPropertyToMeta(HtmlMeta meta, string value)
         {

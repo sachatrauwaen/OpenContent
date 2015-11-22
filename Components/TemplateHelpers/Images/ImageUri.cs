@@ -73,7 +73,6 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             return ImageHelper.GetFacebookImageUrl(FileInfo);
         }
 
-
         public string EditImageUrl(ModuleInfo module)
         {
             if (module == null) return string.Empty;

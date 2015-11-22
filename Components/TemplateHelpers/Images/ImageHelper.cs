@@ -8,6 +8,7 @@ using DotNetNuke.Entities.Content.Common;
 using DotNetNuke.Entities.Modules.Definitions;
 using DotNetNuke.Services.FileSystem;
 using Newtonsoft.Json.Linq;
+using Satrabel.OpenContent.Components;
 
 namespace Satrabel.OpenContent.Components.TemplateHelpers
 {
@@ -44,7 +45,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         /// <returns></returns>
         public static string GetFacebookImageUrl(IFileInfo file)
         {
-            var ratio = new Ratio("21x11");
+            var ratio = new Ratio("120x63");
             ratio.SetWidth(1200);
             return GetImageUrl(file, ratio);
         }

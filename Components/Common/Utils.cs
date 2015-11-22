@@ -92,6 +92,7 @@ namespace Satrabel.OpenContent.Components
 
         public static string HtmlDecodeIfNeeded(string text)
         {
+            if (string.IsNullOrEmpty(text)) return text;
             if (text.Contains("&lt;") && text.Contains("&gt;"))
                 text = HttpUtility.HtmlDecode(text);
             return text;
