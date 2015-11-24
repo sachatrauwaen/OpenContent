@@ -65,9 +65,21 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\bin\DotNetNuke.WebUtility.dll</HintPath>
     </Reference>
-    <Reference Include="Handlebars, Version=1.0.5607.41709, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Handlebars, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Handlebars.Net\source\Handlebars\bin\Debug\Handlebars.dll</HintPath>
+      <HintPath>ref\Handlebars.dll</HintPath>
+    </Reference>
+    <Reference Include="Lucene.Net, Version=3.0.3.0, Culture=neutral, PublicKeyToken=85089178b9ac3181, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Lucene.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="Lucene.Net.Contrib.Analyzers, Version=3.0.3.0, Culture=neutral, PublicKeyToken=85089178b9ac3181, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Lucene.Net.Contrib.Analyzers.dll</HintPath>
+    </Reference>
+    <Reference Include="Lucene.Net.Contrib.FastVectorHighlighter, Version=3.0.3.0, Culture=neutral, PublicKeyToken=85089178b9ac3181, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Lucene.Net.Contrib.FastVectorHighlighter.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -132,6 +144,21 @@
     <Compile Include="Components\FolderUri.cs" />
     <Compile Include="Components\FileUri.cs" />
     <Compile Include="Components\Handlebars\HandlebarsEngine.cs" />
+    <Compile Include="Components\JPList\FilterDTO.cs" />
+    <Compile Include="Components\JPList\JplistAPIController.cs" />
+    <Compile Include="Components\JPList\JpListQueryDTO.cs" />
+    <Compile Include="Components\JPList\PaginationDTO.cs" />
+    <Compile Include="Components\JPList\RequestDTO.cs" />
+    <Compile Include="Components\JPList\ResultDTO.cs" />
+    <Compile Include="Components\JPList\SortDTO.cs" />
+    <Compile Include="Components\JPList\StatusDataDTO.cs" />
+    <Compile Include="Components\JPList\StatusDTO.cs" />
+    <Compile Include="Components\Lucene\Index\JsonIndexUtils.cs" />
+    <Compile Include="Components\Lucene\LuceneController.cs" />
+    <Compile Include="Components\Lucene\Mapping\GenericFields.cs" />
+    <Compile Include="Components\Lucene\Mapping\JsonMappingUtils.cs" />
+    <Compile Include="Components\Lucene\Mapping\JsonObjectMapper.cs" />
+    <Compile Include="Components\Lucene\Search\JsonSearchUtils.cs" />
     <Compile Include="Components\TemplateHelpers\Images\ImageHelper.cs" />
     <Compile Include="Components\TemplateHelpers\Images\ImageUri.cs" />
     <Compile Include="Components\TemplateHelpers\Images\Ratio.cs" />

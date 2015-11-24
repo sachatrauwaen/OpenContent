@@ -27,6 +27,7 @@ using DotNetNuke.Entities.Tabs;
 using DotNetNuke.Common;
 using DotNetNuke.Services.FileSystem;
 using System.Collections.Generic;
+using Satrabel.OpenContent.Components.Lucene;
 
 #endregion
 
@@ -475,6 +476,51 @@ namespace Satrabel.OpenContent.Components
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
+        [HttpPost]
+        public HttpResponseMessage List(ListDTO req)
+        {
+            OpenContentSettings settings = new OpenContentSettings(ActiveModule.ModuleSettings);
+            ModuleInfo module = ActiveModule;
+            if (settings.ModuleId > 0)
+            {
+                module = ModuleController.Instance.GetModule(settings.ModuleId, settings.TabId, false);
+            }
+            var manifest = OpenContentUtils.GetManifest(settings.Template);
+            TemplateManifest templateManifest = null;
+            if (manifest != null)
+            {
+                templateManifest = manifest.GetTemplateManifest(settings.Template);
+            }
+            string editRole = manifest == null ? "" : manifest.EditRole;
+            bool listMode = templateManifest != null && templateManifest.IsListTemplate;
+            JArray json = new JArray();
+            try
+            {
+                if (listMode)
+                {
+                    var docs = LuceneController.Instance.Search(module.ModuleID, "Title",req.query, 10, 0);
+                    foreach (var item in docs.ids)
+                    {
+                        var content = GetContent(module.ModuleID, listMode, int.Parse(item));
+                        if (content != null)
+                        {
+                            json.Add( content.Json.ToJObject("GetContent " + item));
+                        }    
+                    }
+                }
+                else {
+                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "not supported because not in multi items template ");
+                }
+                return Request.CreateResponse(HttpStatusCode.OK, json);
+            }
+            catch (Exception exc)
+            {
+                Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
     }
 
     public class LookupRequestDTO
@@ -489,6 +535,11 @@ namespace Satrabel.OpenContent.Components
     {
         public string value { get; set; }
         public string text { get; set; }
+    }
+
+    public class ListDTO
+    {
+        public string query { get; set; }
     }
 }
 
