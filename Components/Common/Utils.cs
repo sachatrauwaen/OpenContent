@@ -40,6 +40,7 @@ namespace Satrabel.OpenContent.Components
             /// </summary>
             public static string StripTagsRegex(string source)
             {
+                if (string.IsNullOrEmpty(source)) return source;
                 return Regex.Replace(source, "<.*?>", string.Empty);
             }
 
@@ -47,12 +48,13 @@ namespace Satrabel.OpenContent.Components
             /// Compiled regular expression for performance.
             /// </summary>
             private static readonly Regex HtmlRegex = new Regex("<.*?>", RegexOptions.Compiled);
-
+            
             /// <summary>
             /// Remove HTML from string with compiled Regex.
             /// </summary>
             public static string StripTagsRegexCompiled(string source)
             {
+                if (string.IsNullOrEmpty(source)) return source;
                 return HtmlRegex.Replace(source, string.Empty);
             }
 
@@ -61,6 +63,7 @@ namespace Satrabel.OpenContent.Components
             /// </summary>
             public static string StripTagsCharArray(string source)
             {
+                if (string.IsNullOrEmpty(source)) return source;
                 char[] array = new char[source.Length];
                 int arrayIndex = 0;
                 bool inside = false;
