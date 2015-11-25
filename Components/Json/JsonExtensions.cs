@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Web;
+using Satrabel.OpenContent.Components.Uri;
 
 namespace Satrabel.OpenContent.Components.Json
 {

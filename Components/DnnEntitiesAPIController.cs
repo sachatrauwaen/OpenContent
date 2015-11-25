@@ -50,7 +50,7 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
-                var tabs = TabController.GetTabsBySortOrder(PortalSettings.PortalId).Where(t => t.ParentId != PortalSettings.AdminTabId).Where(t => t.TabName.ToLower().Contains(q.ToLower())).Select(t => new { name = t.TabName + " (" + t.TabPath.Replace("//", "/").Replace("/" + t.TabName + "/", "") + " " + l + ")", value = (new Uri(NavigateUrl(t, l, PortalSettings))).PathAndQuery });
+                var tabs = TabController.GetTabsBySortOrder(PortalSettings.PortalId).Where(t => t.ParentId != PortalSettings.AdminTabId).Where(t => t.TabName.ToLower().Contains(q.ToLower())).Select(t => new { name = t.TabName + " (" + t.TabPath.Replace("//", "/").Replace("/" + t.TabName + "/", "") + " " + l + ")", value = (new System.Uri(NavigateUrl(t, l, PortalSettings))).PathAndQuery });
                 return Request.CreateResponse(HttpStatusCode.OK, tabs);
             }
             catch (Exception exc)
@@ -179,7 +179,7 @@ namespace Satrabel.OpenContent.Components
                 {
                     tabs = tabs.Where(t => t.TabName.ToLower().Contains(q.ToLower()));
                 }
-                var tabsDtos = tabs.Select(t => new { value = t.TabID.ToString(), text = t.TabName + " (" + t.TabPath.Replace("//", "/").Replace("/" + t.TabName + "/", "") + " " + l + ")", url = (new Uri(NavigateUrl(t, l, PortalSettings))).PathAndQuery });
+                var tabsDtos = tabs.Select(t => new { value = t.TabID.ToString(), text = t.TabName + " (" + t.TabPath.Replace("//", "/").Replace("/" + t.TabName + "/", "") + " " + l + ")", url = (new System.Uri(NavigateUrl(t, l, PortalSettings))).PathAndQuery });
                 return Request.CreateResponse(HttpStatusCode.OK, tabsDtos);
             }
             catch (Exception exc)
