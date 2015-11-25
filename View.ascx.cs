@@ -124,11 +124,13 @@ namespace Satrabel.OpenContent
             if (demoExist)
             {
                 TemplateManifest manifest = OpenContentUtils.GetTemplateManifest(_info.Template);
+                TemplateFiles files = null;
                 if (manifest != null && manifest.Main != null)
                 {
                     _info.Template = new FileUri(_info.Template.UrlFolder, manifest.Main.Template);
+                    files = manifest.Main;
                 }
-                _info.OutputString = GenerateOutput(_info.Template, _info.DataJson, _info.SettingsJson, null);
+                _info.OutputString = GenerateOutput(_info.Template, _info.DataJson, _info.SettingsJson, files);
             }
         }
 
@@ -501,7 +503,7 @@ namespace Satrabel.OpenContent
                             dyn.Context.Id = item.ContentId;
                             dyn.Context.EditUrl = ModuleContext.EditUrl("id", item.ContentId.ToString());
                             dyn.Context.IsEditable = ModuleContext.IsEditable ||
-                                (! string.IsNullOrEmpty(editRole) &&
+                                (!string.IsNullOrEmpty(editRole) &&
                                 OpenContentUtils.HasEditPermissions(ModuleContext.PortalSettings, _info.Module, editRole, item.CreatedByUserId));
                             dyn.Context.DetailUrl = Globals.NavigateURL(ModuleContext.TabId, false, ModuleContext.PortalSettings, "", DnnUtils.GetCurrentCultureCode(), /*OpenContentUtils.CleanupUrl(dyn.Title)*/"", "id=" + item.ContentId.ToString());
                             dyn.Context.MainUrl = Globals.NavigateURL(ModuleContext.TabId, false, ModuleContext.PortalSettings, "", DnnUtils.GetCurrentCultureCode(), /*OpenContentUtils.CleanupUrl(dyn.Title)*/"");
