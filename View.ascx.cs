@@ -836,10 +836,6 @@ namespace Satrabel.OpenContent
                 Manifest manifest;
                 FileUri template = OpenContentUtils.GetTemplate(ModuleContext.Settings, out manifest, out templateManifest);
                 bool templateDefined = template != null;
-                if (templateDefined)
-                {
-                    templateManifest = OpenContentUtils.GetTemplateManifest(template);
-                }
 
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 if (Page.Request.QueryString["id"] != null)
