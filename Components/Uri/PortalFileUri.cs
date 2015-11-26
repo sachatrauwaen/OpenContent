@@ -1,12 +1,11 @@
 ﻿using System;
-using System.ComponentModel;
 using DotNetNuke.Entities.Content.Common;
 using DotNetNuke.Entities.Modules.Definitions;
 using DotNetNuke.Services.FileSystem;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Json;
 
-namespace Satrabel.OpenContent.Components.Uri
+namespace Satrabel.OpenContent.Components
 {
     public class PortalFileUri : FileUri
     {

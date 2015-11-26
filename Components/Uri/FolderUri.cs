@@ -3,7 +3,7 @@ using System.IO;
 using System.Web.Hosting;
 using DotNetNuke.Services.FileSystem;
 
-namespace Satrabel.OpenContent.Components.Uri
+namespace Satrabel.OpenContent.Components
 {
     public class FolderUri
     {

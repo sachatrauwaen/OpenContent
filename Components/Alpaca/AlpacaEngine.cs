@@ -15,7 +15,7 @@ using DotNetNuke.Framework.JavaScriptLibraries;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Json;
 using System.Web.UI.HtmlControls;
-using Satrabel.OpenContent.Components.Uri;
+
 
 namespace Satrabel.OpenContent.Components.Alpaca
 {

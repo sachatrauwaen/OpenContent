@@ -4,7 +4,7 @@ using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Services.FileSystem;
 using DotNetNuke.UI.Modules;
-using Satrabel.OpenContent.Components.Uri;
+
 
 namespace Satrabel.OpenContent.Components.TemplateHelpers
 {

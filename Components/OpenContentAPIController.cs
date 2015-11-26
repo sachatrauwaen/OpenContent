@@ -27,7 +27,7 @@ using DotNetNuke.Entities.Tabs;
 using DotNetNuke.Common;
 using DotNetNuke.Services.FileSystem;
 using System.Collections.Generic;
-using Satrabel.OpenContent.Components.Uri;
+
 
 #endregion
 

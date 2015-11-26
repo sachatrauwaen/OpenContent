@@ -7,7 +7,7 @@ using System.Web.UI;
 using System.Web.WebPages;
 using DotNetNuke.Web.Client;
 using DotNetNuke.Web.Client.ClientResourceManagement;
-using Satrabel.OpenContent.Components.Uri;
+
 
 namespace Satrabel.OpenContent.Components
 {

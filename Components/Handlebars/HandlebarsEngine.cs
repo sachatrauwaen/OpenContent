@@ -9,7 +9,7 @@ using System.Web.UI;
 using HandlebarsDotNet;
 using DotNetNuke.UI.Modules;
 using System.Globalization;
-using Satrabel.OpenContent.Components.Uri;
+
 
 namespace Satrabel.OpenContent.Components.Handlebars
 {
