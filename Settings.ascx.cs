@@ -11,16 +11,12 @@
 
 using System;
 using DotNetNuke.Entities.Modules;
-using DotNetNuke.Services.Exceptions;
-using System.IO;
-using System.Web.UI.WebControls;
 using DotNetNuke.Framework;
-using DotNetNuke.Framework.JavaScriptLibraries;
 using Satrabel.OpenContent.Components;
 
 #endregion
 
-namespace Satrabel.Struct
+namespace Satrabel.OpenContent
 {
     public partial class Settings : ModuleSettingsBase
     {
@@ -34,7 +30,7 @@ namespace Satrabel.Struct
         }
         public override void LoadSettings()
         {
-            var template = OpenContentUtils.GetTemplate(Settings);
+            FileUri template = new OpenContentSettings(Settings).Template.Uri;
             scriptList.Items.AddRange(OpenContentUtils.GetTemplatesFiles(PortalSettings, ModuleId, template, "OpenContent").ToArray());
             base.LoadSettings();
         }

@@ -85,14 +85,12 @@ namespace Satrabel.OpenContent
             {
                 case cData:
                     OpenContentController ctrl = new OpenContentController();
-                    Manifest manifest = null;
                     TemplateManifest template = null;
                     OpenContentSettings settings = new OpenContentSettings(Settings);
 
                     if (settings.TemplateAvailable)
                     {
-                        OpenContentUtils.GetTemplate(settings, out manifest, out template);
-                        //template = OpenContentUtils.GetTemplateManifest(settings.Template);
+                        template = settings.Template;
                     }
                     if (template != null && template.IsListTemplate)
                     {
@@ -163,8 +161,7 @@ namespace Satrabel.OpenContent
             OpenContentSettings settings = new OpenContentSettings(Settings);
             if (settings.TemplateAvailable)
             {
-                Manifest manifest = null;
-                OpenContentUtils.GetTemplate(settings, out manifest, out template);
+                template = settings.Template;
             }
             if (template != null && template.IsListTemplate)
             {

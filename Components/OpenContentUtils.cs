@@ -47,109 +47,76 @@ namespace Satrabel.OpenContent.Components
         }
 
 
-        public static FileUri GetTemplateOld(Hashtable moduleSettings)
-        {
-            var template = moduleSettings["template"] as string;
-            if (!string.IsNullOrEmpty(template))
-            {
-                return new FileUri(template);
-            }
-            return null;
-        }
+        //public static FileUri GetTemplateOld(Hashtable moduleSettings)
+        //{
+        //    var template = moduleSettings["template"] as string;
+        //    if (!string.IsNullOrEmpty(template))
+        //    {
+        //        return new FileUri(template);
+        //    }
+        //    return null;
+        //}
 
 
-        public static FileUri GetTemplate(Hashtable moduleSettings)
-        {
-            OpenContentSettings settings = new OpenContentSettings(moduleSettings);
-            Manifest deepManifest;
-            TemplateManifest deepTemplateManifest;
-            var retval = GetTemplate(settings, out deepManifest, out deepTemplateManifest);
-            return retval;
-        }
+        //public static FileUri GetTemplate(Hashtable moduleSettings)
+        //{
+        //    OpenContentSettings settings = new OpenContentSettings(moduleSettings);
+        //    Manifest deepManifest;
+        //    TemplateManifest deepTemplateManifest;
+        //    var retval = GetTemplate(settings, out deepManifest, out deepTemplateManifest);
+        //    return retval;
+        //}
 
-        public static FileUri GetTemplate(Hashtable moduleSettings, out Manifest manifest, out TemplateManifest templateManifest)
-        {
-            OpenContentSettings settings = new OpenContentSettings(moduleSettings);
-            Manifest deepManifest;
-            TemplateManifest deepTemplateManifest;
-            var retval = GetTemplate(settings, out deepManifest, out deepTemplateManifest);
-            manifest = deepManifest;
-            templateManifest = deepTemplateManifest;
-            return retval;
-        }
+        //public static FileUri GetTemplate(Hashtable moduleSettings, out Manifest manifest, out TemplateManifest templateManifest)
+        //{
+        //    OpenContentSettings settings = new OpenContentSettings(moduleSettings);
+        //    Manifest deepManifest;
+        //    TemplateManifest deepTemplateManifest;
+        //    var retval = GetTemplate(settings, out deepManifest, out deepTemplateManifest);
+        //    manifest = deepManifest;
+        //    templateManifest = deepTemplateManifest;
+        //    return retval;
+        //}
 
-        public static FileUri GetTemplate(OpenContentSettings settings, out Manifest manifest, out TemplateManifest templateManifest)
-        {
-            FileUri templateUri = null;
-            manifest = null;
-            templateManifest = null;
-            if (!settings.TemplateAvailable) return null;
 
-            manifest = GetManifest(settings.TemplateDir);
-            if (manifest != null && manifest.HasTemplates)
-            {
-                //get the requested template key
-                templateManifest = manifest.GetTemplateManifest(settings.TemplateKey);
-                if (templateManifest == null)
-                    return null; //we don't seem to find the previously defined template anymore
-                templateUri = new FileUri(settings.TemplateDir, templateManifest.Main.Template); //always main?
-                return templateUri;
-            }
-            return settings.Template;
-        }
 
-        public static Manifest GetManifest(FolderUri folder)
-        {
-            try
-            {
-                Manifest manifest = null;
-                var file = new FileUri(folder.UrlFolder, "manifest.json");
-                if (file.FileExists)
-                {
-                    string content = File.ReadAllText(file.PhysicalFilePath);
-                    manifest = JsonConvert.DeserializeObject<Manifest>(content);
-                }
-                return manifest;
-            }
-            catch (Exception ex)
-            {
-                //we should log this
-                if (Debugger.IsAttached) Debugger.Break();
-                return null;
-            }
-        }
+     
 
-        public static TemplateManifest GetTemplateManifest(FileUri template)  //todo - dit bestaat ook als methode van een classe
-        {
-            if (template == null)
-            {
-                throw new ArgumentNullException("template is null");
-            }
-            TemplateManifest templateManifest = null;
-            Manifest manifest = GetManifest(template);
-            if (manifest != null)
-            {
-                templateManifest = manifest.GetTemplateManifest(template);
-            }
-            return templateManifest;
-        }
 
         public static List<System.Web.UI.WebControls.ListItem> GetTemplates(PortalSettings portalSettings, int moduleId, string selectedTemplate, string moduleSubDir)
         {
             return GetTemplates(portalSettings, moduleId, new FileUri(selectedTemplate), moduleSubDir);
         }
 
-        public static List<System.Web.UI.WebControls.ListItem> GetTemplatesFiles(PortalSettings portalSettings, int moduleId, string selectedTemplate, string moduleSubDir)
+        /// <summary>
+        /// Gets the templates files.
+        /// </summary>
+        /// <param name="portalSettings">The portal settings.</param>
+        /// <param name="moduleId">The module identifier.</param>
+        /// <param name="selectedTemplate">The selected template.</param>
+        /// <param name="moduleSubDir">The module sub dir.</param>
+        /// <returns></returns>
+        /// <remarks>Used by OpenForms</remarks>
+        [Obso lete("This method is obsolete; use GetTemplatesFiles(PortalSettings portalSettings, int moduleId, FileUri selectedTemplate, string moduleSubDir) instead")]
+        public static List<ListItem> GetTemplatesFiles(PortalSettings portalSettings, int moduleId, string selectedTemplate, string moduleSubDir)
         {
             return GetTemplatesFiles(portalSettings, moduleId, new FileUri(selectedTemplate), moduleSubDir);
         }
 
+        /// <summary>
+        /// Gets the templates files.
+        /// </summary>
+        /// <param name="portalSettings">The portal settings.</param>
+        /// <param name="moduleId">The module identifier.</param>
+        /// <param name="selectedTemplate">The selected template.</param>
+        /// <param name="moduleSubDir">The module sub dir.</param>
+        /// <returns></returns>
         public static List<ListItem> GetTemplatesFiles(PortalSettings portalSettings, int moduleId, FileUri selectedTemplate, string moduleSubDir)
         {
             return GetTemplatesFiles(portalSettings, moduleId, selectedTemplate, moduleSubDir, null);
         }
 
-        public static List<ListItem> GetTemplatesFiles(PortalSettings portalSettings, int moduleId, FileUri selectedTemplate, string moduleSubDir, FileUri otherModuleTemplate)
+        public static List<ListItem> GetTemplatesFiles(PortalSettings portalSettings, int moduleId, TemplateManifest selectedTemplate, string moduleSubDir, TemplateManifest otherModuleTemplate)
         {
             string basePath = HostingEnvironment.MapPath(GetSiteTemplateFolder(portalSettings, moduleSubDir));
             if (!Directory.Exists(basePath))
@@ -159,7 +126,7 @@ namespace Satrabel.OpenContent.Components
             var dirs = Directory.GetDirectories(basePath);
             if (otherModuleTemplate != null)
             {
-                var selDir = otherModuleTemplate.PhysicalFullDirectory;
+                var selDir = otherModuleTemplate.Uri.PhysicalFullDirectory;
                 dirs = new string[] { selDir };
             }
 
@@ -185,7 +152,7 @@ namespace Satrabel.OpenContent.Components
                 }
                 IEnumerable<string> files = null;
                 string templateVirtualFolder = FolderUri.ReverseMapPath(dir);
-                var manifest = GetManifest(new FolderUri(templateVirtualFolder));
+                var manifest = ManifestFactory.GetManifest(new FolderUri(templateVirtualFolder));
                 if (manifest != null && manifest.HasTemplates)
                 {
                     files = manifest.Templates.Select(t => t.Key);
@@ -198,7 +165,7 @@ namespace Satrabel.OpenContent.Components
                             templateName = templateName + " - " + template.Value.Title;
                         }
                         var item = new ListItem(templateCat + " : " + templateName, templateUri.FilePath);
-                        if (selectedTemplate != null && templateUri.FilePath.ToLowerInvariant() == selectedTemplate.FilePath.ToLowerInvariant())
+                        if (selectedTemplate != null && templateUri.FilePath.ToLowerInvariant() == selectedTemplate.Uri.FilePath.ToLowerInvariant())
                         {
                             item.Selected = true;
                         }
@@ -227,7 +194,7 @@ namespace Satrabel.OpenContent.Components
                             scriptName = scriptName.Replace("\\", " - ");
 
                         var item = new ListItem(templateCat + " : " + scriptName, templateUri.FilePath);
-                        if (selectedTemplate != null && templateUri.FilePath.ToLowerInvariant() == selectedTemplate.FilePath.ToLowerInvariant())
+                        if (selectedTemplate != null && templateUri.FilePath.ToLowerInvariant() == selectedTemplate.Uri.FilePath.ToLowerInvariant())
                         {
                             item.Selected = true;
                         }
@@ -256,7 +223,7 @@ namespace Satrabel.OpenContent.Components
 
                         string scriptPath = FileUri.ReverseMapPath(script);
                         var item = new ListItem(TemplateCat + " : " + scriptName, scriptPath);
-                        if (selectedTemplate != null && scriptPath.ToLowerInvariant() == selectedTemplate.FilePath.ToLowerInvariant())
+                        if (selectedTemplate != null && scriptPath.ToLowerInvariant() == selectedTemplate.Uri.FilePath.ToLowerInvariant())
                         {
                             item.Selected = true;
                         }
@@ -402,21 +369,21 @@ namespace Satrabel.OpenContent.Components
             return "";
         }
 
-        public static string GetDefaultTemplate(string PhysicalFolder)
+        public static string GetDefaultTemplate(string physicalFolder)
         {
             string Template = "";
-            FolderUri folder = new FolderUri(FolderUri.ReverseMapPath(PhysicalFolder));
-            var manifest = GetManifest(folder);
+            FolderUri folder = new FolderUri(FolderUri.ReverseMapPath(physicalFolder));
+            var manifest = ManifestFactory.GetManifest(folder);
             if (manifest != null && manifest.HasTemplates)
             {
                 //get the requested template key
                 //var templateManifest = manifest.Templates.First().Value;
                 //var templateUri = new FileUri(folder, templateManifest.Main.Template);
-                Template = folder.Path+"/"+manifest.Templates.First().Key;
+                Template = folder.Path + "/" + manifest.Templates.First().Key;
             }
             else
             {
-                foreach (var item in Directory.GetFiles(PhysicalFolder))
+                foreach (var item in Directory.GetFiles(physicalFolder))
                 {
                     string FileName = Path.GetFileName(item).ToLower();
                     if (FileName == "template.hbs")
@@ -525,77 +492,4 @@ namespace Satrabel.OpenContent.Components
         }
 
     }
-    public class TemplateManifest
-    {
-        [JsonProperty(PropertyName = "type")]
-        public string Type { get; set; }
-        [JsonProperty(PropertyName = "title")]
-        public string Title { get; set; }
-        [JsonProperty(PropertyName = "main")]
-        public TemplateFiles Main { get; set; }
-        [JsonProperty(PropertyName = "detail")]
-        public TemplateFiles Detail { get; set; }
-
-        public bool IsListTemplate
-        {
-            get
-            {
-                return Type == "multiple";
-            }
-        }
-
-    }
-    public class PartialTemplate
-    {
-        [JsonProperty(PropertyName = "template")]
-        public string Template { get; set; }
-    }
-    public class TemplateFiles
-    {
-        [JsonProperty(PropertyName = "template")]
-        public string Template { get; set; }
-
-        [JsonProperty(PropertyName = "partialTemplates")]
-        public Dictionary<string, PartialTemplate> PartialTemplates { get; set; }
-
-        [JsonProperty(PropertyName = "schemaInTemplate")]
-        public bool SchemaInTemplate { get; set; }
-
-        [JsonProperty(PropertyName = "optionsInTemplate")]
-        public bool OptionsInTemplate { get; set; }
-    }
-
-    public class Manifest
-    {
-        [JsonProperty(PropertyName = "developmentPath")]
-        public bool DevelopmentPath { get; set; }
-        [JsonProperty(PropertyName = "editWitoutPostback")]
-        public bool EditWitoutPostback { get; set; }
-        [JsonProperty(PropertyName = "templates")]
-        public Dictionary<string, TemplateManifest> Templates { get; set; }
-        [JsonProperty(PropertyName = "additionalEditControl")]
-        public string AdditionalEditControl { get; set; }
-        [JsonProperty(PropertyName = "editRole")]
-        public string EditRole { get; set; }
-
-        public bool HasTemplates { get { return (Templates != null); } }
-
-        public TemplateManifest GetTemplateManifest(FileUri template)
-        {
-            if (Templates != null && Templates.ContainsKey(template.FileNameWithoutExtension))
-            {
-                return Templates[template.FileNameWithoutExtension];
-            }
-            return null;
-        }
-        public TemplateManifest GetTemplateManifest(string templateKey)
-        {
-            if (Templates != null && Templates.ContainsKey(templateKey))
-            {
-                return Templates[templateKey];
-            }
-            return null;
-        }
-    }
-
 }

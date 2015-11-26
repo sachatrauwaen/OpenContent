@@ -1,0 +1,14 @@
+﻿{
+    "editWitoutPostback": false,
+    "templates": {
+        "{{templatekey}}": {
+            "type": "single", /* single or multiple*/
+            "title": "{{templatekey}}",
+            "main": {
+                "template": "{{templatekey}}.{{templateextention}}",
+                "schemaInTemplate": true,
+                "optionsInTemplate": true
+            }
+        }
+    }
+}

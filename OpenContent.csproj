@@ -129,6 +129,12 @@
     <Compile Include="Components\FeatureController.cs" />
     <Compile Include="Components\FilesStatus.cs" />
     <Compile Include="Components\FileUploadController.cs" />
+    <Compile Include="Components\Manifest\Manifest.cs" />
+    <Compile Include="Components\Manifest\ManifestFactory.cs" />
+    <Compile Include="Components\Manifest\TemplateKey.cs" />
+    <Compile Include="Components\Manifest\TemplateManifest.cs" />
+    <Compile Include="Components\Manifest\PartialTemplate.cs" />
+    <Compile Include="Components\Manifest\TemplateFiles.cs" />
     <Compile Include="Components\Uri\PortalFileUri.cs" />
     <Compile Include="Components\Uri\FolderUri.cs" />
     <Compile Include="Components\Uri\FileUri.cs" />
@@ -155,7 +161,7 @@
     <Compile Include="Components\Rss\FeedParser.cs" />
     <Compile Include="Components\Rss\FeedItem.cs" />
     <Compile Include="Components\TemplateHelpers\MetaTags.cs" />
-    <Compile Include="Components\TemplateInfo.cs" />
+    <Compile Include="Components\Manifest\TemplateInfo.cs" />
     <Compile Include="Components\Common\Utils.cs" />
     <Compile Include="EditGlobalSettings.ascx.cs">
       <DependentUpon>EditGlobalSettings.ascx</DependentUpon>
@@ -654,6 +660,7 @@
     <Content Include="web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Templates\default-manifest.json" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
