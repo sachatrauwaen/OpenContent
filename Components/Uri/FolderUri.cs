@@ -1,8 +1,6 @@
 ﻿using System;
 using System.IO;
-using System.Web;
 using System.Web.Hosting;
-using DotNetNuke.Entities.Portals;
 using DotNetNuke.Services.FileSystem;
 
 namespace Satrabel.OpenContent.Components
@@ -120,7 +118,7 @@ namespace Satrabel.OpenContent.Components
 
         #region Private Methods
 
-        private string NormalizePath(string filePath)
+        protected static string NormalizePath(string filePath)
         {
             filePath = filePath.Replace("\\", "/");
             filePath = filePath.Trim('~');

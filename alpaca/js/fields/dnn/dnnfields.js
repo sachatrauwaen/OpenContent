@@ -1619,11 +1619,11 @@
                         }
                     }
                     setTimeout(function () {
-                        $(cropButton).css('cursor', 'initial');
+                        $(cropButton).css('cursor', 'default');
                     }, 500);
                 }).fail(function (xhr, result, status) {
                     alert("Uh-oh, something broke: " + status);
-                    $(parentel).css('cursor', 'initial');
+                    $(parentel).css('cursor', 'default');
                 });
                 return false;
             });
@@ -3491,7 +3491,7 @@
                         if (!state.id) { return state.text; }
                         
                         var $state = $(
-                          '<span><img src="' + self.dataSource[state.id].url + '" style="height: 30px;width: 36px;"  /> ' + state.text + '</span>'
+                          '<span><img src="' + self.dataSource[state.id].url + '" style="height: 45px;width: 54px;"  /> ' + state.text + '</span>'
                         );
                         return $state;
                     };

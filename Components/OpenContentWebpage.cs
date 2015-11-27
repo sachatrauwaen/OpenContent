@@ -8,6 +8,7 @@ using System.Web.WebPages;
 using DotNetNuke.Web.Client;
 using DotNetNuke.Web.Client.ClientResourceManagement;
 
+
 namespace Satrabel.OpenContent.Components
 {
     public abstract class OpenContentWebPage<TModel> : DotNetNuke.Web.Razor.DotNetNukeWebPage<TModel>

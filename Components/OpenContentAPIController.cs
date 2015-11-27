@@ -29,6 +29,7 @@ using DotNetNuke.Services.FileSystem;
 using System.Collections.Generic;
 using Satrabel.OpenContent.Components.Lucene;
 
+
 #endregion
 
 namespace Satrabel.OpenContent.Components

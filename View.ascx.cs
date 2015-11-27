@@ -50,6 +50,7 @@ using DotNetNuke.Entities.Users;
 using DotNetNuke.Instrumentation;
 using DotNetNuke.Services.Installer.Log;
 
+
 #endregion
 
 namespace Satrabel.OpenContent
@@ -129,11 +130,13 @@ namespace Satrabel.OpenContent
             if (demoExist)
             {
                 TemplateManifest manifest = OpenContentUtils.GetTemplateManifest(_info.Template);
+                TemplateFiles files = null;
                 if (manifest != null && manifest.Main != null)
                 {
                     _info.Template = new FileUri(_info.Template.UrlFolder, manifest.Main.Template);
+                    files = manifest.Main;
                 }
-                _info.OutputString = GenerateOutput(_info.Template, _info.DataJson, _info.SettingsJson, null);
+                _info.OutputString = GenerateOutput(_info.Template, _info.DataJson, _info.SettingsJson, files);
             }
         }
 
@@ -178,6 +181,12 @@ namespace Satrabel.OpenContent
             }
         }
 
+        private static bool SettingsNeeded(FileUri template)
+        {
+            var schemaFileUri = new FileUri(template.Path + "schema.json");
+            return schemaFileUri.FileExists;
+        }
+
         private void RenderOtherModuleDemoData()
         {
 
@@ -192,7 +201,7 @@ namespace Satrabel.OpenContent
                     {
                         // for list templates a main template need to be defined
                         GetDataList(_info, _settings);
-                        if (_info.DataExist)
+                        if (_info.DataExist && !(SettingsNeeded(_info.Template) && _info.SettingsJson == null))
                         {
                             _info.OutputString = GenerateListOutput(_info.Template.UrlFolder, TemplateManifest.Main, _info.DataList, _info.SettingsJson);
                         }
@@ -506,7 +515,7 @@ namespace Satrabel.OpenContent
                             dyn.Context.Id = item.ContentId;
                             dyn.Context.EditUrl = ModuleContext.EditUrl("id", item.ContentId.ToString());
                             dyn.Context.IsEditable = ModuleContext.IsEditable ||
-                                (! string.IsNullOrEmpty(editRole) &&
+                                (!string.IsNullOrEmpty(editRole) &&
                                 OpenContentUtils.HasEditPermissions(ModuleContext.PortalSettings, _info.Module, editRole, item.CreatedByUserId));
                             dyn.Context.DetailUrl = Globals.NavigateURL(ModuleContext.TabId, false, ModuleContext.PortalSettings, "", DnnUtils.GetCurrentCultureCode(), /*OpenContentUtils.CleanupUrl(dyn.Title)*/"", "id=" + item.ContentId.ToString());
                             dyn.Context.MainUrl = Globals.NavigateURL(ModuleContext.TabId, false, ModuleContext.PortalSettings, "", DnnUtils.GetCurrentCultureCode(), /*OpenContentUtils.CleanupUrl(dyn.Title)*/"");
@@ -585,6 +594,7 @@ namespace Satrabel.OpenContent
             // context
             model.Context = new ExpandoObject();
             model.Context.ModuleId = ModuleContext.ModuleId;
+            model.Context.ModuleTitle = ModuleContext.Configuration.ModuleTitle;
             model.Context.AddUrl = ModuleContext.EditUrl();
             model.Context.IsEditable = ModuleContext.IsEditable ||
                                       (!string.IsNullOrEmpty(editRole) &&
@@ -839,10 +849,6 @@ namespace Satrabel.OpenContent
                 Manifest manifest;
                 FileUri template = OpenContentUtils.GetTemplate(ModuleContext.Settings, out manifest, out templateManifest);
                 bool templateDefined = template != null;
-                if (templateDefined)
-                {
-                    templateManifest = OpenContentUtils.GetTemplateManifest(template);
-                }
 
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 if (Page.Request.QueryString["id"] != null)
@@ -901,7 +907,7 @@ namespace Satrabel.OpenContent
                                SecurityAccessLevel.Host,
                                true,
                                false);
-                if (templateDefined /*&& !listMode*/)
+                if (templateDefined || manifest != null)
                     Actions.Add(ModuleContext.GetNextActionID(),
                                Localization.GetString("EditData.Action", LocalResourceFile),
                                ModuleActionType.EditContent,

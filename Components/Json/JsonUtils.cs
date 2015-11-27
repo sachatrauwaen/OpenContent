@@ -1,10 +1,17 @@
 ﻿using System.Linq;
 using Newtonsoft.Json.Linq;
 
+
 namespace Satrabel.OpenContent.Components.Json
 {
-    public class JsonUtils
+    public static class JsonUtils
     {
+        public static bool IsJson(this string jsonData)
+        {
+            if (string.IsNullOrWhiteSpace(jsonData)) return false;
+            return jsonData.Trim().Substring(0, 1).IndexOfAny(new[] { '[', '{' }) == 0;
+        }
+
         public static JObject LoadJsonFromFile(string filename)
         {
             return new FileUri(filename).ToJObject();
@@ -15,6 +22,7 @@ namespace Satrabel.OpenContent.Components.Json
             var dynamicObject = System.Web.Helpers.Json.Decode(json);
             return dynamicObject;
         }
+
         public static string SimplifyJson(string json, string culture)
         {
             JObject obj = JObject.Parse(json);

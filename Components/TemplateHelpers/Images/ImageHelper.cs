@@ -8,6 +8,7 @@ using DotNetNuke.Entities.Content.Common;
 using DotNetNuke.Entities.Modules.Definitions;
 using DotNetNuke.Services.FileSystem;
 using Newtonsoft.Json.Linq;
+using Satrabel.OpenContent.Components;
 
 namespace Satrabel.OpenContent.Components.TemplateHelpers
 {
@@ -35,6 +36,19 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         }
 
 
+
+        /// <summary>
+        /// Gets an optimial image for facebook.
+        /// Based on the Facebook best practices https://developers.facebook.com/docs/sharing/best-practices#images
+        /// Prefereably 1200 x 630 or larger, minimal 600 x 315 and not smaller then 200 x 200
+        /// </summary>
+        /// <returns></returns>
+        public static string GetFacebookImageUrl(IFileInfo file)
+        {
+            var ratio = new Ratio("120x63");
+            ratio.SetWidth(1200);
+            return GetImageUrl(file, ratio);
+        }
 
         public static string GetImageUrl(IFileInfo file, Ratio ratio)
         {
@@ -76,12 +90,12 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         }
 
 
-        public static Image Resize(Image image, int scaledWidth, int scaledHeight)
+        internal static Image Resize(Image image, int scaledWidth, int scaledHeight)
         {
             return new Bitmap(image, scaledWidth, scaledHeight);
         }
 
-        public static Image Crop(Image image, int x, int y, int width, int height)
+        internal static Image Crop(Image image, int x, int y, int width, int height)
         {
             var croppedBitmap = new Bitmap(width, height);
 
@@ -112,7 +126,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             return targetImage;
         }
          */
-        public static Image SaveCroppedImage(Image image, int targetWidth, int targetHeight, out int left, out int top, out int srcWidth, out int srcHeight)
+        internal static Image SaveCroppedImage(Image image, int targetWidth, int targetHeight, out int left, out int top, out int srcWidth, out int srcHeight)
         {
             ImageCodecInfo jpgInfo = ImageCodecInfo.GetImageEncoders().Where(codecInfo => codecInfo.MimeType == "image/jpeg").First();
             Image finalImage = image;

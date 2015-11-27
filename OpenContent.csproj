@@ -141,8 +141,9 @@
     <Compile Include="Components\FeatureController.cs" />
     <Compile Include="Components\FilesStatus.cs" />
     <Compile Include="Components\FileUploadController.cs" />
-    <Compile Include="Components\FolderUri.cs" />
-    <Compile Include="Components\FileUri.cs" />
+    <Compile Include="Components\Uri\PortalFileUri.cs" />
+    <Compile Include="Components\Uri\FolderUri.cs" />
+    <Compile Include="Components\Uri\FileUri.cs" />
     <Compile Include="Components\Handlebars\HandlebarsEngine.cs" />
     <Compile Include="Components\JPList\FilterDTO.cs" />
     <Compile Include="Components\JPList\JplistAPIController.cs" />
@@ -180,6 +181,7 @@
     <Compile Include="Components\TemplateHelpers\Normalizers.cs" />
     <Compile Include="Components\Rss\FeedParser.cs" />
     <Compile Include="Components\Rss\FeedItem.cs" />
+    <Compile Include="Components\TemplateHelpers\MetaTags.cs" />
     <Compile Include="Components\TemplateInfo.cs" />
     <Compile Include="Components\Common\Utils.cs" />
     <Compile Include="EditGlobalSettings.ascx.cs">

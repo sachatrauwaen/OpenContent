@@ -10,6 +10,7 @@ using HandlebarsDotNet;
 using DotNetNuke.UI.Modules;
 using System.Globalization;
 
+
 namespace Satrabel.OpenContent.Components.Handlebars
 {
     public class HandlebarsEngine

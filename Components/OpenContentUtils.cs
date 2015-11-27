@@ -22,6 +22,7 @@ using DotNetNuke.UI.Modules;
 using DotNetNuke.Security.Permissions;
 using DotNetNuke.Security;
 
+
 namespace Satrabel.OpenContent.Components
 {
     public static class OpenContentUtils
@@ -89,6 +90,8 @@ namespace Satrabel.OpenContent.Components
             {
                 //get the requested template key
                 templateManifest = manifest.GetTemplateManifest(settings.TemplateKey);
+                if (templateManifest == null)
+                    return null; //we don't seem to find the previously defined template anymore
                 templateUri = new FileUri(settings.TemplateDir, templateManifest.Main.Template); //always main?
                 return templateUri;
             }
