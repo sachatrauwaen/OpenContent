@@ -175,6 +175,12 @@ namespace Satrabel.OpenContent
             }
         }
 
+        private static bool SettingsNeeded(FileUri template)
+        {
+            var schemaFileUri = new FileUri(template.Path + "schema.json");
+            return schemaFileUri.FileExists;
+        }
+
         private void RenderOtherModuleDemoData()
         {
 
@@ -189,7 +195,7 @@ namespace Satrabel.OpenContent
                     {
                         // for list templates a main template need to be defined
                         GetDataList(_info, _settings);
-                        if (_info.DataExist)
+                        if (_info.DataExist && !(SettingsNeeded(_info.Template) && _info.SettingsJson == null))
                         {
                             _info.OutputString = GenerateListOutput(_info.Template.UrlFolder, TemplateManifest.Main, _info.DataList, _info.SettingsJson);
                         }
@@ -894,7 +900,7 @@ namespace Satrabel.OpenContent
                                SecurityAccessLevel.Host,
                                true,
                                false);
-                if (templateDefined || manifest!=null)
+                if (templateDefined || manifest != null)
                     Actions.Add(ModuleContext.GetNextActionID(),
                                Localization.GetString("EditData.Action", LocalResourceFile),
                                ModuleActionType.EditContent,
