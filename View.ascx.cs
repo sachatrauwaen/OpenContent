@@ -115,6 +115,12 @@ namespace Satrabel.OpenContent
                 }
                 IncludeResourses(_info.Template);
                 //if (DemoData) pDemo.Visible = true;
+                if (_info.TemplateManifest != null && _info.TemplateManifest.IsListTemplate)
+                {
+                    DotNetNuke.Framework.ServicesFramework.Instance.RequestAjaxScriptSupport();
+                    DotNetNuke.Framework.ServicesFramework.Instance.RequestAjaxAntiForgerySupport();
+                }
+
             }
         }
 
@@ -392,8 +398,8 @@ namespace Satrabel.OpenContent
                     }
                 }
             }
-
             _settings = new OpenContentSettings(modSettings);
+            
         }
         private string GenerateOutput(FileUri template, string dataJson, string settingsJson, TemplateFiles files)
         {
@@ -1049,6 +1055,8 @@ namespace Satrabel.OpenContent
                     ClientResourceManager.RegisterScript(Page, Page.ResolveUrl(jsfilename.UrlFilePath), FileOrder.Js.DefaultPriority);
                 }
                 ClientResourceManager.RegisterScript(Page, Page.ResolveUrl("~/DesktopModules/OpenContent/js/opencontent.js"), FileOrder.Js.DefaultPriority);
+
+
             }
         }
 

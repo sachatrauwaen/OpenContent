@@ -19,7 +19,8 @@ using DotNetNuke.Entities.Controllers;
 using DotNetNuke.Entities.Portals;
 using System.Web.UI.WebControls;
 using DotNetNuke.Security.Roles;
-
+using Satrabel.OpenContent.Components.Lucene;
+using Satrabel.OpenContent.Components.Lucene.Net.Mapping;
 
 #endregion
 
@@ -76,5 +77,19 @@ namespace Satrabel.OpenContent
 		{
 		}
 		#endregion
+
+        protected void bIndex_Click(object sender, EventArgs e)
+        {
+            //LuceneController lc = LuceneController.Instance;
+            LuceneController.Instance.DeleteAll();
+            OpenContentController occ = new OpenContentController();
+            foreach (var item in occ.GetContents(ModuleId))
+            {
+                LuceneController.Instance.Add(JsonMappingUtils.JsonToDocument(ModuleId.ToString(), item.ContentId.ToString(), item.Json, true));
+            }
+            LuceneController.Instance.Commit();
+            //lc.OptimizeSearchIndex(true);
+            LuceneController.ClearInstance();
+        }
 	}
 }

@@ -39,6 +39,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterEqualHelper(hbs);
             RegisterFormatNumberHelper(hbs);
             RegisterScriptHelper(hbs);
+            RegisterHandlebarsHelper(hbs);
             RegisterRegisterStylesheetHelper(hbs, page, sourceFolder);
             RegisterRegisterScriptHelper(hbs, page, sourceFolder);
             RegisterArrayIndexHelper(hbs);
@@ -64,6 +65,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterEqualHelper(hbs);
             RegisterFormatNumberHelper(hbs);
             RegisterScriptHelper(hbs);
+            RegisterHandlebarsHelper(hbs);
             RegisterRegisterStylesheetHelper(hbs, page, sourceFolder);
             RegisterRegisterScriptHelper(hbs, page, sourceFolder);
             //RegisterEditUrlHelper(hbs, module);
@@ -139,6 +141,18 @@ namespace Satrabel.OpenContent.Components.Handlebars
             {
                 HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "<script>");
                 options.Template(writer, (object)context);
+                HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "</script>");
+            });
+
+        }
+        private void RegisterHandlebarsHelper(HandlebarsDotNet.IHandlebars hbs)
+        {
+            hbs.RegisterHelper("handlebars", (writer, options, context, arguments) =>
+            {
+                HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "<script id=\"jplist-templatex\" type=\"text/x-handlebars-template\">");
+                HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, context);
+                
+                //options.Template(writer, (object)context);
                 HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "</script>");
             });
 
