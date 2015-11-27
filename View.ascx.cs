@@ -588,6 +588,7 @@ namespace Satrabel.OpenContent
             // context
             model.Context = new ExpandoObject();
             model.Context.ModuleId = ModuleContext.ModuleId;
+            model.Context.ModuleTitle = ModuleContext.Configuration.ModuleTitle;
             model.Context.AddUrl = ModuleContext.EditUrl();
             model.Context.IsEditable = ModuleContext.IsEditable ||
                                       (!string.IsNullOrEmpty(editRole) &&
