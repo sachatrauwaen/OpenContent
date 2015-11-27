@@ -99,6 +99,9 @@ namespace Satrabel.OpenContent.Components
                 if (content != null)
                 {
                     json["data"] = content.Json.ToJObject("GetContent " + id);
+                    if (json["schema"]["properties"]["ModuleTitle"] is JObject){
+                        json["data"]["ModuleTitle"] = ActiveModule.ModuleTitle;
+                    }
                     AddVersions(json, content);
                     createdByUserid = content.CreatedByUserId;
                 }
