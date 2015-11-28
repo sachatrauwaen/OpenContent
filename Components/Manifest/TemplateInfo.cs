@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using DotNetNuke.Entities.Modules;
 
 namespace Satrabel.OpenContent.Components.Manifest
@@ -10,33 +11,82 @@ namespace Satrabel.OpenContent.Components.Manifest
             SettingsJson = "";
             DataJson = "";
             OutputString = "";
-            this.TemplateManifest = null;
-            this.Manifest = null;
+            Template = null;
+            //Manifest = null;
             Files = null;
         }
-        public string SettingsJson { get; set; }
-        public string DataJson { get; set; }
-        public string OutputString { get; set; }
-        public bool DataExist { get; set; }
-        public IEnumerable<OpenContentInfo> DataList { get; set; }
+
+        #region Public Properties
+
         public int ItemId { get; set; }
-        public int TabId { get; set; }
-        public int ModuleId { get; set; }
+        public string OutputString { get; set; }
 
-        public bool IsOtherModule
+        #endregion
+
+        #region Data & Settings
+
+        public void ResetData()
         {
-            get
-            {
-                return TabId > 0 && ModuleId > 0;
-            }
+            DataJson = "";
+            SettingsJson = "";
         }
-        public FileUri OtherModuleTemplate { get; set; }
-        public string OtherModuleSettingsJson { get; set; }
 
-        public ModuleInfo Module { get; set; }
-        public FileUri Template { get; set; }
-        public TemplateManifest TemplateManifest { get; set; }
-        public Manifest Manifest { get; set; }
-        public TemplateFiles Files { get; set; }
+        public void SetData(string dataJson, string settingsData, bool dataExists)
+        {
+            DataJson = dataJson;
+            SettingsJson = settingsData;
+        }
+
+        public void SetData(IEnumerable<OpenContentInfo> getContents, string settingsData)
+        {
+            DataList = getContents;
+            SettingsJson = settingsData;
+            DataExist = true;
+        }
+
+        public string DataJson { get; private set; }
+        public string SettingsJson { get; private set; }
+
+        public IEnumerable<OpenContentInfo> DataList { get; private set; }
+        public bool DataExist { get; private set; }
+
+        #endregion
+
+        #region DataSource Module information
+
+        public void SetDataSourceModule(int tabId, int moduleId, ModuleInfo getModule, TemplateManifest template, string data)
+        {
+            TabId = tabId;
+            ModuleId = moduleId;
+            Module = getModule;
+            OtherModuleTemplate = template;
+            OtherModuleSettingsJson = data;
+        }
+
+        public int TabId { get; private set; }
+        public int ModuleId { get; private set; }
+        public ModuleInfo Module { get; private set; }
+        public TemplateManifest OtherModuleTemplate { get; private set; }
+        public string OtherModuleSettingsJson { get; private set; }
+
+        #endregion
+
+        public void SetSelectedTemplate(TemplateManifest template)
+        {
+            Template = template;
+        }
+
+        public TemplateManifest Template { get; private set; }
+
+        #region ReadOnly
+
+        public bool IsOtherModule { get { return TabId > 0 && ModuleId > 0; } }
+
+        #endregion
+
+        public TemplateFiles Files { get; private set; }
+
+        //public FileUri Template { get;private set; }
+        //public Manifest Manifest { get; private set; }
     }
 }

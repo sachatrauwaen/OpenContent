@@ -101,7 +101,7 @@ namespace Satrabel.OpenContent.Components.Manifest
                 return null;
             }
         }
-        //private static TemplateManifest GetTemplateManifest(FileUri template)  //todo - dit bestaat ook als methode van een classe
+        //private static TemplateManifest GetTemplateManifest(FileUri template)  
         //{
         //    if (template == null)
         //    {

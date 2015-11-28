@@ -44,12 +44,8 @@ namespace Satrabel.OpenContent.Components.JPList
                 {
                     module = ModuleController.Instance.GetModule(settings.ModuleId, settings.TabId, false);
                 }
-                var manifest = OpenContentUtils.GetManifest(settings.Template);
-                TemplateManifest templateManifest = null;
-                if (manifest != null)
-                {
-                    templateManifest = manifest.GetTemplateManifest(settings.Template);
-                }
+                var manifest = settings.Template.Manifest;
+                var templateManifest = settings.Template;
                 string editRole = manifest == null ? "" : manifest.EditRole;
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
 

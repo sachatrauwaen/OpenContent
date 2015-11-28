@@ -98,7 +98,7 @@ namespace Satrabel.OpenContent.Components
         /// <param name="moduleSubDir">The module sub dir.</param>
         /// <returns></returns>
         /// <remarks>Used by OpenForms</remarks>
-        [Obso lete("This method is obsolete; use GetTemplatesFiles(PortalSettings portalSettings, int moduleId, FileUri selectedTemplate, string moduleSubDir) instead")]
+        [Obsolete("This method is obsolete; use GetTemplatesFiles(PortalSettings portalSettings, int moduleId, FileUri selectedTemplate, string moduleSubDir) instead")]
         public static List<ListItem> GetTemplatesFiles(PortalSettings portalSettings, int moduleId, string selectedTemplate, string moduleSubDir)
         {
             return GetTemplatesFiles(portalSettings, moduleId, new FileUri(selectedTemplate), moduleSubDir);
@@ -117,7 +117,7 @@ namespace Satrabel.OpenContent.Components
             return GetTemplatesFiles(portalSettings, moduleId, selectedTemplate, moduleSubDir, null);
         }
 
-        public static List<ListItem> GetTemplatesFiles(PortalSettings portalSettings, int moduleId, TemplateManifest selectedTemplate, string moduleSubDir, TemplateManifest otherModuleTemplate)
+        public static List<ListItem> GetTemplatesFiles(PortalSettings portalSettings, int moduleId, FileUri selectedTemplate, string moduleSubDir, FileUri otherModuleTemplate)
         {
             string basePath = HostingEnvironment.MapPath(GetSiteTemplateFolder(portalSettings, moduleSubDir));
             if (!Directory.Exists(basePath))
@@ -127,7 +127,7 @@ namespace Satrabel.OpenContent.Components
             var dirs = Directory.GetDirectories(basePath);
             if (otherModuleTemplate != null)
             {
-                var selDir = otherModuleTemplate.Uri.PhysicalFullDirectory;
+                var selDir = otherModuleTemplate.PhysicalFullDirectory;
                 dirs = new string[] { selDir };
             }
 
@@ -156,7 +156,6 @@ namespace Satrabel.OpenContent.Components
                 var manifest = ManifestUtils.GetManifest(new FolderUri(templateVirtualFolder));
                 if (manifest != null && manifest.HasTemplates)
                 {
-                    files = manifest.Templates.Select(t => t.Key);
                     foreach (var template in manifest.Templates)
                     {
                         FileUri templateUri = new FileUri(templateVirtualFolder, template.Key);
@@ -166,7 +165,7 @@ namespace Satrabel.OpenContent.Components
                             templateName = templateName + " - " + template.Value.Title;
                         }
                         var item = new ListItem(templateCat + " : " + templateName, templateUri.FilePath);
-                        if (selectedTemplate != null && templateUri.FilePath.ToLowerInvariant() == selectedTemplate.Uri.FilePath.ToLowerInvariant())
+                        if (selectedTemplate != null && templateUri.FilePath.ToLowerInvariant() == selectedTemplate.FilePath.ToLowerInvariant())
                         {
                             item.Selected = true;
                         }
@@ -195,7 +194,7 @@ namespace Satrabel.OpenContent.Components
                             scriptName = scriptName.Replace("\\", " - ");
 
                         var item = new ListItem(templateCat + " : " + scriptName, templateUri.FilePath);
-                        if (selectedTemplate != null && templateUri.FilePath.ToLowerInvariant() == selectedTemplate.Uri.FilePath.ToLowerInvariant())
+                        if (selectedTemplate != null && templateUri.FilePath.ToLowerInvariant() == selectedTemplate.FilePath.ToLowerInvariant())
                         {
                             item.Selected = true;
                         }
@@ -224,7 +223,7 @@ namespace Satrabel.OpenContent.Components
 
                         string scriptPath = FileUri.ReverseMapPath(script);
                         var item = new ListItem(TemplateCat + " : " + scriptName, scriptPath);
-                        if (selectedTemplate != null && scriptPath.ToLowerInvariant() == selectedTemplate.Uri.FilePath.ToLowerInvariant())
+                        if (selectedTemplate != null && scriptPath.ToLowerInvariant() == selectedTemplate.FilePath.ToLowerInvariant())
                         {
                             item.Selected = true;
                         }

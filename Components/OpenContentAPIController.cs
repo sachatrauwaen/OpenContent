@@ -476,12 +476,8 @@ namespace Satrabel.OpenContent.Components
             {
                 module = ModuleController.Instance.GetModule(settings.ModuleId, settings.TabId, false);
             }
-            var manifest = OpenContentUtils.GetManifest(settings.Template);
-            TemplateManifest templateManifest = null;
-            if (manifest != null)
-            {
-                templateManifest = manifest.GetTemplateManifest(settings.Template);
-            }
+            var manifest = settings.Template.Manifest;
+            TemplateManifest templateManifest =settings.Template;
             string editRole = manifest == null ? "" : manifest.EditRole;
             bool listMode = templateManifest != null && templateManifest.IsListTemplate;
             JArray json = new JArray();
