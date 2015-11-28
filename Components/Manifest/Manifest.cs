@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace Satrabel.OpenContent.Components
+namespace Satrabel.OpenContent.Components.Manifest
 {
     public class Manifest
     {

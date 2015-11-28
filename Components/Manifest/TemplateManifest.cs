@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace Satrabel.OpenContent.Components
+namespace Satrabel.OpenContent.Components.Manifest
 {
     public class TemplateManifest
     {
@@ -46,7 +46,7 @@ namespace Satrabel.OpenContent.Components
             {
                 if (_manifest == null)
                 {
-                    _manifest = ManifestFactory.GetManifest(ManifestDir);
+                    _manifest = ManifestUtils.GetManifest(ManifestDir);
                 }
                 return _manifest;
             }

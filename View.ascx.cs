@@ -49,7 +49,7 @@ using DotNetNuke.Security.Roles;
 using DotNetNuke.Entities.Users;
 using DotNetNuke.Instrumentation;
 using DotNetNuke.Services.Installer.Log;
-
+using Satrabel.OpenContent.Components.Manifest;
 
 #endregion
 
@@ -181,38 +181,31 @@ namespace Satrabel.OpenContent
             }
         }
 
-        private static bool SettingsNeeded(FileUri template)
-        {
-            var schemaFileUri = new FileUri(template.Path + "schema.json");
-            return schemaFileUri.FileExists;
-        }
-
         private void RenderOtherModuleDemoData()
         {
-
-            TemplateManifest TemplateManifest = OpenContentUtils.GetTemplateManifest(_info.Template);
-            if (TemplateManifest != null && TemplateManifest.IsListTemplate)
+            TemplateManifest templateManifest = OpenContentUtils.GetTemplateManifest(_info.Template);
+            if (templateManifest != null && templateManifest.IsListTemplate)
             {
                 // Multi items Template
                 if (_info.ItemId == Null.NullInteger)
                 {
                     // List template
-                    if (TemplateManifest.Main != null)
+                    if (templateManifest.Main != null)
                     {
                         // for list templates a main template need to be defined
                         GetDataList(_info, _settings);
-                        if (_info.DataExist && !(SettingsNeeded(_info.Template) && _info.SettingsJson == null))
+                        if (_info.DataExist && !(_info.Template.SettingsNeeded() && _info.SettingsJson == null))
                         {
-                            _info.OutputString = GenerateListOutput(_info.Template.UrlFolder, TemplateManifest.Main, _info.DataList, _info.SettingsJson);
+                            _info.OutputString = GenerateListOutput(_info.Template.UrlFolder, templateManifest.Main, _info.DataList, _info.SettingsJson);
                         }
                     }
                 }
             }
             else
             {
-                if (TemplateManifest != null && TemplateManifest.Main != null)
+                if (templateManifest != null && templateManifest.Main != null)
                 {
-                    _info.Template = new FileUri(_info.Template.UrlFolder, TemplateManifest.Main.Template);
+                    _info.Template = new FileUri(_info.Template.UrlFolder, templateManifest.Main.Template);
                 }
                 bool dsDataExist = GetModuleDemoData(_info, _settings);
                 if (dsDataExist)

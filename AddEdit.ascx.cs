@@ -20,7 +20,7 @@ using DotNetNuke.Web.Client.ClientResourceManagement;
 using DotNetNuke.Web.Client;
 using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components;
-
+using Satrabel.OpenContent.Components.Manifest;
 
 #endregion
 

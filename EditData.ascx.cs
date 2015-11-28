@@ -23,6 +23,7 @@ using Newtonsoft.Json.Linq;
 using System.Globalization;
 using DotNetNuke.Common.Utilities;
 using Satrabel.OpenContent.Components.Json;
+using Satrabel.OpenContent.Components.Manifest;
 
 #endregion
 

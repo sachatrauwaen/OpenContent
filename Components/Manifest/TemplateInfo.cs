@@ -1,11 +1,7 @@
-﻿using DotNetNuke.Entities.Modules;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Collections.Generic;
+using DotNetNuke.Entities.Modules;
 
-
-namespace Satrabel.OpenContent.Components
+namespace Satrabel.OpenContent.Components.Manifest
 {
     public class TemplateInfo
     {

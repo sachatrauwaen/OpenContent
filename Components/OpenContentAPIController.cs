@@ -28,7 +28,7 @@ using DotNetNuke.Common;
 using DotNetNuke.Services.FileSystem;
 using System.Collections.Generic;
 using Satrabel.OpenContent.Components.Lucene;
-
+using Satrabel.OpenContent.Components.Manifest;
 
 #endregion
 
@@ -410,7 +410,7 @@ namespace Satrabel.OpenContent.Components
             ModuleController mc = new ModuleController();
             var module = mc.GetModule(req.moduleid, req.tabid, false);
             var settings = new OpenContentSettings(module.ModuleSettings);
-            Manifest manifest=settings.Manifest;
+            Manifest.Manifest manifest=settings.Manifest;
             TemplateManifest templateManifest=settings.Template;
             bool listMode = templateManifest != null && templateManifest.IsListTemplate;
             //JToken json = new JObject();

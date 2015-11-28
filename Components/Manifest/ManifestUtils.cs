@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Web;
 using Newtonsoft.Json;
 
-namespace Satrabel.OpenContent.Components
+namespace Satrabel.OpenContent.Components.Manifest
 {
-    public static class ManifestFactory
+    public static class ManifestUtils
     {
         #region Manifest Factory
 
@@ -119,5 +117,11 @@ namespace Satrabel.OpenContent.Components
         //}
 
         #endregion
+
+        internal static bool SettingsNeeded(this FileUri template)
+        {
+            var schemaFileUri = new FileUri(template.Path + "schema.json");
+            return schemaFileUri.FileExists;
+        }
     }
 }

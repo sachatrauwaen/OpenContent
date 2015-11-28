@@ -21,6 +21,7 @@ using System.Web.UI.WebControls;
 using DotNetNuke.UI.Modules;
 using DotNetNuke.Security.Permissions;
 using DotNetNuke.Security;
+using Satrabel.OpenContent.Components.Manifest;
 
 
 namespace Satrabel.OpenContent.Components
@@ -152,7 +153,7 @@ namespace Satrabel.OpenContent.Components
                 }
                 IEnumerable<string> files = null;
                 string templateVirtualFolder = FolderUri.ReverseMapPath(dir);
-                var manifest = ManifestFactory.GetManifest(new FolderUri(templateVirtualFolder));
+                var manifest = ManifestUtils.GetManifest(new FolderUri(templateVirtualFolder));
                 if (manifest != null && manifest.HasTemplates)
                 {
                     files = manifest.Templates.Select(t => t.Key);
@@ -373,7 +374,7 @@ namespace Satrabel.OpenContent.Components
         {
             string Template = "";
             FolderUri folder = new FolderUri(FolderUri.ReverseMapPath(physicalFolder));
-            var manifest = ManifestFactory.GetManifest(folder);
+            var manifest = ManifestUtils.GetManifest(folder);
             if (manifest != null && manifest.HasTemplates)
             {
                 //get the requested template key

@@ -142,7 +142,7 @@
     <Compile Include="Components\FilesStatus.cs" />
     <Compile Include="Components\FileUploadController.cs" />
     <Compile Include="Components\Manifest\Manifest.cs" />
-    <Compile Include="Components\Manifest\ManifestFactory.cs" />
+    <Compile Include="Components\Manifest\ManifestUtils.cs" />
     <Compile Include="Components\Manifest\TemplateKey.cs" />
     <Compile Include="Components\Manifest\TemplateManifest.cs" />
     <Compile Include="Components\Manifest\PartialTemplate.cs" />

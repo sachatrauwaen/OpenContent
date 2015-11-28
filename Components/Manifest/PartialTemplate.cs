@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace Satrabel.OpenContent.Components
+namespace Satrabel.OpenContent.Components.Manifest
 {
     public class PartialTemplate
     {

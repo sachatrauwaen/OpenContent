@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using Newtonsoft.Json;
+using Satrabel.OpenContent.Components.Manifest;
 
 
 namespace Satrabel.OpenContent.Components
@@ -21,7 +22,7 @@ namespace Satrabel.OpenContent.Components
                 var templateUri = new FileUri(template);
                 TemplateKey = new TemplateKey(templateUri.FilePath, templateUri.FileNameWithoutExtension, templateUri.Extension == "" ? "manifest" : templateUri.Extension);
                 TemplateManifest templateManifest;
-                Manifest = ManifestFactory.GetManifest(TemplateKey, out templateManifest);
+                Manifest = ManifestUtils.GetManifest(TemplateKey, out templateManifest);
                 Template = templateManifest;
             }
             var sTabId = moduleSettings["tabid"] as string;
@@ -45,7 +46,7 @@ namespace Satrabel.OpenContent.Components
         internal int ModuleId { get; set; }
 
         public TemplateManifest Template { get; private set; }
-        public Manifest Manifest { get; private set; }
+        public Manifest.Manifest Manifest { get; private set; }
 
         public FolderUri TemplateDir { get { return TemplateKey.TemplateDir; } }
         //public TemplateKey TemplateKey { get { return Template == null ? "" : Template.FileNameWithoutExtension; } }
