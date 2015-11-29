@@ -179,7 +179,7 @@ namespace Satrabel.OpenContent
 
             //initialize _info state
             _info.SetSelectedTemplate(_settings.Template);
-            _info.ItemId = _itemId;
+            _info.DetailItemId = _itemId;
             if (_settings.TabId > 0 && _settings.ModuleId > 0) // other module
             {
                 _info.SetDataSourceModule(_settings.TabId, _settings.ModuleId, ModuleController.Instance.GetModule(_info.ModuleId, _info.TabId, false), null, "");
@@ -719,7 +719,7 @@ namespace Satrabel.OpenContent
         {
             _info.ResetData();
             OpenContentController ctrl = new OpenContentController();
-            IEnumerable<OpenContentInfo> dataList ;
+            IEnumerable<OpenContentInfo> dataList;
             if (clientSide)
             {
                 var data = ctrl.GetFirstContent(info.ModuleId);
@@ -743,7 +743,7 @@ namespace Satrabel.OpenContent
         {
             _info.ResetData();
             OpenContentController ctrl = new OpenContentController();
-            var struc = ctrl.GetContent(info.ItemId, info.ModuleId);
+            var struc = ctrl.GetContent(info.DetailItemId, info.ModuleId);
             if (struc != null)
             {
                 _info.SetData(struc.Json, settings.Data, true);
@@ -787,7 +787,7 @@ namespace Satrabel.OpenContent
             return !string.IsNullOrWhiteSpace(info.DataJson) && (!string.IsNullOrWhiteSpace(info.SettingsJson) || !settingsNeeded);
         }
 
-        private bool GetModuleDemoData(TemplateInfo info, OpenContentSettings settings)
+        private bool GetOtherModuleDemoData(TemplateInfo info, OpenContentSettings settings)
         {
             _info.ResetData();
             OpenContentController ctrl = new OpenContentController();
@@ -803,13 +803,20 @@ namespace Satrabel.OpenContent
                     var settingsFilename = info.Template.Uri.PhysicalFullDirectory + "\\" + info.Template.Uri.FileNameWithoutExtension + "-data.json";
                     if (File.Exists(settingsFilename))
                     {
-                        string fileContent = File.ReadAllText(settingsFilename);
-                        if (!string.IsNullOrWhiteSpace(fileContent))
+                        string settingsContent = File.ReadAllText(settingsFilename);
+                        if (!string.IsNullOrWhiteSpace(settingsContent))
                         {
-                            _info.SetData(struc.Json, fileContent, true);
+                            _info.SetData(struc.Json, settingsContent, true);
                         }
                     }
                 }
+                //Als er OtherModuleSettingsJson bestaan en 
+                if (_info.OtherModuleTemplate.Uri.FilePath == _info.Template.Uri.FilePath && !string.IsNullOrEmpty(_info.OtherModuleSettingsJson))
+                {
+                    _info.SetData(struc.Json, _info.OtherModuleSettingsJson, true);
+                }
+                _info.OutputString = GenerateOutput(_info.Template.Uri, _info.DataJson, _info.SettingsJson, null);
+
                 return true;
             }
             return false;
@@ -982,6 +989,7 @@ namespace Satrabel.OpenContent
             BindButtons(_settings, _info);
             if (rblUseTemplate.SelectedIndex == 0) // existing template
             {
+                _info.SetSelectedTemplate();
                 _info.Template = new FileUri(ddlTemplate.SelectedValue);
                 if (rblDataSource.SelectedIndex == 0) // this module
                 {
@@ -1109,7 +1117,7 @@ namespace Satrabel.OpenContent
             if (template != null && template.IsListTemplate)
             {
                 // Multi items template
-                if (_info.ItemId == Null.NullInteger)
+                if (_info.DetailItemId == Null.NullInteger)
                 {
                     // List template
                     if (template.Main != null)
@@ -1125,32 +1133,21 @@ namespace Satrabel.OpenContent
             }
             else
             {
-                //if (templateManifest != null && templateManifest.Main != null)
-                //{
-                //    _info.Template = new FileUri(_info.Template.Uri.UrlFolder, templateManifest.Main.Template);
-                //}
-                bool dsDataExist = GetModuleDemoData(_info, _settings);
-                if (dsDataExist)
-                {
-                    if (_info.OtherModuleTemplate.Uri.FilePath == _info.Template.Uri.FilePath && !string.IsNullOrEmpty(_info.OtherModuleSettingsJson))
-                    {
-                        _info.SettingsJson = _info.OtherModuleSettingsJson;
-                    }
-                    _info.OutputString = GenerateOutput(_info.Template.Uri, _info.DataJson, _info.SettingsJson, null);
-                }
+                bool dsDataExist = GetOtherModuleDemoData(_info, _settings);
+
             }
         }
 
         private void RazorRender(WebPageBase webpage, TextWriter writer, dynamic model)
         {
-            var HttpContext = new HttpContextWrapper(System.Web.HttpContext.Current);
+            var httpContext = new HttpContextWrapper(System.Web.HttpContext.Current);
             if ((webpage) is DotNetNukeWebPage<dynamic>)
             {
                 var mv = (DotNetNukeWebPage<dynamic>)webpage;
                 mv.Model = model;
             }
             if (webpage != null)
-                webpage.ExecutePageHierarchy(new WebPageContext(HttpContext, webpage, null), writer, webpage);
+                webpage.ExecutePageHierarchy(new WebPageContext(httpContext, webpage, null), writer, webpage);
         }
     }
 }

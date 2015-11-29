@@ -18,7 +18,7 @@ namespace Satrabel.OpenContent.Components.Manifest
 
         #region Public Properties
 
-        public int ItemId { get; set; }
+        public int DetailItemId { get; set; }
         public string OutputString { get; set; }
 
         #endregion
