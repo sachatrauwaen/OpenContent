@@ -19,14 +19,6 @@ namespace Satrabel.OpenContent.Components.Manifest
         public bool HasTemplates { get { return (Templates != null); } }
         public FolderUri ManifestDir { get; set; }
 
-        public TemplateManifest GetTemplateManifest(FileUri template)
-        {
-            if (Templates != null && Templates.ContainsKey(template.FileNameWithoutExtension))
-            {
-                return Templates[template.FileNameWithoutExtension];
-            }
-            return null;
-        }
         public TemplateManifest GetTemplateManifest(TemplateKey templateKey)
         {
             if (Templates != null && Templates.ContainsKey(templateKey.Key))

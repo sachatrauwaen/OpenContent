@@ -989,8 +989,7 @@ namespace Satrabel.OpenContent
             BindButtons(_settings, _info);
             if (rblUseTemplate.SelectedIndex == 0) // existing template
             {
-                _info.SetSelectedTemplate();
-                _info.Template = new FileUri(ddlTemplate.SelectedValue);
+                _info.SetSelectedTemplate(new FileUri(ddlTemplate.SelectedValue).ToTemplateManifest());
                 if (rblDataSource.SelectedIndex == 0) // this module
                 {
                     RenderDemoData();
@@ -1002,7 +1001,7 @@ namespace Satrabel.OpenContent
             }
             else // new template
             {
-                _info.Template = new FileUri(ddlTemplate.SelectedValue);
+                _info.SetSelectedTemplate(new FileUri(ddlTemplate.SelectedValue).ToTemplateManifest());
                 if (rblFrom.SelectedIndex == 0) // site
                 {
                     RenderDemoData();

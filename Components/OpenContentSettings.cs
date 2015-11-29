@@ -20,7 +20,7 @@ namespace Satrabel.OpenContent.Components
             if (!string.IsNullOrEmpty(template))
             {
                 var templateUri = new FileUri(template);
-                TemplateKey = new TemplateKey(templateUri.FilePath, templateUri.FileNameWithoutExtension, templateUri.Extension == "" ? "manifest" : templateUri.Extension);
+                TemplateKey = new TemplateKey(templateUri);
                 TemplateManifest templateManifest;
                 Manifest = ManifestUtils.GetManifest(TemplateKey, out templateManifest);
                 Template = templateManifest;
