@@ -7,7 +7,7 @@ using System;
 using System.Diagnostics;
 using System.Runtime.Serialization.Formatters;
 
-namespace Lucene.Net.Mapping
+namespace Satrabel.OpenContent.Components.Lucene.Mapping
 {
     /// <summary>
     /// Implements the IObjectMapper interface using a JSON serialization to identify all the properties and nested

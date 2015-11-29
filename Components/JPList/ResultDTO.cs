@@ -8,7 +8,7 @@ namespace Satrabel.OpenContent.Components.JPList
 {
     class ResultDTO
     {
-        public JArray data { get; set; }
+        public JToken data { get; set; }
 
         public int count { get; set; }
     }

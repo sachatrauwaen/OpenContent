@@ -129,4 +129,10 @@
   <data name="lList.Text" xml:space="preserve">
     <value>Manage</value>
   </data>
+  <data name="lFilter.Help" xml:space="preserve">
+    <value>Lucene query</value>
+  </data>
+  <data name="lFilter.Text" xml:space="preserve">
+    <value>Filter</value>
+  </data>
 </root>

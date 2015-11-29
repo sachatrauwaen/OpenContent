@@ -3766,6 +3766,113 @@
     Alpaca.registerFieldClass("image2", Alpaca.Fields.Image2Field);
 
 })(jQuery);
+///#source 1 1 MLImage2Field.js
+(function($) {
+
+
+    var Alpaca = $.alpaca;
+        
+    Alpaca.Fields.MLImage2Field = Alpaca.Fields.Image2Field.extend(
+    /**
+     * @lends Alpaca.Fields.Image2Field.prototype
+     */
+    {
+        constructor: function (container, data, options, schema, view, connector) {
+            var self = this;
+            this.base(container, data, options, schema, view, connector);
+            //this.sf = connector.servicesFramework;
+            //this.dataSource = {};
+            this.culture = connector.culture;
+            this.defaultCulture = connector.defaultCulture;
+        },
+        /**
+         * @see Alpaca.Fields.Image2Field#setup
+         */
+        setup: function()
+        {
+            var self = this;
+            if (this.data && Alpaca.isObject(this.data)) {
+                this.olddata = this.data;
+            } else if (this.data) {
+                this.olddata = {};
+                this.olddata[this.defaultCulture] = this.data;
+            }
+
+            this.base();
+        },
+
+        getValue: function () {
+            
+                var val = this.base(val);
+
+                var self = this;
+                var o = {};
+                if (this.olddata && Alpaca.isObject(this.olddata)) {
+                    $.each(this.olddata, function (key, value) {
+                        var v = Alpaca.copyOf(value);
+                        if (key != self.culture) {
+                            o[key] = v;
+                        }
+                    });
+                }
+                if (val != "") {
+                    o[self.culture] = val;
+                }
+                if ($.isEmptyObject(o)) {
+                    return "";
+                }
+                return o;
+            
+        },
+
+        /**
+         * @see Alpaca.Field#setValue
+         */
+        setValue: function(val)
+        {
+            
+            if (val === "") {
+                return;
+            }
+            if (!val) {
+                this.base("");
+                return;
+            }
+            if (Alpaca.isObject(val)) {
+                var v = val[this.culture];
+                if (!v) {
+                    this.base("");
+                    return;
+                }
+                this.base(v);
+            }
+            else {
+                this.base(val);
+            }
+
+        },
+        afterRenderControl: function (model, callback) {
+            var self = this;
+            this.base(model, function () {
+                self.handlePostRender2(function () {
+                    callback();
+                });
+            });
+        },
+        handlePostRender2: function (callback) {
+            var self = this;
+            var el = this.getControlEl();
+
+            callback();
+
+            $(this.control.get(0)).after('<img src="/images/Flags/' + this.culture + '.gif" />');
+            
+        },
+    });
+
+    Alpaca.registerFieldClass("mlimage2", Alpaca.Fields.MLImage2Field);
+
+})(jQuery);
 ///#source 1 1 File2Field.js
 (function($) {
 
@@ -4871,6 +4978,7 @@
             this.culture = connector.culture;
             this.sf = connector.servicesFramework;
         },
+
 
         setup: function () {
             this.base();

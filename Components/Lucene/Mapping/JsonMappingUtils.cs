@@ -1,13 +1,14 @@
-﻿using Lucene.Net.Documents;
+﻿using Lucene.Net.Analysis.Standard;
+using Lucene.Net.Documents;
 using Lucene.Net.Index;
-using Lucene.Net.Mapping;
+using Lucene.Net.QueryParsers;
 using Lucene.Net.Search;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Satrabel.OpenContent.Components.Lucene.Net.Mapping
+namespace Satrabel.OpenContent.Components.Lucene.Mapping
 {
     public class JsonMappingUtils
     {
@@ -32,7 +33,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Net.Mapping
 
         #endregion
 
-        public static Document JsonToDocument(string type, string id, string source, bool StoreSource = true)
+        public static Document JsonToDocument(string type, string id, string source, bool StoreSource = false)
         {
             var ObjectMapper = new JsonObjectMapper();
             Document doc = new Document();
@@ -50,8 +51,29 @@ namespace Satrabel.OpenContent.Components.Lucene.Net.Mapping
 
         public static Filter GetTypeFilter(string type)
         {
-            Filter filter = new QueryWrapperFilter(new TermQuery(new Term(FieldType, type)));
+            var typeTermQuery = new TermQuery(new Term(FieldType, type));
+            
+            //var analyzer = new StandardAnalyzer(global::Lucene.Net.Util.Version.LUCENE_30);
+            //var parser = new QueryParser(global::Lucene.Net.Util.Version.LUCENE_30, "Category", analyzer);
+            //var xquery = parser.Parse("Category3");
+
+            BooleanQuery query = new BooleanQuery();
+            query.Add(typeTermQuery, Occur.MUST);
+            //query.Add(xquery, Occur.MUST);
+
+
+            Filter filter = new QueryWrapperFilter(query);
             //filter.AddTerm(new Term(FieldType, type));
+            return filter;
+        }
+
+        public static Filter GetTypeFilter(string type, Query Filter)
+        {
+            var typeTermQuery = new TermQuery(new Term(FieldType, type));
+            BooleanQuery query = new BooleanQuery();
+            query.Add(typeTermQuery, Occur.MUST);
+            query.Add(Filter, Occur.MUST);
+            Filter filter = new QueryWrapperFilter(query);
             return filter;
         }
 

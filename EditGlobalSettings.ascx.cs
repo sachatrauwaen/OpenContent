@@ -20,27 +20,28 @@ using DotNetNuke.Entities.Portals;
 using System.Web.UI.WebControls;
 using DotNetNuke.Security.Roles;
 using Satrabel.OpenContent.Components.Lucene;
-using Satrabel.OpenContent.Components.Lucene.Net.Mapping;
+using Satrabel.OpenContent.Components.Lucene.Index;
+using Newtonsoft.Json.Linq;
 
 #endregion
 
 namespace Satrabel.OpenContent
 {
-	public partial class EditGlobalSettings : PortalModuleBase
-	{
-		#region Event Handlers
-		protected override void OnInit(EventArgs e)
-		{
-			base.OnInit(e);
+    public partial class EditGlobalSettings : PortalModuleBase
+    {
+        #region Event Handlers
+        protected override void OnInit(EventArgs e)
+        {
+            base.OnInit(e);
             hlCancel.NavigateUrl = Globals.NavigateURL();
-			cmdSave.Click += cmdSave_Click;
-			//cmdCancel.Click += cmdCancel_Click;
-		}
-		protected override void OnLoad(EventArgs e)
-		{
-			base.OnLoad(e);
-			if (!Page.IsPostBack)
-			{
+            cmdSave.Click += cmdSave_Click;
+            //cmdCancel.Click += cmdCancel_Click;
+        }
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+            if (!Page.IsPostBack)
+            {
                 var pc = PortalController.Instance;
                 ddlRoles.Items.Add(new ListItem("None", "-1"));
                 RoleController rc = new RoleController();
@@ -60,10 +61,10 @@ namespace Satrabel.OpenContent
                 }
                 string OpenContent_AutoAttach = PortalController.GetPortalSetting("OpenContent_AutoAttach", ModuleContext.PortalId, "False");
                 cbMLContent.Checked = bool.Parse(OpenContent_AutoAttach);
-			}
-		}
-		protected void cmdSave_Click(object sender, EventArgs e)
-		{
+            }
+        }
+        protected void cmdSave_Click(object sender, EventArgs e)
+        {
             if (ddlRoles.SelectedIndex > 0)
                 PortalController.UpdatePortalSetting(PortalId, "OpenContent_EditorsRoleId", ddlRoles.SelectedValue, true);
             else
@@ -72,24 +73,49 @@ namespace Satrabel.OpenContent
             PortalController.UpdatePortalSetting(PortalId, "OpenContent_AutoAttach", cbMLContent.Checked.ToString(), true);
 
             Response.Redirect(Globals.NavigateURL(), true);
-		}
-		protected void cmdCancel_Click(object sender, EventArgs e)
-		{
-		}
-		#endregion
+        }
+        protected void cmdCancel_Click(object sender, EventArgs e)
+        {
+        }
+        #endregion
 
         protected void bIndex_Click(object sender, EventArgs e)
         {
-            //LuceneController lc = LuceneController.Instance;
-            LuceneController.Instance.DeleteAll();
-            OpenContentController occ = new OpenContentController();
-            foreach (var item in occ.GetContents(ModuleId))
+            using (LuceneController lc = LuceneController.Instance)
             {
-                LuceneController.Instance.Add(JsonMappingUtils.JsonToDocument(ModuleId.ToString(), item.ContentId.ToString(), item.Json, true));
+                lc.DeleteAll();
+                OpenContentController occ = new OpenContentController();
+                foreach (var item in occ.GetContents(ModuleId))
+                {
+                    lc.Add(item);
+                }
+                lc.Commit();
+                lc.OptimizeSearchIndex(true);
+                LuceneController.ClearInstance();
+                return;
+                var oc = occ.GetContent(89, ModuleId);
+                var data = JObject.Parse(oc.Json);
+                for (int i = 0; i < 10000; i++)
+                {
+                    data["Title"] = "Title " + i;
+                    var newoc = new OpenContentInfo()
+                    {
+                        Title = "check"+i,
+                        ModuleId = ModuleId,
+                        Html ="tst",
+                        Json = data.ToString(),
+                        CreatedByUserId = UserId,
+                        CreatedOnDate = DateTime.Now,
+                        LastModifiedByUserId = UserId,
+                        LastModifiedOnDate = DateTime.Now
+                       
+                    };
+                    occ.AddContent(newoc);
+                }
+
+
             }
-            LuceneController.Instance.Commit();
-            //lc.OptimizeSearchIndex(true);
-            LuceneController.ClearInstance();
+            
         }
-	}
+    }
 }

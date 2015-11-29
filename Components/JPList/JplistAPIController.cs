@@ -48,30 +48,53 @@ namespace Satrabel.OpenContent.Components.JPList
                 {
                     templateManifest = manifest.GetTemplateManifest(settings.Template);
                 }
+                TemplateFiles files = null;
+                if (templateManifest != null)
+                {
+                    files = templateManifest.Main;
+                    // detail not traited !!!
+                }
+
                 string editRole = manifest == null ? "" : manifest.EditRole;
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
 
                 if (listMode)
                 {
-                    JArray json = new JArray();
+                    string luceneFilter = "";
+                    string luceneSort = "";
+                    if (!string.IsNullOrEmpty(settings.Data))
+                    {
+                        var set = JObject.Parse(settings.Data);
+                        if (set["LuceneFilter"] != null)
+                        {
+                            luceneFilter = set["LuceneFilter"].ToString();
+                        }
+                        if (set["LuceneSort"] != null)
+                        {
+                            luceneSort = set["LuceneSort"].ToString();
+                        }
+                    }
+                    
+                    //JArray json = new JArray();
                     var jpListQuery = BuildJpListQuery(req.StatusLst);
-
                     string luceneQuery = BuildLuceneQuery(jpListQuery);
-                    SearchResults docs = LuceneController.Instance.Search(module.ModuleID, "Title", luceneQuery, jpListQuery.Pagination.number, jpListQuery.Pagination.currentPage);
+                    SearchResults docs = LuceneController.Instance.Search(module.ModuleID.ToString(), "Title", luceneQuery, luceneFilter, luceneSort, jpListQuery.Pagination.number, jpListQuery.Pagination.currentPage);
                     int total = docs.ToalResults;
-                    //docs = docs.Skip(jpListQuery.Pagination.currentPage * jpListQuery.Pagination.number).Take(jpListQuery.Pagination.number);
                     OpenContentController ctrl = new OpenContentController();
+                    var dataList = new List<OpenContentInfo>();
                     foreach (var item in docs.ids)
                     {
                         var content = ctrl.GetContent(int.Parse(item), module.ModuleID);
                         if (content != null)
                         {
-                            json.Add(content.Json.ToJObject("GetContent " + item));
+                            dataList.Add(content);
                         }
                     }
+                    ModelFactory mf = new ModelFactory(dataList, settings.Data, settings.Template.PhysicalFullDirectory, manifest, files, ActiveModule, PortalSettings);
+                    var model = mf.GetModelAsJson(true);  
                     var res = new ResultDTO()
                     {
-                        data = json,
+                        data = model,
                         count = total
                     };
                     return Request.CreateResponse(HttpStatusCode.OK, res);

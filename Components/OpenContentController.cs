@@ -14,6 +14,8 @@ using System.Collections.Generic;
 using DotNetNuke.Data;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Json;
+using Satrabel.OpenContent.Components.Lucene;
+using Satrabel.OpenContent.Components.Lucene.Index;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -35,6 +37,8 @@ namespace Satrabel.OpenContent.Components
                 var rep = ctx.GetRepository<OpenContentInfo>();
                 rep.Insert(Content);
             }
+            LuceneController.Instance.Add(Content);
+            LuceneController.Instance.Commit();
         }
 
         public void DeleteContent(OpenContentInfo Content)
@@ -44,6 +48,8 @@ namespace Satrabel.OpenContent.Components
                 var rep = ctx.GetRepository<OpenContentInfo>();
                 rep.Delete(Content);
             }
+            LuceneController.Instance.Delete(Content);
+            LuceneController.Instance.Commit();
         }
 
         public IEnumerable<OpenContentInfo> GetContents(int moduleId)
@@ -105,6 +111,8 @@ namespace Satrabel.OpenContent.Components
                 var rep = ctx.GetRepository<OpenContentInfo>();
                 rep.Update(Content);
             }
+            LuceneController.Instance.Update(Content);
+            LuceneController.Instance.Commit();
         }
 
     }

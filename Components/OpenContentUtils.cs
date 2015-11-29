@@ -535,6 +535,8 @@ namespace Satrabel.OpenContent.Components
         public TemplateFiles Main { get; set; }
         [JsonProperty(PropertyName = "detail")]
         public TemplateFiles Detail { get; set; }
+        [JsonProperty(PropertyName = "clientSide")]
+        public bool ClientSide { get; set; }
 
         public bool IsListTemplate
         {
@@ -563,6 +565,9 @@ namespace Satrabel.OpenContent.Components
 
         [JsonProperty(PropertyName = "optionsInTemplate")]
         public bool OptionsInTemplate { get; set; }
+
+        
+
     }
 
     public class Manifest

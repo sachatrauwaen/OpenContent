@@ -41,7 +41,7 @@ namespace Satrabel.OpenContent
             var settings = new OpenContentSettings(ModuleContext.Settings);
             if (settings.TemplateAvailable)
             {
-                AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, settings.TemplateDir.Path, settings.TemplateKey );
+                AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, settings.TemplateDir.Path, settings.TemplateKey);
                 alpaca.RegisterAll();
             }
         }
@@ -55,6 +55,9 @@ namespace Satrabel.OpenContent
                 //var template = OpenContentUtils.GetTemplate(Settings);
                 var settings = new OpenContentSettings(ModuleContext.Settings);
                 scriptList.Items.AddRange(OpenContentUtils.GetTemplatesFiles(PortalSettings, ModuleId, settings.Template, "OpenContent", (settings.IsOtherModule ? settings.Template : null)).ToArray());
+
+                //var templateManifest = OpenContentUtils.GetTemplateManifest(settings.Template);
+                //phFilter.Visible = templateManifest != null && templateManifest.ClientSide;
             }
         }
 

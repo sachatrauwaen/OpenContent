@@ -200,7 +200,7 @@ namespace Satrabel.OpenContent
                     if (TemplateManifest.Main != null)
                     {
                         // for list templates a main template need to be defined
-                        GetDataList(_info, _settings);
+                        GetDataList(_info, _settings, TemplateManifest.ClientSide);
                         if (_info.DataExist && !(SettingsNeeded(_info.Template) && _info.SettingsJson == null))
                         {
                             _info.OutputString = GenerateListOutput(_info.Template.UrlFolder, TemplateManifest.Main, _info.DataList, _info.SettingsJson);
@@ -334,8 +334,7 @@ namespace Satrabel.OpenContent
                         if (_info.TemplateManifest.Main != null)
                         {
                             // for list templates a main template need to be defined
-
-                            GetDataList(_info, _settings);
+                            GetDataList(_info, _settings, _info.TemplateManifest.ClientSide);
                             if (_info.DataExist)
                             {
                                 _info.OutputString = GenerateListOutput(_settings.Template.UrlFolder, _info.TemplateManifest.Main, _info.DataList, _info.SettingsJson);
@@ -417,16 +416,20 @@ namespace Satrabel.OpenContent
                         Exceptions.ProcessModuleLoadException(this, new Exception(template.FilePath + " don't exist"));
 
                     string TemplateVirtualFolder = template.UrlFolder;
-                    string TemplateFolder = Server.MapPath(TemplateVirtualFolder);
+                    string PhysicalTemplateFolder = Server.MapPath(TemplateVirtualFolder);
                     if (!string.IsNullOrEmpty(dataJson))
                     {
-                        if (LocaleController.Instance.GetLocales(ModuleContext.PortalId).Count > 1)
-                        {
-                            dataJson = JsonUtils.SimplifyJson(dataJson, LocaleController.Instance.GetCurrentLocale(ModuleContext.PortalId).Code);
-                        }
-                        dynamic model = JsonUtils.JsonToDynamic(dataJson);
 
-                        CompleteModel(settingsJson, TemplateFolder, model, files);
+                        ModelFactory mf = new ModelFactory(dataJson, settingsJson, PhysicalTemplateFolder, _info.Manifest, files, ModuleContext.Configuration, ModuleContext.PortalSettings);
+                        dynamic model = mf.GetModelAsDynamic();
+
+                        //if (LocaleController.Instance.GetLocales(ModuleContext.PortalId).Count > 1)
+                        //{
+                        //    dataJson = JsonUtils.SimplifyJson(dataJson, LocaleController.Instance.GetCurrentLocale(ModuleContext.PortalId).Code);
+                        //}
+                        //dynamic model = JsonUtils.JsonToDynamic(dataJson);
+
+                        //CompleteModel(settingsJson, TemplateFolder, model, files);
                         if (template.Extension != ".hbs")
                         {
                             return ExecuteRazor(template, model);
@@ -485,45 +488,37 @@ namespace Satrabel.OpenContent
                 {
                     string PhysicalTemplateFolder = Server.MapPath(TemplateVirtualFolder);
                     FileUri Template = CheckFiles(TemplateVirtualFolder, files, PhysicalTemplateFolder);
-                    if (dataList != null && dataList.Any())
+                    if (dataList != null /*&& dataList.Any()*/)
                     {
-                        string editRole = _info.Manifest == null ? "" : _info.Manifest.EditRole;
-                        dynamic model = new ExpandoObject();
-                        model.Items = new List<dynamic>();
-                        foreach (var item in dataList)
-                        {
-                            //info.DataList = info.DataList.Where(i => i.Json.ToJObject("").SelectToken("Category", false).Any(c=> c.ToString() == "Category1"));
-                            string dataJson = item.Json;
-                            if (LocaleController.Instance.GetLocales(ModuleContext.PortalId).Count > 1)
-                            {
-                                dataJson = JsonUtils.SimplifyJson(dataJson, LocaleController.Instance.GetCurrentLocale(ModuleContext.PortalId).Code);
-                            }
-                            dynamic dyn = JsonUtils.JsonToDynamic(dataJson);
-                            /*
-                            if (Request.QueryString["cat"] != null)
-                            {
-                                string value = Request.QueryString["cat"];
+                        ModelFactory mf = new ModelFactory(dataList, settingsJson, PhysicalTemplateFolder, _info.Manifest, files, ModuleContext.Configuration, ModuleContext.PortalSettings);
+                        dynamic model = mf.GetModelAsDynamic();                                                        
 
-                                if (!Filter(dyn, "Category", value))
-                                {
-                                    continue;
-                                }
-                                //info.DataList = info.DataList.Where(i => Filter(i.Json, key, value));
-                            }
-                            */
-                            dyn.Context = new ExpandoObject();
-                            dyn.Context.Id = item.ContentId;
-                            dyn.Context.EditUrl = ModuleContext.EditUrl("id", item.ContentId.ToString());
-                            dyn.Context.IsEditable = ModuleContext.IsEditable ||
-                                (!string.IsNullOrEmpty(editRole) &&
-                                OpenContentUtils.HasEditPermissions(ModuleContext.PortalSettings, _info.Module, editRole, item.CreatedByUserId));
-                            dyn.Context.DetailUrl = Globals.NavigateURL(ModuleContext.TabId, false, ModuleContext.PortalSettings, "", DnnUtils.GetCurrentCultureCode(), /*OpenContentUtils.CleanupUrl(dyn.Title)*/"", "id=" + item.ContentId.ToString());
-                            dyn.Context.MainUrl = Globals.NavigateURL(ModuleContext.TabId, false, ModuleContext.PortalSettings, "", DnnUtils.GetCurrentCultureCode(), /*OpenContentUtils.CleanupUrl(dyn.Title)*/"");
+                        //string editRole = _info.Manifest == null ? "" : _info.Manifest.EditRole;
+                        //dynamic model = new ExpandoObject();
+                        //model.Items = new List<dynamic>();
+                        //foreach (var item in dataList)
+                        //{                            
+                        //    string dataJson = item.Json;
+                        //    if (LocaleController.Instance.GetLocales(ModuleContext.PortalId).Count > 1)
+                        //    {
+                        //        dataJson = JsonUtils.SimplifyJson(dataJson, LocaleController.Instance.GetCurrentLocale(ModuleContext.PortalId).Code);
+                        //    }
+                        //    dynamic dyn = JsonUtils.JsonToDynamic(dataJson);
+
+                            
+                        //    dyn.Context = new ExpandoObject();
+                        //    dyn.Context.Id = item.ContentId;
+                        //    dyn.Context.EditUrl = ModuleContext.EditUrl("id", item.ContentId.ToString());
+                        //    dyn.Context.IsEditable = ModuleContext.IsEditable ||
+                        //        (!string.IsNullOrEmpty(editRole) &&
+                        //        OpenContentUtils.HasEditPermissions(ModuleContext.PortalSettings, _info.Module, editRole, item.CreatedByUserId));
+                        //    dyn.Context.DetailUrl = Globals.NavigateURL(ModuleContext.TabId, false, ModuleContext.PortalSettings, "", DnnUtils.GetCurrentCultureCode(), /*OpenContentUtils.CleanupUrl(dyn.Title)*/"", "id=" + item.ContentId.ToString());
+                        //    dyn.Context.MainUrl = Globals.NavigateURL(ModuleContext.TabId, false, ModuleContext.PortalSettings, "", DnnUtils.GetCurrentCultureCode(), /*OpenContentUtils.CleanupUrl(dyn.Title)*/"");
 
 
-                            model.Items.Add(dyn);
-                        }
-                        CompleteModel(settingsJson, PhysicalTemplateFolder, model, files);
+                        //    model.Items.Add(dyn);
+                        //}
+                        //CompleteModel(settingsJson, PhysicalTemplateFolder, model, files);
                         return ExecuteTemplate(TemplateVirtualFolder, files, Template, model);
                     }
                 }
@@ -534,7 +529,7 @@ namespace Satrabel.OpenContent
             }
             return "";
         }
-
+        /*
         private void CompleteModel(string settingsJson, string PhysicalTemplateFolder, dynamic model, TemplateFiles manifest)
         {
             if (manifest != null && manifest.SchemaInTemplate)
@@ -595,6 +590,7 @@ namespace Satrabel.OpenContent
             model.Context = new ExpandoObject();
             model.Context.ModuleId = ModuleContext.ModuleId;
             model.Context.ModuleTitle = ModuleContext.Configuration.ModuleTitle;
+            
             model.Context.AddUrl = ModuleContext.EditUrl();
             model.Context.IsEditable = ModuleContext.IsEditable ||
                                       (!string.IsNullOrEmpty(editRole) &&
@@ -603,6 +599,7 @@ namespace Satrabel.OpenContent
             model.Context.MainUrl = Globals.NavigateURL(ModuleContext.TabId, false, ModuleContext.PortalSettings, "", DnnUtils.GetCurrentCultureCode());
 
         }
+         */
         private string GenerateOutput(string TemplateVirtualFolder, TemplateFiles files, string dataJson, string settingsJson)
         {
             try
@@ -614,12 +611,17 @@ namespace Satrabel.OpenContent
 
                     if (!string.IsNullOrEmpty(dataJson))
                     {
-                        if (LocaleController.Instance.GetLocales(ModuleContext.PortalId).Count > 1)
-                        {
-                            dataJson = JsonUtils.SimplifyJson(dataJson, LocaleController.Instance.GetCurrentLocale(ModuleContext.PortalId).Code);
-                        }
-                        dynamic model = JsonUtils.JsonToDynamic(dataJson);
 
+                        //if (LocaleController.Instance.GetLocales(ModuleContext.PortalId).Count > 1)
+                        //{
+                        //    dataJson = JsonUtils.SimplifyJson(dataJson, LocaleController.Instance.GetCurrentLocale(ModuleContext.PortalId).Code);
+                        //}
+                        //dynamic model = JsonUtils.JsonToDynamic(dataJson);
+                        //CompleteModel(settingsJson, PhysicalTemplateFolder, model, files);
+
+                        ModelFactory mf = new ModelFactory(dataJson, settingsJson, PhysicalTemplateFolder, _info.Manifest, files, ModuleContext.Configuration, ModuleContext.PortalSettings);
+                        dynamic model = mf.GetModelAsDynamic();
+                        
                         Page.Title = model.Title + " | " + ModuleContext.PortalSettings.PortalName;
                         /*
                         var container = Globals.FindControlRecursive(this, "ctr" + ModuleContext.ModuleId);
@@ -629,8 +631,7 @@ namespace Satrabel.OpenContent
                             ((Label)ctl).Text = model.Title;
                         }
                         */
-
-                        CompleteModel(settingsJson, PhysicalTemplateFolder, model, files);
+                        
                         return ExecuteTemplate(TemplateVirtualFolder, files, template, model);
                     }
                     else
@@ -754,19 +755,30 @@ namespace Satrabel.OpenContent
             }
 
         }
-        private void GetDataList(TemplateInfo info, OpenContentSettings settings)
+        private void GetDataList(TemplateInfo info, OpenContentSettings settings, bool ClientSide)
         {
             info.DataExist = false;
             info.SettingsJson = "";
             OpenContentController ctrl = new OpenContentController();
-            info.DataList = ctrl.GetContents(info.ModuleId);
-            if (info.DataList != null && info.DataList.Any())
+            if (ClientSide)
             {
-
-                info.SettingsJson = settings.Data;
-                info.DataExist = true;
+                var data = ctrl.GetFirstContent(info.ModuleId);
+                if (data != null)
+                {
+                    info.DataList = new List<OpenContentInfo>();
+                    info.SettingsJson = settings.Data;
+                    info.DataExist = true;
+                }
             }
-
+            else 
+            {
+                info.DataList = ctrl.GetContents(info.ModuleId);
+                if (info.DataList != null && info.DataList.Any())
+                {
+                    info.SettingsJson = settings.Data;
+                    info.DataExist = true;
+                }
+            }
         }
 
         private bool Filter(string json, string key, string value)

@@ -1,5 +1,6 @@
 ﻿using Lucene.Net.Analysis;
 using Lucene.Net.Documents;
+using Lucene.Net.Index;
 using Lucene.Net.Search;
 using Satrabel.OpenContent.Components;
 using Satrabel.OpenContent.Components.Lucene;
@@ -35,7 +36,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Index
         #region Update
 
 
-        public static void Update<T>(this LuceneController controller, OpenContentInfo data)
+        public static void Update(this LuceneController controller, OpenContentInfo data)
         {
             if (null == controller)
             {
