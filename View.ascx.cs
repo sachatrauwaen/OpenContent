@@ -505,7 +505,7 @@ namespace Satrabel.OpenContent
                         {
                             // for list templates a main template need to be defined
 
-                            GetDataList(_info, _settings);
+                            GetDataList(_info, _settings, _info.Template.ClientSide);
                             if (_info.DataExist)
                             {
                                 _info.OutputString = GenerateListOutput(_settings.Template.Uri.UrlFolder, _info.Template.Main, _info.DataList, _info.SettingsJson);
@@ -715,14 +715,27 @@ namespace Satrabel.OpenContent
             }
         }
 
-        private void GetDataList(TemplateInfo info, OpenContentSettings settings)
+        private void GetDataList(TemplateInfo info, OpenContentSettings settings, bool clientSide)
         {
             _info.ResetData();
             OpenContentController ctrl = new OpenContentController();
-            var dataList = ctrl.GetContents(info.ModuleId);
-            if (dataList != null && dataList.Any())
+            IEnumerable<OpenContentInfo> dataList ;
+            if (clientSide)
             {
-                _info.SetData(dataList, settings.Data);
+                var data = ctrl.GetFirstContent(info.ModuleId);
+                if (data != null)
+                {
+                    dataList = new List<OpenContentInfo>();
+                    _info.SetData(dataList, settings.Data);
+                }
+            }
+            else
+            {
+                dataList = ctrl.GetContents(info.ModuleId);
+                if (info.DataList != null && info.DataList.Any())
+                {
+                    _info.SetData(dataList, settings.Data);
+                }
             }
         }
 
@@ -835,6 +848,40 @@ namespace Satrabel.OpenContent
             return accept;
         }
 
+        private string GenerateOutput(string templateVirtualFolder, TemplateFiles files, string dataJson, string settingsJson)
+        {
+            try
+            {
+                if (!(string.IsNullOrEmpty(files.Template)))
+                {
+                    string physicalTemplateFolder = Server.MapPath(templateVirtualFolder);
+                    FileUri template = CheckFiles(templateVirtualFolder, files, physicalTemplateFolder);
+
+                    if (!string.IsNullOrEmpty(dataJson))
+                    {
+                        ModelFactory mf = new ModelFactory(dataJson, settingsJson, physicalTemplateFolder, _info.Template.Manifest, files, ModuleContext.Configuration, ModuleContext.PortalSettings);
+                        dynamic model = mf.GetModelAsDynamic();
+
+                        Page.Title = model.Title + " | " + ModuleContext.PortalSettings.PortalName;
+                        return ExecuteTemplate(templateVirtualFolder, files, template, model);
+                    }
+                    else
+                    {
+                        return "";
+                    }
+                }
+                else
+                {
+                    return "";
+                }
+            }
+            catch (Exception ex)
+            {
+                Exceptions.ProcessModuleLoadException(this, ex);
+            }
+            return "";
+        }
+
         private string GenerateOutput(FileUri template, string dataJson, string settingsJson, TemplateFiles files)
         {
             try
@@ -844,17 +891,12 @@ namespace Satrabel.OpenContent
                     if (!template.FileExists)
                         Exceptions.ProcessModuleLoadException(this, new Exception(template.FilePath + " don't exist"));
 
-                    string TemplateVirtualFolder = template.UrlFolder;
-                    string TemplateFolder = Server.MapPath(TemplateVirtualFolder);
+                    string templateVirtualFolder = template.UrlFolder;
+                    string physicalTemplateFolder = Server.MapPath(templateVirtualFolder);
                     if (!string.IsNullOrEmpty(dataJson))
                     {
-                        if (LocaleController.Instance.GetLocales(ModuleContext.PortalId).Count > 1)
-                        {
-                            dataJson = JsonUtils.SimplifyJson(dataJson, LocaleController.Instance.GetCurrentLocale(ModuleContext.PortalId).Code);
-                        }
-                        dynamic model = JsonUtils.JsonToDynamic(dataJson);
-
-                        CompleteModel(settingsJson, TemplateFolder, model, files);
+                        ModelFactory mf = new ModelFactory(dataJson, settingsJson, physicalTemplateFolder, _info.Template.Manifest, files, ModuleContext.Configuration, ModuleContext.PortalSettings);
+                        dynamic model = mf.GetModelAsDynamic();
                         if (template.Extension != ".hbs")
                         {
                             return ExecuteRazor(template, model);
@@ -891,94 +933,12 @@ namespace Satrabel.OpenContent
                 {
                     string physicalTemplateFolder = Server.MapPath(TemplateVirtualFolder);
                     FileUri templateUri = CheckFiles(TemplateVirtualFolder, files, physicalTemplateFolder);
-                    if (dataList != null && dataList.Any())
+                    if (dataList != null)
                     {
-                        string editRole = _info.Template.Manifest == null ? "" : _info.Template.Manifest.EditRole;
-                        dynamic model = new ExpandoObject();
-                        model.Items = new List<dynamic>();
-                        foreach (var item in dataList)
-                        {
-                            //info.DataList = info.DataList.Where(i => i.Json.ToJObject("").SelectToken("Category", false).Any(c=> c.ToString() == "Category1"));
-                            string dataJson = item.Json;
-                            if (LocaleController.Instance.GetLocales(ModuleContext.PortalId).Count > 1)
-                            {
-                                dataJson = JsonUtils.SimplifyJson(dataJson, LocaleController.Instance.GetCurrentLocale(ModuleContext.PortalId).Code);
-                            }
-                            dynamic dyn = JsonUtils.JsonToDynamic(dataJson);
-                            /*
-                            if (Request.QueryString["cat"] != null)
-                            {
-                                string value = Request.QueryString["cat"];
-
-                                if (!Filter(dyn, "Category", value))
-                                {
-                                    continue;
-                                }
-                                //info.DataList = info.DataList.Where(i => Filter(i.Json, key, value));
-                            }
-                            */
-                            dyn.Context = new ExpandoObject();
-                            dyn.Context.Id = item.ContentId;
-                            dyn.Context.EditUrl = ModuleContext.EditUrl("id", item.ContentId.ToString());
-                            dyn.Context.IsEditable = ModuleContext.IsEditable ||
-                                                     (!string.IsNullOrEmpty(editRole) &&
-                                                      OpenContentUtils.HasEditPermissions(ModuleContext.PortalSettings, _info.Module, editRole, item.CreatedByUserId));
-                            dyn.Context.DetailUrl = Globals.NavigateURL(ModuleContext.TabId, false, ModuleContext.PortalSettings, "", DnnUtils.GetCurrentCultureCode(), /*OpenContentUtils.CleanupUrl(dyn.Title)*/"", "id=" + item.ContentId.ToString());
-                            dyn.Context.MainUrl = Globals.NavigateURL(ModuleContext.TabId, false, ModuleContext.PortalSettings, "", DnnUtils.GetCurrentCultureCode(), /*OpenContentUtils.CleanupUrl(dyn.Title)*/"");
-
-
-                            model.Items.Add(dyn);
-                        }
-                        CompleteModel(settingsJson, physicalTemplateFolder, model, files);
+                        ModelFactory mf = new ModelFactory(dataList, settingsJson, physicalTemplateFolder, _info.Template.Manifest, files, ModuleContext.Configuration, ModuleContext.PortalSettings);
+                        dynamic model = mf.GetModelAsDynamic();
                         return ExecuteTemplate(TemplateVirtualFolder, files, templateUri, model);
                     }
-                }
-            }
-            catch (Exception ex)
-            {
-                Exceptions.ProcessModuleLoadException(this, ex);
-            }
-            return "";
-        }
-
-        private string GenerateOutput(string TemplateVirtualFolder, TemplateFiles files, string dataJson, string settingsJson)
-        {
-            try
-            {
-                if (!(string.IsNullOrEmpty(files.Template)))
-                {
-                    string PhysicalTemplateFolder = Server.MapPath(TemplateVirtualFolder);
-                    FileUri template = CheckFiles(TemplateVirtualFolder, files, PhysicalTemplateFolder);
-
-                    if (!string.IsNullOrEmpty(dataJson))
-                    {
-                        if (LocaleController.Instance.GetLocales(ModuleContext.PortalId).Count > 1)
-                        {
-                            dataJson = JsonUtils.SimplifyJson(dataJson, LocaleController.Instance.GetCurrentLocale(ModuleContext.PortalId).Code);
-                        }
-                        dynamic model = JsonUtils.JsonToDynamic(dataJson);
-
-                        Page.Title = model.Title + " | " + ModuleContext.PortalSettings.PortalName;
-                        /*
-                        var container = Globals.FindControlRecursive(this, "ctr" + ModuleContext.moduleId);
-                        Control ctl = DotNetNuke.Common.Globals.FindControlRecursiveDown(container, "titleLabel");
-                        if (ctl != null && ctl is Label)
-                        {
-                            ((Label)ctl).Text = model.Title;
-                        }
-                        */
-
-                        CompleteModel(settingsJson, PhysicalTemplateFolder, model, files);
-                        return ExecuteTemplate(TemplateVirtualFolder, files, template, model);
-                    }
-                    else
-                    {
-                        return "";
-                    }
-                }
-                else
-                {
-                    return "";
                 }
             }
             catch (Exception ex)
@@ -1145,20 +1105,20 @@ namespace Satrabel.OpenContent
 
         private void RenderOtherModuleDemoData()
         {
-            TemplateManifest templateManifest = _info.Template;
-            if (templateManifest != null && templateManifest.IsListTemplate)
+            TemplateManifest template = _info.Template;
+            if (template != null && template.IsListTemplate)
             {
                 // Multi items template
                 if (_info.ItemId == Null.NullInteger)
                 {
                     // List template
-                    if (templateManifest.Main != null)
+                    if (template.Main != null)
                     {
                         // for list templates a main template need to be defined
-                        GetDataList(_info, _settings);
+                        GetDataList(_info, _settings, template.ClientSide);
                         if (_info.DataExist && !(_info.Template.Uri.SettingsNeeded() && _info.SettingsJson == null))
                         {
-                            _info.OutputString = GenerateListOutput(_info.Template.Uri.UrlFolder, templateManifest.Main, _info.DataList, _info.SettingsJson);
+                            _info.OutputString = GenerateListOutput(_info.Template.Uri.UrlFolder, template.Main, _info.DataList, _info.SettingsJson);
                         }
                     }
                 }

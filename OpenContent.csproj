@@ -147,6 +147,8 @@
     <Compile Include="Components\Manifest\TemplateManifest.cs" />
     <Compile Include="Components\Manifest\PartialTemplate.cs" />
     <Compile Include="Components\Manifest\TemplateFiles.cs" />
+    <Compile Include="Components\Lucene\SearchResults.cs" />
+    <Compile Include="Components\ModelFactory.cs" />
     <Compile Include="Components\Uri\PortalFileUri.cs" />
     <Compile Include="Components\Uri\FolderUri.cs" />
     <Compile Include="Components\Uri\FileUri.cs" />
@@ -160,9 +162,8 @@
     <Compile Include="Components\JPList\SortDTO.cs" />
     <Compile Include="Components\JPList\StatusDataDTO.cs" />
     <Compile Include="Components\JPList\StatusDTO.cs" />
-    <Compile Include="Components\Lucene\Index\JsonIndexUtils.cs" />
+    <Compile Include="Components\Lucene\Index\OpenContentMappingExtensions.cs" />
     <Compile Include="Components\Lucene\LuceneController.cs" />
-    <Compile Include="Components\Lucene\Mapping\GenericFields.cs" />
     <Compile Include="Components\Lucene\Mapping\JsonMappingUtils.cs" />
     <Compile Include="Components\Lucene\Mapping\JsonObjectMapper.cs" />
     <Compile Include="Components\Lucene\Search\JsonSearchUtils.cs" />
@@ -269,6 +270,7 @@
     <Content Include="alpaca\js\fields\dnn\dnnfields.min.js">
       <DependentUpon>dnnfields.js</DependentUpon>
     </Content>
+    <Content Include="alpaca\js\fields\dnn\MLImage2Field.js" />
     <Content Include="alpaca\js\fields\dnn\Url2Field.js" />
     <Content Include="alpaca\js\fields\dnn\File2Field.js" />
     <Content Include="alpaca\js\fields\dnn\ImageCropperField.js" />

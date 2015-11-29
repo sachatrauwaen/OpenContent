@@ -38,7 +38,7 @@ namespace Satrabel.OpenContent.Components.Lucene
         #region Constants
         private const string DefaultSearchFolder = @"App_Data\OCSearch";
         private const string WriteLockFile = "write.lock";
-        internal const int DefaultRereadTimeSpan = 30; // in seconds
+        internal const int DefaultRereadTimeSpan = 10; // in seconds (initialy 30sec)
         private const int DISPOSED = 1;
         private const int UNDISPOSED = 0;
         #endregion
@@ -52,17 +52,10 @@ namespace Satrabel.OpenContent.Components.Lucene
         private IndexWriter _writer;
         private IndexReader _idxReader;
         private CachedReader _reader;
-        private FastVectorHighlighter _fastHighlighter;
         private readonly object _writerLock = new object();
         private readonly double _readerTimeSpan; // in seconds
         private readonly List<CachedReader> _oldReaders = new List<CachedReader>();
         private int _isDisposed = UNDISPOSED;
-
-        private const string HighlightPreTag = "[b]";
-        private const string HighlightPostTag = "[/b]";
-
-        private const string HtmlPreTag = "<b>";
-        private const string HtmlPostTag = "</b>";
 
         private static LuceneController _instance = new LuceneController();
         public static LuceneController Instance
@@ -80,7 +73,7 @@ namespace Satrabel.OpenContent.Components.Lucene
         }
 
         #region constructor
-        public LuceneController()
+        private LuceneController()
         {
             //var hostController = HostController.Instance;
 
@@ -231,42 +224,19 @@ namespace Satrabel.OpenContent.Components.Lucene
             return System.IO.Directory.Exists(IndexFolder) &&
                    System.IO.Directory.GetFiles(IndexFolder, "*.*").Length > 0;
         }
-
-        private FastVectorHighlighter FastHighlighter
-        {
-            get
-            {
-                if (_fastHighlighter == null)
-                {
-                    FragListBuilder fragListBuilder = new SimpleFragListBuilder();
-                    FragmentsBuilder fragmentBuilder = new ScoreOrderFragmentsBuilder(
-                        new[] { HighlightPreTag }, new[] { HighlightPostTag });
-                    _fastHighlighter = new FastVectorHighlighter(true, true, fragListBuilder, fragmentBuilder);
-                }
-                return _fastHighlighter;
-            }
-        }
-
+                
         #endregion
 
-        public SearchResults Search(int ModuleId, Query Query, int PageSize, int PageIndex)
+        public SearchResults Search(string type, Query Filter, Query Query, Sort Sort, int PageSize, int PageIndex)
         {
-
             var luceneResults = new SearchResults();
-
             //validate whether index folder is exist and contains index files, otherwise return null.
             if (!ValidateIndexFolder())
             {
                 return null;
             }
-
-            //TODO - Explore simple highlighter as it does not give partial words
-            var highlighter = FastHighlighter;
-            var fieldQuery = highlighter.GetFieldQuery(Query);
-
             var maxResults = PageIndex * PageSize;
             var minResults = maxResults - PageSize + 1;
-
             var searcher = GetSearcher();
             /*
             var searchSecurityTrimmer = new SearchSecurityTrimmer(new SearchSecurityTrimmerContext
@@ -277,20 +247,27 @@ namespace Satrabel.OpenContent.Components.Lucene
                     SearchQuery = searchContext.SearchQuery
                 });
              */
-            var topDocs = searcher.Search(ModuleId.ToString(), Query, (PageIndex + 1) * PageSize /*, null , searchSecurityTrimmer*/);
+            var topDocs = searcher.Search(type, Filter, Query,  (PageIndex + 1) * PageSize /*, null , searchSecurityTrimmer*/, Sort);
             //luceneResults.TotalHits = searchSecurityTrimmer.TotalHits;
             luceneResults.ToalResults = topDocs.TotalHits;
             luceneResults.ids = topDocs.ScoreDocs.Skip(PageIndex * PageSize).Select(d => searcher.Doc(d.Doc).GetField("$id").StringValue).ToArray();
             return luceneResults;
         }
 
-        public SearchResults Search(int ModuleId, string DefaultFieldName, string Query, int PageSize, int PageIndex)
+        public SearchResults Search(string type, string DefaultFieldName, string Filter, string Query, string Sorts, int PageSize, int PageIndex)
         {
             var analyzer = new StandardAnalyzer(global::Lucene.Net.Util.Version.LUCENE_30);
             var parser = new QueryParser(global::Lucene.Net.Util.Version.LUCENE_30, DefaultFieldName, analyzer);
 
+            var filter = ParseQuery(Filter, parser);
             var query = ParseQuery(Query, parser);
-            return Search(ModuleId, query, PageSize, PageIndex);
+
+            var sort = Sort.RELEVANCE;
+            if (!string.IsNullOrEmpty(Sorts)){
+                sort = new Sort(new SortField(Sorts, SortField.STRING));
+            }
+                
+            return Search(type, filter, query, sort,PageSize, PageIndex);
         }
         private static Query ParseQuery(string searchQuery, QueryParser parser)
         {
@@ -312,17 +289,6 @@ namespace Satrabel.OpenContent.Components.Lucene
             }
             return query;
         }
-
-        private string GetHighlightedText(FastVectorHighlighter highlighter, FieldQuery fieldQuery, IndexSearcher searcher, ScoreDoc match, string tag, int length)
-        {
-            var s = highlighter.GetBestFragment(fieldQuery, searcher.IndexReader, match.Doc, tag, length);
-            if (!string.IsNullOrEmpty(s))
-            {
-                s = HttpUtility.HtmlEncode(s).Replace(HighlightPreTag, HtmlPreTag).Replace(HighlightPostTag, HtmlPostTag);
-            }
-            return s;
-        }
-
         public void Add(Document doc)
         {
             Requires.NotNull("searchDocument", doc);
@@ -491,9 +457,5 @@ namespace Satrabel.OpenContent.Components.Lucene
         }
     }
 
-    public class SearchResults
-    {
-        public int ToalResults { get; set; }
-        public string[] ids { get; set; }
-    }
+    
 }

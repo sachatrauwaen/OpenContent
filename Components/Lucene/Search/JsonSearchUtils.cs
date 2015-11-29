@@ -1,6 +1,5 @@
 ﻿using Lucene.Net.Documents;
-using Lucene.Net.Mapping;
-using Satrabel.OpenContent.Components.Lucene.Net.Mapping;
+using Satrabel.OpenContent.Components.Lucene.Mapping;
 using System;
 using System.Linq;
 
@@ -38,6 +37,12 @@ namespace Lucene.Net.Search
             return searcher.Search(query, JsonMappingUtils.GetTypeFilter(type), numResults);
         }
 
+        public static TopDocs Search(this Searcher searcher, string type, Query Filter, Query query, int numResults)
+        {
+            Filter filter = new QueryWrapperFilter(query);
+            return searcher.Search(query, JsonMappingUtils.GetTypeFilter(type, Filter), numResults);
+        }
+
         #endregion
 
         #region With Sort
@@ -66,6 +71,10 @@ namespace Lucene.Net.Search
         public static TopDocs Search(this Searcher searcher, string type, Query query, int numResults, Sort sort)
         {
             return searcher.Search(query, JsonMappingUtils.GetTypeFilter(type), numResults, sort);
+        }
+        public static TopDocs Search(this Searcher searcher, string type, Query query, Query filter, int numResults, Sort sort)
+        {
+            return searcher.Search(query, JsonMappingUtils.GetTypeFilter(type, filter), numResults, sort);
         }
 
        

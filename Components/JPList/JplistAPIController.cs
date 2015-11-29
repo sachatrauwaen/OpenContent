@@ -1,28 +1,17 @@
-﻿using DotNetNuke.Entities.Content.Common;
-using DotNetNuke.Entities.Icons;
-using DotNetNuke.Entities.Modules;
+﻿using DotNetNuke.Entities.Modules;
 using DotNetNuke.Instrumentation;
 using DotNetNuke.Security;
-using DotNetNuke.Services.FileSystem;
 using DotNetNuke.Web.Api;
 using Newtonsoft.Json.Linq;
-using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Lucene;
-//using Satrabel.OpenDocument.Components.Lucene;
-//using Satrabel.OpenDocument.Components.Template;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Web;
 using System.Web.Http;
 using Satrabel.OpenContent.Components.Manifest;
 
-//using Satrabel.OpenContent.Components;
-//using Satrabel.OpenContent.Components.TemplateHelpers;
-//using TemplateHelper = Satrabel.OpenDocument.Components.Template.TemplateHelper;
 
 namespace Satrabel.OpenContent.Components.JPList
 {
@@ -46,30 +35,54 @@ namespace Satrabel.OpenContent.Components.JPList
                 }
                 var manifest = settings.Template.Manifest;
                 var templateManifest = settings.Template;
+               
+                TemplateFiles files = null;
+                if (templateManifest != null)
+                {
+                    files = templateManifest.Main;
+                    // detail not traited !!!
+                }
+
                 string editRole = manifest == null ? "" : manifest.EditRole;
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
 
                 if (listMode)
                 {
-                    JArray json = new JArray();
+                    string luceneFilter = "";
+                    string luceneSort = "";
+                    if (!string.IsNullOrEmpty(settings.Data))
+                    {
+                        var set = JObject.Parse(settings.Data);
+                        if (set["LuceneFilter"] != null)
+                        {
+                            luceneFilter = set["LuceneFilter"].ToString();
+                        }
+                        if (set["LuceneSort"] != null)
+                        {
+                            luceneSort = set["LuceneSort"].ToString();
+                        }
+                    }
+                    
+                    //JArray json = new JArray();
                     var jpListQuery = BuildJpListQuery(req.StatusLst);
-
                     string luceneQuery = BuildLuceneQuery(jpListQuery);
-                    SearchResults docs = LuceneController.Instance.Search(module.ModuleID, "Title", luceneQuery, jpListQuery.Pagination.number, jpListQuery.Pagination.currentPage);
+                    SearchResults docs = LuceneController.Instance.Search(module.ModuleID.ToString(), "Title", luceneQuery, luceneFilter, luceneSort, jpListQuery.Pagination.number, jpListQuery.Pagination.currentPage);
                     int total = docs.ToalResults;
-                    //docs = docs.Skip(jpListQuery.Pagination.currentPage * jpListQuery.Pagination.number).Take(jpListQuery.Pagination.number);
                     OpenContentController ctrl = new OpenContentController();
+                    var dataList = new List<OpenContentInfo>();
                     foreach (var item in docs.ids)
                     {
                         var content = ctrl.GetContent(int.Parse(item), module.ModuleID);
                         if (content != null)
                         {
-                            json.Add(content.Json.ToJObject("GetContent " + item));
+                            dataList.Add(content);
                         }
                     }
+                    ModelFactory mf = new ModelFactory(dataList, settings.Data, settings.Template.Uri.PhysicalFullDirectory, manifest, files, ActiveModule, PortalSettings);
+                    var model = mf.GetModelAsJson(true);  
                     var res = new ResultDTO()
                     {
-                        data = json,
+                        data = model,
                         count = total
                     };
                     return Request.CreateResponse(HttpStatusCode.OK, res);
