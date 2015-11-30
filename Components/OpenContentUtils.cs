@@ -151,7 +151,6 @@ namespace Satrabel.OpenContent.Components
                         continue;
                     }
                 }
-                IEnumerable<string> files = null;
                 string templateVirtualFolder = FolderUri.ReverseMapPath(dir);
                 var manifest = ManifestUtils.GetManifest(new FolderUri(templateVirtualFolder));
                 if (manifest != null && manifest.HasTemplates)
@@ -174,8 +173,8 @@ namespace Satrabel.OpenContent.Components
                 }
                 else
                 {
-                    files = Directory.EnumerateFiles(dir, "*.*", SearchOption.AllDirectories)
-                            .Where(s => s.EndsWith(".cshtml") || s.EndsWith(".vbhtml") || s.EndsWith(".hbs"));
+                    IEnumerable<string> files = Directory.EnumerateFiles(dir, "*.*", SearchOption.AllDirectories)
+                        .Where(s => s.EndsWith(".cshtml") || s.EndsWith(".vbhtml") || s.EndsWith(".hbs"));
                     foreach (string script in files)
                     {
                         FileUri templateUri = FileUri.FromPath(script);
@@ -201,7 +200,6 @@ namespace Satrabel.OpenContent.Components
                         lst.Add(item);
                     }
                 }
-
             }
             // skin
             basePath = HostingEnvironment.MapPath(GetSkinTemplateFolder(portalSettings, moduleSubDir));

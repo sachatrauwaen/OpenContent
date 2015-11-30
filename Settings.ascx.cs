@@ -13,6 +13,7 @@ using System;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Framework;
 using Satrabel.OpenContent.Components;
+using Satrabel.OpenContent.Components.Manifest;
 
 #endregion
 
@@ -30,7 +31,7 @@ namespace Satrabel.OpenContent
         }
         public override void LoadSettings()
         {
-            FileUri template = new OpenContentSettings(Settings).Template.Uri;
+            FileUri template = new OpenContentSettings(Settings).Template.Uri();
             scriptList.Items.AddRange(OpenContentUtils.GetTemplatesFiles(PortalSettings, ModuleId, template, "OpenContent").ToArray());
             base.LoadSettings();
         }

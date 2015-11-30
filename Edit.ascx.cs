@@ -22,6 +22,7 @@ using System.Web.Hosting;
 using Satrabel.OpenContent.Components;
 using Satrabel.OpenContent.Components.Alpaca;
 using System.Web;
+using Satrabel.OpenContent.Components.Manifest;
 
 #endregion
 
@@ -47,7 +48,7 @@ namespace Satrabel.OpenContent
             cmdSave.NavigateUrl = Globals.NavigateURL();
 
             OpenContentSettings settings = new OpenContentSettings(Settings);
-            AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, settings.Template.Uri.Path, "");
+            AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, settings.Template.Uri().Path, "");
             alpaca.RegisterAll();
         }
 

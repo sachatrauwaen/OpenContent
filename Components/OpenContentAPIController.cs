@@ -72,22 +72,22 @@ namespace Satrabel.OpenContent.Components
             try
             {
                 // schema
-                var schemaJson = JsonUtils.LoadJsonFromFile(settings.Template.Uri.UrlFolder + "schema.json");
+                var schemaJson = JsonUtils.LoadJsonFromFile(settings.Template.Uri().UrlFolder + "schema.json");
                 if (schemaJson != null)
                     json["schema"] = schemaJson;
 
                 // default options
-                var optionsJson = JsonUtils.LoadJsonFromFile(settings.Template.Uri.UrlFolder + "options.json");
+                var optionsJson = JsonUtils.LoadJsonFromFile(settings.Template.Uri().UrlFolder + "options.json");
                 if (optionsJson != null)
                     json["options"] = optionsJson;
 
                 // language options
-                optionsJson = JsonUtils.LoadJsonFromFile(settings.Template.Uri.UrlFolder + "options." + DnnUtils.GetCurrentCultureCode() + ".json");
+                optionsJson = JsonUtils.LoadJsonFromFile(settings.Template.Uri().UrlFolder + "options." + DnnUtils.GetCurrentCultureCode() + ".json");
                 if (optionsJson != null)
                     json["options"] = json["options"].JsonMerge(optionsJson);
 
                 // view
-                optionsJson = JsonUtils.LoadJsonFromFile(settings.Template.Uri.UrlFolder + "view.json");
+                optionsJson = JsonUtils.LoadJsonFromFile(settings.Template.Uri().UrlFolder + "view.json");
                 if (optionsJson != null)
                     json["view"] = optionsJson;
 

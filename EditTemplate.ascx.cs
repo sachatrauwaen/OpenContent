@@ -52,7 +52,7 @@ namespace Satrabel.OpenContent
         {
             var settings = new OpenContentSettings(ModuleContext.Settings);
             TemplateManifest template = settings.Template;
-            string templateFolder = template.Uri.UrlFolder;
+            string templateFolder = template.Uri().UrlFolder;
             string templateDir = Server.MapPath(templateFolder);
             string moduleDir = Server.MapPath(ModuleTemplateDirectory);
             if (!Directory.Exists(moduleDir))
@@ -89,9 +89,9 @@ namespace Satrabel.OpenContent
         private void InitEditor(TemplateManifest template)
         {
             LoadFiles(template);
-            var scriptFile = new FileUri(template.Uri.UrlFolder, scriptList.SelectedValue);
+            var scriptFile = new FileUri(template.Uri().UrlFolder, scriptList.SelectedValue);
             DisplayFile(scriptFile);
-            if (template.Uri.FilePath.StartsWith(ModuleTemplateDirectory))
+            if (template.Uri().FilePath.StartsWith(ModuleTemplateDirectory))
             {
                 cmdCustom.Visible = false;
             }
@@ -187,8 +187,8 @@ namespace Satrabel.OpenContent
 
 
 
-                scriptList.Items.Add(new ListItem("Stylesheet", template.Uri.FileNameWithoutExtension + ".css"));
-                scriptList.Items.Add(new ListItem("Javascript", template.Uri.FileNameWithoutExtension + ".js"));
+                scriptList.Items.Add(new ListItem("Stylesheet", template.Uri().FileNameWithoutExtension + ".css"));
+                scriptList.Items.Add(new ListItem("Javascript", template.Uri().FileNameWithoutExtension + ".js"));
                 scriptList.Items.Add(new ListItem("Schema", "schema.json"));
                 scriptList.Items.Add(new ListItem("Layout Options", "options.json"));
                 //scriptList.Items.Add(new ListItem("Edit Layout Options - Template File Overides", "options." + template.FileNameWithoutExtension + ".json"));
@@ -196,11 +196,11 @@ namespace Satrabel.OpenContent
                 {
                     scriptList.Items.Add(new ListItem("Layout Options - " + item.Code, "options." + item.Code + ".json"));
                 }
-                scriptList.Items.Add(new ListItem("Settings Schema", template.Uri.FileNameWithoutExtension + "-schema.json"));
-                scriptList.Items.Add(new ListItem("Settings Layout Options", template.Uri.FileNameWithoutExtension + "-options.json"));
+                scriptList.Items.Add(new ListItem("Settings Schema", template.Uri().FileNameWithoutExtension + "-schema.json"));
+                scriptList.Items.Add(new ListItem("Settings Layout Options", template.Uri().FileNameWithoutExtension + "-options.json"));
                 foreach (Locale item in LocaleController.Instance.GetLocales(PortalId).Values)
                 {
-                    scriptList.Items.Add(new ListItem("Settings Layout Options - " + item.Code, template.Uri.FileNameWithoutExtension + "-options." + item.Code + ".json"));
+                    scriptList.Items.Add(new ListItem("Settings Layout Options - " + item.Code, template.Uri().FileNameWithoutExtension + "-options." + item.Code + ".json"));
                 }
             }
         }
@@ -217,7 +217,7 @@ namespace Satrabel.OpenContent
 
         private void Save()
         {
-            FileUri template = new OpenContentSettings(ModuleContext.Settings).Template.Uri;
+            FileUri template = new OpenContentSettings(ModuleContext.Settings).Template.Uri();
             string templateFolder = Path.GetDirectoryName(template.FilePath);
             string scriptFile = templateFolder + "/" + scriptList.SelectedValue;
             string srcFile = Server.MapPath(scriptFile);
@@ -243,7 +243,7 @@ namespace Satrabel.OpenContent
 
         private void scriptList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            FileUri template = new OpenContentSettings(ModuleContext.Settings).Template.Uri;
+            FileUri template = new OpenContentSettings(ModuleContext.Settings).Template.Uri();
             var scriptFile = new FileUri(template.UrlFolder, scriptList.SelectedValue);
             DisplayFile(scriptFile);
         }

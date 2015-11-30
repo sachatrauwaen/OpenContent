@@ -32,17 +32,7 @@ namespace Satrabel.OpenContent.Components.Manifest
 
         public FolderUri ManifestDir { get; set; }
 
-        public FileUri Uri
-        {
-            get
-            {
-                if (_uri == null)
-                {
-                    _uri = new FileUri(ManifestDir, Main.Template);
-                }
-                return _uri;
-            }
-        }
+
         public Manifest Manifest
         {
             get

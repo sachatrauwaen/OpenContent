@@ -59,6 +59,13 @@ namespace Satrabel.OpenContent.Components.Manifest
             return templateManifest;
         }
 
+
+        internal static FileUri Uri(this TemplateManifest templateUri)
+        {
+            if (templateUri == null) return null;
+            return new FileUri(templateUri.ManifestDir, templateUri.Main.Template);
+        }
+
         private static Manifest GetManifest(TemplateKey templeteKey)
         {
             try
