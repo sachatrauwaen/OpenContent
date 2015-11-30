@@ -34,11 +34,11 @@ namespace Satrabel.OpenContent.Components
 
         public void RegisterScript(string filePath)
         {
-            if (!filePath.StartsWith("http") && !filePath.Contains("/"))
+            if (!filePath.StartsWith("http") && !filePath.StartsWith("/"))
             {
                 filePath = VirtualPath + filePath;
             }
-            if (!filePath.StartsWith("http"))
+            else if (!filePath.StartsWith("http"))
             {
                 var file = new FileUri(filePath);
                 filePath = file.UrlFilePath;
