@@ -44,17 +44,23 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
 
         public string GetImageUrl(float columnWidth, string ratioString, bool isMobile)
         {
-            if (columnWidth < 0 || columnWidth > 1) columnWidth = 1;
+            if (columnWidth < 0) columnWidth = 12;
+
             if (string.IsNullOrEmpty(ratioString)) ratioString = "1x1";
             var ratio = new Ratio(ratioString);
-            var maxWidth = ImageHelper.CalculateMaxPixels(columnWidth, isMobile);
+
+            int maxWidth;
+            if (columnWidth > 12)
+                maxWidth = (int)Math.Round(columnWidth);
+            else
+                maxWidth = ImageHelper.CalculateMaxPixels(columnWidth, isMobile);
             ratio.SetWidth(maxWidth);
             return ImageHelper.GetImageUrl(FileInfo, ratio);
         }
 
         public string GetImageUrl(string ratioString, float columnHeight, bool isMobile)
         {
-            if (columnHeight < 0 || columnHeight > 1) columnHeight = 1;
+            if (columnHeight < 0 || columnHeight > 12) columnHeight = 12;
             if (string.IsNullOrEmpty(ratioString)) ratioString = "1x1";
             var ratio = new Ratio(ratioString);
             var maxHeight = ImageHelper.CalculateMaxPixels(columnHeight, isMobile);

@@ -120,7 +120,7 @@ namespace Satrabel.OpenContent.Components
                 }
                 int folderLength = d.Length;
 
-                var res = files.Select(f => new { value = f.FileId.ToString(), url = ImageHelper.GetImageUrl(f, new Ratio(15, 15)), text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName }).Take(100);
+                var res = files.Select(f => new { value = f.FileId.ToString(), url = ImageHelper.GetImageUrl(f, new Ratio(40, 40)), text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName }).Take(100);
 
                 return Request.CreateResponse(HttpStatusCode.OK, res);
 
