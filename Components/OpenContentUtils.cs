@@ -346,7 +346,7 @@ namespace Satrabel.OpenContent.Components
                 //get the requested template key
                 //var templateManifest = manifest.Templates.First().Value;
                 //var templateUri = new FileUri(folder, templateManifest.Main.Template);
-                Template = folder.Path + "/" + manifest.Templates.First().Key;
+                Template = folder.FolderPath + "/" + manifest.Templates.First().Key;
             }
             else
             {

@@ -23,7 +23,7 @@ namespace Satrabel.OpenContent.Components
 
         }
         public PortalFileUri(FolderUri path, string filename)
-            : base(path.Path, filename)
+            : base(path.FolderPath, filename)
         {
 
         }

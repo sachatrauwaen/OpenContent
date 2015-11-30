@@ -5,7 +5,7 @@
             "type": "single", /* single or multiple*/
             "title": "{{templatekey}}",
             "main": {
-                "template": "{{templatekey}}.{{templateextention}}",
+                "template": "{{templatekey}}{{templateextention}}",
                 "schemaInTemplate": true,
                 "optionsInTemplate": true,
                 "clientSideData": false

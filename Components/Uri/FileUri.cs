@@ -26,7 +26,7 @@ namespace Satrabel.OpenContent.Components
             }
             FileName = filename;
         }
-        public FileUri(FolderUri path, string filename) : base(path.Path)
+        public FileUri(FolderUri path, string filename) : base(path.FolderPath)
         {
             if (string.IsNullOrEmpty(filename))
             {
@@ -53,7 +53,7 @@ namespace Satrabel.OpenContent.Components
         /// <value>
         /// The file path.
         /// </value>
-        public string FilePath { get { return base.Path + "/" + FileName; } }
+        public string FilePath { get { return base.FolderPath + "/" + FileName; } }
 
         public string UrlFilePath { get { return base.UrlPath + "/" + FileName; } }
 

@@ -6,7 +6,7 @@
 
         public TemplateKey(FileUri templateUri)
         {
-            _folder = templateUri.FilePath;
+            _folder = templateUri.FolderPath;
             Key = templateUri.FileNameWithoutExtension;
             Extention = templateUri.Extension == "" ? "manifest" : templateUri.Extension;
         }

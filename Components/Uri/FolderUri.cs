@@ -15,7 +15,7 @@ namespace Satrabel.OpenContent.Components
             {
                 throw new ArgumentNullException("pathToFolder is null");
             }
-            Path = NormalizePath(pathToFolder);
+            FolderPath = NormalizePath(pathToFolder);
         }
 
         protected FolderUri(IFileInfo pathToFolder)
@@ -24,7 +24,7 @@ namespace Satrabel.OpenContent.Components
             {
                 throw new ArgumentNullException("pathToFolder is null");
             }
-            Path = NormalizePath(pathToFolder.Folder);
+            FolderPath = NormalizePath(pathToFolder.Folder);
         }
 
         #endregion
@@ -44,14 +44,14 @@ namespace Satrabel.OpenContent.Components
         /// <value>
         /// The file path.
         /// </value>
-        public string Path { get; private set; }
+        public string FolderPath { get; private set; }
 
         protected string UrlPath
         {
             get
             {
-                if (NormalizedApplicationPath == "/" && Path.StartsWith("/")) return Path;
-                return NormalizedApplicationPath + Path;
+                if (NormalizedApplicationPath == "/" && FolderPath.StartsWith("/")) return FolderPath;
+                return NormalizedApplicationPath + FolderPath;
             }
         }
 
@@ -72,7 +72,7 @@ namespace Satrabel.OpenContent.Components
         {
             get
             {
-                return HostingEnvironment.MapPath("~/" + Path);
+                return HostingEnvironment.MapPath("~/" + FolderPath);
             }
         }
 

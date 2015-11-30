@@ -32,25 +32,25 @@ namespace Satrabel.OpenContent.Components
         readonly PortalSettings PortalSettings;
         readonly IEnumerable<OpenContentInfo> DataList = null;
 
-        public ModelFactory(string dataJson, string settingsJson, string PhysicalTemplateFolder, Manifest.Manifest Manifest, TemplateFiles ManifestFiles, ModuleInfo Module, PortalSettings PortalSettings)
+        public ModelFactory(string dataJson, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateFiles manifestFiles, ModuleInfo module, PortalSettings portalSettings)
         {
             this.dataJson = dataJson;
             this.settingsJson = settingsJson;
-            this.PhysicalTemplateFolder = PhysicalTemplateFolder;
-            this.Manifest = Manifest;
-            this.ManifestFiles = ManifestFiles;
-            this.Module = Module;
-            this.PortalSettings = PortalSettings;
+            this.PhysicalTemplateFolder = physicalTemplateFolder;
+            this.Manifest = manifest;
+            this.ManifestFiles = manifestFiles;
+            this.Module = module;
+            this.PortalSettings = portalSettings;
         }
-        public ModelFactory(IEnumerable<OpenContentInfo> DataList, string settingsJson, string PhysicalTemplateFolder, Manifest.Manifest Manifest, TemplateFiles ManifestFiles, ModuleInfo Module, PortalSettings PortalSettings)
+        public ModelFactory(IEnumerable<OpenContentInfo> dataList, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateFiles manifestFiles, ModuleInfo module, PortalSettings portalSettings)
         {
-            this.DataList = DataList;
+            this.DataList = dataList;
             this.settingsJson = settingsJson;
-            this.PhysicalTemplateFolder = PhysicalTemplateFolder;
-            this.Manifest = Manifest;
-            this.ManifestFiles = ManifestFiles;
-            this.Module = Module;
-            this.PortalSettings = PortalSettings;
+            this.PhysicalTemplateFolder = physicalTemplateFolder;
+            this.Manifest = manifest;
+            this.ManifestFiles = manifestFiles;
+            this.Module = module;
+            this.PortalSettings = portalSettings;
         }
         public dynamic GetModelAsDynamic()
         {

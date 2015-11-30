@@ -186,7 +186,7 @@ namespace Satrabel.OpenContent
             }
             else // this module
             {
-                _info.SetDataSourceModule(_settings.TabId, _settings.ModuleId, ModuleContext.Configuration, null, "");
+                _info.SetDataSourceModule(_settings.TabId, ModuleContext.ModuleId, ModuleContext.Configuration, null, "");
             }
 
             //start rendering
@@ -633,8 +633,7 @@ namespace Satrabel.OpenContent
                 if (string.IsNullOrEmpty(_info.SettingsJson))
                 {
                     string schemaFilename = _info.Template.Uri().PhysicalFullDirectory + "\\" + _info.Template.Uri().FileNameWithoutExtension + "-schema.json";
-                    bool settingsNeeded = File.Exists(schemaFilename);
-                    dataExists = !settingsNeeded;
+                    dataExists = File.Exists(schemaFilename);
                 }
                 else
                 {
@@ -688,7 +687,7 @@ namespace Satrabel.OpenContent
             FileUri dataFilename = null;
             if (info.Template != null)
             {
-                dataFilename = new FileUri(info.Template.Uri().PhysicalFullDirectory + "\\" + "data.json"); ;
+                dataFilename = new FileUri(info.Template.Uri().UrlFolder + "data.json"); ;
             }
             if (dataFilename != null && dataFilename.FileExists)
             {
