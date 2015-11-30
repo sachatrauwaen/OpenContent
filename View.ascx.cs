@@ -505,7 +505,7 @@ namespace Satrabel.OpenContent
                         {
                             // for list templates a main template need to be defined
 
-                            GetDataList(_info, _settings, _info.Template.ClientSide);
+                            GetDataList(_info, _settings, _info.Template.ClientSideData);
                             if (_info.DataExist)
                             {
                                 _info.OutputString = GenerateListOutput(_settings.Template.Uri().UrlFolder, _info.Template.Main, _info.DataList, _info.SettingsJson);
@@ -596,76 +596,6 @@ namespace Satrabel.OpenContent
                 return hbEngine.Execute(Page, this, files, TemplateVirtualFolder, model);
             }
         }
-
-        private void CompleteModel(string settingsJson, string PhysicalTemplateFolder, dynamic model, TemplateFiles manifest)
-        {
-            if (manifest != null && manifest.SchemaInTemplate)
-            {
-                // schema
-                string schemaFilename = PhysicalTemplateFolder + "\\" + "schema.json";
-                try
-                {
-                    dynamic schema = JsonUtils.JsonToDynamic(File.ReadAllText(schemaFilename));
-                    model.Schema = schema;
-                }
-                catch (Exception ex)
-                {
-                    Exceptions.ProcessModuleLoadException(string.Format("Invalid json-schema. Please verify file {0}.", schemaFilename), this, ex, true);
-                }
-            }
-            if (manifest != null && manifest.OptionsInTemplate)
-            {
-                // options
-                JToken optionsJson = null;
-                // default options
-                string optionsFilename = PhysicalTemplateFolder + "\\" + "options.json";
-                if (File.Exists(optionsFilename))
-                {
-                    string fileContent = File.ReadAllText(optionsFilename);
-                    if (!string.IsNullOrWhiteSpace(fileContent))
-                    {
-                        optionsJson = fileContent.ToJObject("Options");
-                    }
-                }
-                // language options
-                optionsFilename = PhysicalTemplateFolder + "\\" + "options." + DnnUtils.GetCurrentCultureCode() + ".json";
-                if (File.Exists(optionsFilename))
-                {
-                    string fileContent = File.ReadAllText(optionsFilename);
-                    if (!string.IsNullOrWhiteSpace(fileContent))
-                    {
-                        var extraJson = fileContent.ToJObject("Options cultureSpecific");
-                        if (optionsJson == null)
-                            optionsJson = extraJson;
-                        else
-                            optionsJson = optionsJson.JsonMerge(extraJson);
-                    }
-                }
-                if (optionsJson != null)
-                {
-                    dynamic Options = JsonUtils.JsonToDynamic(optionsJson.ToString());
-                    model.Options = Options;
-                }
-            }
-            // settings
-            if (settingsJson != null)
-            {
-                model.Settings = JsonUtils.JsonToDynamic(settingsJson);
-            }
-            string editRole = _info.Template.Manifest == null ? "" : _info.Template.Manifest.EditRole;
-            // context
-            model.Context = new ExpandoObject();
-            model.Context.ModuleId = ModuleContext.ModuleId;
-            model.Context.ModuleTitle = ModuleContext.Configuration.ModuleTitle;
-            model.Context.AddUrl = ModuleContext.EditUrl();
-            model.Context.IsEditable = ModuleContext.IsEditable ||
-                                       (!string.IsNullOrEmpty(editRole) &&
-                                        OpenContentUtils.HasEditPermissions(ModuleContext.PortalSettings, _info.Module, editRole, -1));
-            model.Context.PortalId = ModuleContext.PortalId;
-            model.Context.MainUrl = Globals.NavigateURL(ModuleContext.TabId, false, ModuleContext.PortalSettings, "", DnnUtils.GetCurrentCultureCode());
-
-        }
-
         private FileUri CheckFiles(string templateVirtualFolder, TemplateFiles files, string templateFolder)
         {
             if (files == null)
@@ -743,7 +673,7 @@ namespace Satrabel.OpenContent
         {
             _info.ResetData();
             OpenContentController ctrl = new OpenContentController();
-            var struc = ctrl.GetContent(info.DetailItemId, info.ModuleId);
+            var struc = ctrl.GetContent(info.DetailItemId);
             if (struc != null)
             {
                 _info.SetData(struc.Json, settings.Data, true);
@@ -1129,7 +1059,7 @@ namespace Satrabel.OpenContent
                     if (template.Main != null)
                     {
                         // for list templates a main template need to be defined
-                        GetDataList(_info, _settings, template.ClientSide);
+                        GetDataList(_info, _settings, template.ClientSideData);
                         if (_info.DataExist && !(_info.Template.Uri().SettingsNeeded() && _info.SettingsJson == null))
                         {
                             _info.OutputString = GenerateListOutput(_info.Template.Uri().UrlFolder, template.Main, _info.DataList, _info.SettingsJson);

@@ -6,5 +6,9 @@ namespace Satrabel.OpenContent.Components.Manifest
     {
         [JsonProperty(PropertyName = "template")]
         public string Template { get; set; }
+
+        [JsonProperty(PropertyName = "clientSide")]
+        public bool ClientSide { get; set; }
+
     }
 }

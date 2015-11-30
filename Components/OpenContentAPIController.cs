@@ -124,7 +124,7 @@ namespace Satrabel.OpenContent.Components
             {
                 if (id > 0)
                 {
-                    return ctrl.GetContent(id, moduleId);
+                    return ctrl.GetContent(id);
                 }
             }
             else
@@ -248,6 +248,7 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
+                bool Index = false;
                 OpenContentSettings settings = new OpenContentSettings(ActiveModule.ModuleSettings);
                 ModuleInfo module = ActiveModule;
                 if (settings.ModuleId > 0)
@@ -256,6 +257,7 @@ namespace Satrabel.OpenContent.Components
                 }
                 var manifest = settings.Template.Manifest;
                 TemplateManifest templateManifest = settings.Template;
+                    Index = settings.Template.Manifest.Index;
                 string editRole = manifest == null ? "" : manifest.EditRole;
 
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
@@ -267,7 +269,7 @@ namespace Satrabel.OpenContent.Components
                     int itemId;
                     if (json["id"] != null && int.TryParse(json["id"].ToString(), out itemId))
                     {
-                        content = ctrl.GetContent(itemId, module.ModuleID);
+                        content = ctrl.GetContent(itemId);
                         if (content != null)
                             createdByUserid = content.CreatedByUserId;
                     }
@@ -297,7 +299,7 @@ namespace Satrabel.OpenContent.Components
                         LastModifiedOnDate = DateTime.Now,
                         Html = "",
                     };
-                    ctrl.AddContent(content);
+                    ctrl.AddContent(content, Index);
                 }
                 else
                 {
@@ -305,7 +307,7 @@ namespace Satrabel.OpenContent.Components
                     content.Json = json["form"].ToString();
                     content.LastModifiedByUserId = UserInfo.UserID;
                     content.LastModifiedOnDate = DateTime.Now;
-                    ctrl.UpdateContent(content);
+                    ctrl.UpdateContent(content, Index);
                 }
                 if (json["form"]["ModuleTitle"] != null && json["form"]["ModuleTitle"].Type == JTokenType.String)
                 {
@@ -328,6 +330,7 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
+                bool Index = false;
                 OpenContentSettings settings = new OpenContentSettings(ActiveModule.ModuleSettings);
                 ModuleInfo module = ActiveModule;
                 if (settings.ModuleId > 0)
@@ -336,6 +339,7 @@ namespace Satrabel.OpenContent.Components
                 }
                 var manifest = settings.Template.Manifest;
                 TemplateManifest templateManifest = settings.Template;
+				Index = manifest.Index;
                 string editRole = manifest == null ? "" : manifest.EditRole;
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 int CreatedByUserid = -1;
@@ -346,7 +350,7 @@ namespace Satrabel.OpenContent.Components
                     int ItemId;
                     if (int.TryParse(json["id"].ToString(), out ItemId))
                     {
-                        content = ctrl.GetContent(ItemId, module.ModuleID);
+                        content = ctrl.GetContent(ItemId);
                         if (content != null)
                         {
                             CreatedByUserid = content.CreatedByUserId;
@@ -367,7 +371,7 @@ namespace Satrabel.OpenContent.Components
                 }
                 if (content != null)
                 {
-                    ctrl.DeleteContent(content);
+                    ctrl.DeleteContent(content, Index);
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, "");
             }

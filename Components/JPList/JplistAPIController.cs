@@ -6,6 +6,10 @@ using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Lucene;
 using System;
 using System.Collections.Generic;
+
+using System.Diagnostics;
+using System.IO;
+
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -27,6 +31,11 @@ namespace Satrabel.OpenContent.Components.JPList
         {
             try
             {
+                //Stopwatch stopwatch = new Stopwatch();
+                //stopwatch.Start();
+                //stopwatch.Stop();
+                //Debug.WriteLine("List:" + stopwatch.ElapsedMilliseconds); 
+                
                 OpenContentSettings settings = new OpenContentSettings(ActiveModule.ModuleSettings);
                 ModuleInfo module = ActiveModule;
                 if (settings.ModuleId > 0)
@@ -45,7 +54,6 @@ namespace Satrabel.OpenContent.Components.JPList
 
                 string editRole = manifest == null ? "" : manifest.EditRole;
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
-
                 if (listMode)
                 {
                     string luceneFilter = "";
@@ -62,9 +70,9 @@ namespace Satrabel.OpenContent.Components.JPList
                             luceneSort = set["LuceneSort"].ToString();
                         }
                     }
-                    
                     //JArray json = new JArray();
                     var jpListQuery = BuildJpListQuery(req.StatusLst);
+
                     string luceneQuery = BuildLuceneQuery(jpListQuery);
                     SearchResults docs = LuceneController.Instance.Search(module.ModuleID.ToString(), "Title", luceneQuery, luceneFilter, luceneSort, jpListQuery.Pagination.number, jpListQuery.Pagination.currentPage);
                     int total = docs.ToalResults;
@@ -72,7 +80,7 @@ namespace Satrabel.OpenContent.Components.JPList
                     var dataList = new List<OpenContentInfo>();
                     foreach (var item in docs.ids)
                     {
-                        var content = ctrl.GetContent(int.Parse(item), module.ModuleID);
+                        var content = ctrl.GetContent(int.Parse(item));
                         if (content != null)
                         {
                             dataList.Add(content);
@@ -85,6 +93,7 @@ namespace Satrabel.OpenContent.Components.JPList
                         data = model,
                         count = total
                     };
+                    
                     return Request.CreateResponse(HttpStatusCode.OK, res);
                 }
                 else

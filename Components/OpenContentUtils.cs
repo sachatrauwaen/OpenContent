@@ -48,40 +48,9 @@ namespace Satrabel.OpenContent.Components
         }
 
 
-        //public static FileUri GetTemplateOld(Hashtable moduleSettings)
-        //{
-        //    var template = moduleSettings["template"] as string;
-        //    if (!string.IsNullOrEmpty(template))
-        //    {
-        //        return new FileUri(template);
-        //    }
-        //    return null;
-        //}
-
-
-        //public static FileUri GetTemplate(Hashtable moduleSettings)
-        //{
-        //    OpenContentSettings settings = new OpenContentSettings(moduleSettings);
-        //    Manifest deepManifest;
-        //    TemplateManifest deepTemplateManifest;
-        //    var retval = GetTemplate(settings, out deepManifest, out deepTemplateManifest);
-        //    return retval;
-        //}
-
-        //public static FileUri GetTemplate(Hashtable moduleSettings, out Manifest manifest, out TemplateManifest templateManifest)
-        //{
-        //    OpenContentSettings settings = new OpenContentSettings(moduleSettings);
-        //    Manifest deepManifest;
-        //    TemplateManifest deepTemplateManifest;
-        //    var retval = GetTemplate(settings, out deepManifest, out deepTemplateManifest);
-        //    manifest = deepManifest;
-        //    templateManifest = deepTemplateManifest;
-        //    return retval;
-        //}
 
 
 
-     
 
 
         public static List<System.Web.UI.WebControls.ListItem> GetTemplates(PortalSettings portalSettings, int moduleId, string selectedTemplate, string moduleSubDir)

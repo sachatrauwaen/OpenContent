@@ -119,8 +119,6 @@ namespace Satrabel.OpenContent.Components
         {
             throw new NotImplementedException();
         }
-
-
         private dynamic GetModelAsDynamicFromList()
         {
             dynamic model = new ExpandoObject();
@@ -293,26 +291,21 @@ namespace Satrabel.OpenContent.Components
             model["Context"] = context;
             context["ModuleId"] = Module.ModuleID;
             context["ModuleTitle"] = Module.ModuleTitle;
-
             context["AddUrl"] = EditUrl();
             context["IsEditable"] = IsEditable ||
                                       (!string.IsNullOrEmpty(editRole) &&
                                         OpenContentUtils.HasEditPermissions(PortalSettings, Module, editRole, -1));
             context["PortalId"] = PortalSettings.PortalId;
             context["MainUrl"] = Globals.NavigateURL(Module.TabID, false, PortalSettings, "", DnnUtils.GetCurrentCultureCode());
-
         }
-        
         public string EditUrl()
         {
             return EditUrl("", "", "Edit");
         }
-
         public string EditUrl(string controlKey)
         {
             return EditUrl("", "", controlKey);
         }
-
         public string EditUrl(string keyName, string keyValue)
         {
             return EditUrl(keyName, keyValue, "Edit");
@@ -353,12 +346,10 @@ namespace Satrabel.OpenContent.Components
 
             return NavigateUrl(PortalSettings.ActiveTab.TabID, key, false, parameters);
         }
-
         public string NavigateUrl(int tabID, string controlKey, bool pageRedirect, params string[] additionalParameters)
         {
             return NavigateUrl(tabID, controlKey, Globals.glbDefaultPage, pageRedirect, additionalParameters);
         }
-
         public string NavigateUrl(int tabID, string controlKey, string pageName, bool pageRedirect, params string[] additionalParameters)
         {
             var isSuperTab = Globals.IsHostTab(tabID);
@@ -376,7 +367,6 @@ namespace Satrabel.OpenContent.Components
             }
             return url;
         }
-
         internal static string GetCultureCode(int TabID, bool IsSuperTab, PortalSettings settings)
         {
             string cultureCode = Null.NullString;
@@ -395,8 +385,6 @@ namespace Satrabel.OpenContent.Components
 
             return cultureCode;
         }
-
-
         private bool? _isEditable;
         public bool IsEditable
         {

@@ -4,6 +4,7 @@ namespace Satrabel.OpenContent.Components.Manifest
 {
     public class TemplateManifest
     {
+
         private FileUri _uri;
         private Manifest _manifest;
 
@@ -19,8 +20,8 @@ namespace Satrabel.OpenContent.Components.Manifest
         [JsonProperty(PropertyName = "detail")]
         public TemplateFiles Detail { get; set; }
 
-        [JsonProperty(PropertyName = "clientSide")]
-        public bool ClientSide { get; set; }
+        [JsonProperty(PropertyName = "clientSideData")]
+        public bool ClientSideData { get; set; }
 
         public bool IsListTemplate
         {
@@ -31,7 +32,6 @@ namespace Satrabel.OpenContent.Components.Manifest
         }
 
         public FolderUri ManifestDir { get; set; }
-
 
         public Manifest Manifest
         {
@@ -44,5 +44,6 @@ namespace Satrabel.OpenContent.Components.Manifest
                 return _manifest;
             }
         }
+
     }
 }

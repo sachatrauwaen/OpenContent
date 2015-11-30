@@ -23,7 +23,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         /// <returns></returns>
         public static int CalculateMaxPixels(float columnWidth, bool isMobile, bool retina = true)
         {
-            if (columnWidth < 0 || columnWidth > 1) columnWidth = 1;
+            if (columnWidth < 0 || columnWidth > 12) columnWidth = 1;
             if (isMobile && retina)
             {
                 return Convert.ToInt32(2 * 768 * columnWidth);
@@ -79,7 +79,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
                             var cropratio = new Ratio(w, h);
                             if (Math.Abs(cropratio.AsFloat - ratio.AsFloat) < 0.02) //allow 2% margin
                             {
-                                return url + string.Format("?crop={0},{1},{2},{3}", x, y, w, h);
+                                return url + string.Format("?crop={0},{1},{2},{3}", x, y, ratio.Width, ratio.Height);
                             }
                         }
                     }
