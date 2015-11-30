@@ -92,30 +92,36 @@ namespace Satrabel.OpenContent
                 lc.Commit();
                 lc.OptimizeSearchIndex(true);
                 LuceneController.ClearInstance();
-                return;
-                var oc = occ.GetContent(89, ModuleId);
+            }
+        }
+
+        protected void bGenerate_Click(object sender, EventArgs e)
+        {
+            OpenContentController occ = new OpenContentController();
+        
+            var oc = occ.GetFirstContent(ModuleId);
+            if (oc != null)
+            {
                 var data = JObject.Parse(oc.Json);
                 for (int i = 0; i < 10000; i++)
                 {
                     data["Title"] = "Title " + i;
                     var newoc = new OpenContentInfo()
                     {
-                        Title = "check"+i,
+                        Title = "check" + i,
                         ModuleId = ModuleId,
-                        Html ="tst",
+                        Html = "tst",
                         Json = data.ToString(),
                         CreatedByUserId = UserId,
                         CreatedOnDate = DateTime.Now,
                         LastModifiedByUserId = UserId,
                         LastModifiedOnDate = DateTime.Now
-                       
+
                     };
-                    occ.AddContent(newoc);
+                    occ.AddContent(newoc, true);
                 }
-
-
             }
-            
+
         }
     }
 }

@@ -235,20 +235,12 @@ namespace Satrabel.OpenContent.Components.Lucene
             {
                 return null;
             }
-            var maxResults = PageIndex * PageSize;
-            var minResults = maxResults - PageSize + 1;
             var searcher = GetSearcher();
-            /*
-            var searchSecurityTrimmer = new SearchSecurityTrimmer(new SearchSecurityTrimmerContext
-                {
-                    Searcher = searcher,
-                    SecurityChecker = searchContext.SecurityCheckerDelegate,
-                    LuceneQuery = searchContext.LuceneQuery,
-                    SearchQuery = searchContext.SearchQuery
-                });
-             */
-            var topDocs = searcher.Search(type, Filter, Query,  (PageIndex + 1) * PageSize /*, null , searchSecurityTrimmer*/, Sort);
-            //luceneResults.TotalHits = searchSecurityTrimmer.TotalHits;
+            TopDocs topDocs;
+            if (Filter == null)
+                topDocs = searcher.Search(type, Query, (PageIndex + 1) * PageSize, Sort);
+            else
+                topDocs = searcher.Search(type, Filter, Query,  (PageIndex + 1) * PageSize , Sort);
             luceneResults.ToalResults = topDocs.TotalHits;
             luceneResults.ids = topDocs.ScoreDocs.Skip(PageIndex * PageSize).Select(d => searcher.Doc(d.Doc).GetField("$id").StringValue).ToArray();
             return luceneResults;
@@ -258,15 +250,16 @@ namespace Satrabel.OpenContent.Components.Lucene
         {
             var analyzer = new StandardAnalyzer(global::Lucene.Net.Util.Version.LUCENE_30);
             var parser = new QueryParser(global::Lucene.Net.Util.Version.LUCENE_30, DefaultFieldName, analyzer);
-
-            var filter = ParseQuery(Filter, parser);
-            var query = ParseQuery(Query, parser);
-
+            Query filter = null;
+            if (!string.IsNullOrEmpty(Filter))
+            {
+                filter = ParseQuery(Filter, parser);
+            }
+            Query query = ParseQuery(Query, parser);
             var sort = Sort.RELEVANCE;
             if (!string.IsNullOrEmpty(Sorts)){
                 sort = new Sort(new SortField(Sorts, SortField.STRING));
             }
-                
             return Search(type, filter, query, sort,PageSize, PageIndex);
         }
         private static Query ParseQuery(string searchQuery, QueryParser parser)

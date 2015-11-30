@@ -49,6 +49,7 @@ using DotNetNuke.Security.Roles;
 using DotNetNuke.Entities.Users;
 using DotNetNuke.Instrumentation;
 using DotNetNuke.Services.Installer.Log;
+using Satrabel.OpenContent.Components.Lucene;
 
 
 #endregion
@@ -115,10 +116,28 @@ namespace Satrabel.OpenContent
                 }
                 IncludeResourses(_info.Template);
                 //if (DemoData) pDemo.Visible = true;
-                if (_info.TemplateManifest != null && _info.TemplateManifest.IsListTemplate)
+                if (_info.TemplateManifest != null && _info.TemplateManifest.ClientSideData)
                 {
                     DotNetNuke.Framework.ServicesFramework.Instance.RequestAjaxScriptSupport();
                     DotNetNuke.Framework.ServicesFramework.Instance.RequestAjaxAntiForgerySupport();
+                }
+                if (_info.Files != null && _info.Files.PartialTemplates != null)
+                {
+                    foreach (var item in _info.Files.PartialTemplates.Where(p=> p.Value.ClientSide))
+                    {
+                        try
+                        {
+                            var f = new FileUri(_info.Template.Path, item.Value.Template);
+                            string s = File.ReadAllText(f.PhysicalFilePath);
+                            var litPartial = new LiteralControl(s);
+                            Controls.Add(litPartial);
+                        }
+                        catch (Exception ex)
+                        {
+                            DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, ex.Message, DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
+                        }
+                        
+                    }
                 }
 
             }
@@ -199,8 +218,9 @@ namespace Satrabel.OpenContent
                     // List template
                     if (TemplateManifest.Main != null)
                     {
+                        _info.Files = TemplateManifest.Main;
                         // for list templates a main template need to be defined
-                        GetDataList(_info, _settings, TemplateManifest.ClientSide);
+                        GetDataList(_info, _settings, TemplateManifest.ClientSideData);
                         if (_info.DataExist && !(SettingsNeeded(_info.Template) && _info.SettingsJson == null))
                         {
                             _info.OutputString = GenerateListOutput(_info.Template.UrlFolder, TemplateManifest.Main, _info.DataList, _info.SettingsJson);
@@ -333,8 +353,9 @@ namespace Satrabel.OpenContent
                         // List template
                         if (_info.TemplateManifest.Main != null)
                         {
+                            _info.Files = _info.TemplateManifest.Main;
                             // for list templates a main template need to be defined
-                            GetDataList(_info, _settings, _info.TemplateManifest.ClientSide);
+                            GetDataList(_info, _settings, _info.TemplateManifest.ClientSideData);
                             if (_info.DataExist)
                             {
                                 _info.OutputString = GenerateListOutput(_settings.Template.UrlFolder, _info.TemplateManifest.Main, _info.DataList, _info.SettingsJson);
@@ -346,6 +367,7 @@ namespace Satrabel.OpenContent
                         // detail template
                         if (_info.TemplateManifest.Detail != null)
                         {
+                            _info.Files = _info.TemplateManifest.Detail;
                             GetDetailData(_info, _settings);
                             if (_info.DataExist)
                             {
@@ -404,7 +426,7 @@ namespace Satrabel.OpenContent
                 }
             }
             _settings = new OpenContentSettings(modSettings);
-            
+
         }
         private string GenerateOutput(FileUri template, string dataJson, string settingsJson, TemplateFiles files)
         {
@@ -491,7 +513,7 @@ namespace Satrabel.OpenContent
                     if (dataList != null /*&& dataList.Any()*/)
                     {
                         ModelFactory mf = new ModelFactory(dataList, settingsJson, PhysicalTemplateFolder, _info.Manifest, files, ModuleContext.Configuration, ModuleContext.PortalSettings);
-                        dynamic model = mf.GetModelAsDynamic();                                                        
+                        dynamic model = mf.GetModelAsDynamic();
 
                         //string editRole = _info.Manifest == null ? "" : _info.Manifest.EditRole;
                         //dynamic model = new ExpandoObject();
@@ -505,7 +527,7 @@ namespace Satrabel.OpenContent
                         //    }
                         //    dynamic dyn = JsonUtils.JsonToDynamic(dataJson);
 
-                            
+
                         //    dyn.Context = new ExpandoObject();
                         //    dyn.Context.Id = item.ContentId;
                         //    dyn.Context.EditUrl = ModuleContext.EditUrl("id", item.ContentId.ToString());
@@ -621,7 +643,7 @@ namespace Satrabel.OpenContent
 
                         ModelFactory mf = new ModelFactory(dataJson, settingsJson, PhysicalTemplateFolder, _info.Manifest, files, ModuleContext.Configuration, ModuleContext.PortalSettings);
                         dynamic model = mf.GetModelAsDynamic();
-                        
+
                         Page.Title = model.Title + " | " + ModuleContext.PortalSettings.PortalName;
                         /*
                         var container = Globals.FindControlRecursive(this, "ctr" + ModuleContext.ModuleId);
@@ -631,7 +653,7 @@ namespace Satrabel.OpenContent
                             ((Label)ctl).Text = model.Title;
                         }
                         */
-                        
+
                         return ExecuteTemplate(TemplateVirtualFolder, files, template, model);
                     }
                     else
@@ -744,13 +766,11 @@ namespace Satrabel.OpenContent
             info.DataJson = "";
             info.SettingsJson = "";
             OpenContentController ctrl = new OpenContentController();
-            var struc = ctrl.GetContent(info.ItemId, info.ModuleId);
+            var struc = ctrl.GetContent(info.ItemId);
             if (struc != null)
             {
                 info.DataJson = struc.Json;
                 info.SettingsJson = settings.Data;
-
-
                 info.DataExist = true;
             }
 
@@ -762,6 +782,7 @@ namespace Satrabel.OpenContent
             OpenContentController ctrl = new OpenContentController();
             if (ClientSide)
             {
+                // check if data is present, but dont return data
                 var data = ctrl.GetFirstContent(info.ModuleId);
                 if (data != null)
                 {
@@ -770,9 +791,31 @@ namespace Satrabel.OpenContent
                     info.DataExist = true;
                 }
             }
-            else 
+            else
             {
-                info.DataList = ctrl.GetContents(info.ModuleId);
+                bool useLucene = info.Manifest.Index;
+                if (useLucene)
+                {
+                    string luceneFilter = settings.LuceneFilter;
+                    string luceneSort = settings.LuceneSort;
+                    int? luceneMaxResults = settings.LuceneMaxResults;
+                    SearchResults docs = LuceneController.Instance.Search(_info.ModuleId.ToString(), "Title", "", luceneFilter, luceneSort, (luceneMaxResults.HasValue ? luceneMaxResults.Value : 100), 0);
+                    int total = docs.ToalResults;
+                    var dataList = new List<OpenContentInfo>();
+                    foreach (var item in docs.ids)
+                    {
+                        var content = ctrl.GetContent(int.Parse(item));
+                        if (content != null)
+                        {
+                            dataList.Add(content);
+                        }
+                    }
+                    info.DataList = dataList;
+                }
+                else
+                {
+                    info.DataList = ctrl.GetContents(info.ModuleId);
+                }
                 if (info.DataList != null && info.DataList.Any())
                 {
                     info.SettingsJson = settings.Data;

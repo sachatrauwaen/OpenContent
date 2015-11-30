@@ -21,7 +21,7 @@ namespace Satrabel.OpenContent.Components
 {
     public class OpenContentController
     {
-        public void AddContent(OpenContentInfo Content)
+        public void AddContent(OpenContentInfo Content, bool Index)
         {
             OpenContentVersion ver = new OpenContentVersion()
             {
@@ -37,19 +37,25 @@ namespace Satrabel.OpenContent.Components
                 var rep = ctx.GetRepository<OpenContentInfo>();
                 rep.Insert(Content);
             }
-            LuceneController.Instance.Add(Content);
-            LuceneController.Instance.Commit();
+            if (Index)
+            {
+                LuceneController.Instance.Add(Content);
+                LuceneController.Instance.Commit();
+            }
         }
 
-        public void DeleteContent(OpenContentInfo Content)
+        public void DeleteContent(OpenContentInfo Content, bool Index)
         {
             using (IDataContext ctx = DataContext.Instance())
             {
                 var rep = ctx.GetRepository<OpenContentInfo>();
                 rep.Delete(Content);
             }
-            LuceneController.Instance.Delete(Content);
-            LuceneController.Instance.Commit();
+            if (Index)
+            {
+                LuceneController.Instance.Delete(Content);
+                LuceneController.Instance.Commit();
+            }
         }
 
         public IEnumerable<OpenContentInfo> GetContents(int moduleId)
@@ -63,7 +69,7 @@ namespace Satrabel.OpenContent.Components
             }
             return Contents;
         }
-
+        /* slow !!!
         public OpenContentInfo GetContent(int ContentId, int moduleId)
         {
             OpenContentInfo Content;
@@ -71,11 +77,22 @@ namespace Satrabel.OpenContent.Components
             using (IDataContext ctx = DataContext.Instance())
             {
                 var rep = ctx.GetRepository<OpenContentInfo>();
-                Content = rep.GetById(ContentId, moduleId);
+                Content = rep.GetById(ContentId, moduleId);                
             }
             return Content;
         }
+         */
+        public OpenContentInfo GetContent(int ContentId)
+        {
+            OpenContentInfo Content;
 
+            using (IDataContext ctx = DataContext.Instance())
+            {
+                var rep = ctx.GetRepository<OpenContentInfo>();                
+                Content = rep.GetById(ContentId);
+            }
+            return Content;
+        }
         public OpenContentInfo GetFirstContent(int moduleId)
         {
             OpenContentInfo Content;
@@ -88,7 +105,7 @@ namespace Satrabel.OpenContent.Components
             return Content;
         }
 
-        public void UpdateContent(OpenContentInfo Content)
+        public void UpdateContent(OpenContentInfo Content, bool Index)
         {
             OpenContentVersion ver = new OpenContentVersion()
             {
@@ -111,8 +128,11 @@ namespace Satrabel.OpenContent.Components
                 var rep = ctx.GetRepository<OpenContentInfo>();
                 rep.Update(Content);
             }
-            LuceneController.Instance.Update(Content);
-            LuceneController.Instance.Commit();
+            if (Index)
+            {
+                LuceneController.Instance.Update(Content);
+                LuceneController.Instance.Commit();
+            }
         }
 
     }
