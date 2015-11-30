@@ -7,7 +7,8 @@
             "main": {
                 "template": "{{templatekey}}.{{templateextention}}",
                 "schemaInTemplate": true,
-                "optionsInTemplate": true
+                "optionsInTemplate": true,
+                "clientSideData": false
             }
         }
     }
