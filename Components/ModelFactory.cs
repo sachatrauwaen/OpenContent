@@ -17,6 +17,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Web;
+using Satrabel.OpenContent.Components.Manifest;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -25,13 +26,13 @@ namespace Satrabel.OpenContent.Components
         string dataJson;
         string settingsJson;
         string PhysicalTemplateFolder;
-        Manifest Manifest;
+        Manifest.Manifest Manifest;
         TemplateFiles ManifestFiles;
         ModuleInfo Module;
         PortalSettings PortalSettings;
         IEnumerable<OpenContentInfo> DataList = null;
 
-        public ModelFactory(string dataJson, string settingsJson, string PhysicalTemplateFolder, Manifest Manifest, TemplateFiles ManifestFiles, ModuleInfo Module, PortalSettings PortalSettings)
+        public ModelFactory(string dataJson, string settingsJson, string PhysicalTemplateFolder, Manifest.Manifest Manifest, TemplateFiles ManifestFiles, ModuleInfo Module, PortalSettings PortalSettings)
         {
             this.dataJson = dataJson;
             this.settingsJson = settingsJson;
@@ -41,7 +42,7 @@ namespace Satrabel.OpenContent.Components
             this.Module = Module;
             this.PortalSettings = PortalSettings;
         }
-        public ModelFactory(IEnumerable<OpenContentInfo> DataList, string settingsJson, string PhysicalTemplateFolder, Manifest Manifest, TemplateFiles ManifestFiles, ModuleInfo Module, PortalSettings PortalSettings)
+        public ModelFactory(IEnumerable<OpenContentInfo> DataList, string settingsJson, string PhysicalTemplateFolder, Manifest.Manifest Manifest, TemplateFiles ManifestFiles, ModuleInfo Module, PortalSettings PortalSettings)
         {
             this.DataList = DataList;
             this.settingsJson = settingsJson;

@@ -28,7 +28,7 @@ using DotNetNuke.Common;
 using DotNetNuke.Services.FileSystem;
 using System.Collections.Generic;
 using Satrabel.OpenContent.Components.Lucene;
-
+using Satrabel.OpenContent.Components.Manifest;
 
 #endregion
 
@@ -428,7 +428,7 @@ namespace Satrabel.OpenContent.Components
         {
             ModuleController mc = new ModuleController();
             var module = mc.GetModule(req.moduleid, req.tabid, false);
-            Manifest manifest;
+            Manifest.Manifest manifest;
             TemplateManifest templateManifest;
             FileUri template = OpenContentUtils.GetTemplate(module.ModuleSettings, out manifest, out templateManifest);
             bool listMode = templateManifest != null && templateManifest.IsListTemplate;

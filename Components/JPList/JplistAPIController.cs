@@ -19,6 +19,8 @@ using System.Net;
 using System.Net.Http;
 using System.Web;
 using System.Web.Http;
+using Satrabel.OpenContent.Components.Manifest;
+
 //using Satrabel.OpenContent.Components;
 //using Satrabel.OpenContent.Components.TemplateHelpers;
 //using TemplateHelper = Satrabel.OpenDocument.Components.Template.TemplateHelper;

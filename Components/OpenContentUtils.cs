@@ -21,6 +21,7 @@ using System.Web.UI.WebControls;
 using DotNetNuke.UI.Modules;
 using DotNetNuke.Security.Permissions;
 using DotNetNuke.Security;
+using Satrabel.OpenContent.Components.Manifest;
 
 
 namespace Satrabel.OpenContent.Components
@@ -61,16 +62,16 @@ namespace Satrabel.OpenContent.Components
         public static FileUri GetTemplate(Hashtable moduleSettings)
         {
             OpenContentSettings settings = new OpenContentSettings(moduleSettings);
-            Manifest deepManifest;
+            Manifest.Manifest deepManifest;
             TemplateManifest deepTemplateManifest;
             var retval = GetTemplate(settings, out deepManifest, out deepTemplateManifest);
             return retval;
         }
 
-        public static FileUri GetTemplate(Hashtable moduleSettings, out Manifest manifest, out TemplateManifest templateManifest)
+        public static FileUri GetTemplate(Hashtable moduleSettings, out Manifest.Manifest manifest, out TemplateManifest templateManifest)
         {
             OpenContentSettings settings = new OpenContentSettings(moduleSettings);
-            Manifest deepManifest;
+            Manifest.Manifest deepManifest;
             TemplateManifest deepTemplateManifest;
             var retval = GetTemplate(settings, out deepManifest, out deepTemplateManifest);
             manifest = deepManifest;
@@ -78,7 +79,7 @@ namespace Satrabel.OpenContent.Components
             return retval;
         }
 
-        public static FileUri GetTemplate(OpenContentSettings settings, out Manifest manifest, out TemplateManifest templateManifest)
+        public static FileUri GetTemplate(OpenContentSettings settings, out Manifest.Manifest manifest, out TemplateManifest templateManifest)
         {
             FileUri templateUri = null;
             manifest = null;
@@ -98,16 +99,16 @@ namespace Satrabel.OpenContent.Components
             return settings.Template;
         }
 
-        public static Manifest GetManifest(FolderUri folder)
+        public static Manifest.Manifest GetManifest(FolderUri folder)
         {
             try
             {
-                Manifest manifest = null;
+                Manifest.Manifest manifest = null;
                 var file = new FileUri(folder.UrlFolder, "manifest.json");
                 if (file.FileExists)
                 {
                     string content = File.ReadAllText(file.PhysicalFilePath);
-                    manifest = JsonConvert.DeserializeObject<Manifest>(content);
+                    manifest = JsonConvert.DeserializeObject<Manifest.Manifest>(content);
                 }
                 return manifest;
             }
@@ -126,7 +127,7 @@ namespace Satrabel.OpenContent.Components
                 throw new ArgumentNullException("template is null");
             }
             TemplateManifest templateManifest = null;
-            Manifest manifest = GetManifest(template);
+            Manifest.Manifest manifest = GetManifest(template);
             if (manifest != null)
             {
                 templateManifest = manifest.GetTemplateManifest(template);
@@ -525,81 +526,4 @@ namespace Satrabel.OpenContent.Components
         }
 
     }
-    public class TemplateManifest
-    {
-        [JsonProperty(PropertyName = "type")]
-        public string Type { get; set; }
-        [JsonProperty(PropertyName = "title")]
-        public string Title { get; set; }
-        [JsonProperty(PropertyName = "main")]
-        public TemplateFiles Main { get; set; }
-        [JsonProperty(PropertyName = "detail")]
-        public TemplateFiles Detail { get; set; }
-        [JsonProperty(PropertyName = "clientSideData")]
-        public bool ClientSideData { get; set; }
-
-        public bool IsListTemplate
-        {
-            get
-            {
-                return Type == "multiple";
-            }
-        }
-
-    }
-    public class PartialTemplate
-    {
-        [JsonProperty(PropertyName = "template")]
-        public string Template { get; set; }
-        [JsonProperty(PropertyName = "clientSide")]
-        public bool ClientSide { get; set; }
-
-    }
-    public class TemplateFiles
-    {
-        [JsonProperty(PropertyName = "template")]
-        public string Template { get; set; }
-        [JsonProperty(PropertyName = "partialTemplates")]
-        public Dictionary<string, PartialTemplate> PartialTemplates { get; set; }
-        [JsonProperty(PropertyName = "schemaInTemplate")]
-        public bool SchemaInTemplate { get; set; }
-        [JsonProperty(PropertyName = "optionsInTemplate")]
-        public bool OptionsInTemplate { get; set; }
-    }
-
-    public class Manifest
-    {
-        [JsonProperty(PropertyName = "developmentPath")]
-        public bool DevelopmentPath { get; set; }
-        [JsonProperty(PropertyName = "editWitoutPostback")]
-        public bool EditWitoutPostback { get; set; }
-        [JsonProperty(PropertyName = "templates")]
-        public Dictionary<string, TemplateManifest> Templates { get; set; }
-        [JsonProperty(PropertyName = "additionalEditControl")]
-        public string AdditionalEditControl { get; set; }
-        [JsonProperty(PropertyName = "editRole")]
-        public string EditRole { get; set; }
-        [JsonProperty(PropertyName = "index")]
-        public bool Index { get; set; }
- 
-        public bool HasTemplates { get { return (Templates != null); } }
-
-        public TemplateManifest GetTemplateManifest(FileUri template)
-        {
-            if (Templates != null && Templates.ContainsKey(template.FileNameWithoutExtension))
-            {
-                return Templates[template.FileNameWithoutExtension];
-            }
-            return null;
-        }
-        public TemplateManifest GetTemplateManifest(string templateKey)
-        {
-            if (Templates != null && Templates.ContainsKey(templateKey))
-            {
-                return Templates[templateKey];
-            }
-            return null;
-        }
-    }
-
 }
