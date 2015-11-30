@@ -18,7 +18,7 @@ using System.Web.UI.WebControls;
 using DotNetNuke.Services.Localization;
 using System.IO;
 using Satrabel.OpenContent.Components;
-
+using Satrabel.OpenContent.Components.Manifest;
 
 #endregion
 

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Satrabel.OpenContent.Components.Manifest;
 
 
 namespace Satrabel.OpenContent.Components
@@ -40,7 +41,7 @@ namespace Satrabel.OpenContent.Components
 
         public ModuleInfo Module { get; set; }
         public TemplateManifest TemplateManifest { get; set; }
-        public Manifest Manifest { get; set; }
+        public Manifest.Manifest Manifest { get; set; }
         public TemplateFiles Files { get; set; }
     }
 }
