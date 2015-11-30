@@ -161,10 +161,15 @@ namespace Satrabel.OpenContent
             OpenContentController ctrl = new OpenContentController();
             TemplateManifest template = null;
             OpenContentSettings settings = new OpenContentSettings(Settings);
+            bool Index = false;
             if (settings.TemplateAvailable)
             {
                 Manifest manifest = null;
                 OpenContentUtils.GetTemplate(settings, out manifest, out template);
+                if (manifest != null)
+                {
+                    Index = manifest.Index;
+                }
             }
             if (template != null && template.IsListTemplate)
             {
@@ -177,7 +182,7 @@ namespace Satrabel.OpenContent
                 var dataList = ctrl.GetContents(ModuleId);
                 foreach (var item in dataList)
                 {
-                    ctrl.DeleteContent(item);
+                    ctrl.DeleteContent(item, Index);
                 }
                 if (lst != null)
                 {
@@ -194,7 +199,7 @@ namespace Satrabel.OpenContent
                             Html = "",
                             Json = json.ToString()
                         };
-                        ctrl.AddContent(data);
+                        ctrl.AddContent(data, Index);
                     }
                 }
             }
@@ -206,7 +211,7 @@ namespace Satrabel.OpenContent
                 {
                     if (data != null)
                     {
-                        ctrl.DeleteContent(data);
+                        ctrl.DeleteContent(data, Index);
                     }
                 }
                 else
@@ -225,7 +230,7 @@ namespace Satrabel.OpenContent
                             Html = "",
                             Json = txtSource.Text
                         };
-                        ctrl.AddContent(data);
+                        ctrl.AddContent(data, Index);
                     }
                     else
                     {
@@ -233,7 +238,7 @@ namespace Satrabel.OpenContent
                         data.LastModifiedByUserId = UserInfo.UserID;
                         data.LastModifiedOnDate = DateTime.Now;
                         data.Json = txtSource.Text;
-                        ctrl.UpdateContent(data);
+                        ctrl.UpdateContent(data, Index);
                     }
 
                     if (json["ModuleTitle"] != null && json["ModuleTitle"].Type == JTokenType.String)

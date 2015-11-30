@@ -535,8 +535,8 @@ namespace Satrabel.OpenContent.Components
         public TemplateFiles Main { get; set; }
         [JsonProperty(PropertyName = "detail")]
         public TemplateFiles Detail { get; set; }
-        [JsonProperty(PropertyName = "clientSide")]
-        public bool ClientSide { get; set; }
+        [JsonProperty(PropertyName = "clientSideData")]
+        public bool ClientSideData { get; set; }
 
         public bool IsListTemplate
         {
@@ -551,23 +551,20 @@ namespace Satrabel.OpenContent.Components
     {
         [JsonProperty(PropertyName = "template")]
         public string Template { get; set; }
+        [JsonProperty(PropertyName = "clientSide")]
+        public bool ClientSide { get; set; }
+
     }
     public class TemplateFiles
     {
         [JsonProperty(PropertyName = "template")]
         public string Template { get; set; }
-
         [JsonProperty(PropertyName = "partialTemplates")]
         public Dictionary<string, PartialTemplate> PartialTemplates { get; set; }
-
         [JsonProperty(PropertyName = "schemaInTemplate")]
         public bool SchemaInTemplate { get; set; }
-
         [JsonProperty(PropertyName = "optionsInTemplate")]
         public bool OptionsInTemplate { get; set; }
-
-        
-
     }
 
     public class Manifest
@@ -582,7 +579,9 @@ namespace Satrabel.OpenContent.Components
         public string AdditionalEditControl { get; set; }
         [JsonProperty(PropertyName = "editRole")]
         public string EditRole { get; set; }
-
+        [JsonProperty(PropertyName = "index")]
+        public bool Index { get; set; }
+ 
         public bool HasTemplates { get { return (Templates != null); } }
 
         public TemplateManifest GetTemplateManifest(FileUri template)

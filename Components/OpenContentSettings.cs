@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,7 @@ namespace Satrabel.OpenContent.Components
 {
     public class OpenContentSettings
     {
+        private JObject _json = null;
         public OpenContentSettings(Hashtable moduleSettings)
         {
             var template = moduleSettings["template"] as string;    //path+file  of //manifestpath+key
@@ -47,5 +49,55 @@ namespace Satrabel.OpenContent.Components
         }
 
         public bool TemplateAvailable { get { return Template != null; } }
+
+        public JObject DataAsJson
+        {
+            get
+            {
+                if (_json == null)
+                {
+                    _json = JObject.Parse(Data);
+
+                }
+                return _json;
+            }
+        }
+
+        public string LuceneFilter
+        {
+            get
+            {
+                var filter = DataAsJson["LuceneFilter"];
+                if (filter != null)
+                    return filter.ToString();
+                else
+                    return "";
+            }
+        }
+        public string LuceneSort
+        {
+            get
+            {
+                var filter = DataAsJson["LuceneSort"];
+                if (filter != null)
+                    return filter.ToString();
+                else
+                    return "";
+            }
+        }
+
+        public int? LuceneMaxResults
+        {
+            get
+            {
+                int maxResults = 0;
+                var sMaxResults = DataAsJson["LuceneMaxResults"];
+
+                if (sMaxResults != null && int.TryParse(sMaxResults.ToString(), out maxResults))
+                    return maxResults;
+                else
+                    return null;
+            }
+        }
     }
 }
