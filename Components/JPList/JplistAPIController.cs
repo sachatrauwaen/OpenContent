@@ -35,7 +35,7 @@ namespace Satrabel.OpenContent.Components.JPList
                 //stopwatch.Start();
                 //stopwatch.Stop();
                 //Debug.WriteLine("List:" + stopwatch.ElapsedMilliseconds); 
-                
+
                 OpenContentSettings settings = new OpenContentSettings(ActiveModule.ModuleSettings);
                 ModuleInfo module = ActiveModule;
                 if (settings.ModuleId > 0)
@@ -72,8 +72,12 @@ namespace Satrabel.OpenContent.Components.JPList
                     }
                     //JArray json = new JArray();
                     var jpListQuery = BuildJpListQuery(req.StatusLst);
-
                     string luceneQuery = BuildLuceneQuery(jpListQuery);
+                    if (jpListQuery.Sorts.Any())
+                    {
+                        var sort = jpListQuery.Sorts.First();
+                        luceneSort = sort.path + " " + sort.order;
+                    }
                     SearchResults docs = LuceneController.Instance.Search(module.ModuleID.ToString(), "Title", luceneQuery, luceneFilter, luceneSort, jpListQuery.Pagination.number, jpListQuery.Pagination.currentPage);
                     int total = docs.ToalResults;
                     OpenContentController ctrl = new OpenContentController();
@@ -93,7 +97,7 @@ namespace Satrabel.OpenContent.Components.JPList
                         data = model,
                         count = total
                     };
-                    
+
                     return Request.CreateResponse(HttpStatusCode.OK, res);
                 }
                 else
@@ -164,6 +168,8 @@ namespace Satrabel.OpenContent.Components.JPList
                                     });
                                 }
                             }
+
+
                             break;
                         }
 
@@ -180,6 +186,16 @@ namespace Satrabel.OpenContent.Components.JPList
 
             }
             return query;
+        }
+
+        private DateTime? ParseIsoDateTime(string date)
+        {
+            // "2010-08-20T15:00:00Z"
+            DateTime dt;
+            if (DateTime.TryParse(date, null, System.Globalization.DateTimeStyles.RoundtripKind, out dt))
+                return dt;
+            else
+                return null;
         }
 
         private string BuildLuceneQuery(JpListQueryDTO jpListQuery)

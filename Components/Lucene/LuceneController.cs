@@ -258,7 +258,23 @@ namespace Satrabel.OpenContent.Components.Lucene
             Query query = ParseQuery(Query, parser);
             var sort = Sort.RELEVANCE;
             if (!string.IsNullOrEmpty(Sorts)){
-                sort = new Sort(new SortField(Sorts, SortField.STRING));
+                var sortArray = Sorts.Split(',');
+                var sortFields = new List<SortField>();
+                foreach (var item in sortArray)
+                {
+                    bool reverse = false;
+                    var sortElements = item.Split(' ');
+                    if (sortElements.Length > 1 && sortElements[1].ToLower() == "desc"){
+                        reverse = true;
+                    }
+                    int sortfieldtype = SortField.STRING;
+                    if (sortElements[0].ToLower().Contains("date"))
+                    {
+                        sortfieldtype = SortField.LONG;
+                    }
+                    sortFields.Add(new SortField(sortElements[0], sortfieldtype, reverse));
+                }
+                sort = new Sort(sortFields.ToArray());
             }
             return Search(type, filter, query, sort,PageSize, PageIndex);
         }
