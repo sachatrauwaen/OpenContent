@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using DotNetNuke.Services.Installer.Log;
 using Newtonsoft.Json;
 
 namespace Satrabel.OpenContent.Components.Manifest
@@ -46,9 +47,8 @@ namespace Satrabel.OpenContent.Components.Manifest
             }
             catch (Exception ex)
             {
-                //we should log this
-                if (Debugger.IsAttached) Debugger.Break();
-                return null;
+                Log.Logger.ErrorFormat("Failed to load manifest from folder {0}. Error:{1}", folder.UrlFolder, ex.ToString());
+                throw ex;
             }
         }
 
@@ -68,25 +68,29 @@ namespace Satrabel.OpenContent.Components.Manifest
 
         private static Manifest GetManifest(TemplateKey templeteKey)
         {
-            try
-            {
-                Manifest manifest = null;
-                var file = new FileUri("DesktopModules/OpenContent/Templates", "default-manifest.json");
-                if (file.FileExists)
-                {
-                    string content = File.ReadAllText(file.PhysicalFilePath);
-                    content = content.Replace("{{templatekey}}", templeteKey.Key);
-                    content = content.Replace("{{templateextention}}", templeteKey.Extention);
-                    manifest = JsonConvert.DeserializeObject<Manifest>(content);
-                }
-                return manifest;
-            }
-            catch (Exception ex)
-            {
-                //we should log this
-                if (Debugger.IsAttached) Debugger.Break();
-                return null;
-            }
+            string content = @"
+                                    {
+                                        ""editWitoutPostback"": false,
+                                        ""templates"": {
+                                            ""{{templatekey}}"": {
+                                                ""type"": ""single"", /* single or multiple*/
+                                                ""title"": ""{{templatekey}}"",
+                                                ""main"": {
+                                                    ""template"": ""{{templatekey}}{{templateextention}}"",
+                                                    ""schemaInTemplate"": true,
+                                                    ""optionsInTemplate"": true,
+                                                    ""clientSideData"": false
+                                                }
+                                            }
+                                        }
+                                    }
+                                ";
+
+            Manifest manifest = null;
+            content = content.Replace("{{templatekey}}", templeteKey.Key);
+            content = content.Replace("{{templateextention}}", templeteKey.Extention);
+            manifest = JsonConvert.DeserializeObject<Manifest>(content);
+            return manifest;
         }
 
         #endregion

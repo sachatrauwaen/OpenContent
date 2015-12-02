@@ -9,7 +9,7 @@ namespace Satrabel.OpenContent.Components
     /// <summary>
     /// Utility class containing several commonly used procedures by Stefan Kamphuis
     /// </summary>
-    public static class Logging
+    public static class Log
     {
         public static ILog Logger
         {

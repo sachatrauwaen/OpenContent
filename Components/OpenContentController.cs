@@ -21,53 +21,53 @@ namespace Satrabel.OpenContent.Components
 {
     public class OpenContentController
     {
-        public void AddContent(OpenContentInfo Content, bool Index)
+        public void AddContent(OpenContentInfo content, bool index)
         {
             OpenContentVersion ver = new OpenContentVersion()
             {
-                Json = Content.Json.ToJObject("Adding Content"),
-                CreatedByUserId = Content.LastModifiedByUserId,
-                CreatedOnDate = Content.LastModifiedOnDate
+                Json = content.Json.ToJObject("Adding Content"),
+                CreatedByUserId = content.LastModifiedByUserId,
+                CreatedOnDate = content.LastModifiedOnDate
             };
             var versions = new List<OpenContentVersion>();
             versions.Add(ver);
-            Content.Versions = versions;
+            content.Versions = versions;
             using (IDataContext ctx = DataContext.Instance())
             {
                 var rep = ctx.GetRepository<OpenContentInfo>();
-                rep.Insert(Content);
+                rep.Insert(content);
             }
-            if (Index)
+            if (index)
             {
-                LuceneController.Instance.Add(Content);
+                LuceneController.Instance.Add(content);
                 LuceneController.Instance.Commit();
             }
         }
 
-        public void DeleteContent(OpenContentInfo Content, bool Index)
+        public void DeleteContent(OpenContentInfo content, bool Index)
         {
             using (IDataContext ctx = DataContext.Instance())
             {
                 var rep = ctx.GetRepository<OpenContentInfo>();
-                rep.Delete(Content);
+                rep.Delete(content);
             }
             if (Index)
             {
-                LuceneController.Instance.Delete(Content);
+                LuceneController.Instance.Delete(content);
                 LuceneController.Instance.Commit();
             }
         }
 
         public IEnumerable<OpenContentInfo> GetContents(int moduleId)
         {
-            IEnumerable<OpenContentInfo> Contents;
+            IEnumerable<OpenContentInfo> content;
 
             using (IDataContext ctx = DataContext.Instance())
             {
                 var rep = ctx.GetRepository<OpenContentInfo>();
-                Contents = rep.Get(moduleId);
+                content = rep.Get(moduleId);
             }
-            return Contents;
+            return content;
         }
         /* slow !!!
         public OpenContentInfo GetContent(int ContentId, int moduleId)
@@ -82,55 +82,55 @@ namespace Satrabel.OpenContent.Components
             return Content;
         }
          */
-        public OpenContentInfo GetContent(int ContentId)
+        public OpenContentInfo GetContent(int contentId)
         {
-            OpenContentInfo Content;
-
-            using (IDataContext ctx = DataContext.Instance())
-            {
-                var rep = ctx.GetRepository<OpenContentInfo>();                
-                Content = rep.GetById(ContentId);
-            }
-            return Content;
-        }
-        public OpenContentInfo GetFirstContent(int moduleId)
-        {
-            OpenContentInfo Content;
+            OpenContentInfo content;
 
             using (IDataContext ctx = DataContext.Instance())
             {
                 var rep = ctx.GetRepository<OpenContentInfo>();
-                Content = rep.Get(moduleId).FirstOrDefault();
+                content = rep.GetById(contentId);
             }
-            return Content;
+            return content;
+        }
+        public OpenContentInfo GetFirstContent(int moduleId)
+        {
+            OpenContentInfo content;
+
+            using (IDataContext ctx = DataContext.Instance())
+            {
+                var rep = ctx.GetRepository<OpenContentInfo>();
+                content = rep.Get(moduleId).FirstOrDefault();
+            }
+            return content;
         }
 
-        public void UpdateContent(OpenContentInfo Content, bool Index)
+        public void UpdateContent(OpenContentInfo content, bool index)
         {
             OpenContentVersion ver = new OpenContentVersion()
             {
-                Json = Content.Json.ToJObject("UpdateContent"),
-                CreatedByUserId = Content.LastModifiedByUserId,
-                CreatedOnDate = Content.LastModifiedOnDate
+                Json = content.Json.ToJObject("UpdateContent"),
+                CreatedByUserId = content.LastModifiedByUserId,
+                CreatedOnDate = content.LastModifiedOnDate
             };
-            var versions = Content.Versions;
-            if (versions.Count == 0 || versions[0].Json.ToString() != Content.Json)
+            var versions = content.Versions;
+            if (versions.Count == 0 || versions[0].Json.ToString() != content.Json)
             {
                 versions.Insert(0, ver);
                 if (versions.Count > 5)
                 {
                     versions.RemoveAt(versions.Count - 1);
                 }
-                Content.Versions = versions;
+                content.Versions = versions;
             }
             using (IDataContext ctx = DataContext.Instance())
             {
                 var rep = ctx.GetRepository<OpenContentInfo>();
-                rep.Update(Content);
+                rep.Update(content);
             }
-            if (Index)
+            if (index)
             {
-                LuceneController.Instance.Update(Content);
+                LuceneController.Instance.Update(content);
                 LuceneController.Instance.Commit();
             }
         }
