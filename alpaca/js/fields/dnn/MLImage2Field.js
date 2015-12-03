@@ -1,6 +1,5 @@
 ﻿(function($) {
 
-
     var Alpaca = $.alpaca;
         
     Alpaca.Fields.MLImage2Field = Alpaca.Fields.Image2Field.extend(

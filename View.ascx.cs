@@ -75,7 +75,8 @@ namespace Satrabel.OpenContent
             {
                 _info.TabId = _settings.TabId;
                 _info.ModuleId = _settings.ModuleId;
-                _info.Module = ModuleController.Instance.GetModule(_info.ModuleId, _info.TabId, false);
+                ModuleController mc = new ModuleController();
+                _info.Module = mc.GetModule(_info.ModuleId, _info.TabId, false);
             }
             else // this module
             {
@@ -170,7 +171,8 @@ namespace Satrabel.OpenContent
             }
             if (rblDataSource.SelectedIndex == 1) // other module
             {
-                var dsModule = ModuleController.Instance.GetTabModule(int.Parse(ddlDataSource.SelectedValue));
+                ModuleController mc = new ModuleController();
+                var dsModule = mc.GetTabModule(int.Parse(ddlDataSource.SelectedValue));
                 var dsSettings = new OpenContentSettings(dsModule.ModuleSettings);
                 _info.OtherModuleSettingsJson = dsSettings.Data;
                 _info.OtherModuleTemplate = dsSettings.Template;
@@ -303,7 +305,8 @@ namespace Satrabel.OpenContent
         }
         private void BindOtherModules(int TabId, int ModuleId)
         {
-            var modules = ModuleController.Instance.GetModules(ModuleContext.PortalId).Cast<ModuleInfo>();
+            ModuleController mc = new ModuleController();
+            var modules = mc.GetModules(ModuleContext.PortalId).Cast<ModuleInfo>();
             modules = modules.Where(m => m.ModuleDefinition.DefinitionName == "OpenContent" && m.IsDeleted == false);
             rblDataSource.Items[1].Enabled = modules.Any();
             phDataSource.Visible = rblDataSource.SelectedIndex == 1; // other module
@@ -320,7 +323,7 @@ namespace Satrabel.OpenContent
                 if (item.TabModuleID != ModuleContext.TabModuleId)
                 {
                     var tc = new TabController();
-                    var Tab = tc.GetTab(item.TabID, ModuleContext.PortalId);
+                    var Tab = tc.GetTab(item.TabID, ModuleContext.PortalId, false);
                     var li = new ListItem(Tab.TabName + " - " + item.ModuleTitle, item.TabModuleID.ToString());
                     ddlDataSource.Items.Add(li);
                     if (item.TabID == TabId && item.ModuleID == ModuleId)
@@ -411,16 +414,20 @@ namespace Satrabel.OpenContent
                 {
                     if (ModuleContext.ModuleId != defaultModule.ModuleID)
                     {
-                        var mc = ModuleController.Instance;
+                        ModuleController mc = new ModuleController();
+                        
                         mc.DeLocalizeModule(module);
 
                         mc.ClearCache(defaultModule.TabID);
                         mc.ClearCache(module.TabID);
-                        DataCache.RemoveCache(string.Format(DataCache.ModuleSettingsCacheKey, defaultModule.TabID));
-                        DataCache.RemoveCache(string.Format(DataCache.ModuleSettingsCacheKey, module.TabID));
+                        
+                        const string ModuleSettingsCacheKey = "ModuleSettings{0}"; // to be compatible with dnn 7.2
+                        DataCache.RemoveCache(string.Format(ModuleSettingsCacheKey, defaultModule.TabID));
+                        DataCache.RemoveCache(string.Format(ModuleSettingsCacheKey, module.TabID));
 
                         //DataCache.ClearCache();
-                        module = ModuleController.Instance.GetModule(defaultModule.ModuleID, ModuleContext.TabId, true);
+
+                        module = mc.GetModule(defaultModule.ModuleID, ModuleContext.TabId, true);
                         modSettings = module.ModuleSettings;
                     }
                 }
@@ -1176,7 +1183,7 @@ namespace Satrabel.OpenContent
                 }
                 else // other module
                 {
-                    var dsModule = ModuleController.Instance.GetTabModule(int.Parse(ddlDataSource.SelectedValue));
+                    var dsModule = mc.GetTabModule(int.Parse(ddlDataSource.SelectedValue));
                     mc.UpdateModuleSetting(ModuleContext.ModuleId, "tabid", dsModule.TabID.ToString());
                     mc.UpdateModuleSetting(ModuleContext.ModuleId, "moduleid", dsModule.ModuleID.ToString());
                 }
@@ -1227,7 +1234,8 @@ namespace Satrabel.OpenContent
 
         protected void ddlDataSource_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var dsModule = ModuleController.Instance.GetTabModule(int.Parse(ddlDataSource.SelectedValue));
+            ModuleController mc = new ModuleController();
+            var dsModule = mc.GetTabModule(int.Parse(ddlDataSource.SelectedValue));
             var dsSettings = new OpenContentSettings(dsModule.ModuleSettings);
             BindTemplates(dsSettings.Template, dsSettings.Template);
         }
@@ -1254,7 +1262,8 @@ namespace Satrabel.OpenContent
             {
                 //BindOtherModules(dsModule.TabID, dsModule.ModuleID);
                 BindOtherModules(-1, -1);
-                var dsModule = ModuleController.Instance.GetTabModule(int.Parse(ddlDataSource.SelectedValue));
+                ModuleController mc = new ModuleController();
+                var dsModule = mc.GetTabModule(int.Parse(ddlDataSource.SelectedValue));
                 var dsSettings = new OpenContentSettings(dsModule.ModuleSettings);
                 BindTemplates(dsSettings.Template, dsSettings.Template);
             }

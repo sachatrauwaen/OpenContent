@@ -372,7 +372,8 @@ namespace Satrabel.OpenContent.Components
             string cultureCode = Null.NullString;
             if (settings != null)
             {
-                TabInfo linkTab = TabController.Instance.GetTab(TabID, IsSuperTab ? Null.NullInteger : settings.PortalId, false);
+                TabController tc = new TabController();
+                TabInfo linkTab = tc.GetTab(TabID, IsSuperTab ? Null.NullInteger : settings.PortalId, false);
                 if (linkTab != null)
                 {
                     cultureCode = linkTab.CultureCode;

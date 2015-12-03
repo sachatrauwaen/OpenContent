@@ -42,9 +42,9 @@ namespace Satrabel.OpenContent
             base.OnLoad(e);
             if (!Page.IsPostBack)
             {
-                var pc = PortalController.Instance;
+                var pc = new PortalController();
                 ddlRoles.Items.Add(new ListItem("None", "-1"));
-                RoleController rc = new RoleController();
+                var rc = new RoleController();                
                 foreach (var role in rc.GetRoles(PortalId))
                 {
                     ddlRoles.Items.Add(new ListItem(role.RoleName, role.RoleID.ToString()));

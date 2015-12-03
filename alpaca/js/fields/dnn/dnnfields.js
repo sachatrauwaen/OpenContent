@@ -3769,7 +3769,6 @@
 ///#source 1 1 MLImage2Field.js
 (function($) {
 
-
     var Alpaca = $.alpaca;
         
     Alpaca.Fields.MLImage2Field = Alpaca.Fields.Image2Field.extend(
