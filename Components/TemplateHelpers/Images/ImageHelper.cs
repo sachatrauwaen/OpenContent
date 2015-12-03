@@ -56,7 +56,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
 
             var url = file.ToUrl();
             if (url.Contains("LinkClick.aspx")) return url;
-            if (ModuleDefinitionController.GetModuleDefinitionByFriendlyName("OpenDocument") == null) return url;
+            if (ModuleDefinitionController.GetModuleDefinitionByFriendlyName("OpenFiles") == null) return url;
 
             url = url.RemoveQueryParams();
 

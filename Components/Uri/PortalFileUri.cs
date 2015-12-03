@@ -63,7 +63,7 @@ namespace Satrabel.OpenContent.Components
         {
             if (_fileMetaData == null)
             {
-                if (ModuleDefinitionController.GetModuleDefinitionByFriendlyName("OpenDocument") == null)
+                if (ModuleDefinitionController.GetModuleDefinitionByFriendlyName("OpenFiles") == null)
                     _fileMetaData = JObject.Parse("{}");
                 else if (FileInfo.ContentItemID <= 0)
                     _fileMetaData = JObject.Parse("{}");
@@ -85,7 +85,7 @@ namespace Satrabel.OpenContent.Components
         }
 
         /// <summary>
-        /// Get a value from the OpenDocument Metadata attached to a PortalFile.
+        /// Get a value from the OpenFiles Metadata attached to a PortalFile.
         /// </summary>
         /// <param name="fieldname">The fieldname.</param>
         /// <param name="defaultValue">The default value.</param>
@@ -100,7 +100,7 @@ namespace Satrabel.OpenContent.Components
         }
 
         /// <summary>
-        /// Get a value from the OpenDocument Metadata attached to a PortalFile.
+        /// Get a value from the OpenFiles Metadata attached to a PortalFile.
         /// </summary>
         /// <param name="fieldname">The fieldname.</param>
         /// <param name="defaultValue">The default value.</param>
