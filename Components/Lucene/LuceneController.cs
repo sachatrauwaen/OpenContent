@@ -27,6 +27,7 @@ using DotNetNuke.Services.Search;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Util;
 using Lucene.Net.QueryParsers;
+using Satrabel.OpenContent.Components.Lucene.Mapping;
 
 #endregion
 
@@ -122,7 +123,7 @@ namespace Satrabel.OpenContent.Components.Lucene
 
                             CheckDisposed();
                             var writer = new IndexWriter(FSDirectory.Open(IndexFolder),
-                                new StandardAnalyzer(global::Lucene.Net.Util.Version.LUCENE_30), IndexWriter.MaxFieldLength.UNLIMITED);
+                                JsonMappingUtils.GetAnalyser(), IndexWriter.MaxFieldLength.UNLIMITED);
                             _idxReader = writer.GetReader();
                             Thread.MemoryBarrier();
                             _writer = writer;
@@ -242,14 +243,13 @@ namespace Satrabel.OpenContent.Components.Lucene
             else
                 topDocs = searcher.Search(type, Filter, Query,  (PageIndex + 1) * PageSize , Sort);
             luceneResults.ToalResults = topDocs.TotalHits;
-            luceneResults.ids = topDocs.ScoreDocs.Skip(PageIndex * PageSize).Select(d => searcher.Doc(d.Doc).GetField("$id").StringValue).ToArray();
+            luceneResults.ids = topDocs.ScoreDocs.Skip(PageIndex * PageSize).Select(d => searcher.Doc(d.Doc).GetField(JsonMappingUtils.FieldId).StringValue).ToArray();
             return luceneResults;
         }
 
         public SearchResults Search(string type, string DefaultFieldName, string Filter, string Query, string Sorts, int PageSize, int PageIndex)
         {
-            var analyzer = new StandardAnalyzer(global::Lucene.Net.Util.Version.LUCENE_30);
-            var parser = new QueryParser(global::Lucene.Net.Util.Version.LUCENE_30, DefaultFieldName, analyzer);
+            var parser = new QueryParser(global::Lucene.Net.Util.Version.LUCENE_30, DefaultFieldName, JsonMappingUtils.GetAnalyser());
             Query filter = null;
             if (!string.IsNullOrEmpty(Filter))
             {
@@ -272,7 +272,7 @@ namespace Satrabel.OpenContent.Components.Lucene
                     {
                         sortfieldtype = SortField.LONG;
                     }
-                    sortFields.Add(new SortField(sortElements[0], sortfieldtype, reverse));
+                    sortFields.Add(new SortField("@"+sortElements[0], sortfieldtype, reverse));
                 }
                 sort = new Sort(sortFields.ToArray());
             }
