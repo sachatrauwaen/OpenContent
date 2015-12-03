@@ -67,7 +67,7 @@ namespace Satrabel.OpenContent.Components
         /// <param name="moduleSubDir">The module sub dir.</param>
         /// <returns></returns>
         /// <remarks>Used by OpenForms</remarks>
-        [Obsolete("This method is obsolete; use GetTemplatesFiles(PortalSettings portalSettings, int moduleId, FileUri selectedTemplate, string moduleSubDir) instead")]
+        [Obsolete("This method is obsolete since dec 2015; use GetTemplatesFiles(PortalSettings portalSettings, int moduleId, FileUri selectedTemplate, string moduleSubDir) instead")]
         public static List<ListItem> GetTemplatesFiles(PortalSettings portalSettings, int moduleId, string selectedTemplate, string moduleSubDir)
         {
             return GetTemplatesFiles(portalSettings, moduleId, new FileUri(selectedTemplate), moduleSubDir);

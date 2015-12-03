@@ -9,6 +9,8 @@
 ' DEALINGS IN THE SOFTWARE.
 ' 
 */
+
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using DotNetNuke.Data;
@@ -21,6 +23,12 @@ namespace Satrabel.OpenContent.Components
 {
     public class OpenContentController
     {
+        [Obsolete("This method is obsolete since dec 2015; use AddContent(OpenContentInfo content, bool index) instead")]
+        public void AddContent(OpenContentInfo content)
+        {
+            AddContent(content, false);
+        }
+
         public void AddContent(OpenContentInfo content, bool index)
         {
             OpenContentVersion ver = new OpenContentVersion()
@@ -103,6 +111,12 @@ namespace Satrabel.OpenContent.Components
                 content = rep.Get(moduleId).FirstOrDefault();
             }
             return content;
+        }
+
+        [Obsolete("This method is obsolete since dec 2015; use UpdateContent(OpenContentInfo content, bool index) instead")]
+        public void UpdateContent(OpenContentInfo content)
+        {
+            UpdateContent(content, false);
         }
 
         public void UpdateContent(OpenContentInfo content, bool index)
