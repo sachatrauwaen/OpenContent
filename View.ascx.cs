@@ -766,6 +766,7 @@ namespace Satrabel.OpenContent
             }
             rblUseTemplate.Items[1].Enabled = rblDataSource.SelectedIndex == 0; // this module
             ddlDataSource.Items.Clear();
+            var listItems = new List<ListItem>();
             foreach (var item in modules)
             {
                 if (item.TabModuleID != ModuleContext.TabModuleId)
@@ -773,12 +774,16 @@ namespace Satrabel.OpenContent
                     var tc = new TabController();
                     var tab = tc.GetTab(item.TabID, ModuleContext.PortalId, false);
                     var li = new ListItem(tab.TabName + " - " + item.ModuleTitle, item.TabModuleID.ToString());
-                    ddlDataSource.Items.Add(li);
+                    listItems.Add(li);
                     if (item.TabID == tabId && item.ModuleID == moduleId)
                     {
                         li.Selected = true;
                     }
                 }
+            }
+            foreach (ListItem li in listItems.OrderBy(x => x.Text))
+            {
+                ddlDataSource.Items.Add(li);
             }
         }
 
