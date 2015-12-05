@@ -115,6 +115,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
 
                     case JTokenType.String:
                         doc.Add(new Field(prefix, value.Value.ToString(), Field.Store.NO, Field.Index.ANALYZED));
+                        doc.Add(new Field("@"+prefix, Truncate(value.Value.ToString(), 100), Field.Store.NO, Field.Index.NOT_ANALYZED));
                         break;
 
                     case JTokenType.TimeSpan:
@@ -134,6 +135,11 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
             {
                 Debug.Fail("Unsupported JToken: " + token);
             }
+        }
+
+        public static string Truncate(string str, int maxLength)
+        {
+            return str.Substring(0, Math.Min(str.Length, maxLength));
         }
 
         /// <summary>

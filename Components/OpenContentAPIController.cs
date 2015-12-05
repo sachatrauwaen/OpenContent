@@ -61,7 +61,8 @@ namespace Satrabel.OpenContent.Components
             ModuleInfo module = ActiveModule;
             if (settings.ModuleId > 0)
             {
-                module = ModuleController.Instance.GetModule(settings.ModuleId, settings.TabId, false);
+                ModuleController mc = new ModuleController();
+                module = mc.GetModule(settings.ModuleId, settings.TabId, false);
             }
             var manifest = settings.Manifest;
             TemplateManifest templateManifest = settings.Template;
@@ -167,7 +168,8 @@ namespace Satrabel.OpenContent.Components
             ModuleInfo module = ActiveModule;
             if (settings.ModuleId > 0)
             {
-                module = ModuleController.Instance.GetModule(settings.ModuleId, settings.TabId, false);
+                ModuleController mc = new ModuleController();
+                module = mc.GetModule(settings.ModuleId, settings.TabId, false);
             }
             var manifest = settings.Template.Manifest;
             var templateManifest = settings.Template;
@@ -253,7 +255,8 @@ namespace Satrabel.OpenContent.Components
                 ModuleInfo module = ActiveModule;
                 if (settings.ModuleId > 0)
                 {
-                    module = ModuleController.Instance.GetModule(settings.ModuleId, settings.TabId, false);
+                    ModuleController mc = new ModuleController();
+                    module = mc.GetModule(settings.ModuleId, settings.TabId, false);
                 }
                 var manifest = settings.Template.Manifest;
                 TemplateManifest templateManifest = settings.Template;
@@ -335,7 +338,8 @@ namespace Satrabel.OpenContent.Components
                 ModuleInfo module = ActiveModule;
                 if (settings.ModuleId > 0)
                 {
-                    module = ModuleController.Instance.GetModule(settings.ModuleId, settings.TabId, false);
+                    ModuleController mc = new ModuleController();
+                    module = mc.GetModule(settings.ModuleId, settings.TabId, false);
                 }
                 var manifest = settings.Template.Manifest;
                 TemplateManifest templateManifest = settings.Template;
@@ -478,7 +482,8 @@ namespace Satrabel.OpenContent.Components
             ModuleInfo module = ActiveModule;
             if (settings.ModuleId > 0)
             {
-                module = ModuleController.Instance.GetModule(settings.ModuleId, settings.TabId, false);
+                ModuleController mc = new ModuleController();
+                module = mc.GetModule(settings.ModuleId, settings.TabId, false);
             }
             var manifest = settings.Template.Manifest;
             TemplateManifest templateManifest =settings.Template;

@@ -1,4 +1,5 @@
-﻿using Lucene.Net.Analysis.Standard;
+﻿using Lucene.Net.Analysis;
+using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.QueryParsers;
@@ -13,12 +14,10 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
     public class JsonMappingUtils
     {
         #region Consts
-
         /// <summary>
         /// The name of the field which holds the type.
         /// </summary>
         public static readonly string FieldType = "$type";
-
         /// <summary>
         /// The name of the field which holds the JSON-serialized source of the object.
         /// </summary>
@@ -28,9 +27,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
         /// The name of the field which holds the timestamp when the document was created.
         /// </summary>
         public static readonly string FieldTimestamp = "$timestamp";
-
         public static readonly string FieldId = "$id";
-
         #endregion
 
         public static Document JsonToDocument(string type, string id, string source, bool StoreSource = false)
@@ -48,25 +45,14 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
             ObjectMapper.AddJsonToDocument(source, doc);
             return doc;
         }
-
         public static Filter GetTypeFilter(string type)
         {
             var typeTermQuery = new TermQuery(new Term(FieldType, type));
-            
-            //var analyzer = new StandardAnalyzer(global::Lucene.Net.Util.Version.LUCENE_30);
-            //var parser = new QueryParser(global::Lucene.Net.Util.Version.LUCENE_30, "Category", analyzer);
-            //var xquery = parser.Parse("Category3");
-
             BooleanQuery query = new BooleanQuery();
             query.Add(typeTermQuery, Occur.MUST);
-            //query.Add(xquery, Occur.MUST);
-
-
             Filter filter = new QueryWrapperFilter(query);
-            //filter.AddTerm(new Term(FieldType, type));
             return filter;
         }
-
         public static Filter GetTypeFilter(string type, Query Filter)
         {
             var typeTermQuery = new TermQuery(new Term(FieldType, type));
@@ -77,5 +63,25 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
             return filter;
         }
 
+        public static Analyzer GetAnalyser()
+        {
+            var analyser = new StandardAnalyzer(global::Lucene.Net.Util.Version.LUCENE_30);
+            return analyser;
+            /*
+            var analyzerList = new List<KeyValuePair<string, Analyzer>>
+            {
+                //new KeyValuePair<string, Analyzer>("PortalId", new KeywordAnalyzer()),
+                //new KeyValuePair<string, Analyzer>("FileId", new KeywordAnalyzer()),
+                new KeyValuePair<string, Analyzer>("Title", new SimpleAnalyzer()),
+                //new KeyValuePair<string, Analyzer>("FileName", new SimpleAnalyzer()),
+                new KeyValuePair<string, Analyzer>("Description", new StandardAnalyzer(global::Lucene.Net.Util.Version.LUCENE_30)),
+                //new KeyValuePair<string, Analyzer>("FileContent", new StandardAnalyzer(Version.LUCENE_30)),
+                //new KeyValuePair<string, Analyzer>("Folder", new LowercaseKeywordAnalyzer()),
+                new KeyValuePair<string, Analyzer>("Category", new KeywordAnalyzer())
+            };
+            return new PerFieldAnalyzerWrapper(new KeywordAnalyzer(), analyzerList);
+            */
+            
+        }
     }
 }
