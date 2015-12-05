@@ -561,7 +561,7 @@ namespace Satrabel.OpenContent
             FileUri dataFilename = null;
             if (info.Template != null)
             {
-                dataFilename = new FileUri(info.Template.Uri().UrlFolder + "data.json"); ;
+                dataFilename = new FileUri(info.Template.Uri().UrlFolder , "data.json"); ;
             }
             if (dataFilename != null && dataFilename.FileExists)
             {

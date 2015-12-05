@@ -69,7 +69,7 @@ namespace Satrabel.OpenContent
             }
             ModuleController mc = new ModuleController();
 
-            var newtemplate = new FileUri(ModuleTemplateDirectory + "schema.json");
+            var newtemplate = new FileUri(ModuleTemplateDirectory , "schema.json");
             mc.UpdateModuleSetting(ModuleId, "template", newtemplate.FilePath);
             ModuleContext.Settings["template"] = newtemplate.FilePath;
             settings = new OpenContentSettings(ModuleContext.Settings);
