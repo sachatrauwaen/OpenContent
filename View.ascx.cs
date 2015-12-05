@@ -535,7 +535,7 @@ namespace Satrabel.OpenContent
             else
             {
                 dataList = ctrl.GetContents(info.ModuleId);
-                if (info.DataList != null && info.DataList.Any())
+                if (dataList.Any())
                 {
                     _info.SetData(dataList, settings.Data);
                 }
