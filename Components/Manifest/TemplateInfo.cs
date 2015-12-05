@@ -35,7 +35,7 @@ namespace Satrabel.OpenContent.Components.Manifest
         {
             DataJson = dataJson;
             SettingsJson = settingsData;
-            DataExist = true;
+            DataExist = dataExists;
         }
 
         public void SetData(IEnumerable<OpenContentInfo> getContents, string settingsData)

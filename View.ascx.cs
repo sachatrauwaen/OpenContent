@@ -645,7 +645,7 @@ namespace Satrabel.OpenContent
                             // for list templates a main template need to be defined
 
                             GetDataList(_info, _settings, _info.Template.ClientSideData);
-                            if (_info.DataExist)
+                            if (_info.DataExist &&  !(_info.SettingsJson == null && _info.Template.SettingsNeeded()))
                             {
                                 _info.OutputString = GenerateListOutput(_settings.Template.Uri().UrlFolder, _info.Template.Main, _info.DataList, _info.SettingsJson);
                             }
@@ -657,7 +657,7 @@ namespace Satrabel.OpenContent
                         if (_info.Template.Detail != null)
                         {
                             GetDetailData(_info, _settings);
-                            if (_info.DataExist)
+                            if (_info.DataExist && !(_info.SettingsJson == null && _info.Template.SettingsNeeded()))
                             {
                                 _info.OutputString = GenerateOutput(_settings.Template.Uri().UrlFolder, _info.Template.Detail, _info.DataJson, _info.SettingsJson);
                             }
@@ -668,7 +668,7 @@ namespace Satrabel.OpenContent
                 {
                     // single item template
                     GetData();
-                    if (_info.DataExist)
+                    if (_info.DataExist && !(_info.SettingsJson == null && _info.Template.SettingsNeeded()))
                     {
                         _info.OutputString = GenerateOutput(_info.Template.Uri(), _info.DataJson, _info.SettingsJson, _info.Template.Main);
                     }
@@ -1068,7 +1068,7 @@ namespace Satrabel.OpenContent
                     {
                         // for list templates a main template need to be defined
                         GetDataList(_info, _settings, template.ClientSideData);
-                        if (_info.DataExist && !(_info.Template.Uri().SettingsNeeded() && _info.SettingsJson == null))
+                        if (_info.DataExist && !(_info.SettingsJson == null && _info.Template.SettingsNeeded()))
                         {
                             _info.OutputString = GenerateListOutput(_info.Template.Uri().UrlFolder, template.Main, _info.DataList, _info.SettingsJson);
                         }

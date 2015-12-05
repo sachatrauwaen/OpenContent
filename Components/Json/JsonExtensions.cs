@@ -13,6 +13,12 @@ namespace Satrabel.OpenContent.Components.Json
     {
         private static readonly ILog Logger = LoggerSource.Instance.GetLogger(typeof(JsonUtils));
 
+
+        public static bool IsEmpty(this JObject json)
+        {
+            return !json.HasValues;
+        }
+
         public static JObject ToJObject(this FileUri file)
         {
             try

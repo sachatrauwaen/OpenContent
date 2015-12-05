@@ -1,3 +1,4 @@
+using System.Security;
 using Newtonsoft.Json;
 
 namespace Satrabel.OpenContent.Components.Manifest
@@ -31,7 +32,8 @@ namespace Satrabel.OpenContent.Components.Manifest
             }
         }
 
-        public FolderUri ManifestDir { get; set; }
+        public string Key { get; private set; }
+        public FolderUri ManifestDir { get; private set; }
 
         public Manifest Manifest
         {
@@ -43,6 +45,12 @@ namespace Satrabel.OpenContent.Components.Manifest
                 }
                 return _manifest;
             }
+        }
+
+        public void SetSource(TemplateKey templateKey)
+        {
+            ManifestDir = templateKey.TemplateDir;
+            Key = templateKey.Key;
         }
 
     }

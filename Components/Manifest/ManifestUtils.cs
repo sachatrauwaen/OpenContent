@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using DotNetNuke.Services.Installer.Log;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Schema;
+using Satrabel.OpenContent.Components.Json;
 
 namespace Satrabel.OpenContent.Components.Manifest
 {
@@ -20,13 +22,13 @@ namespace Satrabel.OpenContent.Components.Manifest
 
             if (manifest != null && manifest.HasTemplates)
             {
-                //store the Folder into the Manifest object and its templates
+                //store some info into the Manifest object and its templates for backlink reference
                 manifest.ManifestDir = templateKey.TemplateDir;
                 foreach (KeyValuePair<string, TemplateManifest> keyValuePair in manifest.Templates)
                 {
-                    keyValuePair.Value.ManifestDir = templateKey.TemplateDir;
+                    keyValuePair.Value.SetSource(templateKey);
                 }
-                //get the requested template key
+                //get the requested template by Key
                 templateManifest = manifest.GetTemplateManifest(templateKey);
             }
             return manifest;
@@ -95,10 +97,17 @@ namespace Satrabel.OpenContent.Components.Manifest
 
         #endregion
 
-        internal static bool SettingsNeeded(this FileUri template)
+
+        internal static bool SettingsNeeded(this TemplateManifest template)
         {
-            var schemaFileUri = new FileUri(template.FolderPath, "schema.json");
-            return schemaFileUri.FileExists;
+            var schemaFileUri = new FileUri(template.Uri().UrlFolder, template.Uri().FileNameWithoutExtension + "-schema.json");
+            if (schemaFileUri.FileExists && !schemaFileUri.ToJObject().IsEmpty())
+                return true;
+            schemaFileUri = new FileUri(template.Uri().UrlFolder, template.Key + "-schema.json");
+            if (schemaFileUri.FileExists && !schemaFileUri.ToJObject().IsEmpty())
+                return true;
+            return false;
         }
+
     }
 }
