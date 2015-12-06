@@ -50,7 +50,7 @@ namespace Satrabel.OpenContent.Components
         {
             get
             {
-                if (NormalizedApplicationPath == "/" && FolderPath.StartsWith("/")) return FolderPath;
+                //if (NormalizedApplicationPath == "/" && FolderPath.StartsWith("/")) return FolderPath;
                 return NormalizedApplicationPath + FolderPath;
             }
         }
@@ -65,7 +65,7 @@ namespace Satrabel.OpenContent.Components
         {
             get
             {
-                return UrlPath + "/";
+                return UrlPath.TrimEnd('/') + "/";
             }
         }
         public string PhysicalFullDirectory

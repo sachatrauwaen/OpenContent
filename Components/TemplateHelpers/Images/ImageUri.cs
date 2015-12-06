@@ -15,21 +15,13 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         public ImageUri(int fileId) : base(fileId)
         {
         }
-
-        public ImageUri(string pathToFile, int portalid)
-            : base(pathToFile)
-        {
-            FileInfo = ToIFileInfo(portalid);
-        }
-
-        private ImageUri(string pathToFile)
-            : base(pathToFile)
+        
+        private ImageUri(string pathToFile) : base(pathToFile)
         {
             //Don't use this constructor in this class
         }
 
-        private ImageUri(string path, string filename)
-            : base(path, filename)
+        private ImageUri(string path, string filename) : base(path, filename)
         {
             //Don't use this constructor in this class
         }
@@ -79,6 +71,8 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             return ImageHelper.GetFacebookImageUrl(FileInfo);
         }
 
+
+        [Obsolete("This method is obsolete since dec 2015; use public string EditUrl(ModuleInfo module) instead")]
         public string EditImageUrl(ModuleInfo module)
         {
             if (module == null) return string.Empty;
@@ -87,6 +81,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             return EditImageUrl();
         }
 
+        [Obsolete("This method is obsolete since dec 2015; use public string EditUrl() instead")]
         public string EditImageUrl()
         {
             //var url = Globals.NavigateURL(tabFileManager);
@@ -99,22 +94,6 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             //javascript:dnnModal.show('http://localhost:54068/en-us/OpenFiles/ctl/Module/ModuleId/487/view/gridview/pageSize/10?ReturnURL=/en-us/OpenFiles?folderId=42&popUp=true',/*showReturn*/false,550,950,true,'')
             //return string.Format("javascript:dnnModal.show('{0}/ctl/FileProperties/mid/{2}?popUp=true&fileId={1}')", url, FileInfo.FileId, modId);
         }
-
-        #region Private Methods
-
-        private IFileInfo ToIFileInfo(int portalid)
-        {
-            IFileInfo fileRequested = null;
-            var pf = (new PortalController()).GetPortal(portalid).HomeDirectory;
-            var pos = FilePath.IndexOf("/" + pf, StringComparison.Ordinal);
-            if (pos > -1)
-            {
-                fileRequested = FileManager.Instance.GetFile(portalid, FilePath.Substring(pos + pf.Length + 2));
-            }
-            return fileRequested;
-        }
-
-        #endregion
 
     }
 }
