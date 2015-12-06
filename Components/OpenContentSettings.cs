@@ -17,7 +17,7 @@ namespace Satrabel.OpenContent.Components
 
         private JObject _json = null;
 
-        public OpenContentSettings(Hashtable moduleSettings)
+        public OpenContentSettings(IDictionary moduleSettings)
         {
             var template = moduleSettings["template"] as string;    //templatepath+file  or  //manifestpath+key
             if (!string.IsNullOrEmpty(template))
@@ -42,11 +42,11 @@ namespace Satrabel.OpenContent.Components
             Data = moduleSettings["data"] as string;
         }
 
-        internal TemplateKey TemplateKey { get; set; }
+        internal TemplateKey TemplateKey { get; private set; }
 
 
-        public int TabId { get; set; }
-        internal int ModuleId { get; set; }
+        public int TabId { get; private set; }
+        internal int ModuleId { get; private set; }
 
         public TemplateManifest Template { get; private set; }
         public Manifest.Manifest Manifest { get; private set; }

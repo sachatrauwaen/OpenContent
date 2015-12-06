@@ -31,7 +31,7 @@ namespace Satrabel.OpenContent
         }
         public override void LoadSettings()
         {
-            FileUri template = new OpenContentSettings(Settings).Template.Uri();
+            var template = new OpenContentSettings(Settings).Template;
             scriptList.Items.AddRange(OpenContentUtils.GetTemplatesFiles(PortalSettings, ModuleId, template, "OpenContent").ToArray());
             base.LoadSettings();
         }

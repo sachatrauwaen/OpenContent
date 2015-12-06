@@ -89,7 +89,7 @@ namespace Satrabel.OpenContent.Components.Manifest
                                 ";
 
             Manifest manifest = null;
-            content = content.Replace("{{templatekey}}", templeteKey.Key);
+            content = content.Replace("{{templatekey}}", templeteKey.ShortKey);
             content = content.Replace("{{templateextention}}", templeteKey.Extention);
             manifest = JsonConvert.DeserializeObject<Manifest>(content);
             return manifest;
@@ -103,7 +103,7 @@ namespace Satrabel.OpenContent.Components.Manifest
             var schemaFileUri = new FileUri(template.Uri().UrlFolder, template.Uri().FileNameWithoutExtension + "-schema.json");
             if (schemaFileUri.FileExists && !schemaFileUri.ToJObject().IsEmpty())
                 return true;
-            schemaFileUri = new FileUri(template.Uri().UrlFolder, template.Key + "-schema.json");
+            schemaFileUri = new FileUri(template.Uri().UrlFolder, template.Key.ShortKey + "-schema.json");
             if (schemaFileUri.FileExists && !schemaFileUri.ToJObject().IsEmpty())
                 return true;
             return false;

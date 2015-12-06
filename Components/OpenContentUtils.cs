@@ -67,10 +67,16 @@ namespace Satrabel.OpenContent.Components
         /// <param name="moduleSubDir">The module sub dir.</param>
         /// <returns></returns>
         /// <remarks>Used by OpenForms</remarks>
-        [Obsolete("This method is obsolete since dec 2015; use GetTemplatesFiles(PortalSettings portalSettings, int moduleId, FileUri selectedTemplate, string moduleSubDir) instead")]
+        [Obsolete("This method is obsolete since dec 2015; use GetTemplatesFiles(PortalSettings portalSettings, int moduleId, TemplateManifest selectedTemplate, string moduleSubDir) instead")]
         public static List<ListItem> GetTemplatesFiles(PortalSettings portalSettings, int moduleId, string selectedTemplate, string moduleSubDir)
         {
-            return GetTemplatesFiles(portalSettings, moduleId, new FileUri(selectedTemplate), moduleSubDir);
+            return GetTemplatesFiles(portalSettings, moduleId, new FileUri(selectedTemplate).ToTemplateManifest(), moduleSubDir);
+        }
+
+        [Obsolete("This method is obsolete since dec 2015; use GetTemplatesFiles(PortalSettings portalSettings, int moduleId, TemplateManifest selectedTemplate, string moduleSubDir) instead")]
+        public static List<ListItem> GetTemplates(PortalSettings portalSettings, int moduleId, FileUri selectedTemplate, string moduleSubDir)
+        {
+            return GetTemplatesFiles(portalSettings, moduleId, selectedTemplate.ToTemplateManifest(), moduleSubDir);
         }
 
         /// <summary>
@@ -81,12 +87,12 @@ namespace Satrabel.OpenContent.Components
         /// <param name="selectedTemplate">The selected template.</param>
         /// <param name="moduleSubDir">The module sub dir.</param>
         /// <returns></returns>
-        public static List<ListItem> GetTemplatesFiles(PortalSettings portalSettings, int moduleId, FileUri selectedTemplate, string moduleSubDir)
+        public static List<ListItem> GetTemplatesFiles(PortalSettings portalSettings, int moduleId, TemplateManifest selectedTemplate, string moduleSubDir)
         {
             return GetTemplatesFiles(portalSettings, moduleId, selectedTemplate, moduleSubDir, null);
         }
 
-        public static List<ListItem> GetTemplatesFiles(PortalSettings portalSettings, int moduleId, FileUri selectedTemplate, string moduleSubDir, FileUri otherModuleTemplate)
+        public static List<ListItem> GetTemplatesFiles(PortalSettings portalSettings, int moduleId, TemplateManifest selectedTemplate, string moduleSubDir, FileUri otherModuleTemplate)
         {
             string basePath = HostingEnvironment.MapPath(GetSiteTemplateFolder(portalSettings, moduleSubDir));
             if (!Directory.Exists(basePath))
@@ -133,7 +139,7 @@ namespace Satrabel.OpenContent.Components
                             templateName = templateName + " - " + template.Value.Title;
                         }
                         var item = new ListItem(templateCat + " : " + templateName, templateUri.FilePath);
-                        if (selectedTemplate != null && templateUri.FilePath.ToLowerInvariant() == selectedTemplate.FilePath.ToLowerInvariant())
+                        if (selectedTemplate != null && templateUri.FilePath.ToLowerInvariant() == selectedTemplate.Key.FullKeyString().ToLowerInvariant())
                         {
                             item.Selected = true;
                         }
@@ -162,7 +168,7 @@ namespace Satrabel.OpenContent.Components
                             scriptName = scriptName.Replace("\\", " - ");
 
                         var item = new ListItem(templateCat + " : " + scriptName, templateUri.FilePath);
-                        if (selectedTemplate != null && templateUri.FilePath.ToLowerInvariant() == selectedTemplate.FilePath.ToLowerInvariant())
+                        if (selectedTemplate != null && templateUri.FilePath.ToLowerInvariant() == selectedTemplate.Key.FullKeyString().ToLowerInvariant())
                         {
                             item.Selected = true;
                         }
@@ -176,8 +182,7 @@ namespace Satrabel.OpenContent.Components
             {
                 foreach (var dir in Directory.GetDirectories(basePath))
                 {
-                    string TemplateCat = "Skin";
-                    string DirName = Path.GetFileNameWithoutExtension(dir);
+                    string templateCat = "Skin";
                     var files = Directory.EnumerateFiles(dir, "*.*", SearchOption.AllDirectories)
                                 .Where(s => s.EndsWith(".cshtml") || s.EndsWith(".vbhtml") || s.EndsWith(".hbs"));
                     foreach (string script in files)
@@ -188,9 +193,9 @@ namespace Satrabel.OpenContent.Components
                         else
                             scriptName = scriptName.Replace("\\", " - ");
 
-                        string scriptPath = FileUri.ReverseMapPath(script);
-                        var item = new ListItem(TemplateCat + " : " + scriptName, scriptPath);
-                        if (selectedTemplate != null && scriptPath.ToLowerInvariant() == selectedTemplate.FilePath.ToLowerInvariant())
+                        string scriptPath = FolderUri.ReverseMapPath(script);
+                        var item = new ListItem(templateCat + " : " + scriptName, scriptPath);
+                        if (selectedTemplate != null && scriptPath.ToLowerInvariant() == selectedTemplate.Key.FullKeyString().ToLowerInvariant())
                         {
                             item.Selected = true;
                         }
@@ -200,7 +205,7 @@ namespace Satrabel.OpenContent.Components
             }
             return lst;
         }
-        public static List<ListItem> GetTemplates(PortalSettings portalSettings, int moduleId, FileUri selectedTemplate, string moduleSubDir)
+        public static List<ListItem> GetTemplates(PortalSettings portalSettings, int moduleId, TemplateManifest selectedTemplate, string moduleSubDir)
         {
             string basePath = HostingEnvironment.MapPath(GetSiteTemplateFolder(portalSettings, moduleSubDir));
             if (!Directory.Exists(basePath))
@@ -210,14 +215,14 @@ namespace Satrabel.OpenContent.Components
             List<ListItem> lst = new List<ListItem>();
             foreach (var dir in Directory.GetDirectories(basePath))
             {
-                string TemplateCat = "Site";
-                string DirName = Path.GetFileNameWithoutExtension(dir);
-                int ModId = -1;
-                if (int.TryParse(DirName, out ModId))
+                string templateCat = "Site";
+                string dirName = Path.GetFileNameWithoutExtension(dir);
+                int modId = -1;
+                if (int.TryParse(dirName, out modId))
                 {
-                    if (ModId == moduleId)
+                    if (modId == moduleId)
                     {
-                        TemplateCat = "Module";
+                        templateCat = "Module";
                     }
                     else
                     {
@@ -225,14 +230,14 @@ namespace Satrabel.OpenContent.Components
                     }
                 }
                 string scriptName = dir;
-                if (TemplateCat == "Module")
-                    scriptName = TemplateCat;
+                if (templateCat == "Module")
+                    scriptName = templateCat;
                 else
-                    scriptName = TemplateCat + ":" + scriptName.Substring(scriptName.LastIndexOf("\\") + 1);
+                    scriptName = templateCat + ":" + scriptName.Substring(scriptName.LastIndexOf("\\") + 1);
 
-                string scriptPath = FileUri.ReverseMapPath(dir);
+                string scriptPath = FolderUri.ReverseMapPath(dir);
                 var item = new ListItem(scriptName, scriptPath);
-                if (selectedTemplate != null && scriptPath.ToLowerInvariant() == selectedTemplate.FilePath.ToLowerInvariant())
+                if (selectedTemplate != null && scriptPath.ToLowerInvariant() == selectedTemplate.Key.FullKeyString().ToLowerInvariant())
                 {
                     item.Selected = true;
                 }
@@ -244,13 +249,12 @@ namespace Satrabel.OpenContent.Components
             {
                 foreach (var dir in Directory.GetDirectories(basePath))
                 {
-                    string TemplateCat = "Skin";
-                    string DirName = Path.GetFileNameWithoutExtension(dir);
+                    string templateCat = "Skin";
                     string scriptName = dir;
-                    scriptName = TemplateCat + ":" + scriptName.Substring(scriptName.LastIndexOf("\\") + 1);
-                    string scriptPath = FileUri.ReverseMapPath(dir);
+                    scriptName = templateCat + ":" + scriptName.Substring(scriptName.LastIndexOf("\\") + 1);
+                    string scriptPath = FolderUri.ReverseMapPath(dir);
                     var item = new ListItem(scriptName, scriptPath);
-                    if (selectedTemplate != null && scriptPath.ToLowerInvariant() == selectedTemplate.FilePath.ToLowerInvariant())
+                    if (selectedTemplate != null && scriptPath.ToLowerInvariant() == selectedTemplate.Key.FullKeyString().ToLowerInvariant())
                     {
                         item.Selected = true;
                     }

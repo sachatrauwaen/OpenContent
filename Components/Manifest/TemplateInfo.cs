@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using DotNetNuke.Entities.Modules;
 
 namespace Satrabel.OpenContent.Components.Manifest
@@ -31,25 +32,27 @@ namespace Satrabel.OpenContent.Components.Manifest
             SettingsJson = "";
         }
 
-        public void SetData(string dataJson, string settingsData, bool dataExists)
+        public void SetData(string dataJson, string settingsData)
         {
             DataJson = dataJson;
             SettingsJson = settingsData;
-            DataExist = dataExists;
+            DataExist = !string.IsNullOrWhiteSpace(dataJson);
         }
 
         public void SetData(IEnumerable<OpenContentInfo> getContents, string settingsData)
         {
             DataList = getContents;
             SettingsJson = settingsData;
-            DataExist = true;
+            DataExist = (getContents != null && getContents.Any());
         }
 
         public string DataJson { get; private set; }
         public string SettingsJson { get; private set; }
 
         public IEnumerable<OpenContentInfo> DataList { get; private set; }
-        public bool DataExist { get; private set; }
+        private bool DataExist { get; set; }
+        public bool ShowInitControl { get { return !DataExist || SettingsJson == null && Template.SettingsNeeded(); } }
+
 
         #endregion
 

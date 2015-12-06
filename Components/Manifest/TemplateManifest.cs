@@ -32,7 +32,7 @@ namespace Satrabel.OpenContent.Components.Manifest
             }
         }
 
-        public string Key { get; private set; }
+        public TemplateKey Key { get; private set; }
         public FolderUri ManifestDir { get; private set; }
 
         public Manifest Manifest
@@ -50,8 +50,10 @@ namespace Satrabel.OpenContent.Components.Manifest
         public void SetSource(TemplateKey templateKey)
         {
             ManifestDir = templateKey.TemplateDir;
-            Key = templateKey.Key;
+            Key = templateKey;
         }
+
+     
 
     }
 }

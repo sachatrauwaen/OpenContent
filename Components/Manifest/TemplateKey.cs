@@ -7,11 +7,20 @@
         public TemplateKey(FileUri templateUri)
         {
             _folder = templateUri.FolderPath;
-            Key = templateUri.FileNameWithoutExtension;
+            ShortKey = templateUri.FileNameWithoutExtension;
             Extention = templateUri.Extension == "" ? "manifest" : templateUri.Extension;
         }
         public FolderUri TemplateDir { get { return new FolderUri(_folder); } }
-        public string Key { get; private set; }
+        public string ShortKey { get; private set; }
         public string Extention { get; private set; }
+
+           public string FullKeyString()
+        {
+               if (Extention == "manifest")
+               {
+                   return _folder + "/" + ShortKey;
+               }
+               return _folder + "/" + ShortKey + Extention;
+        }
     }
 }

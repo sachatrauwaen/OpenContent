@@ -31,9 +31,9 @@ namespace Satrabel.OpenContent.Components.Manifest
         }
         public TemplateManifest GetTemplateManifest(TemplateKey templateKey)
         {
-            if (Templates != null && Templates.ContainsKey(templateKey.Key))
+            if (Templates != null && Templates.ContainsKey(templateKey.ShortKey))
             {
-                return Templates[templateKey.Key];
+                return Templates[templateKey.ShortKey];
             }
             return null;
         }

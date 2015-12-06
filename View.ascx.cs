@@ -193,7 +193,7 @@ namespace Satrabel.OpenContent
 
             //start rendering
             InitTemplateInfo();
-            if (!_info.DataExist)
+            if (_info.ShowInitControl)
             {
                 // no data exist and ... -> show initialization
                 if (ModuleContext.EditMode)
@@ -372,7 +372,7 @@ namespace Satrabel.OpenContent
                 BindOtherModules(-1, -1);
                 var dsModule = (new ModuleController()).GetTabModule(int.Parse(ddlDataSource.SelectedValue));
                 var dsSettings = new OpenContentSettings(dsModule.ModuleSettings);
-                BindTemplates(dsSettings.Template.Uri(), dsSettings.Template.Uri());
+                BindTemplates(dsSettings.Template, dsSettings.Template.Uri());
             }
             else // this module
             {
@@ -386,7 +386,7 @@ namespace Satrabel.OpenContent
             phFrom.Visible = rblUseTemplate.SelectedIndex == 1;
             phTemplateName.Visible = rblUseTemplate.SelectedIndex == 1;
             rblFrom.SelectedIndex = 0;
-            var scriptFileSetting = new OpenContentSettings(ModuleContext.Settings).Template.Uri();
+            var scriptFileSetting = new OpenContentSettings(ModuleContext.Settings).Template;
             ddlTemplate.Items.Clear();
             if (rblUseTemplate.SelectedIndex == 0) // existing
             {
@@ -403,7 +403,7 @@ namespace Satrabel.OpenContent
             ddlTemplate.Items.Clear();
             if (rblFrom.SelectedIndex == 0) // site
             {
-                var scriptFileSetting = new OpenContentSettings(ModuleContext.Settings).Template.Uri();
+                var scriptFileSetting = new OpenContentSettings(ModuleContext.Settings).Template;
                 ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplates(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, "OpenContent").ToArray());
 
                 //ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplatesFiles(ModuleContext.PortalSettings, ModuleContext.moduleId, scriptFileSetting, "OpenContent").ToArray());
@@ -443,7 +443,6 @@ namespace Satrabel.OpenContent
                 if (rblUseTemplate.SelectedIndex == 0) // existing
                 {
                     mc.UpdateModuleSetting(ModuleContext.ModuleId, "template", ddlTemplate.SelectedValue);
-                    //mc.UpdateModuleSetting(moduleId, "data", HiddenField.Value);
                 }
                 else if (rblUseTemplate.SelectedIndex == 1) // new
                 {
@@ -488,7 +487,7 @@ namespace Satrabel.OpenContent
         {
             var dsModule = (new ModuleController()).GetTabModule(int.Parse(ddlDataSource.SelectedValue));
             var dsSettings = new OpenContentSettings(dsModule.ModuleSettings);
-            BindTemplates(dsSettings.Template.Uri(), dsSettings.Template.Uri());
+            BindTemplates(dsSettings.Template, dsSettings.Template.Uri());
         }
 
         #endregion
@@ -503,18 +502,7 @@ namespace Satrabel.OpenContent
             var struc = ctrl.GetFirstContent(_info.ModuleId);
             if (struc != null)
             {
-                var dataExists = false;
-                if (string.IsNullOrEmpty(_info.SettingsJson))
-                {
-                    string schemaFilename = _info.Template.Uri().PhysicalFullDirectory + "\\" + _info.Template.Uri().FileNameWithoutExtension + "-schema.json";
-                    dataExists = File.Exists(schemaFilename);
-                }
-                else
-                {
-                    dataExists = true;
-                }
-
-                _info.SetData(struc.Json, _settings.Data, dataExists);
+                _info.SetData(struc.Json, _settings.Data);
             }
         }
 
@@ -549,7 +537,7 @@ namespace Satrabel.OpenContent
             var struc = ctrl.GetContent(info.DetailItemId);
             if (struc != null)
             {
-                _info.SetData(struc.Json, settings.Data, true);
+                _info.SetData(struc.Json, settings.Data);
             }
 
         }
@@ -557,11 +545,11 @@ namespace Satrabel.OpenContent
         private bool GetDemoData(TemplateInfo info, OpenContentSettings settings)
         {
             _info.ResetData();
-            bool settingsNeeded = false;
+            //bool settingsNeeded = false;
             FileUri dataFilename = null;
             if (info.Template != null)
             {
-                dataFilename = new FileUri(info.Template.Uri().UrlFolder , "data.json"); ;
+                dataFilename = new FileUri(info.Template.Uri().UrlFolder, "data.json"); ;
             }
             if (dataFilename != null && dataFilename.FileExists)
             {
@@ -582,15 +570,15 @@ namespace Satrabel.OpenContent
                         }
                         else
                         {
-                            string schemaFilename = info.Template.Uri().PhysicalFullDirectory + "\\" + info.Template.Uri().FileNameWithoutExtension + "-schema.json";
-                            settingsNeeded = File.Exists(schemaFilename);
+                            //string schemaFilename = info.Template.Uri().PhysicalFullDirectory + "\\" + info.Template.Uri().FileNameWithoutExtension + "-schema.json";
+                            //settingsNeeded = File.Exists(schemaFilename);
                         }
                     }
                 }
                 if (!string.IsNullOrWhiteSpace(fileContent))
-                    _info.SetData(fileContent, settingContent, true);
+                    _info.SetData(fileContent, settingContent);
             }
-            return !string.IsNullOrWhiteSpace(info.DataJson) && (!string.IsNullOrWhiteSpace(info.SettingsJson) || !settingsNeeded);
+            return !info.ShowInitControl; //!string.IsNullOrWhiteSpace(info.DataJson) && (!string.IsNullOrWhiteSpace(info.SettingsJson) || !settingsNeeded);
         }
 
         private bool GetOtherModuleDemoData(TemplateInfo info, OpenContentSettings settings)
@@ -602,7 +590,7 @@ namespace Satrabel.OpenContent
             {
                 if (settings.Template != null && info.Template.Uri().FilePath == settings.Template.Uri().FilePath)
                 {
-                    _info.SetData(struc.Json, settings.Data, true);
+                    _info.SetData(struc.Json, settings.Data);
                 }
                 if (string.IsNullOrEmpty(info.SettingsJson))
                 {
@@ -612,14 +600,14 @@ namespace Satrabel.OpenContent
                         string settingsContent = File.ReadAllText(settingsFilename);
                         if (!string.IsNullOrWhiteSpace(settingsContent))
                         {
-                            _info.SetData(struc.Json, settingsContent, true);
+                            _info.SetData(struc.Json, settingsContent);
                         }
                     }
                 }
                 //Als er OtherModuleSettingsJson bestaan en 
                 if (_info.OtherModuleTemplate.Uri().FilePath == _info.Template.Uri().FilePath && !string.IsNullOrEmpty(_info.OtherModuleSettingsJson))
                 {
-                    _info.SetData(struc.Json, _info.OtherModuleSettingsJson, true);
+                    _info.SetData(struc.Json, _info.OtherModuleSettingsJson);
                 }
                 _info.OutputString = GenerateOutput(_info.Template.Uri(), _info.DataJson, _info.SettingsJson, null);
 
@@ -645,7 +633,7 @@ namespace Satrabel.OpenContent
                             // for list templates a main template need to be defined
 
                             GetDataList(_info, _settings, _info.Template.ClientSideData);
-                            if (_info.DataExist &&  !(_info.SettingsJson == null && _info.Template.SettingsNeeded()))
+                            if (!_info.ShowInitControl)
                             {
                                 _info.OutputString = GenerateListOutput(_settings.Template.Uri().UrlFolder, _info.Template.Main, _info.DataList, _info.SettingsJson);
                             }
@@ -657,7 +645,7 @@ namespace Satrabel.OpenContent
                         if (_info.Template.Detail != null)
                         {
                             GetDetailData(_info, _settings);
-                            if (_info.DataExist && !(_info.SettingsJson == null && _info.Template.SettingsNeeded()))
+                            if (!_info.ShowInitControl)
                             {
                                 _info.OutputString = GenerateOutput(_settings.Template.Uri().UrlFolder, _info.Template.Detail, _info.DataJson, _info.SettingsJson);
                             }
@@ -668,7 +656,7 @@ namespace Satrabel.OpenContent
                 {
                     // single item template
                     GetData();
-                    if (_info.DataExist && !(_info.SettingsJson == null && _info.Template.SettingsNeeded()))
+                    if (!_info.ShowInitControl)
                     {
                         _info.OutputString = GenerateOutput(_info.Template.Uri(), _info.DataJson, _info.SettingsJson, _info.Template.Main);
                     }
@@ -787,7 +775,7 @@ namespace Satrabel.OpenContent
             }
         }
 
-        private void BindTemplates(FileUri template, FileUri otherModuleTemplate)
+        private void BindTemplates(TemplateManifest template, FileUri otherModuleTemplate)
         {
             ddlTemplate.Items.Clear();
 
@@ -812,14 +800,14 @@ namespace Satrabel.OpenContent
             bool templateDefined = info.Template != null;
             bool settingsDefined = !string.IsNullOrEmpty(settings.Data);
             bool settingsNeeded = false;
+
             if (rblUseTemplate.SelectedIndex == 0) // existing template
             {
-                string templateFilename = HostingEnvironment.MapPath("~/" + ddlTemplate.SelectedValue);
-                string prefix = Path.GetFileNameWithoutExtension(templateFilename) + "-";
-                string schemaFilename = Path.GetDirectoryName(templateFilename) + "\\" + prefix + "schema.json";
-                settingsNeeded = File.Exists(schemaFilename);
-                templateDefined = templateDefined &&
-                    (!ddlTemplate.Visible || (settings.Template.Uri().FilePath == ddlTemplate.SelectedValue));
+                //create tmp TemplateManifest
+                var templateManifest = new FileUri(ddlTemplate.SelectedValue).ToTemplateManifest();
+                settingsNeeded = templateManifest.SettingsNeeded();
+
+                templateDefined = templateDefined &&  (!ddlTemplate.Visible || (settings.Template.Key.FullKeyString() == ddlTemplate.SelectedValue));
                 settingsDefined = settingsDefined || !settingsNeeded;
             }
             else // new template
@@ -1008,7 +996,7 @@ namespace Satrabel.OpenContent
             {
                 rblDataSource.SelectedIndex = (_settings.TabId > 0 && _settings.ModuleId > 0 ? 1 : 0);
                 BindOtherModules(_settings.TabId, _settings.ModuleId);
-                BindTemplates(_settings.Template.Uri(), (_info.IsOtherModule ? _info.Template.Uri() : null));
+                BindTemplates(_settings.Template, (_info.IsOtherModule ? _info.Template.Uri() : null));
             }
             if (rblDataSource.SelectedIndex == 1) // other module
             {
@@ -1044,13 +1032,6 @@ namespace Satrabel.OpenContent
             bool demoExist = GetDemoData(_info, _settings);
             if (demoExist)
             {
-                //var template = _info.Template;
-                //TemplateFiles files = null;
-                //if (_info.Template != null && _info.Template.Main != null)
-                //{
-                //    _info.Template = new FileUri(_info.Template.Uri().UrlFolder, _info.Template.Main.Template);
-                //    files = template.Main;
-                //}
                 _info.OutputString = GenerateOutput(_info.Template.Uri(), _info.DataJson, _info.SettingsJson, _info.Template.Main);
             }
         }
@@ -1068,7 +1049,7 @@ namespace Satrabel.OpenContent
                     {
                         // for list templates a main template need to be defined
                         GetDataList(_info, _settings, template.ClientSideData);
-                        if (_info.DataExist && !(_info.SettingsJson == null && _info.Template.SettingsNeeded()))
+                        if (!_info.ShowInitControl)
                         {
                             _info.OutputString = GenerateListOutput(_info.Template.Uri().UrlFolder, template.Main, _info.DataList, _info.SettingsJson);
                         }
