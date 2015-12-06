@@ -15,13 +15,8 @@ namespace Satrabel.OpenContent.Components
         /// Gets the list of the DNN modules by friendlyName.
         /// </summary>
         /// <param name="friendlyName">Friendly name of the module.</param>
-        /// <param name="tabFileManager"></param>
         /// <returns></returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        internal static List<ModuleInfo> GetDnnModulesByFriendlyName(string friendlyName, int tabFileManager)
-        {
-            throw new NotImplementedException();
-        }
         internal static ModuleInfo GetLastModuleByFriendlyName(string friendlyName)
         {
             //DesktopModuleController dmc = new DesktopModuleController();

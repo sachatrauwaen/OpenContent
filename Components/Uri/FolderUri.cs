@@ -13,7 +13,7 @@ namespace Satrabel.OpenContent.Components
         {
             if (string.IsNullOrEmpty(pathToFolder))
             {
-                throw new ArgumentNullException("pathToFolder is null");
+                throw new ArgumentNullException("pathToFolder");
             }
             FolderPath = NormalizePath(pathToFolder);
         }
@@ -22,7 +22,7 @@ namespace Satrabel.OpenContent.Components
         {
             if (pathToFolder == null)
             {
-                throw new ArgumentNullException("pathToFolder is null");
+                throw new ArgumentNullException("pathToFolder");
             }
             FolderPath = NormalizePath(pathToFolder.Folder);
         }
@@ -106,7 +106,7 @@ namespace Satrabel.OpenContent.Components
         {
             if (string.IsNullOrEmpty(path))
             {
-                throw new ArgumentNullException("path is null");
+                throw new ArgumentNullException("path");
             }
             string appPath = HostingEnvironment.MapPath("~");
             string file = string.Format("{0}", path.Replace(appPath, "").Replace("\\", "/"));
