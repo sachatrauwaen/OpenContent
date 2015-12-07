@@ -76,8 +76,6 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
-
-
         private JToken GetModelAsJsonFromList(bool onlyData)
         {
             JObject model = new JObject();
@@ -298,25 +296,28 @@ namespace Satrabel.OpenContent.Components
             context["PortalId"] = PortalSettings.PortalId;
             context["MainUrl"] = Globals.NavigateURL(Module.TabID, false, PortalSettings, "", DnnUtils.GetCurrentCultureCode());
         }
-        public string EditUrl()
+
+        private string EditUrl()
         {
             return EditUrl("", "", "Edit");
         }
-        public string EditUrl(string controlKey)
+        private string EditUrl(string controlKey)
         {
             return EditUrl("", "", controlKey);
         }
-        public string EditUrl(string keyName, string keyValue)
+
+        private string EditUrl(string keyName, string keyValue)
         {
             return EditUrl(keyName, keyValue, "Edit");
         }
 
-        public string EditUrl(string keyName, string keyValue, string controlKey)
+        private string EditUrl(string keyName, string keyValue, string controlKey)
         {
             var parameters = new string[] { };
             return EditUrl(keyName, keyValue, controlKey, parameters);
         }
-        public string EditUrl(string keyName, string keyValue, string controlKey, params string[] additionalParameters)
+
+        private string EditUrl(string keyName, string keyValue, string controlKey, params string[] additionalParameters)
         {
             string key = controlKey;
             if (string.IsNullOrEmpty(key))
@@ -346,11 +347,13 @@ namespace Satrabel.OpenContent.Components
 
             return NavigateUrl(PortalSettings.ActiveTab.TabID, key, false, parameters);
         }
-        public string NavigateUrl(int tabId, string controlKey, bool pageRedirect, params string[] additionalParameters)
+
+        private string NavigateUrl(int tabId, string controlKey, bool pageRedirect, params string[] additionalParameters)
         {
             return NavigateUrl(tabId, controlKey, Globals.glbDefaultPage, pageRedirect, additionalParameters);
         }
-        public string NavigateUrl(int tabId, string controlKey, string pageName, bool pageRedirect, params string[] additionalParameters)
+
+        private string NavigateUrl(int tabId, string controlKey, string pageName, bool pageRedirect, params string[] additionalParameters)
         {
             var isSuperTab = Globals.IsHostTab(tabId);
             var settings = PortalSettings;
@@ -367,7 +370,8 @@ namespace Satrabel.OpenContent.Components
             }
             return url;
         }
-        internal static string GetCultureCode(int tabId, bool isSuperTab, PortalSettings settings)
+
+        private static string GetCultureCode(int tabId, bool isSuperTab, PortalSettings settings)
         {
             string cultureCode = Null.NullString;
             if (settings != null)
@@ -387,7 +391,8 @@ namespace Satrabel.OpenContent.Components
             return cultureCode;
         }
         private bool? _isEditable;
-        public bool IsEditable
+
+        private bool IsEditable
         {
             get
             {
