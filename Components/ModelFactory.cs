@@ -117,7 +117,7 @@ namespace Satrabel.OpenContent.Components
 
         private JToken GetModelAsJsonFromJson()
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException(); //todo
         }
         private dynamic GetModelAsDynamicFromList()
         {
@@ -346,16 +346,16 @@ namespace Satrabel.OpenContent.Components
 
             return NavigateUrl(PortalSettings.ActiveTab.TabID, key, false, parameters);
         }
-        public string NavigateUrl(int tabID, string controlKey, bool pageRedirect, params string[] additionalParameters)
+        public string NavigateUrl(int tabId, string controlKey, bool pageRedirect, params string[] additionalParameters)
         {
-            return NavigateUrl(tabID, controlKey, Globals.glbDefaultPage, pageRedirect, additionalParameters);
+            return NavigateUrl(tabId, controlKey, Globals.glbDefaultPage, pageRedirect, additionalParameters);
         }
-        public string NavigateUrl(int tabID, string controlKey, string pageName, bool pageRedirect, params string[] additionalParameters)
+        public string NavigateUrl(int tabId, string controlKey, string pageName, bool pageRedirect, params string[] additionalParameters)
         {
-            var isSuperTab = Globals.IsHostTab(tabID);
+            var isSuperTab = Globals.IsHostTab(tabId);
             var settings = PortalSettings;
-            var language = GetCultureCode(tabID, isSuperTab, settings);
-            var url = Globals.NavigateURL(tabID, isSuperTab, settings, controlKey, language, pageName, additionalParameters);
+            var language = GetCultureCode(tabId, isSuperTab, settings);
+            var url = Globals.NavigateURL(tabId, isSuperTab, settings, controlKey, language, pageName, additionalParameters);
 
             // Making URLs call popups
             if (PortalSettings != null && PortalSettings.EnablePopUps)
@@ -367,13 +367,13 @@ namespace Satrabel.OpenContent.Components
             }
             return url;
         }
-        internal static string GetCultureCode(int TabID, bool IsSuperTab, PortalSettings settings)
+        internal static string GetCultureCode(int tabId, bool isSuperTab, PortalSettings settings)
         {
             string cultureCode = Null.NullString;
             if (settings != null)
             {
                 TabController tc = new TabController();
-                TabInfo linkTab = tc.GetTab(TabID, IsSuperTab ? Null.NullInteger : settings.PortalId, false);
+                TabInfo linkTab = tc.GetTab(tabId, isSuperTab ? Null.NullInteger : settings.PortalId, false);
                 if (linkTab != null)
                 {
                     cultureCode = linkTab.CultureCode;
