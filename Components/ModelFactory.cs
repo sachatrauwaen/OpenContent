@@ -86,12 +86,12 @@ namespace Satrabel.OpenContent.Components
             {
                 foreach (var item in DataList)
                 {
-                    string dataJson = item.Json;
+                    string itemDataJson = item.Json;
                     if (LocaleController.Instance.GetLocales(PortalSettings.PortalId).Count > 1)
                     {
-                        dataJson = JsonUtils.SimplifyJson(dataJson, LocaleController.Instance.GetCurrentLocale(PortalSettings.PortalId).Code);
+                        itemDataJson = JsonUtils.SimplifyJson(itemDataJson, LocaleController.Instance.GetCurrentLocale(PortalSettings.PortalId).Code);
                     }
-                    JObject dyn = JObject.Parse(dataJson);
+                    JObject dyn = JObject.Parse(itemDataJson);
                     JObject context = new JObject();
                     dyn["Context"] = context;
 
