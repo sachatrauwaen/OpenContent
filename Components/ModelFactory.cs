@@ -391,7 +391,6 @@ namespace Satrabel.OpenContent.Components
             return cultureCode;
         }
         private bool? _isEditable;
-
         private bool IsEditable
         {
             get
