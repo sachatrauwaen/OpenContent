@@ -127,7 +127,7 @@ namespace Satrabel.OpenContent.Components
                     }
                 }
                 string templateVirtualFolder = FolderUri.ReverseMapPath(dir);
-                var manifest = ManifestUtils.GetManifest(new FolderUri(templateVirtualFolder));
+                var manifest = ManifestUtils.GetFileManifest(new FolderUri(templateVirtualFolder));
                 if (manifest != null && manifest.HasTemplates)
                 {
                     foreach (var template in manifest.Templates)
@@ -344,7 +344,7 @@ namespace Satrabel.OpenContent.Components
         {
             string Template = "";
             FolderUri folder = new FolderUri(FolderUri.ReverseMapPath(physicalFolder));
-            var manifest = ManifestUtils.GetManifest(folder);
+            var manifest = ManifestUtils.GetFileManifest(folder);
             if (manifest != null && manifest.HasTemplates)
             {
                 //get the requested template key

@@ -13,12 +13,18 @@ namespace Satrabel.OpenContent.Components.Manifest
     {
         #region Manifest Factory
 
+        internal static Manifest GetManifest(TemplateKey templateKey)
+        {
+            TemplateManifest templateManifest;
+            var manifest = GetManifest(templateKey, out  templateManifest);
+            return manifest;
+        }
         internal static Manifest GetManifest(TemplateKey templateKey, out TemplateManifest templateManifest)
         {
             templateManifest = null;
             if (templateKey == null) return null;
 
-            var manifest = templateKey.Extention == "manifest" ? GetManifest(templateKey.TemplateDir) : GetManifest(templateKey);
+            var manifest = templateKey.Extention == "manifest" ? GetFileManifest(templateKey.TemplateDir) : GetVirtualManifest(templateKey);
 
             if (manifest != null && manifest.HasTemplates)
             {
@@ -34,7 +40,7 @@ namespace Satrabel.OpenContent.Components.Manifest
             return manifest;
         }
 
-        internal static Manifest GetManifest(FolderUri folder)
+        internal static Manifest GetFileManifest(FolderUri folder)
         {
             try
             {
@@ -68,7 +74,7 @@ namespace Satrabel.OpenContent.Components.Manifest
             return new FileUri(templateUri.ManifestDir, templateUri.Main.Template);
         }
 
-        private static Manifest GetManifest(TemplateKey templeteKey)
+        private static Manifest GetVirtualManifest(TemplateKey templeteKey)
         {
             string content = @"
                                     {

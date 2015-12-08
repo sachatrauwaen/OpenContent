@@ -41,7 +41,7 @@ namespace Satrabel.OpenContent.Components.Manifest
             {
                 if (_manifest == null)
                 {
-                    _manifest = ManifestUtils.GetManifest(ManifestDir);
+                    _manifest = ManifestUtils.GetManifest(Key);
                 }
                 return _manifest;
             }
