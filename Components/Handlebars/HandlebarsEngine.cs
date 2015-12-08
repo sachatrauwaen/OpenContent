@@ -9,6 +9,8 @@ using System.Web.UI;
 using HandlebarsDotNet;
 using DotNetNuke.UI.Modules;
 using System.Globalization;
+using Satrabel.OpenContent.Components.Manifest;
+using Satrabel.OpenContent.Components.TemplateHelpers;
 
 
 namespace Satrabel.OpenContent.Components.Handlebars
@@ -23,6 +25,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterMultiplyHelper(hbs);
             RegisterEqualHelper(hbs);
             RegisterFormatNumberHelper(hbs);
+            RegisterImageUrlHelper(hbs);
             RegisterArrayIndexHelper(hbs);
             RegisterArrayTranslateHelper(hbs);
             var template = hbs.Compile(source);
@@ -38,7 +41,9 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterMultiplyHelper(hbs);
             RegisterEqualHelper(hbs);
             RegisterFormatNumberHelper(hbs);
+            RegisterImageUrlHelper(hbs);
             RegisterScriptHelper(hbs);
+            RegisterHandlebarsHelper(hbs);
             RegisterRegisterStylesheetHelper(hbs, page, sourceFolder);
             RegisterRegisterScriptHelper(hbs, page, sourceFolder);
             RegisterArrayIndexHelper(hbs);
@@ -63,7 +68,9 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterMultiplyHelper(hbs);
             RegisterEqualHelper(hbs);
             RegisterFormatNumberHelper(hbs);
+            RegisterImageUrlHelper(hbs);
             RegisterScriptHelper(hbs);
+            RegisterHandlebarsHelper(hbs);
             RegisterRegisterStylesheetHelper(hbs, page, sourceFolder);
             RegisterRegisterScriptHelper(hbs, page, sourceFolder);
             //RegisterEditUrlHelper(hbs, module);
@@ -75,10 +82,10 @@ namespace Satrabel.OpenContent.Components.Handlebars
         }
         private void RegisterTemplate(HandlebarsDotNet.IHandlebars hbs, string name, string sourceFilename)
         {
-            string FileName = System.Web.Hosting.HostingEnvironment.MapPath(sourceFilename);
-            if (File.Exists(FileName))
+            string fileName = System.Web.Hosting.HostingEnvironment.MapPath(sourceFilename);
+            if (File.Exists(fileName))
             {
-                using (var reader = new StreamReader(FileName))
+                using (var reader = new StreamReader(fileName))
                 {
                     var partialTemplate = hbs.Compile(reader);
                     hbs.RegisterTemplate(name, partialTemplate);
@@ -143,6 +150,18 @@ namespace Satrabel.OpenContent.Components.Handlebars
             });
 
         }
+        private void RegisterHandlebarsHelper(HandlebarsDotNet.IHandlebars hbs)
+        {
+            hbs.RegisterHelper("handlebars", (writer, options, context, arguments) =>
+            {
+                HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "<script id=\"jplist-templatex\" type=\"text/x-handlebars-template\">");
+                HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, context);
+
+                //options.Template(writer, (object)context);
+                HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "</script>");
+            });
+
+        }
         private void RegisterRegisterScriptHelper(HandlebarsDotNet.IHandlebars hbs, Page page, string sourceFolder)
         {
             hbs.RegisterHelper("registerscript", (writer, context, parameters) =>
@@ -185,7 +204,24 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 }
             });
         }
+        private void RegisterImageUrlHelper(HandlebarsDotNet.IHandlebars hbs)
+        {
+            hbs.RegisterHelper("imageurl", (writer, context, parameters) =>
+            {
+                if (parameters.Length == 3)
+                {
+                    string imageId = parameters[0] as string;
+                    int width = Normalize.DynamicValue(parameters[1], -1);
+                    string ratiostring = parameters[2] as string;
+                    bool isMobile = HttpContext.Current.Request.Browser.IsMobileDevice;
 
+                    var imageObject = Convert.ToInt32(imageId) == 0 ? null : new ImageUri(Convert.ToInt32(imageId));
+                    var imageUrl = imageObject == null ? string.Empty : imageObject.GetImageUrl(width, ratiostring, isMobile);
+
+                    writer.WriteSafeString(imageUrl);
+                }
+            });
+        }
         private void RegisterArrayIndexHelper(HandlebarsDotNet.IHandlebars hbs)
         {
             hbs.RegisterHelper("arrayindex", (writer, context, parameters) =>
@@ -267,14 +303,15 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     string provider = parameters[2].ToString();
 
                     IFormatProvider formatprovider = null;
-                    if (provider.ToLower() == "invariant"){
+                    if (provider.ToLower() == "invariant")
+                    {
                         formatprovider = CultureInfo.InvariantCulture;
                     }
-                    else if (!string.IsNullOrWhiteSpace( provider))
+                    else if (!string.IsNullOrWhiteSpace(provider))
                     {
                         formatprovider = CultureInfo.CreateSpecificCulture(provider);
                     }
-                    
+
                     string res = number.Value.ToString(format, formatprovider);
                     HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, res);
                 }

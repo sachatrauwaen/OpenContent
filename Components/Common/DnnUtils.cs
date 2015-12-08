@@ -15,23 +15,20 @@ namespace Satrabel.OpenContent.Components
         /// Gets the list of the DNN modules by friendlyName.
         /// </summary>
         /// <param name="friendlyName">Friendly name of the module.</param>
-        /// <param name="tabFileManager"></param>
         /// <returns></returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        internal static List<ModuleInfo> GetDnnModulesByFriendlyName(string friendlyName, int tabFileManager)
-        {
-            throw new NotImplementedException();
-        }
         internal static ModuleInfo GetLastModuleByFriendlyName(string friendlyName)
         {
             //DesktopModuleController dmc = new DesktopModuleController();
             //DesktopModuleController.GetDesktopModuleByFriendlyName
             int portalid = PortalSettings.Current.PortalId;
             string culture = PortalSettings.Current.CultureCode;
-            var modules = ModuleController.Instance.GetModulesByDefinition(portalid, friendlyName).Cast<ModuleInfo>().OrderByDescending(m=> m.ModuleID);
+            TabController tc = new TabController();
+            ModuleController mc = new ModuleController();
+            var modules = mc.GetModulesByDefinition(portalid, friendlyName).Cast<ModuleInfo>().OrderByDescending(m=> m.ModuleID);
             foreach (var mod in modules)
             {
-                var tab = TabController.Instance.GetTab(mod.TabID, portalid);
+                var tab = tc.GetTab(mod.TabID, portalid, false);
                 if (tab.CultureCode == culture || tab.CultureCode == null)
                 {
                     return mod;
@@ -50,7 +47,8 @@ namespace Satrabel.OpenContent.Components
         internal static TabInfo GetDnnTabByUrl(string pageUrl, string culture)
         {
             var alternativeLocale = LocaleController.Instance.GetLocale(culture);
-            var alternativeTab = TabController.Instance.GetTabByCulture(PortalSettings.Current.ActiveTab.TabID, PortalSettings.Current.PortalId, alternativeLocale);
+            TabController tc = new TabController();
+            var alternativeTab = tc.GetTabByCulture(PortalSettings.Current.ActiveTab.TabID, PortalSettings.Current.PortalId, alternativeLocale);
             throw new NotImplementedException();
         }
 

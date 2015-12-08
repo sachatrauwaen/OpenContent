@@ -174,3 +174,4 @@
 /// <reference path="../alpaca/js/fields/dnn/file2field.js" />
 /// <reference path="../alpaca/js/fields/dnn/url2field.js" />
 /// <reference path="../alpaca/js/fields/dnn/mlwysihtmlfield.js" />
+/// <reference path="../alpaca/js/fields/dnn/mlimage2field.js" />

@@ -20,7 +20,7 @@ using System.Web;
 using Satrabel.OpenContent.Components.Alpaca;
 using System.IO;
 using DotNetNuke.Services.Localization;
-
+using Satrabel.OpenContent.Components.Manifest;
 
 #endregion
 
@@ -41,7 +41,7 @@ namespace Satrabel.OpenContent
             var settings = new OpenContentSettings(ModuleContext.Settings);
             if (settings.TemplateAvailable)
             {
-                AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, settings.TemplateDir.Path, settings.TemplateKey );
+                AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, settings.TemplateDir.FolderPath, settings.TemplateKey.ShortKey );
                 alpaca.RegisterAll();
             }
         }
@@ -54,7 +54,7 @@ namespace Satrabel.OpenContent
                 hlTemplateExchange.NavigateUrl = EditUrl("ShareTemplate");
                 //var template = OpenContentUtils.GetTemplate(Settings);
                 var settings = new OpenContentSettings(ModuleContext.Settings);
-                scriptList.Items.AddRange(OpenContentUtils.GetTemplatesFiles(PortalSettings, ModuleId, settings.Template, "OpenContent", (settings.IsOtherModule ? settings.Template : null)).ToArray());
+                scriptList.Items.AddRange(OpenContentUtils.GetTemplatesFiles(PortalSettings, ModuleId, settings.Template, "OpenContent", (settings.IsOtherModule ? settings.Template.Uri() : null)).ToArray());
             }
         }
 

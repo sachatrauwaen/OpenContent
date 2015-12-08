@@ -27,7 +27,8 @@ using DotNetNuke.Entities.Tabs;
 using DotNetNuke.Common;
 using DotNetNuke.Services.FileSystem;
 using System.Collections.Generic;
-
+using Satrabel.OpenContent.Components.Lucene;
+using Satrabel.OpenContent.Components.Manifest;
 
 #endregion
 
@@ -60,36 +61,34 @@ namespace Satrabel.OpenContent.Components
             ModuleInfo module = ActiveModule;
             if (settings.ModuleId > 0)
             {
-                module = ModuleController.Instance.GetModule(settings.ModuleId, settings.TabId, false);
+                ModuleController mc = new ModuleController();
+                module = mc.GetModule(settings.ModuleId, settings.TabId, false);
             }
-            var manifest = OpenContentUtils.GetManifest(settings.Template);
-            TemplateManifest templateManifest = null;
-            if (manifest != null)
-            {
-                templateManifest = manifest.GetTemplateManifest(settings.Template);
-            }
+            var manifest = settings.Manifest;
+            TemplateManifest templateManifest = settings.Template;
+            
             string editRole = manifest == null ? "" : manifest.EditRole;
             bool listMode = templateManifest != null && templateManifest.IsListTemplate;
             JObject json = new JObject();
             try
             {
                 // schema
-                var schemaJson = JsonUtils.LoadJsonFromFile(settings.Template.UrlFolder + "schema.json");
+                var schemaJson = JsonUtils.LoadJsonFromFile(settings.Template.Uri().UrlFolder + "schema.json");
                 if (schemaJson != null)
                     json["schema"] = schemaJson;
 
                 // default options
-                var optionsJson = JsonUtils.LoadJsonFromFile(settings.Template.UrlFolder + "options.json");
+                var optionsJson = JsonUtils.LoadJsonFromFile(settings.Template.Uri().UrlFolder + "options.json");
                 if (optionsJson != null)
                     json["options"] = optionsJson;
 
                 // language options
-                optionsJson = JsonUtils.LoadJsonFromFile(settings.Template.UrlFolder + "options." + DnnUtils.GetCurrentCultureCode() + ".json");
+                optionsJson = JsonUtils.LoadJsonFromFile(settings.Template.Uri().UrlFolder + "options." + DnnUtils.GetCurrentCultureCode() + ".json");
                 if (optionsJson != null)
                     json["options"] = json["options"].JsonMerge(optionsJson);
 
                 // view
-                 optionsJson = JsonUtils.LoadJsonFromFile(settings.Template.UrlFolder + "view.json");
+                optionsJson = JsonUtils.LoadJsonFromFile(settings.Template.Uri().UrlFolder + "view.json");
                 if (optionsJson != null)
                     json["view"] = optionsJson;
 
@@ -98,6 +97,9 @@ namespace Satrabel.OpenContent.Components
                 if (content != null)
                 {
                     json["data"] = content.Json.ToJObject("GetContent " + id);
+                    if (json["schema"]["properties"]["ModuleTitle"] is JObject){
+                        json["data"]["ModuleTitle"] = ActiveModule.ModuleTitle;
+                    }
                     AddVersions(json, content);
                     createdByUserid = content.CreatedByUserId;
                 }
@@ -123,7 +125,7 @@ namespace Satrabel.OpenContent.Components
             {
                 if (id > 0)
                 {
-                    return ctrl.GetContent(id, moduleId);
+                    return ctrl.GetContent(id);
                 }
             }
             else
@@ -166,14 +168,11 @@ namespace Satrabel.OpenContent.Components
             ModuleInfo module = ActiveModule;
             if (settings.ModuleId > 0)
             {
-                module = ModuleController.Instance.GetModule(settings.ModuleId, settings.TabId, false);
+                ModuleController mc = new ModuleController();
+                module = mc.GetModule(settings.ModuleId, settings.TabId, false);
             }
-            var manifest = OpenContentUtils.GetManifest(settings.Template);
-            TemplateManifest templateManifest = null;
-            if (manifest != null)
-            {
-                templateManifest = manifest.GetTemplateManifest(settings.Template);
-            }
+            var manifest = settings.Template.Manifest;
+            var templateManifest = settings.Template;
             string editRole = manifest == null ? "" : manifest.EditRole;
             bool listMode = templateManifest != null && templateManifest.IsListTemplate;
             JObject json = new JObject();
@@ -251,18 +250,17 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
+                bool Index = false;
                 OpenContentSettings settings = new OpenContentSettings(ActiveModule.ModuleSettings);
                 ModuleInfo module = ActiveModule;
                 if (settings.ModuleId > 0)
                 {
-                    module = ModuleController.Instance.GetModule(settings.ModuleId, settings.TabId, false);
+                    ModuleController mc = new ModuleController();
+                    module = mc.GetModule(settings.ModuleId, settings.TabId, false);
                 }
-                var manifest = OpenContentUtils.GetManifest(settings.Template);
-                TemplateManifest templateManifest = null;
-                if (manifest != null)
-                {
-                    templateManifest = manifest.GetTemplateManifest(settings.Template);
-                }
+                var manifest = settings.Template.Manifest;
+                TemplateManifest templateManifest = settings.Template;
+                    Index = settings.Template.Manifest.Index;
                 string editRole = manifest == null ? "" : manifest.EditRole;
 
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
@@ -274,7 +272,7 @@ namespace Satrabel.OpenContent.Components
                     int itemId;
                     if (json["id"] != null && int.TryParse(json["id"].ToString(), out itemId))
                     {
-                        content = ctrl.GetContent(itemId, module.ModuleID);
+                        content = ctrl.GetContent(itemId);
                         if (content != null)
                             createdByUserid = content.CreatedByUserId;
                     }
@@ -304,7 +302,7 @@ namespace Satrabel.OpenContent.Components
                         LastModifiedOnDate = DateTime.Now,
                         Html = "",
                     };
-                    ctrl.AddContent(content);
+                    ctrl.AddContent(content, Index);
                 }
                 else
                 {
@@ -312,7 +310,7 @@ namespace Satrabel.OpenContent.Components
                     content.Json = json["form"].ToString();
                     content.LastModifiedByUserId = UserInfo.UserID;
                     content.LastModifiedOnDate = DateTime.Now;
-                    ctrl.UpdateContent(content);
+                    ctrl.UpdateContent(content, Index);
                 }
                 if (json["form"]["ModuleTitle"] != null && json["form"]["ModuleTitle"].Type == JTokenType.String)
                 {
@@ -335,18 +333,17 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
+                bool Index = false;
                 OpenContentSettings settings = new OpenContentSettings(ActiveModule.ModuleSettings);
                 ModuleInfo module = ActiveModule;
                 if (settings.ModuleId > 0)
                 {
-                    module = ModuleController.Instance.GetModule(settings.ModuleId, settings.TabId, false);
+                    ModuleController mc = new ModuleController();
+                    module = mc.GetModule(settings.ModuleId, settings.TabId, false);
                 }
-                var manifest = OpenContentUtils.GetManifest(settings.Template);
-                TemplateManifest templateManifest = null;
-                if (manifest != null)
-                {
-                    templateManifest = manifest.GetTemplateManifest(settings.Template);
-                }
+                var manifest = settings.Template.Manifest;
+                TemplateManifest templateManifest = settings.Template;
+				Index = manifest.Index;
                 string editRole = manifest == null ? "" : manifest.EditRole;
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 int CreatedByUserid = -1;
@@ -357,7 +354,7 @@ namespace Satrabel.OpenContent.Components
                     int ItemId;
                     if (int.TryParse(json["id"].ToString(), out ItemId))
                     {
-                        content = ctrl.GetContent(ItemId, module.ModuleID);
+                        content = ctrl.GetContent(ItemId);
                         if (content != null)
                         {
                             CreatedByUserid = content.CreatedByUserId;
@@ -378,7 +375,7 @@ namespace Satrabel.OpenContent.Components
                 }
                 if (content != null)
                 {
-                    ctrl.DeleteContent(content);
+                    ctrl.DeleteContent(content, Index);
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, "");
             }
@@ -420,9 +417,9 @@ namespace Satrabel.OpenContent.Components
         {
             ModuleController mc = new ModuleController();
             var module = mc.GetModule(req.moduleid, req.tabid, false);
-            Manifest manifest;
-            TemplateManifest templateManifest;
-            FileUri template = OpenContentUtils.GetTemplate(module.ModuleSettings, out manifest, out templateManifest);
+            var settings = new OpenContentSettings(module.ModuleSettings);
+            Manifest.Manifest manifest=settings.Manifest;
+            TemplateManifest templateManifest=settings.Template;
             bool listMode = templateManifest != null && templateManifest.IsListTemplate;
             //JToken json = new JObject();
             List<LookupResultDTO> res = new List<LookupResultDTO>();
@@ -476,6 +473,48 @@ namespace Satrabel.OpenContent.Components
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
+        [HttpPost]
+        public HttpResponseMessage List(ListDTO req)
+        {
+            OpenContentSettings settings = new OpenContentSettings(ActiveModule.ModuleSettings);
+            ModuleInfo module = ActiveModule;
+            if (settings.ModuleId > 0)
+            {
+                ModuleController mc = new ModuleController();
+                module = mc.GetModule(settings.ModuleId, settings.TabId, false);
+            }
+            var manifest = settings.Template.Manifest;
+            TemplateManifest templateManifest =settings.Template;
+            string editRole = manifest == null ? "" : manifest.EditRole;
+            bool listMode = templateManifest != null && templateManifest.IsListTemplate;
+            JArray json = new JArray();
+            try
+            {
+                if (listMode)
+                {
+                    var docs = LuceneController.Instance.Search(module.ModuleID.ToString(), "Title",req.query, "", "", 10, 0);
+                    foreach (var item in docs.ids)
+                    {
+                        var content = GetContent(module.ModuleID, listMode, int.Parse(item));
+                        if (content != null)
+                        {
+                            json.Add( content.Json.ToJObject("GetContent " + item));
+                        }    
+                    }
+                }
+                else {
+                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "not supported because not in multi items template ");
+                }
+                return Request.CreateResponse(HttpStatusCode.OK, json);
+            }
+            catch (Exception exc)
+            {
+                Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
     }
 
     public class LookupRequestDTO
@@ -490,6 +529,11 @@ namespace Satrabel.OpenContent.Components
     {
         public string value { get; set; }
         public string text { get; set; }
+    }
+
+    public class ListDTO
+    {
+        public string query { get; set; }
     }
 }
 

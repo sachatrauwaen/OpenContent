@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Satrabel.Struct {
+namespace Satrabel.OpenContent {
     
     
     public partial class Settings {

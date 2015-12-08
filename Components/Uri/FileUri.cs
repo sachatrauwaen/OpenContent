@@ -13,7 +13,7 @@ namespace Satrabel.OpenContent.Components
         {
             if (string.IsNullOrEmpty(pathToFile))
             {
-                throw new ArgumentNullException("pathToFile is null");
+                throw new ArgumentNullException("pathToFile");
             }
             FileName = System.IO.Path.GetFileName(NormalizePath(pathToFile));
         }
@@ -22,15 +22,15 @@ namespace Satrabel.OpenContent.Components
         {
             if (string.IsNullOrEmpty(filename))
             {
-                throw new ArgumentNullException("filename is null");
+                throw new ArgumentNullException("filename");
             }
             FileName = filename;
         }
-        public FileUri(FolderUri path, string filename) : base(path.Path)
+        public FileUri(FolderUri path, string filename) : base(path.FolderPath)
         {
             if (string.IsNullOrEmpty(filename))
             {
-                throw new ArgumentNullException("filename is null");
+                throw new ArgumentNullException("filename");
             }
             FileName = filename;
         }
@@ -53,7 +53,7 @@ namespace Satrabel.OpenContent.Components
         /// <value>
         /// The file path.
         /// </value>
-        public string FilePath { get { return base.Path + "/" + FileName; } }
+        public string FilePath { get { return base.FolderPath + "/" + FileName; } }
 
         public string UrlFilePath { get { return base.UrlPath + "/" + FileName; } }
 
@@ -100,7 +100,7 @@ namespace Satrabel.OpenContent.Components
         {
             if (string.IsNullOrEmpty(path))
             {
-                throw new ArgumentNullException("path is null");
+                throw new ArgumentNullException("path");
             }
             string appPath = HostingEnvironment.MapPath("~");
             string file = string.Format("{0}", path.Replace(appPath, "").Replace("\\", "/"));

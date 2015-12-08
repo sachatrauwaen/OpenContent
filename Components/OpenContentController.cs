@@ -9,55 +9,75 @@
 ' DEALINGS IN THE SOFTWARE.
 ' 
 */
+
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using DotNetNuke.Data;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Json;
+using Satrabel.OpenContent.Components.Lucene;
+using Satrabel.OpenContent.Components.Lucene.Index;
 
 namespace Satrabel.OpenContent.Components
 {
     public class OpenContentController
     {
-        public void AddContent(OpenContentInfo Content)
+        [Obsolete("This method is obsolete since dec 2015; use AddContent(OpenContentInfo content, bool index) instead")]
+        public void AddContent(OpenContentInfo content)
+        {
+            AddContent(content, false);
+        }
+
+        public void AddContent(OpenContentInfo content, bool index)
         {
             OpenContentVersion ver = new OpenContentVersion()
             {
-                Json = Content.Json.ToJObject("Adding Content"),
-                CreatedByUserId = Content.LastModifiedByUserId,
-                CreatedOnDate = Content.LastModifiedOnDate
+                Json = content.Json.ToJObject("Adding Content"),
+                CreatedByUserId = content.LastModifiedByUserId,
+                CreatedOnDate = content.LastModifiedOnDate
             };
             var versions = new List<OpenContentVersion>();
             versions.Add(ver);
-            Content.Versions = versions;
+            content.Versions = versions;
             using (IDataContext ctx = DataContext.Instance())
             {
                 var rep = ctx.GetRepository<OpenContentInfo>();
-                rep.Insert(Content);
+                rep.Insert(content);
+            }
+            if (index)
+            {
+                LuceneController.Instance.Add(content);
+                LuceneController.Instance.Commit();
             }
         }
 
-        public void DeleteContent(OpenContentInfo Content)
+        public void DeleteContent(OpenContentInfo content, bool Index)
         {
             using (IDataContext ctx = DataContext.Instance())
             {
                 var rep = ctx.GetRepository<OpenContentInfo>();
-                rep.Delete(Content);
+                rep.Delete(content);
+            }
+            if (Index)
+            {
+                LuceneController.Instance.Delete(content);
+                LuceneController.Instance.Commit();
             }
         }
 
         public IEnumerable<OpenContentInfo> GetContents(int moduleId)
         {
-            IEnumerable<OpenContentInfo> Contents;
+            IEnumerable<OpenContentInfo> content;
 
             using (IDataContext ctx = DataContext.Instance())
             {
                 var rep = ctx.GetRepository<OpenContentInfo>();
-                Contents = rep.Get(moduleId);
+                content = rep.Get(moduleId);
             }
-            return Contents;
+            return content;
         }
-
+        /* slow !!!
         public OpenContentInfo GetContent(int ContentId, int moduleId)
         {
             OpenContentInfo Content;
@@ -65,45 +85,67 @@ namespace Satrabel.OpenContent.Components
             using (IDataContext ctx = DataContext.Instance())
             {
                 var rep = ctx.GetRepository<OpenContentInfo>();
-                Content = rep.GetById(ContentId, moduleId);
+                Content = rep.GetById(ContentId, moduleId);                
             }
             return Content;
         }
-
-        public OpenContentInfo GetFirstContent(int moduleId)
+         */
+        public OpenContentInfo GetContent(int contentId)
         {
-            OpenContentInfo Content;
+            OpenContentInfo content;
 
             using (IDataContext ctx = DataContext.Instance())
             {
                 var rep = ctx.GetRepository<OpenContentInfo>();
-                Content = rep.Get(moduleId).FirstOrDefault();
+                content = rep.GetById(contentId);
             }
-            return Content;
+            return content;
+        }
+        public OpenContentInfo GetFirstContent(int moduleId)
+        {
+            OpenContentInfo content;
+
+            using (IDataContext ctx = DataContext.Instance())
+            {
+                var rep = ctx.GetRepository<OpenContentInfo>();
+                content = rep.Get(moduleId).FirstOrDefault();
+            }
+            return content;
         }
 
-        public void UpdateContent(OpenContentInfo Content)
+        [Obsolete("This method is obsolete since dec 2015; use UpdateContent(OpenContentInfo content, bool index) instead")]
+        public void UpdateContent(OpenContentInfo content)
+        {
+            UpdateContent(content, false);
+        }
+
+        public void UpdateContent(OpenContentInfo content, bool index)
         {
             OpenContentVersion ver = new OpenContentVersion()
             {
-                Json = Content.Json.ToJObject("UpdateContent"),
-                CreatedByUserId = Content.LastModifiedByUserId,
-                CreatedOnDate = Content.LastModifiedOnDate
+                Json = content.Json.ToJObject("UpdateContent"),
+                CreatedByUserId = content.LastModifiedByUserId,
+                CreatedOnDate = content.LastModifiedOnDate
             };
-            var versions = Content.Versions;
-            if (versions.Count == 0 || versions[0].Json.ToString() != Content.Json)
+            var versions = content.Versions;
+            if (versions.Count == 0 || versions[0].Json.ToString() != content.Json)
             {
                 versions.Insert(0, ver);
                 if (versions.Count > 5)
                 {
                     versions.RemoveAt(versions.Count - 1);
                 }
-                Content.Versions = versions;
+                content.Versions = versions;
             }
             using (IDataContext ctx = DataContext.Instance())
             {
                 var rep = ctx.GetRepository<OpenContentInfo>();
-                rep.Update(Content);
+                rep.Update(content);
+            }
+            if (index)
+            {
+                LuceneController.Instance.Update(content);
+                LuceneController.Instance.Commit();
             }
         }
 

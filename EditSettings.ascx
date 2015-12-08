@@ -7,6 +7,12 @@
         <asp:DropDownList ID="scriptList" runat="server" />
         <asp:HyperLink ID="hlTemplateExchange" runat="server" Visible="false">More...</asp:HyperLink>
     </div>
+    <asp:PlaceHolder ID="phFilter" runat="server" Visible="false">
+    <div class="dnnFormItem">
+        <dnn:Label ID="lFilter" ControlName="tbFilter" runat="server" />
+        <asp:TextBox ID="tbFilter" runat="server"></asp:TextBox>
+    </div>
+    </asp:PlaceHolder>
     <div id="field1" class="alpaca"></div>
     <ul class="dnnActions dnnClear" style="display: block; padding-left: 35%">
         <li>

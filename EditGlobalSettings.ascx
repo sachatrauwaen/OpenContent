@@ -17,5 +17,11 @@
         <li>
             <asp:HyperLink ID="hlCancel" runat="server" class="dnnSecondaryAction" resourcekey="cmdCancel" />
         </li>
+        <li>
+            <asp:LinkButton ID="bIndex" runat="server" class="dnnSecondaryAction" Text="Reindex all" OnClick="bIndex_Click" />
+        </li>
+        <li>
+            <asp:LinkButton ID="bGenerate" runat="server" class="dnnSecondaryAction" Text="Generate 10k" OnClick="bGenerate_Click" />
+        </li>
     </ul>
 </asp:Panel>
