@@ -53,7 +53,5 @@ namespace Satrabel.OpenContent.Components.Manifest
             Key = templateKey;
         }
 
-     
-
     }
 }
