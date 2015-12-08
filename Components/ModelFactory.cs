@@ -165,7 +165,7 @@ namespace Satrabel.OpenContent.Components
             if (ManifestFiles != null && ManifestFiles.SchemaInTemplate)
             {
                 // schema
-                string schemaFilename = PhysicalTemplateFolder + "\\" + "schema.json";
+                string schemaFilename = PhysicalTemplateFolder + "schema.json";
                 try
                 {
                     dynamic schema = JsonUtils.JsonToDynamic(File.ReadAllText(schemaFilename));
@@ -181,7 +181,7 @@ namespace Satrabel.OpenContent.Components
                 // options
                 JToken optionsJson = null;
                 // default options
-                string optionsFilename = PhysicalTemplateFolder + "\\" + "options.json";
+                string optionsFilename = PhysicalTemplateFolder + "options.json";
                 if (File.Exists(optionsFilename))
                 {
                     string fileContent = File.ReadAllText(optionsFilename);
@@ -191,7 +191,7 @@ namespace Satrabel.OpenContent.Components
                     }
                 }
                 // language options
-                optionsFilename = PhysicalTemplateFolder + "\\" + "options." + DnnUtils.GetCurrentCultureCode() + ".json";
+                optionsFilename = PhysicalTemplateFolder + "options." + DnnUtils.GetCurrentCultureCode() + ".json";
                 if (File.Exists(optionsFilename))
                 {
                     string fileContent = File.ReadAllText(optionsFilename);
@@ -235,7 +235,7 @@ namespace Satrabel.OpenContent.Components
             if (ManifestFiles != null && ManifestFiles.SchemaInTemplate)
             {
                 // schema
-                string schemaFilename = PhysicalTemplateFolder + "\\" + "schema.json";
+                string schemaFilename = PhysicalTemplateFolder + "schema.json";
                 try
                 {
                     model["Schema"] = JObject.Parse(File.ReadAllText(schemaFilename));
@@ -250,7 +250,7 @@ namespace Satrabel.OpenContent.Components
                 // options
                 JToken optionsJson = null;
                 // default options
-                string optionsFilename = PhysicalTemplateFolder + "\\" + "options.json";
+                string optionsFilename = PhysicalTemplateFolder + "options.json";
                 if (File.Exists(optionsFilename))
                 {
                     string fileContent = File.ReadAllText(optionsFilename);
@@ -260,7 +260,7 @@ namespace Satrabel.OpenContent.Components
                     }
                 }
                 // language options
-                optionsFilename = PhysicalTemplateFolder + "\\" + "options." + DnnUtils.GetCurrentCultureCode() + ".json";
+                optionsFilename = PhysicalTemplateFolder + "options." + DnnUtils.GetCurrentCultureCode() + ".json";
                 if (File.Exists(optionsFilename))
                 {
                     string fileContent = File.ReadAllText(optionsFilename);
