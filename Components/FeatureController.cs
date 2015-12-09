@@ -54,7 +54,7 @@ namespace Satrabel.OpenContent.Components
                 Title = "",
                 Html = ""
             };
-            ctrl.AddContent(content, false);
+            ctrl.AddContent(content, false, null);
         }
         #region ModuleSearchBase
         public override IList<SearchDocument> GetModifiedSearchDocuments(ModuleInfo modInfo, DateTime beginDateUtc)

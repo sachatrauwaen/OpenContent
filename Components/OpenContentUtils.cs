@@ -22,6 +22,7 @@ using DotNetNuke.UI.Modules;
 using DotNetNuke.Security.Permissions;
 using DotNetNuke.Security;
 using Satrabel.OpenContent.Components.Manifest;
+using Satrabel.OpenContent.Components.Lucene.Config;
 
 
 namespace Satrabel.OpenContent.Components
@@ -472,5 +473,26 @@ namespace Satrabel.OpenContent.Components
                     (!string.IsNullOrEmpty(editrole) && portalSettings.UserInfo.IsInRole(editrole) && (CreatedByUserId == -1 || portalSettings.UserId == CreatedByUserId));
         }
 
+
+        internal static IndexDTO GetIndexConfig(FolderUri folder)
+        {
+            try
+            {
+                IndexDTO indexConfig = null;
+                var file = new FileUri(folder.UrlFolder, "index.json");
+                if (file.FileExists)
+                {
+                    string content = File.ReadAllText(file.PhysicalFilePath);
+                    indexConfig = JsonConvert.DeserializeObject<IndexDTO>(content);
+                }
+                return indexConfig;
+            }
+            catch (Exception ex)
+            {
+                //we should log this
+                if (Debugger.IsAttached) Debugger.Break();
+                return null;
+            }
+        }
     }
 }

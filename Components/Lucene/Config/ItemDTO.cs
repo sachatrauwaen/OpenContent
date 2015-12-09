@@ -1,0 +1,12 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace Satrabel.OpenContent.Components.Lucene.Config
+{
+    public class ItemDTO
+    {
+        public Dictionary<string, FieldDTO> fields { get; set; }
+    }
+}

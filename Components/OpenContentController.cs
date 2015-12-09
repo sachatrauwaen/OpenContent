@@ -18,6 +18,7 @@ using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Lucene;
 using Satrabel.OpenContent.Components.Lucene.Index;
+using Satrabel.OpenContent.Components.Lucene.Config;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -26,10 +27,11 @@ namespace Satrabel.OpenContent.Components
         [Obsolete("This method is obsolete since dec 2015; use AddContent(OpenContentInfo content, bool index) instead")]
         public void AddContent(OpenContentInfo content)
         {
-            AddContent(content, false);
+            AddContent(content, false, null);
         }
 
-        public void AddContent(OpenContentInfo content, bool index)
+
+        public void AddContent(OpenContentInfo content, bool index, IndexDTO IndexConfig)
         {
             OpenContentVersion ver = new OpenContentVersion()
             {
@@ -52,14 +54,14 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
-        public void DeleteContent(OpenContentInfo content, bool Index)
+        public void DeleteContent(OpenContentInfo content, bool index)
         {
             using (IDataContext ctx = DataContext.Instance())
             {
                 var rep = ctx.GetRepository<OpenContentInfo>();
                 rep.Delete(content);
             }
-            if (Index)
+            if (index)
             {
                 LuceneController.Instance.Delete(content);
                 LuceneController.Instance.Commit();
@@ -116,10 +118,10 @@ namespace Satrabel.OpenContent.Components
         [Obsolete("This method is obsolete since dec 2015; use UpdateContent(OpenContentInfo content, bool index) instead")]
         public void UpdateContent(OpenContentInfo content)
         {
-            UpdateContent(content, false);
+            UpdateContent(content, false, null);
         }
 
-        public void UpdateContent(OpenContentInfo content, bool index)
+        public void UpdateContent(OpenContentInfo content, bool index, IndexDTO IndexConfig)
         {
             OpenContentVersion ver = new OpenContentVersion()
             {

@@ -118,7 +118,7 @@ namespace Satrabel.OpenContent
                         LastModifiedOnDate = DateTime.Now
 
                     };
-                    occ.AddContent(newoc, true);
+                    occ.AddContent(newoc, true, null);
                 }
             }
 
