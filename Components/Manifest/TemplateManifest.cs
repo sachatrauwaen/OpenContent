@@ -6,7 +6,6 @@ namespace Satrabel.OpenContent.Components.Manifest
     public class TemplateManifest
     {
 
-        private FileUri _uri;
         private Manifest _manifest;
 
         [JsonProperty(PropertyName = "type")]

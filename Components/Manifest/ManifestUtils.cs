@@ -63,15 +63,14 @@ namespace Satrabel.OpenContent.Components.Manifest
         internal static TemplateManifest ToTemplateManifest(this FileUri templateUri)
         {
             TemplateManifest templateManifest;
-            ManifestUtils.GetManifest(new TemplateKey(templateUri), out templateManifest);
+            GetManifest(new TemplateKey(templateUri), out templateManifest);
             return templateManifest;
         }
 
 
         internal static FileUri Uri(this TemplateManifest templateUri)
         {
-            if (templateUri == null) return null;
-            return new FileUri(templateUri.ManifestDir, templateUri.Main.Template);
+            return templateUri == null ? null : new FileUri(templateUri.ManifestDir, templateUri.Main.Template);
         }
 
         private static Manifest GetVirtualManifest(TemplateKey templeteKey)
@@ -94,10 +93,9 @@ namespace Satrabel.OpenContent.Components.Manifest
                                     }
                                 ";
 
-            Manifest manifest = null;
             content = content.Replace("{{templatekey}}", templeteKey.ShortKey);
             content = content.Replace("{{templateextention}}", templeteKey.Extention);
-            manifest = JsonConvert.DeserializeObject<Manifest>(content);
+            var manifest = JsonConvert.DeserializeObject<Manifest>(content);
             return manifest;
         }
 
