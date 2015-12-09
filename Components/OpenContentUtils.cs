@@ -126,31 +126,41 @@ namespace Satrabel.OpenContent.Components
                         continue;
                     }
                 }
-                string templateVirtualFolder = FolderUri.ReverseMapPath(dir);
-                var manifest = ManifestUtils.GetFileManifest(new FolderUri(templateVirtualFolder));
-                if (manifest != null && manifest.HasTemplates)
+
+                IEnumerable<string> files = Directory.EnumerateFiles(dir, "*.*", SearchOption.AllDirectories);
+                IEnumerable<string> manifestfiles = files.Where(s => s.EndsWith("manifest.json"));
+                if (manifestfiles.Any())
                 {
-                    foreach (var template in manifest.Templates)
+                    foreach (string manifestFile in manifestfiles)
                     {
-                        FileUri templateUri = new FileUri(templateVirtualFolder, template.Key);
-                        string templateName = dirName;
-                        if (!string.IsNullOrEmpty(template.Value.Title))
+                        FileUri manifestFileUri = FileUri.FromPath(manifestFile);
+                        //string templateVirtualFolder = FolderUri.ReverseMapPath(dir);
+                        var manifest = ManifestUtils.GetFileManifest(manifestFileUri);
+                        if (manifest != null && manifest.HasTemplates)
                         {
-                            templateName = templateName + " - " + template.Value.Title;
+                            foreach (var template in manifest.Templates)
+                            {
+                                FileUri templateUri = new FileUri(manifestFileUri.FolderPath, template.Key);
+                                string templateName = dirName;
+                                if (!string.IsNullOrEmpty(template.Value.Title))
+                                {
+                                    templateName = templateName + " - " + template.Value.Title;
+                                }
+                                var item = new ListItem(templateCat + " : " + templateName, templateUri.FilePath);
+                                if (selectedTemplate != null && templateUri.FilePath.ToLowerInvariant() == selectedTemplate.Key.FullKeyString().ToLowerInvariant())
+                                {
+                                    item.Selected = true;
+                                }
+                                lst.Add(item);
+                            }
                         }
-                        var item = new ListItem(templateCat + " : " + templateName, templateUri.FilePath);
-                        if (selectedTemplate != null && templateUri.FilePath.ToLowerInvariant() == selectedTemplate.Key.FullKeyString().ToLowerInvariant())
-                        {
-                            item.Selected = true;
-                        }
-                        lst.Add(item);
                     }
+
                 }
                 else
                 {
-                    IEnumerable<string> files = Directory.EnumerateFiles(dir, "*.*", SearchOption.AllDirectories)
-                        .Where(s => s.EndsWith(".cshtml") || s.EndsWith(".vbhtml") || s.EndsWith(".hbs"));
-                    foreach (string script in files)
+                    IEnumerable<string> scriptfiles = files.Where(s => s.EndsWith(".cshtml") || s.EndsWith(".vbhtml") || s.EndsWith(".hbs"));
+                    foreach (string script in scriptfiles)
                     {
                         FileUri templateUri = FileUri.FromPath(script);
 
