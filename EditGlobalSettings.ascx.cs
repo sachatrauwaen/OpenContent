@@ -22,6 +22,8 @@ using DotNetNuke.Security.Roles;
 using Satrabel.OpenContent.Components.Lucene;
 using Satrabel.OpenContent.Components.Lucene.Index;
 using Newtonsoft.Json.Linq;
+using Satrabel.OpenContent.Components.Manifest;
+using Satrabel.OpenContent.Components.Lucene.Config;
 
 #endregion
 
@@ -44,7 +46,7 @@ namespace Satrabel.OpenContent
             {
                 var pc = new PortalController();
                 ddlRoles.Items.Add(new ListItem("None", "-1"));
-                var rc = new RoleController();                
+                var rc = new RoleController();
                 foreach (var role in rc.GetRoles(PortalId))
                 {
                     ddlRoles.Items.Add(new ListItem(role.RoleName, role.RoleID.ToString()));
@@ -81,13 +83,26 @@ namespace Satrabel.OpenContent
 
         protected void bIndex_Click(object sender, EventArgs e)
         {
+            TemplateManifest template = null;
+            OpenContentSettings settings = new OpenContentSettings(Settings);
+            bool index = false;
+            if (settings.TemplateAvailable)
+            {
+                index = settings.Manifest.Index;
+            }
+            FieldConfig indexConfig = null;
+            if (index)
+            {
+                indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
+            }
+
             using (LuceneController lc = LuceneController.Instance)
             {
                 lc.DeleteAll();
                 OpenContentController occ = new OpenContentController();
                 foreach (var item in occ.GetContents(ModuleId))
                 {
-                    lc.Add(item);
+                    lc.Add(item, indexConfig);
                 }
                 lc.Commit();
                 lc.OptimizeSearchIndex(true);
@@ -98,7 +113,7 @@ namespace Satrabel.OpenContent
         protected void bGenerate_Click(object sender, EventArgs e)
         {
             OpenContentController occ = new OpenContentController();
-        
+
             var oc = occ.GetFirstContent(ModuleId);
             if (oc != null)
             {

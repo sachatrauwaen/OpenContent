@@ -3,7 +3,9 @@
 using Lucene.Net.Search;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Satrabel.OpenContent.Components.Lucene.Config;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.Serialization.Formatters;
 
@@ -43,11 +45,11 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
         /// <param name="doc">
         /// The Document to add the object to.
         /// </param>
-       
-        public void AddJsonToDocument(string source, Document doc)
+
+        public void AddJsonToDocument(string source, Document doc, FieldConfig config)
         {
             JToken token = JToken.Parse(source);
-            Add(doc, null, token);
+            Add(doc, null, token, config);
         }
 
         #endregion
@@ -66,64 +68,98 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
         /// <param name="token">
         /// The JToken to add.
         /// </param>
-        private static void Add(Document doc, string prefix, JToken token)
+        private static void Add(Document doc, string prefix, JToken token, FieldConfig field)
         {
             if (token is JObject)
             {
-                AddProperties(doc, prefix, token as JObject);
+                AddProperties(doc, prefix, token as JObject, field);
             }
             else if (token is JArray)
             {
-                AddArray(doc, prefix, token as JArray);
+                AddArray(doc, prefix, token as JArray, field.item);
             }
             else if (token is JValue)
             {
                 JValue value = token as JValue;
                 IConvertible convertible = value as IConvertible;
+                bool index = true;
+                bool sort = true;
+                if (field != null)
+                {
+                    index = field.Index;
+                    sort = field.Sort;
+                }
 
                 switch (value.Type)
                 {
                     case JTokenType.Boolean:
-                        doc.Add(new NumericField(prefix, Field.Store.NO, true).SetIntValue((bool)value.Value ? 1 : 0));
+                        if (index || sort)
+                        {
+                            doc.Add(new NumericField(prefix, Field.Store.NO, true).SetIntValue((bool)value.Value ? 1 : 0));
+                        }
                         break;
 
                     case JTokenType.Date:
-                        doc.Add(new NumericField(prefix, Field.Store.NO, true).SetLongValue(((DateTime)value.Value).Ticks));
+                        if (index || sort)
+                        {
+                            doc.Add(new NumericField(prefix, Field.Store.NO, true).SetLongValue(((DateTime)value.Value).Ticks));
+                        }
                         break;
 
                     case JTokenType.Float:
-                        if (value.Value is float)
+                        if (index || sort)
                         {
-                            doc.Add(new NumericField(prefix, Field.Store.NO, true).SetFloatValue((float)value.Value));
-                        }
-                        else
-                        {
-                            doc.Add(new NumericField(prefix, Field.Store.NO, true).SetDoubleValue(Convert.ToDouble(value.Value)));
+                            if (value.Value is float)
+                            {
+                                doc.Add(new NumericField(prefix, Field.Store.NO, true).SetFloatValue((float)value.Value));
+                            }
+                            else
+                            {
+                                doc.Add(new NumericField(prefix, Field.Store.NO, true).SetDoubleValue(Convert.ToDouble(value.Value)));
+                            }
                         }
                         break;
 
                     case JTokenType.Guid:
-                        doc.Add(new Field(prefix, value.Value.ToString(), Field.Store.NO, Field.Index.NOT_ANALYZED));
+                        if (index || sort)
+                        {
+                            doc.Add(new Field(prefix, value.Value.ToString(), Field.Store.NO, Field.Index.NOT_ANALYZED));
+                        }
                         break;
 
                     case JTokenType.Integer:
-                        doc.Add(new NumericField(prefix, Field.Store.NO, true).SetLongValue(Convert.ToInt64(value.Value)));
+                        if (index || sort)
+                        {
+                            doc.Add(new NumericField(prefix, Field.Store.NO, true).SetLongValue(Convert.ToInt64(value.Value)));
+                        }
                         break;
 
                     case JTokenType.Null:
                         break;
 
                     case JTokenType.String:
-                        doc.Add(new Field(prefix, value.Value.ToString(), Field.Store.NO, Field.Index.ANALYZED));
-                        doc.Add(new Field("@"+prefix, Truncate(value.Value.ToString(), 100), Field.Store.NO, Field.Index.NOT_ANALYZED));
+                        if (index)
+                        {
+                            doc.Add(new Field(prefix, value.Value.ToString(), Field.Store.NO, Field.Index.ANALYZED));
+                        }
+                        if (sort)
+                        {
+                            doc.Add(new Field("@" + prefix, Truncate(value.Value.ToString(), 100), Field.Store.NO, Field.Index.NOT_ANALYZED));
+                        }
                         break;
 
                     case JTokenType.TimeSpan:
-                        doc.Add(new NumericField(prefix, Field.Store.NO, true).SetLongValue(((TimeSpan)value.Value).Ticks));
+                        if (index || sort)
+                        {
+                            doc.Add(new NumericField(prefix, Field.Store.NO, true).SetLongValue(((TimeSpan)value.Value).Ticks));
+                        }
                         break;
 
                     case JTokenType.Uri:
-                        doc.Add(new Field(prefix, value.Value.ToString(), Field.Store.NO, Field.Index.ANALYZED));
+                        if (index || sort)
+                        {
+                            doc.Add(new Field(prefix, value.Value.ToString(), Field.Store.NO, Field.Index.ANALYZED));
+                        }
                         break;
 
                     default:
@@ -154,11 +190,16 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
         /// <param name="obj">
         /// The JObject to add.
         /// </param>
-        private static void AddProperties(Document doc, string prefix, JObject obj)
+        private static void AddProperties(Document doc, string prefix, JObject obj, FieldConfig field)
         {
             foreach (JProperty property in obj.Properties())
             {
-                Add(doc, MakePrefix(prefix, property.Name), property.Value);
+                FieldConfig f = null;
+                if (field.fields.ContainsKey(property.Name))
+                {
+                    f = field.fields[property.Name];
+                }
+                Add(doc, MakePrefix(prefix, property.Name), property.Value, f);
             }
         }
 
@@ -174,11 +215,11 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
         /// <param name="array">
         /// The JArray to add.
         /// </param>
-        private static void AddArray(Document doc, string prefix, JArray array)
+        private static void AddArray(Document doc, string prefix, JArray array, FieldConfig item)
         {
             for (int i = 0; i < array.Count; i++)
             {
-                Add(doc, prefix, array[i]);
+                Add(doc, prefix, array[i], item);
             }
         }
 

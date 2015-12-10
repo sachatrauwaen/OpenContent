@@ -48,12 +48,6 @@ namespace Satrabel.OpenContent.Components
             return portalSettings.ActiveTab.SkinPath + moduleSubDir + "/Templates/";
         }
 
-
-
-
-
-
-
         public static List<System.Web.UI.WebControls.ListItem> GetTemplates(PortalSettings portalSettings, int moduleId, string selectedTemplate, string moduleSubDir)
         {
             return GetTemplates(portalSettings, moduleId, new FileUri(selectedTemplate), moduleSubDir);
@@ -474,16 +468,16 @@ namespace Satrabel.OpenContent.Components
         }
 
 
-        internal static IndexDTO GetIndexConfig(FolderUri folder)
+        internal static FieldConfig GetIndexConfig(FolderUri folder)
         {
             try
             {
-                IndexDTO indexConfig = null;
+                FieldConfig indexConfig = null;
                 var file = new FileUri(folder.UrlFolder, "index.json");
                 if (file.FileExists)
                 {
                     string content = File.ReadAllText(file.PhysicalFilePath);
-                    indexConfig = JsonConvert.DeserializeObject<IndexDTO>(content);
+                    indexConfig = JsonConvert.DeserializeObject<FieldConfig>(content);
                 }
                 return indexConfig;
             }

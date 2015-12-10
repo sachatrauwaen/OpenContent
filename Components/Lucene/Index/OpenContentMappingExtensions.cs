@@ -4,6 +4,7 @@ using Lucene.Net.Index;
 using Lucene.Net.Search;
 using Satrabel.OpenContent.Components;
 using Satrabel.OpenContent.Components.Lucene;
+using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.Lucene.Mapping;
 using System;
 using System.Linq.Expressions;
@@ -16,7 +17,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Index
     {
         #region Add
 
-        public static void Add(this LuceneController controller, OpenContentInfo data)
+        public static void Add(this LuceneController controller, OpenContentInfo data, FieldConfig config)
         {
             if (null == controller)
             {
@@ -27,7 +28,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Index
                 throw new ArgumentNullException("data");
             }
 
-            controller.Add(JsonMappingUtils.JsonToDocument(data.ModuleId.ToString(), data.ContentId.ToString(), data.Json));
+            controller.Add(JsonMappingUtils.JsonToDocument(data.ModuleId.ToString(), data.ContentId.ToString(), data.Json, config));
         }
 
 
@@ -36,7 +37,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Index
         #region Update
 
 
-        public static void Update(this LuceneController controller, OpenContentInfo data)
+        public static void Update(this LuceneController controller, OpenContentInfo data, FieldConfig config)
         {
             if (null == controller)
             {
@@ -47,7 +48,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Index
                 throw new ArgumentNullException("data");
             }
             controller.Delete(data);
-            controller.Add(data);
+            controller.Add(data, config);
         }
 
         #endregion

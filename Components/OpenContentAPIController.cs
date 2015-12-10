@@ -289,7 +289,7 @@ namespace Satrabel.OpenContent.Components
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
-                var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template);
+                var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
                 if (content == null)
                 {
                     content = new OpenContentInfo()

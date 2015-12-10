@@ -31,7 +31,7 @@ namespace Satrabel.OpenContent.Components
         }
 
 
-        public void AddContent(OpenContentInfo content, bool index, IndexDTO IndexConfig)
+        public void AddContent(OpenContentInfo content, bool index, FieldConfig IndexConfig)
         {
             OpenContentVersion ver = new OpenContentVersion()
             {
@@ -49,7 +49,7 @@ namespace Satrabel.OpenContent.Components
             }
             if (index)
             {
-                LuceneController.Instance.Add(content);
+                LuceneController.Instance.Add(content, IndexConfig);
                 LuceneController.Instance.Commit();
             }
         }
@@ -121,7 +121,7 @@ namespace Satrabel.OpenContent.Components
             UpdateContent(content, false, null);
         }
 
-        public void UpdateContent(OpenContentInfo content, bool index, IndexDTO IndexConfig)
+        public void UpdateContent(OpenContentInfo content, bool index, FieldConfig IndexConfig)
         {
             OpenContentVersion ver = new OpenContentVersion()
             {
@@ -146,7 +146,7 @@ namespace Satrabel.OpenContent.Components
             }
             if (index)
             {
-                LuceneController.Instance.Update(content);
+                LuceneController.Instance.Update(content, IndexConfig);
                 LuceneController.Instance.Commit();
             }
         }

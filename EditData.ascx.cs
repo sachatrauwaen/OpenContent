@@ -167,7 +167,7 @@ namespace Satrabel.OpenContent
                 template = settings.Template;
                 index = settings.Template.Manifest.Index;
             }
-            IndexDTO indexConfig = null;
+            FieldConfig indexConfig = null;
             if (index)
             {
                 indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
@@ -257,7 +257,7 @@ namespace Satrabel.OpenContent
         private void SaveSettings()
         {
             ModuleController mc = new ModuleController();
-            if (!string.IsNullOrEmpty(txtSource.Text)) 
+            if (!string.IsNullOrEmpty(txtSource.Text))
                 mc.UpdateModuleSetting(ModuleId, "data", txtSource.Text);
         }
         protected void cmdCancel_Click(object sender, EventArgs e)
