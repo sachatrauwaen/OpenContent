@@ -62,7 +62,10 @@
 
 .alpaca-field .help-block,
 .alpaca-field .alpaca-message {
-    text-align: center;
+ padding-left:32%;
+     margin-bottom: 18px;
+     margin-left:38px;
+     color: #aa0000;
 }
 
 .alpaca-field-text-max-length-indicator {
@@ -70,11 +73,12 @@
     color: #aaa;
 }
 
-    .alpaca-field-text-max-length-indicator.err {
-        color: #aa0000;
-    }
+.alpaca-field-text-max-length-indicator.err {
+    color: #aa0000;
+}
 
-.alpaca-message-notOptional {
+.alpaca-message-notOptional
+ {
     color: #aa0000;
 }
 
