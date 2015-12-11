@@ -50,7 +50,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             return GetImageUrl(file, ratio);
         }
 
-        public static string GetImageUrl(IFileInfo file, Ratio ratio)
+        public static string GetImageUrl(IFileInfo file, Ratio requestedCropRatio)
         {
             if (file == null) throw new NoNullAllowedException("FileInfo should not be null");
 
@@ -72,21 +72,31 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
                         foreach (var cropperobj in crop["croppers"].Children())
                         {
                             var cropper = cropperobj.Children().First();
-                            int x = int.Parse(cropper["x"].ToString());
-                            int y = int.Parse(cropper["y"].ToString());
+                            int left = int.Parse(cropper["x"].ToString());
+                            int top = int.Parse(cropper["y"].ToString());
                             int w = int.Parse(cropper["width"].ToString());
                             int h = int.Parse(cropper["height"].ToString());
-                            var cropratio = new Ratio(w, h);
-                            if (Math.Abs(cropratio.AsFloat - ratio.AsFloat) < 0.02) //allow 2% margin
+                            var definedCropRatio = new Ratio(w, h);
+
+                            if (Math.Abs(definedCropRatio.AsFloat - requestedCropRatio.AsFloat) < 0.02) //allow 2% margin
                             {
-                                return url + string.Format("?crop={0},{1},{2},{3}", x, y, ratio.Width, ratio.Height);
+                                if (requestedCropRatio.Width > file.Width || requestedCropRatio.Height > file.Height)
+                                {
+                                    requestedCropRatio = new Ratio(definedCropRatio.Width, definedCropRatio.Height);
+                                    requestedCropRatio.SetWidth(definedCropRatio.Width);
+                                }
+                                return url + string.Format("?crop={0},{1},{2},{3}", left, top, requestedCropRatio.Width, requestedCropRatio.Height);
+
+                                //string center = string.Format("{0},{1}", (left+( (float)file.Width/2)), (top+((float)file.Height/2)));
+                                //return url + string.Format("?width={1}&height={2}&mode=crop&center={0}", center, requestedCropRatio.Width, requestedCropRatio.Height);
+                                //return url + string.Format("?crop={0},{1},{2},{3}", left, top, requestedCropRatio.Width, requestedCropRatio.Height);
                             }
                         }
                     }
                 }
             }
 
-            return url + string.Format("?width={0}&height={1}&mode=crop", ratio.Width, ratio.Height);
+            return url + string.Format("?width={0}&height={1}&mode=crop", requestedCropRatio.Width, requestedCropRatio.Height);
         }
 
 
