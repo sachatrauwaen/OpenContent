@@ -80,16 +80,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
 
                             if (Math.Abs(definedCropRatio.AsFloat - requestedCropRatio.AsFloat) < 0.02) //allow 2% margin
                             {
-                                if (requestedCropRatio.Width > file.Width || requestedCropRatio.Height > file.Height)
-                                {
-                                    requestedCropRatio = new Ratio(definedCropRatio.Width, definedCropRatio.Height);
-                                    requestedCropRatio.SetWidth(definedCropRatio.Width);
-                                }
-                                return url + string.Format("?crop={0},{1},{2},{3}", left, top, requestedCropRatio.Width, requestedCropRatio.Height);
-
-                                //string center = string.Format("{0},{1}", (left+( (float)file.Width/2)), (top+((float)file.Height/2)));
-                                //return url + string.Format("?width={1}&height={2}&mode=crop&center={0}", center, requestedCropRatio.Width, requestedCropRatio.Height);
-                                //return url + string.Format("?crop={0},{1},{2},{3}", left, top, requestedCropRatio.Width, requestedCropRatio.Height);
+                                return url + string.Format("?crop={0},{1},{2},{3}&width={4}&height={5}", left, top, w, h, requestedCropRatio.Width, requestedCropRatio.Height);
                             }
                         }
                     }
