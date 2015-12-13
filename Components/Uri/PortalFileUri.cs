@@ -15,24 +15,17 @@ namespace Satrabel.OpenContent.Components
     {
         #region Constructors
 
-        public PortalFileUri(string pathToFile)
-            : base(System.IO.Path.GetDirectoryName(pathToFile))
+        public PortalFileUri(string pathToFile) : base(System.IO.Path.GetDirectoryName(pathToFile))
         {
-
+            FileInfo = GetFileInfo();
         }
-
-        public PortalFileUri(string path, string filename)
-            : base(path, filename)
+        public PortalFileUri(string path, string filename) : base(path, filename)
         {
-
+            FileInfo = GetFileInfo();
         }
         public PortalFileUri(FolderUri path, string filename) : base(path.FolderPath, filename)
         {
-
-        }
-        public PortalFileUri(string pathToFile, int portalid) : base(pathToFile)
-        {
-            FileInfo = GetFileInfo(portalid);
+            FileInfo = GetFileInfo();
         }
         public PortalFileUri(IFileInfo fileInfo) : base(GetFilePath(fileInfo))
         {
@@ -47,8 +40,9 @@ namespace Satrabel.OpenContent.Components
             FileInfo = fileInfo;
         }
 
-        private IFileInfo GetFileInfo(int portalid)
+        private IFileInfo GetFileInfo()
         {
+            var portalid = PortalSettings.Current.PortalId;
             IFileInfo fileRequested = null;
             var pf = (new PortalController()).GetPortal(portalid).HomeDirectory;
             var pos = FilePath.IndexOf("/" + pf, StringComparison.Ordinal);

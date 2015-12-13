@@ -15,16 +15,12 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         public ImageUri(int fileId) : base(fileId)
         {
         }
-        
-        private ImageUri(string pathToFile) : base(pathToFile)
-        {
-            //Don't use this constructor in this class
-        }
-
-        private ImageUri(string path, string filename) : base(path, filename)
-        {
-            //Don't use this constructor in this class
-        }
+        //public ImageUri(string pathToFile) : base(pathToFile)
+        //{
+        //}
+        //public ImageUri(string path, string filename) : base(path, filename)
+        //{
+        //}
 
         #endregion
 
