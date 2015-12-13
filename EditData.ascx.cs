@@ -250,7 +250,8 @@ namespace Satrabel.OpenContent
         private void SaveSettings()
         {
             ModuleController mc = new ModuleController();
-            mc.UpdateModuleSetting(ModuleId, "data", txtSource.Text);
+            if (!string.IsNullOrEmpty(txtSource.Text)) 
+                mc.UpdateModuleSetting(ModuleId, "data", txtSource.Text);
         }
         protected void cmdCancel_Click(object sender, EventArgs e)
         {

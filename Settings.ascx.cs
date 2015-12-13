@@ -39,7 +39,8 @@ namespace Satrabel.OpenContent
         {
             ModuleController mc = new ModuleController();
             mc.UpdateModuleSetting(ModuleId, "template", scriptList.SelectedValue);
-            mc.UpdateModuleSetting(ModuleId, "data", HiddenField.Value);
+            if (!string.IsNullOrEmpty(HiddenField.Value))
+                mc.UpdateModuleSetting(ModuleId, "data", HiddenField.Value);
         }
     }
 }

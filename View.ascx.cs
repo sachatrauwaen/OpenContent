@@ -459,7 +459,8 @@ namespace Satrabel.OpenContent
                         mc.UpdateModuleSetting(ModuleContext.ModuleId, "template", template);
                     }
                 }
-                mc.DeleteModuleSetting(ModuleContext.ModuleId, "data");
+                //don't reset settings. Sure they might be invalid, but maybe not. And you can't ever revert.
+                //mc.DeleteModuleSetting(ModuleContext.ModuleId, "data");
                 Response.Redirect(Globals.NavigateURL(), true);
             }
             catch (Exception exc)

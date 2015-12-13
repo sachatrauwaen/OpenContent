@@ -399,8 +399,8 @@ namespace Satrabel.OpenContent.Components
                 var template = json["template"].ToString();
 
                 var mc = new ModuleController();
-                mc.UpdateModuleSetting(moduleId, "template", template);
-                mc.UpdateModuleSetting(moduleId, "data", data);
+                if (!string.IsNullOrEmpty(template)) mc.UpdateModuleSetting(moduleId, "template", template);
+                if (!string.IsNullOrEmpty(data)) mc.UpdateModuleSetting(moduleId, "data", data);
                 return Request.CreateResponse(HttpStatusCode.OK, "");
             }
             catch (Exception exc)
