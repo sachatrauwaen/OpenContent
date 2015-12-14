@@ -552,7 +552,7 @@ namespace Satrabel.OpenContent
             }
             if (dataFilename != null && dataFilename.FileExists)
             {
-                string fileContent = File.ReadAllText(dataFilename.FilePath);
+                string fileContent = File.ReadAllText(dataFilename.PhysicalFilePath);
                 string settingContent = "";
                 if (!string.IsNullOrWhiteSpace(fileContent))
                 {
