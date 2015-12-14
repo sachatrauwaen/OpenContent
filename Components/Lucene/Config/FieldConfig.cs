@@ -15,9 +15,9 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
         [JsonProperty(PropertyName = "sort")]
         public bool Sort { get; set; }
         [JsonProperty(PropertyName = "fields")]
-        public Dictionary<string, FieldConfig> fields { get; set; }
-        [JsonProperty(PropertyName = "item")]
-        public FieldConfig item { get; set; }
+        public Dictionary<string, FieldConfig> Fields { get; set; }
+        [JsonProperty(PropertyName = "items")]
+        public FieldConfig Items { get; set; }
 
     }
 }

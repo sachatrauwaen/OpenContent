@@ -25,6 +25,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterMultiplyHelper(hbs);
             RegisterEqualHelper(hbs);
             RegisterFormatNumberHelper(hbs);
+            RegisterFormatDateTimeHelper(hbs);
             RegisterImageUrlHelper(hbs);
             RegisterArrayIndexHelper(hbs);
             RegisterArrayTranslateHelper(hbs);
@@ -41,6 +42,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterMultiplyHelper(hbs);
             RegisterEqualHelper(hbs);
             RegisterFormatNumberHelper(hbs);
+            RegisterFormatDateTimeHelper(hbs);
             RegisterImageUrlHelper(hbs);
             RegisterScriptHelper(hbs);
             RegisterHandlebarsHelper(hbs);
@@ -68,6 +70,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterMultiplyHelper(hbs);
             RegisterEqualHelper(hbs);
             RegisterFormatNumberHelper(hbs);
+            RegisterFormatDateTimeHelper(hbs);
             RegisterImageUrlHelper(hbs);
             RegisterScriptHelper(hbs);
             RegisterHandlebarsHelper(hbs);
@@ -313,6 +316,42 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     }
 
                     string res = number.Value.ToString(format, formatprovider);
+                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, res);
+                }
+                catch (Exception)
+                {
+                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "");
+                }
+            });
+        }
+        private void RegisterFormatDateTimeHelper(HandlebarsDotNet.IHandlebars hbs)
+        {
+            hbs.RegisterHelper("formatDateTime", (writer, context, parameters) =>
+            {
+                try
+                {
+                    string res;
+                    DateTime? datetime = parameters[0] as DateTime?;
+                    string format = parameters[1].ToString();
+                    if (parameters.Count() > 1 && !string.IsNullOrWhiteSpace(parameters[2].ToString()))
+                    {
+                        string provider = parameters[2].ToString();
+                        IFormatProvider formatprovider = null;
+                        if (provider.ToLower() == "invariant")
+                        {
+                            formatprovider = CultureInfo.InvariantCulture;
+                        }
+                        else
+                        {
+                            formatprovider = CultureInfo.CreateSpecificCulture(provider);
+                        }
+                        res = datetime.Value.ToString(format, formatprovider);
+                    }
+                    else
+                    {
+                        res = datetime.Value.ToString(format);
+                    }
+
                     HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, res);
                 }
                 catch (Exception)

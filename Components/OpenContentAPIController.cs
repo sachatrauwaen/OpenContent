@@ -495,7 +495,8 @@ namespace Satrabel.OpenContent.Components
             {
                 if (listMode)
                 {
-                    var docs = LuceneController.Instance.Search(module.ModuleID.ToString(), "Title", req.query, "", "", 10, 0);
+                    var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
+                    var docs = LuceneController.Instance.Search(module.ModuleID.ToString(), "Title", req.query, "", "", 10, 0, indexConfig);
                     foreach (var item in docs.ids)
                     {
                         var content = GetContent(module.ModuleID, listMode, int.Parse(item));

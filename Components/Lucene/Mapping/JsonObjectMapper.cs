@@ -76,7 +76,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
             }
             else if (token is JArray)
             {
-                AddArray(doc, prefix, token as JArray, field.item);
+                AddArray(doc, prefix, token as JArray, field.Items);
             }
             else if (token is JValue)
             {
@@ -138,13 +138,21 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
                         break;
 
                     case JTokenType.String:
-                        if (index)
+
+                        if (field != null && field.Type == "key")
                         {
-                            doc.Add(new Field(prefix, value.Value.ToString(), Field.Store.NO, Field.Index.ANALYZED));
+                            doc.Add(new Field(prefix, value.Value.ToString(), Field.Store.NO, Field.Index.NOT_ANALYZED));
                         }
-                        if (sort)
+                        else
                         {
-                            doc.Add(new Field("@" + prefix, Truncate(value.Value.ToString(), 100), Field.Store.NO, Field.Index.NOT_ANALYZED));
+                            if (index)
+                            {
+                                doc.Add(new Field(prefix, value.Value.ToString(), Field.Store.NO, Field.Index.ANALYZED));
+                            }
+                            if (sort)
+                            {
+                                doc.Add(new Field("@" + prefix, Truncate(value.Value.ToString(), 100), Field.Store.NO, Field.Index.NOT_ANALYZED));
+                            }
                         }
                         break;
 
@@ -195,9 +203,9 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
             foreach (JProperty property in obj.Properties())
             {
                 FieldConfig f = null;
-                if (field.fields.ContainsKey(property.Name))
+                if (field.Fields.ContainsKey(property.Name))
                 {
-                    f = field.fields[property.Name];
+                    f = field.Fields[property.Name];
                 }
                 Add(doc, MakePrefix(prefix, property.Name), property.Value, f);
             }

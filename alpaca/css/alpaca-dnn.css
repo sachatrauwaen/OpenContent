@@ -369,3 +369,7 @@ select.oc-ddl-versions {
     color: #333;
     font-size: 12px;
 }
+
+.bootstrap-datetimepicker-widget{
+left:35% !important;
+}
