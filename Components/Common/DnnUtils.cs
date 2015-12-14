@@ -52,9 +52,17 @@ namespace Satrabel.OpenContent.Components
             throw new NotImplementedException();
         }
 
-        internal static string ToUrl(this IFileInfo file)
+        internal static string ToUrl(this IFileInfo fileInfo)
         {
-            return FileManager.Instance.GetUrl(file);
+            if (fileInfo == null) return "";
+
+            var url = FileManager.Instance.GetUrl(fileInfo);
+            if (url.ToLower().Contains("linkclick"))
+            {
+                //this method works also for linkclick
+                url = fileInfo.PhysicalPath.Replace(new FolderUri("/").PhysicalFullDirectory, "");
+            }
+            return url;
         }
 
         public static string GetCurrentCultureCode()

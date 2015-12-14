@@ -124,7 +124,7 @@ namespace Satrabel.OpenContent.Components
                         type = fileInfo.ContentType,
                         size = file.ContentLength,
                         progress = "1.0",
-                        url = FileManager.Instance.GetUrl(fileInfo),
+                        url = fileInfo.ToUrl(),
                         thumbnail_url = fileIcon,
                         message = "success",
                         id = fileInfo.FileId,

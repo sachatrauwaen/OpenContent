@@ -116,8 +116,6 @@ namespace Satrabel.OpenContent
                 int.TryParse(Page.Request.QueryString["id"], out _itemId);
             }
 
-            //string template = OpenContentUtils.GetTemplateFolder(ModuleContext.Settings);
-            //string settingsJson = ModuleContext.Settings["data"] as string;
             if (!Page.IsPostBack)
             {
                 //if (ModuleContext.EditMode && !ModuleContext.IsEditable)
@@ -972,12 +970,12 @@ namespace Satrabel.OpenContent
             }
             catch (Exception ex)
             {
-                Exceptions.ProcessModuleLoadException(string.Format("Error while loading template {0}", template.FilePath), this, ex);
+                Exceptions.ProcessModuleLoadException(string.Format("Error while loading template {0} on page {1}", template.FilePath, this.Request.RawUrl), this, ex);
                 return "";
             }
         }
 
-        private string ExecuteTemplate(string TemplateVirtualFolder, TemplateFiles files, FileUri template, dynamic model)
+        private string ExecuteTemplate(string templateVirtualFolder, TemplateFiles files, FileUri template, dynamic model)
         {
             if (template.Extension != ".hbs")
             {
@@ -986,7 +984,7 @@ namespace Satrabel.OpenContent
             else
             {
                 HandlebarsEngine hbEngine = new HandlebarsEngine();
-                return hbEngine.Execute(Page, this, files, TemplateVirtualFolder, model);
+                return hbEngine.Execute(Page, this, files, templateVirtualFolder, model);
             }
         }
 

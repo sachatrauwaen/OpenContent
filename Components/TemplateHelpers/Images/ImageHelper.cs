@@ -80,6 +80,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
 
                             if (Math.Abs(definedCropRatio.AsFloat - requestedCropRatio.AsFloat) < 0.02) //allow 2% margin
                             {
+                                //crop first then resize (order defined by the processors definition order in the config file)
                                 return url + string.Format("?crop={0},{1},{2},{3}&width={4}&height={5}", left, top, w, h, requestedCropRatio.Width, requestedCropRatio.Height);
                             }
                         }

@@ -13,7 +13,7 @@
 using System;
 using DotNetNuke.Entities.Modules;
 
-namespace Satrabel.Modules.OpenContent
+namespace Satrabel.OpenContent
 {
     public class OpenContentModuleBase : PortalModuleBase
     {

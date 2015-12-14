@@ -459,7 +459,7 @@ namespace Satrabel.OpenContent.Components
             {
                 imageCropped.Save(content, imgFormat);
                 var newFile = fileManager.AddFile(userFolder, newFilename, content, true);
-                cropresult.url = FileManager.Instance.GetUrl(newFile);
+                cropresult.url = newFile.ToUrl();
                 return cropresult;
             }
             return null;
