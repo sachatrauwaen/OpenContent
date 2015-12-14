@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using DotNetNuke.Common;
 using DotNetNuke.Entities.Content.Common;
 using DotNetNuke.Entities.Modules;
@@ -45,10 +46,10 @@ namespace Satrabel.OpenContent.Components
             var portalid = PortalSettings.Current.PortalId;
             IFileInfo fileRequested = null;
             var pf = (new PortalController()).GetPortal(portalid).HomeDirectory;
-            var pos = FilePath.IndexOf("/" + pf, StringComparison.Ordinal);
+            var pos =  FilePath.IndexOf(pf, StringComparison.InvariantCultureIgnoreCase);
             if (pos > -1)
             {
-                fileRequested = FileManager.Instance.GetFile(portalid, FilePath.Substring(pos + pf.Length + 2));
+                fileRequested = FileManager.Instance.GetFile(portalid, FilePath.Substring(pos + pf.Length + 1));
             }
             return fileRequested;
         }

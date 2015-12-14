@@ -52,7 +52,8 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
 
         public static string GetImageUrl(IFileInfo file, Ratio requestedCropRatio)
         {
-            if (file == null) throw new NoNullAllowedException("FileInfo should not be null");
+            if (file == null) 
+                throw new NoNullAllowedException("FileInfo should not be null");
 
             var url = file.ToUrl();
             if (url.Contains("LinkClick.aspx")) return url;
