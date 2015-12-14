@@ -40,7 +40,6 @@ namespace Satrabel.OpenContent.Components
 
             FileInfo = fileInfo;
         }
-
         private IFileInfo GetFileInfo()
         {
             var portalid = PortalSettings.Current.PortalId;

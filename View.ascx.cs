@@ -630,7 +630,6 @@ namespace Satrabel.OpenContent
                         if (_info.Template.Main != null)
                         {
                             // for list templates a main template need to be defined
-
                             GetDataList(_info, _settings, _info.Template.ClientSideData);
                             if (!_info.ShowInitControl)
                             {

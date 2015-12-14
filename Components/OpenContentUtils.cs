@@ -129,6 +129,7 @@ namespace Satrabel.OpenContent.Components
 
                 IEnumerable<string> files = Directory.EnumerateFiles(dir, "*.*", SearchOption.AllDirectories);
                 IEnumerable<string> manifestfiles = files.Where(s => s.EndsWith("manifest.json"));
+                var templateFound = false;
                 if (manifestfiles.Any())
                 {
                     foreach (string manifestFile in manifestfiles)
@@ -138,6 +139,7 @@ namespace Satrabel.OpenContent.Components
                         var manifest = ManifestUtils.GetFileManifest(manifestFileUri);
                         if (manifest != null && manifest.HasTemplates)
                         {
+                            templateFound = true;
                             foreach (var template in manifest.Templates)
                             {
                                 FileUri templateUri = new FileUri(manifestFileUri.FolderPath, template.Key);
@@ -157,7 +159,7 @@ namespace Satrabel.OpenContent.Components
                     }
 
                 }
-                else
+                if (!templateFound)
                 {
                     IEnumerable<string> scriptfiles = files.Where(s => s.EndsWith(".cshtml") || s.EndsWith(".vbhtml") || s.EndsWith(".hbs"));
                     foreach (string script in scriptfiles)
