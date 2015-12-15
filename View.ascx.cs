@@ -562,14 +562,14 @@ namespace Satrabel.OpenContent
                     }
                     if (string.IsNullOrEmpty(settingContent))
                     {
-                        var settingsFilename = info.Template.Uri().PhysicalFullDirectory + "\\" + info.Template.Uri().FileNameWithoutExtension + "-data.json";
+                        var settingsFilename = info.Template.Uri().PhysicalFullDirectory + "\\" + info.Template.Key.ShortKey + "-data.json";
                         if (File.Exists(settingsFilename))
                         {
                             settingContent = File.ReadAllText(settingsFilename);
                         }
                         else
                         {
-                            //string schemaFilename = info.Template.Uri().PhysicalFullDirectory + "\\" + info.Template.Uri().FileNameWithoutExtension + "-schema.json";
+                            //string schemaFilename = info.Template.Uri().PhysicalFullDirectory + "\\" + info.Template.Key.ShortKey + "-schema.json";
                             //settingsNeeded = File.Exists(schemaFilename);
                         }
                     }
@@ -583,7 +583,7 @@ namespace Satrabel.OpenContent
         private bool GetOtherModuleDemoData(TemplateInfo info, OpenContentSettings settings)
         {
             _info.ResetData();
-            OpenContentController ctrl = new OpenContentController();
+            var ctrl = new OpenContentController();
             var struc = ctrl.GetFirstContent(info.ModuleId);
             if (struc != null)
             {
@@ -593,7 +593,7 @@ namespace Satrabel.OpenContent
                 }
                 if (string.IsNullOrEmpty(info.SettingsJson))
                 {
-                    var settingsFilename = info.Template.Uri().PhysicalFullDirectory + "\\" + info.Template.Uri().FileNameWithoutExtension + "-data.json";
+                    var settingsFilename = info.Template.Uri().PhysicalFullDirectory + "\\" + info.Template.Key.ShortKey + "-data.json";
                     if (File.Exists(settingsFilename))
                     {
                         string settingsContent = File.ReadAllText(settingsFilename);
@@ -679,8 +679,6 @@ namespace Satrabel.OpenContent
                     ClientResourceManager.RegisterScript(Page, Page.ResolveUrl(jsfilename.UrlFilePath), FileOrder.Js.DefaultPriority);
                 }
                 ClientResourceManager.RegisterScript(Page, Page.ResolveUrl("~/DesktopModules/OpenContent/js/opencontent.js"), FileOrder.Js.DefaultPriority);
-
-
             }
         }
 
@@ -1056,7 +1054,8 @@ namespace Satrabel.OpenContent
             }
             else
             {
-                bool dsDataExist = GetOtherModuleDemoData(_info, _settings);
+                //too many rendering issues 
+             //   bool dsDataExist = GetOtherModuleDemoData(_info, _settings);
 
             }
         }

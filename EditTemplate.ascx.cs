@@ -187,8 +187,8 @@ namespace Satrabel.OpenContent
 
 
 
-                scriptList.Items.Add(new ListItem("Stylesheet", template.Uri().FileNameWithoutExtension + ".css"));
-                scriptList.Items.Add(new ListItem("Javascript", template.Uri().FileNameWithoutExtension + ".js"));
+                scriptList.Items.Add(new ListItem("Stylesheet", template.Key.ShortKey + ".css"));
+                scriptList.Items.Add(new ListItem("Javascript", template.Key.ShortKey + ".js"));
                 scriptList.Items.Add(new ListItem("Schema", "schema.json"));
                 scriptList.Items.Add(new ListItem("Layout Options", "options.json"));
                 //scriptList.Items.Add(new ListItem("Edit Layout Options - Template File Overides", "options." + template.FileNameWithoutExtension + ".json"));
@@ -196,11 +196,11 @@ namespace Satrabel.OpenContent
                 {
                     scriptList.Items.Add(new ListItem("Layout Options - " + item.Code, "options." + item.Code + ".json"));
                 }
-                scriptList.Items.Add(new ListItem("Settings Schema", template.Uri().FileNameWithoutExtension + "-schema.json"));
-                scriptList.Items.Add(new ListItem("Settings Layout Options", template.Uri().FileNameWithoutExtension + "-options.json"));
+                scriptList.Items.Add(new ListItem("Settings Schema", template.Key.ShortKey + "-schema.json"));
+                scriptList.Items.Add(new ListItem("Settings Layout Options", template.Key.ShortKey + "-options.json"));
                 foreach (Locale item in LocaleController.Instance.GetLocales(PortalId).Values)
                 {
-                    scriptList.Items.Add(new ListItem("Settings Layout Options - " + item.Code, template.Uri().FileNameWithoutExtension + "-options." + item.Code + ".json"));
+                    scriptList.Items.Add(new ListItem("Settings Layout Options - " + item.Code, template.Key.ShortKey + "-options." + item.Code + ".json"));
                 }
             }
         }

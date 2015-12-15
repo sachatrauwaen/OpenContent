@@ -104,7 +104,7 @@ namespace Satrabel.OpenContent.Components.Manifest
 
         internal static bool SettingsNeeded(this TemplateManifest template)
         {
-            var schemaFileUri = new FileUri(template.Uri().UrlFolder, template.Uri().FileNameWithoutExtension + "-schema.json");
+            var schemaFileUri = new FileUri(template.Uri().UrlFolder, template.Key.ShortKey + "-schema.json");
             if (schemaFileUri.FileExists && !schemaFileUri.ToJObject().IsEmpty())
                 return true;
             schemaFileUri = new FileUri(template.Uri().UrlFolder, template.Key.ShortKey + "-schema.json");
