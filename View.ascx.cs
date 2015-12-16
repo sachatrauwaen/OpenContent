@@ -49,6 +49,7 @@ using DotNetNuke.Security.Roles;
 using DotNetNuke.Entities.Users;
 using DotNetNuke.Instrumentation;
 using DotNetNuke.Services.Installer.Log;
+using Satrabel.OpenContent.Components.Lucene;
 using Satrabel.OpenContent.Components.Manifest;
 
 #endregion
@@ -509,7 +510,7 @@ namespace Satrabel.OpenContent
         {
             _info.ResetData();
             OpenContentController ctrl = new OpenContentController();
-            IEnumerable<OpenContentInfo> dataList;
+            List<OpenContentInfo> dataList;
             if (clientSide)
             {
                 var data = ctrl.GetFirstContent(info.ModuleId);
@@ -521,7 +522,31 @@ namespace Satrabel.OpenContent
             }
             else
             {
-                dataList = ctrl.GetContents(info.ModuleId);
+                bool useLucene = info.Template.Manifest.Index;
+                if (useLucene)
+                {
+                    var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
+                    string luceneFilter = settings.LuceneFilter;
+                    string luceneSort = settings.LuceneSort;
+                    int? luceneMaxResults = settings.LuceneMaxResults;
+                    SearchResults docs = LuceneController.Instance.Search(_info.ModuleId.ToString(), "Title", "",
+                        luceneFilter, luceneSort, (luceneMaxResults.HasValue ? luceneMaxResults.Value : 100), 0,
+                        indexConfig);
+                    int total = docs.ToalResults;
+                    dataList = new List<OpenContentInfo>();
+                    foreach (var item in docs.ids)
+                    {
+                        var content = ctrl.GetContent(int.Parse(item));
+                        if (content != null)
+                        {
+                            dataList.Add(content);
+                        }
+                    }
+                }
+                else
+                {
+                    dataList = ctrl.GetContents(info.ModuleId).ToList();
+                }
                 if (dataList.Any())
                 {
                     _info.SetData(dataList, settings.Data);
