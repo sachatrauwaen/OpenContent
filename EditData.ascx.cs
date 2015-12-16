@@ -235,10 +235,14 @@ namespace Satrabel.OpenContent
                         data.Json = txtSource.Text;
                         ctrl.UpdateContent(data, index);
                     }
-
-                    if (json["ModuleTitle"] != null && json["ModuleTitle"].Type == JTokenType.String)
+                    if (json["form"]["ModuleTitle"] != null && json["form"]["ModuleTitle"].Type == JTokenType.String)
                     {
-                        string ModuleTitle = json["ModuleTitle"].ToString();
+                        string ModuleTitle = json["form"]["ModuleTitle"].ToString();
+                        OpenContentUtils.UpdateModuleTitle(ModuleContext.Configuration, ModuleTitle);
+                    }
+                    else if (json["form"]["ModuleTitle"] != null && json["form"]["ModuleTitle"].Type == JTokenType.Object)
+                    {
+                        string ModuleTitle = json["form"]["ModuleTitle"][DnnUtils.GetCurrentCultureCode()].ToString();
                         OpenContentUtils.UpdateModuleTitle(ModuleContext.Configuration, ModuleTitle);
                     }
                 }

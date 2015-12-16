@@ -534,11 +534,10 @@ namespace Satrabel.OpenContent
             _info.ResetData();
             OpenContentController ctrl = new OpenContentController();
             var struc = ctrl.GetContent(info.DetailItemId);
-            if (struc != null)
+            if (struc != null && struc.ModuleId == info.ModuleId)
             {
                 _info.SetData(struc.Json, settings.Data);
             }
-
         }
 
         private bool GetDemoData(TemplateInfo info, OpenContentSettings settings)
@@ -640,12 +639,22 @@ namespace Satrabel.OpenContent
                     else
                     {
                         // detail template
-                        if (_info.Template.Detail != null)
+                        GetDetailData(_info, _settings);
+                        if (_info.Template.Detail != null && !_info.ShowInitControl)
                         {
-                            GetDetailData(_info, _settings);
-                            if (!_info.ShowInitControl)
+                            _info.OutputString = GenerateOutput(_settings.Template.Uri().UrlFolder, _info.Template.Detail, _info.DataJson, _info.SettingsJson);
+                        }
+                        else // if itemid not corresponding to this module, show list template
+                        {
+                            // List template
+                            if (_info.Template.Main != null)
                             {
-                                _info.OutputString = GenerateOutput(_settings.Template.Uri().UrlFolder, _info.Template.Detail, _info.DataJson, _info.SettingsJson);
+                                // for list templates a main template need to be defined
+                                GetDataList(_info, _settings, _info.Template.ClientSideData);
+                                if (!_info.ShowInitControl)
+                                {
+                                    _info.OutputString = GenerateListOutput(_settings.Template.Uri().UrlFolder, _info.Template.Main, _info.DataList, _info.SettingsJson);
+                                }
                             }
                         }
                     }
@@ -736,10 +745,23 @@ namespace Satrabel.OpenContent
             return accept;
         }
 
+
         private void BindOtherModules(int tabId, int moduleId)
         {
             IEnumerable<ModuleInfo> modules = (new ModuleController()).GetModules(ModuleContext.PortalId).Cast<ModuleInfo>();
             modules = modules.Where(m => m.ModuleDefinition.DefinitionName == "OpenContent" && m.IsDeleted == false);
+            /*
+            List<ModuleInfo> filterdModules = new List<ModuleInfo>();
+            foreach (var module in modules.ToList())
+            {
+                OpenContentSettings set = new OpenContentSettings(module.ModuleSettings);
+                if (set.IsOtherModule)
+                {
+                    modules.
+                }
+            }
+            */
+
             rblDataSource.Items[1].Enabled = modules.Any();
             phDataSource.Visible = rblDataSource.SelectedIndex == 1; // other module
             if (rblDataSource.SelectedIndex == 1) // other module
@@ -803,7 +825,7 @@ namespace Satrabel.OpenContent
                 var templateManifest = new FileUri(ddlTemplate.SelectedValue).ToTemplateManifest();
                 settingsNeeded = templateManifest.SettingsNeeded();
 
-                templateDefined = templateDefined &&  (!ddlTemplate.Visible || (settings.Template.Key.FullKeyString() == ddlTemplate.SelectedValue));
+                templateDefined = templateDefined && (!ddlTemplate.Visible || (settings.Template.Key.FullKeyString() == ddlTemplate.SelectedValue));
                 settingsDefined = settingsDefined || !settingsNeeded;
             }
             else // new template
@@ -1055,7 +1077,7 @@ namespace Satrabel.OpenContent
             else
             {
                 //too many rendering issues 
-             //   bool dsDataExist = GetOtherModuleDemoData(_info, _settings);
+                //   bool dsDataExist = GetOtherModuleDemoData(_info, _settings);
 
             }
         }

@@ -99,7 +99,15 @@ namespace Satrabel.OpenContent.Components
                     json["data"] = content.Json.ToJObject("GetContent " + id);
                     if (json["schema"]["properties"]["ModuleTitle"] is JObject)
                     {
-                        json["data"]["ModuleTitle"] = ActiveModule.ModuleTitle;
+                        //json["data"]["ModuleTitle"] = ActiveModule.ModuleTitle;
+                        if (json["data"]["ModuleTitle"] != null && json["data"]["ModuleTitle"].Type == JTokenType.String)
+                        {
+                            json["data"]["ModuleTitle"] = ActiveModule.ModuleTitle;
+                        }
+                        else if (json["data"]["ModuleTitle"] != null && json["data"]["ModuleTitle"].Type == JTokenType.Object)
+                        {
+                            json["data"]["ModuleTitle"][DnnUtils.GetCurrentCultureCode()] = ActiveModule.ModuleTitle;
+                        }
                     }
                     AddVersions(json, content);
                     createdByUserid = content.CreatedByUserId;
@@ -316,6 +324,11 @@ namespace Satrabel.OpenContent.Components
                 if (json["form"]["ModuleTitle"] != null && json["form"]["ModuleTitle"].Type == JTokenType.String)
                 {
                     string ModuleTitle = json["form"]["ModuleTitle"].ToString();
+                    OpenContentUtils.UpdateModuleTitle(ActiveModule, ModuleTitle);
+                }
+                else if (json["form"]["ModuleTitle"] != null && json["form"]["ModuleTitle"].Type == JTokenType.Object)
+                {
+                    string ModuleTitle = json["form"]["ModuleTitle"][DnnUtils.GetCurrentCultureCode()].ToString();
                     OpenContentUtils.UpdateModuleTitle(ActiveModule, ModuleTitle);
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, "");
