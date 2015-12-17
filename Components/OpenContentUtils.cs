@@ -47,12 +47,6 @@ namespace Satrabel.OpenContent.Components
             return portalSettings.ActiveTab.SkinPath + moduleSubDir + "/Templates/";
         }
 
-
-
-
-
-
-
         public static List<System.Web.UI.WebControls.ListItem> GetTemplates(PortalSettings portalSettings, int moduleId, string selectedTemplate, string moduleSubDir)
         {
             return GetTemplates(portalSettings, moduleId, new FileUri(selectedTemplate), moduleSubDir);

@@ -73,7 +73,6 @@ namespace Satrabel.OpenContent
         protected override void OnInit(EventArgs e)
         {
             base.OnInit(e);
-            var modSettings = ModuleContext.Settings;
 
             // auto attach a ContentLocalized OpenContent module to the reference module of the default language
             string openContentAutoAttach = PortalController.GetPortalSetting("OpenContent_AutoAttach", ModuleContext.PortalId, "False");
@@ -98,13 +97,13 @@ namespace Satrabel.OpenContent
 
                         //DataCache.ClearCache();
                         module = mc.GetModule(defaultModule.ModuleID, ModuleContext.TabId, true);
-                        modSettings = module.ModuleSettings;
+                        _settings = module.OpenContentSettings();
                     }
                 }
             }
 
-            _settings = new OpenContentSettings(modSettings);
-
+            if (_settings == null)
+                _settings = ModuleContext.OpenContentSettings();
         }
 
         protected override void OnLoad(EventArgs e)
@@ -240,7 +239,7 @@ namespace Satrabel.OpenContent
             {
                 var actions = new ModuleActionCollection();
 
-                var settings = new OpenContentSettings(ModuleContext.Settings);
+                var settings = ModuleContext.OpenContentSettings();
                 TemplateManifest template = settings.Template;
                 bool templateDefined = template != null;
                 bool listMode = template != null && template.IsListTemplate;
@@ -369,7 +368,7 @@ namespace Satrabel.OpenContent
                 //BindOtherModules(dsModule.TabID, dsModule.ModuleID);
                 BindOtherModules(-1, -1);
                 var dsModule = (new ModuleController()).GetTabModule(int.Parse(ddlDataSource.SelectedValue));
-                var dsSettings = new OpenContentSettings(dsModule.ModuleSettings);
+                var dsSettings = dsModule.OpenContentSettings();
                 BindTemplates(dsSettings.Template, dsSettings.Template.Uri());
             }
             else // this module
@@ -384,7 +383,7 @@ namespace Satrabel.OpenContent
             phFrom.Visible = rblUseTemplate.SelectedIndex == 1;
             phTemplateName.Visible = rblUseTemplate.SelectedIndex == 1;
             rblFrom.SelectedIndex = 0;
-            var scriptFileSetting = new OpenContentSettings(ModuleContext.Settings).Template;
+            var scriptFileSetting = ModuleContext.OpenContentSettings().Template;
             ddlTemplate.Items.Clear();
             if (rblUseTemplate.SelectedIndex == 0) // existing
             {
@@ -401,7 +400,7 @@ namespace Satrabel.OpenContent
             ddlTemplate.Items.Clear();
             if (rblFrom.SelectedIndex == 0) // site
             {
-                var scriptFileSetting = new OpenContentSettings(ModuleContext.Settings).Template;
+                var scriptFileSetting = ModuleContext.OpenContentSettings().Template;
                 ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplates(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, "OpenContent").ToArray());
 
                 //ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplatesFiles(ModuleContext.PortalSettings, ModuleContext.moduleId, scriptFileSetting, "OpenContent").ToArray());
@@ -485,7 +484,7 @@ namespace Satrabel.OpenContent
         protected void ddlDataSource_SelectedIndexChanged(object sender, EventArgs e)
         {
             var dsModule = (new ModuleController()).GetTabModule(int.Parse(ddlDataSource.SelectedValue));
-            var dsSettings = new OpenContentSettings(dsModule.ModuleSettings);
+            var dsSettings = dsModule.OpenContentSettings();
             BindTemplates(dsSettings.Template, dsSettings.Template.Uri());
         }
 
@@ -1019,7 +1018,7 @@ namespace Satrabel.OpenContent
             if (rblDataSource.SelectedIndex == 1) // other module
             {
                 var dsModule = (new ModuleController()).GetTabModule(int.Parse(ddlDataSource.SelectedValue));
-                var dsSettings = new OpenContentSettings(dsModule.ModuleSettings);
+                var dsSettings = dsModule.OpenContentSettings();
                 _info.SetDataSourceModule(dsModule.TabID, dsModule.ModuleID, dsModule, dsSettings.Template, dsSettings.Data);
             }
             BindButtons(_settings, _info);

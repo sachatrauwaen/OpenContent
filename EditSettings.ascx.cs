@@ -38,7 +38,7 @@ namespace Satrabel.OpenContent
             hlCancel.NavigateUrl = Globals.NavigateURL();
             cmdSave.NavigateUrl = Globals.NavigateURL();
 
-            var settings = new OpenContentSettings(ModuleContext.Settings);
+            var settings = ModuleContext.OpenContentSettings();
             if (settings.TemplateAvailable)
             {
                 AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, settings.TemplateDir.FolderPath, settings.TemplateKey.ShortKey );
@@ -53,7 +53,7 @@ namespace Satrabel.OpenContent
             {
                 hlTemplateExchange.NavigateUrl = EditUrl("ShareTemplate");
                 //var template = OpenContentUtils.GetTemplate(Settings);
-                var settings = new OpenContentSettings(ModuleContext.Settings);
+                var settings = ModuleContext.OpenContentSettings();
                 scriptList.Items.AddRange(OpenContentUtils.GetTemplatesFiles(PortalSettings, ModuleId, settings.Template, "OpenContent", (settings.IsOtherModule ? settings.Template.Uri() : null)).ToArray());
             }
         }

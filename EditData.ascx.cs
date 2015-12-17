@@ -87,7 +87,7 @@ namespace Satrabel.OpenContent
                 case cData:
                     OpenContentController ctrl = new OpenContentController();
                     TemplateManifest template = null;
-                    OpenContentSettings settings = new OpenContentSettings(Settings);
+                    OpenContentSettings settings = this.OpenContentSettings();
 
                     if (settings.TemplateAvailable)
                     {
@@ -159,7 +159,7 @@ namespace Satrabel.OpenContent
         {
             OpenContentController ctrl = new OpenContentController();
             TemplateManifest template = null;
-            OpenContentSettings settings = new OpenContentSettings(Settings);
+            OpenContentSettings settings = this.OpenContentSettings();
             bool index = false;
             if (settings.TemplateAvailable)
             {

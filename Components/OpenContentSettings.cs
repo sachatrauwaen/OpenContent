@@ -17,7 +17,7 @@ namespace Satrabel.OpenContent.Components
 
         private JObject _json = null;
 
-        public OpenContentSettings(IDictionary moduleSettings)
+        internal OpenContentSettings(IDictionary moduleSettings)
         {
             var template = moduleSettings["template"] as string;    //templatepath+file  or  //manifestpath+key
             if (!string.IsNullOrEmpty(template))

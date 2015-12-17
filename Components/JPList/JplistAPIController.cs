@@ -36,7 +36,7 @@ namespace Satrabel.OpenContent.Components.JPList
                 //stopwatch.Stop();
                 //Debug.WriteLine("List:" + stopwatch.ElapsedMilliseconds); 
 
-                OpenContentSettings settings = new OpenContentSettings(ActiveModule.ModuleSettings);
+                OpenContentSettings settings = ActiveModule.OpenContentSettings();
                 ModuleInfo module = ActiveModule;
                 if (settings.ModuleId > 0)
                 {
