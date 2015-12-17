@@ -226,12 +226,30 @@ namespace Satrabel.OpenContent
                 }
                 IncludeResourses(_info.Template);
                 //if (DemoData) pDemo.Visible = true;
-                if (_info.Template.IsListTemplate)
+               
+                if (_info.Template != null && _info.Template.ClientSideData)
                 {
                     DotNetNuke.Framework.ServicesFramework.Instance.RequestAjaxScriptSupport();
                     DotNetNuke.Framework.ServicesFramework.Instance.RequestAjaxAntiForgerySupport();
                 }
+                if (_info.Files != null && _info.Files.PartialTemplates != null)
+                {
+                    foreach (var item in _info.Files.PartialTemplates.Where(p => p.Value.ClientSide))
+                    {
+                        try
+                        {
+                            var f = new FileUri(_info.Template.ManifestDir.FolderPath, item.Value.Template);
+                            string s = File.ReadAllText(f.PhysicalFilePath);
+                            var litPartial = new LiteralControl(s);
+                            Controls.Add(litPartial);
+                        }
+                        catch (Exception ex)
+                        {
+                            DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, ex.Message, DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
+                        }
 
+                    }
+                }
             }
         }
 
