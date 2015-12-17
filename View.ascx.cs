@@ -750,19 +750,17 @@ namespace Satrabel.OpenContent
         {
             IEnumerable<ModuleInfo> modules = (new ModuleController()).GetModules(ModuleContext.PortalId).Cast<ModuleInfo>();
             modules = modules.Where(m => m.ModuleDefinition.DefinitionName == "OpenContent" && m.IsDeleted == false);
-            /*
             List<ModuleInfo> filterdModules = new List<ModuleInfo>();
             foreach (var module in modules.ToList())
             {
                 OpenContentSettings set = new OpenContentSettings(module.ModuleSettings);
-                if (set.IsOtherModule)
+                if (!set.IsOtherModule)
                 {
-                    modules.
+                    filterdModules.Add(module);
                 }
             }
-            */
 
-            rblDataSource.Items[1].Enabled = modules.Any();
+            rblDataSource.Items[1].Enabled = filterdModules.Any();
             phDataSource.Visible = rblDataSource.SelectedIndex == 1; // other module
             if (rblDataSource.SelectedIndex == 1) // other module
             {
@@ -773,7 +771,7 @@ namespace Satrabel.OpenContent
             rblUseTemplate.Items[1].Enabled = rblDataSource.SelectedIndex == 0; // this module
             ddlDataSource.Items.Clear();
             var listItems = new List<ListItem>();
-            foreach (var item in modules)
+            foreach (var item in filterdModules)
             {
                 if (item.TabModuleID != ModuleContext.TabModuleId)
                 {
