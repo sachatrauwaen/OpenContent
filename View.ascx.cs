@@ -748,7 +748,6 @@ namespace Satrabel.OpenContent
         private void BindOtherModules(int tabId, int moduleId)
         {
             IEnumerable<ModuleInfo> modules = (new ModuleController()).GetModules(ModuleContext.PortalId).Cast<ModuleInfo>();
-            modules = modules.Where(m => m.ModuleDefinition.DefinitionName == "OpenContent" && m.IsDeleted == false);
             /*
             List<ModuleInfo> filterdModules = new List<ModuleInfo>();
             foreach (var module in modules.ToList())
@@ -760,6 +759,7 @@ namespace Satrabel.OpenContent
                 }
             }
             */
+            modules = modules.Where(m => m.ModuleDefinition.DefinitionName == "OpenContent" && m.IsDeleted == false && !m.OpenContentSettings().IsOtherModule);
 
             rblDataSource.Items[1].Enabled = modules.Any();
             phDataSource.Visible = rblDataSource.SelectedIndex == 1; // other module
