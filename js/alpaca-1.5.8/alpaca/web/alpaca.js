@@ -18595,7 +18595,7 @@ function program13(depth0,data,depth1) {
                 {
                     self.destroy();
 
-                    self.errorCallback.call(_this, err);
+                    self.errorCallback.call(self, err);
                 },
                 "notTopLevel":true,
                 "render" : function(fieldControl, cb) {
