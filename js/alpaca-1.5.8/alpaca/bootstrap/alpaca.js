@@ -19356,7 +19356,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                 {
                     self.destroy();
 
-                    self.errorCallback.call(_this, err);
+                    self.errorCallback.call(self, err);
                 },
                 "notTopLevel":true,
                 "render" : function(fieldControl, cb) {
