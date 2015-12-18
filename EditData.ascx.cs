@@ -88,7 +88,7 @@ namespace Satrabel.OpenContent
                 case cData:
                     OpenContentController ctrl = new OpenContentController();
                     TemplateManifest template = null;
-                    OpenContentSettings settings = new OpenContentSettings(Settings);
+                    OpenContentSettings settings = this.OpenContentSettings();
 
                     if (settings.TemplateAvailable)
                     {
@@ -160,7 +160,7 @@ namespace Satrabel.OpenContent
         {
             OpenContentController ctrl = new OpenContentController();
             TemplateManifest template = null;
-            OpenContentSettings settings = new OpenContentSettings(Settings);
+            OpenContentSettings settings = this.OpenContentSettings();
             bool index = false;
             if (settings.TemplateAvailable)
             {
@@ -242,10 +242,14 @@ namespace Satrabel.OpenContent
                         data.Json = txtSource.Text;
                         ctrl.UpdateContent(data, index, indexConfig);
                     }
-
-                    if (json["ModuleTitle"] != null && json["ModuleTitle"].Type == JTokenType.String)
+                    if (json["form"]["ModuleTitle"] != null && json["form"]["ModuleTitle"].Type == JTokenType.String)
                     {
-                        string ModuleTitle = json["ModuleTitle"].ToString();
+                        string ModuleTitle = json["form"]["ModuleTitle"].ToString();
+                        OpenContentUtils.UpdateModuleTitle(ModuleContext.Configuration, ModuleTitle);
+                    }
+                    else if (json["form"]["ModuleTitle"] != null && json["form"]["ModuleTitle"].Type == JTokenType.Object)
+                    {
+                        string ModuleTitle = json["form"]["ModuleTitle"][DnnUtils.GetCurrentCultureCode()].ToString();
                         OpenContentUtils.UpdateModuleTitle(ModuleContext.Configuration, ModuleTitle);
                     }
                 }

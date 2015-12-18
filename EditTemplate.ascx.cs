@@ -50,7 +50,7 @@ namespace Satrabel.OpenContent
 
         private void cmdCustom_Click(object sender, EventArgs e)
         {
-            var settings = new OpenContentSettings(ModuleContext.Settings);
+            var settings = ModuleContext.OpenContentSettings();
             TemplateManifest template = settings.Template;
             string templateFolder = template.Uri().UrlFolder;
             string templateDir = Server.MapPath(templateFolder);
@@ -72,7 +72,7 @@ namespace Satrabel.OpenContent
             var newtemplate = new FileUri(ModuleTemplateDirectory , "schema.json");
             mc.UpdateModuleSetting(ModuleId, "template", newtemplate.FilePath);
             ModuleContext.Settings["template"] = newtemplate.FilePath;
-            settings = new OpenContentSettings(ModuleContext.Settings);
+            settings = ModuleContext.OpenContentSettings();
             InitEditor(settings.Template);
         }
 
@@ -81,7 +81,7 @@ namespace Satrabel.OpenContent
             base.OnLoad(e);
             if (!Page.IsPostBack)
             {
-                TemplateManifest template = new OpenContentSettings(ModuleContext.Settings).Template;
+                TemplateManifest template = ModuleContext.OpenContentSettings().Template;
                 InitEditor(template);
             }
         }
@@ -217,7 +217,7 @@ namespace Satrabel.OpenContent
 
         private void Save()
         {
-            FileUri template = new OpenContentSettings(ModuleContext.Settings).Template.Uri();
+            FileUri template = ModuleContext.OpenContentSettings().Template.Uri();
             string templateFolder = Path.GetDirectoryName(template.FilePath);
             string scriptFile = templateFolder + "/" + scriptList.SelectedValue;
             string srcFile = Server.MapPath(scriptFile);
@@ -243,7 +243,7 @@ namespace Satrabel.OpenContent
 
         private void scriptList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            FileUri template = new OpenContentSettings(ModuleContext.Settings).Template.Uri();
+            FileUri template = ModuleContext.OpenContentSettings().Template.Uri();
             var scriptFile = new FileUri(template.UrlFolder, scriptList.SelectedValue);
             DisplayFile(scriptFile);
         }

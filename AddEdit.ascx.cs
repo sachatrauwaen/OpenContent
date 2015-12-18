@@ -34,7 +34,7 @@ namespace Satrabel.OpenContent
             base.OnInit(e);
             //string AddEditControl = PortalController.GetPortalSetting("OpenContent_AddEditControl", ModuleContext.PortalId, "");
 
-            var settings = new OpenContentSettings(ModuleContext.Settings);
+            var settings = ModuleContext.OpenContentSettings();
             Manifest manifest = settings.Manifest;
             if (manifest != null)
             {

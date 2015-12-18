@@ -6,6 +6,7 @@ using DotNetNuke.Entities.Portals;
 using DotNetNuke.Entities.Tabs;
 using DotNetNuke.Services.FileSystem;
 using DotNetNuke.Services.Localization;
+using DotNetNuke.UI.Modules;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -74,6 +75,19 @@ namespace Satrabel.OpenContent.Components
                 return PortalSettings.Current.ActiveTab.CultureCode;
                 
             return LocaleController.Instance.GetCurrentLocale(PortalSettings.Current.PortalId).Code;
+        }
+
+        public static OpenContentSettings OpenContentSettings(this ModuleInfo module)
+        {
+            return new OpenContentSettings(module.ModuleSettings);
+        }
+        public static OpenContentSettings OpenContentSettings(this ModuleInstanceContext module)
+        {
+            return new OpenContentSettings(module.Settings);
+        }
+        public static OpenContentSettings OpenContentSettings(this PortalModuleBase module)
+        {
+            return new OpenContentSettings(module.Settings);
         }
     }
 }

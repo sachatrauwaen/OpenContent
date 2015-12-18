@@ -74,7 +74,6 @@ namespace Satrabel.OpenContent
         protected override void OnInit(EventArgs e)
         {
             base.OnInit(e);
-            var modSettings = ModuleContext.Settings;
 
             // auto attach a ContentLocalized OpenContent module to the reference module of the default language
             string openContentAutoAttach = PortalController.GetPortalSetting("OpenContent_AutoAttach", ModuleContext.PortalId, "False");
@@ -99,13 +98,13 @@ namespace Satrabel.OpenContent
 
                         //DataCache.ClearCache();
                         module = mc.GetModule(defaultModule.ModuleID, ModuleContext.TabId, true);
-                        modSettings = module.ModuleSettings;
+                        _settings = module.OpenContentSettings();
                     }
                 }
             }
 
-            _settings = new OpenContentSettings(modSettings);
-
+            if (_settings == null)
+                _settings = ModuleContext.OpenContentSettings();
         }
 
         protected override void OnLoad(EventArgs e)
@@ -259,7 +258,7 @@ namespace Satrabel.OpenContent
             {
                 var actions = new ModuleActionCollection();
 
-                var settings = new OpenContentSettings(ModuleContext.Settings);
+                var settings = ModuleContext.OpenContentSettings();
                 TemplateManifest template = settings.Template;
                 bool templateDefined = template != null;
                 bool listMode = template != null && template.IsListTemplate;
@@ -388,7 +387,7 @@ namespace Satrabel.OpenContent
                 //BindOtherModules(dsModule.TabID, dsModule.ModuleID);
                 BindOtherModules(-1, -1);
                 var dsModule = (new ModuleController()).GetTabModule(int.Parse(ddlDataSource.SelectedValue));
-                var dsSettings = new OpenContentSettings(dsModule.ModuleSettings);
+                var dsSettings = dsModule.OpenContentSettings();
                 BindTemplates(dsSettings.Template, dsSettings.Template.Uri());
             }
             else // this module
@@ -403,7 +402,7 @@ namespace Satrabel.OpenContent
             phFrom.Visible = rblUseTemplate.SelectedIndex == 1;
             phTemplateName.Visible = rblUseTemplate.SelectedIndex == 1;
             rblFrom.SelectedIndex = 0;
-            var scriptFileSetting = new OpenContentSettings(ModuleContext.Settings).Template;
+            var scriptFileSetting = ModuleContext.OpenContentSettings().Template;
             ddlTemplate.Items.Clear();
             if (rblUseTemplate.SelectedIndex == 0) // existing
             {
@@ -420,7 +419,7 @@ namespace Satrabel.OpenContent
             ddlTemplate.Items.Clear();
             if (rblFrom.SelectedIndex == 0) // site
             {
-                var scriptFileSetting = new OpenContentSettings(ModuleContext.Settings).Template;
+                var scriptFileSetting = ModuleContext.OpenContentSettings().Template;
                 ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplates(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, "OpenContent").ToArray());
 
                 //ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplatesFiles(ModuleContext.PortalSettings, ModuleContext.moduleId, scriptFileSetting, "OpenContent").ToArray());
@@ -504,7 +503,7 @@ namespace Satrabel.OpenContent
         protected void ddlDataSource_SelectedIndexChanged(object sender, EventArgs e)
         {
             var dsModule = (new ModuleController()).GetTabModule(int.Parse(ddlDataSource.SelectedValue));
-            var dsSettings = new OpenContentSettings(dsModule.ModuleSettings);
+            var dsSettings = dsModule.OpenContentSettings();
             BindTemplates(dsSettings.Template, dsSettings.Template.Uri());
         }
 
@@ -577,11 +576,10 @@ namespace Satrabel.OpenContent
             _info.ResetData();
             OpenContentController ctrl = new OpenContentController();
             var struc = ctrl.GetContent(info.DetailItemId);
-            if (struc != null)
+            if (struc != null && struc.ModuleId == info.ModuleId)
             {
                 _info.SetData(struc.Json, settings.Data);
             }
-
         }
 
         private bool GetDemoData(TemplateInfo info, OpenContentSettings settings)
@@ -684,13 +682,24 @@ namespace Satrabel.OpenContent
                     else
                     {
                         // detail template
-                        if (_info.Template.Detail != null)
+                        GetDetailData(_info, _settings);
+                        if (_info.Template.Detail != null && !_info.ShowInitControl)
                         {
                             _info.Files = _info.Template.Detail;
-                            GetDetailData(_info, _settings);
-                            if (!_info.ShowInitControl)
+                            _info.OutputString = GenerateOutput(_settings.Template.Uri().UrlFolder, _info.Template.Detail, _info.DataJson, _info.SettingsJson);
+                        }
+                        else // if itemid not corresponding to this module, show list template
+                        {
+                            // List template
+                            if (_info.Template.Main != null)
                             {
-                                _info.OutputString = GenerateOutput(_settings.Template.Uri().UrlFolder, _info.Template.Detail, _info.DataJson, _info.SettingsJson);
+                                // for list templates a main template need to be defined
+                                _info.Files = _info.Template.Main;
+                                GetDataList(_info, _settings, _info.Template.ClientSideData);
+                                if (!_info.ShowInitControl)
+                                {
+                                    _info.OutputString = GenerateListOutput(_settings.Template.Uri().UrlFolder, _info.Template.Main, _info.DataList, _info.SettingsJson);
+                                }
                             }
                         }
                     }
@@ -781,10 +790,13 @@ namespace Satrabel.OpenContent
             return accept;
         }
 
+
         private void BindOtherModules(int tabId, int moduleId)
         {
             IEnumerable<ModuleInfo> modules = (new ModuleController()).GetModules(ModuleContext.PortalId).Cast<ModuleInfo>();
-            modules = modules.Where(m => m.ModuleDefinition.DefinitionName == "OpenContent" && m.IsDeleted == false);
+
+            modules = modules.Where(m => m.ModuleDefinition.DefinitionName == "OpenContent" && m.IsDeleted == false && !m.OpenContentSettings().IsOtherModule);
+
             rblDataSource.Items[1].Enabled = modules.Any();
             phDataSource.Visible = rblDataSource.SelectedIndex == 1; // other module
             if (rblDataSource.SelectedIndex == 1) // other module
@@ -1042,7 +1054,7 @@ namespace Satrabel.OpenContent
             if (rblDataSource.SelectedIndex == 1) // other module
             {
                 var dsModule = (new ModuleController()).GetTabModule(int.Parse(ddlDataSource.SelectedValue));
-                var dsSettings = new OpenContentSettings(dsModule.ModuleSettings);
+                var dsSettings = dsModule.OpenContentSettings();
                 _info.SetDataSourceModule(dsModule.TabID, dsModule.ModuleID, dsModule, dsSettings.Template, dsSettings.Data);
             }
             BindButtons(_settings, _info);
@@ -1101,7 +1113,7 @@ namespace Satrabel.OpenContent
             else
             {
                 //too many rendering issues 
-             //   bool dsDataExist = GetOtherModuleDemoData(_info, _settings);
+                //   bool dsDataExist = GetOtherModuleDemoData(_info, _settings);
 
             }
         }

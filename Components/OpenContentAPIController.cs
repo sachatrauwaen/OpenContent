@@ -57,7 +57,7 @@ namespace Satrabel.OpenContent.Components
         [HttpGet]
         public HttpResponseMessage Edit(int id)
         {
-            OpenContentSettings settings = new OpenContentSettings(ActiveModule.ModuleSettings);
+            OpenContentSettings settings = ActiveModule.OpenContentSettings();
             ModuleInfo module = ActiveModule;
             if (settings.ModuleId > 0)
             {
@@ -99,7 +99,15 @@ namespace Satrabel.OpenContent.Components
                     json["data"] = content.Json.ToJObject("GetContent " + id);
                     if (json["schema"]["properties"]["ModuleTitle"] is JObject)
                     {
-                        json["data"]["ModuleTitle"] = ActiveModule.ModuleTitle;
+                        //json["data"]["ModuleTitle"] = ActiveModule.ModuleTitle;
+                        if (json["data"]["ModuleTitle"] != null && json["data"]["ModuleTitle"].Type == JTokenType.String)
+                        {
+                            json["data"]["ModuleTitle"] = ActiveModule.ModuleTitle;
+                        }
+                        else if (json["data"]["ModuleTitle"] != null && json["data"]["ModuleTitle"].Type == JTokenType.Object)
+                        {
+                            json["data"]["ModuleTitle"][DnnUtils.GetCurrentCultureCode()] = ActiveModule.ModuleTitle;
+                        }
                     }
                     AddVersions(json, content);
                     createdByUserid = content.CreatedByUserId;
@@ -165,7 +173,7 @@ namespace Satrabel.OpenContent.Components
         public HttpResponseMessage Version(int id, string ticks)
         {
             //FileUri template = OpenContentUtils.GetTemplate(ActiveModule.ModuleSettings);
-            OpenContentSettings settings = new OpenContentSettings(ActiveModule.ModuleSettings);
+            OpenContentSettings settings = ActiveModule.OpenContentSettings();
             ModuleInfo module = ActiveModule;
             if (settings.ModuleId > 0)
             {
@@ -252,7 +260,7 @@ namespace Satrabel.OpenContent.Components
             try
             {
                 bool index = false;
-                OpenContentSettings settings = new OpenContentSettings(ActiveModule.ModuleSettings);
+                OpenContentSettings settings = ActiveModule.OpenContentSettings();
                 ModuleInfo module = ActiveModule;
                 if (settings.ModuleId > 0)
                 {
@@ -318,6 +326,11 @@ namespace Satrabel.OpenContent.Components
                     string ModuleTitle = json["form"]["ModuleTitle"].ToString();
                     OpenContentUtils.UpdateModuleTitle(ActiveModule, ModuleTitle);
                 }
+                else if (json["form"]["ModuleTitle"] != null && json["form"]["ModuleTitle"].Type == JTokenType.Object)
+                {
+                    string ModuleTitle = json["form"]["ModuleTitle"][DnnUtils.GetCurrentCultureCode()].ToString();
+                    OpenContentUtils.UpdateModuleTitle(ActiveModule, ModuleTitle);
+                }
                 return Request.CreateResponse(HttpStatusCode.OK, "");
             }
             catch (Exception exc)
@@ -335,7 +348,7 @@ namespace Satrabel.OpenContent.Components
             try
             {
                 bool Index = false;
-                OpenContentSettings settings = new OpenContentSettings(ActiveModule.ModuleSettings);
+                OpenContentSettings settings = ActiveModule.OpenContentSettings();
                 ModuleInfo module = ActiveModule;
                 if (settings.ModuleId > 0)
                 {
@@ -418,7 +431,7 @@ namespace Satrabel.OpenContent.Components
         {
             ModuleController mc = new ModuleController();
             var module = mc.GetModule(req.moduleid, req.tabid, false);
-            var settings = new OpenContentSettings(module.ModuleSettings);
+            var settings = module.OpenContentSettings();
             Manifest.Manifest manifest = settings.Manifest;
             TemplateManifest templateManifest = settings.Template;
             bool listMode = templateManifest != null && templateManifest.IsListTemplate;
@@ -479,7 +492,7 @@ namespace Satrabel.OpenContent.Components
         [HttpPost]
         public HttpResponseMessage List(ListDTO req)
         {
-            OpenContentSettings settings = new OpenContentSettings(ActiveModule.ModuleSettings);
+            OpenContentSettings settings = ActiveModule.OpenContentSettings();
             ModuleInfo module = ActiveModule;
             if (settings.ModuleId > 0)
             {
