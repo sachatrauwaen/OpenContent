@@ -88,7 +88,7 @@ namespace Satrabel.OpenContent.Components.Manifest
 
         #endregion
 
-        public TemplateFiles Files { get; private set; }
+        public TemplateFiles Files { get; set; }
 
         //public FileUri Template { get;private set; }
         //public Manifest Manifest { get; private set; }

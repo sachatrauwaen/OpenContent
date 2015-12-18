@@ -673,6 +673,7 @@ namespace Satrabel.OpenContent
                         if (_info.Template.Main != null)
                         {
                             // for list templates a main template need to be defined
+                            _info.Files = _info.Template.Main;
                             GetDataList(_info, _settings, _info.Template.ClientSideData);
                             if (!_info.ShowInitControl)
                             {
@@ -685,6 +686,7 @@ namespace Satrabel.OpenContent
                         // detail template
                         if (_info.Template.Detail != null)
                         {
+                            _info.Files = _info.Template.Detail;
                             GetDetailData(_info, _settings);
                             if (!_info.ShowInitControl)
                             {
@@ -1087,6 +1089,7 @@ namespace Satrabel.OpenContent
                     if (template.Main != null)
                     {
                         // for list templates a main template need to be defined
+                        _info.Files = _info.Template.Main;
                         GetDataList(_info, _settings, template.ClientSideData);
                         if (!_info.ShowInitControl)
                         {
