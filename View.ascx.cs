@@ -768,7 +768,8 @@ namespace Satrabel.OpenContent
                 {
                     var tc = new TabController();
                     var tab = tc.GetTab(item.TabID, ModuleContext.PortalId, false);
-                    var li = new ListItem(tab.TabName + " - " + item.ModuleTitle, item.TabModuleID.ToString());
+                    var tabpath = tab.TabPath.Replace("//", "/").TrimEnd(tab.TabName).Trim('/');
+                    var li = new ListItem(string.Format("{0} [{2}] - {1}", tab.TabName, item.ModuleTitle, tabpath), item.TabModuleID.ToString());
                     listItems.Add(li);
                     if (item.TabID == tabId && item.ModuleID == moduleId)
                     {
