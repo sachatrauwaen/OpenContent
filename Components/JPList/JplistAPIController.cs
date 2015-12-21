@@ -18,6 +18,7 @@ using Satrabel.OpenContent.Components.Manifest;
 using Lucene.Net.Search;
 using Lucene.Net.Index;
 using Lucene.Net.QueryParsers;
+using Satrabel.OpenContent.Components.Lucene.Config;
 
 
 namespace Satrabel.OpenContent.Components.JPList
@@ -244,9 +245,8 @@ namespace Satrabel.OpenContent.Components.JPList
             return queryStr;
         }
 
-        private Query BuildLuceneQuery2(JpListQueryDTO jpListQuery)
+        private Query BuildLuceneQuery2(JpListQueryDTO jpListQuery, FieldConfig field)
         {
-            
             if (jpListQuery.Filters.Any())
             {
                 BooleanQuery query = new BooleanQuery();
@@ -296,9 +296,7 @@ namespace Satrabel.OpenContent.Components.JPList
                 Query query = new MatchAllDocsQuery();
                 return query;
             }
-            
         }
-
         #endregion
     }
 }

@@ -102,7 +102,26 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
                     case JTokenType.Date:
                         if (index || sort)
                         {
-                            doc.Add(new NumericField(prefix, Field.Store.NO, true).SetLongValue(((DateTime)value.Value).Ticks));
+                            //doc.Add(new NumericField(prefix, Field.Store.NO, true).SetLongValue(((DateTime)value.Value).Ticks));
+                            if (field != null ){
+                                if (field.Type == "datetime")
+                                {
+                                    doc.Add(new Field(prefix, DateTools.DateToString((DateTime)value.Value, DateTools.Resolution.SECOND), Field.Store.NO, Field.Index.NOT_ANALYZED));
+                                }
+                                else if (field.Type == "date")
+                                {
+                                    doc.Add(new Field(prefix, DateTools.DateToString((DateTime)value.Value, DateTools.Resolution.DAY), Field.Store.NO, Field.Index.NOT_ANALYZED));
+                                }
+                                else if (field.Type == "time")
+                                {
+                                    doc.Add(new Field(prefix, DateTools.DateToString((DateTime)value.Value, DateTools.Resolution.SECOND).Substring(8), Field.Store.NO, Field.Index.NOT_ANALYZED));
+                                }
+                            }
+                            else
+                            {
+                                doc.Add(new Field(prefix, DateTools.DateToString((DateTime)value.Value, DateTools.Resolution.SECOND), Field.Store.NO, Field.Index.NOT_ANALYZED));
+                            }
+                            
                         }
                         break;
 
