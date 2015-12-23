@@ -49,6 +49,7 @@ using DotNetNuke.Security.Roles;
 using DotNetNuke.Entities.Users;
 using DotNetNuke.Instrumentation;
 using DotNetNuke.Services.Installer.Log;
+using Satrabel.OpenContent.Components.Infrastructure;
 using Satrabel.OpenContent.Components.Manifest;
 
 #endregion
@@ -66,6 +67,7 @@ namespace Satrabel.OpenContent
 
         private int _itemId = Null.NullInteger;
         private readonly TemplateInfo _info = new TemplateInfo();
+        private readonly IDatasource _datasource = new DefaultDatasource();
         private OpenContentSettings _settings;
 
         #region Event Handlers
@@ -490,132 +492,7 @@ namespace Satrabel.OpenContent
 
         #endregion
 
-        #region GetData
-
-        private void GetData()
-        {
-            _info.ResetData();
-
-            OpenContentController ctrl = new OpenContentController();
-            var struc = ctrl.GetFirstContent(_info.ModuleId);
-            if (struc != null)
-            {
-                _info.SetData(struc.Json, _settings.Data);
-            }
-        }
-
-        private void GetDataList(TemplateInfo info, OpenContentSettings settings, bool clientSide)
-        {
-            _info.ResetData();
-            OpenContentController ctrl = new OpenContentController();
-            IEnumerable<OpenContentInfo> dataList;
-            if (clientSide)
-            {
-                var data = ctrl.GetFirstContent(info.ModuleId);
-                if (data != null)
-                {
-                    dataList = new List<OpenContentInfo>();
-                    _info.SetData(dataList, settings.Data);
-                }
-            }
-            else
-            {
-                dataList = ctrl.GetContents(info.ModuleId);
-                if (dataList.Any())
-                {
-                    _info.SetData(dataList, settings.Data);
-                }
-            }
-        }
-
-        private void GetDetailData(TemplateInfo info, OpenContentSettings settings)
-        {
-            _info.ResetData();
-            OpenContentController ctrl = new OpenContentController();
-            var struc = ctrl.GetContent(info.DetailItemId);
-            if (struc != null && struc.ModuleId == info.ModuleId)
-            {
-                _info.SetData(struc.Json, settings.Data);
-            }
-        }
-
-        private bool GetDemoData(TemplateInfo info, OpenContentSettings settings)
-        {
-            _info.ResetData();
-            //bool settingsNeeded = false;
-            FileUri dataFilename = null;
-            if (info.Template != null)
-            {
-                dataFilename = new FileUri(info.Template.Uri().UrlFolder, "data.json"); ;
-            }
-            if (dataFilename != null && dataFilename.FileExists)
-            {
-                string fileContent = File.ReadAllText(dataFilename.PhysicalFilePath);
-                string settingContent = "";
-                if (!string.IsNullOrWhiteSpace(fileContent))
-                {
-                    if (settings.Template != null && info.Template.Uri().FilePath == settings.Template.Uri().FilePath)
-                    {
-                        settingContent = settings.Data;
-                    }
-                    if (string.IsNullOrEmpty(settingContent))
-                    {
-                        var settingsFilename = info.Template.Uri().PhysicalFullDirectory + "\\" + info.Template.Key.ShortKey + "-data.json";
-                        if (File.Exists(settingsFilename))
-                        {
-                            settingContent = File.ReadAllText(settingsFilename);
-                        }
-                        else
-                        {
-                            //string schemaFilename = info.Template.Uri().PhysicalFullDirectory + "\\" + info.Template.Key.ShortKey + "-schema.json";
-                            //settingsNeeded = File.Exists(schemaFilename);
-                        }
-                    }
-                }
-                if (!string.IsNullOrWhiteSpace(fileContent))
-                    _info.SetData(fileContent, settingContent);
-            }
-            return !info.ShowInitControl; //!string.IsNullOrWhiteSpace(info.DataJson) && (!string.IsNullOrWhiteSpace(info.SettingsJson) || !settingsNeeded);
-        }
-
-        private bool GetOtherModuleDemoData(TemplateInfo info, OpenContentSettings settings)
-        {
-            _info.ResetData();
-            var ctrl = new OpenContentController();
-            var struc = ctrl.GetFirstContent(info.ModuleId);
-            if (struc != null)
-            {
-                if (settings.Template != null && info.Template.Uri().FilePath == settings.Template.Uri().FilePath)
-                {
-                    _info.SetData(struc.Json, settings.Data);
-                }
-                if (string.IsNullOrEmpty(info.SettingsJson))
-                {
-                    var settingsFilename = info.Template.Uri().PhysicalFullDirectory + "\\" + info.Template.Key.ShortKey + "-data.json";
-                    if (File.Exists(settingsFilename))
-                    {
-                        string settingsContent = File.ReadAllText(settingsFilename);
-                        if (!string.IsNullOrWhiteSpace(settingsContent))
-                        {
-                            _info.SetData(struc.Json, settingsContent);
-                        }
-                    }
-                }
-                //Als er OtherModuleSettingsJson bestaan en 
-                if (_info.OtherModuleTemplate.Uri().FilePath == _info.Template.Uri().FilePath && !string.IsNullOrEmpty(_info.OtherModuleSettingsJson))
-                {
-                    _info.SetData(struc.Json, _info.OtherModuleSettingsJson);
-                }
-                _info.OutputString = GenerateOutput(_info.Template.Uri(), _info.DataJson, _info.SettingsJson, null);
-
-                return true;
-            }
-            return false;
-        }
-
-        #endregion
-
-        private void InitTemplateInfo()
+  private void InitTemplateInfo()
         {
             if (_settings.Template != null)
             {
@@ -628,7 +505,7 @@ namespace Satrabel.OpenContent
                         if (_info.Template.Main != null)
                         {
                             // for list templates a main template need to be defined
-                            GetDataList(_info, _settings, _info.Template.ClientSideData);
+                            _datasource.GetDataList(_info, _settings, _info.Template.ClientSideData);
                             if (!_info.ShowInitControl)
                             {
                                 _info.OutputString = GenerateListOutput(_settings.Template.Uri().UrlFolder, _info.Template.Main, _info.DataList, _info.SettingsJson);
@@ -638,7 +515,7 @@ namespace Satrabel.OpenContent
                     else
                     {
                         // detail template
-                        GetDetailData(_info, _settings);
+                        _datasource.GetDetailData(_info, _settings);
                         if (_info.Template.Detail != null && !_info.ShowInitControl)
                         {
                             _info.OutputString = GenerateOutput(_settings.Template.Uri().UrlFolder, _info.Template.Detail, _info.DataJson, _info.SettingsJson);
@@ -649,7 +526,7 @@ namespace Satrabel.OpenContent
                             if (_info.Template.Main != null)
                             {
                                 // for list templates a main template need to be defined
-                                GetDataList(_info, _settings, _info.Template.ClientSideData);
+                                _datasource.GetDataList(_info, _settings, _info.Template.ClientSideData);
                                 if (!_info.ShowInitControl)
                                 {
                                     _info.OutputString = GenerateListOutput(_settings.Template.Uri().UrlFolder, _info.Template.Main, _info.DataList, _info.SettingsJson);
@@ -661,7 +538,7 @@ namespace Satrabel.OpenContent
                 else
                 {
                     // single item template
-                    GetData();
+                _datasource.GetData(_info,_settings);
                     if (!_info.ShowInitControl)
                     {
                         _info.OutputString = GenerateOutput(_info.Template.Uri(), _info.DataJson, _info.SettingsJson, _info.Template.Main);
@@ -1037,7 +914,7 @@ namespace Satrabel.OpenContent
 
         private void RenderDemoData()
         {
-            bool demoExist = GetDemoData(_info, _settings);
+            bool demoExist = _datasource.GetDemoData(_info, _settings);
             if (demoExist)
             {
                 _info.OutputString = GenerateOutput(_info.Template.Uri(), _info.DataJson, _info.SettingsJson, _info.Template.Main);
@@ -1056,7 +933,7 @@ namespace Satrabel.OpenContent
                     if (template.Main != null)
                     {
                         // for list templates a main template need to be defined
-                        GetDataList(_info, _settings, template.ClientSideData);
+                        _datasource.GetDataList(_info, _settings, template.ClientSideData);
                         if (!_info.ShowInitControl)
                         {
                             _info.OutputString = GenerateListOutput(_info.Template.Uri().UrlFolder, template.Main, _info.DataList, _info.SettingsJson);
@@ -1067,7 +944,9 @@ namespace Satrabel.OpenContent
             else
             {
                 //too many rendering issues 
-                //   bool dsDataExist = GetOtherModuleDemoData(_info, _settings);
+                //bool dsDataExist = _datasource.GetOtherModuleDemoData(_info, _info, _settings);
+                //if (dsDataExist)
+                //    _info.OutputString = GenerateOutput(_info.Template.Uri(), _info.DataJson, _info.SettingsJson, null);
 
             }
         }
