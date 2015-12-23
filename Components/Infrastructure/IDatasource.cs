@@ -4,9 +4,9 @@ namespace Satrabel.OpenContent.Components.Infrastructure
 {
     interface IDatasource
     {
-        void GetDataList(TemplateInfo info, OpenContentSettings settings, bool clientSideData);
-        void GetDetailData(TemplateInfo info, OpenContentSettings settings);
-        void GetData(TemplateInfo info, OpenContentSettings settings);
-        bool GetDemoData(TemplateInfo info, OpenContentSettings settings);
+        void GetDataList(RenderInfo info, OpenContentSettings settings, bool clientSideData);
+        void GetDetailData(RenderInfo info, OpenContentSettings settings);
+        void GetData(RenderInfo info, OpenContentSettings settings);
+        bool GetDemoData(RenderInfo info, OpenContentSettings settings);
     }
 }

@@ -10,7 +10,7 @@ namespace Satrabel.OpenContent.Components.Infrastructure
 {
     public class DefaultDatasource : IDatasource
     {
-        public void GetData(TemplateInfo info, OpenContentSettings settings)
+        public void GetData(RenderInfo info, OpenContentSettings settings)
         {
             info.ResetData();
 
@@ -22,7 +22,7 @@ namespace Satrabel.OpenContent.Components.Infrastructure
             }
         }
 
-        public void GetDataList(TemplateInfo info, OpenContentSettings settings, bool clientSide)
+        public void GetDataList(RenderInfo info, OpenContentSettings settings, bool clientSide)
         {
             info.ResetData();
             var ctrl = new OpenContentController();
@@ -46,7 +46,7 @@ namespace Satrabel.OpenContent.Components.Infrastructure
             }
         }
 
-        public void GetDetailData(TemplateInfo info, OpenContentSettings settings)
+        public void GetDetailData(RenderInfo info, OpenContentSettings settings)
         {
             info.ResetData();
             OpenContentController ctrl = new OpenContentController();
@@ -57,7 +57,7 @@ namespace Satrabel.OpenContent.Components.Infrastructure
             }
         }
 
-        public bool GetDemoData(TemplateInfo info, OpenContentSettings settings)
+        public bool GetDemoData(RenderInfo info, OpenContentSettings settings)
         {
             info.ResetData();
             //bool settingsNeeded = false;
@@ -96,7 +96,7 @@ namespace Satrabel.OpenContent.Components.Infrastructure
             return !info.ShowInitControl; //!string.IsNullOrWhiteSpace(info.DataJson) && (!string.IsNullOrWhiteSpace(info.SettingsJson) || !settingsNeeded);
         }
 
-        internal bool GetOtherModuleDemoData(TemplateInfo _info, TemplateInfo info, OpenContentSettings settings)
+        internal bool GetOtherModuleDemoData(RenderInfo _info, RenderInfo info, OpenContentSettings settings)
         {
             _info.ResetData();
             var ctrl = new OpenContentController();

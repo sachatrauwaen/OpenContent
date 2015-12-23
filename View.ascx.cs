@@ -66,7 +66,7 @@ namespace Satrabel.OpenContent
         private static readonly ILog Logger = LoggerSource.Instance.GetLogger(typeof(View));
 
         private int _itemId = Null.NullInteger;
-        private readonly TemplateInfo _info = new TemplateInfo();
+        private readonly RenderInfo _info = new RenderInfo();
         private readonly IDatasource _datasource = new DefaultDatasource();
         private OpenContentSettings _settings;
 
@@ -680,7 +680,7 @@ namespace Satrabel.OpenContent
             }
         }
 
-        private void BindButtons(OpenContentSettings settings, TemplateInfo info)
+        private void BindButtons(OpenContentSettings settings, RenderInfo info)
         {
             bool templateDefined = info.Template != null;
             bool settingsDefined = !string.IsNullOrEmpty(settings.Data);
