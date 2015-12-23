@@ -4,6 +4,9 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Linq;
+using System.Net.Http;
+using System.Web;
+using DotNetNuke.Common;
 using DotNetNuke.Entities.Content.Common;
 using DotNetNuke.Entities.Modules.Definitions;
 using DotNetNuke.Services.FileSystem;
@@ -52,7 +55,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
 
         public static string GetImageUrl(IFileInfo file, Ratio requestedCropRatio)
         {
-            if (file == null) 
+            if (file == null)
                 throw new NoNullAllowedException("FileInfo should not be null");
 
             var url = file.ToUrl();
@@ -68,7 +71,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
                 {
                     JObject content = JObject.Parse(contentItem.Content);
                     var crop = content["crop"];
-                    if (crop is JObject)
+                    if (crop is JObject && crop["croppers"] != null)
                     {
                         foreach (var cropperobj in crop["croppers"].Children())
                         {
@@ -85,6 +88,10 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
                                 return url + string.Format("?crop={0},{1},{2},{3}&width={4}&height={5}", left, top, w, h, requestedCropRatio.Width, requestedCropRatio.Height);
                             }
                         }
+                    }
+                    else
+                    {
+                        Log.Logger.Info(string.Format("Warning for page {0}. Can't find croppers in {1}. ", HttpContext.Current.Request.RawUrl, contentItem.Content));
                     }
                 }
             }
