@@ -75,12 +75,9 @@ namespace Satrabel.OpenContent.Components.Manifest
 
         #endregion
 
-        public void SetSelectedTemplate(TemplateManifest template)
-        {
-            Template = template;
-        }
+        
 
-        public TemplateManifest Template { get; private set; }
+        public TemplateManifest Template { get; set; }
 
         #region ReadOnly
 

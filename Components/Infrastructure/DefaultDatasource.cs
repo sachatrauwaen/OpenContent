@@ -96,16 +96,16 @@ namespace Satrabel.OpenContent.Components.Infrastructure
             return !info.ShowInitControl; //!string.IsNullOrWhiteSpace(info.DataJson) && (!string.IsNullOrWhiteSpace(info.SettingsJson) || !settingsNeeded);
         }
 
-        internal bool GetOtherModuleDemoData(RenderInfo _info, RenderInfo info, OpenContentSettings settings)
+        internal bool GetOtherModuleDemoData(RenderInfo info, OpenContentSettings settings)
         {
-            _info.ResetData();
+            info.ResetData();
             var ctrl = new OpenContentController();
             var struc = ctrl.GetFirstContent(info.ModuleId);
             if (struc != null)
             {
                 if (settings.Template != null && info.Template.Uri().FilePath == settings.Template.Uri().FilePath)
                 {
-                    _info.SetData(struc.Json, settings.Data);
+                    info.SetData(struc.Json, settings.Data);
                 }
                 if (string.IsNullOrEmpty(info.SettingsJson))
                 {
@@ -115,14 +115,14 @@ namespace Satrabel.OpenContent.Components.Infrastructure
                         string settingsContent = File.ReadAllText(settingsFilename);
                         if (!string.IsNullOrWhiteSpace(settingsContent))
                         {
-                            _info.SetData(struc.Json, settingsContent);
+                            info.SetData(struc.Json, settingsContent);
                         }
                     }
                 }
                 //Als er OtherModuleSettingsJson bestaan en 
-                if (_info.OtherModuleTemplate.Uri().FilePath == _info.Template.Uri().FilePath && !string.IsNullOrEmpty(_info.OtherModuleSettingsJson))
+                if (info.OtherModuleTemplate.Uri().FilePath == info.Template.Uri().FilePath && !string.IsNullOrEmpty(info.OtherModuleSettingsJson))
                 {
-                    _info.SetData(struc.Json, _info.OtherModuleSettingsJson);
+                    info.SetData(struc.Json, info.OtherModuleSettingsJson);
                 }
 
                 return true;
