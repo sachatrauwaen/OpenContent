@@ -60,7 +60,7 @@ namespace Satrabel.OpenContent
 
         private int _itemId = Null.NullInteger;
         private readonly RenderInfo _renderinfo = new RenderInfo();
-        private readonly IDatasource _datasource = new DefaultDatasource();
+        private IDatasource _datasource ;
         private OpenContentSettings _settings;
 
         #region Event Handlers
@@ -99,6 +99,8 @@ namespace Satrabel.OpenContent
 
             if (_settings == null)
                 _settings = ModuleContext.OpenContentSettings();
+
+            _datasource = new DefaultDatasource(); //in future we might set here another datasource, if the templates dictates us to do so.
         }
 
         protected override void OnLoad(EventArgs e)
