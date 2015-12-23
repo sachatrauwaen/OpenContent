@@ -141,6 +141,8 @@
     <Compile Include="Components\FeatureController.cs" />
     <Compile Include="Components\FilesStatus.cs" />
     <Compile Include="Components\FileUploadController.cs" />
+    <Compile Include="Components\Infrastructure\DefaultDatasource.cs" />
+    <Compile Include="Components\Infrastructure\IDatasource.cs" />
     <Compile Include="Components\Manifest\Manifest.cs" />
     <Compile Include="Components\Manifest\ManifestUtils.cs" />
     <Compile Include="Components\Manifest\TemplateKey.cs" />
