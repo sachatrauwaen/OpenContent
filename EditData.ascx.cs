@@ -95,12 +95,10 @@ namespace Satrabel.OpenContent
                     }
                     if (template != null && template.IsListTemplate)
                     {
-                        var dataList = ctrl.GetContents(ModuleId);
+                        var dataList = ctrl.GetContents(settings.ModuleId == -1 ? ModuleId : settings.ModuleId);
                         if (dataList != null)
                         {
-
                             JArray lst = new JArray();
-
                             foreach (var item in dataList)
                             {
                                 lst.Add(JObject.Parse(item.Json));
@@ -110,7 +108,7 @@ namespace Satrabel.OpenContent
                     }
                     else
                     {
-                        OpenContentInfo data = ctrl.GetFirstContent(ModuleId);
+                        OpenContentInfo data = ctrl.GetFirstContent(settings.ModuleId == -1 ? ModuleId : settings.ModuleId);
                         if (data != null)
                         {
                             json = data.Json;
@@ -254,7 +252,7 @@ namespace Satrabel.OpenContent
         private void SaveSettings()
         {
             ModuleController mc = new ModuleController();
-            if (!string.IsNullOrEmpty(txtSource.Text)) 
+            if (!string.IsNullOrEmpty(txtSource.Text))
                 mc.UpdateModuleSetting(ModuleId, "data", txtSource.Text);
         }
         protected void cmdCancel_Click(object sender, EventArgs e)
