@@ -24,14 +24,7 @@ namespace Satrabel.OpenContent.Components
 {
     public class OpenContentController
     {
-        [Obsolete("This method is obsolete since dec 2015; use AddContent(OpenContentInfo content, bool index) instead")]
-        public void AddContent(OpenContentInfo content)
-        {
-            AddContent(content, false, null);
-        }
-
-
-        public void AddContent(OpenContentInfo content, bool index, FieldConfig IndexConfig)
+        public void AddContent(OpenContentInfo content, bool index, FieldConfig indexConfig)
         {
             OpenContentVersion ver = new OpenContentVersion()
             {
@@ -49,7 +42,7 @@ namespace Satrabel.OpenContent.Components
             }
             if (index)
             {
-                LuceneController.Instance.Add(content, IndexConfig);
+                LuceneController.Instance.Add(content, indexConfig);
                 LuceneController.Instance.Commit();
             }
         }
@@ -79,19 +72,7 @@ namespace Satrabel.OpenContent.Components
             }
             return content;
         }
-        /* slow !!!
-        public OpenContentInfo GetContent(int ContentId, int moduleId)
-        {
-            OpenContentInfo Content;
 
-            using (IDataContext ctx = DataContext.Instance())
-            {
-                var rep = ctx.GetRepository<OpenContentInfo>();
-                Content = rep.GetById(ContentId, moduleId);                
-            }
-            return Content;
-        }
-         */
         public OpenContentInfo GetContent(int contentId)
         {
             OpenContentInfo content;
@@ -103,6 +84,7 @@ namespace Satrabel.OpenContent.Components
             }
             return content;
         }
+
         public OpenContentInfo GetFirstContent(int moduleId)
         {
             OpenContentInfo content;
@@ -115,13 +97,7 @@ namespace Satrabel.OpenContent.Components
             return content;
         }
 
-        [Obsolete("This method is obsolete since dec 2015; use UpdateContent(OpenContentInfo content, bool index) instead")]
-        public void UpdateContent(OpenContentInfo content)
-        {
-            UpdateContent(content, false, null);
-        }
-
-        public void UpdateContent(OpenContentInfo content, bool index, FieldConfig IndexConfig)
+        public void UpdateContent(OpenContentInfo content, bool index, FieldConfig indexConfig)
         {
             OpenContentVersion ver = new OpenContentVersion()
             {
@@ -146,9 +122,33 @@ namespace Satrabel.OpenContent.Components
             }
             if (index)
             {
-                LuceneController.Instance.Update(content, IndexConfig);
+                LuceneController.Instance.Update(content, indexConfig);
                 LuceneController.Instance.Commit();
             }
+        }
+
+        /* slow !!!
+        public OpenContentInfo GetContent(int ContentId, int moduleId)
+        {
+            OpenContentInfo Content;
+
+            using (IDataContext ctx = DataContext.Instance())
+            {
+                var rep = ctx.GetRepository<OpenContentInfo>();
+                Content = rep.GetById(ContentId, moduleId);                
+            }
+            return Content;
+        }
+         */
+        [Obsolete("This method is obsolete since dec 2015; use UpdateContent(OpenContentInfo content, bool index) instead")]
+        public void UpdateContent(OpenContentInfo content)
+        {
+            UpdateContent(content, false, null);
+        }
+        [Obsolete("This method is obsolete since dec 2015; use AddContent(OpenContentInfo content, bool index) instead")]
+        public void AddContent(OpenContentInfo content)
+        {
+            AddContent(content, false, null);
         }
 
     }

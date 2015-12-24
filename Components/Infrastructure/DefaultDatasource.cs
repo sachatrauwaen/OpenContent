@@ -14,7 +14,7 @@ namespace Satrabel.OpenContent.Components.Infrastructure
         {
             info.ResetData();
 
-            OpenContentController ctrl = new OpenContentController();
+            var ctrl = new OpenContentController();
             var struc = ctrl.GetFirstContent(info.ModuleId);
             if (struc != null)
             {
@@ -49,7 +49,7 @@ namespace Satrabel.OpenContent.Components.Infrastructure
         public void GetDetailData(RenderInfo info, OpenContentSettings settings)
         {
             info.ResetData();
-            OpenContentController ctrl = new OpenContentController();
+            var ctrl = new OpenContentController();
             var struc = ctrl.GetContent(info.DetailItemId);
             if (struc != null && struc.ModuleId == info.ModuleId)
             {
