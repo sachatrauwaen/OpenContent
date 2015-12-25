@@ -41,7 +41,6 @@ using DotNetNuke.Security.Permissions;
 using DotNetNuke.Instrumentation;
 using DotNetNuke.Services.Installer.Log;
 using Satrabel.OpenContent.Components.Lucene;
-using Satrabel.OpenContent.Components.Infrastructure;
 
 using Satrabel.OpenContent.Components.Manifest;
 
@@ -60,7 +59,6 @@ namespace Satrabel.OpenContent
 
         private int _itemId = Null.NullInteger;
         private readonly RenderInfo _renderinfo = new RenderInfo();
-        private IDatasource _datasource ;
         private OpenContentSettings _settings;
 
         #region Event Handlers
@@ -99,8 +97,6 @@ namespace Satrabel.OpenContent
 
             if (_settings == null)
                 _settings = ModuleContext.OpenContentSettings();
-
-            _datasource = new DefaultDatasource(); //in future we might set here another datasource, if the templates dictates us to do so.
         }
 
         protected override void OnLoad(EventArgs e)
@@ -520,7 +516,7 @@ namespace Satrabel.OpenContent
                         {
                             // for list templates a main template need to be defined
                             _renderinfo.Files = _renderinfo.Template.Main;
-                            _datasource.GetDataList(_renderinfo, _settings, _renderinfo.Template.ClientSideData);
+                            GetDataList(_renderinfo, _settings, _renderinfo.Template.ClientSideData);
                             if (!_renderinfo.ShowInitControl)
                             {
                                 _renderinfo.OutputString = GenerateListOutput(_settings.Template.Uri().UrlFolder, _renderinfo.Template.Main, _renderinfo.DataList, _renderinfo.SettingsJson);
@@ -530,7 +526,7 @@ namespace Satrabel.OpenContent
                     else
                     {
                         // detail template
-                        _datasource.GetDetailData(_renderinfo, _settings);
+                        GetDetailData(_renderinfo, _settings);
                         if (_renderinfo.Template.Detail != null && !_renderinfo.ShowInitControl)
                         {
                             _renderinfo.Files = _renderinfo.Template.Detail;
@@ -543,7 +539,7 @@ namespace Satrabel.OpenContent
                             {
                                 // for list templates a main template need to be defined
                                 _renderinfo.Files = _renderinfo.Template.Main;
-                                _datasource.GetDataList(_renderinfo, _settings, _renderinfo.Template.ClientSideData);
+                                GetDataList(_renderinfo, _settings, _renderinfo.Template.ClientSideData);
                                 if (!_renderinfo.ShowInitControl)
                                 {
                                     _renderinfo.OutputString = GenerateListOutput(_settings.Template.Uri().UrlFolder, _renderinfo.Template.Main, _renderinfo.DataList, _renderinfo.SettingsJson);
@@ -555,7 +551,7 @@ namespace Satrabel.OpenContent
                 else
                 {
                     // single item template
-                    _datasource.GetData(_renderinfo, _settings);
+                    GetData(_renderinfo, _settings);
                     if (!_renderinfo.ShowInitControl)
                     {
                         _renderinfo.OutputString = GenerateOutput(_renderinfo.Template.Uri(), _renderinfo.DataJson, _renderinfo.SettingsJson, _renderinfo.Template.Main);
@@ -587,9 +583,7 @@ namespace Satrabel.OpenContent
         private FileUri CheckFiles(string templateVirtualFolder, TemplateFiles files, string templateFolder)
         {
             if (files == null)
-            {
                 Exceptions.ProcessModuleLoadException(this, new Exception("Manifest.json missing or incomplete"));
-            }
             string templateFile = templateFolder + "\\" + files.Template;
             string template = templateVirtualFolder + "/" + files.Template;
             if (!File.Exists(templateFile))
@@ -753,6 +747,127 @@ namespace Satrabel.OpenContent
             }
         }
 
+
+        public void GetData(RenderInfo info, OpenContentSettings settings)
+        {
+            info.ResetData();
+
+            OpenContentController ctrl = new OpenContentController();
+            var struc = ctrl.GetFirstContent(info.ModuleId);
+            if (struc != null)
+            {
+                info.SetData(struc.Json, settings.Data);
+            }
+        }
+
+        public void GetDataList(RenderInfo info, OpenContentSettings settings, bool clientSide)
+        {
+            info.ResetData();
+            OpenContentController ctrl = new OpenContentController();
+            IEnumerable<OpenContentInfo> dataList;
+            if (clientSide)
+            {
+                var data = ctrl.GetFirstContent(info.ModuleId);
+                if (data != null)
+                {
+                    dataList = new List<OpenContentInfo>();
+                    info.SetData(dataList, settings.Data);
+                }
+            }
+            else
+            {
+                dataList = ctrl.GetContents(info.ModuleId);
+                if (dataList.Any())
+                {
+                    info.SetData(dataList, settings.Data);
+                }
+            }
+        }
+
+        public void GetDetailData(RenderInfo info, OpenContentSettings settings)
+        {
+            info.ResetData();
+            OpenContentController ctrl = new OpenContentController();
+            var struc = ctrl.GetContent(info.DetailItemId);
+            if (struc != null && struc.ModuleId == info.ModuleId)
+            {
+                info.SetData(struc.Json, settings.Data);
+            }
+        }
+
+        public bool GetDemoData(RenderInfo info, OpenContentSettings settings)
+        {
+            info.ResetData();
+            //bool settingsNeeded = false;
+            FileUri dataFilename = null;
+            if (info.Template != null)
+            {
+                dataFilename = new FileUri(info.Template.Uri().UrlFolder, "data.json"); ;
+            }
+            if (dataFilename != null && dataFilename.FileExists)
+            {
+                string fileContent = File.ReadAllText(dataFilename.PhysicalFilePath);
+                string settingContent = "";
+                if (!string.IsNullOrWhiteSpace(fileContent))
+                {
+                    if (settings.Template != null && info.Template.Uri().FilePath == settings.Template.Uri().FilePath)
+                    {
+                        settingContent = settings.Data;
+                    }
+                    if (string.IsNullOrEmpty(settingContent))
+                    {
+                        var settingsFilename = info.Template.Uri().PhysicalFullDirectory + "\\" + info.Template.Key.ShortKey + "-data.json";
+                        if (File.Exists(settingsFilename))
+                        {
+                            settingContent = File.ReadAllText(settingsFilename);
+                        }
+                        else
+                        {
+                            //string schemaFilename = info.Template.Uri().PhysicalFullDirectory + "\\" + info.Template.Key.ShortKey + "-schema.json";
+                            //settingsNeeded = File.Exists(schemaFilename);
+                        }
+                    }
+                }
+                if (!string.IsNullOrWhiteSpace(fileContent))
+                    info.SetData(fileContent, settingContent);
+            }
+            return !info.ShowInitControl; //!string.IsNullOrWhiteSpace(info.DataJson) && (!string.IsNullOrWhiteSpace(info.SettingsJson) || !settingsNeeded);
+        }
+
+        internal bool GetOtherModuleDemoData(RenderInfo info, OpenContentSettings settings)
+        {
+            info.ResetData();
+            OpenContentController ctrl = new OpenContentController();
+            var struc = ctrl.GetFirstContent(info.ModuleId);
+            if (struc != null)
+            {
+                if (settings.Template != null && info.Template.Uri().FilePath == settings.Template.Uri().FilePath)
+                {
+                    info.SetData(struc.Json, settings.Data);
+                }
+                if (string.IsNullOrEmpty(info.SettingsJson))
+                {
+                    var settingsFilename = info.Template.Uri().PhysicalFullDirectory + "\\" + info.Template.Key.ShortKey + "-data.json";
+                    if (File.Exists(settingsFilename))
+                    {
+                        string settingsContent = File.ReadAllText(settingsFilename);
+                        if (!string.IsNullOrWhiteSpace(settingsContent))
+                        {
+                            info.SetData(struc.Json, settingsContent);
+                        }
+                    }
+                }
+                //Als er OtherModuleSettingsJson bestaan en 
+                if (info.OtherModuleTemplate.Uri().FilePath == info.Template.Uri().FilePath && !string.IsNullOrEmpty(info.OtherModuleSettingsJson))
+                {
+                    info.SetData(struc.Json, info.OtherModuleSettingsJson);
+                }
+
+                return true;
+            }
+            return false;
+        }
+
         #region Render
 
         private string GenerateOutput(string templateVirtualFolder, TemplateFiles files, string dataJson, string settingsJson)
@@ -832,19 +947,19 @@ namespace Satrabel.OpenContent
             return "";
         }
 
-        private string GenerateListOutput(string TemplateVirtualFolder, TemplateFiles files, IEnumerable<OpenContentInfo> dataList, string settingsJson)
+        private string GenerateListOutput(string templateVirtualFolder, TemplateFiles files, IEnumerable<OpenContentInfo> dataList, string settingsJson)
         {
             try
             {
                 if (!(string.IsNullOrEmpty(files.Template)))
                 {
-                    string physicalTemplateFolder = Server.MapPath(TemplateVirtualFolder);
-                    FileUri templateUri = CheckFiles(TemplateVirtualFolder, files, physicalTemplateFolder);
+                    string physicalTemplateFolder = Server.MapPath(templateVirtualFolder);
+                    FileUri templateUri = CheckFiles(templateVirtualFolder, files, physicalTemplateFolder);
                     if (dataList != null)
                     {
                         ModelFactory mf = new ModelFactory(dataList, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, files, ModuleContext.Configuration, ModuleContext.PortalSettings);
                         dynamic model = mf.GetModelAsDynamic();
-                        return ExecuteTemplate(TemplateVirtualFolder, files, templateUri, model);
+                        return ExecuteTemplate(templateVirtualFolder, files, templateUri, model);
                     }
                 }
             }
@@ -931,7 +1046,7 @@ namespace Satrabel.OpenContent
 
         private void RenderDemoData()
         {
-            bool demoExist = _datasource.GetDemoData(_renderinfo, _settings);
+            bool demoExist = GetDemoData(_renderinfo, _settings);
             if (demoExist)
             {
                 _renderinfo.OutputString = GenerateOutput(_renderinfo.Template.Uri(), _renderinfo.DataJson, _renderinfo.SettingsJson, _renderinfo.Template.Main);
@@ -951,7 +1066,7 @@ namespace Satrabel.OpenContent
                     {
                         // for list templates a main template need to be defined
                         _renderinfo.Files = _renderinfo.Template.Main;
-                        _datasource.GetDataList(_renderinfo, _settings, template.ClientSideData);
+                        GetDataList(_renderinfo, _settings, template.ClientSideData);
                         if (!_renderinfo.ShowInitControl)
                         {
                             _renderinfo.OutputString = GenerateListOutput(_renderinfo.Template.Uri().UrlFolder, template.Main, _renderinfo.DataList, _renderinfo.SettingsJson);
