@@ -250,79 +250,22 @@ namespace Satrabel.OpenContent.Components.Lucene
         public SearchResults Search(string type, string DefaultFieldName, string Filter, string Query, string Sorts, int PageSize, int PageIndex, FieldConfig IndexConfig)
         {
             Query query = ParseQuery(Query, DefaultFieldName);
-            return Search(type, DefaultFieldName, Filter, query, Sorts, PageSize, PageIndex, IndexConfig);
-        }
-        public SearchResults Search(string type, string DefaultFieldName, string Filter, Query Query, string Sorts, int PageSize, int PageIndex, FieldConfig IndexConfig)
-        {
-            Query filter = null;
-            if (!string.IsNullOrEmpty(Filter))
+            Query filter = ParseQuery(Filter, DefaultFieldName);
+
+            QueryDefinition def = new QueryDefinition(IndexConfig)
             {
-                filter = ParseQuery(Filter, DefaultFieldName);
-            }
+                Query = query,
+                Filter = filter,
+                PageIndex = PageIndex,
+                PageSize = PageSize
+            };
+            def.BuildSort(Sorts);
             
-            var sort = Sort.RELEVANCE;
-            if (!string.IsNullOrEmpty(Sorts))
-            {
-                var sortArray = Sorts.Split(',');
-                var sortFields = new List<SortField>();
-                foreach (var item in sortArray)
-                {
-                    bool reverse = false;
-                    var sortElements = item.Split(' ');
-                    string fieldName = sortElements[0];
-                    if (sortElements.Length > 1 && sortElements[1].ToLower() == "desc")
-                    {
-                        reverse = true;
-                    }
-                    int sortfieldtype = SortField.STRING;
-                    string sortFieldPrefix = "";
-                    if (IndexConfig != null && IndexConfig.Fields.ContainsKey(fieldName))
-                    {
-                        var config = IndexConfig.Items == null ? IndexConfig.Fields[fieldName] : IndexConfig.Items;
-                        if (config.Type == "datetime" || config.Type == "date" || config.Type == "time" )
-                        {
-                            sortfieldtype = SortField.LONG;
-                        }
-                        else if (config.Type == "boolean")
-                        {
-                            sortfieldtype = SortField.INT;
-                        }
-                        else if (config.Type == "int")
-                        {
-                            sortfieldtype = SortField.LONG;
-                        }
-                        else if (config.Type == "long")
-                        {
-                            sortfieldtype = SortField.LONG;
-                        }
-                        else if (config.Type == "float" || config.Type == "double")
-                        {
-                            sortfieldtype = SortField.FLOAT;
-                        }
-                        else if (config.Type == "double")
-                        {
-                            sortfieldtype = SortField.DOUBLE;
-                        }
-                        else if (config.Type == "key")
-                        {
-                            sortfieldtype = SortField.STRING;                            
-                        }
-                        else if (config.Type == "text" || config.Type == "html")
-                        {
-                            sortfieldtype = SortField.STRING;
-                            sortFieldPrefix = "@";
-                        }
-                        else
-                        {
-                            sortfieldtype = SortField.STRING;
-                            sortFieldPrefix = "@";
-                        }
-                    }
-                    sortFields.Add(new SortField(sortFieldPrefix + fieldName, sortfieldtype, reverse));
-                }
-                sort = new Sort(sortFields.ToArray());
-            }
-            return Search(type, filter, Query, sort, PageSize, PageIndex);
+            return Search(type, DefaultFieldName, def);
+        }
+        public SearchResults Search(string type, string DefaultFieldName, QueryDefinition def)
+        {            
+            return Search(type, def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
         }
         public static Query ParseQuery(string searchQuery, string DefaultFieldName)
         {

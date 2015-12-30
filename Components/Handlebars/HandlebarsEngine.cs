@@ -331,9 +331,12 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 try
                 {
                     string res;
-                    DateTime? datetime = parameters[0] as DateTime?;
+                    //DateTime? datetime = parameters[0] as DateTime?;
+
+                    DateTime datetime = DateTime.Parse(parameters[0].ToString(), null, System.Globalization.DateTimeStyles.RoundtripKind);
+
                     string format = parameters[1].ToString();
-                    if (parameters.Count() > 1 && !string.IsNullOrWhiteSpace(parameters[2].ToString()))
+                    if (parameters.Count() > 2 && !string.IsNullOrWhiteSpace(parameters[2].ToString()))
                     {
                         string provider = parameters[2].ToString();
                         IFormatProvider formatprovider = null;
@@ -345,11 +348,11 @@ namespace Satrabel.OpenContent.Components.Handlebars
                         {
                             formatprovider = CultureInfo.CreateSpecificCulture(provider);
                         }
-                        res = datetime.Value.ToString(format, formatprovider);
+                        res = datetime.ToString(format, formatprovider);
                     }
                     else
                     {
-                        res = datetime.Value.ToString(format);
+                        res = datetime.ToString(format);
                     }
 
                     HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, res);

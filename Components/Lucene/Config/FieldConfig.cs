@@ -8,8 +8,8 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
 {
     public class FieldConfig
     {
-        [JsonProperty(PropertyName = "type")]
-        public string Type { get; set; }
+        [JsonProperty(PropertyName = "indexType")]
+        public string IndexType { get; set; }
         [JsonProperty(PropertyName = "index")]
         public bool Index { get; set; }
         [JsonProperty(PropertyName = "sort")]

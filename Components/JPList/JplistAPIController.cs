@@ -19,6 +19,7 @@ using Lucene.Net.Search;
 using Lucene.Net.Index;
 using Lucene.Net.QueryParsers;
 using Satrabel.OpenContent.Components.Lucene.Config;
+using Lucene.Net.Documents;
 
 
 namespace Satrabel.OpenContent.Components.JPList
@@ -49,7 +50,7 @@ namespace Satrabel.OpenContent.Components.JPList
                 }
                 var manifest = settings.Template.Manifest;
                 var templateManifest = settings.Template;
-               
+
                 TemplateFiles files = null;
                 if (templateManifest != null)
                 {
@@ -61,31 +62,29 @@ namespace Satrabel.OpenContent.Components.JPList
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 if (listMode)
                 {
-                    string luceneFilter = "";
-                    string luceneSort = "";
-                    if (!string.IsNullOrEmpty(settings.Data))
+                    var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
+                    QueryDefinition def = new QueryDefinition(indexConfig);
+                    BooleanQuery luceneFilter = null;
+                    
+                    if (!string.IsNullOrEmpty(settings.Query))
                     {
-                        var set = JObject.Parse(settings.Data);
-                        if (set["LuceneFilter"] != null)
-                        {
-                            luceneFilter = set["LuceneFilter"].ToString();
-                        }
-                        if (set["LuceneSort"] != null)
-                        {
-                            luceneSort = set["LuceneSort"].ToString();
-                        }
+                        var query = JObject.Parse(settings.Query);
+                        def.Build(query);
                     }
-                    //JArray json = new JArray();
+                    
                     var jpListQuery = BuildJpListQuery(req.StatusLst);
-                    //string luceneQuery = BuildLuceneQuery(jpListQuery);
-                    Query luceneQuery = BuildLuceneQuery2(jpListQuery);
+                    def.Query = BuildLuceneQuery2(jpListQuery, indexConfig);
                     if (jpListQuery.Sorts.Any())
                     {
                         var sort = jpListQuery.Sorts.First();
-                        luceneSort = sort.path + " " + sort.order;
+                        string luceneSort = sort.path + " " + sort.order;
+                        def.BuildSort(luceneSort);
                     }
-                    var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
-                    SearchResults docs = LuceneController.Instance.Search(module.ModuleID.ToString(), "Title", luceneFilter, luceneQuery, luceneSort, jpListQuery.Pagination.number, jpListQuery.Pagination.currentPage, indexConfig);
+
+                    def.PageSize = jpListQuery.Pagination.number;
+                    def.PageIndex = jpListQuery.Pagination.currentPage;
+
+                    SearchResults docs = LuceneController.Instance.Search(module.ModuleID.ToString(), "Title", def);
                     int total = docs.ToalResults;
                     OpenContentController ctrl = new OpenContentController();
                     var dataList = new List<OpenContentInfo>();
@@ -98,7 +97,7 @@ namespace Satrabel.OpenContent.Components.JPList
                         }
                     }
                     ModelFactory mf = new ModelFactory(dataList, settings.Data, settings.Template.Uri().PhysicalFullDirectory, manifest, files, ActiveModule, PortalSettings);
-                    var model = mf.GetModelAsJson(true);  
+                    var model = mf.GetModelAsJson(true);
                     var res = new ResultDTO()
                     {
                         data = model,
@@ -118,6 +117,7 @@ namespace Satrabel.OpenContent.Components.JPList
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
+
 
         #region Private Methods
 
@@ -254,35 +254,30 @@ namespace Satrabel.OpenContent.Components.JPList
                 {
                     if (f.pathGroup != null && f.pathGroup.Any()) //group is bv multicheckbox, vb categories where(categy="" OR category="")
                     {
-                        //string pathStr = "";
                         var groupQuery = new BooleanQuery();
                         foreach (var p in f.pathGroup)
                         {
-                            //pathStr += (string.IsNullOrEmpty(pathStr) ? "" : " OR ") + f.name + ":" + p;
                             var termQuery = new TermQuery(new Term(f.name, p));
                             groupQuery.Add(termQuery, Occur.SHOULD); // or
                         }
-
-                        //queryStr += "+" + "(" + pathStr + ")";
                         query.Add(groupQuery, Occur.MUST); //and
                     }
                     else
                     {
                         var names = f.names;
-                        //string pathStr = "";
                         var groupQuery = new BooleanQuery();
                         foreach (var n in names)
                         {
                             if (!string.IsNullOrEmpty(f.path))
                             {
-                                //pathStr += (string.IsNullOrEmpty(pathStr) ? "" : " OR ") + n + ":" + f.path;  //for dropdownlists; value is keyword => never partial search
+                                //for dropdownlists; value is keyword => never partial search
                                 var termQuery = new TermQuery(new Term(n, f.path));
                                 groupQuery.Add(termQuery, Occur.SHOULD); // or
                             }
                             else
                             {
-                                //pathStr += (string.IsNullOrEmpty(pathStr) ? "" : " OR ") + n + ":" + f.value + "*";   //textbox
-                                var query1 = LuceneController.ParseQuery(n + ":" + f.value + "*", "Title");                                
+                                //textbox
+                                var query1 = LuceneController.ParseQuery(n + ":" + f.value + "*", "Title");
                                 groupQuery.Add(query1, Occur.SHOULD); // or
                             }
                         }

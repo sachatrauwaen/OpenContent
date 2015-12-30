@@ -1,4 +1,4 @@
-<%@ Control Language="C#" AutoEventWireup="false" Inherits="Satrabel.OpenContent.Edit" CodeBehind="Edit.ascx.cs" %>
+<%@ Control Language="C#" AutoEventWireup="false" Inherits="Satrabel.OpenContent.EditQuery" CodeBehind="EditQuery.ascx.cs" %>
 <%@ Import Namespace="Newtonsoft.Json" %>
 
 <asp:Panel ID="ScopeWrapper" runat="server">
@@ -9,19 +9,18 @@
         </li>
         <li>
             <asp:HyperLink ID="hlCancel" runat="server" class="dnnSecondaryAction" resourcekey="cmdCancel" />
-        </li>
-        <li>
-            <asp:HyperLink ID="hlDelete" runat="server" class="dnnSecondaryAction" resourcekey="cmdDelete" />
-        </li>
-        <li style="padding-left: 10px;">
-            <asp:DropDownList ID="ddlVersions" runat="server" CssClass="oc-ddl-versions" />
-        </li>
+        </li>           
     </ul>
 </asp:Panel>
 
 <script type="text/javascript">
-    $(document).ready(function() {
-        var engine = new alpacaEngine.engine(<%=JsonConvert.SerializeObject(AlpacaContext)%>);
+    $(document).ready(function () {
+        var config = <%=JsonConvert.SerializeObject(AlpacaContext)%>;
+
+        config.editAction = "EditSettings";
+        config.updateAction = "UpdateSettings";
+        config.data = { "key": "query"};
+        var engine = new alpacaEngine.engine(config);
         engine.init();
     });
 </script>

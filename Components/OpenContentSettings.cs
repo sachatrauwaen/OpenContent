@@ -14,9 +14,6 @@ namespace Satrabel.OpenContent.Components
 {
     public class OpenContentSettings
     {
-
-        private JObject _json = null;
-
         internal OpenContentSettings(IDictionary moduleSettings)
         {
             var template = moduleSettings["template"] as string;    //templatepath+file  or  //manifestpath+key
@@ -40,6 +37,7 @@ namespace Satrabel.OpenContent.Components
             }
 
             Data = moduleSettings["data"] as string;
+            Query = moduleSettings["query"] as string;
         }
 
         internal TemplateKey TemplateKey { get; private set; }
@@ -57,6 +55,7 @@ namespace Satrabel.OpenContent.Components
         //internal FileUri Template { get; private set; }
 
         public string Data { get; private set; }
+        public string Query { get; private set; }
         public bool IsOtherModule
         {
             get
@@ -67,54 +66,6 @@ namespace Satrabel.OpenContent.Components
 
         public bool TemplateAvailable { get { return TemplateKey != null; } }
 
-        public JObject DataAsJson
-        {
-            get
-            {
-                if (_json == null)
-                {
-                    _json = JObject.Parse(Data);
-
-                }
-                return _json;
-            }
-        }
-
-        public string LuceneFilter
-        {
-            get
-            {
-                var filter = DataAsJson["LuceneFilter"];
-                if (filter != null)
-                    return filter.ToString();
-                else
-                    return "";
-            }
-        }
-        public string LuceneSort
-        {
-            get
-            {
-                var filter = DataAsJson["LuceneSort"];
-                if (filter != null)
-                    return filter.ToString();
-                else
-                    return "";
-            }
-        }
-
-        public int? LuceneMaxResults
-        {
-            get
-            {
-                int maxResults = 0;
-                var sMaxResults = DataAsJson["LuceneMaxResults"];
-
-                if (sMaxResults != null && int.TryParse(sMaxResults.ToString(), out maxResults))
-                    return maxResults;
-                else
-                    return null;
-            }
-        }
+       
     }
 }

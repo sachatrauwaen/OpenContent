@@ -19,10 +19,10 @@
         width: 100%;
     }
 
-        .alpaca-field-table table tr td .alpaca-field .form-control {
-            width: auto;
-            margin: 0;
-        }
+.alpaca-field-table table tr td .alpaca-field .alpaca-control {
+    width: auto;
+    margin: 0;
+}
 
 .alpaca-field-table .form-group {
     margin-bottom: 0px;
@@ -351,8 +351,7 @@
 }
 
 .alpaca-field-text img,
-.alpaca-field-wysihtml > img
- {
+.alpaca-field-wysihtml > img {
     margin-bottom: 18px;
     margin-left: 5px;
 }
@@ -370,6 +369,6 @@ select.oc-ddl-versions {
     font-size: 12px;
 }
 
-.bootstrap-datetimepicker-widget{
-left:35% !important;
+.bootstrap-datetimepicker-widget {
+    left: 35% !important;
 }

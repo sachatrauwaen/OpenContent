@@ -77,6 +77,8 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
             ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/alpaca/js/fields/dnn/dnnfields.js", FileOrder.Js.DefaultPriority + 3);
 
+            ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/alpacaengine.js", FileOrder.Js.DefaultPriority + 10);
+
             ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/css/font-awesome/css/font-awesome.min.css", FileOrder.Css.DefaultPriority);
         }
         public void RegisterTemplates()
@@ -164,15 +166,11 @@ namespace Satrabel.OpenContent.Components.Alpaca
                         CKDNNporid.Value = ModuleContext.PortalId.ToString();
                     }
                 }
-
             }
-
         }
-
         private JToken GetOptions()
         {
             string physicalDirectory = HostingEnvironment.MapPath("~/" + VirtualDirectory);
-
             JToken optionsJson = null;
             // default options
             string optionsFilename = physicalDirectory + "\\" + (string.IsNullOrEmpty(Prefix) ? "" : Prefix + "-") + "options.json";
@@ -247,5 +245,8 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
             return "en_US";
         }
+
+        
+
     }
 }

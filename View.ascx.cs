@@ -50,6 +50,7 @@ using DotNetNuke.Entities.Users;
 using DotNetNuke.Instrumentation;
 using DotNetNuke.Services.Installer.Log;
 using Satrabel.OpenContent.Components.Lucene;
+using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.Manifest;
 
 #endregion
@@ -129,8 +130,6 @@ namespace Satrabel.OpenContent
                         var permExist = objModule.ModulePermissions.Where(tp => tp.RoleID == roleId).Any();
                         if (!permExist)
                         {
-                            //todo sacha: add two permissions, read and write; Or better still add all permissions that are available. eg if you installed extra permissions
-
                             var permissionController = new PermissionController();
                             // view permission
                             var arrSystemModuleViewPermissions = permissionController.GetPermissionByCodeAndKey("SYSTEM_MODULE_DEFINITION", "VIEW");
@@ -307,7 +306,19 @@ namespace Satrabel.OpenContent
                     SecurityAccessLevel.Admin,
                     true,
                     false);
-
+                if (templateDefined && listMode)
+                {
+                    actions.Add(ModuleContext.GetNextActionID(),
+                        Localization.GetString("EditQuery.Action", LocalResourceFile),
+                        ModuleActionType.ContentOptions,
+                        "",
+                        "~/DesktopModules/OpenContent/images/filter.png",
+                        ModuleContext.EditUrl("EditQuery"),
+                        false,
+                        SecurityAccessLevel.Admin,
+                        true,
+                        false);
+                }
                 if (templateDefined)
                     actions.Add(ModuleContext.GetNextActionID(),
                         Localization.GetString("EditTemplate.Action", LocalResourceFile),
@@ -346,7 +357,7 @@ namespace Satrabel.OpenContent
                     Localization.GetString("EditGlobalSettings.Action", LocalResourceFile),
                     ModuleActionType.ContentOptions,
                     "",
-                    "~/DesktopModules/OpenContent/images/exchange.png",
+                    "~/DesktopModules/OpenContent/images/settings.png",
                     ModuleContext.EditUrl("EditGlobalSettings"),
                     false,
                     SecurityAccessLevel.Host,
@@ -499,22 +510,18 @@ namespace Satrabel.OpenContent
                 }
             }
         }
-
         protected void ddlDataSource_SelectedIndexChanged(object sender, EventArgs e)
         {
             var dsModule = (new ModuleController()).GetTabModule(int.Parse(ddlDataSource.SelectedValue));
             var dsSettings = dsModule.OpenContentSettings();
             BindTemplates(dsSettings.Template, dsSettings.Template.Uri());
         }
-
         #endregion
 
         #region GetData
-
         private void GetData()
         {
             _info.ResetData();
-
             OpenContentController ctrl = new OpenContentController();
             var struc = ctrl.GetFirstContent(_info.ModuleId);
             if (struc != null)
@@ -543,12 +550,11 @@ namespace Satrabel.OpenContent
                 if (useLucene)
                 {
                     var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
-                    string luceneFilter = settings.LuceneFilter;
-                    string luceneSort = settings.LuceneSort;
-                    int? luceneMaxResults = settings.LuceneMaxResults;
-                    SearchResults docs = LuceneController.Instance.Search(_info.ModuleId.ToString(), "Title", "",
-                        luceneFilter, luceneSort, (luceneMaxResults.HasValue ? luceneMaxResults.Value : 100), 0,
-                        indexConfig);
+                    var queryDef = new QueryDefinition(indexConfig);
+                    if (!string.IsNullOrEmpty(settings.Query)) { 
+                        queryDef.Build(JObject.Parse(settings.Query));
+                    }
+                    SearchResults docs = LuceneController.Instance.Search(_info.ModuleId.ToString(), "Title", queryDef);
                     int total = docs.ToalResults;
                     dataList = new List<OpenContentInfo>();
                     foreach (var item in docs.ids)
@@ -657,7 +663,6 @@ namespace Satrabel.OpenContent
         }
 
         #endregion
-
         private void InitTemplateInfo()
         {
             if (_settings.Template != null)
@@ -715,7 +720,6 @@ namespace Satrabel.OpenContent
                 }
             }
         }
-
         private void IncludeResourses(TemplateManifest template)
         {
             if (template != null)
@@ -735,7 +739,6 @@ namespace Satrabel.OpenContent
                 ClientResourceManager.RegisterScript(Page, Page.ResolveUrl("~/DesktopModules/OpenContent/js/opencontent.js"), FileOrder.Js.DefaultPriority);
             }
         }
-
         private FileUri CheckFiles(string templateVirtualFolder, TemplateFiles files, string templateFolder)
         {
             if (files == null)
@@ -774,7 +777,6 @@ namespace Satrabel.OpenContent
             }
             return accept;
         }
-
         private bool Filter(dynamic obj, string key, string value)
         {
             bool accept = true;
@@ -789,14 +791,10 @@ namespace Satrabel.OpenContent
             }
             return accept;
         }
-
-
         private void BindOtherModules(int tabId, int moduleId)
         {
             IEnumerable<ModuleInfo> modules = (new ModuleController()).GetModules(ModuleContext.PortalId).Cast<ModuleInfo>();
-
             modules = modules.Where(m => m.ModuleDefinition.DefinitionName == "OpenContent" && m.IsDeleted == false && !m.OpenContentSettings().IsOtherModule);
-
             rblDataSource.Items[1].Enabled = modules.Any();
             phDataSource.Visible = rblDataSource.SelectedIndex == 1; // other module
             if (rblDataSource.SelectedIndex == 1) // other module
@@ -831,10 +829,8 @@ namespace Satrabel.OpenContent
         private void BindTemplates(TemplateManifest template, FileUri otherModuleTemplate)
         {
             ddlTemplate.Items.Clear();
-
             //var templateUri = template == null ? null : template.Uri;
             //var otherModuleTemplateUri = otherModuleTemplate == null ? null : otherModuleTemplate.Uri;
-
             ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplatesFiles(ModuleContext.PortalSettings, ModuleContext.ModuleId, template, "OpenContent", otherModuleTemplate).ToArray());
             if (ddlTemplate.Items.Count == 0)
             {
@@ -847,19 +843,16 @@ namespace Satrabel.OpenContent
 
             }
         }
-
         private void BindButtons(OpenContentSettings settings, TemplateInfo info)
         {
             bool templateDefined = info.Template != null;
             bool settingsDefined = !string.IsNullOrEmpty(settings.Data);
             bool settingsNeeded = false;
-
             if (rblUseTemplate.SelectedIndex == 0) // existing template
             {
                 //create tmp TemplateManifest
                 var templateManifest = new FileUri(ddlTemplate.SelectedValue).ToTemplateManifest();
                 settingsNeeded = templateManifest.SettingsNeeded();
-
                 templateDefined = templateDefined && (!ddlTemplate.Visible || (settings.Template.Key.FullKeyString() == ddlTemplate.SelectedValue));
                 settingsDefined = settingsDefined || !settingsNeeded;
             }

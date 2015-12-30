@@ -117,55 +117,13 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AddContent.Action" xml:space="preserve">
-    <value>Add Content</value>
-  </data>
-  <data name="EditData.Action" xml:space="preserve">
-    <value>Edit Raw Data</value>
-  </data>
-  <data name="EditGlobalSettings.Action" xml:space="preserve">
-    <value>Edit Global Settings</value>
-  </data>
-  <data name="EditSettings.Action" xml:space="preserve">
-    <value>Template Settings</value>
-  </data>
-  <data name="EditTemplate.Action" xml:space="preserve">
-    <value>Edit Template Files</value>
-  </data>
-  <data name="Help.Action" xml:space="preserve">
-    <value>Help</value>
-  </data>
-  <data name="lTemplate.Text" xml:space="preserve">
-    <value>Template</value>
-  </data>
-  <data name="lUseTemplate.Text" xml:space="preserve">
-    <value>I want</value>
-  </data>
-  <data name="ShareTemplate.Action" xml:space="preserve">
-    <value>Template Exchange</value>
-  </data>
-  <data name="Intro.Text" xml:space="preserve">
-    <value>Get Started</value>
-  </data>
-  <data name="lFrom.Text" xml:space="preserve">
-    <value>Based On Template From</value>
-  </data>
-  <data name="lTemplateName.Text" xml:space="preserve">
-    <value>New Template Name</value>
-  </data>
-  <data name="EditContent.Action" xml:space="preserve">
-    <value>Edit Content</value>
-  </data>
-  <data name="lUseContent.Text" xml:space="preserve">
-    <value>Source of content</value>
-  </data>
-  <data name="lDataSource.Text" xml:space="preserve">
-    <value>Page - Module</value>
-  </data>
   <data name="cmdSave.Text" xml:space="preserve">
     <value>Save</value>
   </data>
-  <data name="EditQuery.Action" xml:space="preserve">
-    <value>Filter Settings</value>
+  <data name="cmdCancel.Text" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="cmdDelete.Text" xml:space="preserve">
+    <value>Delete</value>
   </data>
 </root>

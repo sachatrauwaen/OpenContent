@@ -407,13 +407,21 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
-                int moduleId = ActiveModule.ModuleID;
-                var data = json["data"].ToString();
-                var template = json["template"].ToString();
-
                 var mc = new ModuleController();
-                if (!string.IsNullOrEmpty(template)) mc.UpdateModuleSetting(moduleId, "template", template);
-                if (!string.IsNullOrEmpty(data)) mc.UpdateModuleSetting(moduleId, "data", data);
+                int moduleId = ActiveModule.ModuleID;
+                if (json["data"] != null)
+                {
+                    var data = json["data"].ToString();
+                    var template = json["template"].ToString();
+                    if (!string.IsNullOrEmpty(template)) mc.UpdateModuleSetting(moduleId, "template", template);
+                    if (!string.IsNullOrEmpty(data)) mc.UpdateModuleSetting(moduleId, "data", data);
+                }
+                else if (json["form"] != null)
+                {
+                    var form = json["form"].ToString();
+                    var key = json["key"].ToString();
+                    if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(form)) mc.UpdateModuleSetting(moduleId, key, form);
+                }
                 return Request.CreateResponse(HttpStatusCode.OK, "");
             }
             catch (Exception exc)
@@ -421,7 +429,6 @@ namespace Satrabel.OpenContent.Components
                 Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
-
         }
 
         [ValidateAntiForgeryToken]
@@ -531,6 +538,58 @@ namespace Satrabel.OpenContent.Components
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
+
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [HttpGet]
+        public HttpResponseMessage EditSettings(string key)
+        {
+            string data = (string)ActiveModule.ModuleSettings[key];
+            JObject json = new JObject();
+            try
+            {
+                OpenContentSettings settings = ActiveModule.OpenContentSettings();
+                ModuleInfo module = ActiveModule;
+                if (settings.ModuleId > 0)
+                {
+                    ModuleController mc = new ModuleController();
+                    module = mc.GetModule(settings.ModuleId, settings.TabId, false);
+                }
+                var manifest = settings.Manifest;
+                TemplateManifest templateManifest = settings.Template;
+
+                var templateUri = settings.TemplateDir;
+                string prefix = key + "-";
+
+                // schema
+                var schemaJson = JsonUtils.LoadJsonFromFile(templateUri.UrlFolder + prefix + "schema.json");
+                if (schemaJson != null)
+                    json["schema"] = schemaJson;
+
+                // default options
+                var optionsJson = JsonUtils.LoadJsonFromFile(templateUri.UrlFolder + prefix + "options.json");
+                if (optionsJson != null)
+                    json["options"] = optionsJson;
+
+                // language options
+                optionsJson = JsonUtils.LoadJsonFromFile(templateUri.UrlFolder + prefix + "options." + DnnUtils.GetCurrentCultureCode() + ".json");
+                if (optionsJson != null)
+                    json["options"] = json["options"].JsonMerge(optionsJson);
+
+
+                JObject dataJson = data.ToJObject("Raw settings json");
+                if (dataJson != null)
+                    json["data"] = dataJson;
+
+                return Request.CreateResponse(HttpStatusCode.OK, json);
+            }
+            catch (Exception exc)
+            {
+                Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
+
     }
 
     public class LookupRequestDTO
