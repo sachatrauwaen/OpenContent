@@ -96,12 +96,10 @@ namespace Satrabel.OpenContent
                     }
                     if (template != null && template.IsListTemplate)
                     {
-                        var dataList = ctrl.GetContents(ModuleId);
+                        var dataList = ctrl.GetContents(settings.ModuleId == -1 ? ModuleId : settings.ModuleId);
                         if (dataList != null)
                         {
-
                             JArray lst = new JArray();
-
                             foreach (var item in dataList)
                             {
                                 lst.Add(JObject.Parse(item.Json));
@@ -111,7 +109,7 @@ namespace Satrabel.OpenContent
                     }
                     else
                     {
-                        OpenContentInfo data = ctrl.GetFirstContent(ModuleId);
+                        OpenContentInfo data = ctrl.GetFirstContent(settings.ModuleId == -1 ? ModuleId : settings.ModuleId);
                         if (data != null)
                         {
                             json = data.Json;

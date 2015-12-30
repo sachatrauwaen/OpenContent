@@ -5,9 +5,9 @@ using DotNetNuke.Entities.Modules;
 
 namespace Satrabel.OpenContent.Components.Manifest
 {
-    public class TemplateInfo
+    public class RenderInfo
     {
-        public TemplateInfo()
+        public RenderInfo()
         {
             SettingsJson = "";
             DataJson = "";
@@ -75,12 +75,9 @@ namespace Satrabel.OpenContent.Components.Manifest
 
         #endregion
 
-        public void SetSelectedTemplate(TemplateManifest template)
-        {
-            Template = template;
-        }
+        
 
-        public TemplateManifest Template { get; private set; }
+        public TemplateManifest Template { get; set; }
 
         #region ReadOnly
 

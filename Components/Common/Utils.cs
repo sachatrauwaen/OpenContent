@@ -17,13 +17,7 @@ namespace Satrabel.OpenContent.Components
             if (qIndex >= 0) url = url.Remove(qIndex);
             return url;
         }
-        public static string TrimStart(this string txt, string value)
-        {
-            //remove any query parameters
-            int qIndex = txt.IndexOf(value, StringComparison.Ordinal);
-            if (qIndex == 0) txt = txt.Substring(value.Length);
-            return txt;
-        }
+
 
         #endregion
 
@@ -91,6 +85,22 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
+        public static string TrimStart(this string text, string value)
+        {
+            if (string.IsNullOrEmpty(text)) return text;
+            //remove any query parameters
+            int qIndex = text.IndexOf(value, StringComparison.Ordinal);
+            if (qIndex == 0) text = text.Substring(value.Length);
+            return text;
+        }
+
+        public static string TrimEnd(this string text, string value)
+        {
+            if (string.IsNullOrEmpty(text)) return text;
+            int qIndex = text.LastIndexOf(value, StringComparison.Ordinal);
+            if (qIndex != -1) text = text.Substring(0, qIndex);
+            return text;
+        }
         #endregion
 
         public static string HtmlDecodeIfNeeded(string text)

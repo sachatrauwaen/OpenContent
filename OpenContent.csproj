@@ -143,15 +143,11 @@
     <Compile Include="Components\FilesStatus.cs" />
     <Compile Include="Components\FileUploadController.cs" />
     <Compile Include="Components\Lucene\Config\FieldConfig.cs" />
-    <Compile Include="Components\Lucene\Config\FieldFilter.cs" />
-    <Compile Include="Components\Lucene\Config\FieldSort.cs" />
     <Compile Include="Components\Lucene\Config\QueryDefinition.cs" />
-    <Compile Include="Components\Lucene\Config\QuerySettings.cs" />
     <Compile Include="Components\Alpaca\SchemaConfig.cs" />
     <Compile Include="Components\Lucene\SearchResults.cs" />
     <Compile Include="Components\Manifest\Manifest.cs" />
     <Compile Include="Components\Manifest\ManifestUtils.cs" />
-    <Compile Include="Components\Manifest\TemplateInfo.cs" />
     <Compile Include="Components\Manifest\TemplateKey.cs" />
     <Compile Include="Components\ModelFactory.cs" />
     <Compile Include="Components\Manifest\TemplateFiles.cs" />
@@ -198,6 +194,7 @@
     <Compile Include="Components\Rss\FeedParser.cs" />
     <Compile Include="Components\Rss\FeedItem.cs" />
     <Compile Include="Components\TemplateHelpers\MetaTags.cs" />
+    <Compile Include="Components\Manifest\RenderInfo.cs" />
     <Compile Include="Components\Common\Utils.cs" />
     <Compile Include="EditQuery.ascx.cs">
       <DependentUpon>EditQuery.ascx</DependentUpon>
