@@ -1036,10 +1036,13 @@ namespace Satrabel.OpenContent
             }
             else // new template
             {
-                _renderinfo.Template = new FileUri(ddlTemplate.SelectedValue).ToTemplateManifest();
-                if (rblFrom.SelectedIndex == 0) // site
+                if (!string.IsNullOrEmpty(ddlTemplate.SelectedValue))
                 {
-                    RenderDemoData();
+                    _renderinfo.Template = new FileUri(ddlTemplate.SelectedValue).ToTemplateManifest();
+                    if (rblFrom.SelectedIndex == 0) // site
+                    {
+                        RenderDemoData();
+                    }
                 }
             }
         }
