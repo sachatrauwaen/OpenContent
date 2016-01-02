@@ -32,8 +32,5 @@ namespace Satrabel.OpenContent.Components
                 Logger.DebugFormat("Result from '{0}' with status '{1}': {2} \r\n", method, response.StatusCode.ToString(), String.IsNullOrEmpty(responsemessage) ? "<empty>" : responsemessage);
             }
         }
-
-
-        
     }
 }
