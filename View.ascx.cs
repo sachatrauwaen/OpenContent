@@ -157,17 +157,13 @@ namespace Satrabel.OpenContent
                             ModulePermissionController.SaveModulePermissions(objModule);
                         }
                     }
-
-
                 }
             }
         }
-
         protected override void OnPreRender(EventArgs e)
         {
             //base.OnPreRender(e);
             pHelp.Visible = false;
-
             //initialize _info state
             _renderinfo.Template = _settings.Template;
             _renderinfo.DetailItemId = _itemId;
@@ -180,10 +176,10 @@ namespace Satrabel.OpenContent
             {
                 _renderinfo.SetDataSourceModule(_settings.TabId, ModuleContext.ModuleId, ModuleContext.Configuration, null, "");
             }
-
             //start rendering
             InitTemplateInfo();
-            if (_renderinfo.ShowInitControl)
+            bool OtherModuleWithFilterSettings = _settings.IsOtherModule && !string.IsNullOrEmpty(_settings.Query);
+            if (_renderinfo.ShowInitControl && !OtherModuleWithFilterSettings)
             {
                 // no data exist and ... -> show initialization
                 if (ModuleContext.EditMode)
@@ -255,6 +251,7 @@ namespace Satrabel.OpenContent
                 bool templateDefined = template != null;
                 bool listMode = template != null && template.IsListTemplate;
 
+
                 if (Page.Request.QueryString["id"] != null)
                 {
                     int.TryParse(Page.Request.QueryString["id"], out _itemId);
@@ -302,16 +299,20 @@ namespace Satrabel.OpenContent
 
                 if (templateDefined && listMode)
                 {
-                    actions.Add(ModuleContext.GetNextActionID(),
-                        Localization.GetString("EditQuery.Action", LocalResourceFile),
-                        ModuleActionType.ContentOptions,
-                        "",
-                        "~/DesktopModules/OpenContent/images/filter.png",
-                        ModuleContext.EditUrl("EditQuery"),
-                        false,
-                        SecurityAccessLevel.Admin,
-                        true,
-                        false);
+                    bool queryAvailable = settings.Template.QueryAvailable();
+                    if (queryAvailable)
+                    {
+                        actions.Add(ModuleContext.GetNextActionID(),
+                            Localization.GetString("EditQuery.Action", LocalResourceFile),
+                            ModuleActionType.ContentOptions,
+                            "",
+                            "~/DesktopModules/OpenContent/images/filter.png",
+                            ModuleContext.EditUrl("EditQuery"),
+                            false,
+                            SecurityAccessLevel.Admin,
+                            true,
+                            false);
+                    }
                 }
 
                 if (templateDefined)
@@ -331,7 +332,8 @@ namespace Satrabel.OpenContent
                         ModuleActionType.EditContent,
                         "",
                         "~/DesktopModules/OpenContent/images/edit.png",
-                        ModuleContext.EditUrl("EditData"),
+                        //ModuleContext.EditUrl("EditData"),
+                        (listMode && _itemId != Null.NullInteger ? ModuleContext.EditUrl("id", _itemId.ToString(), "EditData") : ModuleContext.EditUrl("EditData")),
                         false,
                         SecurityAccessLevel.Host,
                         true,
@@ -786,6 +788,7 @@ namespace Satrabel.OpenContent
                 {
                     dataList = new List<OpenContentInfo>();
                     info.SetData(dataList, settings.Data);
+                    info.DataExist = true;
                 }
             }
             else
@@ -793,11 +796,11 @@ namespace Satrabel.OpenContent
                 bool useLucene = info.Template.Manifest.Index;
                 if (useLucene)
                 {
-                    var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
+                    var indexConfig = OpenContentUtils.GetIndexConfig(info.Template.Key.TemplateDir);
                     var queryDef = new QueryDefinition(indexConfig);
                     if (!string.IsNullOrEmpty(settings.Query))
                     {
-                        queryDef.Build(JObject.Parse(settings.Query));
+                        queryDef.Build(JObject.Parse(settings.Query), Request.QueryString);
                     }
                     SearchResults docs = LuceneController.Instance.Search(info.ModuleId.ToString(), "Title", queryDef);
                     int total = docs.ToalResults;
@@ -919,7 +922,7 @@ namespace Satrabel.OpenContent
 
                     if (!string.IsNullOrEmpty(dataJson))
                     {
-                        ModelFactory mf = new ModelFactory(dataJson, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, files, ModuleContext.Configuration, ModuleContext.PortalSettings);
+                        ModelFactory mf = new ModelFactory(dataJson, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, files, ModuleContext.Configuration, ModuleContext.PortalSettings, _settings.TabId);
                         dynamic model = mf.GetModelAsDynamic();
 
                         Page.Title = model.Title + " | " + ModuleContext.PortalSettings.PortalName;
@@ -955,7 +958,7 @@ namespace Satrabel.OpenContent
                     string physicalTemplateFolder = Server.MapPath(templateVirtualFolder);
                     if (!string.IsNullOrEmpty(dataJson))
                     {
-                        ModelFactory mf = new ModelFactory(dataJson, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, files, ModuleContext.Configuration, ModuleContext.PortalSettings);
+                        ModelFactory mf = new ModelFactory(dataJson, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, files, ModuleContext.Configuration, ModuleContext.PortalSettings, _settings.TabId);
                         dynamic model = mf.GetModelAsDynamic();
                         if (template.Extension != ".hbs")
                         {
@@ -995,7 +998,7 @@ namespace Satrabel.OpenContent
                     FileUri templateUri = CheckFiles(templateVirtualFolder, files, physicalTemplateFolder);
                     if (dataList != null)
                     {
-                        ModelFactory mf = new ModelFactory(dataList, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, files, ModuleContext.Configuration, ModuleContext.PortalSettings);
+                        ModelFactory mf = new ModelFactory(dataList, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, files, ModuleContext.Configuration, ModuleContext.PortalSettings, _settings.TabId);
                         dynamic model = mf.GetModelAsDynamic();
                         return ExecuteTemplate(templateVirtualFolder, files, templateUri, model);
                     }

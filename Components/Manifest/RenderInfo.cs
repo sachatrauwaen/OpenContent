@@ -36,21 +36,21 @@ namespace Satrabel.OpenContent.Components.Manifest
         {
             DataJson = dataJson;
             SettingsJson = settingsData;
-            DataExist = !string.IsNullOrWhiteSpace(dataJson);
+            if (!string.IsNullOrWhiteSpace(dataJson)) DataExist = true;            
         }
 
         public void SetData(IEnumerable<OpenContentInfo> getContents, string settingsData)
         {
             DataList = getContents;
             SettingsJson = settingsData;
-            DataExist = (getContents != null && getContents.Any());
+            if (getContents != null && getContents.Any()) DataExist = true;
         }
 
         public string DataJson { get; private set; }
         public string SettingsJson { get; private set; }
 
         public IEnumerable<OpenContentInfo> DataList { get; private set; }
-        private bool DataExist { get; set; }
+        public bool DataExist { get; set; }
         public bool ShowInitControl { get { return !DataExist || SettingsJson == null && Template.SettingsNeeded(); } }
 
 

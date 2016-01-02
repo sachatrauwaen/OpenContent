@@ -27,6 +27,7 @@ using DotNetNuke.Entities.Tabs;
 using DotNetNuke.Common;
 using DotNetNuke.Services.FileSystem;
 using System.Collections.Generic;
+using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Lucene;
 using Satrabel.OpenContent.Components.Manifest;
 
@@ -69,29 +70,10 @@ namespace Satrabel.OpenContent.Components
 
             string editRole = manifest == null ? "" : manifest.EditRole;
             bool listMode = templateManifest != null && templateManifest.IsListTemplate;
-            JObject json = new JObject();
             try
             {
-                // schema
-                var schemaJson = JsonUtils.LoadJsonFromFile(settings.Template.Uri().UrlFolder + "schema.json");
-                if (schemaJson != null)
-                    json["schema"] = schemaJson;
-
-                // default options
-                var optionsJson = JsonUtils.LoadJsonFromFile(settings.Template.Uri().UrlFolder + "options.json");
-                if (optionsJson != null)
-                    json["options"] = optionsJson;
-
-                // language options
-                optionsJson = JsonUtils.LoadJsonFromFile(settings.Template.Uri().UrlFolder + "options." + DnnUtils.GetCurrentCultureCode() + ".json");
-                if (optionsJson != null)
-                    json["options"] = json["options"].JsonMerge(optionsJson);
-
-                // view
-                optionsJson = JsonUtils.LoadJsonFromFile(settings.Template.Uri().UrlFolder + "view.json");
-                if (optionsJson != null)
-                    json["view"] = optionsJson;
-
+                var fb = new FormBuilder(settings.TemplateDir);
+                JObject json = fb.BuildForm();
                 int createdByUserid = -1;
                 var content = GetContent(module.ModuleID, listMode, id);
                 if (content != null)
@@ -218,27 +200,12 @@ namespace Satrabel.OpenContent.Components
         public HttpResponseMessage Settings(string Template)
         {
             string data = (string)ActiveModule.ModuleSettings["data"];
-            JObject json = new JObject();
             try
             {
                 var templateUri = new FileUri(Template);
-                string prefix = templateUri.FileNameWithoutExtension + "-";
-
-                // schema
-                var schemaJson = JsonUtils.LoadJsonFromFile(templateUri.UrlFolder + prefix + "schema.json");
-                if (schemaJson != null)
-                    json["schema"] = schemaJson;
-
-                // default options
-                var optionsJson = JsonUtils.LoadJsonFromFile(templateUri.UrlFolder + prefix + "options.json");
-                if (optionsJson != null)
-                    json["options"] = optionsJson;
-
-                // language options
-                optionsJson = JsonUtils.LoadJsonFromFile(templateUri.UrlFolder + prefix + "options." + DnnUtils.GetCurrentCultureCode() + ".json");
-                if (optionsJson != null)
-                    json["options"] = json["options"].JsonMerge(optionsJson);
-
+                string key = templateUri.FileNameWithoutExtension;
+                var fb = new FormBuilder(templateUri);
+                JObject json = fb.BuildForm(key);
 
                 JObject dataJson = data.ToJObject("Raw settings json");
                 if (dataJson != null)
@@ -545,38 +512,11 @@ namespace Satrabel.OpenContent.Components
         public HttpResponseMessage EditSettings(string key)
         {
             string data = (string)ActiveModule.ModuleSettings[key];
-            JObject json = new JObject();
             try
             {
                 OpenContentSettings settings = ActiveModule.OpenContentSettings();
-                ModuleInfo module = ActiveModule;
-                if (settings.ModuleId > 0)
-                {
-                    ModuleController mc = new ModuleController();
-                    module = mc.GetModule(settings.ModuleId, settings.TabId, false);
-                }
-                var manifest = settings.Manifest;
-                TemplateManifest templateManifest = settings.Template;
-
-                var templateUri = settings.TemplateDir;
-                string prefix = key + "-";
-
-                // schema
-                var schemaJson = JsonUtils.LoadJsonFromFile(templateUri.UrlFolder + prefix + "schema.json");
-                if (schemaJson != null)
-                    json["schema"] = schemaJson;
-
-                // default options
-                var optionsJson = JsonUtils.LoadJsonFromFile(templateUri.UrlFolder + prefix + "options.json");
-                if (optionsJson != null)
-                    json["options"] = optionsJson;
-
-                // language options
-                optionsJson = JsonUtils.LoadJsonFromFile(templateUri.UrlFolder + prefix + "options." + DnnUtils.GetCurrentCultureCode() + ".json");
-                if (optionsJson != null)
-                    json["options"] = json["options"].JsonMerge(optionsJson);
-
-
+                var fb = new FormBuilder(settings.TemplateDir);
+                JObject json = fb.BuildForm(key);
                 JObject dataJson = data.ToJObject("Raw settings json");
                 if (dataJson != null)
                     json["data"] = dataJson;
@@ -589,7 +529,6 @@ namespace Satrabel.OpenContent.Components
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
-
     }
 
     public class LookupRequestDTO

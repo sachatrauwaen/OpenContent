@@ -64,7 +64,7 @@ namespace Satrabel.OpenContent.Components.JPList
                 {
                     var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
                     QueryDefinition def = new QueryDefinition(indexConfig);
-                    BooleanQuery luceneFilter = null;
+                    //BooleanQuery luceneFilter = null;
                     
                     if (!string.IsNullOrEmpty(settings.Query))
                     {
@@ -80,8 +80,8 @@ namespace Satrabel.OpenContent.Components.JPList
                         string luceneSort = sort.path + " " + sort.order;
                         def.BuildSort(luceneSort);
                     }
-
-                    def.PageSize = jpListQuery.Pagination.number;
+                    if (jpListQuery.Pagination.number > 0)
+                        def.PageSize = jpListQuery.Pagination.number;
                     def.PageIndex = jpListQuery.Pagination.currentPage;
 
                     SearchResults docs = LuceneController.Instance.Search(module.ModuleID.ToString(), "Title", def);
@@ -96,7 +96,7 @@ namespace Satrabel.OpenContent.Components.JPList
                             dataList.Add(content);
                         }
                     }
-                    ModelFactory mf = new ModelFactory(dataList, settings.Data, settings.Template.Uri().PhysicalFullDirectory, manifest, files, ActiveModule, PortalSettings);
+                    ModelFactory mf = new ModelFactory(dataList, settings.Data, settings.Template.Uri().PhysicalFullDirectory, manifest, files, ActiveModule, PortalSettings, settings.TabId);
                     var model = mf.GetModelAsJson(true);
                     var res = new ResultDTO()
                     {
@@ -245,7 +245,7 @@ namespace Satrabel.OpenContent.Components.JPList
             return queryStr;
         }
 
-        private Query BuildLuceneQuery2(JpListQueryDTO jpListQuery, FieldConfig field)
+        private Query BuildLuceneQuery2(JpListQueryDTO jpListQuery, FieldConfig indexConfig)
         {
             if (jpListQuery.Filters.Any())
             {
@@ -268,6 +268,7 @@ namespace Satrabel.OpenContent.Components.JPList
                         var groupQuery = new BooleanQuery();
                         foreach (var n in names)
                         {
+
                             if (!string.IsNullOrEmpty(f.path))
                             {
                                 //for dropdownlists; value is keyword => never partial search
@@ -277,7 +278,10 @@ namespace Satrabel.OpenContent.Components.JPList
                             else
                             {
                                 //textbox
-                                var query1 = LuceneController.ParseQuery(n + ":" + f.value + "*", "Title");
+                                var field = indexConfig.Fields[n];
+                                bool ml = field != null && field.MultiLanguage;
+                                string fieldName = ml ? n + "." + DnnUtils.GetCurrentCultureCode() : n;
+                                var query1 = LuceneController.ParseQuery(fieldName + ":" + f.value + "*", "Title");
                                 groupQuery.Add(query1, Occur.SHOULD); // or
                             }
                         }

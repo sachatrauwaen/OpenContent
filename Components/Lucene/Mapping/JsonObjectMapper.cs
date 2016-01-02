@@ -82,8 +82,8 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
             {
                 JValue value = token as JValue;
                 IConvertible convertible = value as IConvertible;
-                bool index = true;
-                bool sort = true;
+                bool index = false;
+                bool sort = false;
                 if (field != null)
                 {
                     index = field.Index;
@@ -226,9 +226,13 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
             foreach (JProperty property in obj.Properties())
             {
                 FieldConfig f = null;
-                if (field.Fields.ContainsKey(property.Name))
+                if (field != null && field.Fields != null && field.Fields.ContainsKey(property.Name))
                 {
                     f = field.Fields[property.Name];
+                }
+                else if (field != null && field.MultiLanguage)
+                {
+                    f = field;
                 }
                 Add(doc, MakePrefix(prefix, property.Name), property.Value, f);
             }

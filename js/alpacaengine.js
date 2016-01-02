@@ -4,6 +4,10 @@
 
 alpacaEngine.engine = function(config) {
     var self = this;
+    self.defaultCulture = config.defaultCulture;
+    self.currentCulture = config.currentCulture;
+    self.NumberDecimalSeparator = config.NumberDecimalSeparator;
+    self.AlpacaCulture = config.AlpacaCulture;
     self.moduleId = config.moduleId;
     self.itemId = config.itemId;
     self.cancelButton = config.cancelButtonID;

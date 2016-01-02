@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Web;
 using Lucene.Net.Search;
@@ -23,10 +24,10 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
         public Query Query { get; set; }
         public int PageSize { get; set; }
         public int PageIndex { get; set; }
-        public QueryDefinition Build(JObject query)
+        public QueryDefinition Build(JObject query, NameValueCollection QueryString = null)
         {
             BuildPage(query);
-            BuildFilter(query);
+            BuildFilter(query, QueryString);
             BuildSort(query);
             return this;
         }
@@ -40,7 +41,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
             }
             return this;
         }
-        public QueryDefinition BuildFilter(JObject query)
+        public QueryDefinition BuildFilter(JObject query, NameValueCollection QueryString = null)
         {
             BooleanQuery q = new BooleanQuery();
             var filter = query["Filter"] as JObject;
@@ -51,7 +52,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                     if (item.Value is JValue) // text
                     {
                         var val = (JValue)item.Value;
-                        q.Add(new TermQuery(new Term(item.Name, item.Value.ToString())), Occur.MUST);
+                        q.Add(new WildcardQuery(new Term(item.Name, item.Value.ToString())), Occur.MUST);
                     }
                     else if (item.Value is JArray) // enum
                     {
@@ -69,6 +70,10 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                             }
                             q.Add(arrQ, Occur.MUST);
                         }
+                        else if (QueryString != null && QueryString[item.Name] != null)
+                        {
+                            q.Add(new TermQuery(new Term(item.Name, QueryString[item.Name])), Occur.MUST);
+                        }
                     }
                     else if (item.Value is JObject) // range
                     {
@@ -77,18 +82,18 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                         var endDays = valObj["EndDays"] as JValue;
                         if ((startDays != null && startDays.Value != null) || (endDays != null && endDays.Value != null))
                         {
-                            var startDate = DateTime.Now;
-                            var endDate = DateTime.Now;
+                            var startDate = DateTime.MinValue;
+                            var endDate = DateTime.MaxValue;
                             try
                             {
-                                startDate = startDate.AddDays((long)startDays.Value);
+                                startDate = DateTime.Today.AddDays((long)startDays.Value);
                             }
                             catch (Exception)
                             {
                             }
                             try
                             {
-                                endDate = endDate.AddDays((long)endDays.Value);
+                                endDate = DateTime.Today.AddDays((long)endDays.Value);
                             }
                             catch (Exception)
                             {

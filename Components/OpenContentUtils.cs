@@ -21,6 +21,7 @@ using System.Web.UI.WebControls;
 using DotNetNuke.UI.Modules;
 using DotNetNuke.Security.Permissions;
 using DotNetNuke.Security;
+using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.Lucene.Config;
 
@@ -472,13 +473,8 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
-                FieldConfig indexConfig = null;
-                var file = new FileUri(folder.UrlFolder, "index.json");
-                if (file.FileExists)
-                {
-                    string content = File.ReadAllText(file.PhysicalFilePath);
-                    indexConfig = JsonConvert.DeserializeObject<FieldConfig>(content);
-                }
+                var fb = new FormBuilder(folder);
+                FieldConfig indexConfig = fb.BuildIndex();
                 return indexConfig;
             }
             catch (Exception ex)

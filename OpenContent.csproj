@@ -136,6 +136,8 @@
     </Compile>
     <Compile Include="Components\Alpaca\AlpacaContext.cs" />
     <Compile Include="Components\Alpaca\AlpacaEngine.cs" />
+    <Compile Include="Components\Alpaca\FormBuilder.cs" />
+    <Compile Include="Components\Alpaca\OptionsConfig.cs" />
     <Compile Include="Components\Common\DateTimeExtensions.cs" />
     <Compile Include="Components\Common\DnnUtils.cs" />
     <Compile Include="Components\Dynamic\DynamicHelper.cs" />

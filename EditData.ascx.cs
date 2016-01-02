@@ -48,21 +48,18 @@ namespace Satrabel.OpenContent
             sourceList.SelectedIndexChanged += sourceList_SelectedIndexChanged;
             ddlVersions.SelectedIndexChanged += ddlVersions_SelectedIndexChanged;
         }
-
         private void ddlVersions_SelectedIndexChanged(object sender, EventArgs e)
         {
-
             OpenContentController ctrl = new OpenContentController();
-            OpenContentInfo data = ctrl.GetFirstContent(ModuleId);
+            OpenContentSettings settings = this.OpenContentSettings();
+            int ModId = settings.IsOtherModule ? settings.ModuleId : ModuleId;
+            OpenContentInfo data = ctrl.GetFirstContent(ModId);
             if (data != null)
             {
                 var d = new DateTime(long.Parse(ddlVersions.SelectedValue));
-
-
                 var ver = data.Versions.Single(v => v.CreatedOnDate == d);
                 txtSource.Text = ver.Json.ToString();
             }
-
         }
         protected override void OnLoad(EventArgs e)
         {
@@ -72,8 +69,6 @@ namespace Satrabel.OpenContent
                 InitEditor();
             }
         }
-
-
         private void InitEditor()
         {
             LoadFiles();
@@ -89,27 +84,47 @@ namespace Satrabel.OpenContent
                     OpenContentController ctrl = new OpenContentController();
                     TemplateManifest template = null;
                     OpenContentSettings settings = this.OpenContentSettings();
-
+                    int ModId = settings.IsOtherModule ? settings.ModuleId : ModuleId;
                     if (settings.TemplateAvailable)
                     {
                         template = settings.Template;
                     }
                     if (template != null && template.IsListTemplate)
                     {
-                        var dataList = ctrl.GetContents(settings.ModuleId == -1 ? ModuleId : settings.ModuleId);
-                        if (dataList != null)
+                        int itemId = Request.QueryString["id"] == null ? -1 : int.Parse(Request.QueryString["id"]);
+                        if (itemId > 0)
                         {
-                            JArray lst = new JArray();
-                            foreach (var item in dataList)
+                            OpenContentInfo data = ctrl.GetContent(itemId);
+                            if (data != null)
                             {
-                                lst.Add(JObject.Parse(item.Json));
+                                json = data.Json;
+                                foreach (var ver in data.Versions)
+                                {
+                                    ddlVersions.Items.Add(new ListItem()
+                                    {
+                                        Text = ver.CreatedOnDate.ToShortDateString() + " " + ver.CreatedOnDate.ToShortTimeString(),
+                                        Value = ver.CreatedOnDate.Ticks.ToString()
+                                    });
+                                }
                             }
-                            json = lst.ToString();
+                        }
+                        else
+                        {
+                            var dataList = ctrl.GetContents(ModId);
+                            if (dataList != null)
+                            {
+                                JArray lst = new JArray();
+                                foreach (var item in dataList)
+                                {
+                                    lst.Add(JObject.Parse(item.Json));
+                                }
+                                json = lst.ToString();
+                            }
                         }
                     }
                     else
                     {
-                        OpenContentInfo data = ctrl.GetFirstContent(settings.ModuleId == -1 ? ModuleId : settings.ModuleId);
+                        OpenContentInfo data = ctrl.GetFirstContent(ModId);
                         if (data != null)
                         {
                             json = data.Json;
@@ -149,8 +164,6 @@ namespace Satrabel.OpenContent
             {
                 SaveSettings();
             }
-
-
             Response.Redirect(Globals.NavigateURL(), true);
         }
 
@@ -159,6 +172,7 @@ namespace Satrabel.OpenContent
             OpenContentController ctrl = new OpenContentController();
             TemplateManifest template = null;
             OpenContentSettings settings = this.OpenContentSettings();
+            int ModId = settings.IsOtherModule ? settings.ModuleId : ModuleId;
             bool index = false;
             if (settings.TemplateAvailable)
             {
@@ -173,39 +187,91 @@ namespace Satrabel.OpenContent
 
             if (template != null && template.IsListTemplate)
             {
-                JArray lst = null;
-                if (!string.IsNullOrEmpty(txtSource.Text))
+                int itemId = Request.QueryString["id"] == null ? -1 : int.Parse(Request.QueryString["id"]);
+                if (itemId > 0)
                 {
-                    lst = JArray.Parse(txtSource.Text);
-                }
-
-                var dataList = ctrl.GetContents(ModuleId);
-                foreach (var item in dataList)
-                {
-                    ctrl.DeleteContent(item, index);
-                }
-                if (lst != null)
-                {
-                    foreach (JObject json in lst)
+                    var data = ctrl.GetContent(itemId);
+                    if (string.IsNullOrEmpty(txtSource.Text))
                     {
-                        var data = new OpenContentInfo()
+                        if (data != null)
                         {
-                            ModuleId = ModuleId,
-                            Title = json["Title"] == null ? ModuleContext.Configuration.ModuleTitle : json["Title"].ToString(),
-                            CreatedByUserId = UserInfo.UserID,
-                            CreatedOnDate = DateTime.Now,
-                            LastModifiedByUserId = UserInfo.UserID,
-                            LastModifiedOnDate = DateTime.Now,
-                            Html = "",
-                            Json = json.ToString()
-                        };
-                        ctrl.AddContent(data, index, indexConfig);
+                            ctrl.DeleteContent(data, index);
+                        }
+                    }
+                    else
+                    {
+                        JObject json = txtSource.Text.ToJObject("Saving txtSource");
+                        if (data == null)
+                        {
+                            data = new OpenContentInfo()
+                            {
+                                ModuleId = ModId,
+                                Title = json["Title"] == null ? ModuleContext.Configuration.ModuleTitle : json["Title"].ToString(),
+                                CreatedByUserId = UserInfo.UserID,
+                                CreatedOnDate = DateTime.Now,
+                                LastModifiedByUserId = UserInfo.UserID,
+                                LastModifiedOnDate = DateTime.Now,
+                                Html = "",
+                                Json = txtSource.Text
+                            };
+                            ctrl.AddContent(data, index, indexConfig);
+                        }
+                        else
+                        {
+                            data.Title = json["Title"] == null ? ModuleContext.Configuration.ModuleTitle : json["Title"].ToString();
+                            data.LastModifiedByUserId = UserInfo.UserID;
+                            data.LastModifiedOnDate = DateTime.Now;
+                            data.Json = txtSource.Text;
+                            ctrl.UpdateContent(data, index, indexConfig);
+                        }
+                        if (json["ModuleTitle"] != null && json["ModuleTitle"].Type == JTokenType.String)
+                        {
+                            string ModuleTitle = json["ModuleTitle"].ToString();
+                            OpenContentUtils.UpdateModuleTitle(ModuleContext.Configuration, ModuleTitle);
+                        }
+                        else if (json["ModuleTitle"] != null && json["ModuleTitle"].Type == JTokenType.Object)
+                        {
+                            string ModuleTitle = json["ModuleTitle"][DnnUtils.GetCurrentCultureCode()].ToString();
+                            OpenContentUtils.UpdateModuleTitle(ModuleContext.Configuration, ModuleTitle);
+                        }
+                    }
+                }
+                else
+                {
+                    JArray lst = null;
+                    if (!string.IsNullOrEmpty(txtSource.Text))
+                    {
+                        lst = JArray.Parse(txtSource.Text);
+                    }
+
+                    var dataList = ctrl.GetContents(ModId);
+                    foreach (var item in dataList)
+                    {
+                        ctrl.DeleteContent(item, index);
+                    }
+                    if (lst != null)
+                    {
+                        foreach (JObject json in lst)
+                        {
+                            var data = new OpenContentInfo()
+                            {
+                                ModuleId = ModId,
+                                Title = json["Title"] == null ? ModuleContext.Configuration.ModuleTitle : json["Title"].ToString(),
+                                CreatedByUserId = UserInfo.UserID,
+                                CreatedOnDate = DateTime.Now,
+                                LastModifiedByUserId = UserInfo.UserID,
+                                LastModifiedOnDate = DateTime.Now,
+                                Html = "",
+                                Json = json.ToString()
+                            };
+                            ctrl.AddContent(data, index, indexConfig);
+                        }
                     }
                 }
             }
             else
             {
-                var data = ctrl.GetFirstContent(ModuleId);
+                var data = ctrl.GetFirstContent(ModId);
 
                 if (string.IsNullOrEmpty(txtSource.Text))
                 {
@@ -221,7 +287,7 @@ namespace Satrabel.OpenContent
                     {
                         data = new OpenContentInfo()
                         {
-                            ModuleId = ModuleId,
+                            ModuleId = ModId,
                             Title = json["Title"] == null ? ModuleContext.Configuration.ModuleTitle : json["Title"].ToString(),
                             CreatedByUserId = UserInfo.UserID,
                             CreatedOnDate = DateTime.Now,
@@ -252,9 +318,6 @@ namespace Satrabel.OpenContent
                     }
                 }
             }
-
-
-
         }
         private void SaveSettings()
         {
@@ -266,15 +329,12 @@ namespace Satrabel.OpenContent
         {
             Response.Redirect(Globals.NavigateURL(), true);
         }
-
         private void sourceList_SelectedIndexChanged(object sender, EventArgs e)
         {
             phVersions.Visible = sourceList.SelectedValue == cData;
             DisplayFile(sourceList.SelectedValue);
-
         }
         #endregion
-
     }
 }
 
