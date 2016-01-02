@@ -163,6 +163,10 @@ namespace Satrabel.OpenContent.Components.Alpaca
                         form.Controls.Add(CKDNNporid);
                         CKDNNporid.Value = ModuleContext.PortalId.ToString();
                     }
+                    else
+                    {
+                        Log.Logger.Warn("Failed to load CKEeditor. Can not find ~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js");
+                    }
                 }
 
             }
