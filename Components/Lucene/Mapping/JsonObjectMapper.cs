@@ -76,7 +76,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
             }
             else if (token is JArray)
             {
-                AddArray(doc, prefix, token as JArray, field.Items);
+                AddArray(doc, prefix, token as JArray, field == null ? null : field.Items);
             }
             else if (token is JValue)
             {

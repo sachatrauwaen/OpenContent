@@ -19,12 +19,15 @@ namespace Satrabel.OpenContent.Components.Alpaca
         }
         public JObject BuildQuerySettings()
         {
+            var jsonEdit = Build();
             SchemaConfig newSchema = new SchemaConfig(true);
+            // max results
             newSchema.Properties.Add("MaxResults", new SchemaConfig()
             {
                 Title = "MaxResults",
                 Type = "number"
             });
+            // Filter
             SchemaConfig newSchemaFilter = new SchemaConfig(true)
             {
                 Title = "Filter"
@@ -33,7 +36,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
             OptionsConfig newOptions = new OptionsConfig(true);
             OptionsConfig newOptionsFilter = new OptionsConfig(true);
             newOptions.Fields.Add("Filter", newOptionsFilter);
-            var jsonEdit = Build();
+
             SchemaConfig schemaConfig = new SchemaConfig();
             var schemaJson = jsonEdit["schema"];
             if (schemaJson != null)
@@ -49,9 +52,26 @@ namespace Satrabel.OpenContent.Components.Alpaca
             List<string> fieldLst = new List<string>();
             foreach (var prop in schemaConfig.Properties)
             {
-                var opts = optionsConfig.Fields[prop.Key];
+                var opts = optionsConfig.Fields.ContainsKey(prop.Key) ? optionsConfig.Fields[prop.Key] : null;
                 string optType = opts == null ? "text" : opts.Type;
-                if (optType == "text" || optType == "mltext" || optType == "checkbox" || optType == "select")
+
+                if (prop.Value.Type == "boolean")
+                {
+                    var newProp = new SchemaConfig()
+                    {
+                        //Type = prop.Value.Type,
+                        Title = prop.Value.Title,
+                        Enum = new List<string>(new[] { "true", "false" })
+                    };
+                    newSchemaFilter.Properties.Add(prop.Key, newProp);
+
+                    var newField = new OptionsConfig();
+                    newOptionsFilter.Fields.Add(prop.Key, newField);
+                    newField.Type = "select";
+                    
+                    fieldLst.Add(prop.Key);
+                }
+                else if (optType == "text" || optType == "mltext" || optType == "checkbox" || optType == "select")
                 {
                     var newProp = new SchemaConfig()
                     {
@@ -87,6 +107,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     fieldLst.Add(prop.Key);
                 }
             }
+            // Sort
             SchemaConfig newSchemaSort = new SchemaConfig()
             {
                 Type = "array",
@@ -195,9 +216,19 @@ namespace Satrabel.OpenContent.Components.Alpaca
             List<string> fieldLst = new List<string>();
             foreach (var prop in schemaConfig.Properties)
             {
-                var opts = optionsConfig.Fields[prop.Key];
+                var opts = optionsConfig.Fields.ContainsKey(prop.Key) ? optionsConfig.Fields[prop.Key] : null;
                 string optType = opts == null ? "text" : opts.Type;
-                if (optType == "text")
+                if (prop.Value.Type == "boolean")
+                {
+                    var newField = new FieldConfig()
+                    {
+                        IndexType = "boolean",
+                        Index = true,
+                        Sort = true
+                    };
+                    newConfig.Fields.Add(prop.Key, newField);
+                }
+                else if (optType == "text")
                 {
                     var newField = new FieldConfig()
                     {

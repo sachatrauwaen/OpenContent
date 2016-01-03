@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 using Lucene.Net.Search;
@@ -49,10 +50,26 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
             {
                 foreach (var item in filter.Properties())
                 {
+                    var indexConfig = IndexConfig != null && IndexConfig.Fields != null &&
+                                      IndexConfig.Fields.ContainsKey(item.Name)
+                        ? IndexConfig.Fields[item.Name]
+                        : null;
                     if (item.Value is JValue) // text
                     {
-                        var val = (JValue)item.Value;
-                        q.Add(new WildcardQuery(new Term(item.Name, item.Value.ToString())), Occur.MUST);
+                        var val = item.Value.ToString();
+                        if (indexConfig.IndexType == "boolean")
+                        {
+                            bool bval;
+                            if (bool.TryParse(val, out bval))
+                            {
+                                int ival = bval ? 1 : 0;
+                                q.Add(NumericRangeQuery.NewIntRange(item.Name, ival, ival, true, true), Occur.MUST);
+                            }
+                        }
+                        else
+                        {
+                            q.Add(new WildcardQuery(new Term(item.Name, val)), Occur.MUST);
+                        }
                     }
                     else if (item.Value is JArray) // enum
                     {
