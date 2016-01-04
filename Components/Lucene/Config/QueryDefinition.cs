@@ -148,7 +148,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
             {
                 DateTime startDate = DateTime.Today;
                 DateTime endDate = DateTime.MaxValue;
-                q.Add(NumericRangeQuery.NewLongRange("publishstartdate", startDate.Ticks, endDate.Ticks, true, true), Occur.MUST);
+                q.Add(NumericRangeQuery.NewLongRange("publishenddate", startDate.Ticks, endDate.Ticks, true, true), Occur.MUST);
             }
 
         }

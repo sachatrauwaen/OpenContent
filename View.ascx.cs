@@ -780,13 +780,12 @@ namespace Satrabel.OpenContent
         {
             info.ResetData();
             OpenContentController ctrl = new OpenContentController();
-            List<OpenContentInfo> dataList;
+            List<OpenContentInfo> dataList = new List<OpenContentInfo>(); ;
             if (clientSide)
             {
                 var data = ctrl.GetFirstContent(info.ModuleId);
                 if (data != null)
                 {
-                    dataList = new List<OpenContentInfo>();
                     info.SetData(dataList, settings.Data);
                     info.DataExist = true;
                 }
@@ -803,14 +802,16 @@ namespace Satrabel.OpenContent
                         queryDef.Build(JObject.Parse(settings.Query), ModuleContext.PortalSettings.UserMode != PortalSettings.Mode.Edit, Request.QueryString);
                     }
                     SearchResults docs = LuceneController.Instance.Search(info.ModuleId.ToString(), "Title", queryDef);
-                    int total = docs.ToalResults;
-                    dataList = new List<OpenContentInfo>();
-                    foreach (var item in docs.ids)
+                    if (docs != null)
                     {
-                        var content = ctrl.GetContent(int.Parse(item));
-                        if (content != null)
+                        int total = docs.ToalResults;
+                        foreach (var item in docs.ids)
                         {
-                            dataList.Add(content);
+                            var content = ctrl.GetContent(int.Parse(item));
+                            if (content != null)
+                            {
+                                dataList.Add(content);
+                            }
                         }
                     }
                 }

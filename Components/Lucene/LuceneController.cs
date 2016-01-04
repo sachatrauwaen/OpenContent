@@ -38,7 +38,7 @@ namespace Satrabel.OpenContent.Components.Lucene
     {
 
         #region Constants
-        private const string DefaultSearchFolder = @"App_Data\OCSearch";
+        private const string DefaultSearchFolder = @"App_Data\OpenContent\lucene_index";
         private const string WriteLockFile = "write.lock";
         internal const int DefaultRereadTimeSpan = 10; // in seconds (initialy 30sec)
         private const int DISPOSED = 1;
