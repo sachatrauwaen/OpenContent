@@ -14,6 +14,8 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using DotNetNuke.Entities.Portals;
+using DotNetNuke.Security.Permissions;
 using Satrabel.OpenContent.Components.Manifest;
 using Lucene.Net.Search;
 using Lucene.Net.Index;
@@ -69,7 +71,7 @@ namespace Satrabel.OpenContent.Components.JPList
                     if (!string.IsNullOrEmpty(settings.Query))
                     {
                         var query = JObject.Parse(settings.Query);
-                        def.Build(query);
+                        def.Build(query, PortalSettings.UserMode != PortalSettings.Mode.Edit);
                     }
                     
                     var jpListQuery = BuildJpListQuery(req.StatusLst);

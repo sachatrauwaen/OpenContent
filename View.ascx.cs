@@ -800,7 +800,7 @@ namespace Satrabel.OpenContent
                     var queryDef = new QueryDefinition(indexConfig);
                     if (!string.IsNullOrEmpty(settings.Query))
                     {
-                        queryDef.Build(JObject.Parse(settings.Query), Request.QueryString);
+                        queryDef.Build(JObject.Parse(settings.Query), ModuleContext.PortalSettings.UserMode != PortalSettings.Mode.Edit, Request.QueryString);
                     }
                     SearchResults docs = LuceneController.Instance.Search(info.ModuleId.ToString(), "Title", queryDef);
                     int total = docs.ToalResults;

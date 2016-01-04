@@ -25,10 +25,10 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
         public Query Query { get; set; }
         public int PageSize { get; set; }
         public int PageIndex { get; set; }
-        public QueryDefinition Build(JObject query, NameValueCollection QueryString = null)
+        public QueryDefinition Build(JObject query, bool addWorkflowFilter, NameValueCollection QueryString = null)
         {
             BuildPage(query);
-            BuildFilter(query, QueryString);
+            BuildFilter(query, addWorkflowFilter ,QueryString);
             BuildSort(query);
             return this;
         }
@@ -42,7 +42,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
             }
             return this;
         }
-        public QueryDefinition BuildFilter(JObject query, NameValueCollection QueryString = null)
+        public QueryDefinition BuildFilter(JObject query, bool addWorkflowFilter, NameValueCollection QueryString = null)
         {
             BooleanQuery q = new BooleanQuery();
             var filter = query["Filter"] as JObject;
@@ -123,8 +123,34 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                     }
                 }
             }
+            if (addWorkflowFilter)
+            {
+                AddWorkflowFilter(q);
+            }
             Filter = q.Clauses.Count > 0 ? q : null;
             return this;
+        }
+
+        private void AddWorkflowFilter(BooleanQuery q)
+        {
+
+            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey("status"))
+            {
+                q.Add(new TermQuery(new Term("status", "published")), Occur.MUST); // and
+            }
+            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey("publishstartdate"))
+            {
+                DateTime startDate = DateTime.MinValue;
+                DateTime endDate = DateTime.Today;
+                q.Add(NumericRangeQuery.NewLongRange("publishstartdate", startDate.Ticks, endDate.Ticks, true, true), Occur.MUST);
+            }
+            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey("publishenddate"))
+            {
+                DateTime startDate = DateTime.Today;
+                DateTime endDate = DateTime.MaxValue;
+                q.Add(NumericRangeQuery.NewLongRange("publishstartdate", startDate.Ticks, endDate.Ticks, true, true), Occur.MUST);
+            }
+
         }
 
         public QueryDefinition BuildSort(JObject query)
