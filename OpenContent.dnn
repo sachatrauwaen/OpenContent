@@ -1,6 +1,6 @@
 <dotnetnuke type="Package" version="5.0">
   <packages>
-    <package name="OpenContent" type="Module" version="02.00.01">
+    <package name="OpenContent" type="Module" version="02.00.02">
       <friendlyName>OpenContent</friendlyName>
       <description>OpenContent module by Satrabel.be</description>
       <iconFile>~/DesktopModules/OpenContent/Images/icon_extensions.png</iconFile>
@@ -95,6 +95,17 @@
                     <supportsPartialRendering>False</supportsPartialRendering>
                     <controlTitle>Edit Template</controlTitle>
                     <controlType>Host</controlType>
+                    <iconFile />
+                    <helpUrl />
+                    <viewOrder>0</viewOrder>
+                    <supportsPopUps>True</supportsPopUps>
+                  </moduleControl>
+                   <moduleControl>
+                    <controlKey>EditQuery</controlKey>
+                    <controlSrc>DesktopModules/OpenContent/EditQuery.ascx</controlSrc>
+                    <supportsPartialRendering>False</supportsPartialRendering>
+                    <controlTitle>Edit Filter Settings</controlTitle>
+                    <controlType>Admin</controlType>
                     <iconFile />
                     <helpUrl />
                     <viewOrder>0</viewOrder>

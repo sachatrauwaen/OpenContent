@@ -111,6 +111,9 @@ namespace Satrabel.OpenContent.Components
             if (!onlyData)
             {
                 CompleteModel(model);
+                model["Context"]["RssUrl"] = PortalSettings.PortalAlias.HTTPAlias +
+                       "/DesktopModules/OpenContent/API/RssAPI/GetFeed?moduleId=" + Module.ModuleID + "&tabId=" + MainTabId;
+
             }
             return model;
         }
@@ -156,6 +159,8 @@ namespace Satrabel.OpenContent.Components
                 }
             }
             CompleteModel(model);
+            model.Context.RssUrl = PortalSettings.PortalAlias.HTTPAlias +
+                                   "/DesktopModules/OpenContent/API/RssAPI/GetFeed?moduleId=" + Module.ModuleID + "&tabId=" + MainTabId;
             return model;
         }
         private dynamic GetModelAsDynamicFromJson()
@@ -167,6 +172,7 @@ namespace Satrabel.OpenContent.Components
             }
             dynamic model = JsonUtils.JsonToDynamic(json);
             CompleteModel(model);
+
             return model;
         }
 

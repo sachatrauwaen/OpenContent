@@ -55,6 +55,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 var opts = optionsConfig.Fields.ContainsKey(prop.Key) ? optionsConfig.Fields[prop.Key] : null;
                 if (prop.Key == "status" || prop.Key == "publishstartdate" || prop.Key == "publishenddate")
                 {
+                    fieldLst.Add(prop.Key);
                     continue;
                 }
 

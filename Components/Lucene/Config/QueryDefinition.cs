@@ -131,6 +131,17 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
             return this;
         }
 
+        public QueryDefinition BuildFilter(bool addWorkflowFilter, NameValueCollection QueryString = null)
+        {
+            BooleanQuery q = new BooleanQuery();
+            if (addWorkflowFilter)
+            {
+               AddWorkflowFilter(q);
+            }
+            Filter = q.Clauses.Count > 0 ? q : null;
+            return this;
+        }
+
         private void AddWorkflowFilter(BooleanQuery q)
         {
 
@@ -150,7 +161,6 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                 DateTime endDate = DateTime.MaxValue;
                 q.Add(NumericRangeQuery.NewLongRange("publishenddate", startDate.Ticks, endDate.Ticks, true, true), Occur.MUST);
             }
-
         }
 
         public QueryDefinition BuildSort(JObject query)

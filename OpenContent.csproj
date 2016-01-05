@@ -154,6 +154,7 @@
     <Compile Include="Components\ModelFactory.cs" />
     <Compile Include="Components\Manifest\TemplateFiles.cs" />
     <Compile Include="Components\Manifest\PartialTemplate.cs" />
+    <Compile Include="Components\Rss\RssApiController.cs" />
     <Compile Include="Components\TemplateHelpers\OtherExtentions.cs" />
     <Compile Include="Components\Manifest\TemplateManifest.cs" />
     <Compile Include="Components\Uri\PortalFileUri.cs" />
