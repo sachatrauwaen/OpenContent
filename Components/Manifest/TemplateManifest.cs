@@ -19,10 +19,10 @@ namespace Satrabel.OpenContent.Components.Manifest
 
         [JsonProperty(PropertyName = "detail")]
         public TemplateFiles Detail { get; set; }
-
+        
         [JsonProperty(PropertyName = "clientSideData")]
         public bool ClientSideData { get; set; }
-
+        
         public bool IsListTemplate
         {
             get

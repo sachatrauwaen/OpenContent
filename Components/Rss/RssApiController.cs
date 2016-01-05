@@ -54,7 +54,7 @@ namespace Satrabel.OpenContent.Components.Rss
                 }
             }
 
-            ModelFactory mf = new ModelFactory(dataList, null, settings.TemplateDir.PhysicalFullDirectory,null, null, module, PortalSettings, tabId);
+            ModelFactory mf = new ModelFactory(dataList, null, settings.TemplateDir.PhysicalFullDirectory,null, null, null, module, PortalSettings, tabId);
             dynamic model = mf.GetModelAsDynamic();
             HandlebarsEngine hbEngine = new HandlebarsEngine();
             string res =  hbEngine.Execute(source, model);

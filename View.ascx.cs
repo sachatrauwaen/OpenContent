@@ -923,10 +923,25 @@ namespace Satrabel.OpenContent
 
                     if (!string.IsNullOrEmpty(dataJson))
                     {
-                        ModelFactory mf = new ModelFactory(dataJson, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, files, ModuleContext.Configuration, ModuleContext.PortalSettings, _settings.TabId);
+                        ModelFactory mf = new ModelFactory(dataJson, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, ModuleContext.Configuration, ModuleContext.PortalSettings, _settings.TabId);
                         dynamic model = mf.GetModelAsDynamic();
 
-                        Page.Title = model.Title + " | " + ModuleContext.PortalSettings.PortalName;
+                        if (!string.IsNullOrEmpty(_renderinfo.Template.Manifest.DetailTitle))
+                        {
+                            HandlebarsEngine hbEngine = new HandlebarsEngine();
+                            Page.Title = hbEngine.Execute(_renderinfo.Template.Manifest.DetailTitle, model);
+                        }
+                        if (!string.IsNullOrEmpty(_renderinfo.Template.Manifest.DetailDescription))
+                        {
+                            HandlebarsEngine hbEngine = new HandlebarsEngine();
+                            PageUtils.SetPageDescription(Page, hbEngine.Execute(_renderinfo.Template.Manifest.DetailDescription, model));
+                        }
+                        if (!string.IsNullOrEmpty(_renderinfo.Template.Manifest.DetailMeta))
+                        {
+                            HandlebarsEngine hbEngine = new HandlebarsEngine();
+                            PageUtils.SetPageMeta(Page, hbEngine.Execute(_renderinfo.Template.Manifest.DetailMeta, model));
+                        }
+                        //Page.Title = model.Title + " | " + ModuleContext.PortalSettings.PortalName;
                         return ExecuteTemplate(templateVirtualFolder, files, template, model);
                     }
                     else
@@ -959,7 +974,7 @@ namespace Satrabel.OpenContent
                     string physicalTemplateFolder = Server.MapPath(templateVirtualFolder);
                     if (!string.IsNullOrEmpty(dataJson))
                     {
-                        ModelFactory mf = new ModelFactory(dataJson, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, files, ModuleContext.Configuration, ModuleContext.PortalSettings, _settings.TabId);
+                        ModelFactory mf = new ModelFactory(dataJson, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, ModuleContext.Configuration, ModuleContext.PortalSettings, _settings.TabId);
                         dynamic model = mf.GetModelAsDynamic();
                         if (template.Extension != ".hbs")
                         {
@@ -999,7 +1014,7 @@ namespace Satrabel.OpenContent
                     FileUri templateUri = CheckFiles(templateVirtualFolder, files, physicalTemplateFolder);
                     if (dataList != null)
                     {
-                        ModelFactory mf = new ModelFactory(dataList, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, files, ModuleContext.Configuration, ModuleContext.PortalSettings, _settings.TabId);
+                        ModelFactory mf = new ModelFactory(dataList, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, ModuleContext.Configuration, ModuleContext.PortalSettings, _settings.TabId);
                         dynamic model = mf.GetModelAsDynamic();
                         return ExecuteTemplate(templateVirtualFolder, files, templateUri, model);
                     }
@@ -1047,6 +1062,8 @@ namespace Satrabel.OpenContent
                 return hbEngine.Execute(Page, this, files, templateVirtualFolder, model);
             }
         }
+
+
 
         private void RenderInitForm()
         {

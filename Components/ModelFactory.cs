@@ -17,6 +17,8 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Web;
+using System.Web.UI;
+using Satrabel.OpenContent.Components.Handlebars;
 using Satrabel.OpenContent.Components.Manifest;
 
 namespace Satrabel.OpenContent.Components
@@ -27,13 +29,14 @@ namespace Satrabel.OpenContent.Components
         readonly string settingsJson;
         readonly string PhysicalTemplateFolder;
         readonly Manifest.Manifest Manifest;
+        readonly TemplateManifest TemplateManifest;
         readonly TemplateFiles ManifestFiles;
         readonly ModuleInfo Module;
         readonly PortalSettings PortalSettings;
         readonly IEnumerable<OpenContentInfo> DataList = null;
         readonly int MainTabId;
 
-        public ModelFactory(string dataJson, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateFiles manifestFiles, ModuleInfo module, PortalSettings portalSettings, int MainTabId)
+        public ModelFactory(string dataJson, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles manifestFiles, ModuleInfo module, PortalSettings portalSettings, int MainTabId)
         {
             this.dataJson = dataJson;
             this.settingsJson = settingsJson;
@@ -42,9 +45,10 @@ namespace Satrabel.OpenContent.Components
             this.ManifestFiles = manifestFiles;
             this.Module = module;
             this.PortalSettings = portalSettings;
+            this.TemplateManifest = templateManifest;
             this.MainTabId = MainTabId > 0 ? MainTabId : module.TabID;
         }
-        public ModelFactory(IEnumerable<OpenContentInfo> dataList, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateFiles manifestFiles, ModuleInfo module, PortalSettings portalSettings, int MainTabId)
+        public ModelFactory(IEnumerable<OpenContentInfo> dataList, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles manifestFiles, ModuleInfo module, PortalSettings portalSettings, int MainTabId)
         {
             this.DataList = dataList;
             this.settingsJson = settingsJson;
@@ -53,6 +57,7 @@ namespace Satrabel.OpenContent.Components
             this.ManifestFiles = manifestFiles;
             this.Module = module;
             this.PortalSettings = portalSettings;
+            this.TemplateManifest = templateManifest;
             this.MainTabId = MainTabId > 0 ? MainTabId : module.TabID;
         }
         public dynamic GetModelAsDynamic()
@@ -95,6 +100,13 @@ namespace Satrabel.OpenContent.Components
                         itemDataJson = JsonUtils.SimplifyJson(itemDataJson, DnnUtils.GetCurrentCultureCode());
                     }
                     JObject dyn = JObject.Parse(itemDataJson);
+                    string url = "";
+                    if (Manifest != null && !string.IsNullOrEmpty(Manifest.DetailUrl))
+                    {
+                        HandlebarsEngine hbEngine = new HandlebarsEngine();
+                        url = OpenContentUtils.CleanupUrl(hbEngine.Execute(Manifest.DetailUrl, dyn));
+                    }
+
                     JObject context = new JObject();
                     dyn["Context"] = context;
 
@@ -103,7 +115,7 @@ namespace Satrabel.OpenContent.Components
                     context["IsEditable"] = IsEditable ||
                         (!string.IsNullOrEmpty(editRole) &&
                         OpenContentUtils.HasEditPermissions(PortalSettings, Module, editRole, item.CreatedByUserId));
-                    context["DetailUrl"] = Globals.NavigateURL(MainTabId, false, PortalSettings, "", DnnUtils.GetCurrentCultureCode(), dyn["Title"] == null ? "" : OpenContentUtils.CleanupUrl(dyn["Title"].ToString()), "id=" + item.ContentId.ToString());
+                    context["DetailUrl"] = Globals.NavigateURL(MainTabId, false, PortalSettings, "", DnnUtils.GetCurrentCultureCode(), dyn["Title"] == null ? "" : OpenContentUtils.CleanupUrl(url/*dyn["Title"].ToString()*/), "id=" + item.ContentId.ToString());
                     context["MainUrl"] = Globals.NavigateURL(MainTabId, false, PortalSettings, "", DnnUtils.GetCurrentCultureCode(), "");
                     items.Add(dyn);
                 }
@@ -137,10 +149,15 @@ namespace Satrabel.OpenContent.Components
                         dataJson = JsonUtils.SimplifyJson(dataJson, DnnUtils.GetCurrentCultureCode());
                     }
                     dynamic dyn = JsonUtils.JsonToDynamic(dataJson);
-                    string title = "";
+                    string url = "";
                     try
                     {
-                        title = OpenContentUtils.CleanupUrl(dyn.Title);
+                        if (Manifest != null && !string.IsNullOrEmpty(Manifest.DetailUrl))
+                        {
+                            HandlebarsEngine hbEngine = new HandlebarsEngine();
+                            url = OpenContentUtils.CleanupUrl(hbEngine.Execute(Manifest.DetailUrl, dyn));
+                        }
+                        //title = OpenContentUtils.CleanupUrl(dyn.Title);
                     }
                     catch (Exception)
                     {
@@ -152,9 +169,8 @@ namespace Satrabel.OpenContent.Components
                     dyn.Context.IsEditable = IsEditable ||
                         (!string.IsNullOrEmpty(editRole) &&
                         OpenContentUtils.HasEditPermissions(PortalSettings, Module, editRole, item.CreatedByUserId));
-                    dyn.Context.DetailUrl = Globals.NavigateURL(MainTabId, false, PortalSettings, "", DnnUtils.GetCurrentCultureCode(), title, "id=" + item.ContentId.ToString());
+                    dyn.Context.DetailUrl = Globals.NavigateURL(MainTabId, false, PortalSettings, "", DnnUtils.GetCurrentCultureCode(), url, "id=" + item.ContentId.ToString());
                     dyn.Context.MainUrl = Globals.NavigateURL(MainTabId, false, PortalSettings, "", DnnUtils.GetCurrentCultureCode(), "");
-
                     model.Items.Add(dyn);
                 }
             }
