@@ -64,6 +64,15 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
+        public static void SetPageDescription(HttpContextBase context, string description)
+        {
+            var pageObj = context.CurrentHandler as System.Web.UI.Page;
+            if (pageObj != null)
+            {
+                SetPageDescription(pageObj, HttpUtility.HtmlDecode(Mail.ConvertToText(description)));
+            }
+        }
+
         public static void SetPageMeta(Page page, string meta)
         {
             var dnnpage = page as DotNetNuke.Framework.CDefault;
@@ -71,15 +80,6 @@ namespace Satrabel.OpenContent.Components
             {
                 var htmlMeta = new LiteralControl(meta); 
                 dnnpage.FindControl("Head").Controls.Add(htmlMeta);
-            }
-        }
-
-        public static void SetPageDescription(HttpContextBase context, string description)
-        {
-            var pageObj = context.CurrentHandler as System.Web.UI.Page;
-            if (pageObj != null)
-            {
-                SetPageDescription(pageObj, HttpUtility.HtmlDecode(Mail.ConvertToText(description)));
             }
         }
 
