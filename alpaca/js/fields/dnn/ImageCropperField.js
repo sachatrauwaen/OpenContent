@@ -7,8 +7,7 @@
      * @lends Alpaca.Fields.ImageField.prototype
      */
     {
-        constructor: function(container, data, options, schema, view, connector)
-        {
+        constructor: function (container, data, options, schema, view, connector) {
             var self = this;
             this.base(container, data, options, schema, view, connector);
             this.sf = connector.servicesFramework;
@@ -59,7 +58,7 @@
             //var el = $( this.control).filter('#'+this.id);
             //var el = $(this.control.get(0)).find('input[type=text]');
             var el = this.getControlEl();
-            
+
             if (el && el.length > 0) {
                 if (Alpaca.isEmpty(value)) {
                     el.val("");
@@ -97,7 +96,7 @@
             for (var i in this.options.croppers) {
                 var cropper = this.options.croppers[i];
                 var id = this.id + '-' + i;
-                var $cropbutton = $('#'+id);
+                var $cropbutton = $('#' + id);
                 cropdata[i] = $cropbutton.data('cropdata');
             }
             return cropdata;
@@ -105,16 +104,16 @@
         cropAllImages: function (url) {
             var self = this;
             for (var i in this.options.croppers) {
-                
+
                 var id = this.id + '-' + i;
                 var $cropbutton = $('#' + id);
 
                 //cropdata[i] = $cropbutton.data('cropdata');
-                                
+
                 var cropopt = this.options.croppers[i];
-                
+
                 var crop = { "x": -1, "y": -1, "width": cropopt.width, "height": cropopt.height, "rotate": 0 };
-                var postData = JSON.stringify({ url: url, id: i, crop: crop, resize: cropopt, cropfolder: this.options.cropfolder});
+                var postData = JSON.stringify({ url: url, id: i, crop: crop, resize: cropopt, cropfolder: this.options.cropfolder });
 
                 var action = "CropImage";
                 $.ajax({
@@ -136,7 +135,7 @@
             }
             //var data = $image.cropper('getData', { rounded: true });
             //var cropperId = cropButton.data('cropperId');
-            
+
         },
         setCroppedData: function (value) {
 
@@ -144,7 +143,7 @@
             var parentel = this.getFieldEl();
             if (el && el.length > 0) {
                 if (Alpaca.isEmpty(value)) {
-                    
+
                 }
                 else {
                     var firstCropButton;
@@ -156,19 +155,19 @@
                         if (cropdata) {
                             $cropbutton.data('cropdata', cropdata);
                         }
-                        
+
                         if (!firstCropButton) {
                             firstCropButton = $cropbutton;
                             $(firstCropButton).addClass('active');
                             if (cropdata) {
                                 var $image = $(parentel).find('.alpaca-image-display img.image');
                                 var cropper = $image.data('cropper');
-                                if (cropper){
+                                if (cropper) {
                                     $image.cropper('setData', cropdata.cropper);
                                 }
                             }
                         }
-                        
+
                     }
                 }
             }
@@ -191,22 +190,26 @@
             var el = this.getControlEl();
             if (value) {
                 var $cropbutton = $('#' + id);
-                $cropbutton.data('cropdata', value);                
+                $cropbutton.data('cropdata', value);
             }
         },
-        getCurrentCropData : function() {
+        getCurrentCropData: function () {
+            /*
             var el = this.getControlEl();
-            var curtab = $(el).parent().find(".alpaca-form-tab.active");
+            var curtab = $(el).parent().parent().find(".alpaca-form-tab.active");
             var cropdata = $(this).data('cropdata');
-            //var cropopt = $(this).data('cropopt');
+            */
+
+            var el = this.getFieldEl(); //this.getControlEl();
+            var curtab = $(el).parent().find(".alpaca-form-tab.active");
+            var cropdata = $(curtab).data('cropdata');
             return cropdata;
         },
         setCurrentCropData: function (value) {
             var el = this.getFieldEl(); //this.getControlEl();
-            
             var curtab = $(el).parent().find(".alpaca-form-tab.active");
             $(curtab).data('cropdata', value);
-          
+
         },
         afterRenderControl: function (model, callback) {
             var self = this;
@@ -219,17 +222,29 @@
         cropChange: function (e) {
             var self = e.data;
             //var parentel = this.getFieldEl();
-            var $image = this; //$(parentel).find('.alpaca-image-display img.image');
-            var data = $(this).cropper('getData', { rounded: true });
-            var cropdata = {
-                url: "",
-                cropper: data
-            };
-            self.setCurrentCropData(cropdata);
+
+            var currentCropdata = self.getCurrentCropData();
+            if (currentCropdata) {
+                var cropper = currentCropdata.cropper;
+                var $image = this; //$(parentel).find('.alpaca-image-display img.image');
+                var data = $(this).cropper('getData', { rounded: true });
+                if (data.x != cropper.x ||
+                    data.y != cropper.y ||
+                    data.width != cropper.width ||
+                    data.height != cropper.height ||
+                    data.rotate != cropper.rotate) {
+
+                    var cropdata = {
+                        url: "",
+                        cropper: data
+                    };
+                    self.setCurrentCropData(cropdata);
+                }
+            }
             //self.setCroppedDataForId(cropperButtonIdcropButton.data('cropperButtonId'), cropdata);
 
         },
-        getCropppersData : function() {
+        getCropppersData: function () {
             for (var i in self.options.croppers) {
                 var cropper = self.options.croppers[i];
                 var id = self.id + '-' + i;
@@ -250,9 +265,9 @@
                 var postData = JSON.stringify({ url: el.val(), id: cropperId, crop: data, resize: cropopt });
                 */
                 var data = self.getCroppedData();
-                var postData = JSON.stringify({ url: el.val(), cropfolder : self.options.cropfolder, cropdata: data, croppers: self.options.croppers });
+                var postData = JSON.stringify({ url: el.val(), cropfolder: self.options.cropfolder, cropdata: data, croppers: self.options.croppers });
 
-                
+
                 $(cropButton).css('cursor', 'wait');
 
                 var action = "CropImages";
@@ -295,7 +310,7 @@
                 cropperButton.data('cropopt', cropper);
                 cropperButton.click(function () {
                     $image.off('change.cropper');
-                                        
+
                     var cropdata = $(this).data('cropdata');
                     var cropopt = $(this).data('cropopt');
                     $image.cropper('setAspectRatio', cropopt.width / cropopt.height);
@@ -306,11 +321,11 @@
                     }
                     cropButton.data('cropperButtonId', this.id);
                     cropButton.data('cropperId', $(this).attr("data-id"));
-                    
+
                     $(this).parent().find('.alpaca-form-tab').removeClass('active');
                     $(this).addClass('active');
 
-                    $image.on('change.cropper', self ,self.cropChange);
+                    $image.on('change.cropper', self, self.cropChange);
 
                     return false;
                 });
@@ -321,7 +336,7 @@
                     cropButton.data('cropperId', $(firstCropButton).attr("data-id"));
                 }
             }
-            
+
             var $image = $(parentel).find('.alpaca-image-display img.image');
             $image.cropper(self.options.cropper).on('built.cropper', function () {
                 var cropopt = $(firstCropButton).data('cropopt');
@@ -335,7 +350,7 @@
                 var $image = $(parentel).find('.alpaca-image-display img.image');
                 $image.on('change.cropper', self, self.cropChange);
             });
-            
+
             if (self.options.uploadhidden) {
                 $(this.control.get(0)).find('input[type=file]').hide();
             } else {
@@ -343,7 +358,7 @@
                     dataType: 'json',
                     url: self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
                     maxFileSize: 25000000,
-                    formData: { uploadfolder : self.options.uploadfolder },
+                    formData: { uploadfolder: self.options.uploadfolder },
                     beforeSend: self.sf.setModuleHeaders,
                     add: function (e, data) {
                         //data.context = $(opts.progressContextSelector);
@@ -362,7 +377,7 @@
                             $.each(data.result, function (index, file) {
                                 //self.setValue(file.url);
                                 el.val(file.url);
-                                
+
                                 $(el).change();
                                 //$(el).change();
                                 //$(e.target).parent().find('input[type=text]').val(file.url);
@@ -381,7 +396,7 @@
                 //if (newValue !== value) {
                 $(parentel).find('.alpaca-image-display img.image').attr('src', value);
                 $image.cropper('replace', value);
-                if (value){
+                if (value) {
                     self.cropAllImages(value);
                 }
 
@@ -393,7 +408,7 @@
                 var manageButton = $('<a href="' + self.options.manageurl + '" target="_blank" class="alpaca-form-button">Manage files</a>').appendTo($(el).parent());
             }
 
-            
+
             callback();
         },
         applyTypeAhead: function () {
