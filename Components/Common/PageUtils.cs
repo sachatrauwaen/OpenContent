@@ -5,6 +5,7 @@ using System.Web.UI;
 using System.Web.UI.HtmlControls;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Entities.Tabs;
+using DotNetNuke.Services.Mail;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -15,7 +16,7 @@ namespace Satrabel.OpenContent.Components
         /// </summary>
         /// <param name="page">The page.</param>
         /// <param name="title">The title.</param>
-        static public void SetPageTitle(Page page, string title)
+        public static void SetPageTitle(Page page, string title)
         {
             var dnnpage = page as DotNetNuke.Framework.CDefault;
             if (dnnpage != null)
@@ -30,8 +31,10 @@ namespace Satrabel.OpenContent.Components
         /// </summary>
         /// <param name="context">The context.  (use from Razor file)</param>
         /// <param name="title">The title.</param>
-        static public void SetPageTitle(HttpContextBase context, string title)
+        public static void SetPageTitle(HttpContextBase context, string title)
         {
+            if (context == null) return;
+            if (string.IsNullOrWhiteSpace(title)) return;
             var pageObj = context.CurrentHandler as System.Web.UI.Page;
             if (pageObj != null)
             {
@@ -44,7 +47,7 @@ namespace Satrabel.OpenContent.Components
         /// </summary>
         /// <param name="page">The page.</param>
         /// <param name="description">The description.</param>
-        static public void SetPageDescription(Page page, string description)
+        public static void SetPageDescription(Page page, string description)
         {
             var dnnpage = page as DotNetNuke.Framework.CDefault;
             if (dnnpage != null)
@@ -60,7 +63,8 @@ namespace Satrabel.OpenContent.Components
                 }
             }
         }
-        static public void SetPageMeta(Page page, string meta)
+
+        public static void SetPageMeta(Page page, string meta)
         {
             var dnnpage = page as DotNetNuke.Framework.CDefault;
             if (dnnpage != null)
@@ -69,16 +73,17 @@ namespace Satrabel.OpenContent.Components
                 dnnpage.FindControl("Head").Controls.Add(htmlMeta);
             }
         }
-        static public void SetPageDescription(HttpContextBase context, string description)
+
+        public static void SetPageDescription(HttpContextBase context, string description)
         {
             var pageObj = context.CurrentHandler as System.Web.UI.Page;
             if (pageObj != null)
             {
-                SetPageDescription(pageObj, description);
+                SetPageDescription(pageObj, HttpUtility.HtmlDecode(Mail.ConvertToText(description)));
             }
         }
 
-        static public void AddBreadCrumbs(List<BreadCrumb> breadCrumbs)
+        public static void AddBreadCrumbs(List<BreadCrumb> breadCrumbs)
         {
             int idx = 0;
             foreach (var item in breadCrumbs)
@@ -93,7 +98,7 @@ namespace Satrabel.OpenContent.Components
 
         }
 
-        static public void AddBreadCrumb(string name, string url)
+        public static void AddBreadCrumb(string name, string url)
         {
             int idx = -8888;
             if (PortalSettings.Current.ActiveTab.BreadCrumbs.Count > 0)
@@ -115,7 +120,7 @@ namespace Satrabel.OpenContent.Components
         /// Clears the breadcrumbs and sets them again with a list of breadcrumbs items.
         /// </summary>
         /// <param name="breadCrumbs">The bread crumbs.</param>
-        static public void SetBreadCrumbs(List<BreadCrumb> breadCrumbs)
+        public static void SetBreadCrumbs(List<BreadCrumb> breadCrumbs)
         {
             PortalSettings.Current.ActiveTab.BreadCrumbs.Clear();
             int idx = 0;
@@ -133,7 +138,7 @@ namespace Satrabel.OpenContent.Components
         /// <summary>
         /// Clears the breadcrumbs on a Tab. You'll probably use AddBreadCrumb() after this call to fill Breadcrumbs list again.
         /// </summary>
-        static public void ClearBreadCrumbs()
+        public static void ClearBreadCrumbs()
         {
             PortalSettings.Current.ActiveTab.BreadCrumbs.Clear();
         }
@@ -141,22 +146,26 @@ namespace Satrabel.OpenContent.Components
         /// <summary>
         /// Gets the breadcrumb. (a copy of the DNN version)
         /// </summary>
-        /// <param name="strSeparator">The string separator.</param>
+        /// <param name="separator">The string separator.</param>
         /// <param name="intRootLevel">The int root level.</param>
         /// <param name="strCssClass">The string CSS class.</param>
         /// <param name="useTitle">if set to <c>true</c> [use title].</param>
         /// <returns></returns>
-        static public string GetBreadCrumb(string strSeparator = " > ", int intRootLevel = 0, string strCssClass = "breadcrumbLink", bool useTitle = false)
+        public static string GetBreadCrumb(string separator = " > ", int intRootLevel = 0, string strCssClass = "breadcrumbLink", bool useTitle = false)
         {
             string strBreadCrumbs = "";
             int intTab;
             for (intTab = intRootLevel; intTab <= PortalSettings.Current.ActiveTab.BreadCrumbs.Count - 1; intTab++)
             {
+                var objTab = (TabInfo)PortalSettings.Current.ActiveTab.BreadCrumbs[intTab];
+                if (objTab.TabID > 0)
+                {
+                    continue;
+                }
                 if (intTab != intRootLevel)
                 {
-                    strBreadCrumbs += HttpUtility.HtmlDecode(strSeparator);
+                    strBreadCrumbs += HttpUtility.HtmlDecode(separator);
                 }
-                var objTab = (TabInfo)PortalSettings.Current.ActiveTab.BreadCrumbs[intTab];
                 string strLabel = objTab.LocalizedTabName;
                 if (useTitle && !String.IsNullOrEmpty(objTab.Title))
                 {
@@ -176,7 +185,7 @@ namespace Satrabel.OpenContent.Components
         }
     }
 
-    public class BreadCrumb
+    public struct BreadCrumb
     {
         public string Name { get; set; }
         public string Url { get; set; }
