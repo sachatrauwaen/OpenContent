@@ -11,7 +11,6 @@ namespace Satrabel.OpenContent.Components.Json
 {
     public static class JsonExtensions
     {
-        private static readonly ILog Logger = LoggerSource.Instance.GetLogger(typeof(JsonUtils));
 
 
         public static bool IsEmpty(this JObject json)
@@ -31,7 +30,7 @@ namespace Satrabel.OpenContent.Components.Json
             catch (Exception ex)
             {
                 string mess = string.Format("Error while parsing file [{0}]", file.FilePath);
-                Logger.Error(mess, ex);
+                Log.Logger.Error(mess, ex);
                 throw new Exception(mess, ex);
             }
         }
@@ -45,7 +44,7 @@ namespace Satrabel.OpenContent.Components.Json
             catch (Exception ex)
             {
                 string mess = string.Format("Error while parsing [{0}]", desc);
-                Logger.Error(mess, ex);
+                Log.Logger.Error(mess, ex);
                 throw new Exception(mess, ex);
             }
         }

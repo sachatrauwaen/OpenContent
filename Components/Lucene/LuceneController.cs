@@ -47,8 +47,6 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         #region Private Properties
 
-        private static readonly ILog Logger = LoggerSource.Instance.GetLogger(typeof(LuceneController));
-
         internal string IndexFolder { get; private set; }
 
         private IndexWriter _writer;
@@ -338,7 +336,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             {
                 if (doWait)
                 {
-                    Logger.Debug("Compacting Search Index - started");
+                    Log.Logger.Debug("Compacting Search Index - started");
                 }
 
                 CheckDisposed();
@@ -348,7 +346,7 @@ namespace Satrabel.OpenContent.Components.Lucene
                 if (doWait)
                 {
                     Commit();
-                    Logger.Debug("Compacting Search Index - finished");
+                    Log.Logger.Debug("Compacting Search Index - finished");
                 }
 
                 return true;

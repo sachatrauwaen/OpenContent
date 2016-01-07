@@ -55,8 +55,6 @@ namespace Satrabel.OpenContent
     /// </summary>
     public partial class View : RazorModuleBase, IActionable
     {
-        private static readonly ILog Logger = LoggerSource.Instance.GetLogger(typeof(View));
-
         private int _itemId = Null.NullInteger;
         private readonly RenderInfo _renderinfo = new RenderInfo();
         private OpenContentSettings _settings;
