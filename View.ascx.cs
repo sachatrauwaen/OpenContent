@@ -297,8 +297,8 @@ namespace Satrabel.OpenContent
 
                 if (templateDefined && listMode)
                 {
-                    bool queryAvailable = settings.Template.QueryAvailable();
-                    if (queryAvailable)
+                    //bool queryAvailable = settings.Template.QueryAvailable();
+                    //if (queryAvailable)
                     {
                         actions.Add(ModuleContext.GetNextActionID(),
                             Localization.GetString("EditQuery.Action", LocalResourceFile),

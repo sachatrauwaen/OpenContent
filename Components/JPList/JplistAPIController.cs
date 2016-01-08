@@ -278,10 +278,21 @@ namespace Satrabel.OpenContent.Components.JPList
                             else
                             {
                                 //textbox
+                                Query query1;
                                 var field = indexConfig.Fields[n];
                                 bool ml = field != null && field.MultiLanguage;
-                                string fieldName = ml ? n + "." + DnnUtils.GetCurrentCultureCode() : n;
-                                var query1 = LuceneController.ParseQuery(fieldName + ":" + f.value + "*", "Title");
+                                
+                                if (field != null &&
+                                    (field.IndexType == "key" || (field.Items != null && field.Items.IndexType == "key")))
+                                {                                    
+                                    query1 = new WildcardQuery(new Term(n, f.value));
+                                }
+                                else
+                                {
+                                    string fieldName = ml ? n + "." + DnnUtils.GetCurrentCultureCode() : n;
+                                    query1 = LuceneController.ParseQuery(fieldName + ":" + f.value + "*", "Title");    
+                                }
+                                
                                 groupQuery.Add(query1, Occur.SHOULD); // or
                             }
                         }

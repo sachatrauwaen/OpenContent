@@ -57,7 +57,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                     if (item.Value is JValue) // text
                     {
                         var val = item.Value.ToString();
-                        if (indexConfig.IndexType == "boolean")
+                        if (indexConfig != null && indexConfig.IndexType == "boolean")
                         {
                             bool bval;
                             if (bool.TryParse(val, out bval))
@@ -66,7 +66,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                                 q.Add(NumericRangeQuery.NewIntRange(item.Name, ival, ival, true, true), Occur.MUST);
                             }
                         }
-                        else
+                        else if (!string.IsNullOrEmpty(val))
                         {
                             q.Add(new WildcardQuery(new Term(item.Name, val)), Occur.MUST);
                         }
