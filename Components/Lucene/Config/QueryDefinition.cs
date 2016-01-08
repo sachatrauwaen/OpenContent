@@ -103,7 +103,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                             var endDate = DateTime.MaxValue;
                             try
                             {
-                                startDate = DateTime.Today.AddDays((long)startDays.Value);
+                                startDate = DateTime.Today.AddDays(-(long)startDays.Value);
                             }
                             catch (Exception)
                             {

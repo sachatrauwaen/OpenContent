@@ -103,12 +103,12 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     newProp.Properties.Add("StartDays", new SchemaConfig()
                     {
                         Type = "number",
-                        Title = prop.Value.Title + " start (in days from now)"
+                        Title = prop.Value.Title + " : from x days in the past"
                     });
                     newProp.Properties.Add("EndDays", new SchemaConfig()
                     {
                         Type = "number",
-                        Title = prop.Value.Title + " end (in days from now)"
+                        Title = prop.Value.Title + " : to x days in the future"
                     });
                     fieldLst.Add(prop.Key);
                 }

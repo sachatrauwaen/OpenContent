@@ -23,12 +23,18 @@ namespace Satrabel.OpenContent.Components.Rss
         [HttpGet]
         public HttpResponseMessage GetFeed(int moduleId, int tabId)
         {
+            return GetFeed(moduleId, tabId, "rss", "application/rss+xml");
+        }
+        [AllowAnonymous]
+        [HttpGet]
+        public HttpResponseMessage GetFeed(int moduleId, int tabId, string template, string mediaType)
+        {
             ModuleController mc = new ModuleController();
             OpenContentController ctrl = new OpenContentController();
             List<OpenContentInfo> dataList = new List<OpenContentInfo>(); ;
             var module = mc.GetModule(moduleId, tabId, false);
             OpenContentSettings settings = module.OpenContentSettings();
-            var rssTemplate = new FileUri(settings.TemplateDir, "rss.hbs");
+            var rssTemplate = new FileUri(settings.TemplateDir, template+".hbs");
             string source = File.ReadAllText(rssTemplate.PhysicalFilePath);
 
             bool useLucene = settings.Template.Manifest.Index;
@@ -60,7 +66,7 @@ namespace Satrabel.OpenContent.Components.Rss
             string res =  hbEngine.Execute(source, model);
             var response = new HttpResponseMessage();
             response.Content = new StringContent(res);
-            response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/rss+xml");
+            response.Content.Headers.ContentType = new MediaTypeHeaderValue(mediaType);
             return response;
 
         }
