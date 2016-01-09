@@ -96,10 +96,12 @@ namespace Satrabel.OpenContent
                         RenderDemoData();
                     }
                 }
+                /*
                 else if (_info.Template != null)
                 {
                     RenderDemoData();
                 }
+                 */
             }
             if (!string.IsNullOrEmpty(_info.OutputString))
             {
@@ -321,7 +323,7 @@ namespace Satrabel.OpenContent
                             // for list templates a main template need to be defined
 
                             GetDataList(_info, _settings);
-                            if (_info.DataExist)
+                            //if (_info.DataExist)
                             {
                                 _info.OutputString = GenerateListOutput(_settings.Template.UrlFolder, _info.TemplateManifest.Main, _info.DataList, _info.SettingsJson);
                             }
@@ -470,7 +472,7 @@ namespace Satrabel.OpenContent
                 {
                     string PhysicalTemplateFolder = Server.MapPath(TemplateVirtualFolder);
                     FileUri Template = CheckFiles(TemplateVirtualFolder, files, PhysicalTemplateFolder);
-                    if (dataList != null && dataList.Any())
+                    if (dataList != null)
                     {
                         string editRole = _info.Manifest == null ? "" : _info.Manifest.EditRole;
                         dynamic model = new ExpandoObject();
@@ -744,13 +746,11 @@ namespace Satrabel.OpenContent
             info.SettingsJson = "";
             OpenContentController ctrl = new OpenContentController();
             info.DataList = ctrl.GetContents(info.ModuleId);
+            info.SettingsJson = settings.Data;
             if (info.DataList != null && info.DataList.Any())
-            {
-
-                info.SettingsJson = settings.Data;
+            {                
                 info.DataExist = true;
             }
-
         }
 
         private bool Filter(string json, string key, string value)
