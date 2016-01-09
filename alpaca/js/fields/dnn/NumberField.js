@@ -46,7 +46,7 @@
             }
 
             if (this.numberDecimalSeparator != '.') {                
-                val = val.replace(this.numberDecimalSeparator, '.');
+                val = ("" + val).replace(this.numberDecimalSeparator, '.');
             }
 
             return parseFloat(val);
@@ -134,13 +134,13 @@
 
             // get value as text
             var textValue = this._getControlVal();
-            if (this.numberDecimalSeparator != '.') {
-                textValue = textValue.replace(this.numberDecimalSeparator, '.');
+
+            if (typeof (textValue) === "number") {
+                textValue = "" + textValue;
             }
 
-            if (typeof(textValue) === "number")
-            {
-                textValue = "" + textValue;
+            if (this.numberDecimalSeparator != '.') {
+                textValue = textValue.replace(this.numberDecimalSeparator, '.');
             }
 
             // allow empty
