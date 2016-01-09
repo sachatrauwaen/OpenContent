@@ -42,3 +42,4 @@ OpenContent_02.00.00_Install.zip
 alpaca/js/fields/dnn/dnnfields.js
 alpaca/js/fields/dnn/dnnfields.min.js
 ResourcesZip/
+*.zip
