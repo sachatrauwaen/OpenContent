@@ -1,4 +1,4 @@
-﻿(function ($) {
+﻿(function($) {
 
     var Alpaca = $.alpaca;
 
@@ -15,7 +15,8 @@
         /**
          * @see Alpaca.Fields.TextField#setup
          */
-        setup: function () {
+        setup: function()
+        {
             // default html5 input type = "number";
             //this.inputType = "number";
             // TODO: we can't do this because Chrome screws up it's handling of number type
@@ -23,72 +24,32 @@
             // @see http://stackoverflow.com/questions/16420828/jquery-val-refuses-to-return-non-numeric-input-from-a-number-field-under-chrome
 
             this.base();
-
-            if (typeof (this.options.numericEntry) === "undefined") {
-                this.options.numericEntry = false;
-            }
-          
         },
 
         /**
          * @see Alpaca.Fields.TextField#getFieldType
          */
-        getFieldType: function () {
+        getFieldType: function() {
             return "number";
         },
 
         /**
-         * @see Alpaca.ControlField#postRender
+         * @see Alpaca.Fields.TextField#getValue
          */
-        postRender: function (callback) {
+        getValue: function()
+        {
+            var val = this._getControlVal(true);
 
-            var self = this;
-
-            this.base(function () {
-
-                if (self.control) {
-                    self.on("keypress", function (e) {
-
-                        var key = e.charCode || e.keyCode || 0;
-
-                        var valid = true;
-
-                        if (self.options.numericEntry) {
-                            valid = valid && (key >= 48 && key <= 57);
-                        }
-
-                        if (!valid) {
-                            // don't even allow entry of invalid characters
-                            e.preventDefault();
-                            e.stopImmediatePropagation();
-                        }
-
-                        return valid;
-                    });
-                }
-
-                callback();
-            });
-        },
-
-        getValue: function () {
-            var self = this;
-            if (this.numberDecimalSeparator != '.') {
-                var textValue = this._getControlVal(false);
-                textValue = textValue.replace(this.numberDecimalSeparator, '.');
-
-            /*
-            var value = this.base();
-
-            if (!this.isDisplayOnly()) {
-                value = self.getControlValue();
+            if (typeof(val) == "undefined" || "" == val)
+            {
+                return val;
             }
-            */
-                // some correction for type
-                value = self.ensureProperType(textValue);
-                return value;
+
+            if (this.numberDecimalSeparator != '.') {                
+                val = val.replace(this.numberDecimalSeparator, '.');
             }
-            return this.base();
+
+            return parseFloat(val);
         },
         setValue: function (value) {
             var val = value;
@@ -97,7 +58,6 @@
                     val = "";
                 }
                 else {
-
                     val = ("" + value).replace('.', this.numberDecimalSeparator);
                 }
             }
@@ -106,39 +66,23 @@
 
         },
 
-
-        /**
-         * @see Alpaca.Fields.ControlField#getControlValue
-         */
-        getControlValue: function () {
-            var val = this._getControlVal(true);
-
-            if (typeof (val) == "undefined" || "" == val) {
-                return val;
-            }
-
-            return parseFloat(val);
-        },
-
-
-
         /**
          * @see Alpaca.Fields.TextField#handleValidate
          */
-        handleValidate: function () {
+        handleValidate: function() {
             var baseStatus = this.base();
 
             var valInfo = this.validation;
 
             var status = this._validateNumber();
             valInfo["stringNotANumber"] = {
-                "message": status ? "" : this.getMessage("stringNotANumber"),
+                "message": status ? "" : this.view.getMessage("stringNotANumber"),
                 "status": status
             };
 
             status = this._validateDivisibleBy();
             valInfo["stringDivisibleBy"] = {
-                "message": status ? "" : Alpaca.substituteTokens(this.getMessage("stringDivisibleBy"), [this.schema.divisibleBy]),
+                "message": status ? "" : Alpaca.substituteTokens(this.view.getMessage("stringDivisibleBy"), [this.schema.divisibleBy]),
                 "status": status
             };
 
@@ -149,9 +93,9 @@
             };
             if (!status) {
                 if (this.schema.exclusiveMaximum) {
-                    valInfo["stringValueTooLarge"]["message"] = Alpaca.substituteTokens(this.getMessage("stringValueTooLargeExclusive"), [this.schema.maximum]);
+                    valInfo["stringValueTooLarge"]["message"] = Alpaca.substituteTokens(this.view.getMessage("stringValueTooLargeExclusive"), [this.schema.maximum]);
                 } else {
-                    valInfo["stringValueTooLarge"]["message"] = Alpaca.substituteTokens(this.getMessage("stringValueTooLarge"), [this.schema.maximum]);
+                    valInfo["stringValueTooLarge"]["message"] = Alpaca.substituteTokens(this.view.getMessage("stringValueTooLarge"), [this.schema.maximum]);
                 }
             }
 
@@ -162,9 +106,9 @@
             };
             if (!status) {
                 if (this.schema.exclusiveMinimum) {
-                    valInfo["stringValueTooSmall"]["message"] = Alpaca.substituteTokens(this.getMessage("stringValueTooSmallExclusive"), [this.schema.minimum]);
+                    valInfo["stringValueTooSmall"]["message"] = Alpaca.substituteTokens(this.view.getMessage("stringValueTooSmallExclusive"), [this.schema.minimum]);
                 } else {
-                    valInfo["stringValueTooSmall"]["message"] = Alpaca.substituteTokens(this.getMessage("stringValueTooSmall"), [this.schema.minimum]);
+                    valInfo["stringValueTooSmall"]["message"] = Alpaca.substituteTokens(this.view.getMessage("stringValueTooSmall"), [this.schema.minimum]);
                 }
             }
 
@@ -173,23 +117,29 @@
                 "message": "",
                 "status": status
             };
-            if (!status) {
-                valInfo["stringValueNotMultipleOf"]["message"] = Alpaca.substituteTokens(this.getMessage("stringValueNotMultipleOf"), [this.schema.multipleOf]);
+            if (!status)
+            {
+                valInfo["stringValueNotMultipleOf"]["message"] = Alpaca.substituteTokens(this.view.getMessage("stringValueNotMultipleOf"), [this.schema.multipleOf]);
             }
 
             // hand back a true/false
-            return baseStatus && valInfo["stringNotANumber"]["status"] && valInfo["stringDivisibleBy"]["status"] && valInfo["stringValueTooLarge"]["status"] && valInfo["stringValueTooSmall"]["status"] && valInfo["stringValueNotMultipleOf"]["status"] && valInfo["invalidPattern"]["status"] && valInfo["stringTooLong"]["status"] && valInfo["stringTooShort"]["status"];
+            return baseStatus && valInfo["stringNotANumber"]["status"] && valInfo["stringDivisibleBy"]["status"] && valInfo["stringValueTooLarge"]["status"] && valInfo["stringValueTooSmall"]["status"] && valInfo["stringValueNotMultipleOf"]["status"];
         },
 
         /**
          * Validates if it is a float number.
          * @returns {Boolean} true if it is a float number
          */
-        _validateNumber: function () {
+        _validateNumber: function() {
 
             // get value as text
             var textValue = this._getControlVal();
-            if (typeof (textValue) === "number") {
+            if (this.numberDecimalSeparator != '.') {
+                textValue = textValue.replace(this.numberDecimalSeparator, '.');
+            }
+
+            if (typeof(textValue) === "number")
+            {
                 textValue = "" + textValue;
             }
 
@@ -197,10 +147,11 @@
             if (Alpaca.isValEmpty(textValue)) {
                 return true;
             }
-            textValue = textValue.replace(',', '.')
+
             // check if valid number format
             var validNumber = Alpaca.testRegex(Alpaca.regexps.number, textValue);
-            if (!validNumber) {
+            if (!validNumber)
+            {
                 return false;
             }
 
@@ -217,12 +168,13 @@
          * Validates divisibleBy constraint.
          * @returns {Boolean} true if it passes the divisibleBy constraint.
          */
-        _validateDivisibleBy: function () {
+        _validateDivisibleBy: function() {
             var floatValue = this.getValue();
             if (!Alpaca.isEmpty(this.schema.divisibleBy)) {
 
                 // mod
-                if (floatValue % this.schema.divisibleBy !== 0) {
+                if (floatValue % this.schema.divisibleBy !== 0)
+                {
                     return false;
                 }
             }
@@ -233,7 +185,7 @@
          * Validates maximum constraint.
          * @returns {Boolean} true if it passes the maximum constraint.
          */
-        _validateMaximum: function () {
+        _validateMaximum: function() {
             var floatValue = this.getValue();
 
             if (!Alpaca.isEmpty(this.schema.maximum)) {
@@ -255,7 +207,7 @@
          * Validates maximum constraint.
          * @returns {Boolean} true if it passes the minimum constraint.
          */
-        _validateMinimum: function () {
+        _validateMinimum: function() {
             var floatValue = this.getValue();
 
             if (!Alpaca.isEmpty(this.schema.minimum)) {
@@ -277,11 +229,12 @@
          * Validates multipleOf constraint.
          * @returns {Boolean} true if it passes the multipleOf constraint.
          */
-        _validateMultipleOf: function () {
+        _validateMultipleOf: function() {
             var floatValue = this.getValue();
 
             if (!Alpaca.isEmpty(this.schema.multipleOf)) {
-                if (floatValue && this.schema.multipleOf !== 0) {
+                if (floatValue && this.schema.multipleOf !== 0)
+                {
                     return false;
                 }
             }
@@ -292,67 +245,8 @@
         /**
          * @see Alpaca.Fields.TextField#getType
          */
-        getType: function () {
+        getType: function() {
             return "number";
-        },
-
-        /**
-         * @see Alpaca.ControlField#onKeyPress
-         */
-        onKeyDown: function (e) {
-            var self = this;
-
-            // ignore tab and arrow keys
-            if (e.keyCode === 9 || e.keyCode === 37 || e.keyCode === 38 || e.keyCode === 39 || e.keyCode === 40) {
-                return;
-            }
-
-            if (e.keyCode === 8) // backspace
-            {
-                if (!Alpaca.isEmpty(self.schema.minLength) && (self.options.constrainLengths || self.options.constrainMinLength)) {
-                    var newValue = self.getValue() || "";
-                    if (Alpaca.isNumber(newValue)) {
-                        newValue = newValue.toString();
-                    }
-                    if (newValue.length <= self.schema.minLength) {
-                        // kill event
-                        e.preventDefault();
-                        e.stopImmediatePropagation();
-                    }
-                }
-            }
-            else {
-                if (!Alpaca.isEmpty(self.schema.maxLength) && (self.options.constrainLengths || self.options.constrainMaxLength)) {
-                    var newValue = self.getValue() || "";
-                    if (Alpaca.isNumber(newValue)) {
-                        newValue = newValue.toString();
-                    }
-                    if (newValue.length >= self.schema.maxLength) {
-                        // kill event
-                        e.preventDefault();
-                        e.stopImmediatePropagation();
-                    }
-                }
-            }
-
-            if (e.keyCode === 32) // space
-            {
-                if (self.options.disallowEmptySpaces) {
-                    // kill event
-                    e.preventDefault();
-                    e.stopImmediatePropagation();
-                }
-            }
-        },
-
-        onKeyUp: function (e) {
-            var self = this;
-
-            // if applicable, update the max length indicator
-            self.updateMaxLengthIndicator();
-
-            // trigger "fieldkeyup"
-            $(this.field).trigger("fieldkeyup");
         },
 
         /* builder_helpers */
@@ -361,7 +255,7 @@
          * @private
          * @see Alpaca.Fields.TextField#getSchemaOfSchema
          */
-        getSchemaOfSchema: function () {
+        getSchemaOfSchema: function() {
             return Alpaca.merge(this.base(), {
                 "properties": {
                     "multipleOf": {
@@ -399,7 +293,7 @@
          * @private
          * @see Alpaca.Fields.TextField#getOptionsSchema
          */
-        getOptionsForSchema: function () {
+        getOptionsForSchema: function() {
             return Alpaca.merge(this.base(), {
                 "fields": {
                     "multipleOf": {
@@ -432,33 +326,16 @@
         },
 
         /**
-         * @private
-         * @see Alpaca.Fields.NumberField#getSchemaOfOptions
-         */
-        getSchemaOfOptions: function () {
-            return Alpaca.merge(this.base(), {
-                "properties": {
-                    "numericEntry": {
-                        "title": "Numeric Entry",
-                        "description": "Whether to constrain data entry key presses to numeric values (0-9)",
-                        "type": "boolean",
-                        "default": false
-                    }
-                }
-            });
-        },
-
-        /**
          * @see Alpaca.Fields.TextField#getTitle
          */
-        getTitle: function () {
+        getTitle: function() {
             return "Number Field";
         },
 
         /**
          * @see Alpaca.Fields.TextField#getDescription
          */
-        getDescription: function () {
+        getDescription: function() {
             return "Field for float numbers.";
         }
 
