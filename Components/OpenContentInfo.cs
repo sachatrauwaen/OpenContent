@@ -23,7 +23,7 @@ namespace Satrabel.OpenContent.Components
 {
     [TableName("OpenContent_Items")]
     [PrimaryKey("ContentId", AutoIncrement = true)]
-    [Cacheable("OpenContentItems", CacheItemPriority.Default, 20)]
+    //[Cacheable("OpenContentItems", CacheItemPriority.Default, 20)]
     [Scope("ModuleId")]
     public class OpenContentInfo
     {

@@ -21,7 +21,9 @@ using System.Web.UI.WebControls;
 using DotNetNuke.UI.Modules;
 using DotNetNuke.Security.Permissions;
 using DotNetNuke.Security;
+using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Manifest;
+using Satrabel.OpenContent.Components.Lucene.Config;
 
 
 namespace Satrabel.OpenContent.Components
@@ -466,5 +468,21 @@ namespace Satrabel.OpenContent.Components
                     (!string.IsNullOrEmpty(editrole) && portalSettings.UserInfo.IsInRole(editrole) && (CreatedByUserId == -1 || portalSettings.UserId == CreatedByUserId));
         }
 
+
+        internal static FieldConfig GetIndexConfig(FolderUri folder)
+        {
+            try
+            {
+                var fb = new FormBuilder(folder);
+                FieldConfig indexConfig = fb.BuildIndex();
+                return indexConfig;
+            }
+            catch (Exception ex)
+            {
+                //we should log this
+                if (Debugger.IsAttached) Debugger.Break();
+                return null;
+            }
+        }
     }
 }

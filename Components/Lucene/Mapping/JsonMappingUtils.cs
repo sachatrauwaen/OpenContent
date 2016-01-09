@@ -4,6 +4,7 @@ using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.QueryParsers;
 using Lucene.Net.Search;
+using Satrabel.OpenContent.Components.Lucene.Config;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +31,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
         public static readonly string FieldId = "$id";
         #endregion
 
-        public static Document JsonToDocument(string type, string id, string source, bool StoreSource = false)
+        public static Document JsonToDocument(string type, string id, string source, FieldConfig config, bool StoreSource = false)
         {
             var ObjectMapper = new JsonObjectMapper();
             Document doc = new Document();
@@ -42,7 +43,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
                 doc.Add(new Field(FieldSource, json, Field.Store.YES, Field.Index.NO));
             }
             doc.Add(new NumericField(FieldTimestamp, Field.Store.YES, true).SetLongValue(DateTime.UtcNow.Ticks));
-            ObjectMapper.AddJsonToDocument(source, doc);
+            ObjectMapper.AddJsonToDocument(source, doc, config);
             return doc;
         }
         public static Filter GetTypeFilter(string type)

@@ -5,9 +5,9 @@ using DotNetNuke.Entities.Modules;
 
 namespace Satrabel.OpenContent.Components.Manifest
 {
-    public class TemplateInfo
+    public class RenderInfo
     {
-        public TemplateInfo()
+        public RenderInfo()
         {
             SettingsJson = "";
             DataJson = "";
@@ -36,21 +36,21 @@ namespace Satrabel.OpenContent.Components.Manifest
         {
             DataJson = dataJson;
             SettingsJson = settingsData;
-            DataExist = !string.IsNullOrWhiteSpace(dataJson);
+            if (!string.IsNullOrWhiteSpace(dataJson)) DataExist = true;            
         }
 
         public void SetData(IEnumerable<OpenContentInfo> getContents, string settingsData)
         {
             DataList = getContents;
             SettingsJson = settingsData;
-            DataExist = (getContents != null && getContents.Any());
+            if (getContents != null && getContents.Any()) DataExist = true;
         }
 
         public string DataJson { get; private set; }
         public string SettingsJson { get; private set; }
 
         public IEnumerable<OpenContentInfo> DataList { get; private set; }
-        private bool DataExist { get; set; }
+        public bool DataExist { get; set; }
         public bool ShowInitControl { get { return !DataExist || SettingsJson == null && Template.SettingsNeeded(); } }
 
 
@@ -75,12 +75,9 @@ namespace Satrabel.OpenContent.Components.Manifest
 
         #endregion
 
-        public void SetSelectedTemplate(TemplateManifest template)
-        {
-            Template = template;
-        }
+        
 
-        public TemplateManifest Template { get; private set; }
+        public TemplateManifest Template { get; set; }
 
         #region ReadOnly
 
@@ -88,7 +85,7 @@ namespace Satrabel.OpenContent.Components.Manifest
 
         #endregion
 
-        public TemplateFiles Files { get; private set; }
+        public TemplateFiles Files { get; set; }
 
         //public FileUri Template { get;private set; }
         //public Manifest Manifest { get; private set; }

@@ -101,17 +101,21 @@ namespace Satrabel.OpenContent.Components.Manifest
 
         #endregion
 
-
         internal static bool SettingsNeeded(this TemplateManifest template)
         {
             var schemaFileUri = new FileUri(template.Uri().UrlFolder, template.Key.ShortKey + "-schema.json");
-            if (schemaFileUri.FileExists && !schemaFileUri.ToJObject().IsEmpty())
+            if (schemaFileUri.FileExists)
                 return true;
-            schemaFileUri = new FileUri(template.Uri().UrlFolder, template.Key.ShortKey + "-schema.json");
-            if (schemaFileUri.FileExists && !schemaFileUri.ToJObject().IsEmpty())
-                return true;
+
             return false;
         }
+        internal static bool QueryAvailable(this TemplateManifest template)
+        {
+            var schemaFileUri = new FileUri(template.Uri().UrlFolder, "query-schema.json");
+            if (schemaFileUri.FileExists)
+                return true;
 
+            return false;
+        }
     }
 }

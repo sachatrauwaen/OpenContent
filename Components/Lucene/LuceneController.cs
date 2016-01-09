@@ -28,6 +28,7 @@ using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Util;
 using Lucene.Net.QueryParsers;
 using Satrabel.OpenContent.Components.Lucene.Mapping;
+using Satrabel.OpenContent.Components.Lucene.Config;
 
 #endregion
 
@@ -37,7 +38,7 @@ namespace Satrabel.OpenContent.Components.Lucene
     {
 
         #region Constants
-        private const string DefaultSearchFolder = @"App_Data\OCSearch";
+        private const string DefaultSearchFolder = @"App_Data\OpenContent\lucene_index";
         private const string WriteLockFile = "write.lock";
         internal const int DefaultRereadTimeSpan = 10; // in seconds (initialy 30sec)
         private const int DISPOSED = 1;
@@ -45,8 +46,6 @@ namespace Satrabel.OpenContent.Components.Lucene
         #endregion
 
         #region Private Properties
-
-        private static readonly ILog Logger = LoggerSource.Instance.GetLogger(typeof(LuceneController));
 
         internal string IndexFolder { get; private set; }
 
@@ -225,10 +224,10 @@ namespace Satrabel.OpenContent.Components.Lucene
             return System.IO.Directory.Exists(IndexFolder) &&
                    System.IO.Directory.GetFiles(IndexFolder, "*.*").Length > 0;
         }
-                
+
         #endregion
 
-        public SearchResults Search(string type, Query Filter, Query Query, Sort Sort, int PageSize, int PageIndex)
+        private SearchResults Search(string type, Query Filter, Query Query, Sort Sort, int PageSize, int PageIndex)
         {
             var luceneResults = new SearchResults();
             //validate whether index folder is exist and contains index files, otherwise return null.
@@ -241,45 +240,34 @@ namespace Satrabel.OpenContent.Components.Lucene
             if (Filter == null)
                 topDocs = searcher.Search(type, Query, (PageIndex + 1) * PageSize, Sort);
             else
-                topDocs = searcher.Search(type, Filter, Query,  (PageIndex + 1) * PageSize , Sort);
+                topDocs = searcher.Search(type, Filter, Query, (PageIndex + 1) * PageSize, Sort);
             luceneResults.ToalResults = topDocs.TotalHits;
             luceneResults.ids = topDocs.ScoreDocs.Skip(PageIndex * PageSize).Select(d => searcher.Doc(d.Doc).GetField(JsonMappingUtils.FieldId).StringValue).ToArray();
             return luceneResults;
         }
+        public SearchResults Search(string type, string DefaultFieldName, string Filter, string Query, string Sorts, int PageSize, int PageIndex, FieldConfig IndexConfig)
+        {
+            Query query = ParseQuery(Query, DefaultFieldName);
+            Query filter = ParseQuery(Filter, DefaultFieldName);
 
-        public SearchResults Search(string type, string DefaultFieldName, string Filter, string Query, string Sorts, int PageSize, int PageIndex)
+            QueryDefinition def = new QueryDefinition(IndexConfig)
+            {
+                Query = query,
+                Filter = filter,
+                PageIndex = PageIndex,
+                PageSize = PageSize
+            };
+            def.BuildSort(Sorts);
+            
+            return Search(type, DefaultFieldName, def);
+        }
+        public SearchResults Search(string type, string DefaultFieldName, QueryDefinition def)
+        {            
+            return Search(type, def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
+        }
+        public static Query ParseQuery(string searchQuery, string DefaultFieldName)
         {
             var parser = new QueryParser(global::Lucene.Net.Util.Version.LUCENE_30, DefaultFieldName, JsonMappingUtils.GetAnalyser());
-            Query filter = null;
-            if (!string.IsNullOrEmpty(Filter))
-            {
-                filter = ParseQuery(Filter, parser);
-            }
-            Query query = ParseQuery(Query, parser);
-            var sort = Sort.RELEVANCE;
-            if (!string.IsNullOrEmpty(Sorts)){
-                var sortArray = Sorts.Split(',');
-                var sortFields = new List<SortField>();
-                foreach (var item in sortArray)
-                {
-                    bool reverse = false;
-                    var sortElements = item.Split(' ');
-                    if (sortElements.Length > 1 && sortElements[1].ToLower() == "desc"){
-                        reverse = true;
-                    }
-                    int sortfieldtype = SortField.STRING;
-                    if (sortElements[0].ToLower().Contains("date"))
-                    {
-                        sortfieldtype = SortField.LONG;
-                    }
-                    sortFields.Add(new SortField("@"+sortElements[0], sortfieldtype, reverse));
-                }
-                sort = new Sort(sortFields.ToArray());
-            }
-            return Search(type, filter, query, sort,PageSize, PageIndex);
-        }
-        private static Query ParseQuery(string searchQuery, QueryParser parser)
-        {
             Query query;
             try
             {
@@ -348,7 +336,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             {
                 if (doWait)
                 {
-                    Logger.Debug("Compacting Search Index - started");
+                    Log.Logger.Debug("Compacting Search Index - started");
                 }
 
                 CheckDisposed();
@@ -358,7 +346,7 @@ namespace Satrabel.OpenContent.Components.Lucene
                 if (doWait)
                 {
                     Commit();
-                    Logger.Debug("Compacting Search Index - finished");
+                    Log.Logger.Debug("Compacting Search Index - finished");
                 }
 
                 return true;
@@ -466,5 +454,5 @@ namespace Satrabel.OpenContent.Components.Lucene
         }
     }
 
-    
+
 }

@@ -134,22 +134,30 @@
     <Compile Include="AddEdit.ascx.designer.cs">
       <DependentUpon>AddEdit.ascx</DependentUpon>
     </Compile>
+    <Compile Include="Components\Alpaca\AlpacaContext.cs" />
     <Compile Include="Components\Alpaca\AlpacaEngine.cs" />
+    <Compile Include="Components\Alpaca\FormBuilder.cs" />
+    <Compile Include="Components\Alpaca\OptionsConfig.cs" />
     <Compile Include="Components\Common\DateTimeExtensions.cs" />
     <Compile Include="Components\Common\DnnUtils.cs" />
+    <Compile Include="Components\Common\PageUtils.cs" />
     <Compile Include="Components\Dynamic\DynamicHelper.cs" />
     <Compile Include="Components\FeatureController.cs" />
     <Compile Include="Components\FilesStatus.cs" />
     <Compile Include="Components\FileUploadController.cs" />
+    <Compile Include="Components\Lucene\Config\FieldConfig.cs" />
+    <Compile Include="Components\Lucene\Config\QueryDefinition.cs" />
+    <Compile Include="Components\Alpaca\SchemaConfig.cs" />
+    <Compile Include="Components\Lucene\SearchResults.cs" />
     <Compile Include="Components\Manifest\Manifest.cs" />
     <Compile Include="Components\Manifest\ManifestUtils.cs" />
     <Compile Include="Components\Manifest\TemplateKey.cs" />
-    <Compile Include="Components\Manifest\TemplateManifest.cs" />
-    <Compile Include="Components\Manifest\PartialTemplate.cs" />
-    <Compile Include="Components\Manifest\TemplateFiles.cs" />
-    <Compile Include="Components\Lucene\SearchResults.cs" />
     <Compile Include="Components\ModelFactory.cs" />
+    <Compile Include="Components\Manifest\TemplateFiles.cs" />
+    <Compile Include="Components\Manifest\PartialTemplate.cs" />
+    <Compile Include="Components\Rss\RssApiController.cs" />
     <Compile Include="Components\TemplateHelpers\OtherExtentions.cs" />
+    <Compile Include="Components\Manifest\TemplateManifest.cs" />
     <Compile Include="Components\Uri\PortalFileUri.cs" />
     <Compile Include="Components\Uri\FolderUri.cs" />
     <Compile Include="Components\Uri\FileUri.cs" />
@@ -190,8 +198,15 @@
     <Compile Include="Components\Rss\FeedParser.cs" />
     <Compile Include="Components\Rss\FeedItem.cs" />
     <Compile Include="Components\TemplateHelpers\MetaTags.cs" />
-    <Compile Include="Components\Manifest\TemplateInfo.cs" />
+    <Compile Include="Components\Manifest\RenderInfo.cs" />
     <Compile Include="Components\Common\Utils.cs" />
+    <Compile Include="EditQuery.ascx.cs">
+      <DependentUpon>EditQuery.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="EditQuery.ascx.designer.cs">
+      <DependentUpon>EditQuery.ascx</DependentUpon>
+    </Compile>
     <Compile Include="EditGlobalSettings.ascx.cs">
       <DependentUpon>EditGlobalSettings.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -322,9 +337,16 @@
     <Content Include="css\images\ui-icons_ef8c08_256x240.png" />
     <Content Include="css\images\ui-icons_ffd27a_256x240.png" />
     <Content Include="css\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="EditQuery.ascx" />
     <Content Include="EditGlobalSettings.ascx" />
     <Content Include="EditSettings.ascx" />
+    <Content Include="images\edit.png" />
+    <Content Include="images\edittemplate.png" />
+    <Content Include="images\exchange.png" />
+    <Content Include="images\help.png" />
     <Content Include="images\icon_extensions.png" />
+    <Content Include="images\settings.gif" />
+    <Content Include="images\settings.png" />
     <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\build\css\bootstrap-datetimepicker.css" />
     <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\build\css\bootstrap-datetimepicker.min.css" />
     <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\build\js\bootstrap-datetimepicker.min.js" />
@@ -463,6 +485,7 @@
     <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\tokenizers_spec.js" />
     <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\transport_spec.js" />
     <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\typeahead_view_spec.js" />
+    <Content Include="js\alpacaengine.js" />
     <Content Include="js\CodeMirror\addon\mode\loadmode.js" />
     <Content Include="js\CodeMirror\addon\mode\multiplex.js" />
     <Content Include="js\CodeMirror\addon\mode\multiplex_test.js" />
@@ -499,6 +522,9 @@
     <Content Include="js\alpaca-1.5.8\lib\moment\CHANGELOG.md" />
     <Content Include="js\alpaca-1.5.8\lib\moment\LICENSE" />
     <Content Include="js\alpaca-1.5.8\lib\moment\README.md" />
+    <Content Include="js\alpaca-1.5.8\alpaca\web\alpaca.min.js.map">
+      <DependentUpon>alpaca.min.js</DependentUpon>
+    </Content>
     <None Include="Scripts\_references.js" />
     <Content Include="js\select2\i18n\az.js" />
     <Content Include="js\select2\i18n\bg.js" />
@@ -703,7 +729,9 @@
   <ItemGroup>
     <Content Include="App_LocalResources\EditGlobalSettings.ascx.resx" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="App_LocalResources\EditQuery.ascx.resx" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

@@ -20,7 +20,7 @@ using Satrabel.OpenContent.Components.Manifest;
 
 namespace Satrabel.OpenContent
 {
-    public partial class Edit : PortalModuleBase
+    public partial class EditQuery : PortalModuleBase
     {
         protected override void OnInit(EventArgs e)
         {
@@ -28,10 +28,10 @@ namespace Satrabel.OpenContent
             hlCancel.NavigateUrl = Globals.NavigateURL();
             cmdSave.NavigateUrl = Globals.NavigateURL();
             OpenContentSettings settings = this.OpenContentSettings();
-            AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, settings.Template.Uri().FolderPath, "");
+            AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, settings.Template.Uri().FolderPath, "query");
             alpaca.RegisterAll();
-            int ItemId = Request.QueryString["id"] == null ? -1 : int.Parse(Request.QueryString["id"]);
-            AlpacaContext = new AlpacaContext(PortalId, ModuleId, ItemId, ScopeWrapper.ClientID, hlCancel.ClientID, cmdSave.ClientID, hlDelete.ClientID, ddlVersions.ClientID);
+            int ItemId = 0;//Request.QueryString["id"] == null ? -1 : int.Parse(Request.QueryString["id"]);
+            AlpacaContext = new AlpacaContext(PortalId, ModuleId, ItemId, ScopeWrapper.ClientID, hlCancel.ClientID, cmdSave.ClientID, null, null);
         }
         public AlpacaContext AlpacaContext { get; private set ; }
     }

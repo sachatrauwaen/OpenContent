@@ -90,6 +90,12 @@ namespace Satrabel.OpenContent.Components
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
+        /// <summary>
+        /// Imageses the lookup.
+        /// </summary>
+        /// <param name="q">The string that should be Contained in the name of the file (case insensitive). Use * to get all the files.</param>
+        /// <param name="d">The Folder path to retrieve</param>
+        /// <returns></returns>
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
         [HttpGet]
@@ -120,16 +126,10 @@ namespace Satrabel.OpenContent.Components
                 }
                 int folderLength = d.Length;
 
-                var res = files.Select(f => new { value = f.FileId.ToString(), url = ImageHelper.GetImageUrl(f, new Ratio(40, 40)), text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName }).Take(100);
+                var res = files.Select(f => new { value = f.FileId.ToString(), url = ImageHelper.GetImageUrl(f, new Ratio(40, 40)), text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName })
+                               .Take(100);
 
                 return Request.CreateResponse(HttpStatusCode.OK, res);
-
-                if (false)
-                {
-                    var exc = new ArgumentException("Folder path not specified. Missing ['folder': 'FolderPath'] in optionfile? ");
-                    Logger.Error(exc);
-                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
-                }
             }
             catch (Exception exc)
             {

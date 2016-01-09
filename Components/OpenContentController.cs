@@ -18,18 +18,15 @@ using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Lucene;
 using Satrabel.OpenContent.Components.Lucene.Index;
+using Satrabel.OpenContent.Components.Lucene.Config;
 
 namespace Satrabel.OpenContent.Components
 {
-    public class OpenContentController
+    public class OpenContentController 
     {
-        [Obsolete("This method is obsolete since dec 2015; use AddContent(OpenContentInfo content, bool index) instead")]
-        public void AddContent(OpenContentInfo content)
-        {
-            AddContent(content, false);
-        }
+        #region Commands
 
-        public void AddContent(OpenContentInfo content, bool index)
+        public void AddContent(OpenContentInfo content, bool index, FieldConfig indexConfig)
         {
             OpenContentVersion ver = new OpenContentVersion()
             {
@@ -47,79 +44,32 @@ namespace Satrabel.OpenContent.Components
             }
             if (index)
             {
-                LuceneController.Instance.Add(content);
+                LuceneController.Instance.Add(content, indexConfig);
                 LuceneController.Instance.Commit();
             }
         }
 
-        public void DeleteContent(OpenContentInfo content, bool Index)
+        [Obsolete("This method is obsolete since dec 2015; use AddContent(OpenContentInfo content, bool index) instead")]
+        public void AddContent(OpenContentInfo content)
+        {
+            AddContent(content, false, null);
+        }
+
+        public void DeleteContent(OpenContentInfo content, bool index)
         {
             using (IDataContext ctx = DataContext.Instance())
             {
                 var rep = ctx.GetRepository<OpenContentInfo>();
                 rep.Delete(content);
             }
-            if (Index)
+            if (index)
             {
                 LuceneController.Instance.Delete(content);
                 LuceneController.Instance.Commit();
             }
         }
 
-        public IEnumerable<OpenContentInfo> GetContents(int moduleId)
-        {
-            IEnumerable<OpenContentInfo> content;
-
-            using (IDataContext ctx = DataContext.Instance())
-            {
-                var rep = ctx.GetRepository<OpenContentInfo>();
-                content = rep.Get(moduleId);
-            }
-            return content;
-        }
-        /* slow !!!
-        public OpenContentInfo GetContent(int ContentId, int moduleId)
-        {
-            OpenContentInfo Content;
-
-            using (IDataContext ctx = DataContext.Instance())
-            {
-                var rep = ctx.GetRepository<OpenContentInfo>();
-                Content = rep.GetById(ContentId, moduleId);                
-            }
-            return Content;
-        }
-         */
-        public OpenContentInfo GetContent(int contentId)
-        {
-            OpenContentInfo content;
-
-            using (IDataContext ctx = DataContext.Instance())
-            {
-                var rep = ctx.GetRepository<OpenContentInfo>();
-                content = rep.GetById(contentId);
-            }
-            return content;
-        }
-        public OpenContentInfo GetFirstContent(int moduleId)
-        {
-            OpenContentInfo content;
-
-            using (IDataContext ctx = DataContext.Instance())
-            {
-                var rep = ctx.GetRepository<OpenContentInfo>();
-                content = rep.Get(moduleId).FirstOrDefault();
-            }
-            return content;
-        }
-
-        [Obsolete("This method is obsolete since dec 2015; use UpdateContent(OpenContentInfo content, bool index) instead")]
-        public void UpdateContent(OpenContentInfo content)
-        {
-            UpdateContent(content, false);
-        }
-
-        public void UpdateContent(OpenContentInfo content, bool index)
+        public void UpdateContent(OpenContentInfo content, bool index, FieldConfig indexConfig)
         {
             OpenContentVersion ver = new OpenContentVersion()
             {
@@ -144,10 +94,71 @@ namespace Satrabel.OpenContent.Components
             }
             if (index)
             {
-                LuceneController.Instance.Update(content);
+                LuceneController.Instance.Update(content, indexConfig);
                 LuceneController.Instance.Commit();
             }
         }
 
+        [Obsolete("This method is obsolete since dec 2015; use UpdateContent(OpenContentInfo content, bool index) instead")]
+        public void UpdateContent(OpenContentInfo content)
+        {
+            UpdateContent(content, false, null);
+        }
+
+        #endregion
+
+        #region Queries
+
+        public IEnumerable<OpenContentInfo> GetContents(int moduleId)
+        {
+            IEnumerable<OpenContentInfo> content;
+
+            using (IDataContext ctx = DataContext.Instance())
+            {
+                var rep = ctx.GetRepository<OpenContentInfo>();
+                content = rep.Get(moduleId);
+            }
+            return content;
+        }
+
+        public OpenContentInfo GetContent(int contentId)
+        {
+            OpenContentInfo content;
+
+            using (IDataContext ctx = DataContext.Instance())
+            {
+                var rep = ctx.GetRepository<OpenContentInfo>();
+                content = rep.GetById(contentId);
+            }
+            return content;
+        }
+
+        public OpenContentInfo GetFirstContent(int moduleId)
+        {
+            OpenContentInfo content;
+
+            using (IDataContext ctx = DataContext.Instance())
+            {
+                var rep = ctx.GetRepository<OpenContentInfo>();
+                content = rep.Get(moduleId).FirstOrDefault();
+            }
+            return content;
+        }
+
+        #endregion
+
+        /* slow !!!
+        public OpenContentInfo GetContent(int ContentId, int moduleId)
+        {
+            OpenContentInfo Content;
+
+            using (IDataContext ctx = DataContext.Instance())
+            {
+                var rep = ctx.GetRepository<OpenContentInfo>();
+                Content = rep.GetById(ContentId, moduleId);                
+            }
+            return Content;
+        }
+         */
     }
 }

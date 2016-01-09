@@ -27,6 +27,7 @@ using DotNetNuke.Entities.Tabs;
 using DotNetNuke.Common;
 using DotNetNuke.Services.FileSystem;
 using System.Collections.Generic;
+using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Lucene;
 using Satrabel.OpenContent.Components.Manifest;
 
@@ -37,7 +38,6 @@ namespace Satrabel.OpenContent.Components
     [SupportedModules("OpenContent")]
     public class OpenContentAPIController : DnnApiController
     {
-        private static readonly ILog Logger = LoggerSource.Instance.GetLogger(typeof(OpenContentAPIController));
         public string BaseDir
         {
             get
@@ -69,29 +69,10 @@ namespace Satrabel.OpenContent.Components
 
             string editRole = manifest == null ? "" : manifest.EditRole;
             bool listMode = templateManifest != null && templateManifest.IsListTemplate;
-            JObject json = new JObject();
             try
             {
-                // schema
-                var schemaJson = JsonUtils.LoadJsonFromFile(settings.Template.Uri().UrlFolder + "schema.json");
-                if (schemaJson != null)
-                    json["schema"] = schemaJson;
-
-                // default options
-                var optionsJson = JsonUtils.LoadJsonFromFile(settings.Template.Uri().UrlFolder + "options.json");
-                if (optionsJson != null)
-                    json["options"] = optionsJson;
-
-                // language options
-                optionsJson = JsonUtils.LoadJsonFromFile(settings.Template.Uri().UrlFolder + "options." + DnnUtils.GetCurrentCultureCode() + ".json");
-                if (optionsJson != null)
-                    json["options"] = json["options"].JsonMerge(optionsJson);
-
-                // view
-                optionsJson = JsonUtils.LoadJsonFromFile(settings.Template.Uri().UrlFolder + "view.json");
-                if (optionsJson != null)
-                    json["view"] = optionsJson;
-
+                var fb = new FormBuilder(settings.TemplateDir);
+                JObject json = fb.BuildForm();
                 int createdByUserid = -1;
                 var content = GetContent(module.ModuleID, listMode, id);
                 if (content != null)
@@ -122,7 +103,7 @@ namespace Satrabel.OpenContent.Components
             }
             catch (Exception exc)
             {
-                Logger.Error(exc);
+                Log.Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
@@ -207,7 +188,7 @@ namespace Satrabel.OpenContent.Components
             }
             catch (Exception exc)
             {
-                Logger.Error(exc);
+                Log.Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
@@ -218,27 +199,12 @@ namespace Satrabel.OpenContent.Components
         public HttpResponseMessage Settings(string Template)
         {
             string data = (string)ActiveModule.ModuleSettings["data"];
-            JObject json = new JObject();
             try
             {
                 var templateUri = new FileUri(Template);
-                string prefix = templateUri.FileNameWithoutExtension + "-";
-
-                // schema
-                var schemaJson = JsonUtils.LoadJsonFromFile(templateUri.UrlFolder + prefix + "schema.json");
-                if (schemaJson != null)
-                    json["schema"] = schemaJson;
-
-                // default options
-                var optionsJson = JsonUtils.LoadJsonFromFile(templateUri.UrlFolder + prefix + "options.json");
-                if (optionsJson != null)
-                    json["options"] = optionsJson;
-
-                // language options
-                optionsJson = JsonUtils.LoadJsonFromFile(templateUri.UrlFolder + prefix + "options." + DnnUtils.GetCurrentCultureCode() + ".json");
-                if (optionsJson != null)
-                    json["options"] = json["options"].JsonMerge(optionsJson);
-
+                string key = templateUri.FileNameWithoutExtension;
+                var fb = new FormBuilder(templateUri);
+                JObject json = fb.BuildForm(key);
 
                 JObject dataJson = data.ToJObject("Raw settings json");
                 if (dataJson != null)
@@ -248,7 +214,7 @@ namespace Satrabel.OpenContent.Components
             }
             catch (Exception exc)
             {
-                Logger.Error(exc);
+                Log.Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
@@ -297,7 +263,7 @@ namespace Satrabel.OpenContent.Components
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
-
+                var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
                 if (content == null)
                 {
                     content = new OpenContentInfo()
@@ -311,7 +277,7 @@ namespace Satrabel.OpenContent.Components
                         LastModifiedOnDate = DateTime.Now,
                         Html = "",
                     };
-                    ctrl.AddContent(content, index);
+                    ctrl.AddContent(content, index, indexConfig);
                 }
                 else
                 {
@@ -319,7 +285,7 @@ namespace Satrabel.OpenContent.Components
                     content.Json = json["form"].ToString();
                     content.LastModifiedByUserId = UserInfo.UserID;
                     content.LastModifiedOnDate = DateTime.Now;
-                    ctrl.UpdateContent(content, index);
+                    ctrl.UpdateContent(content, index, indexConfig);
                 }
                 if (json["form"]["ModuleTitle"] != null && json["form"]["ModuleTitle"].Type == JTokenType.String)
                 {
@@ -335,7 +301,7 @@ namespace Satrabel.OpenContent.Components
             }
             catch (Exception exc)
             {
-                Logger.Error(exc);
+                Log.Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
@@ -395,7 +361,7 @@ namespace Satrabel.OpenContent.Components
             }
             catch (Exception exc)
             {
-                Logger.Error(exc);
+                Log.Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
@@ -407,21 +373,28 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
-                int moduleId = ActiveModule.ModuleID;
-                var data = json["data"].ToString();
-                var template = json["template"].ToString();
-
                 var mc = new ModuleController();
-                if (!string.IsNullOrEmpty(template)) mc.UpdateModuleSetting(moduleId, "template", template);
-                if (!string.IsNullOrEmpty(data)) mc.UpdateModuleSetting(moduleId, "data", data);
+                int moduleId = ActiveModule.ModuleID;
+                if (json["data"] != null)
+                {
+                    var data = json["data"].ToString();
+                    var template = json["template"].ToString();
+                    if (!string.IsNullOrEmpty(template)) mc.UpdateModuleSetting(moduleId, "template", template);
+                    if (!string.IsNullOrEmpty(data)) mc.UpdateModuleSetting(moduleId, "data", data);
+                }
+                else if (json["form"] != null)
+                {
+                    var form = json["form"].ToString();
+                    var key = json["key"].ToString();
+                    if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(form)) mc.UpdateModuleSetting(moduleId, key, form);
+                }
                 return Request.CreateResponse(HttpStatusCode.OK, "");
             }
             catch (Exception exc)
             {
-                Logger.Error(exc);
+                Log.Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
-
         }
 
         [ValidateAntiForgeryToken]
@@ -483,7 +456,7 @@ namespace Satrabel.OpenContent.Components
             }
             catch (Exception exc)
             {
-                Logger.Error(exc);
+                Log.Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
@@ -508,7 +481,8 @@ namespace Satrabel.OpenContent.Components
             {
                 if (listMode)
                 {
-                    var docs = LuceneController.Instance.Search(module.ModuleID.ToString(), "Title", req.query, "", "", 10, 0);
+                    var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
+                    var docs = LuceneController.Instance.Search(module.ModuleID.ToString(), "Title", req.query, "", "", 10, 0, indexConfig);
                     foreach (var item in docs.ids)
                     {
                         var content = GetContent(module.ModuleID, listMode, int.Parse(item));
@@ -526,7 +500,31 @@ namespace Satrabel.OpenContent.Components
             }
             catch (Exception exc)
             {
-                Logger.Error(exc);
+                Log.Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
+
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [HttpGet]
+        public HttpResponseMessage EditSettings(string key)
+        {
+            string data = (string)ActiveModule.ModuleSettings[key];
+            try
+            {
+                OpenContentSettings settings = ActiveModule.OpenContentSettings();
+                var fb = new FormBuilder(settings.TemplateDir);
+                JObject json = fb.BuildForm(key);
+                JObject dataJson = data.ToJObject("Raw settings json");
+                if (dataJson != null)
+                    json["data"] = dataJson;
+
+                return Request.CreateResponse(HttpStatusCode.OK, json);
+            }
+            catch (Exception exc)
+            {
+                Log.Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
