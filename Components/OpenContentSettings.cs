@@ -14,7 +14,7 @@ namespace Satrabel.OpenContent.Components
 {
     public class OpenContentSettings
     {
-        internal OpenContentSettings(IDictionary moduleSettings)
+        public OpenContentSettings(IDictionary moduleSettings)
         {
             var template = moduleSettings["template"] as string;    //templatepath+file  or  //manifestpath+key
             if (!string.IsNullOrEmpty(template))

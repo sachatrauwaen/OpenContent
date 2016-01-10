@@ -19,11 +19,11 @@ namespace Satrabel.OpenContent.Components.Manifest
         [JsonProperty(PropertyName = "index")]
         public bool Index { get; set; }
 
-        [JsonProperty(PropertyName = "detailTitle")]
-        public string DetailTitle { get; set; }
+        [JsonProperty(PropertyName = "detailMetaTitle")]
+        public string DetailMetaTitle { get; set; }
 
-        [JsonProperty(PropertyName = "detailDescription")]
-        public string DetailDescription { get; set; }
+        [JsonProperty(PropertyName = "detailMetaDescription")]
+        public string DetailMetaDescription { get; set; }
 
         [JsonProperty(PropertyName = "detailMeta")]
         public string DetailMeta { get; set; }

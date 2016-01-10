@@ -19,6 +19,8 @@ using DotNetNuke.Entities.Controllers;
 using DotNetNuke.Entities.Portals;
 using System.Web.UI.WebControls;
 using DotNetNuke.Security.Roles;
+using Lucene.Net.Index;
+using Lucene.Net.Search;
 using Satrabel.OpenContent.Components.Lucene;
 using Satrabel.OpenContent.Components.Lucene.Index;
 using Newtonsoft.Json.Linq;
@@ -81,62 +83,6 @@ namespace Satrabel.OpenContent
         }
         #endregion
 
-        protected void bIndex_Click(object sender, EventArgs e)
-        {
-            TemplateManifest template = null;
-            OpenContentSettings settings = new OpenContentSettings(Settings);
-            bool index = false;
-            if (settings.TemplateAvailable)
-            {
-                index = settings.Manifest.Index;
-            }
-            FieldConfig indexConfig = null;
-            if (index)
-            {
-                indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
-            }
-
-            using (LuceneController lc = LuceneController.Instance)
-            {
-                lc.DeleteAll();
-                OpenContentController occ = new OpenContentController();
-                foreach (var item in occ.GetContents(ModuleId))
-                {
-                    lc.Add(item, indexConfig);
-                }
-                lc.Commit();
-                lc.OptimizeSearchIndex(true);
-                LuceneController.ClearInstance();
-            }
-        }
-
-        protected void bGenerate_Click(object sender, EventArgs e)
-        {
-            OpenContentController occ = new OpenContentController();
-
-            var oc = occ.GetFirstContent(ModuleId);
-            if (oc != null)
-            {
-                var data = JObject.Parse(oc.Json);
-                for (int i = 0; i < 10000; i++)
-                {
-                    data["Title"] = "Title " + i;
-                    var newoc = new OpenContentInfo()
-                    {
-                        Title = "check" + i,
-                        ModuleId = ModuleId,
-                        Html = "tst",
-                        Json = data.ToString(),
-                        CreatedByUserId = UserId,
-                        CreatedOnDate = DateTime.Now,
-                        LastModifiedByUserId = UserId,
-                        LastModifiedOnDate = DateTime.Now
-
-                    };
-                    occ.AddContent(newoc, true, null);
-                }
-            }
-
-        }
+       
     }
 }

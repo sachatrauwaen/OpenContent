@@ -17,7 +17,29 @@ namespace Satrabel.OpenContent.Components.Handlebars
 {
     public class HandlebarsEngine
     {
+        private Func<object, string> template;
         private int JSOrder = 100;
+
+        public void Compile(string source)
+        {
+            var hbs = HandlebarsDotNet.Handlebars.Create();
+            RegisterDivideHelper(hbs);
+            RegisterMultiplyHelper(hbs);
+            RegisterEqualHelper(hbs);
+            RegisterFormatNumberHelper(hbs);
+            RegisterFormatDateTimeHelper(hbs);
+            RegisterImageUrlHelper(hbs);
+            RegisterArrayIndexHelper(hbs);
+            RegisterArrayTranslateHelper(hbs);
+            template = hbs.Compile(source);
+        }
+
+        public string Execute(dynamic model)
+        {
+            var result = template(model);
+            return result;
+        }
+
         public string Execute(string source, dynamic model)
         {
             var hbs = HandlebarsDotNet.Handlebars.Create();
