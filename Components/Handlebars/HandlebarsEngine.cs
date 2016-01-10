@@ -51,8 +51,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterImageUrlHelper(hbs);
             RegisterArrayIndexHelper(hbs);
             RegisterArrayTranslateHelper(hbs);
-            var template = hbs.Compile(source);
-            var result = template(model);
+            var result = CompileTemplate(hbs, source, model);
             return result;
         }
         public string Execute(Page page, FileUri sourceFilename, dynamic model)
@@ -72,8 +71,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterRegisterScriptHelper(hbs, page, sourceFolder);
             RegisterArrayIndexHelper(hbs);
             RegisterArrayTranslateHelper(hbs);
-            var template = hbs.Compile(source);
-            var result = template(model);
+            var result = CompileTemplate(hbs, source, model);
             return result;
         }
         public string Execute(Page page, IModuleControl module, TemplateFiles files, string templateVirtualFolder, dynamic model)
@@ -101,10 +99,24 @@ namespace Satrabel.OpenContent.Components.Handlebars
             //RegisterEditUrlHelper(hbs, module);
             RegisterArrayIndexHelper(hbs);
             RegisterArrayTranslateHelper(hbs);
-            var template = hbs.Compile(source);
-            var result = template(model);
+            var result = CompileTemplate(hbs, source, model);
             return result;
         }
+
+        private string CompileTemplate(IHandlebars hbs, string source, dynamic model)
+        {
+            try
+            {
+                var compiledTemplate = hbs.Compile(source);
+                return compiledTemplate(model);
+            }
+            catch (Exception ex)
+            {
+                Log.Logger.Error(string.Format("Failed to render Handlebar template source:[{0}], model:[{1}]", source, model), ex);
+                throw new Exception("failed to render Handlebar template. See log for more details");
+            }
+        }
+
         private void RegisterTemplate(HandlebarsDotNet.IHandlebars hbs, string name, string sourceFilename)
         {
             string fileName = System.Web.Hosting.HostingEnvironment.MapPath(sourceFilename);
