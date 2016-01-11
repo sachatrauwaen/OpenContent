@@ -145,9 +145,9 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
         private void AddWorkflowFilter(BooleanQuery q)
         {
 
-            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey("status"))
+            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey("publishstatus"))
             {
-                q.Add(new TermQuery(new Term("status", "published")), Occur.MUST); // and
+                q.Add(new TermQuery(new Term("publishstatus", "published")), Occur.MUST); // and
             }
             if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey("publishstartdate"))
             {
