@@ -104,7 +104,8 @@ namespace Satrabel.OpenContent.Components
                     if (Manifest != null && !string.IsNullOrEmpty(Manifest.DetailUrl))
                     {
                         HandlebarsEngine hbEngine = new HandlebarsEngine();
-                        url = OpenContentUtils.CleanupUrl(hbEngine.Execute(Manifest.DetailUrl, dyn));
+                        dynamic dynForHBS = JsonUtils.JsonToDynamic(dyn.ToString());
+                        url = OpenContentUtils.CleanupUrl(hbEngine.Execute(Manifest.DetailUrl, dynForHBS));
                     }
 
                     JObject context = new JObject();
@@ -115,7 +116,7 @@ namespace Satrabel.OpenContent.Components
                     context["IsEditable"] = IsEditable ||
                         (!string.IsNullOrEmpty(editRole) &&
                         OpenContentUtils.HasEditPermissions(PortalSettings, Module, editRole, item.CreatedByUserId));
-                    context["DetailUrl"] = Globals.NavigateURL(MainTabId, false, PortalSettings, "", DnnUtils.GetCurrentCultureCode(), dyn["Title"] == null ? "" : OpenContentUtils.CleanupUrl(url/*dyn["Title"].ToString()*/), "id=" + item.ContentId.ToString());
+                    context["DetailUrl"] = Globals.NavigateURL(MainTabId, false, PortalSettings, "", DnnUtils.GetCurrentCultureCode(), OpenContentUtils.CleanupUrl(url), "id=" + item.ContentId.ToString());
                     context["MainUrl"] = Globals.NavigateURL(MainTabId, false, PortalSettings, "", DnnUtils.GetCurrentCultureCode(), "");
                     items.Add(dyn);
                 }
