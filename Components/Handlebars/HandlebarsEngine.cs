@@ -17,28 +17,28 @@ namespace Satrabel.OpenContent.Components.Handlebars
 {
     public class HandlebarsEngine
     {
-        private Func<object, string> template;
-        private int JSOrder = 100;
+        //private Func<object, string> _template;
+        private int _jsOrder = 100;
 
-        public void Compile(string source)
-        {
-            var hbs = HandlebarsDotNet.Handlebars.Create();
-            RegisterDivideHelper(hbs);
-            RegisterMultiplyHelper(hbs);
-            RegisterEqualHelper(hbs);
-            RegisterFormatNumberHelper(hbs);
-            RegisterFormatDateTimeHelper(hbs);
-            RegisterImageUrlHelper(hbs);
-            RegisterArrayIndexHelper(hbs);
-            RegisterArrayTranslateHelper(hbs);
-            template = hbs.Compile(source);
-        }
+        //public void Compile(string source)
+        //{
+        //    var hbs = HandlebarsDotNet.Handlebars.Create();
+        //    RegisterDivideHelper(hbs);
+        //    RegisterMultiplyHelper(hbs);
+        //    RegisterEqualHelper(hbs);
+        //    RegisterFormatNumberHelper(hbs);
+        //    RegisterFormatDateTimeHelper(hbs);
+        //    RegisterImageUrlHelper(hbs);
+        //    RegisterArrayIndexHelper(hbs);
+        //    RegisterArrayTranslateHelper(hbs);
+        //    _template = hbs.Compile(source);
+        //}
 
-        public string Execute(dynamic model)
-        {
-            var result = template(model);
-            return result;
-        }
+        //public string Execute(dynamic model)
+        //{
+        //    var result = _template(model);
+        //    return result;
+        //}
 
         public string Execute(string source, dynamic model)
         {
@@ -51,8 +51,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterImageUrlHelper(hbs);
             RegisterArrayIndexHelper(hbs);
             RegisterArrayTranslateHelper(hbs);
-            var result = CompileTemplate(hbs, source, model);
-            return result;
+            return CompileTemplate(hbs, source, model);
         }
         public string Execute(Page page, FileUri sourceFilename, dynamic model)
         {
@@ -71,8 +70,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterRegisterScriptHelper(hbs, page, sourceFolder);
             RegisterArrayIndexHelper(hbs);
             RegisterArrayTranslateHelper(hbs);
-            var result = CompileTemplate(hbs, source, model);
-            return result;
+            return CompileTemplate(hbs, source, model);
         }
         public string Execute(Page page, IModuleControl module, TemplateFiles files, string templateVirtualFolder, dynamic model)
         {
@@ -99,8 +97,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             //RegisterEditUrlHelper(hbs, module);
             RegisterArrayIndexHelper(hbs);
             RegisterArrayTranslateHelper(hbs);
-            var result = CompileTemplate(hbs, source, model);
-            return result;
+            return CompileTemplate(hbs, source, model);
         }
 
         private string CompileTemplate(IHandlebars hbs, string source, dynamic model)
@@ -210,7 +207,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     {
                         jsfilename = sourceFolder + jsfilename;
                     }
-                    ClientResourceManager.RegisterScript(page, page.ResolveUrl(jsfilename), JSOrder++/*FileOrder.Js.DefaultPriority*/);
+                    ClientResourceManager.RegisterScript(page, page.ResolveUrl(jsfilename), _jsOrder++/*FileOrder.Js.DefaultPriority*/);
                     //writer.WriteSafeString(Page.ResolveUrl(jsfilename));
                 }
             });
