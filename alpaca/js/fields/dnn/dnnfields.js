@@ -2239,7 +2239,7 @@
             }
 
             if (this.numberDecimalSeparator != '.') {                
-                val = val.replace(this.numberDecimalSeparator, '.');
+                val = ("" + val).replace(this.numberDecimalSeparator, '.');
             }
 
             return parseFloat(val);
