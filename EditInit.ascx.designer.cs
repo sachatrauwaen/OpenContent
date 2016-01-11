@@ -10,10 +10,10 @@
 namespace Satrabel.OpenContent {
     
     
-    public partial class View {
+    public partial class EditInit {
         
         /// <summary>
-        /// TemplateInit control.
+        /// TemplateInitControl control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
