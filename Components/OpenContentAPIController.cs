@@ -196,9 +196,10 @@ namespace Satrabel.OpenContent.Components
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
         [HttpGet]
-        public HttpResponseMessage Settings(string Template)
+        public HttpResponseMessage Settings()
         {
             string data = (string)ActiveModule.ModuleSettings["data"];
+            string Template = (string)ActiveModule.ModuleSettings["template"];
             try
             {
                 var templateUri = new FileUri(Template);
@@ -378,8 +379,8 @@ namespace Satrabel.OpenContent.Components
                 if (json["data"] != null)
                 {
                     var data = json["data"].ToString();
-                    var template = json["template"].ToString();
-                    if (!string.IsNullOrEmpty(template)) mc.UpdateModuleSetting(moduleId, "template", template);
+                    //string template = (string)ActiveModule.ModuleSettings["template"];
+                    //if (!string.IsNullOrEmpty(template)) mc.UpdateModuleSetting(moduleId, "template", template);
                     if (!string.IsNullOrEmpty(data)) mc.UpdateModuleSetting(moduleId, "data", data);
                 }
                 else if (json["form"] != null)

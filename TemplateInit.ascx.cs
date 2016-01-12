@@ -18,14 +18,14 @@ namespace Satrabel.OpenContent
 {
     public partial class TemplateInit : System.Web.UI.UserControl
     {
+        public ModuleInstanceContext ModuleContext { get; set; }
         public OpenContentSettings Settings { get; set; }
         public RenderInfo Renderinfo { get; set; }
+        public bool RenderOnlySaveButton { get; set; }
 
         protected void Page_Load(object sender, EventArgs e)
         {
-
         }
-
         protected void rblFrom_SelectedIndexChanged(object sender, EventArgs e)
         {
             ddlTemplate.Items.Clear();
@@ -89,7 +89,6 @@ namespace Satrabel.OpenContent
             try
             {
                 ModuleController mc = new ModuleController();
-
                 if (rblDataSource.SelectedIndex == 0) // this module
                 {
                     mc.DeleteModuleSetting(ModuleContext.ModuleId, "tabid");
@@ -101,7 +100,6 @@ namespace Satrabel.OpenContent
                     mc.UpdateModuleSetting(ModuleContext.ModuleId, "tabid", dsModule.TabID.ToString());
                     mc.UpdateModuleSetting(ModuleContext.ModuleId, "moduleid", dsModule.ModuleID.ToString());
                 }
-
                 if (rblUseTemplate.SelectedIndex == 0) // existing
                 {
                     mc.UpdateModuleSetting(ModuleContext.ModuleId, "template", ddlTemplate.SelectedValue);
@@ -199,7 +197,7 @@ namespace Satrabel.OpenContent
             hlEditContent.CssClass = "dnnSecondaryAction";
             //if (ModuleContext.PortalSettings.UserInfo.IsSuperUser)
             hlEditSettings.Enabled = false;
-            hlEditSettings.Visible = settingsNeeded;
+            hlEditSettings.Visible = settingsNeeded && !RenderOnlySaveButton;
 
             if (templateDefined && ModuleContext.EditMode && settingsNeeded)
             {
@@ -214,6 +212,8 @@ namespace Satrabel.OpenContent
                 hlEditContent.CssClass = "dnnSecondaryAction";
 
             }
+            hlEditContent.Visible = !RenderOnlySaveButton;
+            hlEditContent2.Visible = !RenderOnlySaveButton;
             hlEditContent.Enabled = false;
             hlEditContent2.Enabled = false;
             if (templateDefined && settingsDefined && ModuleContext.EditMode)
@@ -307,6 +307,6 @@ namespace Satrabel.OpenContent
             }
         }
 
-        public ModuleInstanceContext ModuleContext { get; set; }
+
     }
 }

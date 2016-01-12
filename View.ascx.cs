@@ -99,7 +99,7 @@ namespace Satrabel.OpenContent
                 _settings = ModuleContext.OpenContentSettings();
 
 
-             OpenContent.TemplateInit ti = (TemplateInit) TemplateInitControl;
+            OpenContent.TemplateInit ti = (TemplateInit)TemplateInitControl;
             ti.ModuleContext = ModuleContext;
             ti.Settings = _settings;
             ti.Renderinfo = _renderinfo;
@@ -248,8 +248,8 @@ namespace Satrabel.OpenContent
         }
         private void RenderInitForm()
         {
-            OpenContent.TemplateInit ti = (TemplateInit) TemplateInitControl;
-           
+            OpenContent.TemplateInit ti = (TemplateInit)TemplateInitControl;
+
             ti.RenderInitForm();
         }
         public DotNetNuke.Entities.Modules.Actions.ModuleActionCollection ModuleActions
@@ -310,18 +310,19 @@ namespace Satrabel.OpenContent
                     true,
                     false);
 
-
-                actions.Add(ModuleContext.GetNextActionID(),
-                    Localization.GetString("EditSettings.Action", LocalResourceFile),
-                    ModuleActionType.ContentOptions,
-                    "",
-                    "~/DesktopModules/OpenContent/images/editsettings2.png",
-                    ModuleContext.EditUrl("EditSettings"),
-                    false,
-                    SecurityAccessLevel.Admin,
-                    true,
-                    false);
-
+                if (templateDefined && settings.Template.SettingsNeeded())
+                {
+                    actions.Add(ModuleContext.GetNextActionID(),
+                        Localization.GetString("EditSettings.Action", LocalResourceFile),
+                        ModuleActionType.ContentOptions,
+                        "",
+                        "~/DesktopModules/OpenContent/images/editsettings2.png",
+                        ModuleContext.EditUrl("EditSettings"),
+                        false,
+                        SecurityAccessLevel.Admin,
+                        true,
+                        false);
+                }
                 if (templateDefined && listMode)
                 {
                     //bool queryAvailable = settings.Template.QueryAvailable();
@@ -466,7 +467,8 @@ namespace Satrabel.OpenContent
                 {
                     // single item template
                     GetData(_renderinfo, _settings);
-                    if (!_renderinfo.ShowInitControl)
+                    bool settingsNeeded = _renderinfo.Template.SettingsNeeded();
+                    if (!_renderinfo.ShowInitControl && (!settingsNeeded || !string.IsNullOrEmpty(_renderinfo.SettingsJson)))
                     {
                         _renderinfo.OutputString = GenerateOutput(_renderinfo.Template.Uri(), _renderinfo.DataJson, _renderinfo.SettingsJson, _renderinfo.Template.Main);
                     }
@@ -547,7 +549,7 @@ namespace Satrabel.OpenContent
         }
 
 
-      
+
         public void GetData(RenderInfo info, OpenContentSettings settings)
         {
             info.ResetData();
@@ -846,7 +848,7 @@ namespace Satrabel.OpenContent
         }
         private void RenderDemoData()
         {
-        
+
             TemplateManifest template = _renderinfo.Template;
             if (template != null && template.IsListTemplate)
             {
@@ -876,7 +878,7 @@ namespace Satrabel.OpenContent
                 {
                     _renderinfo.OutputString = GenerateOutput(_renderinfo.Template.Uri(), _renderinfo.DataJson, _renderinfo.SettingsJson, _renderinfo.Template.Main);
                 }
-        
+
 
                 //too many rendering issues 
                 //bool dsDataExist = _datasource.GetOtherModuleDemoData(_info, _info, _settings);

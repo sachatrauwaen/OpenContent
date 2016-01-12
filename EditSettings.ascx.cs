@@ -51,10 +51,9 @@ namespace Satrabel.OpenContent
             base.OnLoad(e);
             if (!Page.IsPostBack)
             {
-                hlTemplateExchange.NavigateUrl = EditUrl("ShareTemplate");
-                //var template = OpenContentUtils.GetTemplate(Settings);
-                var settings = ModuleContext.OpenContentSettings();
-                scriptList.Items.AddRange(OpenContentUtils.GetTemplatesFiles(PortalSettings, ModuleId, settings.Template, "OpenContent", (settings.IsOtherModule ? settings.Template.Uri() : null)).ToArray());
+                                
+                //var settings = ModuleContext.OpenContentSettings();
+                //scriptList.Items.AddRange(OpenContentUtils.GetTemplatesFiles(PortalSettings, ModuleId, settings.Template, "OpenContent", (settings.IsOtherModule ? settings.Template.Uri() : null)).ToArray());
             }
         }
 

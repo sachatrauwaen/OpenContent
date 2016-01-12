@@ -51,7 +51,7 @@ namespace Satrabel.OpenContent
             ti.ModuleContext = ModuleContext;
             ti.Settings = _settings;
             ti.Renderinfo = _renderinfo;
-            
+            ti.RenderOnlySaveButton = true;
         }
 
         protected override void OnPreRender(EventArgs e)
