@@ -114,7 +114,7 @@ namespace Satrabel.OpenContent.Components
                 var portalFolder = folderManager.GetFolder(PortalSettings.PortalId, d ?? "");
                 if (portalFolder==null)
                 {
-                    var exc = new ArgumentException("Folder path not found. Adjust ['folder': 'FolderPath'] in optionfile. ");
+                    var exc = new ArgumentException("Folder path not found. Adjust ['folder': "+d+"] in optionfile. ");
                     Logger.Error(exc);
                     return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
                 }
@@ -126,7 +126,10 @@ namespace Satrabel.OpenContent.Components
                 }
                 int folderLength = d.Length;
 
-                var res = files.Select(f => new { value = f.FileId.ToString(), url = ImageHelper.GetImageUrl(f, new Ratio(40, 40)), text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName })
+                var res = files.Select(f => new { 
+                    value = f.FileId.ToString(), 
+                    url = "/"+ ImageHelper.GetImageUrl(f, new Ratio(40, 40)),  //todo for install in application folder is dat niet voldoende ???
+                    text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName })
                                .Take(100);
 
                 return Request.CreateResponse(HttpStatusCode.OK, res);
