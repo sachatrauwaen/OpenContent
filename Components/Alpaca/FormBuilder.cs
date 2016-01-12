@@ -53,7 +53,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
             foreach (var prop in schemaConfig.Properties)
             {
                 var opts = optionsConfig.Fields.ContainsKey(prop.Key) ? optionsConfig.Fields[prop.Key] : null;
-                if (prop.Key == "status" || prop.Key == "publishstartdate" || prop.Key == "publishenddate")
+                if (prop.Key == "publishstatus" || prop.Key == "publishstartdate" || prop.Key == "publishenddate")
                 {
                     fieldLst.Add(prop.Key);
                     continue;
