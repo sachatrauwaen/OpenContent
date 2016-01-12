@@ -200,6 +200,13 @@
     <Compile Include="Components\TemplateHelpers\MetaTags.cs" />
     <Compile Include="Components\Manifest\RenderInfo.cs" />
     <Compile Include="Components\Common\Utils.cs" />
+    <Compile Include="EditInit.ascx.cs">
+      <DependentUpon>EditInit.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="EditInit.ascx.designer.cs">
+      <DependentUpon>EditInit.ascx</DependentUpon>
+    </Compile>
     <Compile Include="EditQuery.ascx.cs">
       <DependentUpon>EditQuery.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -262,6 +269,13 @@
     </Compile>
     <Compile Include="Settings.ascx.designer.cs">
       <DependentUpon>Settings.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="TemplateInit.ascx.cs">
+      <DependentUpon>TemplateInit.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="TemplateInit.ascx.designer.cs">
+      <DependentUpon>TemplateInit.ascx</DependentUpon>
     </Compile>
     <Compile Include="View.ascx.cs">
       <DependentUpon>View.ascx</DependentUpon>
@@ -337,6 +351,7 @@
     <Content Include="css\images\ui-icons_ef8c08_256x240.png" />
     <Content Include="css\images\ui-icons_ffd27a_256x240.png" />
     <Content Include="css\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="EditInit.ascx" />
     <Content Include="EditQuery.ascx" />
     <Content Include="EditGlobalSettings.ascx" />
     <Content Include="EditSettings.ascx" />
@@ -642,6 +657,7 @@
     <Content Include="module.css" />
     <Content Include="ReleaseNotes.txt" />
     <Content Include="Settings.ascx" />
+    <Content Include="TemplateInit.ascx" />
     <Content Include="View.ascx" />
   </ItemGroup>
   <ItemGroup>
@@ -731,6 +747,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_LocalResources\EditQuery.ascx.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_LocalResources\EditInit.ascx.resx" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

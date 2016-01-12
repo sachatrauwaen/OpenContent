@@ -187,9 +187,12 @@
          */
         setValue: function (value) {
             var self = this;
-
+            if (value == "now") {
+                value = moment().format();
+            } else if (value == "today") {
+                value = moment().startOf('day').format();
+            }
             this.base(value);
-
             if (this.picker) {
                 if (self.options.dateFormat) {
                     if (moment(value, self.options.dateFormat, true).isValid()) {

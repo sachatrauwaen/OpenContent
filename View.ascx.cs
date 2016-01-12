@@ -65,6 +65,8 @@ namespace Satrabel.OpenContent
         {
             base.OnInit(e);
 
+
+
             // auto attach a ContentLocalized OpenContent module to the reference module of the default language
             string openContentAutoAttach = PortalController.GetPortalSetting("OpenContent_AutoAttach", ModuleContext.PortalId, "False");
             bool autoAttach = bool.Parse(openContentAutoAttach);
@@ -95,6 +97,12 @@ namespace Satrabel.OpenContent
 
             if (_settings == null)
                 _settings = ModuleContext.OpenContentSettings();
+
+
+            OpenContent.TemplateInit ti = (TemplateInit)TemplateInitControl;
+            ti.ModuleContext = ModuleContext;
+            ti.Settings = _settings;
+            ti.Renderinfo = _renderinfo;
         }
 
         protected override void OnLoad(EventArgs e)
@@ -161,7 +169,7 @@ namespace Satrabel.OpenContent
         protected override void OnPreRender(EventArgs e)
         {
             //base.OnPreRender(e);
-            pHelp.Visible = false;
+            //pHelp.Visible = false;
             //initialize _info state
             _renderinfo.Template = _settings.Template;
             _renderinfo.DetailItemId = _itemId;
@@ -186,6 +194,7 @@ namespace Satrabel.OpenContent
                     if (_renderinfo.Template == null || ModuleContext.IsEditable)
                     {
                         RenderInitForm();
+                        RenderDemoData();
                     }
                     else if (_renderinfo.Template != null)
                     {
@@ -237,7 +246,12 @@ namespace Satrabel.OpenContent
                 }
             }
         }
+        private void RenderInitForm()
+        {
+            OpenContent.TemplateInit ti = (TemplateInit)TemplateInitControl;
 
+            ti.RenderInitForm();
+        }
         public DotNetNuke.Entities.Modules.Actions.ModuleActionCollection ModuleActions
         {
             get
@@ -261,7 +275,7 @@ namespace Satrabel.OpenContent
                         Localization.GetString((listMode && _itemId == Null.NullInteger ? ModuleActionType.AddContent : ModuleActionType.EditContent), LocalResourceFile),
                         ModuleActionType.AddContent,
                         "",
-                        "",
+                         (listMode && _itemId == Null.NullInteger ? "~/DesktopModules/OpenContent/images/addcontent2.png" : "~/DesktopModules/OpenContent/images/editcontent2.png"),
                         (listMode && _itemId != Null.NullInteger ? ModuleContext.EditUrl("id", _itemId.ToString()) : ModuleContext.EditUrl()),
                         false,
                         SecurityAccessLevel.Edit,
@@ -284,17 +298,31 @@ namespace Satrabel.OpenContent
                                 false);
                 }
                 */
+
                 actions.Add(ModuleContext.GetNextActionID(),
-                    Localization.GetString("EditSettings.Action", LocalResourceFile),
+                    Localization.GetString("EditInit.Action", LocalResourceFile),
                     ModuleActionType.ContentOptions,
                     "",
-                    "~/DesktopModules/OpenContent/images/settings.gif",
-                    ModuleContext.EditUrl("EditSettings"),
+                    "~/DesktopModules/OpenContent/images/editinit.png",
+                    ModuleContext.EditUrl("EditInit"),
                     false,
                     SecurityAccessLevel.Admin,
                     true,
                     false);
 
+                if (templateDefined && settings.Template.SettingsNeeded())
+                {
+                    actions.Add(ModuleContext.GetNextActionID(),
+                        Localization.GetString("EditSettings.Action", LocalResourceFile),
+                        ModuleActionType.ContentOptions,
+                        "",
+                        "~/DesktopModules/OpenContent/images/editsettings2.png",
+                        ModuleContext.EditUrl("EditSettings"),
+                        false,
+                        SecurityAccessLevel.Admin,
+                        true,
+                        false);
+                }
                 if (templateDefined && listMode)
                 {
                     //bool queryAvailable = settings.Template.QueryAvailable();
@@ -304,7 +332,7 @@ namespace Satrabel.OpenContent
                             Localization.GetString("EditQuery.Action", LocalResourceFile),
                             ModuleActionType.ContentOptions,
                             "",
-                            "~/DesktopModules/OpenContent/images/filter.png",
+                            "~/DesktopModules/OpenContent/images/editfilter.png",
                             ModuleContext.EditUrl("EditQuery"),
                             false,
                             SecurityAccessLevel.Admin,
@@ -386,133 +414,6 @@ namespace Satrabel.OpenContent
             }
         }
 
-        protected void rblFrom_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            ddlTemplate.Items.Clear();
-            if (rblFrom.SelectedIndex == 0) // site
-            {
-                var scriptFileSetting = ModuleContext.OpenContentSettings().Template;
-                ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplates(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, "OpenContent").ToArray());
-
-                //ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplatesFiles(ModuleContext.PortalSettings, ModuleContext.moduleId, scriptFileSetting, "OpenContent").ToArray());
-            }
-            else if (rblFrom.SelectedIndex == 1) // web
-            {
-                FeedParser parser = new FeedParser();
-                var items = parser.Parse("http://www.openextensions.net/templates?agentType=rss&PropertyTypeID=9", FeedType.RSS);
-                foreach (var item in items.OrderBy(t => t.Title))
-                {
-                    ddlTemplate.Items.Add(new ListItem(item.Title, item.ZipEnclosure));
-                }
-                if (ddlTemplate.Items.Count > 0)
-                {
-                    tbTemplateName.Text = Path.GetFileNameWithoutExtension(ddlTemplate.Items[0].Value);
-                }
-            }
-        }
-
-        protected void rblDataSource_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (rblDataSource.SelectedIndex == 1) // other module
-            {
-                BindOtherModules(-1, -1);
-                var dsModule = (new ModuleController()).GetTabModule(int.Parse(ddlDataSource.SelectedValue));
-                var dsSettings = dsModule.OpenContentSettings();
-                BindTemplates(dsSettings.Template, dsSettings.Template.Uri());
-            }
-            else // this module
-            {
-                BindOtherModules(-1, -1);
-                BindTemplates(null, null);
-            }
-        }
-
-        protected void rblUseTemplate_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            phFrom.Visible = rblUseTemplate.SelectedIndex == 1;
-            phTemplateName.Visible = rblUseTemplate.SelectedIndex == 1;
-            rblFrom.SelectedIndex = 0;
-            var scriptFileSetting = ModuleContext.OpenContentSettings().Template;
-            ddlTemplate.Items.Clear();
-            if (rblUseTemplate.SelectedIndex == 0) // existing
-            {
-                ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplatesFiles(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, "OpenContent").ToArray());
-            }
-            else if (rblUseTemplate.SelectedIndex == 1) // new
-            {
-                ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplates(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, "OpenContent").ToArray());
-            }
-        }
-
-        protected void bSave_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                ModuleController mc = new ModuleController();
-
-                if (rblDataSource.SelectedIndex == 0) // this module
-                {
-                    mc.DeleteModuleSetting(ModuleContext.ModuleId, "tabid");
-                    mc.DeleteModuleSetting(ModuleContext.ModuleId, "moduleid");
-                }
-                else // other module
-                {
-                    var dsModule = (new ModuleController()).GetTabModule(int.Parse(ddlDataSource.SelectedValue));
-                    mc.UpdateModuleSetting(ModuleContext.ModuleId, "tabid", dsModule.TabID.ToString());
-                    mc.UpdateModuleSetting(ModuleContext.ModuleId, "moduleid", dsModule.ModuleID.ToString());
-                }
-
-                if (rblUseTemplate.SelectedIndex == 0) // existing
-                {
-                    mc.UpdateModuleSetting(ModuleContext.ModuleId, "template", ddlTemplate.SelectedValue);
-                }
-                else if (rblUseTemplate.SelectedIndex == 1) // new
-                {
-                    if (rblFrom.SelectedIndex == 0) // site
-                    {
-                        string oldFolder = Server.MapPath(ddlTemplate.SelectedValue);
-                        string template = OpenContentUtils.CopyTemplate(ModuleContext.PortalId, oldFolder, tbTemplateName.Text);
-                        mc.UpdateModuleSetting(ModuleContext.ModuleId, "template", template);
-                    }
-                    else if (rblFrom.SelectedIndex == 1) // web
-                    {
-                        string fileName = ddlTemplate.SelectedValue;
-                        string template = OpenContentUtils.ImportFromWeb(ModuleContext.PortalId, fileName, tbTemplateName.Text);
-                        mc.UpdateModuleSetting(ModuleContext.ModuleId, "template", template);
-                    }
-                }
-                //don't reset settings. Sure they might be invalid, but maybe not. And you can't ever revert.
-                //mc.DeleteModuleSetting(ModuleContext.ModuleId, "data");
-                Response.Redirect(Globals.NavigateURL(), true);
-            }
-            catch (Exception exc)
-            {
-                //Module failed to load
-                Exceptions.ProcessModuleLoadException(this, exc);
-            }
-        }
-        protected void ddlTemplate_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (rblUseTemplate.SelectedIndex == 0) // existing
-            {
-
-            }
-            else if (rblUseTemplate.SelectedIndex == 1) // new template
-            {
-                if (rblFrom.SelectedIndex == 1) // web
-                {
-                    tbTemplateName.Text = Path.GetFileNameWithoutExtension(ddlTemplate.SelectedValue);
-                }
-            }
-        }
-
-        protected void ddlDataSource_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            var dsModule = (new ModuleController()).GetTabModule(int.Parse(ddlDataSource.SelectedValue));
-            var dsSettings = dsModule.OpenContentSettings();
-            BindTemplates(dsSettings.Template, dsSettings.Template.Uri());
-        }
-
         #endregion
 
 
@@ -531,7 +432,7 @@ namespace Satrabel.OpenContent
                             // for list templates a main template need to be defined
                             _renderinfo.Files = _renderinfo.Template.Main;
                             GetDataList(_renderinfo, _settings, _renderinfo.Template.ClientSideData);
-                            if (!_renderinfo.ShowInitControl)
+                            if (!_renderinfo.SettingsMissing)
                             {
                                 _renderinfo.OutputString = GenerateListOutput(_settings.Template.Uri().UrlFolder, _renderinfo.Template.Main, _renderinfo.DataList, _renderinfo.SettingsJson);
                             }
@@ -566,7 +467,8 @@ namespace Satrabel.OpenContent
                 {
                     // single item template
                     GetData(_renderinfo, _settings);
-                    if (!_renderinfo.ShowInitControl)
+                    bool settingsNeeded = _renderinfo.Template.SettingsNeeded();
+                    if (!_renderinfo.ShowInitControl && (!settingsNeeded || !string.IsNullOrEmpty(_renderinfo.SettingsJson)))
                     {
                         _renderinfo.OutputString = GenerateOutput(_renderinfo.Template.Uri(), _renderinfo.DataJson, _renderinfo.SettingsJson, _renderinfo.Template.Main);
                     }
@@ -647,120 +549,6 @@ namespace Satrabel.OpenContent
         }
 
 
-        private void BindOtherModules(int tabId, int moduleId)
-        {
-            IEnumerable<ModuleInfo> modules = (new ModuleController()).GetModules(ModuleContext.PortalId).Cast<ModuleInfo>();
-
-            modules = modules.Where(m => m.ModuleDefinition.DefinitionName == "OpenContent" && m.IsDeleted == false && !m.OpenContentSettings().IsOtherModule);
-
-            rblDataSource.Items[1].Enabled = modules.Any();
-            phDataSource.Visible = rblDataSource.SelectedIndex == 1; // other module
-            if (rblDataSource.SelectedIndex == 1) // other module
-            {
-                rblUseTemplate.SelectedIndex = 0; // existing template
-                phFrom.Visible = false;
-                phTemplateName.Visible = false;
-            }
-            rblUseTemplate.Items[1].Enabled = rblDataSource.SelectedIndex == 0; // this module
-            ddlDataSource.Items.Clear();
-            var listItems = new List<ListItem>();
-            foreach (var item in modules)
-            {
-                if (item.TabModuleID != ModuleContext.TabModuleId)
-                {
-                    var tc = new TabController();
-                    var tab = tc.GetTab(item.TabID, ModuleContext.PortalId, false);
-                    var tabpath = tab.TabPath.Replace("//", "/").TrimEnd(tab.TabName).Trim('/');
-                    var li = new ListItem(string.Format("{0} [{2}] - {1}", tab.TabName, item.ModuleTitle, tabpath), item.TabModuleID.ToString());
-                    listItems.Add(li);
-                    if (item.TabID == tabId && item.ModuleID == moduleId)
-                    {
-                        li.Selected = true;
-                    }
-                }
-            }
-            foreach (ListItem li in listItems.OrderBy(x => x.Text))
-            {
-                ddlDataSource.Items.Add(li);
-            }
-        }
-
-        private void BindTemplates(TemplateManifest template, FileUri otherModuleTemplate)
-        {
-            ddlTemplate.Items.Clear();
-
-            //var templateUri = template == null ? null : template.Uri;
-            //var otherModuleTemplateUri = otherModuleTemplate == null ? null : otherModuleTemplate.Uri;
-
-            ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplatesFiles(ModuleContext.PortalSettings, ModuleContext.ModuleId, template, "OpenContent", otherModuleTemplate).ToArray());
-            if (ddlTemplate.Items.Count == 0)
-            {
-                rblUseTemplate.Items[0].Enabled = false;
-                rblUseTemplate.SelectedIndex = 1;
-                rblUseTemplate_SelectedIndexChanged(null, null);
-                rblFrom.Items[0].Enabled = false;
-                rblFrom.SelectedIndex = 1;
-                rblFrom_SelectedIndexChanged(null, null);
-
-            }
-        }
-
-        private void BindButtons(OpenContentSettings settings, RenderInfo info)
-        {
-            bool templateDefined = info.Template != null;
-            bool settingsDefined = !string.IsNullOrEmpty(settings.Data);
-            bool settingsNeeded = false;
-
-            if (rblUseTemplate.SelectedIndex == 0) // existing template
-            {
-                //create tmp TemplateManifest
-                var templateManifest = new FileUri(ddlTemplate.SelectedValue).ToTemplateManifest();
-                settingsNeeded = templateManifest.SettingsNeeded();
-
-                templateDefined = templateDefined && (!ddlTemplate.Visible || (settings.Template.Key.FullKeyString() == ddlTemplate.SelectedValue));
-                settingsDefined = settingsDefined || !settingsNeeded;
-            }
-            else // new template
-            {
-                templateDefined = false;
-            }
-
-            bSave.CssClass = "dnnPrimaryAction";
-            bSave.Enabled = true;
-            hlEditSettings.CssClass = "dnnSecondaryAction";
-            hlEditContent.CssClass = "dnnSecondaryAction";
-            //if (ModuleContext.PortalSettings.UserInfo.IsSuperUser)
-            hlEditSettings.Enabled = false;
-            hlEditSettings.Visible = settingsNeeded;
-
-            if (templateDefined && ModuleContext.EditMode && settingsNeeded)
-            {
-                //hlTempleteExchange.NavigateUrl = ModuleContext.EditUrl("ShareTemplate");
-                hlEditSettings.NavigateUrl = ModuleContext.EditUrl("EditSettings");
-                //hlTempleteExchange.Visible = true;
-                hlEditSettings.Enabled = true;
-
-                bSave.CssClass = "dnnSecondaryAction";
-                bSave.Enabled = false;
-                hlEditSettings.CssClass = "dnnPrimaryAction";
-                hlEditContent.CssClass = "dnnSecondaryAction";
-
-            }
-            hlEditContent.Enabled = false;
-            hlEditContent2.Enabled = false;
-            if (templateDefined && settingsDefined && ModuleContext.EditMode)
-            {
-                hlEditContent.NavigateUrl = ModuleContext.EditUrl("Edit");
-                hlEditContent.Enabled = true;
-                hlEditContent2.NavigateUrl = ModuleContext.EditUrl("Edit");
-                hlEditContent2.Enabled = true;
-                bSave.CssClass = "dnnSecondaryAction";
-                bSave.Enabled = false;
-                hlEditSettings.CssClass = "dnnSecondaryAction";
-                hlEditContent.CssClass = "dnnPrimaryAction";
-            }
-        }
-
 
         public void GetData(RenderInfo info, OpenContentSettings settings)
         {
@@ -798,6 +586,10 @@ namespace Satrabel.OpenContent
                     if (!string.IsNullOrEmpty(settings.Query))
                     {
                         queryDef.Build(JObject.Parse(settings.Query), ModuleContext.PortalSettings.UserMode != PortalSettings.Mode.Edit, Request.QueryString);
+                    }
+                    else
+                    {
+                        queryDef.BuildFilter(ModuleContext.PortalSettings.UserMode != PortalSettings.Mode.Edit);
                     }
                     SearchResults docs = LuceneController.Instance.Search(info.ModuleId.ToString(), "Title", queryDef);
                     if (docs != null)
@@ -1024,7 +816,6 @@ namespace Satrabel.OpenContent
             }
             return "";
         }
-
         private string ExecuteRazor(FileUri template, dynamic model)
         {
             string webConfig = template.PhysicalFullDirectory; // Path.GetDirectoryName(template.PhysicalFilePath);
@@ -1047,7 +838,6 @@ namespace Satrabel.OpenContent
                 return "";
             }
         }
-
         private string ExecuteTemplate(string templateVirtualFolder, TemplateFiles files, FileUri template, dynamic model)
         {
             if (template.Extension != ".hbs")
@@ -1060,61 +850,9 @@ namespace Satrabel.OpenContent
                 return hbEngine.Execute(Page, this, files, templateVirtualFolder, model);
             }
         }
-
-
-
-        private void RenderInitForm()
-        {
-            pHelp.Visible = true;
-            if (!Page.IsPostBack)
-            {
-                rblDataSource.SelectedIndex = (_settings.TabId > 0 && _settings.ModuleId > 0 ? 1 : 0);
-                BindOtherModules(_settings.TabId, _settings.ModuleId);
-                BindTemplates(_settings.Template, (_renderinfo.IsOtherModule ? _renderinfo.Template.Uri() : null));
-            }
-            if (rblDataSource.SelectedIndex == 1) // other module
-            {
-                var dsModule = (new ModuleController()).GetTabModule(int.Parse(ddlDataSource.SelectedValue));
-                var dsSettings = dsModule.OpenContentSettings();
-                _renderinfo.SetDataSourceModule(dsModule.TabID, dsModule.ModuleID, dsModule, dsSettings.Template, dsSettings.Data);
-            }
-            BindButtons(_settings, _renderinfo);
-            if (rblUseTemplate.SelectedIndex == 0) // existing template
-            {
-                _renderinfo.Template = new FileUri(ddlTemplate.SelectedValue).ToTemplateManifest();
-                if (rblDataSource.SelectedIndex == 0) // this module
-                {
-                    RenderDemoData();
-                }
-                else // other module
-                {
-                    RenderOtherModuleDemoData();
-                }
-            }
-            else // new template
-            {
-                if (!string.IsNullOrEmpty(ddlTemplate.SelectedValue))
-                {
-                    _renderinfo.Template = new FileUri(ddlTemplate.SelectedValue).ToTemplateManifest();
-                    if (rblFrom.SelectedIndex == 0) // site
-                    {
-                        RenderDemoData();
-                    }
-                }
-            }
-        }
-
         private void RenderDemoData()
         {
-            bool demoExist = GetDemoData(_renderinfo, _settings);
-            if (demoExist)
-            {
-                _renderinfo.OutputString = GenerateOutput(_renderinfo.Template.Uri(), _renderinfo.DataJson, _renderinfo.SettingsJson, _renderinfo.Template.Main);
-            }
-        }
 
-        private void RenderOtherModuleDemoData()
-        {
             TemplateManifest template = _renderinfo.Template;
             if (template != null && template.IsListTemplate)
             {
@@ -1127,7 +865,7 @@ namespace Satrabel.OpenContent
                         // for list templates a main template need to be defined
                         _renderinfo.Files = _renderinfo.Template.Main;
                         GetDataList(_renderinfo, _settings, template.ClientSideData);
-                        if (!_renderinfo.ShowInitControl)
+                        if (!_renderinfo.SettingsMissing)
                         {
                             _renderinfo.OutputString = GenerateListOutput(_renderinfo.Template.Uri().UrlFolder, template.Main, _renderinfo.DataList, _renderinfo.SettingsJson);
                         }
@@ -1136,6 +874,16 @@ namespace Satrabel.OpenContent
             }
             else
             {
+
+                bool demoExist = GetDemoData(_renderinfo, _settings);
+                bool settingsNeeded = _renderinfo.Template.SettingsNeeded();
+
+                if (demoExist && (!settingsNeeded || !string.IsNullOrEmpty(_renderinfo.SettingsJson)))
+                {
+                    _renderinfo.OutputString = GenerateOutput(_renderinfo.Template.Uri(), _renderinfo.DataJson, _renderinfo.SettingsJson, _renderinfo.Template.Main);
+                }
+
+
                 //too many rendering issues 
                 //bool dsDataExist = _datasource.GetOtherModuleDemoData(_info, _info, _settings);
                 //if (dsDataExist)

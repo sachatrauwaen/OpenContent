@@ -32,6 +32,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
             BuildSort(query);
             return this;
         }
+ 
         public QueryDefinition BuildPage(JObject query)
         {
             int maxResults = 0;
