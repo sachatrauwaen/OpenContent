@@ -35,6 +35,7 @@ namespace Satrabel.OpenContent
     {
         private const string cData = "Data";
         private const string cSettings = "Settings";
+        private const string cFilter = "Filter";
 
         #region Event Handlers
 
@@ -142,6 +143,9 @@ namespace Satrabel.OpenContent
                 case cSettings:
                     json = ModuleContext.Settings["data"] as string;
                     break;
+                case cFilter:
+                    json = ModuleContext.Settings["query"] as string;
+                    break;
             }
 
             txtSource.Text = json;
@@ -152,6 +156,7 @@ namespace Satrabel.OpenContent
             sourceList.Items.Clear();
             sourceList.Items.Add(new ListItem(cData, cData));
             sourceList.Items.Add(new ListItem(cSettings, cSettings));
+            sourceList.Items.Add(new ListItem(cFilter, cFilter));
         }
 
         protected void cmdSave_Click(object sender, EventArgs e)
@@ -164,7 +169,18 @@ namespace Satrabel.OpenContent
             {
                 SaveSettings();
             }
+            else if (sourceList.SelectedValue == cFilter)
+            {
+                SaveFilter();
+            }
             Response.Redirect(Globals.NavigateURL(), true);
+        }
+
+        private void SaveFilter()
+        {
+            ModuleController mc = new ModuleController();
+            if (!string.IsNullOrEmpty(txtSource.Text))
+                mc.UpdateModuleSetting(ModuleId, "query", txtSource.Text);
         }
 
         private void SaveData()

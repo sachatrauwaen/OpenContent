@@ -432,7 +432,7 @@ namespace Satrabel.OpenContent
                             // for list templates a main template need to be defined
                             _renderinfo.Files = _renderinfo.Template.Main;
                             GetDataList(_renderinfo, _settings, _renderinfo.Template.ClientSideData);
-                            if (!_renderinfo.ShowInitControl)
+                            if (!_renderinfo.SettingsMissing)
                             {
                                 _renderinfo.OutputString = GenerateListOutput(_settings.Template.Uri().UrlFolder, _renderinfo.Template.Main, _renderinfo.DataList, _renderinfo.SettingsJson);
                             }
@@ -586,6 +586,10 @@ namespace Satrabel.OpenContent
                     if (!string.IsNullOrEmpty(settings.Query))
                     {
                         queryDef.Build(JObject.Parse(settings.Query), ModuleContext.PortalSettings.UserMode != PortalSettings.Mode.Edit, Request.QueryString);
+                    }
+                    else
+                    {
+                        queryDef.BuildFilter(ModuleContext.PortalSettings.UserMode != PortalSettings.Mode.Edit);
                     }
                     SearchResults docs = LuceneController.Instance.Search(info.ModuleId.ToString(), "Title", queryDef);
                     if (docs != null)
@@ -861,7 +865,7 @@ namespace Satrabel.OpenContent
                         // for list templates a main template need to be defined
                         _renderinfo.Files = _renderinfo.Template.Main;
                         GetDataList(_renderinfo, _settings, template.ClientSideData);
-                        if (!_renderinfo.ShowInitControl)
+                        if (!_renderinfo.SettingsMissing)
                         {
                             _renderinfo.OutputString = GenerateListOutput(_renderinfo.Template.Uri().UrlFolder, template.Main, _renderinfo.DataList, _renderinfo.SettingsJson);
                         }

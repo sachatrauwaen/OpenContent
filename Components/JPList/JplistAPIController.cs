@@ -71,6 +71,10 @@ namespace Satrabel.OpenContent.Components.JPList
                         var query = JObject.Parse(settings.Query);
                         def.Build(query, PortalSettings.UserMode != PortalSettings.Mode.Edit);
                     }
+                    else
+                    {
+                        def.BuildFilter(PortalSettings.UserMode != PortalSettings.Mode.Edit);
+                    }
                     
                     var jpListQuery = BuildJpListQuery(req.StatusLst);
                     def.Query = BuildLuceneQuery2(jpListQuery, indexConfig);

@@ -67,15 +67,15 @@ alpacaEngine.engine = function(config) {
 
             $("#"+self.deleteButton).click(function () {
 
-                var postData = JSON.stringify({ id: itemId });
+                var postData = JSON.stringify({ id: self.itemId });
                 //var action = "Delete";
                 $.ajax({
                     type: "POST",
-                    url: sf.getServiceRoot('OpenContent') + "OpenContentAPI/" + self.deleteAction,
+                    url: self.sf.getServiceRoot('OpenContent') + "OpenContentAPI/" + self.deleteAction,
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     data: postData,
-                    beforeSend: sf.setModuleHeaders
+                    beforeSend: self.sf.setModuleHeaders
                 }).done(function (data) {
                     dnnModal.closePopUp(false, "");
                     var href = $("#"+self.saveButton).attr('href');
