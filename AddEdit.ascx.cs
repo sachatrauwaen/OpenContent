@@ -32,10 +32,14 @@ namespace Satrabel.OpenContent
         protected override void OnInit(EventArgs e)
         {
             base.OnInit(e);
-            //string AddEditControl = PortalController.GetPortalSetting("OpenContent_AddEditControl", ModuleContext.PortalId, "");
-
             var settings = ModuleContext.OpenContentSettings();
             Manifest manifest = settings.Manifest;
+
+            if (settings.TemplateKey.Extention != ".manifest")
+            {
+                manifest = ManifestUtils.GetFileManifest(settings.TemplateKey.TemplateDir);
+            }
+
             if (manifest != null)
             {
                 string addEditControl = manifest.AdditionalEditControl;
