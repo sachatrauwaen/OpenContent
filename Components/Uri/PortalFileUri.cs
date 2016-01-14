@@ -57,13 +57,13 @@ namespace Satrabel.OpenContent.Components
             IFileInfo fileInfo = FileManager.Instance.GetFile(fileId);
             if (fileInfo == null)
                 throw new ArgumentNullException(string.Format("iFileInfo not found for id [{0}]", fileId));
-            return NormalizePath(fileInfo.ToUrl());
+            return NormalizePath(fileInfo.ToUrlWithoutLinkClick());
         }
         private static string GetFilePath(IFileInfo fileInfo)
         {
             if (fileInfo == null)
                 throw new ArgumentNullException("fileInfo");
-            return NormalizePath(fileInfo.ToUrl());
+            return NormalizePath(fileInfo.ToUrlWithoutLinkClick());
         }
         #endregion
 

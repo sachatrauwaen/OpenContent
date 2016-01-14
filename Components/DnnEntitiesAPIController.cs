@@ -128,7 +128,7 @@ namespace Satrabel.OpenContent.Components
 
                 var res = files.Select(f => new { 
                     value = f.FileId.ToString(), 
-                    url = "/"+ ImageHelper.GetImageUrl(f, new Ratio(40, 40)),  //todo for install in application folder is dat niet voldoende ???
+                    url = ImageHelper.GetImageUrl(f, new Ratio(40, 40)),  //todo for install in application folder is dat niet voldoende ???
                     text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName })
                                .Take(100);
 
