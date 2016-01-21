@@ -35,8 +35,8 @@ namespace Satrabel.OpenContent.Components
         readonly PortalSettings PortalSettings;
         readonly IEnumerable<OpenContentInfo> DataList = null;
         readonly int MainTabId;
-
-        public ModelFactory(string dataJson, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles manifestFiles, ModuleInfo module, PortalSettings portalSettings, int MainTabId)
+        readonly int MainModuleId;
+        public ModelFactory(string dataJson, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles manifestFiles, ModuleInfo module, PortalSettings portalSettings, int MainTabId, int MainModuleId)
         {
             this.dataJson = dataJson;
             this.settingsJson = settingsJson;
@@ -47,8 +47,9 @@ namespace Satrabel.OpenContent.Components
             this.PortalSettings = portalSettings;
             this.TemplateManifest = templateManifest;
             this.MainTabId = MainTabId > 0 ? MainTabId : module.TabID;
+            this.MainModuleId = MainModuleId > 0 ? MainModuleId : module.ModuleID;
         }
-        public ModelFactory(IEnumerable<OpenContentInfo> dataList, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles manifestFiles, ModuleInfo module, PortalSettings portalSettings, int MainTabId)
+        public ModelFactory(IEnumerable<OpenContentInfo> dataList, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles manifestFiles, ModuleInfo module, PortalSettings portalSettings, int MainTabId, int MainModuleId)
         {
             this.DataList = dataList;
             this.settingsJson = settingsJson;
@@ -59,17 +60,20 @@ namespace Satrabel.OpenContent.Components
             this.PortalSettings = portalSettings;
             this.TemplateManifest = templateManifest;
             this.MainTabId = MainTabId > 0 ? MainTabId : module.TabID;
+            this.MainModuleId = MainModuleId > 0 ? MainModuleId : module.ModuleID;
         }
         public dynamic GetModelAsDynamic()
         {
-            if (DataList == null)
-            {
-                return GetModelAsDynamicFromJson();
-            }
-            else
-            {
-                return GetModelAsDynamicFromList();
-            }
+            JToken model = GetModelAsJson(false);
+            return JsonUtils.JsonToDynamic(model.ToString());
+            //if (DataList == null)
+            //{
+            //    return GetModelAsDynamicFromJson();
+            //}
+            //else
+            //{
+            //    return GetModelAsDynamicFromList();
+            //}
         }
 
         public JToken GetModelAsJson(bool onlyData = false)
@@ -133,7 +137,13 @@ namespace Satrabel.OpenContent.Components
 
         private JToken GetModelAsJsonFromJson()
         {
-            throw new NotImplementedException(); //todo
+            var model = JObject.Parse(dataJson);
+            if (LocaleController.Instance.GetLocales(PortalSettings.PortalId).Count > 1)
+            {
+                JsonUtils.SimplifyJson(model, LocaleController.Instance.GetCurrentLocale(PortalSettings.PortalId).Code);
+            }
+            CompleteModel(model);
+            return model;
         }
         private dynamic GetModelAsDynamicFromList()
         {
@@ -189,10 +199,8 @@ namespace Satrabel.OpenContent.Components
             }
             dynamic model = JsonUtils.JsonToDynamic(json);
             CompleteModel(model);
-
             return model;
         }
-
         private void CompleteModel(dynamic model)
         {
             if (ManifestFiles != null && ManifestFiles.SchemaInTemplate)
@@ -243,6 +251,29 @@ namespace Satrabel.OpenContent.Components
                     model.Options = Options;
                 }
             }
+            // additional data
+            if (ManifestFiles != null && ManifestFiles.AdditionalDataInTemplate && Manifest.AdditionalData != null)
+            {
+                dynamic Data = new ExpandoObject();
+                model.Data = Data;
+                var dic = Data as IDictionary<string, Object>;
+                foreach (var item in Manifest.AdditionalData)
+                {
+                    var dataManifest = Manifest.AdditionalData[item.Key];
+                    string scope = OpenDataUtils.GetScope(dataManifest, PortalSettings, MainModuleId, Module.TabModuleID);
+                    var dc = new OpenDataController();
+                    var data = dc.GetData(scope, dataManifest.StorageKey ?? item.Key);
+                    if (data != null && !string.IsNullOrEmpty(data.Json))
+                    {
+                        string dataJson = data.Json;
+                        if (LocaleController.Instance.GetLocales(PortalSettings.PortalId).Count > 1)
+                        {
+                            dataJson = JsonUtils.SimplifyJson(dataJson, DnnUtils.GetCurrentCultureCode());
+                        }
+                        dic[item.Value.ModelKey ?? item.Key] = JsonUtils.JsonToDynamic(dataJson);
+                    }
+                }
+            }
             // settings
             if (settingsJson != null)
             {
@@ -260,9 +291,7 @@ namespace Satrabel.OpenContent.Components
                                         OpenContentUtils.HasEditPermissions(PortalSettings, Module, editRole, -1));
             model.Context.PortalId = PortalSettings.PortalId;
             model.Context.MainUrl = Globals.NavigateURL(MainTabId, false, PortalSettings, "", DnnUtils.GetCurrentCultureCode());
-
         }
-
         private void CompleteModel(JObject model)
         {
             if (ManifestFiles != null && ManifestFiles.SchemaInTemplate)
@@ -309,6 +338,27 @@ namespace Satrabel.OpenContent.Components
                 if (optionsJson != null)
                 {
                     model["Options"] = optionsJson;
+                }
+            }
+            // additional data
+            if (ManifestFiles != null && ManifestFiles.AdditionalDataInTemplate && Manifest.AdditionalData != null)
+            {
+                model["Data"] = new JObject();
+                foreach (var item in Manifest.AdditionalData)
+                {
+                    var dataManifest = Manifest.AdditionalData[item.Key];
+                    string scope = OpenDataUtils.GetScope(dataManifest, PortalSettings, MainModuleId, Module.TabModuleID);
+                    var dc = new OpenDataController();
+                    var data = dc.GetData(scope, dataManifest.StorageKey ?? item.Key);
+                    if (data != null && !string.IsNullOrEmpty(data.Json))
+                    {
+                        JObject dataJson = JObject.Parse(data.Json);
+                        if (LocaleController.Instance.GetLocales(PortalSettings.PortalId).Count > 1)
+                        {
+                            JsonUtils.SimplifyJson(dataJson, DnnUtils.GetCurrentCultureCode());
+                        }
+                        model[item.Value.ModelKey ?? item.Key] = JObject.Parse(data.Json);
+                    }
                 }
             }
             // settings

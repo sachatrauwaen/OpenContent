@@ -30,14 +30,18 @@
               <name>01.04.01.SqlDataProvider</name>
               <version>01.04.01</version>
             </script>
+             <script type="Install">
+              <path>Providers\DataProviders\SqlDataProvider</path>
+              <name>02.00.03.SqlDataProvider</name>
+              <version>02.00.03</version>
+            </script>
             <script type="UnInstall">
               <path>Providers\DataProviders\SqlDataProvider</path>
               <name>Uninstall.SqlDataProvider</name>
-              <version>00.00.01</version>
+              <version>02.00.03</version>
             </script>
           </scripts>
         </component>
-
         <component type="ResourceFile">
           <resourceFiles>
             <basePath>DesktopModules/OpenContent</basePath>

@@ -282,6 +282,22 @@ namespace Satrabel.OpenContent
                         true,
                         false);
                 }
+                if (templateDefined)
+                {
+                    foreach (var addData in template.Manifest.AdditionalData)
+                    {
+                        actions.Add(ModuleContext.GetNextActionID(),
+                            addData.Value.Title,
+                            ModuleActionType.EditContent,
+                            "",
+                            "~/DesktopModules/OpenContent/images/editcontent2.png",
+                            ModuleContext.EditUrl("key", addData.Key, "EditAddData"),
+                            false,
+                            SecurityAccessLevel.Edit,
+                            true,
+                            false);
+                    }
+                }
                 /*
                 string AddEditControl = PortalController.GetPortalSetting("OpenContent_AddEditControl", ModuleContext.PortalId, "");
                 if (TemplateDefined && !string.IsNullOrEmpty(AddEditControl))
@@ -561,13 +577,12 @@ namespace Satrabel.OpenContent
                 info.SetData(struc.Json, settings.Data);
             }
         }
-
         public void GetDataList(RenderInfo info, OpenContentSettings settings, bool clientSide)
         {
             info.ResetData();
             OpenContentController ctrl = new OpenContentController();
             List<OpenContentInfo> dataList = new List<OpenContentInfo>(); ;
-            if (clientSide)
+            if (clientSide || !info.Files.DataInTemplate)
             {
                 var data = ctrl.GetFirstContent(info.ModuleId);
                 if (data != null)
@@ -713,7 +728,7 @@ namespace Satrabel.OpenContent
 
                     if (!string.IsNullOrEmpty(dataJson))
                     {
-                        ModelFactory mf = new ModelFactory(dataJson, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, ModuleContext.Configuration, ModuleContext.PortalSettings, _settings.TabId);
+                        ModelFactory mf = new ModelFactory(dataJson, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, ModuleContext.Configuration, ModuleContext.PortalSettings, _settings.TabId, _settings.ModuleId);
                         dynamic model = mf.GetModelAsDynamic();
 
                         if (!string.IsNullOrEmpty(_renderinfo.Template.Manifest.DetailMetaTitle))
@@ -764,7 +779,7 @@ namespace Satrabel.OpenContent
                     string physicalTemplateFolder = Server.MapPath(templateVirtualFolder);
                     if (!string.IsNullOrEmpty(dataJson))
                     {
-                        ModelFactory mf = new ModelFactory(dataJson, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, ModuleContext.Configuration, ModuleContext.PortalSettings, _settings.TabId);
+                        ModelFactory mf = new ModelFactory(dataJson, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, ModuleContext.Configuration, ModuleContext.PortalSettings, _settings.TabId, _settings.ModuleId);
                         dynamic model = mf.GetModelAsDynamic();
                         if (template.Extension != ".hbs")
                         {
@@ -804,7 +819,7 @@ namespace Satrabel.OpenContent
                     FileUri templateUri = CheckFiles(templateVirtualFolder, files, physicalTemplateFolder);
                     if (dataList != null)
                     {
-                        ModelFactory mf = new ModelFactory(dataList, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, ModuleContext.Configuration, ModuleContext.PortalSettings, _settings.TabId);
+                        ModelFactory mf = new ModelFactory(dataList, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, ModuleContext.Configuration, ModuleContext.PortalSettings, _settings.TabId, _settings.ModuleId);
                         dynamic model = mf.GetModelAsDynamic();
                         return ExecuteTemplate(templateVirtualFolder, files, templateUri, model);
                     }

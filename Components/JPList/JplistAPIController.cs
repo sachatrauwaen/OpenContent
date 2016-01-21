@@ -100,7 +100,7 @@ namespace Satrabel.OpenContent.Components.JPList
                             dataList.Add(content);
                         }
                     }
-                    ModelFactory mf = new ModelFactory(dataList, settings.Data, settings.Template.Uri().PhysicalFullDirectory, manifest, templateManifest, files, ActiveModule, PortalSettings, settings.TabId);
+                    ModelFactory mf = new ModelFactory(dataList, settings.Data, settings.Template.Uri().PhysicalFullDirectory, manifest, templateManifest, files, ActiveModule, PortalSettings, settings.TabId, settings.ModuleId);
                     var model = mf.GetModelAsJson(true);
                     var res = new ResultDTO()
                     {
