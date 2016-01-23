@@ -6,7 +6,7 @@ using System.Web;
 
 namespace Satrabel.OpenContent.Components.Manifest
 {
-    public class DataManifest
+    public class AdditionalDataManifest
     {
         [JsonProperty(PropertyName = "title")]
         public string Title { get; set; }
@@ -17,6 +17,6 @@ namespace Satrabel.OpenContent.Components.Manifest
         [JsonProperty(PropertyName = "modelKey")]
         public string ModelKey { get; set; }
         [JsonProperty(PropertyName = "templateFolder")]
-        public string templateFolder { get; set; }
+        public string TemplateFolder { get; set; }
     }
 }

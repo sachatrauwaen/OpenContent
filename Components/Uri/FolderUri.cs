@@ -84,6 +84,19 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
+        public FolderUri ParentFolder
+        {
+            get
+            {
+                return new FolderUri(FolderPath.Substring(0, FolderPath.LastIndexOf('/') + 1));
+            }
+        }
+
+        public FolderUri Append(string path)
+        {
+            return new FolderUri(FolderPath + "/" + path.Trim('/'));
+        }
+
         /// <summary>
         /// Gets the normalized application path.
         /// </summary>
@@ -98,6 +111,8 @@ namespace Satrabel.OpenContent.Components
                 return path;
             }
         }
+
+
 
         #region Static Utils
 

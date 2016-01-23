@@ -21,13 +21,13 @@ using Newtonsoft.Json;
 
 namespace Satrabel.OpenContent.Components
 {
-    [TableName("OpenContent_Data")]
-    [PrimaryKey("DataId", AutoIncrement = true)]
-    [Cacheable("OpenContentData", CacheItemPriority.Default, 20)]
+    [TableName("OpenContent_AdditionalData")]
+    [PrimaryKey("AdditionalDataId", AutoIncrement = true)]
+    [Cacheable("OpenContentAdditionalData", CacheItemPriority.Default, 20)]
     [Scope("Scope")]
-    public class OpenDataInfo
+    public class AdditionalDataInfo
     {
-        public int DataId { get; set; }
+        public int AdditionalDataId { get; set; }
         public string Json { get; set; }
         public string Scope { get; set; }
         public string DataKey { get; set; }

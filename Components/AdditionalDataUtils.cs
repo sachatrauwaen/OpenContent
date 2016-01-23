@@ -26,7 +26,7 @@ using Satrabel.OpenContent.Components.Manifest;
 
 namespace Satrabel.OpenContent.Components
 {
-    public static class OpenDataUtils
+    public static class AdditionalDataUtils
     {
 
         internal static string GetScope(string scopeType, PortalSettings ps, int moduleId, int tabModuleId)
@@ -53,9 +53,9 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
-        internal static string GetScope(DataManifest manifest, PortalSettings ps, int moduleId, int tabModuleId)
+        internal static string GetScope(AdditionalDataManifest manifest, PortalSettings ps, int moduleId, int tabModuleId)
         {
-            return OpenDataUtils.GetScope(manifest.ScopeType, ps, moduleId, tabModuleId);
+            return AdditionalDataUtils.GetScope(manifest.ScopeType, ps, moduleId, tabModuleId);
         }
     }
 }

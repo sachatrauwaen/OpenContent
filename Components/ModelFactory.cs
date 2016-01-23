@@ -260,8 +260,8 @@ namespace Satrabel.OpenContent.Components
                 foreach (var item in Manifest.AdditionalData)
                 {
                     var dataManifest = Manifest.AdditionalData[item.Key];
-                    string scope = OpenDataUtils.GetScope(dataManifest, PortalSettings, MainModuleId, Module.TabModuleID);
-                    var dc = new OpenDataController();
+                    string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings, MainModuleId, Module.TabModuleID);
+                    var dc = new AdditionalDataController();
                     var data = dc.GetData(scope, dataManifest.StorageKey ?? item.Key);
                     if (data != null && !string.IsNullOrEmpty(data.Json))
                     {
@@ -347,8 +347,8 @@ namespace Satrabel.OpenContent.Components
                 foreach (var item in Manifest.AdditionalData)
                 {
                     var dataManifest = Manifest.AdditionalData[item.Key];
-                    string scope = OpenDataUtils.GetScope(dataManifest, PortalSettings, MainModuleId, Module.TabModuleID);
-                    var dc = new OpenDataController();
+                    string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings, MainModuleId, Module.TabModuleID);
+                    var dc = new AdditionalDataController();
                     var data = dc.GetData(scope, dataManifest.StorageKey ?? item.Key);
                     if (data != null && !string.IsNullOrEmpty(data.Json))
                     {

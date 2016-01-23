@@ -123,13 +123,14 @@ namespace Satrabel.OpenContent.Components
             var manifest = settings.Manifest;
             TemplateManifest templateManifest = settings.Template;
             var dataManifest = manifest.AdditionalData[key];
-            string scope = OpenDataUtils.GetScope(dataManifest, PortalSettings, module.ModuleID, ActiveModule.TabModuleID);
+            string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings, module.ModuleID, ActiveModule.TabModuleID);
             try
             {
-                var fb = new FormBuilder(settings.TemplateDir);
+                var templateFolder = string.IsNullOrEmpty(dataManifest.TemplateFolder) ? settings.TemplateDir : settings.TemplateDir.ParentFolder.Append(dataManifest.TemplateFolder);
+                var fb = new FormBuilder(templateFolder);
                 JObject json = fb.BuildForm(key);
                 int createdByUserid = -1;
-                var dc = new OpenDataController();
+                var dc = new AdditionalDataController();
                 var data = dc.GetData(scope, dataManifest.StorageKey ?? key);
                 if (data != null)
                 {
@@ -152,7 +153,6 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
-                bool index = false;
                 OpenContentSettings settings = ActiveModule.OpenContentSettings();
                 ModuleInfo module = ActiveModule;
                 if (settings.ModuleId > 0)
@@ -164,12 +164,12 @@ namespace Satrabel.OpenContent.Components
                 TemplateManifest templateManifest = settings.Template;
                 string key = json["key"].ToString();
                 var dataManifest = manifest.AdditionalData[key];
-                string scope = OpenDataUtils.GetScope(dataManifest, PortalSettings, module.ModuleID, ActiveModule.TabModuleID);
-                OpenDataController ctrl = new OpenDataController();
-                OpenDataInfo data = ctrl.GetData(scope, dataManifest.StorageKey ?? key);
+                string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings, module.ModuleID, ActiveModule.TabModuleID);
+                AdditionalDataController ctrl = new AdditionalDataController();
+                AdditionalDataInfo data = ctrl.GetData(scope, dataManifest.StorageKey ?? key);
                 if (data == null)
                 {
-                    data = new OpenDataInfo()
+                    data = new AdditionalDataInfo()
                     {
                         Scope = scope,
                         DataKey = dataManifest.StorageKey ?? key,
@@ -237,7 +237,7 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
-        private static void AddVersions(JObject json, OpenDataInfo data)
+        private static void AddVersions(JObject json, AdditionalDataInfo data)
         {
             if (!string.IsNullOrEmpty(data.VersionsJson))
             {
@@ -524,12 +524,12 @@ namespace Satrabel.OpenContent.Components
             TemplateManifest templateManifest = settings.Template;
             string key = req.dataKey;
             var dataManifest = manifest.AdditionalData[key];
-            string scope = OpenDataUtils.GetScope(dataManifest, PortalSettings, module.ModuleID, ActiveModule.TabModuleID);
+            string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings, module.ModuleID, ActiveModule.TabModuleID);
             List<LookupResultDTO> res = new List<LookupResultDTO>();
             try
             {
-                OpenDataController ctrl = new OpenDataController();
-                OpenDataInfo data = ctrl.GetData(scope, dataManifest.StorageKey ?? key);
+                AdditionalDataController ctrl = new AdditionalDataController();
+                AdditionalDataInfo data = ctrl.GetData(scope, dataManifest.StorageKey ?? key);
                 if (data != null)
                 {
 

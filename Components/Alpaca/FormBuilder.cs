@@ -77,7 +77,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
 
                     fieldLst.Add(prop.Key);
                 }
-                else if (optType == "text" || optType == "mltext" || optType == "checkbox" || optType == "select")
+                else if (optType == "text" || optType == "mltext" || optType == "checkbox" || optType == "select" || optType == "select2")
                 {
                     var newProp = new SchemaConfig()
                     {
@@ -93,6 +93,12 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     {
                         newProp.Type = "array";
                         newField.Type = "checkbox";
+                    }
+                    if (optType == "select2")
+                    {
+                        newProp.Type = "array";
+                        newField.Type = "select2";
+                        newField.DataService = opts == null ? null : opts.DataService;
                     }
                     fieldLst.Add(prop.Key);
                 }
@@ -224,7 +230,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
             {
                 var opts = optionsConfig.Fields.ContainsKey(prop.Key) ? optionsConfig.Fields[prop.Key] : null;
                 string optType = opts == null ? "text" : opts.Type;
-                if (prop.Value.Type == "array" && prop.Value.Enum != null)
+                if (prop.Value.Type == "array" && (prop.Value.Enum != null || optType == "select" || optType == "select2"))
                 {
                     var newField = new FieldConfig()
                     {
@@ -237,7 +243,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     };
                     newConfig.Fields.Add(prop.Key, newField);
                 }
-                else if (prop.Value.Enum != null)
+                else if (prop.Value.Enum != null  || optType == "select" || optType == "select2")
                 {
                     var newField = new FieldConfig()
                     {

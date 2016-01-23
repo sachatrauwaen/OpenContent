@@ -22,7 +22,7 @@ using Satrabel.OpenContent.Components.Lucene.Config;
 
 namespace Satrabel.OpenContent.Components
 {
-    public class OpenDataController
+    public class AdditionalDataController
     {
         #region Commands
 
@@ -30,7 +30,7 @@ namespace Satrabel.OpenContent.Components
         {
             OpenContentVersion ver = new OpenContentVersion()
             {
-                Json = data.Json.ToJObject("Adding Data"),
+                Json = data.Json.ToJObject("Adding AdditionalData"),
                 CreatedByUserId = data.LastModifiedByUserId,
                 CreatedOnDate = data.LastModifiedOnDate
             };
