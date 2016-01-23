@@ -30,5 +30,6 @@
     <file>MLTextField.js</file>
     <file>MLUrlField.js</file>
     <file>mlwysihtmlField.js</file>
+    <file>GuidField.js</file>
   </files>
 </bundle>

@@ -312,6 +312,7 @@
       <DependentUpon>dnnfields.js</DependentUpon>
     </Content>
     <Content Include="alpaca\js\fields\dnn\MLImage2Field.js" />
+    <Content Include="alpaca\js\fields\dnn\GuidField.js" />
     <Content Include="alpaca\js\fields\dnn\Url2Field.js" />
     <Content Include="alpaca\js\fields\dnn\File2Field.js" />
     <Content Include="alpaca\js\fields\dnn\ImageCropperField.js" />
