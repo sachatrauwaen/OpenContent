@@ -134,6 +134,9 @@
     <Compile Include="AddEdit.ascx.designer.cs">
       <DependentUpon>AddEdit.ascx</DependentUpon>
     </Compile>
+    <Compile Include="Components\AdditionalDataController.cs" />
+    <Compile Include="Components\AdditionalDataInfo.cs" />
+    <Compile Include="Components\AdditionalDataUtils.cs" />
     <Compile Include="Components\Alpaca\AlpacaContext.cs" />
     <Compile Include="Components\Alpaca\AlpacaEngine.cs" />
     <Compile Include="Components\Alpaca\FormBuilder.cs" />
@@ -149,6 +152,7 @@
     <Compile Include="Components\Lucene\Config\QueryDefinition.cs" />
     <Compile Include="Components\Alpaca\SchemaConfig.cs" />
     <Compile Include="Components\Lucene\SearchResults.cs" />
+    <Compile Include="Components\Manifest\AdditionalDataManifest.cs" />
     <Compile Include="Components\Manifest\Manifest.cs" />
     <Compile Include="Components\Manifest\ManifestUtils.cs" />
     <Compile Include="Components\Manifest\TemplateKey.cs" />
@@ -201,6 +205,13 @@
     <Compile Include="Components\TemplateHelpers\MetaTags.cs" />
     <Compile Include="Components\Manifest\RenderInfo.cs" />
     <Compile Include="Components\Common\Utils.cs" />
+    <Compile Include="EditAddData.ascx.cs">
+      <DependentUpon>EditAddData.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="EditAddData.ascx.designer.cs">
+      <DependentUpon>EditAddData.ascx</DependentUpon>
+    </Compile>
     <Compile Include="EditInit.ascx.cs">
       <DependentUpon>EditInit.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -352,6 +363,7 @@
     <Content Include="css\images\ui-icons_ef8c08_256x240.png" />
     <Content Include="css\images\ui-icons_ffd27a_256x240.png" />
     <Content Include="css\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="EditAddData.ascx" />
     <Content Include="EditInit.ascx" />
     <Content Include="EditQuery.ascx" />
     <Content Include="EditGlobalSettings.ascx" />
@@ -751,6 +763,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_LocalResources\EditInit.ascx.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Components\Images\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
