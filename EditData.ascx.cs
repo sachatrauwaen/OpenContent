@@ -216,7 +216,7 @@ namespace Satrabel.OpenContent
                     }
                     else
                     {
-                        JObject json = txtSource.Text.ToJObject("Saving txtSource");
+                        var json = txtSource.Text.ToJObject("Saving txtSource");
                         if (data == null)
                         {
                             data = new OpenContentInfo()
@@ -298,7 +298,7 @@ namespace Satrabel.OpenContent
                 }
                 else
                 {
-                    JObject json = txtSource.Text.ToJObject("Saving txtSource");
+                    var json = txtSource.Text.ToJObject("Saving txtSource");
                     if (data == null)
                     {
                         data = new OpenContentInfo()

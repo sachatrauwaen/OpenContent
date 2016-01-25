@@ -275,7 +275,7 @@ namespace Satrabel.OpenContent.Components
             var templateManifest = settings.Template;
             string editRole = manifest == null ? "" : manifest.EditRole;
             bool listMode = templateManifest != null && templateManifest.IsListTemplate;
-            JObject json = new JObject();
+            JToken json = new JObject();
             try
             {
                 int CreatedByUserid = -1;
@@ -317,7 +317,7 @@ namespace Satrabel.OpenContent.Components
                 var fb = new FormBuilder(templateUri);
                 JObject json = fb.BuildForm(key);
 
-                JObject dataJson = data.ToJObject("Raw settings json");
+                var dataJson = data.ToJObject("Raw settings json");
                 if (dataJson != null)
                     json["data"] = dataJson;
 
@@ -537,16 +537,16 @@ namespace Satrabel.OpenContent.Components
                     if (!string.IsNullOrEmpty(req.dataMember))
                     {
                         json = json[req.dataMember];
-                        if (json is JArray)
+                    }
+                    if (json is JArray)
+                    {
+                        foreach (JToken item in (JArray)json)
                         {
-                            foreach (JToken item in (JArray)json)
+                            res.Add(new LookupResultDTO()
                             {
-                                res.Add(new LookupResultDTO()
-                                {
-                                    value = item[req.valueField] == null ? "" : item[req.valueField].ToString(),
-                                    text = item[req.textField] == null ? "" : item[req.textField].ToString()
-                                });
-                            }
+                                value = item[req.valueField] == null ? "" : item[req.valueField].ToString(),
+                                text = item[req.textField] == null ? "" : item[req.textField].ToString()
+                            });
                         }
                     }
                 }
@@ -678,7 +678,7 @@ namespace Satrabel.OpenContent.Components
                 OpenContentSettings settings = ActiveModule.OpenContentSettings();
                 var fb = new FormBuilder(settings.TemplateDir);
                 JObject json = fb.BuildForm(key);
-                JObject dataJson = data.ToJObject("Raw settings json");
+                var dataJson = data.ToJObject("Raw settings json");
                 if (dataJson != null)
                     json["data"] = dataJson;
 

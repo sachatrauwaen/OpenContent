@@ -536,7 +536,7 @@ namespace Satrabel.OpenContent
         private bool Filter(string json, string key, string value)
         {
             bool accept = true;
-            JObject obj = json.ToJObject("query string filter");
+            var obj = json.ToJObject("query string filter");
             JToken member = obj.SelectToken(key, false);
             if (member is JArray)
             {
@@ -574,7 +574,7 @@ namespace Satrabel.OpenContent
             var struc = ctrl.GetFirstContent(info.ModuleId);
             if (struc != null)
             {
-                info.SetData(struc.Json, settings.Data);
+                info.SetData(struc, struc.Json, settings.Data);
             }
         }
         public void GetDataList(RenderInfo info, OpenContentSettings settings, bool clientSide)
@@ -638,7 +638,7 @@ namespace Satrabel.OpenContent
             var struc = ctrl.GetContent(info.DetailItemId);
             if (struc != null && struc.ModuleId == info.ModuleId)
             {
-                info.SetData(struc.Json, settings.Data);
+                info.SetData(struc, struc.Json, settings.Data);
             }
         }
 
@@ -676,7 +676,7 @@ namespace Satrabel.OpenContent
                     }
                 }
                 if (!string.IsNullOrWhiteSpace(fileContent))
-                    info.SetData(fileContent, settingContent);
+                    info.SetData(null, fileContent, settingContent);
             }
             return !info.ShowInitControl; //!string.IsNullOrWhiteSpace(info.DataJson) && (!string.IsNullOrWhiteSpace(info.SettingsJson) || !settingsNeeded);
         }
@@ -690,7 +690,7 @@ namespace Satrabel.OpenContent
             {
                 if (settings.Template != null && info.Template.Uri().FilePath == settings.Template.Uri().FilePath)
                 {
-                    info.SetData(struc.Json, settings.Data);
+                    info.SetData(struc, struc.Json, settings.Data);
                 }
                 if (string.IsNullOrEmpty(info.SettingsJson))
                 {
@@ -700,14 +700,14 @@ namespace Satrabel.OpenContent
                         string settingsContent = File.ReadAllText(settingsFilename);
                         if (!string.IsNullOrWhiteSpace(settingsContent))
                         {
-                            info.SetData(struc.Json, settingsContent);
+                            info.SetData(struc, struc.Json, settingsContent);
                         }
                     }
                 }
                 //Als er OtherModuleSettingsJson bestaan en 
                 if (info.OtherModuleTemplate.Uri().FilePath == info.Template.Uri().FilePath && !string.IsNullOrEmpty(info.OtherModuleSettingsJson))
                 {
-                    info.SetData(struc.Json, info.OtherModuleSettingsJson);
+                    info.SetData(struc, struc.Json, info.OtherModuleSettingsJson);
                 }
 
                 return true;
@@ -728,7 +728,7 @@ namespace Satrabel.OpenContent
 
                     if (!string.IsNullOrEmpty(dataJson))
                     {
-                        ModelFactory mf = new ModelFactory(dataJson, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, ModuleContext.Configuration, ModuleContext.PortalSettings, _settings.TabId, _settings.ModuleId);
+                        ModelFactory mf = new ModelFactory(_renderinfo.Data, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, ModuleContext.Configuration, ModuleContext.PortalSettings, _settings.TabId, _settings.ModuleId);
                         dynamic model = mf.GetModelAsDynamic();
 
                         if (!string.IsNullOrEmpty(_renderinfo.Template.Manifest.DetailMetaTitle))
@@ -779,7 +779,7 @@ namespace Satrabel.OpenContent
                     string physicalTemplateFolder = Server.MapPath(templateVirtualFolder);
                     if (!string.IsNullOrEmpty(dataJson))
                     {
-                        ModelFactory mf = new ModelFactory(dataJson, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, ModuleContext.Configuration, ModuleContext.PortalSettings, _settings.TabId, _settings.ModuleId);
+                        ModelFactory mf = new ModelFactory(_renderinfo.Data, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, ModuleContext.Configuration, ModuleContext.PortalSettings, _settings.TabId, _settings.ModuleId);
                         dynamic model = mf.GetModelAsDynamic();
                         if (template.Extension != ".hbs")
                         {

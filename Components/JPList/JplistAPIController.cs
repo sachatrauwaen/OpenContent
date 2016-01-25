@@ -100,8 +100,8 @@ namespace Satrabel.OpenContent.Components.JPList
                             dataList.Add(content);
                         }
                     }
-                    ModelFactory mf = new ModelFactory(dataList, settings.Data, settings.Template.Uri().PhysicalFullDirectory, manifest, templateManifest, files, ActiveModule, PortalSettings, settings.TabId, settings.ModuleId);
-                    var model = mf.GetModelAsJson(true);
+                    ModelFactory mf = new ModelFactory(dataList, settings.Data, settings.Template.Uri().PhysicalFullDirectory + "\\", manifest, templateManifest, files, ActiveModule, PortalSettings, settings.TabId, settings.ModuleId);
+                    var model = mf.GetModelAsJson();
                     var res = new ResultDTO()
                     {
                         data = model,
@@ -156,7 +156,8 @@ namespace Satrabel.OpenContent.Components.JPList
                                 });
                             }
 
-                            else if (status.type == "checkbox-group-filter" && status.data != null && !String.IsNullOrEmpty(status.name))
+                            else if ((status.type == "checkbox-group-filter" || status.type ==  "button-filter-group") 
+                                        && status.data != null && !String.IsNullOrEmpty(status.name))
                             {
                                 if (status.data.filterType == "pathGroup" && status.data.pathGroup != null && status.data.pathGroup.Count > 0)
                                 {

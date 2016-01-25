@@ -26,6 +26,7 @@ namespace Satrabel.OpenContent.Components
     public class ModelFactory
     {
         readonly string dataJson;
+        readonly OpenContentInfo Data;
         readonly string settingsJson;
         readonly string PhysicalTemplateFolder;
         readonly Manifest.Manifest Manifest;
@@ -39,6 +40,20 @@ namespace Satrabel.OpenContent.Components
         public ModelFactory(string dataJson, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles manifestFiles, ModuleInfo module, PortalSettings portalSettings, int MainTabId, int MainModuleId)
         {
             this.dataJson = dataJson;
+            this.settingsJson = settingsJson;
+            this.PhysicalTemplateFolder = physicalTemplateFolder;
+            this.Manifest = manifest;
+            this.ManifestFiles = manifestFiles;
+            this.Module = module;
+            this.PortalSettings = portalSettings;
+            this.TemplateManifest = templateManifest;
+            this.MainTabId = MainTabId > 0 ? MainTabId : module.TabID;
+            this.MainModuleId = MainModuleId > 0 ? MainModuleId : module.ModuleID;
+        }
+        public ModelFactory(OpenContentInfo data, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles manifestFiles, ModuleInfo module, PortalSettings portalSettings, int MainTabId, int MainModuleId)
+        {
+            this.dataJson = data.Json;
+            this.Data = data;
             this.settingsJson = settingsJson;
             this.PhysicalTemplateFolder = physicalTemplateFolder;
             this.Manifest = manifest;
@@ -190,6 +205,7 @@ namespace Satrabel.OpenContent.Components
                                    "/DesktopModules/OpenContent/API/RssAPI/GetFeed?moduleId=" + Module.ModuleID + "&tabId=" + MainTabId;
             return model;
         }
+        /*
         private dynamic GetModelAsDynamicFromJson()
         {
             string json = dataJson;
@@ -201,6 +217,8 @@ namespace Satrabel.OpenContent.Components
             CompleteModel(model);
             return model;
         }
+         */
+        /*
         private void CompleteModel(dynamic model)
         {
             if (ManifestFiles != null && ManifestFiles.SchemaInTemplate)
@@ -280,6 +298,7 @@ namespace Satrabel.OpenContent.Components
                 model.Settings = JsonUtils.JsonToDynamic(settingsJson);
             }
             string editRole = Manifest == null ? "" : Manifest.EditRole;
+                        
             // context
             model.Context = new ExpandoObject();
             model.Context.ModuleId = Module.ModuleID;
@@ -292,6 +311,7 @@ namespace Satrabel.OpenContent.Components
             model.Context.PortalId = PortalSettings.PortalId;
             model.Context.MainUrl = Globals.NavigateURL(MainTabId, false, PortalSettings, "", DnnUtils.GetCurrentCultureCode());
         }
+         */
         private void CompleteModel(JObject model)
         {
             if (ManifestFiles != null && ManifestFiles.SchemaInTemplate)
@@ -350,15 +370,16 @@ namespace Satrabel.OpenContent.Components
                     string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings, MainModuleId, Module.TabModuleID);
                     var dc = new AdditionalDataController();
                     var data = dc.GetData(scope, dataManifest.StorageKey ?? item.Key);
+                    JToken dataJson = new JObject();
                     if (data != null && !string.IsNullOrEmpty(data.Json))
                     {
-                        JObject dataJson = JObject.Parse(data.Json);
+                        dataJson = JToken.Parse(data.Json);
                         if (LocaleController.Instance.GetLocales(PortalSettings.PortalId).Count > 1)
                         {
                             JsonUtils.SimplifyJson(dataJson, DnnUtils.GetCurrentCultureCode());
                         }
-                        model[item.Value.ModelKey ?? item.Key] = JObject.Parse(data.Json);
                     }
+                    model[item.Value.ModelKey ?? item.Key] = dataJson;
                 }
             }
             // settings
@@ -378,6 +399,18 @@ namespace Satrabel.OpenContent.Components
                                         OpenContentUtils.HasEditPermissions(PortalSettings, Module, editRole, -1));
             context["PortalId"] = PortalSettings.PortalId;
             context["MainUrl"] = Globals.NavigateURL(MainTabId, false, PortalSettings, "", DnnUtils.GetCurrentCultureCode());
+            if (Data != null)
+            {
+                string url = "";
+                if (Manifest != null && !string.IsNullOrEmpty(Manifest.DetailUrl))
+                {
+                    HandlebarsEngine hbEngine = new HandlebarsEngine();
+                    dynamic dynForHBS = JsonUtils.JsonToDynamic(model.ToString());
+                    url = OpenContentUtils.CleanupUrl(hbEngine.Execute(Manifest.DetailUrl, dynForHBS));
+                }
+                context["DetailUrl"] = Globals.NavigateURL(MainTabId, false, PortalSettings, "", DnnUtils.GetCurrentCultureCode(), OpenContentUtils.CleanupUrl(url), "id=" + Data.ContentId.ToString());
+            }
+
         }
 
         private string EditUrl()

@@ -12,7 +12,7 @@ namespace Satrabel.OpenContent.Components.Json
             return jsonData.Trim().Substring(0, 1).IndexOfAny(new[] { '[', '{' }) == 0;
         }
 
-        public static JObject LoadJsonFromFile(string filename)
+        public static JToken LoadJsonFromFile(string filename)
         {
             return new FileUri(filename).ToJObject();
         }
@@ -31,6 +31,7 @@ namespace Satrabel.OpenContent.Components.Json
         }
         public static void SimplifyJson(JObject o, string culture)
         {
+
             foreach (var child in o.Children<JProperty>())
             {
                 var childProperty = child;
@@ -69,6 +70,31 @@ namespace Satrabel.OpenContent.Components.Json
                             SimplifyJson(obj, culture);
                         }
                     }
+                }
+            }
+        }
+
+        public static void SimplifyJson(JToken o, string culture)
+        {
+
+            var array = o as JArray;
+            if (array != null)
+            {
+                foreach (var value in array)
+                {
+                    var obj = value as JObject;
+                    if (obj != null)
+                    {
+                        SimplifyJson(obj, culture);
+                    }
+                }
+            }
+            else
+            {
+                var obj = o as JObject;
+                if (obj != null)
+                {
+                    SimplifyJson(obj, culture);
                 }
             }
         }

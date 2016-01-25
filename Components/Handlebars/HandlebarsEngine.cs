@@ -11,34 +11,35 @@ using DotNetNuke.UI.Modules;
 using System.Globalization;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.TemplateHelpers;
+using Satrabel.OpenContent.Components.Dynamic;
 
 
 namespace Satrabel.OpenContent.Components.Handlebars
 {
     public class HandlebarsEngine
     {
-        //private Func<object, string> _template;
+        private Func<object, string> _template;
         private int _jsOrder = 100;
 
-        //public void Compile(string source)
-        //{
-        //    var hbs = HandlebarsDotNet.Handlebars.Create();
-        //    RegisterDivideHelper(hbs);
-        //    RegisterMultiplyHelper(hbs);
-        //    RegisterEqualHelper(hbs);
-        //    RegisterFormatNumberHelper(hbs);
-        //    RegisterFormatDateTimeHelper(hbs);
-        //    RegisterImageUrlHelper(hbs);
-        //    RegisterArrayIndexHelper(hbs);
-        //    RegisterArrayTranslateHelper(hbs);
-        //    _template = hbs.Compile(source);
-        //}
+        public void Compile(string source)
+        {
+            var hbs = HandlebarsDotNet.Handlebars.Create();
+            RegisterDivideHelper(hbs);
+            RegisterMultiplyHelper(hbs);
+            RegisterEqualHelper(hbs);
+            RegisterFormatNumberHelper(hbs);
+            RegisterFormatDateTimeHelper(hbs);
+            RegisterImageUrlHelper(hbs);
+            RegisterArrayIndexHelper(hbs);
+            RegisterArrayTranslateHelper(hbs);
+            _template = hbs.Compile(source);
+        }
 
-        //public string Execute(dynamic model)
-        //{
-        //    var result = _template(model);
-        //    return result;
-        //}
+        public string Execute(dynamic model)
+        {
+            var result = _template(model);
+            return result;
+        }
 
         public string Execute(string source, dynamic model)
         {
@@ -51,6 +52,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterImageUrlHelper(hbs);
             RegisterArrayIndexHelper(hbs);
             RegisterArrayTranslateHelper(hbs);
+            RegisterArrayLookupHelper(hbs);
             return CompileTemplate(hbs, source, model);
         }
         public string Execute(Page page, FileUri sourceFilename, dynamic model)
@@ -70,6 +72,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterRegisterScriptHelper(hbs, page, sourceFolder);
             RegisterArrayIndexHelper(hbs);
             RegisterArrayTranslateHelper(hbs);
+            RegisterArrayLookupHelper(hbs);
             return CompileTemplate(hbs, source, model);
         }
         public string Execute(Page page, IModuleControl module, TemplateFiles files, string templateVirtualFolder, dynamic model)
@@ -97,6 +100,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             //RegisterEditUrlHelper(hbs, module);
             RegisterArrayIndexHelper(hbs);
             RegisterArrayTranslateHelper(hbs);
+            RegisterArrayLookupHelper(hbs);
             return CompileTemplate(hbs, source, model);
         }
 
@@ -326,6 +330,69 @@ namespace Satrabel.OpenContent.Components.Handlebars
 
         }
 
+        private void RegisterArrayLookupHelper(HandlebarsDotNet.IHandlebars hbs)
+        {
+            hbs.RegisterHelper("lookup", (writer, options, context, arguments) =>
+            {
+                object[] arr;
+                if (arguments[0] is IEnumerable<Object>)
+                {
+                    var en = arguments[0] as IEnumerable<Object>;
+                    arr = en.ToArray();
+                }
+                else
+                {
+                    arr = (object[])arguments[0];
+                }
+
+                var field = arguments[1].ToString();
+                var value = arguments[2].ToString();
+                foreach (var obj in arr)
+                {
+                    Object member = DynamicUtils.GetMemberValue(obj, field);
+                    if (value.Equals(member))
+                    {
+                        options.Template(writer, (object)obj);
+                    }
+                }
+                options.Inverse(writer, (object)context);
+            });
+            /*
+            hbs.RegisterHelper("arraylookup", (writer, context, parameters) =>
+            {
+                try
+                {
+                    object[] arr;
+                    if (parameters[0] is IEnumerable<Object>)
+                    {
+                        var en = parameters[0] as IEnumerable<Object>;
+                        arr = en.ToArray();
+                    }
+                    else
+                    {
+                        arr = (object[])parameters[0];
+                    }
+                    
+                    var value = parameters[1].ToString();
+                    var text = parameters[2].ToString();
+                    var key = parameters[3].ToString();
+                    foreach (var item in collection)
+                    {
+                        
+                    }
+                    object res = b[i];
+                    string c = parameters[2].ToString();
+                    HandlebarsDotNet.HandlebarsExtensions.
+                    //HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, res.ToString());
+                }
+                catch (Exception)
+                {
+                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "");
+                }
+            });
+            */
+        }
+
         private void RegisterFormatNumberHelper(HandlebarsDotNet.IHandlebars hbs)
         {
             hbs.RegisterHelper("formatNumber", (writer, context, parameters) =>
@@ -365,8 +432,11 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     //DateTime? datetime = parameters[0] as DateTime?;
 
                     DateTime datetime = DateTime.Parse(parameters[0].ToString(), null, System.Globalization.DateTimeStyles.RoundtripKind);
-
-                    string format = parameters[1].ToString();
+                    string format = "dd/MM/yyyy";
+                    if (parameters.Count() > 1)
+                    {
+                        format = parameters[1].ToString();
+                    }
                     if (parameters.Count() > 2 && !string.IsNullOrWhiteSpace(parameters[2].ToString()))
                     {
                         string provider = parameters[2].ToString();
