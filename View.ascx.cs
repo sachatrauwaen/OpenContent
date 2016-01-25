@@ -16,7 +16,7 @@ using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Modules.Actions;
 using DotNetNuke.Services.Localization;
 using DotNetNuke.Security;
-using DotNetNuke.Web.Razor;
+using Satrabel.OpenContent.Components.Razor;
 using System.IO;
 using DotNetNuke.Services.Exceptions;
 using System.Web.UI;
@@ -53,7 +53,7 @@ namespace Satrabel.OpenContent
     /// If so, it will render the template
     /// If not, it will display a 
     /// </summary>
-    public partial class View : RazorModuleBase, IActionable
+    public partial class View : DotNetNuke.Web.Razor.RazorModuleBase, IActionable
     {
         private int _itemId = Null.NullInteger;
         private readonly RenderInfo _renderinfo = new RenderInfo();
@@ -910,9 +910,9 @@ namespace Satrabel.OpenContent
         private void RazorRender(WebPageBase webpage, TextWriter writer, dynamic model)
         {
             var httpContext = new HttpContextWrapper(System.Web.HttpContext.Current);
-            if ((webpage) is DotNetNukeWebPage<dynamic>)
+            if ((webpage) is OpenContentWebPage<dynamic>)
             {
-                var mv = (DotNetNukeWebPage<dynamic>)webpage;
+                var mv = (OpenContentWebPage<dynamic>)webpage;
                 mv.Model = model;
             }
             if (webpage != null)

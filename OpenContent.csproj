@@ -13,7 +13,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Satrabel.OpenContent</RootNamespace>
     <AssemblyName>OpenContent</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
@@ -101,7 +101,7 @@
     </Reference>
     <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\bin\System.Net.Http.Formatting.dll</HintPath>
+      <HintPath>..\..\bin\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
@@ -111,11 +111,11 @@
     </Reference>
     <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\bin\System.Web.Http.dll</HintPath>
+      <HintPath>..\..\bin\System.Web.Http.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.WebPages, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\bin\System.Web.WebPages.dll</HintPath>
+      <HintPath>..\..\bin\System.Web.WebPages.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
@@ -149,16 +149,13 @@
     <Compile Include="Components\Lucene\Config\QueryDefinition.cs" />
     <Compile Include="Components\Alpaca\SchemaConfig.cs" />
     <Compile Include="Components\Lucene\SearchResults.cs" />
-    <Compile Include="Components\Manifest\AdditionalDataManifest.cs" />
     <Compile Include="Components\Manifest\Manifest.cs" />
     <Compile Include="Components\Manifest\ManifestUtils.cs" />
     <Compile Include="Components\Manifest\TemplateKey.cs" />
     <Compile Include="Components\ModelFactory.cs" />
     <Compile Include="Components\Manifest\TemplateFiles.cs" />
     <Compile Include="Components\Manifest\PartialTemplate.cs" />
-    <Compile Include="Components\AdditionalDataUtils.cs" />
-    <Compile Include="Components\AdditionalDataController.cs" />
-    <Compile Include="Components\AdditionalDataInfo.cs" />
+    <Compile Include="Components\Razor\RazorEngine.cs" />
     <Compile Include="Components\Rss\RssApiController.cs" />
     <Compile Include="Components\TemplateHelpers\OtherExtentions.cs" />
     <Compile Include="Components\Manifest\TemplateManifest.cs" />
@@ -210,13 +207,6 @@
     </Compile>
     <Compile Include="EditInit.ascx.designer.cs">
       <DependentUpon>EditInit.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="EditAddData.ascx.cs">
-      <DependentUpon>EditAddData.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EditAddData.ascx.designer.cs">
-      <DependentUpon>EditAddData.ascx</DependentUpon>
     </Compile>
     <Compile Include="EditQuery.ascx.cs">
       <DependentUpon>EditQuery.ascx</DependentUpon>
@@ -312,7 +302,6 @@
       <DependentUpon>dnnfields.js</DependentUpon>
     </Content>
     <Content Include="alpaca\js\fields\dnn\MLImage2Field.js" />
-    <Content Include="alpaca\js\fields\dnn\GuidField.js" />
     <Content Include="alpaca\js\fields\dnn\Url2Field.js" />
     <Content Include="alpaca\js\fields\dnn\File2Field.js" />
     <Content Include="alpaca\js\fields\dnn\ImageCropperField.js" />
@@ -364,7 +353,6 @@
     <Content Include="css\images\ui-icons_ffd27a_256x240.png" />
     <Content Include="css\images\ui-icons_ffffff_256x240.png" />
     <Content Include="EditInit.ascx" />
-    <Content Include="EditAddData.ascx" />
     <Content Include="EditQuery.ascx" />
     <Content Include="EditGlobalSettings.ascx" />
     <Content Include="EditSettings.ascx" />
@@ -553,7 +541,6 @@
     <Content Include="js\alpaca-1.5.8\alpaca\web\alpaca.min.js.map">
       <DependentUpon>alpaca.min.js</DependentUpon>
     </Content>
-    <Content Include="Providers\DataProviders\SqlDataProvider\02.00.03.SqlDataProvider" />
     <None Include="Scripts\_references.js" />
     <Content Include="js\select2\i18n\az.js" />
     <Content Include="js\select2\i18n\bg.js" />
@@ -764,9 +751,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_LocalResources\EditInit.ascx.resx" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="App_LocalResources\EditAddData.ascx.resx" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
