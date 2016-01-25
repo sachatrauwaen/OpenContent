@@ -43,3 +43,4 @@ alpaca/js/fields/dnn/dnnfields.js
 alpaca/js/fields/dnn/dnnfields.min.js
 ResourcesZip/
 *.zip
+*.log
