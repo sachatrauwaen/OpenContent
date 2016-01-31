@@ -2557,6 +2557,7 @@
 (function($) {
 
     var Alpaca = $.alpaca;
+
     
     Alpaca.Fields.Select2Field = Alpaca.Fields.ListField.extend(
     /**
@@ -2590,11 +2591,6 @@
             this.base();
         },
 
-        ObjectToId: function () {
-        },
-        IdToObject: function () {
-        },
-
         getValue: function () {
             if (this.control && this.control.length > 0) {
                 var val = this._getControlVal(true);
@@ -2606,6 +2602,7 @@
                         val[i] = this.ensureProperType(val[i]);
                     }
                 }
+
                 return this.base(val);
             }
         },
