@@ -549,6 +549,19 @@ namespace Satrabel.OpenContent.Components
                             });
                         }
                     }
+                    /*
+                    else if (json is JObject)
+                    {
+                        foreach (var item in json.Children<JProperty>())
+                        {
+                            res.Add(new LookupResultDTO()
+                            {
+                                value = dataManifest.ModelKey ?? key +"/"+item.Name,
+                                text = item.Value[req.textField] == null ? "" : item.Value[req.textField].ToString()
+                            });
+                        }
+                    }
+                     */
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, res);
             }

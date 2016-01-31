@@ -32,6 +32,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterImageUrlHelper(hbs);
             RegisterArrayIndexHelper(hbs);
             RegisterArrayTranslateHelper(hbs);
+            RegisterIfAndHelper(hbs);
             _template = hbs.Compile(source);
         }
 
@@ -53,6 +54,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterArrayIndexHelper(hbs);
             RegisterArrayTranslateHelper(hbs);
             RegisterArrayLookupHelper(hbs);
+            RegisterIfAndHelper(hbs);
             return CompileTemplate(hbs, source, model);
         }
         public string Execute(Page page, FileUri sourceFilename, dynamic model)
@@ -73,6 +75,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterArrayIndexHelper(hbs);
             RegisterArrayTranslateHelper(hbs);
             RegisterArrayLookupHelper(hbs);
+            RegisterIfAndHelper(hbs);
             return CompileTemplate(hbs, source, model);
         }
         public string Execute(Page page, IModuleControl module, TemplateFiles files, string templateVirtualFolder, dynamic model)
@@ -101,6 +104,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterArrayIndexHelper(hbs);
             RegisterArrayTranslateHelper(hbs);
             RegisterArrayLookupHelper(hbs);
+            RegisterIfAndHelper(hbs);
             return CompileTemplate(hbs, source, model);
         }
 
@@ -461,6 +465,25 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 catch (Exception)
                 {
                     HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "");
+                }
+            });
+        }
+        private void RegisterIfAndHelper(IHandlebars hbs)
+        {
+            hbs.RegisterHelper("ifand", (writer, options, context, arguments) =>
+            {
+                bool res = true;
+                foreach (var arg in arguments)
+                {
+                    res = res && HandlebarsUtils.IsTruthyOrNonEmpty(arg);
+                }
+                if (res)
+                {
+                    options.Template(writer, (object)context);
+                }
+                else
+                {
+                    options.Inverse(writer, (object)context);
                 }
             });
         }

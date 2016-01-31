@@ -31,5 +31,6 @@
     <file>MLUrlField.js</file>
     <file>mlwysihtmlField.js</file>
     <file>GuidField.js</file>
+    <file>IconField.js</file>
   </files>
 </bundle>

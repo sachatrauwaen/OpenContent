@@ -233,7 +233,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             //validate whether index folder is exist and contains index files, otherwise return null.
             if (!ValidateIndexFolder())
             {
-                return null;
+                return luceneResults;
             }
             var searcher = GetSearcher();
             TopDocs topDocs;

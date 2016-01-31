@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Newtonsoft.Json.Linq;
+using Satrabel.OpenContent.Components.Alpaca;
 
 
 namespace Satrabel.OpenContent.Components.Json
@@ -31,13 +32,13 @@ namespace Satrabel.OpenContent.Components.Json
         }
         public static void SimplifyJson(JObject o, string culture)
         {
-
-            foreach (var child in o.Children<JProperty>())
+            foreach (var child in o.Children<JProperty>().ToList())
             {
                 var childProperty = child;
                 var array = childProperty.Value as JArray;
                 if (array != null)
                 {
+
                     foreach (var value in array)
                     {
                         var obj = value as JObject;
@@ -73,6 +74,111 @@ namespace Satrabel.OpenContent.Components.Json
                 }
             }
         }
+        public static void LookupJson(JObject o, JObject additionalData, JObject options)
+        {
+            foreach (var child in o.Children<JProperty>().ToList())
+            {
+                JObject opt = null;
+                if (options != null && options["fields"] != null)
+                {
+                    opt = options["fields"][child.Name] as JObject;
+                }
+                bool lookup = opt != null && 
+                    opt["type"] != null &&
+                    opt["type"].ToString() == "select2" &&
+                    opt["dataService"] != null &&
+                    opt["dataService"]["data"] != null &&
+                    opt["dataService"]["data"]["dataKey"] != null;
+
+                string dataKey = "";
+                string dataMember = "";
+                string valueField = "Id";
+                if (lookup)
+                {
+                    dataKey = opt["dataService"]["data"]["dataKey"].ToString();
+                    dataMember = opt["dataService"]["data"]["dataMember"] == null ? "" : opt["dataService"]["data"]["dataMember"].ToString();
+                    valueField = opt["dataService"]["data"]["valueField"] == null ? "Id" : opt["dataService"]["data"]["valueField"].ToString();
+                }
+                              
+                var childProperty = child;
+
+                if (childProperty.Value is JArray)
+                {
+                    var array = childProperty.Value as JArray;
+                    JArray newArray = new JArray();
+                    foreach (var value in array)
+                    {
+                        var obj = value as JObject;
+                        if (obj != null)
+                        {
+                            LookupJson(obj, additionalData, opt["items"] as JObject);
+                        }
+                        else if (lookup)
+                        {
+                            var val = value as JValue;
+                            if (val != null)
+                            {
+                                try
+                                {
+                                    newArray.Add(GenerateObject(additionalData, dataKey, val.ToString(), dataMember, valueField));
+                                }
+                                catch (System.Exception)
+                                {
+                                }
+                            }
+                        }
+                    }
+                    if (lookup)
+                    {
+                        childProperty.Value = newArray;
+                    }
+                }
+                else if (childProperty.Value is JObject)
+                {
+                    var obj = childProperty.Value as JObject;
+                    LookupJson(obj, additionalData, opt);
+                }
+                else if (childProperty.Value is JValue)
+                {
+                    if (lookup)
+                    {
+                        string val = childProperty.Value.ToString();
+                        try
+                        {
+                            o[childProperty.Name] = GenerateObject(additionalData, dataKey, val, dataMember, valueField);
+                        }
+                        catch (System.Exception)
+                        {
+                        }
+                    }
+                }
+            }
+        }
+
+        private static JObject GenerateObject(JObject additionalData, string key, string id, string dataMember, string valueField)
+        {
+            var json = additionalData[key];
+            if (!string.IsNullOrEmpty(dataMember))
+            {
+                json = json[dataMember];
+            }
+            JArray array = json as JArray;
+            if (array != null)
+            {
+                foreach (var obj in array)
+                {
+                    var objid = obj[valueField].ToString();
+                    if (id.Equals(objid))
+                    {
+                        return obj as JObject;
+                    }
+                }
+            }
+            JObject res = new JObject();
+            res["Id"] = id;
+            res["Title"] = "unknow";
+            return res;
+        }
 
         public static void SimplifyJson(JToken o, string culture)
         {
@@ -96,6 +202,14 @@ namespace Satrabel.OpenContent.Components.Json
                 {
                     SimplifyJson(obj, culture);
                 }
+            }
+        }
+
+        internal static void Merge(JObject model, JObject completeModel)
+        {
+            foreach (var prop in completeModel.Properties())
+            {
+                model[prop.Name] = prop.Value;
             }
         }
     }

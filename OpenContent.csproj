@@ -312,6 +312,7 @@
     <Content Include="alpaca\js\fields\dnn\dnnfields.min.js">
       <DependentUpon>dnnfields.js</DependentUpon>
     </Content>
+    <Content Include="alpaca\js\fields\dnn\IconField.js" />
     <Content Include="alpaca\js\fields\dnn\MLImage2Field.js" />
     <Content Include="alpaca\js\fields\dnn\Url2Field.js" />
     <Content Include="alpaca\js\fields\dnn\File2Field.js" />
@@ -553,6 +554,7 @@
     <Content Include="js\alpaca-1.5.8\alpaca\web\alpaca.min.js.map">
       <DependentUpon>alpaca.min.js</DependentUpon>
     </Content>
+    <Content Include="Providers\DataProviders\SqlDataProvider\02.00.03.SqlDataProvider" />
     <None Include="Scripts\_references.js" />
     <Content Include="js\select2\i18n\az.js" />
     <Content Include="js\select2\i18n\bg.js" />

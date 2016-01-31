@@ -52,6 +52,7 @@ namespace Satrabel.OpenContent.Components.Manifest
         public OpenContentInfo Data { get; private set; }
         public IEnumerable<OpenContentInfo> DataList { get; private set; }
         public bool DataExist { get; set; }
+        public bool ShowDemoData { get; set; }
         public bool ShowInitControl { 
             get { 
                 return !DataExist || (string.IsNullOrEmpty(SettingsJson) && Template.SettingsNeeded()); 

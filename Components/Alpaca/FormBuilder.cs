@@ -58,7 +58,10 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     fieldLst.Add(prop.Key);
                     continue;
                 }
-
+                if (prop.Value.Type == "object")
+                {                    
+                    continue;
+                }
                 string optType = opts == null ? "text" : opts.Type;
 
                 if (prop.Value.Type == "boolean")

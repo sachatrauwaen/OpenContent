@@ -9,8 +9,8 @@
 /************************************************************/
 
 
-IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}OpenContent_Data]') AND type in (N'U'))
-DROP TABLE {databaseOwner}[{objectQualifier}OpenContent_Data]
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}OpenContent_AdditionalData]') AND type in (N'U'))
+DROP TABLE {databaseOwner}[{objectQualifier}OpenContent_AdditionalData]
 GO
 
 CREATE TABLE {databaseOwner}{objectQualifier}OpenContent_AdditionalData
@@ -31,7 +31,7 @@ GO
 ALTER TABLE {databaseOwner}{objectQualifier}OpenContent_AdditionalData ADD CONSTRAINT
     PK_{objectQualifier}OpenContent_AdditionalData PRIMARY KEY CLUSTERED 
     (
-    DataId
+    AdditionalDataId
     ) WITH( STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 
 GO
