@@ -258,13 +258,41 @@ namespace Satrabel.OpenContent.Components.Lucene
                 PageSize = PageSize
             };
             def.BuildSort(Sorts);
-            
+
             return Search(type, DefaultFieldName, def);
         }
         public SearchResults Search(string type, string DefaultFieldName, QueryDefinition def)
-        {            
+        {
             return Search(type, def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
         }
+        /*
+        public SearchResults FacetSearch(string type, string DefaultFieldName, QueryDefinition def)
+        {
+            var luceneResults = new SearchResults();
+            //validate whether index folder is exist and contains index files, otherwise return null.
+            if (!ValidateIndexFolder())
+            {
+                return luceneResults;
+            }
+            var searcher = GetSearcher();
+            SimpleFacetedSearch sfs = new SimpleFacetedSearch(searcher.IndexReader, new string[] { "source", "category" });
+            SimpleFacetedSearch.Hits hits = sfs.Search(def.Query, def.PageSize);
+	        
+	        luceneResults.ToalResults  = (int)hits.TotalHitCount;
+            foreach (SimpleFacetedSearch.HitsPerFacet hpf in hits.HitsPerFacet)
+            {
+		        long hitCountPerFacet = hpf.HitCount;
+                SimpleFacetedSearch.FacetName name = hpf.Name;
+
+                foreach (Document doc in hpf.Documents)
+                {
+                     ........
+                }
+            }
+            
+            return Search(type, def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
+        }
+        */
         public static Query ParseQuery(string searchQuery, string DefaultFieldName)
         {
             var parser = new QueryParser(global::Lucene.Net.Util.Version.LUCENE_30, DefaultFieldName, JsonMappingUtils.GetAnalyser());
