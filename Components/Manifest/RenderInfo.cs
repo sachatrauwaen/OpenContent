@@ -32,8 +32,9 @@ namespace Satrabel.OpenContent.Components.Manifest
             SettingsJson = "";
         }
 
-        public void SetData(string dataJson, string settingsData)
+        public void SetData(OpenContentInfo data, string dataJson, string settingsData)
         {
+            Data = data;
             DataJson = dataJson;
             SettingsJson = settingsData;
             if (!string.IsNullOrWhiteSpace(dataJson)) DataExist = true;            
@@ -48,9 +49,10 @@ namespace Satrabel.OpenContent.Components.Manifest
 
         public string DataJson { get; private set; }
         public string SettingsJson { get; private set; }
-
+        public OpenContentInfo Data { get; private set; }
         public IEnumerable<OpenContentInfo> DataList { get; private set; }
         public bool DataExist { get; set; }
+        public bool ShowDemoData { get; set; }
         public bool ShowInitControl { 
             get { 
                 return !DataExist || (string.IsNullOrEmpty(SettingsJson) && Template.SettingsNeeded()); 

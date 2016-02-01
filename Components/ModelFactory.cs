@@ -26,6 +26,7 @@ namespace Satrabel.OpenContent.Components
     public class ModelFactory
     {
         readonly string dataJson;
+        readonly OpenContentInfo Data;
         readonly string settingsJson;
         readonly string PhysicalTemplateFolder;
         readonly Manifest.Manifest Manifest;
@@ -33,10 +34,12 @@ namespace Satrabel.OpenContent.Components
         readonly TemplateFiles ManifestFiles;
         readonly ModuleInfo Module;
         readonly PortalSettings PortalSettings;
+        readonly int PortalId;
         readonly IEnumerable<OpenContentInfo> DataList = null;
         readonly int MainTabId;
-
-        public ModelFactory(string dataJson, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles manifestFiles, ModuleInfo module, PortalSettings portalSettings, int MainTabId)
+        readonly int MainModuleId;
+        readonly string CultureCode;
+        public ModelFactory(string dataJson, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles manifestFiles, ModuleInfo module, PortalSettings portalSettings, int MainTabId, int MainModuleId)
         {
             this.dataJson = dataJson;
             this.settingsJson = settingsJson;
@@ -45,10 +48,42 @@ namespace Satrabel.OpenContent.Components
             this.ManifestFiles = manifestFiles;
             this.Module = module;
             this.PortalSettings = portalSettings;
+            this.PortalId = portalSettings.PortalId;
             this.TemplateManifest = templateManifest;
             this.MainTabId = MainTabId > 0 ? MainTabId : module.TabID;
+            this.MainModuleId = MainModuleId > 0 ? MainModuleId : module.ModuleID;
         }
-        public ModelFactory(IEnumerable<OpenContentInfo> dataList, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles manifestFiles, ModuleInfo module, PortalSettings portalSettings, int MainTabId)
+        public ModelFactory(OpenContentInfo data, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles manifestFiles, ModuleInfo module, PortalSettings portalSettings, int MainTabId, int MainModuleId)
+        {
+            this.dataJson = data.Json;
+            this.Data = data;
+            this.settingsJson = settingsJson;
+            this.PhysicalTemplateFolder = physicalTemplateFolder;
+            this.Manifest = manifest;
+            this.ManifestFiles = manifestFiles;
+            this.Module = module;
+            this.PortalSettings = portalSettings;
+            this.PortalId = portalSettings.PortalId;
+            this.TemplateManifest = templateManifest;
+            this.MainTabId = MainTabId > 0 ? MainTabId : module.TabID;
+            this.MainModuleId = MainModuleId > 0 ? MainModuleId : module.ModuleID;
+        }
+        public ModelFactory(OpenContentInfo data, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles manifestFiles, ModuleInfo module, int portalId, string cultureCode,int MainTabId, int MainModuleI)
+        {
+            this.dataJson = data.Json;
+            this.Data = data;
+            this.settingsJson = settingsJson;
+            this.PhysicalTemplateFolder = physicalTemplateFolder;
+            this.Manifest = manifest;
+            this.ManifestFiles = manifestFiles;
+            this.Module = module;
+            this.PortalId = portalId;
+            this.CultureCode = cultureCode;
+            this.TemplateManifest = templateManifest;
+            this.MainTabId = MainTabId > 0 ? MainTabId : module.TabID;
+            this.MainModuleId = MainModuleId > 0 ? MainModuleId : module.ModuleID;
+        }
+        public ModelFactory(IEnumerable<OpenContentInfo> dataList, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles manifestFiles, ModuleInfo module, PortalSettings portalSettings, int MainTabId, int MainModuleId)
         {
             this.DataList = dataList;
             this.settingsJson = settingsJson;
@@ -57,26 +92,30 @@ namespace Satrabel.OpenContent.Components
             this.ManifestFiles = manifestFiles;
             this.Module = module;
             this.PortalSettings = portalSettings;
+            this.PortalId = portalSettings.PortalId;
             this.TemplateManifest = templateManifest;
             this.MainTabId = MainTabId > 0 ? MainTabId : module.TabID;
+            this.MainModuleId = MainModuleId > 0 ? MainModuleId : module.ModuleID;
         }
-        public dynamic GetModelAsDynamic()
+        public dynamic GetModelAsDynamic(bool onlyData = false)
         {
-            if (DataList == null)
-            {
-                return GetModelAsDynamicFromJson();
-            }
-            else
-            {
-                return GetModelAsDynamicFromList();
-            }
+            JToken model = GetModelAsJson(onlyData);
+            return JsonUtils.JsonToDynamic(model.ToString());
+            //if (DataList == null)
+            //{
+            //    return GetModelAsDynamicFromJson();
+            //}
+            //else
+            //{
+            //    return GetModelAsDynamicFromList();
+            //}
         }
 
         public JToken GetModelAsJson(bool onlyData = false)
         {
             if (DataList == null)
             {
-                return GetModelAsJsonFromJson();
+                return GetModelAsJsonFromJson(onlyData);
             }
             else
             {
@@ -87,6 +126,12 @@ namespace Satrabel.OpenContent.Components
         private JToken GetModelAsJsonFromList(bool onlyData)
         {
             JObject model = new JObject();
+            if (!onlyData)
+            {
+                CompleteModel(model, onlyData);
+                model["Context"]["RssUrl"] = PortalSettings.PortalAlias.HTTPAlias +
+                       "/DesktopModules/OpenContent/API/RssAPI/GetFeed?moduleId=" + Module.ModuleID + "&tabId=" + MainTabId;
+            }
             JArray items = new JArray(); ;
             model["Items"] = items;
             string editRole = Manifest == null ? "" : Manifest.EditRole;
@@ -95,46 +140,58 @@ namespace Satrabel.OpenContent.Components
                 foreach (var item in DataList)
                 {
                     string itemDataJson = item.Json;
-                    if (LocaleController.Instance.GetLocales(PortalSettings.PortalId).Count > 1)
-                    {
-                        itemDataJson = JsonUtils.SimplifyJson(itemDataJson, DnnUtils.GetCurrentCultureCode());
-                    }
                     JObject dyn = JObject.Parse(itemDataJson);
-                    string url = "";
-                    if (Manifest != null && !string.IsNullOrEmpty(Manifest.DetailUrl))
+                    if (LocaleController.Instance.GetLocales(PortalId).Count > 1)
                     {
-                        HandlebarsEngine hbEngine = new HandlebarsEngine();
-                        dynamic dynForHBS = JsonUtils.JsonToDynamic(dyn.ToString());
-                        url = OpenContentUtils.CleanupUrl(hbEngine.Execute(Manifest.DetailUrl, dynForHBS));
+                        JsonUtils.SimplifyJson(dyn, GetCurrentCultureCode());
                     }
-
-                    JObject context = new JObject();
-                    dyn["Context"] = context;
-
-                    context["Id"] = item.ContentId;
-                    context["EditUrl"] = EditUrl("id", item.ContentId.ToString());
-                    context["IsEditable"] = IsEditable ||
-                        (!string.IsNullOrEmpty(editRole) &&
-                        OpenContentUtils.HasEditPermissions(PortalSettings, Module, editRole, item.CreatedByUserId));
-                    context["DetailUrl"] = Globals.NavigateURL(MainTabId, false, PortalSettings, "", DnnUtils.GetCurrentCultureCode(), OpenContentUtils.CleanupUrl(url), "id=" + item.ContentId.ToString());
-                    context["MainUrl"] = Globals.NavigateURL(MainTabId, false, PortalSettings, "", DnnUtils.GetCurrentCultureCode(), "");
+                    if (Manifest.AdditionalData != null && model["AdditionalData"] != null && model["Options"] != null)
+                    {
+                        JsonUtils.LookupJson(dyn, model["AdditionalData"] as JObject, model["Options"] as JObject);
+                    }
+                   
+                    if (!onlyData)
+                    {
+                        string url = "";
+                        if (Manifest != null && !string.IsNullOrEmpty(Manifest.DetailUrl))
+                        {
+                            HandlebarsEngine hbEngine = new HandlebarsEngine();
+                            dynamic dynForHBS = JsonUtils.JsonToDynamic(dyn.ToString());
+                            url = hbEngine.Execute(Manifest.DetailUrl, dynForHBS);
+                        }
+                        JObject context = new JObject();
+                        dyn["Context"] = context;
+                        context["Id"] = item.ContentId;
+                        context["EditUrl"] = EditUrl("id", item.ContentId.ToString());
+                        context["IsEditable"] = IsEditable ||
+                            (!string.IsNullOrEmpty(editRole) &&
+                            OpenContentUtils.HasEditPermissions(PortalSettings, Module, editRole, item.CreatedByUserId));
+                        context["DetailUrl"] = Globals.NavigateURL(MainTabId, false, PortalSettings, "", GetCurrentCultureCode(), OpenContentUtils.CleanupUrl(url), "id=" + item.ContentId.ToString());
+                        context["MainUrl"] = Globals.NavigateURL(MainTabId, false, PortalSettings, "", GetCurrentCultureCode(), "");
+                    }
                     items.Add(dyn);
                 }
-            }
-            if (!onlyData)
-            {
-                CompleteModel(model);
-                model["Context"]["RssUrl"] = PortalSettings.PortalAlias.HTTPAlias +
-                       "/DesktopModules/OpenContent/API/RssAPI/GetFeed?moduleId=" + Module.ModuleID + "&tabId=" + MainTabId;
-
             }
             return model;
         }
 
-        private JToken GetModelAsJsonFromJson()
+        private JToken GetModelAsJsonFromJson(bool onlyData)
         {
-            throw new NotImplementedException(); //todo
+            var model = JObject.Parse(dataJson);
+            if (LocaleController.Instance.GetLocales(PortalId).Count > 1)
+            {
+                JsonUtils.SimplifyJson(model, GetCurrentCultureCode());
+            }
+            var completeModel = new JObject();
+            CompleteModel(completeModel, onlyData);
+            if (Manifest.AdditionalData != null && completeModel["AdditionalData"] != null && completeModel["Options"] != null)
+            {
+                JsonUtils.LookupJson(model, completeModel["AdditionalData"] as JObject, completeModel["Options"] as JObject);
+            }
+            JsonUtils.Merge(model, completeModel);
+            return model;
         }
+        /*
         private dynamic GetModelAsDynamicFromList()
         {
             dynamic model = new ExpandoObject();
@@ -180,6 +237,8 @@ namespace Satrabel.OpenContent.Components
                                    "/DesktopModules/OpenContent/API/RssAPI/GetFeed?moduleId=" + Module.ModuleID + "&tabId=" + MainTabId;
             return model;
         }
+         */
+        /*
         private dynamic GetModelAsDynamicFromJson()
         {
             string json = dataJson;
@@ -189,10 +248,10 @@ namespace Satrabel.OpenContent.Components
             }
             dynamic model = JsonUtils.JsonToDynamic(json);
             CompleteModel(model);
-
             return model;
         }
-
+         */
+        /*
         private void CompleteModel(dynamic model)
         {
             if (ManifestFiles != null && ManifestFiles.SchemaInTemplate)
@@ -243,12 +302,36 @@ namespace Satrabel.OpenContent.Components
                     model.Options = Options;
                 }
             }
+            // additional data
+            if (ManifestFiles != null && ManifestFiles.AdditionalDataInTemplate && Manifest.AdditionalData != null)
+            {
+                dynamic Data = new ExpandoObject();
+                model.Data = Data;
+                var dic = Data as IDictionary<string, Object>;
+                foreach (var item in Manifest.AdditionalData)
+                {
+                    var dataManifest = Manifest.AdditionalData[item.Key];
+                    string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings, MainModuleId, Module.TabModuleID);
+                    var dc = new AdditionalDataController();
+                    var data = dc.GetData(scope, dataManifest.StorageKey ?? item.Key);
+                    if (data != null && !string.IsNullOrEmpty(data.Json))
+                    {
+                        string dataJson = data.Json;
+                        if (LocaleController.Instance.GetLocales(PortalSettings.PortalId).Count > 1)
+                        {
+                            dataJson = JsonUtils.SimplifyJson(dataJson, DnnUtils.GetCurrentCultureCode());
+                        }
+                        dic[item.Value.ModelKey ?? item.Key] = JsonUtils.JsonToDynamic(dataJson);
+                    }
+                }
+            }
             // settings
             if (settingsJson != null)
             {
                 model.Settings = JsonUtils.JsonToDynamic(settingsJson);
             }
             string editRole = Manifest == null ? "" : Manifest.EditRole;
+                        
             // context
             model.Context = new ExpandoObject();
             model.Context.ModuleId = Module.ModuleID;
@@ -260,10 +343,9 @@ namespace Satrabel.OpenContent.Components
                                         OpenContentUtils.HasEditPermissions(PortalSettings, Module, editRole, -1));
             model.Context.PortalId = PortalSettings.PortalId;
             model.Context.MainUrl = Globals.NavigateURL(MainTabId, false, PortalSettings, "", DnnUtils.GetCurrentCultureCode());
-
         }
-
-        private void CompleteModel(JObject model)
+         */
+        private void CompleteModel(JObject model, bool onlyData)
         {
             if (ManifestFiles != null && ManifestFiles.SchemaInTemplate)
             {
@@ -293,7 +375,7 @@ namespace Satrabel.OpenContent.Components
                     }
                 }
                 // language options
-                optionsFilename = PhysicalTemplateFolder + "options." + DnnUtils.GetCurrentCultureCode() + ".json";
+                optionsFilename = PhysicalTemplateFolder + "options." + GetCurrentCultureCode() + ".json";
                 if (File.Exists(optionsFilename))
                 {
                     string fileContent = File.ReadAllText(optionsFilename);
@@ -311,25 +393,80 @@ namespace Satrabel.OpenContent.Components
                     model["Options"] = optionsJson;
                 }
             }
-            // settings
-            if (settingsJson != null)
+            // additional data
+            if (ManifestFiles != null && ManifestFiles.AdditionalDataInTemplate && Manifest.AdditionalData != null)
             {
-                model["Settings"] = JObject.Parse(settingsJson);
+                var AdditionalData = model["AdditionalData"] = new JObject();
+                foreach (var item in Manifest.AdditionalData)
+                {
+                    var dataManifest = Manifest.AdditionalData[item.Key];
+                    string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings, MainModuleId, Module.TabModuleID);
+                    var dc = new AdditionalDataController();
+                    var data = dc.GetData(scope, dataManifest.StorageKey ?? item.Key);
+                    JToken dataJson = new JObject();
+                    if (data != null && !string.IsNullOrEmpty(data.Json))
+                    {
+                        dataJson = JToken.Parse(data.Json);
+                        if (LocaleController.Instance.GetLocales(PortalId).Count > 1)
+                        {
+                            JsonUtils.SimplifyJson(dataJson, GetCurrentCultureCode());
+                        }
+                    }
+                    AdditionalData[item.Value.ModelKey ?? item.Key] = dataJson;
+                }
+            }
+            // settings
+            if (!string.IsNullOrEmpty(settingsJson))
+            {
+                try
+                {
+                    model["Settings"] = JObject.Parse(settingsJson);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Error parsing Json of Settings", ex);
+                }
             }
             string editRole = Manifest == null ? "" : Manifest.EditRole;
-            // context
-            JObject context = new JObject();
-            model["Context"] = context;
-            context["ModuleId"] = Module.ModuleID;
-            context["ModuleTitle"] = Module.ModuleTitle;
-            context["AddUrl"] = EditUrl();
-            context["IsEditable"] = IsEditable ||
-                                      (!string.IsNullOrEmpty(editRole) &&
-                                        OpenContentUtils.HasEditPermissions(PortalSettings, Module, editRole, -1));
-            context["PortalId"] = PortalSettings.PortalId;
-            context["MainUrl"] = Globals.NavigateURL(MainTabId, false, PortalSettings, "", DnnUtils.GetCurrentCultureCode());
+            if (!onlyData)
+            {
+                // context
+                JObject context = new JObject();
+                model["Context"] = context;
+                context["ModuleId"] = Module.ModuleID;
+                context["ModuleTitle"] = Module.ModuleTitle;
+                context["AddUrl"] = EditUrl();
+                context["IsEditable"] = IsEditable ||
+                                          (!string.IsNullOrEmpty(editRole) &&
+                                            OpenContentUtils.HasEditPermissions(PortalSettings, Module, editRole, -1));
+                context["PortalId"] = PortalId;
+                context["MainUrl"] = Globals.NavigateURL(MainTabId, false, PortalSettings, "", GetCurrentCultureCode());
+                if (Data != null)
+                {
+                    string url = "";
+                    if (Manifest != null && !string.IsNullOrEmpty(Manifest.DetailUrl))
+                    {
+                        HandlebarsEngine hbEngine = new HandlebarsEngine();
+                        dynamic dynForHBS = JsonUtils.JsonToDynamic(model.ToString());
+                        url = hbEngine.Execute(Manifest.DetailUrl, dynForHBS);
+                    }
+                    context["DetailUrl"] = Globals.NavigateURL(MainTabId, false, PortalSettings, "", GetCurrentCultureCode(), OpenContentUtils.CleanupUrl(url), "id=" + Data.ContentId.ToString());
+                }
+            }
         }
 
+        private string GetCurrentCultureCode()
+        {
+            if (string.IsNullOrEmpty(CultureCode))
+            {
+                return DnnUtils.GetCurrentCultureCode();
+            }
+            else
+            {
+                return CultureCode;
+            }
+            
+        }
         private string EditUrl()
         {
             return EditUrl("", "", "Edit");
@@ -338,7 +475,6 @@ namespace Satrabel.OpenContent.Components
         {
             return EditUrl("", "", controlKey);
         }
-
         private string EditUrl(string keyName, string keyValue)
         {
             return EditUrl(keyName, keyValue, "Edit");
@@ -424,6 +560,7 @@ namespace Satrabel.OpenContent.Components
             return cultureCode;
         }
         private bool? _isEditable;
+        
         private bool IsEditable
         {
             get

@@ -8,7 +8,7 @@ namespace Satrabel.OpenContent.Components
 {
     public class OpenContentVersion
     {
-        public JObject Json { get; set; }
+        public JToken Json { get; set; }
         public int CreatedByUserId { get; set; }
         public DateTime CreatedOnDate { get; set; }
     }

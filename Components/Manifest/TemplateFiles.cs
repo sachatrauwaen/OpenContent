@@ -5,6 +5,10 @@ namespace Satrabel.OpenContent.Components.Manifest
 {
     public class TemplateFiles
     {
+        public TemplateFiles()
+        {
+            DataInTemplate = true;
+        }
         [JsonProperty(PropertyName = "template")]
         public string Template { get; set; }
 
@@ -16,5 +20,9 @@ namespace Satrabel.OpenContent.Components.Manifest
 
         [JsonProperty(PropertyName = "optionsInTemplate")]
         public bool OptionsInTemplate { get; set; }
+        [JsonProperty(PropertyName = "additionalDataInTemplate")]
+        public bool AdditionalDataInTemplate { get; set; }
+        [JsonProperty(PropertyName = "dataInTemplate")]
+        public bool DataInTemplate { get; set; }
     }
 }

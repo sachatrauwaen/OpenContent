@@ -13,7 +13,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Satrabel.OpenContent</RootNamespace>
     <AssemblyName>OpenContent</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
@@ -134,6 +134,9 @@
     <Compile Include="AddEdit.ascx.designer.cs">
       <DependentUpon>AddEdit.ascx</DependentUpon>
     </Compile>
+    <Compile Include="Components\AdditionalDataController.cs" />
+    <Compile Include="Components\AdditionalDataInfo.cs" />
+    <Compile Include="Components\AdditionalDataUtils.cs" />
     <Compile Include="Components\Alpaca\AlpacaContext.cs" />
     <Compile Include="Components\Alpaca\AlpacaEngine.cs" />
     <Compile Include="Components\Alpaca\FormBuilder.cs" />
@@ -149,6 +152,7 @@
     <Compile Include="Components\Lucene\Config\QueryDefinition.cs" />
     <Compile Include="Components\Alpaca\SchemaConfig.cs" />
     <Compile Include="Components\Lucene\SearchResults.cs" />
+    <Compile Include="Components\Manifest\AdditionalDataManifest.cs" />
     <Compile Include="Components\Manifest\Manifest.cs" />
     <Compile Include="Components\Manifest\ManifestUtils.cs" />
     <Compile Include="Components\Manifest\TemplateKey.cs" />
@@ -201,6 +205,13 @@
     <Compile Include="Components\TemplateHelpers\MetaTags.cs" />
     <Compile Include="Components\Manifest\RenderInfo.cs" />
     <Compile Include="Components\Common\Utils.cs" />
+    <Compile Include="EditAddData.ascx.cs">
+      <DependentUpon>EditAddData.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="EditAddData.ascx.designer.cs">
+      <DependentUpon>EditAddData.ascx</DependentUpon>
+    </Compile>
     <Compile Include="EditInit.ascx.cs">
       <DependentUpon>EditInit.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -301,6 +312,7 @@
     <Content Include="alpaca\js\fields\dnn\dnnfields.min.js">
       <DependentUpon>dnnfields.js</DependentUpon>
     </Content>
+    <Content Include="alpaca\js\fields\dnn\IconField.js" />
     <Content Include="alpaca\js\fields\dnn\MLImage2Field.js" />
     <Content Include="alpaca\js\fields\dnn\Url2Field.js" />
     <Content Include="alpaca\js\fields\dnn\File2Field.js" />
@@ -352,6 +364,7 @@
     <Content Include="css\images\ui-icons_ef8c08_256x240.png" />
     <Content Include="css\images\ui-icons_ffd27a_256x240.png" />
     <Content Include="css\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="EditAddData.ascx" />
     <Content Include="EditInit.ascx" />
     <Content Include="EditQuery.ascx" />
     <Content Include="EditGlobalSettings.ascx" />
@@ -541,6 +554,7 @@
     <Content Include="js\alpaca-1.5.8\alpaca\web\alpaca.min.js.map">
       <DependentUpon>alpaca.min.js</DependentUpon>
     </Content>
+    <Content Include="Providers\DataProviders\SqlDataProvider\02.00.03.SqlDataProvider" />
     <None Include="Scripts\_references.js" />
     <Content Include="js\select2\i18n\az.js" />
     <Content Include="js\select2\i18n\bg.js" />
@@ -751,6 +765,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_LocalResources\EditInit.ascx.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Components\Images\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

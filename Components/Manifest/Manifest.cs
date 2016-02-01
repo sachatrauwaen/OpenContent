@@ -30,6 +30,9 @@ namespace Satrabel.OpenContent.Components.Manifest
 
         [JsonProperty(PropertyName = "detailUrl")]
         public string DetailUrl { get; set; }
+
+        [JsonProperty(PropertyName = "additionalData")]
+        public Dictionary<string, AdditionalDataManifest> AdditionalData { get; set; }
  
         public bool HasTemplates { get { return (Templates != null); } }
         public FolderUri ManifestDir { get; set; }

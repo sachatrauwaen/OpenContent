@@ -108,6 +108,95 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [HttpGet]
+        public HttpResponseMessage EditData(string key)
+        {
+            OpenContentSettings settings = ActiveModule.OpenContentSettings();
+            ModuleInfo module = ActiveModule;
+            if (settings.ModuleId > 0)
+            {
+                ModuleController mc = new ModuleController();
+                module = mc.GetModule(settings.ModuleId, settings.TabId, false);
+            }
+            var manifest = settings.Manifest;
+            TemplateManifest templateManifest = settings.Template;
+            var dataManifest = manifest.AdditionalData[key];
+            string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings, module.ModuleID, ActiveModule.TabModuleID);
+            try
+            {
+                var templateFolder = string.IsNullOrEmpty(dataManifest.TemplateFolder) ? settings.TemplateDir : settings.TemplateDir.ParentFolder.Append(dataManifest.TemplateFolder);
+                var fb = new FormBuilder(templateFolder);
+                JObject json = fb.BuildForm(key);
+                int createdByUserid = -1;
+                var dc = new AdditionalDataController();
+                var data = dc.GetData(scope, dataManifest.StorageKey ?? key);
+                if (data != null)
+                {
+                    json["data"] = data.Json.ToJObject("GetContent " + scope + "/" + key);
+                    AddVersions(json, data);
+                    createdByUserid = data.CreatedByUserId;
+                }
+                return Request.CreateResponse(HttpStatusCode.OK, json);
+            }
+            catch (Exception exc)
+            {
+                Log.Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public HttpResponseMessage UpdateData(JObject json)
+        {
+            try
+            {
+                OpenContentSettings settings = ActiveModule.OpenContentSettings();
+                ModuleInfo module = ActiveModule;
+                if (settings.ModuleId > 0)
+                {
+                    ModuleController mc = new ModuleController();
+                    module = mc.GetModule(settings.ModuleId, settings.TabId, false);
+                }
+                var manifest = settings.Template.Manifest;
+                TemplateManifest templateManifest = settings.Template;
+                string key = json["key"].ToString();
+                var dataManifest = manifest.AdditionalData[key];
+                string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings, module.ModuleID, ActiveModule.TabModuleID);
+                AdditionalDataController ctrl = new AdditionalDataController();
+                AdditionalDataInfo data = ctrl.GetData(scope, dataManifest.StorageKey ?? key);
+                if (data == null)
+                {
+                    data = new AdditionalDataInfo()
+                    {
+                        Scope = scope,
+                        DataKey = dataManifest.StorageKey ?? key,
+                        Json = json["form"].ToString(),
+                        CreatedByUserId = UserInfo.UserID,
+                        CreatedOnDate = DateTime.Now,
+                        LastModifiedByUserId = UserInfo.UserID,
+                        LastModifiedOnDate = DateTime.Now,
+                    };
+                    ctrl.AddData(data);
+                }
+                else
+                {
+                    data.Json = json["form"].ToString();
+                    data.LastModifiedByUserId = UserInfo.UserID;
+                    data.LastModifiedOnDate = DateTime.Now;
+                    ctrl.UpdateData(data);
+                }
+                return Request.CreateResponse(HttpStatusCode.OK, "");
+            }
+            catch (Exception exc)
+            {
+                Log.Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
+
         private OpenContentInfo GetContent(int moduleId, bool listMode, int id)
         {
             OpenContentController ctrl = new OpenContentController();
@@ -148,6 +237,27 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
+        private static void AddVersions(JObject json, AdditionalDataInfo data)
+        {
+            if (!string.IsNullOrEmpty(data.VersionsJson))
+            {
+                var verLst = new JArray();
+                foreach (var item in data.Versions)
+                {
+                    var ver = new JObject();
+                    ver["text"] = item.CreatedOnDate.ToShortDateString() + " " + item.CreatedOnDate.ToShortTimeString();
+                    if (verLst.Count == 0) // first
+                    {
+                        ver["text"] = ver["text"] + " ( current )";
+                    }
+                    ver["ticks"] = item.CreatedOnDate.Ticks.ToString();
+                    verLst.Add(ver);
+                }
+                json["versions"] = verLst;
+
+                //json["versions"] = JArray.Parse(struc.VersionsJson);
+            }
+        }
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         [HttpGet]
@@ -165,7 +275,7 @@ namespace Satrabel.OpenContent.Components
             var templateManifest = settings.Template;
             string editRole = manifest == null ? "" : manifest.EditRole;
             bool listMode = templateManifest != null && templateManifest.IsListTemplate;
-            JObject json = new JObject();
+            JToken json = new JObject();
             try
             {
                 int CreatedByUserid = -1;
@@ -207,7 +317,7 @@ namespace Satrabel.OpenContent.Components
                 var fb = new FormBuilder(templateUri);
                 JObject json = fb.BuildForm(key);
 
-                JObject dataJson = data.ToJObject("Raw settings json");
+                var dataJson = data.ToJObject("Raw settings json");
                 if (dataJson != null)
                     json["data"] = dataJson;
 
@@ -401,6 +511,70 @@ namespace Satrabel.OpenContent.Components
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
         [HttpPost]
+        public HttpResponseMessage LookupData(LookupDataRequestDTO req)
+        {
+            OpenContentSettings settings = ActiveModule.OpenContentSettings();
+            ModuleInfo module = ActiveModule;
+            if (settings.ModuleId > 0)
+            {
+                ModuleController mc = new ModuleController();
+                module = mc.GetModule(settings.ModuleId, settings.TabId, false);
+            }
+            var manifest = settings.Template.Manifest;
+            TemplateManifest templateManifest = settings.Template;
+            string key = req.dataKey;
+            var dataManifest = manifest.AdditionalData[key];
+            string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings, module.ModuleID, ActiveModule.TabModuleID);
+            List<LookupResultDTO> res = new List<LookupResultDTO>();
+            try
+            {
+                AdditionalDataController ctrl = new AdditionalDataController();
+                AdditionalDataInfo data = ctrl.GetData(scope, dataManifest.StorageKey ?? key);
+                if (data != null)
+                {
+
+                    JToken json = data.Json.ToJObject("Get data of  " + req.dataKey);
+                    if (!string.IsNullOrEmpty(req.dataMember))
+                    {
+                        json = json[req.dataMember];
+                    }
+                    if (json is JArray)
+                    {
+                        foreach (JToken item in (JArray)json)
+                        {
+                            res.Add(new LookupResultDTO()
+                            {
+                                value = item[req.valueField] == null ? "" : item[req.valueField].ToString(),
+                                text = item[req.textField] == null ? "" : item[req.textField].ToString()
+                            });
+                        }
+                    }
+                    /*
+                    else if (json is JObject)
+                    {
+                        foreach (var item in json.Children<JProperty>())
+                        {
+                            res.Add(new LookupResultDTO()
+                            {
+                                value = dataManifest.ModelKey ?? key +"/"+item.Name,
+                                text = item.Value[req.textField] == null ? "" : item.Value[req.textField].ToString()
+                            });
+                        }
+                    }
+                     */
+                }
+                return Request.CreateResponse(HttpStatusCode.OK, res);
+            }
+            catch (Exception exc)
+            {
+                Log.Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
+
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [HttpPost]
         public HttpResponseMessage Lookup(LookupRequestDTO req)
         {
             ModuleController mc = new ModuleController();
@@ -517,7 +691,7 @@ namespace Satrabel.OpenContent.Components
                 OpenContentSettings settings = ActiveModule.OpenContentSettings();
                 var fb = new FormBuilder(settings.TemplateDir);
                 JObject json = fb.BuildForm(key);
-                JObject dataJson = data.ToJObject("Raw settings json");
+                var dataJson = data.ToJObject("Raw settings json");
                 if (dataJson != null)
                     json["data"] = dataJson;
 
@@ -539,6 +713,14 @@ namespace Satrabel.OpenContent.Components
         public string valueField { get; set; }
         public string textField { get; set; }
     }
+    public class LookupDataRequestDTO
+    {
+        public string dataKey { get; set; }
+        public string dataMember { get; set; }
+        public string valueField { get; set; }
+        public string textField { get; set; }
+    }
+
     public class LookupResultDTO
     {
         public string value { get; set; }

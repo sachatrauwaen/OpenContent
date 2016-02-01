@@ -79,7 +79,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
 
             ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/alpacaengine.js", FileOrder.Js.DefaultPriority + 10);
 
-            ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/css/font-awesome/css/font-awesome.min.css", FileOrder.Css.DefaultPriority);
+            ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/css/font-awesome/css/font-awesome.min.css", FileOrder.Css.DefaultPriority+1);
         }
         public void RegisterTemplates()
         {
@@ -170,6 +170,13 @@ namespace Satrabel.OpenContent.Components.Alpaca
                         Log.Logger.Warn("Failed to load CKEeditor. Can not find ~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js");
                     }
                 }
+            }
+            if (allFields || fieldTypes.Contains("icon"))
+            {
+                ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/fontIconPicker/jquery.fonticonpicker.min.js", FileOrder.Js.DefaultPriority, "DnnPageHeaderProvider");
+                ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/fontIconPicker/css/jquery.fonticonpicker.min.css", FileOrder.Css.DefaultPriority);
+                ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/fontIconPicker/themes/grey-theme/jquery.fonticonpicker.grey.min.css", FileOrder.Css.DefaultPriority);
+                
             }
         }
         private JToken GetOptions()

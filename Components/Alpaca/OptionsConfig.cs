@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Satrabel.OpenContent.Components.Alpaca
 {
@@ -20,5 +21,9 @@ namespace Satrabel.OpenContent.Components.Alpaca
         public OptionsConfig Items { get; set; }
         [JsonProperty(PropertyName = "removeDefaultNone", NullValueHandling = NullValueHandling.Ignore)]
         public bool? RemoveDefaultNone { get; set; }
+        [JsonProperty(PropertyName = "dataService", NullValueHandling = NullValueHandling.Ignore)]
+        public JObject DataService { get; set; }
+        
+
     }
 }

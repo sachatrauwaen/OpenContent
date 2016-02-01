@@ -80,6 +80,7 @@ namespace Satrabel.OpenContent
             }
             else if (rblUseTemplate.SelectedIndex == 1) // new
             {
+                
                 ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplates(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, "OpenContent").ToArray());
             }
         }
@@ -106,6 +107,7 @@ namespace Satrabel.OpenContent
                 }
                 else if (rblUseTemplate.SelectedIndex == 1) // new
                 {
+                    
                     if (rblFrom.SelectedIndex == 0) // site
                     {
                         string oldFolder = Server.MapPath(ddlTemplate.SelectedValue);
@@ -230,6 +232,7 @@ namespace Satrabel.OpenContent
         }
         public void RenderInitForm()
         {
+            Renderinfo.ShowDemoData = false;
             pHelp.Visible = true;
             if (!Page.IsPostBack)
             {
@@ -250,10 +253,12 @@ namespace Satrabel.OpenContent
                 if (rblDataSource.SelectedIndex == 0) // this module
                 {
                     //todo RenderDemoData();
+                    Renderinfo.ShowDemoData = true;
                 }
                 else // other module
                 {
                     //todo RenderOtherModuleDemoData();
+                    Renderinfo.ShowDemoData = true;
                 }
             }
             else // new template
@@ -264,6 +269,7 @@ namespace Satrabel.OpenContent
                     if (rblFrom.SelectedIndex == 0) // site
                     {
                         //todo RenderDemoData();
+                        //Renderinfo.ShowDemoData = true;
                     }
                 }
             }
