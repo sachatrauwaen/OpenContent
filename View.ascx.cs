@@ -160,7 +160,15 @@ namespace Satrabel.OpenContent
                                 AllowAccess = true
                             };
                             objModule.ModulePermissions.Add(objModulePermission);
-                            ModulePermissionController.SaveModulePermissions(objModule);
+                            try
+                            {
+                                ModulePermissionController.SaveModulePermissions(objModule);
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Logger.Error(string.Format("Error while trying to auto-assign Editor right. Fix this, as it is bad for performance. PageUrl: [{0}], Module: [{1}]-[{2}]", Request.RawUrl, ModuleContext.ModuleId, ModuleContext.Configuration.ModuleTitle), ex);
+                                //throw;
+                            }
                         }
                     }
                 }
