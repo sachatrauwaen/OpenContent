@@ -24,7 +24,21 @@ namespace Satrabel.OpenContent.Components.Manifest
             templateManifest = null;
             if (templateKey == null) return null;
 
-            var manifest = templateKey.Extention == "manifest" ? GetFileManifest(templateKey.TemplateDir) : GetVirtualManifest(templateKey);
+            Manifest manifest;
+            if (templateKey.Extention == "manifest")
+            {
+                manifest = GetFileManifest(templateKey.TemplateDir);
+                //todo downgrade template directories that stop using manifests
+            }
+            else
+            {
+                //todo upgrade template directories that start using manifests
+                //manifest = GetFileManifest(templateKey.TemplateDir);
+                //if (manifest == null)
+                //    manifest = GetVirtualManifest(templateKey);
+                //else if (manifest.Templates == null)
+                    manifest = GetVirtualManifest(templateKey);
+            }
 
             if (manifest != null && manifest.HasTemplates)
             {
