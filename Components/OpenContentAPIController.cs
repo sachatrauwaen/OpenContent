@@ -703,6 +703,32 @@ namespace Satrabel.OpenContent.Components
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [HttpGet]
+        public HttpResponseMessage EditBuilder(string key)
+        {
+
+            //string data = (string)ActiveModule.ModuleSettings[key];
+            try
+            {
+                OpenContentSettings settings = ActiveModule.OpenContentSettings();
+                /*
+                var fb = new FormBuilder(settings.TemplateDir);
+                JObject json = fb.BuildForm(key);
+                var dataJson = data.ToJObject("Raw settings json");
+                if (dataJson != null)
+                    json["data"] = dataJson;
+                */
+                var json = new { };
+                return Request.CreateResponse(HttpStatusCode.OK, json);
+            }
+            catch (Exception exc)
+            {
+                Log.Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
     }
 
     public class LookupRequestDTO

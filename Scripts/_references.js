@@ -177,3 +177,6 @@
 /// <reference path="../js/alpacaengine.js" />
 /// <reference path="../alpaca/js/fields/dnn/dnnfields.js" />
 /// <reference path="../alpaca/js/fields/dnn/iconfield.js" />
+/// <reference path="../js/fonticonpicker/jquery.fonticonpicker.js" />
+/// <reference path="../js/builder/formbuilder.js" />
+/// <reference path="../js/bootstrap/js/bootstrap.js" />

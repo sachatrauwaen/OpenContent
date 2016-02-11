@@ -19,8 +19,11 @@ alpacaEngine.engine = function(config) {
     self.updateAction = "Update";
     self.deleteAction = "Delete";
     self.data = {};
-
-    
+    self.alpaca = config.alpaca;
+    self.formID = "field1";
+    if (config.formID) {
+        self.formID = config.formID;
+    }
     if (config.editAction) {
         self.editAction = config.editAction;
     }
@@ -118,6 +121,9 @@ alpacaEngine.engine = function(config) {
                 self.FormEdit(config);
             });
             */
+            if (self.alpaca) {
+                $.extend(config, self.alpaca);
+            }
             self.FormEdit(config);
 
         }).fail(function (xhr, result, status) {
@@ -151,11 +157,11 @@ alpacaEngine.engine = function(config) {
 
     self.CreateForm = function (connector, config, data) {
 
-        $("#field1").alpaca({
+        $("#"+self.formID).alpaca({
             "schema": config.schema,
             "options": config.options,
             "data": data,
-            "view": "dnn-edit",
+            "view": "dnnbootstrap-edit-horizontal",
             "connector": connector,
             "postRender": function (control) {
                 var selfControl = control;

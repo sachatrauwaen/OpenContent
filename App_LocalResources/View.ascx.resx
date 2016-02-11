@@ -171,4 +171,7 @@
   <data name="EditInit.Action" xml:space="preserve">
     <value>Change Template</value>
   </data>
+  <data name="Builder.Action" xml:space="preserve">
+    <value>Builder</value>
+  </data>
 </root>

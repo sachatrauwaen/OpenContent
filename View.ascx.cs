@@ -272,7 +272,6 @@ namespace Satrabel.OpenContent
                 {
                     int.TryParse(Page.Request.QueryString["id"], out _itemId);
                 }
-
                 if (templateDefined)
                 {
                     actions.Add(ModuleContext.GetNextActionID(),
@@ -372,6 +371,19 @@ namespace Satrabel.OpenContent
                         SecurityAccessLevel.Host,
                         true,
                         false);
+
+                if (templateDefined)
+                    actions.Add(ModuleContext.GetNextActionID(),
+                        Localization.GetString("Builder.Action", LocalResourceFile),
+                        ModuleActionType.ContentOptions,
+                        "",
+                        "~/DesktopModules/OpenContent/images/edittemplate.png",
+                        ModuleContext.EditUrl("Builder"),
+                        false,
+                        SecurityAccessLevel.Host,
+                        true,
+                        false);
+
                 if (templateDefined || settings.Manifest != null)
                     actions.Add(ModuleContext.GetNextActionID(),
                         Localization.GetString("EditData.Action", LocalResourceFile),

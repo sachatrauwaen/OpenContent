@@ -1803,7 +1803,7 @@
                 bloodHoundConfig.remote = {
                     url: self.sf.getServiceRoot('OpenContent') + "DnnEntitiesAPI/Images?q=%QUERY&d=" + tFolder,
                     ajax: {
-                        beforeSend: connector.servicesFramework.setModuleHeaders,
+                        beforeSend: self.sf.setModuleHeaders,
 
                     }
                 };
@@ -6132,17 +6132,15 @@
 
     Alpaca.Fields.IconField = Alpaca.Fields.TextField.extend(
     /**
-     * @lends Alpaca.Fields.ImageField.prototype
+     * @lends Alpaca.Fields.IconField.prototype
      */
     {
-        constructor: function (container, data, options, schema, view, connector) {
-            var self = this;
-            this.base(container, data, options, schema, view, connector);
-        },
-
         setup: function () {
-            if (!this.options.uploadfolder) {
-                this.options.uploadfolder = "";
+            if (!this.options.glyphicons) {
+                this.options.glyphicons = false;
+            }
+            if (!this.options.fontawesome) {
+                this.options.fontawesome = true;
             }
             this.base();
         },
@@ -6185,16 +6183,18 @@
             callback();
         },
         loadIcons: function () {
+            var self = this;
             var icons = [];
-            /*
-            $.each(glyphicon_icons, function (i, v) {
-                icons.push('glyphicon ' + v.css);
-            });
-            */
-            for (var i in fa_icons2) {
-                icons.push('fa ' + i);
+            if (this.options.glyphicons){
+                $.each(glyphicon_icons, function (i, v) {
+                    icons.push('glyphicon ' + v);
+                });
             }
-
+            if (this.options.fontawesome) {
+                for (var i in fa_icons) {
+                    icons.push('fa ' + i);
+                }
+            }
             this.control.fontIconPicker().setIcons(icons);
         }
     });
@@ -6364,7 +6364,7 @@
           "glyphicon-collapse-top"
     ];
 
-    var fa_icons2 = {
+    var fa_icons = {
         "fa-500px": "500px",
         "fa-adjust": "Adjust",
         "fa-adn": "Adn",

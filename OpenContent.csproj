@@ -161,6 +161,8 @@
     <Compile Include="Components\Manifest\PartialTemplate.cs" />
     <Compile Include="Components\Razor\RazorEngine.cs" />
     <Compile Include="Components\Rss\RssApiController.cs" />
+    <Compile Include="Components\Solution\Solution.cs" />
+    <Compile Include="Components\Solution\TemplateSolution.cs" />
     <Compile Include="Components\TemplateHelpers\OtherExtentions.cs" />
     <Compile Include="Components\Manifest\TemplateManifest.cs" />
     <Compile Include="Components\Uri\PortalFileUri.cs" />
@@ -205,6 +207,13 @@
     <Compile Include="Components\TemplateHelpers\MetaTags.cs" />
     <Compile Include="Components\Manifest\RenderInfo.cs" />
     <Compile Include="Components\Common\Utils.cs" />
+    <Compile Include="Builder.ascx.cs">
+      <DependentUpon>Builder.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Builder.ascx.designer.cs">
+      <DependentUpon>Builder.ascx</DependentUpon>
+    </Compile>
     <Compile Include="EditAddData.ascx.cs">
       <DependentUpon>EditAddData.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -299,6 +308,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="AddEdit.ascx" />
+    <Content Include="alpaca\css\alpaca-bootstrap.css" />
     <Content Include="alpaca\css\alpaca-dnn.css" />
     <Content Include="alpaca\css\img\Add_16x16_Gray.png" />
     <Content Include="alpaca\css\img\Delete_16X16_Gray.png" />
@@ -364,6 +374,7 @@
     <Content Include="css\images\ui-icons_ef8c08_256x240.png" />
     <Content Include="css\images\ui-icons_ffd27a_256x240.png" />
     <Content Include="css\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="Builder.ascx" />
     <Content Include="EditAddData.ascx" />
     <Content Include="EditInit.ascx" />
     <Content Include="EditQuery.ascx" />
@@ -515,6 +526,16 @@
     <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\transport_spec.js" />
     <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\typeahead_view_spec.js" />
     <Content Include="js\alpacaengine.js" />
+    <Content Include="js\bootstrap\css\bootstrap-theme.css" />
+    <Content Include="js\bootstrap\css\bootstrap-theme.min.css" />
+    <Content Include="js\bootstrap\css\bootstrap.css" />
+    <Content Include="js\bootstrap\css\bootstrap.min.css" />
+    <Content Include="js\bootstrap\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="js\bootstrap\js\bootstrap.js" />
+    <Content Include="js\bootstrap\js\bootstrap.min.js" />
+    <Content Include="js\builder\formbuilder.css" />
+    <Content Include="js\builder\formbuilder.html" />
+    <Content Include="js\builder\formbuilder.js" />
     <Content Include="js\CodeMirror\addon\mode\loadmode.js" />
     <Content Include="js\CodeMirror\addon\mode\multiplex.js" />
     <Content Include="js\CodeMirror\addon\mode\multiplex_test.js" />
@@ -525,6 +546,19 @@
     <Content Include="js\cropper\cropper.js" />
     <Content Include="js\cropper\cropper.min.css" />
     <Content Include="js\cropper\cropper.min.js" />
+    <Content Include="js\fontIconPicker\css\iconpicker.svg" />
+    <Content Include="js\fontIconPicker\css\jquery.fonticonpicker.css" />
+    <Content Include="js\fontIconPicker\css\jquery.fonticonpicker.min.css" />
+    <Content Include="js\fontIconPicker\jquery.fonticonpicker.js" />
+    <Content Include="js\fontIconPicker\jquery.fonticonpicker.min.js" />
+    <Content Include="js\fontIconPicker\themes\bootstrap-theme\jquery.fonticonpicker.bootstrap.css" />
+    <Content Include="js\fontIconPicker\themes\bootstrap-theme\jquery.fonticonpicker.bootstrap.min.css" />
+    <Content Include="js\fontIconPicker\themes\dark-grey-theme\jquery.fonticonpicker.darkgrey.css" />
+    <Content Include="js\fontIconPicker\themes\dark-grey-theme\jquery.fonticonpicker.darkgrey.min.css" />
+    <Content Include="js\fontIconPicker\themes\grey-theme\jquery.fonticonpicker.grey.css" />
+    <Content Include="js\fontIconPicker\themes\grey-theme\jquery.fonticonpicker.grey.min.css" />
+    <Content Include="js\fontIconPicker\themes\inverted-theme\jquery.fonticonpicker.inverted.css" />
+    <Content Include="js\fontIconPicker\themes\inverted-theme\jquery.fonticonpicker.inverted.min.css" />
     <Content Include="js\opencontent.js" />
     <Content Include="Providers\DataProviders\SqlDataProvider\01.04.01.SqlDataProvider" />
     <Content Include="alpaca\js\fields\dnn\dnnfields.js.bundle" />
@@ -555,6 +589,16 @@
       <DependentUpon>alpaca.min.js</DependentUpon>
     </Content>
     <Content Include="Providers\DataProviders\SqlDataProvider\02.00.03.SqlDataProvider" />
+    <Content Include="js\fontIconPicker\css\iconpicker.eot" />
+    <Content Include="js\fontIconPicker\css\iconpicker.ttf" />
+    <Content Include="js\fontIconPicker\css\iconpicker.woff" />
+    <Content Include="js\bootstrap\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="js\bootstrap\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="js\bootstrap\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="js\bootstrap\fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="js\alpaca-1.5.8\alpaca\bootstrap\alpaca.min.js.map">
+      <DependentUpon>alpaca.min.js</DependentUpon>
+    </Content>
     <None Include="Scripts\_references.js" />
     <Content Include="js\select2\i18n\az.js" />
     <Content Include="js\select2\i18n\bg.js" />

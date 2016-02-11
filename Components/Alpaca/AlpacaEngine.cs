@@ -50,10 +50,19 @@ namespace Satrabel.OpenContent.Components.Alpaca
 
         public void RegisterAll(bool bootstrap = false)
         {
+            RegisterBootstarp();
+            bootstrap = true;
             RegisterAlpaca(bootstrap);
             RegisterTemplates();
             RegisterScripts(bootstrap);
             RegisterFields();
+        }
+
+        private void RegisterBootstarp()
+        {
+            ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/bootstrap/js/bootstrap.min.js", FileOrder.Js.DefaultPriority);
+            ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/bootstrap/css/bootstrap.min.css", FileOrder.Css.DefaultPriority);
+                
         }
 
         private void RegisterAlpaca(bool bootstrap)
@@ -66,6 +75,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
             if (bootstrap)
             {
                 ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/alpaca-1.5.8/alpaca/bootstrap/alpaca.css", FileOrder.Css.DefaultPriority);
+                ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/alpaca/css/alpaca-bootstrap.css", FileOrder.Css.DefaultPriority);
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/alpaca-1.5.8/alpaca/bootstrap/alpaca.js", FileOrder.Js.DefaultPriority + 1);
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/alpaca/js/views/dnnbootstrap.js", FileOrder.Js.DefaultPriority + 2);
             }
@@ -100,7 +110,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
         {
             ServicesFramework.Instance.RequestAjaxScriptSupport();
             ServicesFramework.Instance.RequestAjaxAntiForgerySupport();
-            if (!bootstrap)
+            //if (!bootstrap)
             {
                 JavaScript.RequestRegistration(CommonJs.DnnPlugins); // dnnPanels
             }

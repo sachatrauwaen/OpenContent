@@ -1,0 +1,86 @@
+﻿
+
+.alpaca-image-display img {
+    max-height: 200px;
+    min-height: 100px;
+    max-width: 400px;
+}
+
+.alpaca-field-wysihtml .editor {
+    margin-bottom: 18px;
+    padding: 8px;
+    background: #ffffff;
+    border: 1px solid #c9c9c9;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    -webkit-box-shadow: 0px 1px 0px 0px rgba(255, 255, 255, 0.8), inset 0px 1px 2px 0px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 1px 0px 0px rgba(255, 255, 255, 0.8), inset 0px 1px 2px 0px rgba(0, 0, 0, 0.1);
+    color: #333;
+    font-size: 12px;
+    /*width: 100%;*/
+}
+
+.alpaca-field-wysihtml .toolbar {
+    /*height:25px;*/
+}
+
+.alpaca-field-wysihtml .dialog {
+    padding: 2px;
+}
+
+
+
+.alpaca-field-wysihtml .toolbar .block {
+    display: inline-block;
+}
+
+.alpaca-field-wysihtml .toolbar a {
+    display: inline-block;
+    border-radius: 3px;
+    text-decoration: none;
+    background: #fff;
+    border: 1px solid #ddd;
+    padding: 0 0.2em;
+    margin: 1px 0;
+    color: #000;
+    cursor: pointer;
+}
+
+    .alpaca-field-wysihtml .toolbar a.wysihtml5-command-active,
+    .alpaca-field-wysihtml .toolbar .wysihtml5-action-active {
+        background: #222;
+        color: white;
+    }
+
+.select2-container--default .select2-search--inline .select2-search__field {
+    margin-bottom: 0;
+    padding: 0;
+    border: 0 none;
+    border-radius: 0;
+}
+
+.select2-container--default input[type="search"]:active,
+.select2-container--default input[type="search"]:focus {
+    border: 0 none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    color: #666;
+}
+
+select.oc-ddl-versions {
+    margin-bottom: 18px;
+    padding: 8px;
+    background: #ffffff;
+    border: 1px solid #c9c9c9;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    -webkit-box-shadow: 0px 1px 0px 0px rgba(255, 255, 255, 0.8), inset 0px 1px 2px 0px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 1px 0px 0px rgba(255, 255, 255, 0.8), inset 0px 1px 2px 0px rgba(0, 0, 0, 0.1);
+    color: #333;
+    font-size: 12px;
+}
+
+
+.alpaca-container.collapse {
+    overflow: visible;
+}
