@@ -532,7 +532,7 @@ namespace Satrabel.OpenContent.Components
         {
             var isSuperTab = Globals.IsHostTab(tabId);
             var settings = PortalSettings;
-            var language = GetCultureCode(tabId, isSuperTab, settings);
+            var language = DnnUtils.GetCultureCode(tabId, isSuperTab, settings);
             var url = Globals.NavigateURL(tabId, isSuperTab, settings, controlKey, language, pageName, additionalParameters);
 
             // Making URLs call popups
@@ -546,25 +546,7 @@ namespace Satrabel.OpenContent.Components
             return url;
         }
 
-        private static string GetCultureCode(int tabId, bool isSuperTab, PortalSettings settings)
-        {
-            string cultureCode = Null.NullString;
-            if (settings != null)
-            {
-                TabController tc = new TabController();
-                TabInfo linkTab = tc.GetTab(tabId, isSuperTab ? Null.NullInteger : settings.PortalId, false);
-                if (linkTab != null)
-                {
-                    cultureCode = linkTab.CultureCode;
-                }
-                if (string.IsNullOrEmpty(cultureCode))
-                {
-                    cultureCode = Thread.CurrentThread.CurrentCulture.Name;
-                }
-            }
 
-            return cultureCode;
-        }
         private bool? _isEditable;
         
         private bool IsEditable
