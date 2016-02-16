@@ -39,6 +39,9 @@ namespace Satrabel.OpenContent.Components
         readonly int MainTabId;
         readonly int MainModuleId;
         readonly string CultureCode;
+
+        public JObject Options { get; set; } // alpaca options.json format
+
         public ModelFactory(string dataJson, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles manifestFiles, ModuleInfo module, PortalSettings portalSettings, int MainTabId, int MainModuleId)
         {
             this.dataJson = dataJson;
@@ -51,7 +54,7 @@ namespace Satrabel.OpenContent.Components
             this.PortalId = portalSettings.PortalId;
             this.TemplateManifest = templateManifest;
             this.MainTabId = MainTabId > 0 ? MainTabId : module.TabID;
-            this.MainModuleId = MainModuleId > 0 ? MainModuleId : module.ModuleID;
+            this.MainModuleId = MainModuleId > 0 ? MainModuleId : module.ModuleID;            
         }
         public ModelFactory(OpenContentInfo data, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles manifestFiles, ModuleInfo module, PortalSettings portalSettings, int MainTabId, int MainModuleId)
         {
@@ -149,7 +152,10 @@ namespace Satrabel.OpenContent.Components
                     {
                         JsonUtils.LookupJson(dyn, model["AdditionalData"] as JObject, model["Options"] as JObject);
                     }
-                   
+                    if (Options != null && model["Options"] != null)
+                    {
+                        JsonUtils.ImagesJson(dyn, Options, model["Options"] as JObject);
+                    }
                     if (!onlyData)
                     {
                         string url = "";

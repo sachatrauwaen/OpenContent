@@ -101,7 +101,9 @@ namespace Satrabel.OpenContent.Components.JPList
                         }
                     }
                     ModelFactory mf = new ModelFactory(dataList, settings.Data, settings.Template.Uri().PhysicalFullDirectory + "\\", manifest, templateManifest, files, ActiveModule, PortalSettings, settings.TabId, settings.ModuleId);
-                    var model = mf.GetModelAsJson();
+                    mf.Options = JObject.Parse(req.options);
+                    var model = mf.GetModelAsJson(false);
+                    
                     var res = new ResultDTO()
                     {
                         data = model,
@@ -284,7 +286,7 @@ namespace Satrabel.OpenContent.Components.JPList
                             {
                                 //textbox
                                 Query query1;
-                                var field = indexConfig.Fields[n];
+                                var field = indexConfig.Fields.ContainsKey(n) ? indexConfig.Fields[n] : null;
                                 bool ml = field != null && field.MultiLanguage;
                                 
                                 if (field != null &&

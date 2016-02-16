@@ -1,6 +1,8 @@
 ﻿using System.Linq;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Alpaca;
+using Satrabel.OpenContent.Components.TemplateHelpers;
+using DotNetNuke.Services.FileSystem;
 
 
 namespace Satrabel.OpenContent.Components.Json
@@ -153,6 +155,100 @@ namespace Satrabel.OpenContent.Components.Json
                     }
                 }
             }
+        }
+
+        public static void ImagesJson(JObject o, JObject requestOptions, JObject options)
+        {
+            foreach (var child in o.Children<JProperty>().ToList())
+            {
+                JObject opt = null;
+                if (options != null && options["fields"] != null)
+                {
+                    opt = options["fields"][child.Name] as JObject;
+                }
+                JObject reqOpt = null;
+                if (requestOptions != null && requestOptions["fields"] != null)
+                {
+                    reqOpt = requestOptions["fields"][child.Name] as JObject;
+                }
+
+                bool image = opt != null &&
+                    opt["type"] != null && opt["type"].ToString() == "image2";
+
+                
+                if (image && reqOpt != null)
+                {
+                                       
+                    
+                }
+
+                var childProperty = child;
+
+                if (childProperty.Value is JArray)
+                {
+                    var array = childProperty.Value as JArray;
+                    JArray newArray = new JArray();
+                    foreach (var value in array)
+                    {
+                        var obj = value as JObject;
+                        if (obj != null)
+                        {
+                            LookupJson(obj, reqOpt, opt["items"] as JObject);
+                        }
+                        else if (image)
+                        {
+                            var val = value as JValue;
+                            if (val != null)
+                            {
+                                try
+                                {
+                                    newArray.Add(GenerateImage(reqOpt, val.ToString()));
+                                }
+                                catch (System.Exception)
+                                {
+                                }
+                            }
+                        }
+                    }
+                    if (image)
+                    {
+                        childProperty.Value = newArray;
+                    }
+                }
+                else if (childProperty.Value is JObject)
+                {
+                    var obj = childProperty.Value as JObject;
+                    LookupJson(obj, reqOpt, opt);
+                }
+                else if (childProperty.Value is JValue)
+                {
+                    if (image)
+                    {
+                        string val = childProperty.Value.ToString();
+                        try
+                        {
+                            //o[childProperty.Name] = GenerateObject(additionalData, dataKey, val, dataMember, valueField);
+                            o[childProperty.Name] = GenerateImage(reqOpt, val);
+                        }
+                        catch (System.Exception)
+                        {
+                        }
+                    }
+                }
+            }
+        }
+
+        private static JToken GenerateImage(JObject reqOpt, string p)
+        {
+            var ratio = new Ratio(100, 100);
+            if (reqOpt != null && reqOpt["ratio"] != null)
+            {
+                ratio = new Ratio(reqOpt["ratio"].ToString());
+            }
+            int fileId = int.Parse(p);
+            var file = FileManager.Instance.GetFile(fileId);
+            var imageUrl = ImageHelper.GetImageUrl(file, ratio);
+            return new JValue(imageUrl);
         }
 
         private static JObject GenerateObject(JObject additionalData, string key, string id, string dataMember, string valueField)

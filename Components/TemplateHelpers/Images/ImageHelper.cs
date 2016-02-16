@@ -52,6 +52,27 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             ratio.SetWidth(1200);
             return GetImageUrl(file, ratio);
         }
+        public static string GetImageUrl(string fileid, Ratio requestedCropRatio)
+        {
+            try
+            {
+                return GetImageUrl(int.Parse(fileid), requestedCropRatio);
+            }
+            catch (Exception)
+            {
+
+                return null;
+            }
+        }
+        public static string GetImageUrl(int fileid, Ratio requestedCropRatio)
+        {
+            var file = FileManager.Instance.GetFile(fileid);
+            if (file != null)
+            {
+                return GetImageUrl(file, requestedCropRatio);
+            }
+            return null;
+        }
 
         public static string GetImageUrl(IFileInfo file, Ratio requestedCropRatio)
         {

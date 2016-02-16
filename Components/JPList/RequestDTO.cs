@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,7 @@ namespace Satrabel.OpenContent.Components.JPList
     public class RequestDTO
     {
         public string statuses { get; set; }
+        public string options { get; set; }
         
         public List<StatusDTO> StatusLst
         {
