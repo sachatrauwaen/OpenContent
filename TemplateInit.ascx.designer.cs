@@ -139,6 +139,24 @@ namespace Satrabel.OpenContent {
         protected global::System.Web.UI.WebControls.TextBox tbTemplateName;
         
         /// <summary>
+        /// phDetailPage control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.PlaceHolder phDetailPage;
+        
+        /// <summary>
+        /// ddlDetailPage control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlDetailPage;
+        
+        /// <summary>
         /// bSave control.
         /// </summary>
         /// <remarks>

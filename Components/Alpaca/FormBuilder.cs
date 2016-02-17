@@ -27,6 +27,18 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 Title = "MaxResults",
                 Type = "number"
             });
+            // Default no results
+            newSchema.Properties.Add("DefaultNoResults", new SchemaConfig()
+            {
+                Title = "Default No Results",
+                Type = "boolean"
+            });
+            // Remove current item
+            newSchema.Properties.Add("RemoveCurrentItem", new SchemaConfig()
+            {
+                Title = "Remove Current Item",
+                Type = "boolean"
+            });
             // Filter
             SchemaConfig newSchemaFilter = new SchemaConfig(true)
             {

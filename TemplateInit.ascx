@@ -47,6 +47,15 @@
                 <asp:TextBox ID="tbTemplateName" runat="server"></asp:TextBox>
             </div>
         </asp:PlaceHolder>
+         <asp:PlaceHolder ID="phDetailPage" runat="server" Visible="false">
+            <div class="dnnFormItem">
+                <asp:Label runat="server" ControlName="ddlDetailPage" ResourceKey="lDetailPage" CssClass="dnnLabel" />
+                <asp:DropDownList runat="server" ID="ddlDetailPage" >
+                </asp:DropDownList>
+            </div>
+        </asp:PlaceHolder>
+
+
     </fieldset>
     <ul class="dnnActions dnnClear" style="padding-left: 32%; margin-left: 38px;">
         <li>
