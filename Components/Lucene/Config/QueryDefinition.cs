@@ -75,13 +75,13 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
         {
             BooleanQuery q = new BooleanQuery();
 
-            var vRemoveCurrentItem = query["RemoveCurrentItem"] as JValue;
-            bool RemoveCurrentItem = false;
-            if (vRemoveCurrentItem != null && vRemoveCurrentItem.Type == JTokenType.Boolean)
+            var vExcludeCurrentItem = query["ExcludeCurrentItem"] as JValue;
+            bool ExcludeCurrentItem = false;
+            if (vExcludeCurrentItem != null && vExcludeCurrentItem.Type == JTokenType.Boolean)
             {
-                RemoveCurrentItem = (bool)vRemoveCurrentItem.Value;
+                ExcludeCurrentItem = (bool)vExcludeCurrentItem.Value;
             }
-            if (RemoveCurrentItem && QueryString != null && QueryString["id"] != null)
+            if (ExcludeCurrentItem && QueryString != null && QueryString["id"] != null)
             {
                 q.Add(new MatchAllDocsQuery(), Occur.MUST);
                 q.Add(new TermQuery(new Term("$id", QueryString["id"])), Occur.MUST_NOT);

@@ -34,9 +34,9 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 Type = "boolean"
             });
             // Remove current item
-            newSchema.Properties.Add("RemoveCurrentItem", new SchemaConfig()
+            newSchema.Properties.Add("ExcludeCurrentItem", new SchemaConfig()
             {
-                Title = "Remove Current Item",
+                Title = "Exclude Current Item",
                 Type = "boolean"
             });
             // Filter
