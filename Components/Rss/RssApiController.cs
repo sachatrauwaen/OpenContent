@@ -48,7 +48,7 @@ namespace Satrabel.OpenContent.Components.Rss
                 SearchResults docs = LuceneController.Instance.Search(moduleId.ToString(), "Title", queryDef);
                 if (docs != null)
                 {
-                    int total = docs.ToalResults;
+                    int total = docs.TotalResults;
                     foreach (var item in docs.ids)
                     {
                         var content = ctrl.GetContent(int.Parse(item));

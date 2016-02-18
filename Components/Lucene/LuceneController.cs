@@ -241,7 +241,7 @@ namespace Satrabel.OpenContent.Components.Lucene
                 topDocs = searcher.Search(type, Query, (PageIndex + 1) * PageSize, Sort);
             else
                 topDocs = searcher.Search(type, Filter, Query, (PageIndex + 1) * PageSize, Sort);
-            luceneResults.ToalResults = topDocs.TotalHits;
+            luceneResults.TotalResults = topDocs.TotalHits;
             luceneResults.ids = topDocs.ScoreDocs.Skip(PageIndex * PageSize).Select(d => searcher.Doc(d.Doc).GetField(JsonMappingUtils.FieldId).StringValue).ToArray();
             return luceneResults;
         }

@@ -89,7 +89,7 @@ namespace Satrabel.OpenContent.Components.JPList
                     def.PageIndex = jpListQuery.Pagination.currentPage;
 
                     SearchResults docs = LuceneController.Instance.Search(module.ModuleID.ToString(), "Title", def);
-                    int total = docs.ToalResults;
+                    int total = docs.TotalResults;
                     OpenContentController ctrl = new OpenContentController();
                     var dataList = new List<OpenContentInfo>();
                     foreach (var item in docs.ids)
