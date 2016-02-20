@@ -90,7 +90,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             if (file.ContentItemID > 0)
             {
                 var contentItem = Util.GetContentController().GetContentItem(file.ContentItemID);
-                if (contentItem != null)
+                if (contentItem != null && !string.IsNullOrEmpty(contentItem.Content))
                 {
                     JObject content = JObject.Parse(contentItem.Content);
                     var crop = content["crop"];
