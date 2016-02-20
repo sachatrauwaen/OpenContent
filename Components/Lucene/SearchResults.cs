@@ -11,7 +11,7 @@ namespace Satrabel.OpenContent.Components.Lucene
         {
             ids = new string[0];
         }
-        public int ToalResults { get; set; }
+        public int TotalResults { get; set; }
         public string[] ids { get; set; }
     }
 }
