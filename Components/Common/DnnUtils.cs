@@ -109,6 +109,20 @@ namespace Satrabel.OpenContent.Components
 
             return cultureCode;
         }
+        public static int GetTabByCurrentCulture(int portalId, int tabId)
+        {
+            var tc = new TabController();
+            Locale locale = LocaleController.Instance.GetLocale(DnnUtils.GetCurrentCultureCode());
+            var tab = tc.GetTabByCulture(tabId, portalId, locale);
+            if (tab != null)
+            {
+                return tab.TabID;
+            }
+            else
+            {
+                return tabId;
+            }
+        }
         public static OpenContentSettings OpenContentSettings(this ModuleInfo module)
         {
             return new OpenContentSettings(module.ModuleSettings);

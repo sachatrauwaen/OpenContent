@@ -102,7 +102,10 @@ namespace Satrabel.OpenContent.Components.JPList
                     }
                     int MainTabId = settings.DetailTabId > 0 ? settings.DetailTabId : settings.TabId;
                     ModelFactory mf = new ModelFactory(dataList, settings.Data, settings.Template.Uri().PhysicalFullDirectory + "\\", manifest, templateManifest, files, ActiveModule, PortalSettings, MainTabId, settings.ModuleId);
-                    mf.Options = JObject.Parse(req.options);
+                    if (!string.IsNullOrEmpty(req.options))
+                    {
+                        mf.Options = JObject.Parse(req.options);
+                    }
                     var model = mf.GetModelAsJson(false);
                     
                     var res = new ResultDTO()
