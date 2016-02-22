@@ -465,7 +465,8 @@ namespace Satrabel.OpenContent.Components
             return portalSettings.UserInfo.IsSuperUser ||
                     portalSettings.UserInfo.IsInRole(portalSettings.AdministratorRoleName) ||
                     ModulePermissionController.HasModuleAccess(SecurityAccessLevel.Edit, "CONTENT", module) ||
-                    (!string.IsNullOrEmpty(editrole) && portalSettings.UserInfo.IsInRole(editrole) && (CreatedByUserId == -1 || portalSettings.UserId == CreatedByUserId));
+                    (!string.IsNullOrEmpty(editrole) && portalSettings.UserInfo.IsInRole(editrole) && (CreatedByUserId == -1 || portalSettings.UserId == CreatedByUserId)) ||
+                    (!string.IsNullOrEmpty(editrole) &&  editrole.ToLower() == "all");
         }
 
 

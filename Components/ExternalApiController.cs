@@ -16,7 +16,7 @@ namespace Satrabel.OpenContent.Components
 {
     public class ExternalApiController : DnnApiController
     {
-
+        
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         [ValidateAntiForgeryToken]
         [HttpPost]
