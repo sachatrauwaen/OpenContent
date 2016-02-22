@@ -28,6 +28,7 @@ using Satrabel.OpenContent.Components;
 using Satrabel.OpenContent.Components.Json;
 using System.Web.WebPages;
 using System.Web;
+using System.Web.Helpers;
 using Satrabel.OpenContent.Components.Handlebars;
 using DotNetNuke.Framework;
 using DotNetNuke.Common.Utilities;
@@ -109,7 +110,6 @@ namespace Satrabel.OpenContent
             }
             if (!Page.IsPostBack)
             {
-                //if (ModuleContext.EditMode && !ModuleContext.IsEditable)
                 if (ModuleContext.PortalSettings.UserId > 0)
                 {
                     string OpenContent_EditorsRoleId = PortalController.GetPortalSetting("OpenContent_EditorsRoleId", ModuleContext.PortalId, "");
@@ -117,6 +117,8 @@ namespace Satrabel.OpenContent
                     {
                         int roleId = int.Parse(OpenContent_EditorsRoleId);
                         var objModule = ModuleContext.Configuration;
+                        //todo: probable DNN bug.  objModule.ModulePermissions doesn't return correct permissions for attached multi-lingual modules
+                        //don't alter permissions of modules that are non-default language and that are attached
                         var permExist = objModule.ModulePermissions.Where(tp => tp.RoleID == roleId).Any();
                         if (!permExist)
                         {
@@ -138,6 +140,7 @@ namespace Satrabel.OpenContent
                                 AllowAccess = true
                             };
                             objModule.ModulePermissions.Add(objModulePermission);
+
                             // edit permission
                             arrSystemModuleViewPermissions = permissionController.GetPermissionByCodeAndKey("SYSTEM_MODULE_DEFINITION", "EDIT");
                             permission = (PermissionInfo)arrSystemModuleViewPermissions[0];
@@ -159,8 +162,7 @@ namespace Satrabel.OpenContent
                             }
                             catch (Exception ex)
                             {
-                                Log.Logger.Error(string.Format("Error while trying to auto-assign Editor right. Fix this, as it is bad for performance. PageUrl: [{0}], Module: [{1}]-[{2}]", Request.RawUrl, ModuleContext.ModuleId, ModuleContext.Configuration.ModuleTitle), ex);
-                                //throw;
+                                //Log.Logger.ErrorFormat("Failed to automaticly set the permission. It already exists? tab={0}, moduletitle={1} ", objModule.TabID ,objModule.ModuleTitle);
                             }
                         }
                     }
