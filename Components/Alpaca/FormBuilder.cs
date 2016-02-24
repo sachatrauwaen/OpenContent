@@ -71,7 +71,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     continue;
                 }
                 if (prop.Value.Type == "object")
-                {                    
+                {
                     continue;
                 }
                 string optType = opts == null ? "text" : opts.Type;
@@ -89,6 +89,11 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     var newField = new OptionsConfig();
                     newOptionsFilter.Fields.Add(prop.Key, newField);
                     newField.Type = "select";
+
+                    fieldLst.Add(prop.Key);
+                }
+                else if (prop.Value.Type == "number")
+                {
 
                     fieldLst.Add(prop.Key);
                 }
@@ -258,7 +263,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     };
                     newConfig.Fields.Add(prop.Key, newField);
                 }
-                else if (prop.Value.Enum != null  || optType == "select" || optType == "select2")
+                else if (prop.Value.Enum != null || optType == "select" || optType == "select2")
                 {
                     var newField = new FieldConfig()
                     {
@@ -325,6 +330,16 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     var newField = new FieldConfig()
                     {
                         IndexType = "datetime",
+                        Index = true,
+                        Sort = true
+                    };
+                    newConfig.Fields.Add(prop.Key, newField);
+                }
+                else if (prop.Value.Type == "number")
+                {
+                    var newField = new FieldConfig()
+                    {
+                        IndexType = "float",
                         Index = true,
                         Sort = true
                     };

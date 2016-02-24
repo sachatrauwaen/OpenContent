@@ -139,7 +139,8 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
                             }
                             else
                             {
-                                doc.Add(new NumericField(prefix, Field.Store.NO, true).SetDoubleValue(Convert.ToDouble(value.Value)));
+                                doc.Add(new NumericField(prefix, Field.Store.NO, true).SetFloatValue((float)Convert.ToDouble(value.Value)));
+                                //doc.Add(new NumericField(prefix, Field.Store.NO, true).SetDoubleValue(Convert.ToDouble(value.Value)));
                             }
                         }
                         break;
@@ -154,7 +155,8 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
                     case JTokenType.Integer:
                         if (index || sort)
                         {
-                            doc.Add(new NumericField(prefix, Field.Store.NO, true).SetLongValue(Convert.ToInt64(value.Value)));
+                            doc.Add(new NumericField(prefix, Field.Store.NO, true).SetFloatValue((float)Convert.ToInt64(value.Value)));
+                            //doc.Add(new NumericField(prefix, Field.Store.NO, true).SetLongValue(Convert.ToInt64(value.Value)));
                         }
                         break;
 
