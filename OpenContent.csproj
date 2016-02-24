@@ -162,6 +162,7 @@
     <Compile Include="Components\Manifest\PartialTemplate.cs" />
     <Compile Include="Components\Razor\RazorEngine.cs" />
     <Compile Include="Components\Rss\RssApiController.cs" />
+    <Compile Include="Components\TemplateHelpers\OpenGraph.cs" />
     <Compile Include="Components\TemplateHelpers\OtherExtentions.cs" />
     <Compile Include="Components\Manifest\TemplateManifest.cs" />
     <Compile Include="Components\Uri\PortalFileUri.cs" />
