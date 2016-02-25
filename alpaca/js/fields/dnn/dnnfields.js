@@ -1631,17 +1631,19 @@
                         var cropper = self.options.croppers[i];
                         var id = self.id + '-' + i;
                         var $cropbutton = $('#' + id);
-                        var cropdata = { url: res.cropdata[i].url, cropper: res.cropdata[i].crop };
-                        if (cropdata) {
-                            $cropbutton.data('cropdata', cropdata);
+                        if (res.cropdata[i]){
+                            var cropdata = { url: res.cropdata[i].url, cropper: res.cropdata[i].crop };
+                            if (cropdata) {
+                                $cropbutton.data('cropdata', cropdata);
+                            }
                         }
                     }
                     setTimeout(function () {
-                        $(cropButton).css('cursor', 'default');
+                        $(cropButton).css('cursor', 'initial');
                     }, 500);
                 }).fail(function (xhr, result, status) {
                     alert("Uh-oh, something broke: " + status);
-                    $(parentel).css('cursor', 'default');
+                    $(parentel).css('cursor', 'initial');
                 });
                 return false;
             });
