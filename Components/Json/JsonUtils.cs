@@ -301,7 +301,7 @@ namespace Satrabel.OpenContent.Components.Json
             }
         }
 
-        internal static void Merge(JObject model, JObject completeModel)
+        public static void Merge(JObject model, JObject completeModel)
         {
             foreach (var prop in completeModel.Properties())
             {
