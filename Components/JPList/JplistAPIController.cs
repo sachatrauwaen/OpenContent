@@ -14,6 +14,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using DotNetNuke.Common.Utilities;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Security.Permissions;
 using Satrabel.OpenContent.Components.Manifest;
@@ -65,7 +66,7 @@ namespace Satrabel.OpenContent.Components.JPList
                     var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
                     QueryDefinition def = new QueryDefinition(indexConfig);
                     //BooleanQuery luceneFilter = null;
-                    
+
                     if (!string.IsNullOrEmpty(settings.Query))
                     {
                         var query = JObject.Parse(settings.Query);
@@ -75,7 +76,7 @@ namespace Satrabel.OpenContent.Components.JPList
                     {
                         def.BuildFilter(PortalSettings.UserMode != PortalSettings.Mode.Edit);
                     }
-                    
+
                     var jpListQuery = BuildJpListQuery(req.StatusLst);
                     def.Query = BuildLuceneQuery2(jpListQuery, indexConfig);
                     if (jpListQuery.Sorts.Any())
@@ -90,6 +91,8 @@ namespace Satrabel.OpenContent.Components.JPList
 
                     SearchResults docs = LuceneController.Instance.Search(module.ModuleID.ToString(), "Title", def);
                     int total = docs.TotalResults;
+                    Log.Logger.DebugFormat("OpenContent.JplistApiController.List() Searched for [{0}], found [{1}] items", def.ToJson(), total);
+
                     OpenContentController ctrl = new OpenContentController();
                     var dataList = new List<OpenContentInfo>();
                     foreach (var item in docs.ids)
@@ -99,15 +102,19 @@ namespace Satrabel.OpenContent.Components.JPList
                         {
                             dataList.Add(content);
                         }
+                        else
+                        {
+                            Log.Logger.DebugFormat("OpenContent.JplistApiController.List() ContentItem not found [{0}]", item);
+                        }
                     }
-                    int MainTabId = settings.DetailTabId > 0 ? settings.DetailTabId : settings.TabId;
-                    ModelFactory mf = new ModelFactory(dataList, settings.Data, settings.Template.Uri().PhysicalFullDirectory + "\\", manifest, templateManifest, files, ActiveModule, PortalSettings, MainTabId, settings.ModuleId);
+                    int mainTabId = settings.DetailTabId > 0 ? settings.DetailTabId : settings.TabId;
+                    ModelFactory mf = new ModelFactory(dataList, settings.Data, settings.Template.Uri().PhysicalFullDirectory + "\\", manifest, templateManifest, files, ActiveModule, PortalSettings, mainTabId, settings.ModuleId);
                     if (!string.IsNullOrEmpty(req.options))
                     {
                         mf.Options = JObject.Parse(req.options);
                     }
                     var model = mf.GetModelAsJson(false);
-                    
+
                     var res = new ResultDTO()
                     {
                         data = model,
@@ -162,7 +169,7 @@ namespace Satrabel.OpenContent.Components.JPList
                                 });
                             }
 
-                            else if ((status.type == "checkbox-group-filter" || status.type ==  "button-filter-group") 
+                            else if ((status.type == "checkbox-group-filter" || status.type == "button-filter-group")
                                         && status.data != null && !String.IsNullOrEmpty(status.name))
                             {
                                 if (status.data.filterType == "pathGroup" && status.data.pathGroup != null && status.data.pathGroup.Count > 0)
@@ -292,18 +299,18 @@ namespace Satrabel.OpenContent.Components.JPList
                                 Query query1;
                                 var field = indexConfig.Fields.ContainsKey(n) ? indexConfig.Fields[n] : null;
                                 bool ml = field != null && field.MultiLanguage;
-                                
+
                                 if (field != null &&
                                     (field.IndexType == "key" || (field.Items != null && field.Items.IndexType == "key")))
-                                {                                    
+                                {
                                     query1 = new WildcardQuery(new Term(n, f.value));
                                 }
                                 else
                                 {
                                     string fieldName = ml ? n + "." + DnnUtils.GetCurrentCultureCode() : n;
-                                    query1 = LuceneController.ParseQuery(fieldName + ":" + f.value + "*", "Title");    
+                                    query1 = LuceneController.ParseQuery(fieldName + ":" + f.value + "*", "Title");
                                 }
-                                
+
                                 groupQuery.Add(query1, Occur.SHOULD); // or
                             }
                         }
