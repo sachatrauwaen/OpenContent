@@ -332,7 +332,7 @@ namespace Satrabel.OpenContent
             //var tabs = tc.GetTabsByPortal(ModuleContext.PortalId);
             foreach (var tab in tabs)
             {
-                
+
                 //var tabpath = tab.TabPath.Replace("//", "/").TrimEnd(tab.TabName).Trim('/');
                 var li = new ListItem(tab.Key.Replace("//", " / ").TrimStart(" / "), tab.Value.ToString());
                 if (!tab.Key.StartsWith("//Admin//"))
@@ -353,11 +353,14 @@ namespace Satrabel.OpenContent
         private void ActivateDetailPage()
         {
             phDetailPage.Visible = false;
-            var template = new FileUri(ddlTemplate.SelectedValue);
-            var manifest = template.ToTemplateManifest();
-            if (manifest.IsListTemplate)
+            if (ddlTemplate.SelectedIndex >= 0)
             {
-                phDetailPage.Visible = true;
+                var template = new FileUri(ddlTemplate.SelectedValue);
+                var manifest = template.ToTemplateManifest();
+                if (manifest.IsListTemplate)
+                {
+                    phDetailPage.Visible = true;
+                }
             }
         }
 
