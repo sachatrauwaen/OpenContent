@@ -184,7 +184,7 @@ namespace Satrabel.OpenContent
             bool settingsDefined = !string.IsNullOrEmpty(settings.Data);
             bool settingsNeeded = false;
 
-            if (rblUseTemplate.SelectedIndex == 0) // existing template
+            if (rblUseTemplate.SelectedIndex == 0 && ddlTemplate.SelectedIndex >= 0) // existing template
             {
                 //create tmp TemplateManifest
                 var templateManifest = new FileUri(ddlTemplate.SelectedValue).ToTemplateManifest();
@@ -354,7 +354,7 @@ namespace Satrabel.OpenContent
         private void ActivateDetailPage()
         {
             phDetailPage.Visible = false;
-            if (ddlTemplate.SelectedIndex >= 0)
+            if (ddlTemplate.SelectedIndex >= 0 && rblUseTemplate.SelectedIndex == 0 ) // existing template
             {
                 var template = new FileUri(ddlTemplate.SelectedValue);
                 var manifest = template.ToTemplateManifest();
