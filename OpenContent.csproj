@@ -713,7 +713,9 @@
     <Content Include="js\alpaca-1.5.8\lib\handlebars\README.md" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Templates\web.config" />
+    <Content Include="Templates\web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="js\wysihtml\wysihtml-toolbar.min.map" />

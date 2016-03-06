@@ -850,6 +850,8 @@ namespace Satrabel.OpenContent
         }
         private string ExecuteRazor(FileUri template, dynamic model)
         {
+           
+
             string webConfig = template.PhysicalFullDirectory; // Path.GetDirectoryName(template.PhysicalFilePath);
             webConfig = webConfig.Remove(webConfig.LastIndexOf("\\")) + "\\web.config";
             if (!File.Exists(webConfig))
@@ -927,9 +929,9 @@ namespace Satrabel.OpenContent
         private void RazorRender(WebPageBase webpage, TextWriter writer, dynamic model)
         {
             var httpContext = new HttpContextWrapper(System.Web.HttpContext.Current);
-            if ((webpage) is OpenContentWebPage<dynamic>)
+            if ((webpage) is OpenContentWebPage)
             {
-                var mv = (OpenContentWebPage<dynamic>)webpage;
+                var mv = (OpenContentWebPage)webpage;
                 mv.Model = model;
             }
             if (webpage != null)

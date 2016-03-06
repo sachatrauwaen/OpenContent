@@ -65,13 +65,13 @@ namespace Satrabel.OpenContent.Components.Razor
             return null;
         }
 
-        public void Render<T>(TextWriter writer, T model)
+        public void Render(TextWriter writer, dynamic model)
         {
             try
             {
-                if ((Webpage) is OpenContentWebPage<T>)
+                if ((Webpage) is OpenContentWebPage)
                 {
-                    var mv = (OpenContentWebPage<T>)Webpage;
+                    var mv = (OpenContentWebPage)Webpage;
                     mv.Model = model;
                 }
                 Webpage.ExecutePageHierarchy(new WebPageContext(HttpContext, Webpage, null), writer, Webpage);

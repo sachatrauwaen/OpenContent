@@ -14,6 +14,8 @@ namespace Satrabel.OpenContent.Components
 {
     public abstract class OpenContentWebPage : WebPageBase
     {
+        public dynamic Model { get; set; }
+
         #region Helpers
 
         protected internal DnnHelper Dnn { get; internal set; }
@@ -71,10 +73,9 @@ namespace Satrabel.OpenContent.Components
 
         #endregion
     }
-
     public abstract class OpenContentWebPage<T> : OpenContentWebPage
     {
-        public T Model { get; set; }
+        //public T Model { get; set; }
     }
-
+   
 }

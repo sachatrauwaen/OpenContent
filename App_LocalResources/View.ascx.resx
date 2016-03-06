@@ -171,4 +171,7 @@
   <data name="EditInit.Action" xml:space="preserve">
     <value>Change Template</value>
   </data>
+  <data name="lDetailPage.Text" xml:space="preserve">
+    <value>Detail Page</value>
+  </data>
 </root>
