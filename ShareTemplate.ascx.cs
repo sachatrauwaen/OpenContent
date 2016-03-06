@@ -28,6 +28,7 @@ using System.Web;
 using System.Xml;
 using Satrabel.OpenContent.Components.Rss;
 using System.Net;
+using Satrabel.OpenContent.Components.Manifest;
 
 #endregion
 
@@ -85,7 +86,7 @@ namespace Satrabel.OpenContent
             {
                 phExport.Visible = true;
                 ddlTemplates.Items.Clear();
-                ddlTemplates.Items.AddRange(OpenContentUtils.GetTemplates(PortalSettings, ModuleId, (FileUri)null, GetModuleSubDir()).ToArray());
+                ddlTemplates.Items.AddRange(OpenContentUtils.GetTemplates(PortalSettings, ModuleId, (TemplateManifest)null, GetModuleSubDir()).ToArray());
             }
             else if (rblAction.SelectedValue == "importweb") // Import from web
             {
@@ -102,7 +103,7 @@ namespace Satrabel.OpenContent
             {
                 phCopy.Visible = true;
                 ddlCopyTemplate.Items.Clear();
-                ddlCopyTemplate.Items.AddRange(OpenContentUtils.GetTemplates(PortalSettings, ModuleId, (FileUri)null, GetModuleSubDir()).ToArray());
+                ddlCopyTemplate.Items.AddRange(OpenContentUtils.GetTemplates(PortalSettings, ModuleId, (TemplateManifest)null, GetModuleSubDir()).ToArray());
             }
         }
         protected void cmdImport_Click(object sender, EventArgs e)

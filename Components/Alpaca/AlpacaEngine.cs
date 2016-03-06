@@ -16,6 +16,7 @@ using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Json;
 using System.Web.UI.HtmlControls;
 
+
 namespace Satrabel.OpenContent.Components.Alpaca
 {
     public class AlpacaEngine
@@ -76,7 +77,9 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
             ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/alpaca/js/fields/dnn/dnnfields.js", FileOrder.Js.DefaultPriority + 3);
 
-            ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/css/font-awesome/css/font-awesome.min.css", FileOrder.Css.DefaultPriority);
+            ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/alpacaengine.js", FileOrder.Js.DefaultPriority + 10);
+
+            ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/css/font-awesome/css/font-awesome.min.css", FileOrder.Css.DefaultPriority+1);
         }
         public void RegisterTemplates()
         {
@@ -126,7 +129,10 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/cropper/cropper.js", FileOrder.Js.DefaultPriority);
                 ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/cropper/cropper.css", FileOrder.Css.DefaultPriority);
             }
-            if (allFields || fieldTypes.Contains("select2") || fieldTypes.Contains("image2") || fieldTypes.Contains("file2") || fieldTypes.Contains("url2"))
+            if (allFields || 
+                    fieldTypes.Contains("select2") || fieldTypes.Contains("image2") || fieldTypes.Contains("file2") || fieldTypes.Contains("url2") ||
+                    fieldTypes.Contains("mlimage2") || fieldTypes.Contains("mlfile2") || fieldTypes.Contains("mlurl2") 
+                )
             {
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/select2/select2.js", FileOrder.Js.DefaultPriority);
                 ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/select2/select2.css", FileOrder.Css.DefaultPriority);
@@ -159,16 +165,23 @@ namespace Satrabel.OpenContent.Components.Alpaca
                         form.Controls.Add(CKDNNporid);
                         CKDNNporid.Value = ModuleContext.PortalId.ToString();
                     }
+                    else
+                    {
+                        Log.Logger.Warn("Failed to load CKEeditor. Can not find ~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js");
+                    }
                 }
-
             }
-
+            if (allFields || fieldTypes.Contains("icon"))
+            {
+                ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/fontIconPicker/jquery.fonticonpicker.min.js", FileOrder.Js.DefaultPriority, "DnnPageHeaderProvider");
+                ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/fontIconPicker/css/jquery.fonticonpicker.min.css", FileOrder.Css.DefaultPriority);
+                ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/fontIconPicker/themes/grey-theme/jquery.fonticonpicker.grey.min.css", FileOrder.Css.DefaultPriority);
+                
+            }
         }
-
         private JToken GetOptions()
         {
             string physicalDirectory = HostingEnvironment.MapPath("~/" + VirtualDirectory);
-
             JToken optionsJson = null;
             // default options
             string optionsFilename = physicalDirectory + "\\" + (string.IsNullOrEmpty(Prefix) ? "" : Prefix + "-") + "options.json";
@@ -243,5 +256,8 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
             return "en_US";
         }
+
+        
+
     }
 }

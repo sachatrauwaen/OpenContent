@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Satrabel.OpenContent.Components.Handlebars;
 using Satrabel.OpenContent.Components.Json;
+using Newtonsoft.Json.Linq;
 
 namespace OpenContentTests
 {
@@ -53,6 +54,18 @@ namespace OpenContentTests
             string res2 = hbEngine.Execute(source, model2);
             Assert.AreEqual(expected1, res1);
             Assert.AreEqual(expected2, res2);
+        }
+
+        [TestMethod]
+        public void ParseDate()
+        {
+            JTokenType expected1 = JTokenType.Date;
+            string source = "{ \"d\":\"2009-02-15T00:00:00\" }";
+            JObject obj = JObject.Parse(source);
+            var token = obj["d"];
+            JValue value = token as JValue;
+            var t = value.Type;
+            Assert.AreEqual(expected1, t);
         }
     }
 }

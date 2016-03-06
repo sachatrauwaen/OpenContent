@@ -1,8 +1,6 @@
 ﻿using System;
 using System.IO;
-using System.Web;
 using System.Web.Hosting;
-using DotNetNuke.Entities.Portals;
 using DotNetNuke.Services.FileSystem;
 
 namespace Satrabel.OpenContent.Components
@@ -15,7 +13,7 @@ namespace Satrabel.OpenContent.Components
         {
             if (string.IsNullOrEmpty(pathToFile))
             {
-                throw new ArgumentNullException("pathToFile is null");
+                throw new ArgumentNullException("pathToFile");
             }
             FileName = System.IO.Path.GetFileName(NormalizePath(pathToFile));
         }
@@ -24,25 +22,17 @@ namespace Satrabel.OpenContent.Components
         {
             if (string.IsNullOrEmpty(filename))
             {
-                throw new ArgumentNullException("filename is null");
+                throw new ArgumentNullException("filename");
             }
             FileName = filename;
         }
-        public FileUri(FolderUri path, string filename) : base(path.Path)
+        public FileUri(FolderUri path, string filename) : base(path.FolderPath)
         {
             if (string.IsNullOrEmpty(filename))
             {
-                throw new ArgumentNullException("filename is null");
+                throw new ArgumentNullException("filename");
             }
             FileName = filename;
-        }
-
-        protected FileUri(int fileId) : base(GetFileInfo(fileId))
-        {
-            FileInfo = GetFileInfo(fileId);
-            var filePath = FileManager.Instance.GetUrl(FileInfo);
-            filePath = NormalizePath(filePath);
-            FileName = System.IO.Path.GetFileName(filePath);
         }
 
         private static IFileInfo GetFileInfo(int fileId)
@@ -56,14 +46,6 @@ namespace Satrabel.OpenContent.Components
 
         #endregion
 
-        /// <summary>
-        /// Gets or sets the Dnn file information object.
-        /// </summary>
-        /// <value>
-        /// The Dnn file information object.
-        /// </value>
-        /// <remarks>This is only available for files under the Dnn Portal Directory</remarks>
-        public IFileInfo FileInfo { get; protected set; }
 
         /// <summary>
         /// Gets the file path relative to the Application. No leading /.
@@ -71,7 +53,7 @@ namespace Satrabel.OpenContent.Components
         /// <value>
         /// The file path.
         /// </value>
-        public string FilePath { get { return base.Path + "/" + FileName; } }
+        public string FilePath { get { return base.FolderPath + "/" + FileName; } }
 
         public string UrlFilePath { get { return base.UrlPath + "/" + FileName; } }
 
@@ -118,7 +100,7 @@ namespace Satrabel.OpenContent.Components
         {
             if (string.IsNullOrEmpty(path))
             {
-                throw new ArgumentNullException("path is null");
+                throw new ArgumentNullException("path");
             }
             string appPath = HostingEnvironment.MapPath("~");
             string file = string.Format("{0}", path.Replace(appPath, "").Replace("\\", "/"));
@@ -132,17 +114,5 @@ namespace Satrabel.OpenContent.Components
 
         #endregion
 
-        #region Private Methods
-
-        private string NormalizePath(string filePath)
-        {
-            filePath = filePath.Replace("\\", "/");
-            filePath = filePath.Trim('~');
-            filePath = filePath.TrimStart(NormalizedApplicationPath);
-            filePath = filePath.Trim('/');
-            return filePath;
-        }
-
-        #endregion
     }
 }

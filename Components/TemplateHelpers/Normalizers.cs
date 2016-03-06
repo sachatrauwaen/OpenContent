@@ -60,6 +60,25 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             }
             return retval as DateTime?;
         }
+        public static string DynamicValue(dynamic value, DateTime defaultValue, string format)
+        {
+            if (value == null && defaultValue == DateTime.MinValue) return string.Empty;
+            if (value == null) return string.Empty;
+
+            DateTime? retval = null;
+            if (value.GetType() == DateTime.MinValue.GetType())
+                retval = value as DateTime?;
+            else if (value.GetType() == "".GetType())
+            {
+                retval = DateTimeExtensions.ToDateTime(value);
+            }
+            if (retval == null) return string.Empty;
+
+            if (string.IsNullOrEmpty(format))
+                format = "yyyy-MM-dd hh:mm:ss";
+
+            return retval.ToStringOrDefault(format);
+        }
         #endregion
 
     }

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.IO;
-using System.Web;
 using System.Web.Hosting;
-using DotNetNuke.Entities.Portals;
 using DotNetNuke.Services.FileSystem;
 
 namespace Satrabel.OpenContent.Components
@@ -15,18 +13,18 @@ namespace Satrabel.OpenContent.Components
         {
             if (string.IsNullOrEmpty(pathToFolder))
             {
-                throw new ArgumentNullException("pathToFolder is null");
+                throw new ArgumentNullException("pathToFolder");
             }
-            Path = NormalizePath(pathToFolder);
+            FolderPath = NormalizePath(pathToFolder);
         }
 
         protected FolderUri(IFileInfo pathToFolder)
         {
             if (pathToFolder == null)
             {
-                throw new ArgumentNullException("pathToFolder is null");
+                throw new ArgumentNullException("pathToFolder");
             }
-            Path = NormalizePath(pathToFolder.Folder);
+            FolderPath = NormalizePath(pathToFolder.Folder);
         }
 
         #endregion
@@ -46,14 +44,14 @@ namespace Satrabel.OpenContent.Components
         /// <value>
         /// The file path.
         /// </value>
-        public string Path { get; private set; }
+        public string FolderPath { get; private set; }
 
         protected string UrlPath
         {
             get
             {
-                if (NormalizedApplicationPath == "/" && Path.StartsWith("/")) return Path;
-                return NormalizedApplicationPath + Path;
+                //if (NormalizedApplicationPath == "/" && FolderPath.StartsWith("/")) return FolderPath;
+                return NormalizedApplicationPath + FolderPath;
             }
         }
 
@@ -67,14 +65,14 @@ namespace Satrabel.OpenContent.Components
         {
             get
             {
-                return UrlPath + "/";
+                return UrlPath.TrimEnd('/') + "/";
             }
         }
         public string PhysicalFullDirectory
         {
             get
             {
-                return HostingEnvironment.MapPath("~/" + Path);
+                return HostingEnvironment.MapPath("~/" + FolderPath);
             }
         }
 
@@ -84,6 +82,19 @@ namespace Satrabel.OpenContent.Components
             {
                 return Directory.Exists(PhysicalFullDirectory);
             }
+        }
+
+        public FolderUri ParentFolder
+        {
+            get
+            {
+                return new FolderUri(FolderPath.Substring(0, FolderPath.LastIndexOf('/') + 1));
+            }
+        }
+
+        public FolderUri Append(string path)
+        {
+            return new FolderUri(FolderPath + "/" + path.Trim('/'));
         }
 
         /// <summary>
@@ -101,6 +112,8 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
+
+
         #region Static Utils
 
 
@@ -108,7 +121,7 @@ namespace Satrabel.OpenContent.Components
         {
             if (string.IsNullOrEmpty(path))
             {
-                throw new ArgumentNullException("path is null");
+                throw new ArgumentNullException("path");
             }
             string appPath = HostingEnvironment.MapPath("~");
             string file = string.Format("{0}", path.Replace(appPath, "").Replace("\\", "/"));
@@ -120,7 +133,7 @@ namespace Satrabel.OpenContent.Components
 
         #region Private Methods
 
-        private string NormalizePath(string filePath)
+        protected static string NormalizePath(string filePath)
         {
             filePath = filePath.Replace("\\", "/");
             filePath = filePath.Trim('~');

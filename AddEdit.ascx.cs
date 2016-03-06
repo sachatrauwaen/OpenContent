@@ -20,7 +20,7 @@ using DotNetNuke.Web.Client.ClientResourceManagement;
 using DotNetNuke.Web.Client;
 using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components;
-
+using Satrabel.OpenContent.Components.Manifest;
 
 #endregion
 
@@ -32,11 +32,14 @@ namespace Satrabel.OpenContent
         protected override void OnInit(EventArgs e)
         {
             base.OnInit(e);
-            //string AddEditControl = PortalController.GetPortalSetting("OpenContent_AddEditControl", ModuleContext.PortalId, "");
+            var settings = ModuleContext.OpenContentSettings();
+            Manifest manifest = settings.Manifest;
 
-            Manifest manifest;
-            TemplateManifest templateManifest;
-            var template = OpenContentUtils.GetTemplate(ModuleContext.Settings, out manifest, out templateManifest);
+            if (settings.TemplateKey.Extention != ".manifest")
+            {
+                manifest = ManifestUtils.GetFileManifest(settings.TemplateKey.TemplateDir);
+            }
+
             if (manifest != null)
             {
                 string addEditControl = manifest.AdditionalEditControl;

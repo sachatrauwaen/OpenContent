@@ -38,7 +38,7 @@
          */
         getValue: function()
         {
-            var val = this._getControlVal(true);
+            var val = this._getControlVal(false);
 
             if (typeof(val) == "undefined" || "" == val)
             {
@@ -46,7 +46,7 @@
             }
 
             if (this.numberDecimalSeparator != '.') {                
-                val = val.replace(this.numberDecimalSeparator, '.');
+                val = ("" + val).replace(this.numberDecimalSeparator, '.');
             }
 
             return parseFloat(val);

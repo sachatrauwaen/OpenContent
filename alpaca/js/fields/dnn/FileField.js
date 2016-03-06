@@ -174,7 +174,7 @@
                 bloodHoundConfig.remote = {
                     url: self.sf.getServiceRoot('OpenContent') + "DnnEntitiesAPI/Files?q=%QUERY&d=" + tFolder,
                     ajax: {
-                        beforeSend: connector.servicesFramework.setModuleHeaders,
+                        beforeSend: self.sf.setModuleHeaders,
                     }
                 };
 

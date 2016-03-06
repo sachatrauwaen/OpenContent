@@ -65,9 +65,21 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\bin\DotNetNuke.WebUtility.dll</HintPath>
     </Reference>
-    <Reference Include="Handlebars, Version=1.0.5607.41709, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Handlebars, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Handlebars.Net\source\Handlebars\bin\Debug\Handlebars.dll</HintPath>
+      <HintPath>ref\Handlebars.dll</HintPath>
+    </Reference>
+    <Reference Include="Lucene.Net, Version=3.0.3.0, Culture=neutral, PublicKeyToken=85089178b9ac3181, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Lucene.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="Lucene.Net.Contrib.Analyzers, Version=3.0.3.0, Culture=neutral, PublicKeyToken=85089178b9ac3181, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Lucene.Net.Contrib.Analyzers.dll</HintPath>
+    </Reference>
+    <Reference Include="Lucene.Net.Contrib.FastVectorHighlighter, Version=3.0.3.0, Culture=neutral, PublicKeyToken=85089178b9ac3181, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Lucene.Net.Contrib.FastVectorHighlighter.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -89,7 +101,7 @@
     </Reference>
     <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\bin\System.Net.Http.Formatting.dll</HintPath>
+      <HintPath>..\..\bin\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
@@ -99,11 +111,11 @@
     </Reference>
     <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\bin\System.Web.Http.dll</HintPath>
+      <HintPath>..\..\bin\System.Web.Http.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.WebPages, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\bin\System.Web.WebPages.dll</HintPath>
+      <HintPath>..\..\bin\System.Web.WebPages.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
@@ -122,16 +134,55 @@
     <Compile Include="AddEdit.ascx.designer.cs">
       <DependentUpon>AddEdit.ascx</DependentUpon>
     </Compile>
+    <Compile Include="Components\AdditionalDataController.cs" />
+    <Compile Include="Components\AdditionalDataInfo.cs" />
+    <Compile Include="Components\AdditionalDataUtils.cs" />
+    <Compile Include="Components\Alpaca\AlpacaContext.cs" />
     <Compile Include="Components\Alpaca\AlpacaEngine.cs" />
+    <Compile Include="Components\Alpaca\FormBuilder.cs" />
+    <Compile Include="Components\Alpaca\OptionsConfig.cs" />
     <Compile Include="Components\Common\DateTimeExtensions.cs" />
     <Compile Include="Components\Common\DnnUtils.cs" />
+    <Compile Include="Components\Common\PageUtils.cs" />
     <Compile Include="Components\Dynamic\DynamicHelper.cs" />
+    <Compile Include="Components\ExternalApiController.cs" />
     <Compile Include="Components\FeatureController.cs" />
     <Compile Include="Components\FilesStatus.cs" />
     <Compile Include="Components\FileUploadController.cs" />
-    <Compile Include="Components\FolderUri.cs" />
-    <Compile Include="Components\FileUri.cs" />
+    <Compile Include="Components\Lucene\Config\FieldConfig.cs" />
+    <Compile Include="Components\Lucene\Config\QueryDefinition.cs" />
+    <Compile Include="Components\Alpaca\SchemaConfig.cs" />
+    <Compile Include="Components\Lucene\SearchResults.cs" />
+    <Compile Include="Components\Manifest\AdditionalDataManifest.cs" />
+    <Compile Include="Components\Manifest\Manifest.cs" />
+    <Compile Include="Components\Manifest\ManifestUtils.cs" />
+    <Compile Include="Components\Manifest\TemplateKey.cs" />
+    <Compile Include="Components\ModelFactory.cs" />
+    <Compile Include="Components\Manifest\TemplateFiles.cs" />
+    <Compile Include="Components\Manifest\PartialTemplate.cs" />
+    <Compile Include="Components\Razor\RazorEngine.cs" />
+    <Compile Include="Components\Rss\RssApiController.cs" />
+    <Compile Include="Components\TemplateHelpers\OpenGraph.cs" />
+    <Compile Include="Components\TemplateHelpers\OtherExtentions.cs" />
+    <Compile Include="Components\Manifest\TemplateManifest.cs" />
+    <Compile Include="Components\Uri\PortalFileUri.cs" />
+    <Compile Include="Components\Uri\FolderUri.cs" />
+    <Compile Include="Components\Uri\FileUri.cs" />
     <Compile Include="Components\Handlebars\HandlebarsEngine.cs" />
+    <Compile Include="Components\JPList\FilterDTO.cs" />
+    <Compile Include="Components\JPList\JplistAPIController.cs" />
+    <Compile Include="Components\JPList\JpListQueryDTO.cs" />
+    <Compile Include="Components\JPList\PaginationDTO.cs" />
+    <Compile Include="Components\JPList\RequestDTO.cs" />
+    <Compile Include="Components\JPList\ResultDTO.cs" />
+    <Compile Include="Components\JPList\SortDTO.cs" />
+    <Compile Include="Components\JPList\StatusDataDTO.cs" />
+    <Compile Include="Components\JPList\StatusDTO.cs" />
+    <Compile Include="Components\Lucene\Index\OpenContentMappingExtensions.cs" />
+    <Compile Include="Components\Lucene\LuceneController.cs" />
+    <Compile Include="Components\Lucene\Mapping\JsonMappingUtils.cs" />
+    <Compile Include="Components\Lucene\Mapping\JsonObjectMapper.cs" />
+    <Compile Include="Components\Lucene\Search\JsonSearchUtils.cs" />
     <Compile Include="Components\TemplateHelpers\Images\ImageHelper.cs" />
     <Compile Include="Components\TemplateHelpers\Images\ImageUri.cs" />
     <Compile Include="Components\TemplateHelpers\Images\Ratio.cs" />
@@ -153,8 +204,30 @@
     <Compile Include="Components\TemplateHelpers\Normalizers.cs" />
     <Compile Include="Components\Rss\FeedParser.cs" />
     <Compile Include="Components\Rss\FeedItem.cs" />
-    <Compile Include="Components\TemplateInfo.cs" />
+    <Compile Include="Components\TemplateHelpers\MetaTags.cs" />
+    <Compile Include="Components\Manifest\RenderInfo.cs" />
     <Compile Include="Components\Common\Utils.cs" />
+    <Compile Include="EditAddData.ascx.cs">
+      <DependentUpon>EditAddData.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="EditAddData.ascx.designer.cs">
+      <DependentUpon>EditAddData.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="EditInit.ascx.cs">
+      <DependentUpon>EditInit.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="EditInit.ascx.designer.cs">
+      <DependentUpon>EditInit.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="EditQuery.ascx.cs">
+      <DependentUpon>EditQuery.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="EditQuery.ascx.designer.cs">
+      <DependentUpon>EditQuery.ascx</DependentUpon>
+    </Compile>
     <Compile Include="EditGlobalSettings.ascx.cs">
       <DependentUpon>EditGlobalSettings.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -211,6 +284,13 @@
     <Compile Include="Settings.ascx.designer.cs">
       <DependentUpon>Settings.ascx</DependentUpon>
     </Compile>
+    <Compile Include="TemplateInit.ascx.cs">
+      <DependentUpon>TemplateInit.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="TemplateInit.ascx.designer.cs">
+      <DependentUpon>TemplateInit.ascx</DependentUpon>
+    </Compile>
     <Compile Include="View.ascx.cs">
       <DependentUpon>View.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -234,6 +314,8 @@
     <Content Include="alpaca\js\fields\dnn\dnnfields.min.js">
       <DependentUpon>dnnfields.js</DependentUpon>
     </Content>
+    <Content Include="alpaca\js\fields\dnn\IconField.js" />
+    <Content Include="alpaca\js\fields\dnn\MLImage2Field.js" />
     <Content Include="alpaca\js\fields\dnn\Url2Field.js" />
     <Content Include="alpaca\js\fields\dnn\File2Field.js" />
     <Content Include="alpaca\js\fields\dnn\ImageCropperField.js" />
@@ -284,9 +366,18 @@
     <Content Include="css\images\ui-icons_ef8c08_256x240.png" />
     <Content Include="css\images\ui-icons_ffd27a_256x240.png" />
     <Content Include="css\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="EditAddData.ascx" />
+    <Content Include="EditInit.ascx" />
+    <Content Include="EditQuery.ascx" />
     <Content Include="EditGlobalSettings.ascx" />
     <Content Include="EditSettings.ascx" />
+    <Content Include="images\edit.png" />
+    <Content Include="images\edittemplate.png" />
+    <Content Include="images\exchange.png" />
+    <Content Include="images\help.png" />
     <Content Include="images\icon_extensions.png" />
+    <Content Include="images\settings.gif" />
+    <Content Include="images\settings.png" />
     <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\build\css\bootstrap-datetimepicker.css" />
     <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\build\css\bootstrap-datetimepicker.min.css" />
     <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\build\js\bootstrap-datetimepicker.min.js" />
@@ -425,6 +516,7 @@
     <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\tokenizers_spec.js" />
     <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\transport_spec.js" />
     <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\typeahead_view_spec.js" />
+    <Content Include="js\alpacaengine.js" />
     <Content Include="js\CodeMirror\addon\mode\loadmode.js" />
     <Content Include="js\CodeMirror\addon\mode\multiplex.js" />
     <Content Include="js\CodeMirror\addon\mode\multiplex_test.js" />
@@ -461,6 +553,10 @@
     <Content Include="js\alpaca-1.5.8\lib\moment\CHANGELOG.md" />
     <Content Include="js\alpaca-1.5.8\lib\moment\LICENSE" />
     <Content Include="js\alpaca-1.5.8\lib\moment\README.md" />
+    <Content Include="js\alpaca-1.5.8\alpaca\web\alpaca.min.js.map">
+      <DependentUpon>alpaca.min.js</DependentUpon>
+    </Content>
+    <Content Include="Providers\DataProviders\SqlDataProvider\02.00.03.SqlDataProvider" />
     <None Include="Scripts\_references.js" />
     <Content Include="js\select2\i18n\az.js" />
     <Content Include="js\select2\i18n\bg.js" />
@@ -578,6 +674,7 @@
     <Content Include="module.css" />
     <Content Include="ReleaseNotes.txt" />
     <Content Include="Settings.ascx" />
+    <Content Include="TemplateInit.ascx" />
     <Content Include="View.ascx" />
   </ItemGroup>
   <ItemGroup>
@@ -600,9 +697,6 @@
     <Content Include="Providers\DataProviders\SqlDataProvider\Uninstall.SqlDataProvider" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="css\font-awesome\fonts\fontawesome-webfont.eot" />
     <Content Include="css\font-awesome\fonts\fontawesome-webfont.ttf" />
     <Content Include="css\font-awesome\fonts\fontawesome-webfont.woff" />
@@ -619,7 +713,9 @@
     <Content Include="js\alpaca-1.5.8\lib\handlebars\README.md" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Templates\web.config" />
+    <Content Include="Templates\web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="js\wysihtml\wysihtml-toolbar.min.map" />
@@ -665,7 +761,15 @@
   <ItemGroup>
     <Content Include="App_LocalResources\EditGlobalSettings.ascx.resx" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="App_LocalResources\EditQuery.ascx.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_LocalResources\EditInit.ascx.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Components\Images\" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

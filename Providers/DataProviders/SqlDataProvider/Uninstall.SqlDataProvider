@@ -6,3 +6,6 @@ IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwn
 DROP TABLE {databaseOwner}[{objectQualifier}OpenContent_Items]
 GO
 
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}OpenContent_Data]') AND type in (N'U'))
+DROP TABLE {databaseOwner}[{objectQualifier}OpenContent_AdditionalData]
+GO

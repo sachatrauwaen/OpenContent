@@ -50,7 +50,7 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
-                var tabs = TabController.GetTabsBySortOrder(PortalSettings.PortalId).Where(t => t.ParentId != PortalSettings.AdminTabId).Where(t => t.TabName.ToLower().Contains(q.ToLower())).Select(t => new { name = t.TabName + " (" + t.TabPath.Replace("//", "/").Replace("/" + t.TabName + "/", "") + " " + l + ")", value = (new Uri(NavigateUrl(t, l, PortalSettings))).PathAndQuery });
+                var tabs = TabController.GetTabsBySortOrder(PortalSettings.PortalId).Where(t => t.ParentId != PortalSettings.AdminTabId).Where(t => t.TabName.ToLower().Contains(q.ToLower())).Select(t => new { name = t.TabName + " (" + t.TabPath.Replace("//", "/").Replace("/" + t.TabName + "/", "") + " " + l + ")", value = (new System.Uri(NavigateUrl(t, l, PortalSettings))).PathAndQuery });
                 return Request.CreateResponse(HttpStatusCode.OK, tabs);
             }
             catch (Exception exc)
@@ -90,6 +90,12 @@ namespace Satrabel.OpenContent.Components
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
+        /// <summary>
+        /// Imageses the lookup.
+        /// </summary>
+        /// <param name="q">The string that should be Contained in the name of the file (case insensitive). Use * to get all the files.</param>
+        /// <param name="d">The Folder path to retrieve</param>
+        /// <returns></returns>
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
         [HttpGet]
@@ -108,7 +114,7 @@ namespace Satrabel.OpenContent.Components
                 var portalFolder = folderManager.GetFolder(PortalSettings.PortalId, d ?? "");
                 if (portalFolder==null)
                 {
-                    var exc = new ArgumentException("Folder path not found. Adjust ['folder': 'FolderPath'] in optionfile. ");
+                    var exc = new ArgumentException("Folder path not found. Adjust ['folder': "+d+"] in optionfile. ");
                     Logger.Error(exc);
                     return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
                 }
@@ -120,16 +126,13 @@ namespace Satrabel.OpenContent.Components
                 }
                 int folderLength = d.Length;
 
-                var res = files.Select(f => new { value = f.FileId.ToString(), url = ImageHelper.GetImageUrl(f, new Ratio(15, 15)), text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName }).Take(100);
+                var res = files.Select(f => new { 
+                    value = f.FileId.ToString(), 
+                    url = ImageHelper.GetImageUrl(f, new Ratio(40, 40)),  //todo for install in application folder is dat niet voldoende ???
+                    text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName })
+                               .Take(100);
 
                 return Request.CreateResponse(HttpStatusCode.OK, res);
-
-                if (false)
-                {
-                    var exc = new ArgumentException("Folder path not specified. Missing ['folder': 'FolderPath'] in optionfile? ");
-                    Logger.Error(exc);
-                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
-                }
             }
             catch (Exception exc)
             {
@@ -179,7 +182,7 @@ namespace Satrabel.OpenContent.Components
                 {
                     tabs = tabs.Where(t => t.TabName.ToLower().Contains(q.ToLower()));
                 }
-                var tabsDtos = tabs.Select(t => new { value = t.TabID.ToString(), text = t.TabName + " (" + t.TabPath.Replace("//", "/").Replace("/" + t.TabName + "/", "") + " " + l + ")", url = (new Uri(NavigateUrl(t, l, PortalSettings))).PathAndQuery });
+                var tabsDtos = tabs.Select(t => new { value = t.TabID.ToString(), text = t.TabName + " (" + t.TabPath.Replace("//", "/").Replace("/" + t.TabName + "/", "") + " " + l + ")", url = (new System.Uri(NavigateUrl(t, l, PortalSettings))).PathAndQuery });
                 return Request.CreateResponse(HttpStatusCode.OK, tabsDtos);
             }
             catch (Exception exc)
@@ -459,7 +462,7 @@ namespace Satrabel.OpenContent.Components
             {
                 imageCropped.Save(content, imgFormat);
                 var newFile = fileManager.AddFile(userFolder, newFilename, content, true);
-                cropresult.url = FileManager.Instance.GetUrl(newFile);
+                cropresult.url = newFile.ToUrl();
                 return cropresult;
             }
             return null;

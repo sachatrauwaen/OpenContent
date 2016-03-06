@@ -287,9 +287,11 @@
                         var cropper = self.options.croppers[i];
                         var id = self.id + '-' + i;
                         var $cropbutton = $('#' + id);
-                        var cropdata = { url: res.cropdata[i].url, cropper: res.cropdata[i].crop };
-                        if (cropdata) {
-                            $cropbutton.data('cropdata', cropdata);
+                        if (res.cropdata[i]){
+                            var cropdata = { url: res.cropdata[i].url, cropper: res.cropdata[i].crop };
+                            if (cropdata) {
+                                $cropbutton.data('cropdata', cropdata);
+                            }
                         }
                     }
                     setTimeout(function () {
@@ -459,7 +461,7 @@
                 bloodHoundConfig.remote = {
                     url: self.sf.getServiceRoot('OpenContent') + "DnnEntitiesAPI/Images?q=%QUERY&d=" + tFolder,
                     ajax: {
-                        beforeSend: connector.servicesFramework.setModuleHeaders,
+                        beforeSend: self.sf.setModuleHeaders,
 
                     }
                 };

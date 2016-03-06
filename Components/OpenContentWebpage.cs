@@ -7,11 +7,23 @@ using System.Web.UI;
 using System.Web.WebPages;
 using DotNetNuke.Web.Client;
 using DotNetNuke.Web.Client.ClientResourceManagement;
+using DotNetNuke.Web.Razor.Helpers;
+
 
 namespace Satrabel.OpenContent.Components
 {
-    public abstract class OpenContentWebPage<TModel> : DotNetNuke.Web.Razor.DotNetNukeWebPage<TModel>
+    public abstract class OpenContentWebPage : WebPageBase
     {
+        public dynamic Model { get; set; }
+
+        #region Helpers
+
+        protected internal DnnHelper Dnn { get; internal set; }
+
+        protected internal HtmlHelper Html { get; internal set; }
+
+        protected internal UrlHelper Url { get; internal set; }
+
         int JSOrder = (int)FileOrder.Js.DefaultPriority;
         int CSSOrder = (int)FileOrder.Css.ModuleCss;
 
@@ -33,11 +45,11 @@ namespace Satrabel.OpenContent.Components
 
         public void RegisterScript(string filePath)
         {
-            if (!filePath.StartsWith("http") && !filePath.Contains("/"))
+            if (!filePath.StartsWith("http") && !filePath.StartsWith("/"))
             {
                 filePath = VirtualPath + filePath;
             }
-            if (!filePath.StartsWith("http"))
+            else if (!filePath.StartsWith("http"))
             {
                 var file = new FileUri(filePath);
                 filePath = file.UrlFilePath;
@@ -47,11 +59,23 @@ namespace Satrabel.OpenContent.Components
             JSOrder++;
         }
 
+        #endregion
 
+        #region BaseClass Overrides
 
-  
+        protected override void ConfigurePage(WebPageBase parentPage)
+        {
+            base.ConfigurePage(parentPage);
 
+            //Child pages need to get their context from the Parent
+            Context = parentPage.Context;
+        }
 
-
+        #endregion
     }
+    public abstract class OpenContentWebPage<T> : OpenContentWebPage
+    {
+        //public T Model { get; set; }
+    }
+   
 }

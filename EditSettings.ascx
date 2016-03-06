@@ -2,11 +2,6 @@
 <%@ Register TagPrefix="dnn" TagName="Label" Src="~/controls/LabelControl.ascx" %>
 
 <asp:Panel ID="ScopeWrapper" runat="server" CssClass="dnnForm">
-    <div class="dnnFormItem">
-        <dnn:Label ID="scriptListLabel" ControlName="scriptList" runat="server" />
-        <asp:DropDownList ID="scriptList" runat="server" />
-        <asp:HyperLink ID="hlTemplateExchange" runat="server" Visible="false">More...</asp:HyperLink>
-    </div>
     <div id="field1" class="alpaca"></div>
     <ul class="dnnActions dnnClear" style="display: block; padding-left: 35%">
         <li>
@@ -38,20 +33,10 @@
                 self = moduleScope,
                 sf = $.ServicesFramework(<%=ModuleId %>);
 
-                $("#<%= scriptList.ClientID %>").change(function () {
-                if ($("#field1").alpaca("exists")) {
-                    $("#field1").alpaca("destroy");
-                }
-                self.CreateForm();
-            });
-
             self.CreateForm = function () {
-                var Template = $("#<%= scriptList.ClientID %>").val();
-                if (!Template) return;
                 var postData = {};
-                //var getData = "tabId=<%=TabId %>&moduleId=<%=ModuleId %>";
-                var getData = "Template=" + Template;
-                var action = "Settings"; //self.getUpdateAction();
+                var getData = "";
+                var action = "Settings";
 
                 $.ajax({
                     type: "GET",
@@ -130,9 +115,8 @@
             };
 
         self.FormSubmit = function (data, href) {
-            var Template = $("#<%= scriptList.ClientID %>").val();
             //var postData = { 'data': data, 'template': Template };
-            var postData = JSON.stringify({ 'data': data, 'template': Template });
+            var postData = JSON.stringify({ 'data': data});
             var action = "UpdateSettings";
             $.ajax({
                 type: "POST",

@@ -19,6 +19,7 @@
     <file>NumberField.js</file>
     <file>Select2Field.js</file>
     <file>Image2Field.js</file>
+    <file>MLImage2Field.js</file>
     <file>File2Field.js</file>
     <file>Url2Field.js</file>
     <file>UrlField.js</file>
@@ -29,5 +30,7 @@
     <file>MLTextField.js</file>
     <file>MLUrlField.js</file>
     <file>mlwysihtmlField.js</file>
+    <file>GuidField.js</file>
+    <file>IconField.js</file>
   </files>
 </bundle>

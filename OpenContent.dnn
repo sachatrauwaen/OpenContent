@@ -1,6 +1,6 @@
 <dotnetnuke type="Package" version="5.0">
   <packages>
-    <package name="OpenContent" type="Module" version="02.00.00">
+    <package name="OpenContent" type="Module" version="02.01.00">
       <friendlyName>OpenContent</friendlyName>
       <description>OpenContent module by Satrabel.be</description>
       <iconFile>~/DesktopModules/OpenContent/Images/icon_extensions.png</iconFile>
@@ -30,14 +30,18 @@
               <name>01.04.01.SqlDataProvider</name>
               <version>01.04.01</version>
             </script>
+             <script type="Install">
+              <path>Providers\DataProviders\SqlDataProvider</path>
+              <name>02.00.03.SqlDataProvider</name>
+              <version>02.00.03</version>
+            </script>
             <script type="UnInstall">
               <path>Providers\DataProviders\SqlDataProvider</path>
               <name>Uninstall.SqlDataProvider</name>
-              <version>00.00.01</version>
+              <version>02.00.03</version>
             </script>
           </scripts>
         </component>
-
         <component type="ResourceFile">
           <resourceFiles>
             <basePath>DesktopModules/OpenContent</basePath>
@@ -90,11 +94,33 @@
                     <supportsPopUps>True</supportsPopUps>
                   </moduleControl>
                   <moduleControl>
+                    <controlKey>EditAddData</controlKey>
+                    <controlSrc>DesktopModules/OpenContent/EditAddData.ascx</controlSrc>
+                    <supportsPartialRendering>False</supportsPartialRendering>
+                    <controlTitle>Edit Additional Content</controlTitle>
+                    <controlType>Edit</controlType>
+                    <iconFile />
+                    <helpUrl />
+                    <viewOrder>0</viewOrder>
+                    <supportsPopUps>True</supportsPopUps>
+                  </moduleControl>
+                  <moduleControl>
                     <controlKey>EditTemplate</controlKey>
                     <controlSrc>DesktopModules/OpenContent/EditTemplate.ascx</controlSrc>
                     <supportsPartialRendering>False</supportsPartialRendering>
                     <controlTitle>Edit Template</controlTitle>
                     <controlType>Host</controlType>
+                    <iconFile />
+                    <helpUrl />
+                    <viewOrder>0</viewOrder>
+                    <supportsPopUps>True</supportsPopUps>
+                  </moduleControl>
+                   <moduleControl>
+                    <controlKey>EditQuery</controlKey>
+                    <controlSrc>DesktopModules/OpenContent/EditQuery.ascx</controlSrc>
+                    <supportsPartialRendering>False</supportsPartialRendering>
+                    <controlTitle>Edit Filter Settings</controlTitle>
+                    <controlType>Admin</controlType>
                     <iconFile />
                     <helpUrl />
                     <viewOrder>0</viewOrder>
@@ -144,10 +170,30 @@
                     <viewOrder>0</viewOrder>
                     <supportsPopUps>True</supportsPopUps>
                   </moduleControl>
+                  <moduleControl>
+                    <controlKey>EditInit</controlKey>
+                    <controlSrc>DesktopModules/OpenContent/EditInit.ascx</controlSrc>
+                    <supportsPartialRendering>False</supportsPartialRendering>
+                    <controlTitle>Change Template</controlTitle>
+                    <controlType>Admin</controlType>
+                    <iconFile />
+                    <helpUrl />
+                    <viewOrder>0</viewOrder>
+                    <supportsPopUps>True</supportsPopUps>
+                  </moduleControl>
                 </moduleControls>
               </moduleDefinition>
             </moduleDefinitions>
           </desktopModule>
+          <eventMessage>
+            <processorType>DotNetNuke.Entities.Modules.EventMessageProcessor, DotNetNuke</processorType>
+            <processorCommand>UpgradeModule</processorCommand>
+            <attributes>
+              <businessControllerClass>Satrabel.OpenContent.Components.FeatureController</businessControllerClass>
+              <desktopModuleID>[DESKTOPMODULEID]</desktopModuleID>
+              <upgradeVersionsList>02.01.00</upgradeVersionsList>
+            </attributes>
+          </eventMessage>
         </component>
         <component type="Assembly">
           <assemblies>

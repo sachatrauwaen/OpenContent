@@ -4,10 +4,14 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Linq;
+using System.Net.Http;
+using System.Web;
+using DotNetNuke.Common;
 using DotNetNuke.Entities.Content.Common;
 using DotNetNuke.Entities.Modules.Definitions;
 using DotNetNuke.Services.FileSystem;
 using Newtonsoft.Json.Linq;
+using Satrabel.OpenContent.Components;
 
 namespace Satrabel.OpenContent.Components.TemplateHelpers
 {
@@ -22,7 +26,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         /// <returns></returns>
         public static int CalculateMaxPixels(float columnWidth, bool isMobile, bool retina = true)
         {
-            if (columnWidth < 0 || columnWidth > 1) columnWidth = 1;
+            if (columnWidth < 0 || columnWidth > 12) columnWidth = 1;
             if (isMobile && retina)
             {
                 return Convert.ToInt32(2 * 768 * columnWidth);
@@ -36,52 +40,95 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
 
 
 
-        public static string GetImageUrl(IFileInfo file, Ratio ratio)
+        /// <summary>
+        /// Gets an optimial image for facebook.
+        /// Based on the Facebook best practices https://developers.facebook.com/docs/sharing/best-practices#images
+        /// Prefereably 1200 x 630 or larger, minimal 600 x 315 and not smaller then 200 x 200
+        /// </summary>
+        /// <returns></returns>
+        public static string GetFacebookImageUrl(IFileInfo file)
         {
-            if (file == null) throw new NoNullAllowedException("FileInfo should not be null");
+            var ratio = new Ratio("120x63");
+            ratio.SetWidth(1200);
+            return GetImageUrl(file, ratio);
+        }
+        public static string GetImageUrl(string fileid, Ratio requestedCropRatio)
+        {
+            try
+            {
+                return GetImageUrl(int.Parse(fileid), requestedCropRatio);
+            }
+            catch (Exception)
+            {
 
-            var url = file.ToUrl();
+                return null;
+            }
+        }
+        public static string GetImageUrl(int fileid, Ratio requestedCropRatio)
+        {
+            var file = FileManager.Instance.GetFile(fileid);
+            if (file != null)
+            {
+                return GetImageUrl(file, requestedCropRatio);
+            }
+            return null;
+        }
+
+        public static string GetImageUrl(IFileInfo file, Ratio requestedCropRatio)
+        {
+            if (file == null)
+                throw new NoNullAllowedException("FileInfo should not be null");
+            
+            if (ModuleDefinitionController.GetModuleDefinitionByFriendlyName("OpenFiles") == null) 
+            {
+                return file.ToUrl();
+            } 
+            var url = file.ToUrlWithoutLinkClick();
             if (url.Contains("LinkClick.aspx")) return url;
-            if (ModuleDefinitionController.GetModuleDefinitionByFriendlyName("OpenDocument") == null) return url;
-
             url = url.RemoveQueryParams();
 
             if (file.ContentItemID > 0)
             {
                 var contentItem = Util.GetContentController().GetContentItem(file.ContentItemID);
-                if (contentItem != null)
+                if (contentItem != null && !string.IsNullOrEmpty(contentItem.Content))
                 {
                     JObject content = JObject.Parse(contentItem.Content);
                     var crop = content["crop"];
-                    if (crop is JObject)
+                    if (crop is JObject && crop["croppers"] != null)
                     {
                         foreach (var cropperobj in crop["croppers"].Children())
                         {
                             var cropper = cropperobj.Children().First();
-                            int x = int.Parse(cropper["x"].ToString());
-                            int y = int.Parse(cropper["y"].ToString());
+                            int left = int.Parse(cropper["x"].ToString());
+                            int top = int.Parse(cropper["y"].ToString());
                             int w = int.Parse(cropper["width"].ToString());
                             int h = int.Parse(cropper["height"].ToString());
-                            var cropratio = new Ratio(w, h);
-                            if (Math.Abs(cropratio.AsFloat - ratio.AsFloat) < 0.02) //allow 2% margin
+                            var definedCropRatio = new Ratio(w, h);
+
+                            if (Math.Abs(definedCropRatio.AsFloat - requestedCropRatio.AsFloat) < 0.02) //allow 2% margin
                             {
-                                return url + string.Format("?crop={0},{1},{2},{3}", x, y, w, h);
+                                //crop first then resize (order defined by the processors definition order in the config file)
+                                return url + string.Format("?crop={0},{1},{2},{3}&width={4}&height={5}", left, top, w, h, requestedCropRatio.Width, requestedCropRatio.Height);
                             }
                         }
+                    }
+                    else
+                    {
+                        Log.Logger.Info(string.Format("Warning for page {0}. Can't find croppers in {1}. ", HttpContext.Current.Request.RawUrl, contentItem.Content));
                     }
                 }
             }
 
-            return url + string.Format("?width={0}&height={1}&mode=crop", ratio.Width, ratio.Height);
+            return url + string.Format("?width={0}&height={1}&mode=crop", requestedCropRatio.Width, requestedCropRatio.Height);
         }
 
 
-        public static Image Resize(Image image, int scaledWidth, int scaledHeight)
+        internal static Image Resize(Image image, int scaledWidth, int scaledHeight)
         {
             return new Bitmap(image, scaledWidth, scaledHeight);
         }
 
-        public static Image Crop(Image image, int x, int y, int width, int height)
+        internal static Image Crop(Image image, int x, int y, int width, int height)
         {
             var croppedBitmap = new Bitmap(width, height);
 
@@ -112,7 +159,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             return targetImage;
         }
          */
-        public static Image SaveCroppedImage(Image image, int targetWidth, int targetHeight, out int left, out int top, out int srcWidth, out int srcHeight)
+        internal static Image SaveCroppedImage(Image image, int targetWidth, int targetHeight, out int left, out int top, out int srcWidth, out int srcHeight)
         {
             ImageCodecInfo jpgInfo = ImageCodecInfo.GetImageEncoders().Where(codecInfo => codecInfo.MimeType == "image/jpeg").First();
             Image finalImage = image;
