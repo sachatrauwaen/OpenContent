@@ -33,7 +33,7 @@ namespace Satrabel.OpenContent.Components
             foreach (var mod in modules)
             {
                 var tab = tc.GetTab(mod.TabID, portalid, false);
-                if (tab.CultureCode == culture || tab.CultureCode == null)
+                if (tab.CultureCode == culture || string.IsNullOrEmpty(tab.CultureCode))
                 {
                     return mod;
                 }
