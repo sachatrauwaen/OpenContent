@@ -54,7 +54,11 @@ alpacaEngine.engine = function(config) {
                 height: newHeight,
                 width: newWidth,
                 //position: 'center'
+                resizable: false,
             });
+
+            $("div.alpaca").parent().addClass('popup');
+            
 
             $("#"+self.cancelButton).click(function () {
                 dnnModal.closePopUp(false, "");
@@ -155,7 +159,7 @@ alpacaEngine.engine = function(config) {
             "schema": config.schema,
             "options": config.options,
             "data": data,
-            "view": "dnn-edit",
+            "view": config.view ? config.view : "dnn-edit",
             "connector": connector,
             "postRender": function (control) {
                 var selfControl = control;
