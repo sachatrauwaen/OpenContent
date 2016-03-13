@@ -187,8 +187,8 @@ namespace Satrabel.OpenContent
             }
             //start rendering
             InitTemplateInfo();
-            bool OtherModuleWithFilterSettings = _settings.IsOtherModule && !string.IsNullOrEmpty(_settings.Query);
-            if (_renderinfo.ShowInitControl && !OtherModuleWithFilterSettings)
+            bool otherModuleWithFilterSettings = _settings.IsOtherModule && !string.IsNullOrEmpty(_settings.Query);
+            if (_renderinfo.ShowInitControl && !otherModuleWithFilterSettings)
             {
                 // no data exist and ... -> show initialization
                 if (ModuleContext.EditMode)

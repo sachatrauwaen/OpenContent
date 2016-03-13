@@ -20,7 +20,6 @@ namespace Satrabel.OpenContent.Components
         /// </summary>
         /// <param name="friendlyName">Friendly name of the module.</param>
         /// <returns></returns>
-        /// <exception cref="System.NotImplementedException"></exception>
         internal static ModuleInfo GetLastModuleByFriendlyName(string friendlyName)
         {
             //DesktopModuleController dmc = new DesktopModuleController();
