@@ -6,7 +6,7 @@
     position: relative;
     
     border-bottom: none; 
-    cursor: move;
+    
     font-size: 14px;
     font-weight: bold;
     color:#585858;
@@ -14,9 +14,9 @@
 }
 
 .dnnFormPopup .ui-dialog-titlebar .ui-dialog-title {
-        background-color: #ddd;
+    /*background-color: #ddd;
     color: #fff;
     padding: 5px;
-    /*margin-left: -18px;*/
+    margin-left: -18px;*/
     
 }
