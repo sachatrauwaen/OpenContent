@@ -55,7 +55,7 @@ namespace Satrabel.OpenContent.Components
             this.TemplateManifest = templateManifest;
             this.MainTabId = MainTabId > 0 ? MainTabId : module.TabID;
             this.MainTabId = DnnUtils.GetTabByCurrentCulture(this.PortalId, this.MainTabId, GetCurrentCultureCode());
-            this.MainModuleId = MainModuleId > 0 ? MainModuleId : module.ModuleID;            
+            this.MainModuleId = MainModuleId > 0 ? MainModuleId : module.ModuleID;
         }
         public ModelFactory(OpenContentInfo data, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles manifestFiles, ModuleInfo module, PortalSettings portalSettings, int MainTabId, int MainModuleId)
         {
@@ -73,7 +73,7 @@ namespace Satrabel.OpenContent.Components
             this.MainTabId = DnnUtils.GetTabByCurrentCulture(this.PortalId, this.MainTabId, GetCurrentCultureCode());
             this.MainModuleId = MainModuleId > 0 ? MainModuleId : module.ModuleID;
         }
-        public ModelFactory(OpenContentInfo data, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles manifestFiles, ModuleInfo module, int portalId, string cultureCode,int MainTabId, int MainModuleI)
+        public ModelFactory(OpenContentInfo data, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles manifestFiles, ModuleInfo module, int portalId, string cultureCode, int MainTabId, int MainModuleI)
         {
             this.dataJson = data.Json;
             this.Data = data;
@@ -437,6 +437,22 @@ namespace Satrabel.OpenContent.Components
                     throw new Exception("Error parsing Json of Settings", ex);
                 }
             }
+            // static localization
+            JToken localizationJson = null;
+            string localizationFilename = PhysicalTemplateFolder + GetCurrentCultureCode() + ".json";
+            if (File.Exists(localizationFilename))
+            {
+                string fileContent = File.ReadAllText(localizationFilename);
+                if (!string.IsNullOrWhiteSpace(fileContent))
+                {
+                    localizationJson = fileContent.ToJObject("Options");
+                }
+            }
+            if (localizationJson != null)
+            {
+                model["Localization"] = localizationJson;
+            }
+
             string editRole = Manifest == null ? "" : Manifest.EditRole;
             if (!onlyData)
             {
@@ -475,7 +491,7 @@ namespace Satrabel.OpenContent.Components
             {
                 return CultureCode;
             }
-            
+
         }
         private string EditUrl()
         {
@@ -552,7 +568,7 @@ namespace Satrabel.OpenContent.Components
 
 
         private bool? _isEditable;
-        
+
         private bool IsEditable
         {
             get
