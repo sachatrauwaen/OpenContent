@@ -407,20 +407,22 @@
      */
     {
         /**
-         * @see Alpaca.Fields.CKEditorField#getFieldType
+         * @see Alpaca.Fields.TextAreaField#getFieldType
          */
         getFieldType: function () {
             return "ckeditor";
         },
 
         /**
-         * @see Alpaca.Fields.CKEditorField#setup
+         * @see Alpaca.Fields.TextAreaField#setup
          */
         setup: function () {
             if (!this.data) {
                 this.data = "";
             }
+
             this.base();
+
             if (typeof (this.options.ckeditor) == "undefined") {
                 this.options.ckeditor = {};
             }
@@ -428,6 +430,7 @@
                 this.options.configset = "";
             }
         },
+
         afterRenderControl: function (model, callback) {
             var self = this;
 
@@ -435,142 +438,146 @@
 
                 // see if we can render CK Editor
                 if (!self.isDisplayOnly() && self.control && typeof (CKEDITOR) !== "undefined") {
-                    // use a timeout because CKEditor has some odd timing dependencies
-                    setTimeout(function () {
 
-                        var defaultConfig = {
+                    var defaultConfig = {
+                        toolbar: [
+                             { name: 'basicstyles', groups: ['basicstyles', 'cleanup'], items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'] },
+                             { name: 'styles', items: ['Styles', 'Format'] },
+                             { name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align'], items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', ] },
+                             { name: 'links', items: ['Link', 'Unlink'] },
+
+                             { name: 'document', groups: ['mode', 'document', 'doctools'], items: ['Source'] },
+                        ],
+                        // Set the most common block elements.
+                        format_tags: 'p;h1;h2;h3;pre',
+
+                        // Simplify the dialog windows.
+                        removeDialogTabs: 'image:advanced;link:advanced',
+
+                        // Remove one plugin.
+                        removePlugins: 'elementspath,resize',
+
+                        extraPlugins: 'dnnpages',
+
+                        //autoGrow_onStartup : true,
+                        //autoGrow_minHeight : 100,
+                        //autoGrow_maxHeight : 300,
+                        height: 150,
+                        //skin : 'flat',
+
+                        customConfig: '',
+                        stylesSet: []
+                    };
+                    if (self.options.configset == "basic") {
+                        defaultConfig = {
                             toolbar: [
                                  { name: 'basicstyles', groups: ['basicstyles', 'cleanup'], items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'] },
                                  { name: 'styles', items: ['Styles', 'Format'] },
                                  { name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align'], items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', ] },
                                  { name: 'links', items: ['Link', 'Unlink'] },
 
-                                 { name: 'document', groups: ['mode', 'document', 'doctools'], items: ['Source'] },
+                                 { name: 'document', groups: ['mode', 'document', 'doctools'], items: ['Maximize', 'Source'] },
                             ],
                             // Set the most common block elements.
                             format_tags: 'p;h1;h2;h3;pre',
-
                             // Simplify the dialog windows.
                             removeDialogTabs: 'image:advanced;link:advanced',
-
                             // Remove one plugin.
                             removePlugins: 'elementspath,resize',
-
                             extraPlugins: 'dnnpages',
-
                             //autoGrow_onStartup : true,
                             //autoGrow_minHeight : 100,
                             //autoGrow_maxHeight : 300,
                             height: 150,
                             //skin : 'flat',
-
                             customConfig: '',
                             stylesSet: []
                         };
-                        if (self.options.configset == "basic") {
-                            defaultConfig = {
-                                toolbar: [
-                                     { name: 'basicstyles', groups: ['basicstyles', 'cleanup'], items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'] },
-                                     { name: 'styles', items: ['Styles', 'Format'] },
-                                     { name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align'], items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', ] },
-                                     { name: 'links', items: ['Link', 'Unlink'] },
+                    } else if (self.options.configset == "standard") {
+                        defaultConfig = {
+                            toolbar: [
+                                 { name: 'basicstyles', groups: ['basicstyles', 'cleanup'], items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'] },
+                                 { name: 'styles', items: ['Styles', 'Format'] },
+                                 { name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align'], items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', ] },
+                                 { name: 'links', items: ['Link', 'Unlink', 'Anchor'] },
+                                 { name: 'insert', items: ['Table', 'Smiley', 'SpecialChar', 'Iframe'] },
+                                 { name: 'document', groups: ['mode', 'document', 'doctools'], items: ['Maximize', 'ShowBlocks', 'Source'] }
+                            ],
+                            // Set the most common block elements.
+                            format_tags: 'p;h1;h2;h3;pre;div',
 
-                                     { name: 'document', groups: ['mode', 'document', 'doctools'], items: ['Maximize', 'Source'] },
-                                ],
-                                // Set the most common block elements.
-                                format_tags: 'p;h1;h2;h3;pre',
-                                // Simplify the dialog windows.
-                                removeDialogTabs: 'image:advanced;link:advanced',
-                                // Remove one plugin.
-                                removePlugins: 'elementspath,resize',
-                                extraPlugins: 'dnnpages',
-                                //autoGrow_onStartup : true,
-                                //autoGrow_minHeight : 100,
-                                //autoGrow_maxHeight : 300,
-                                height: 150,
-                                //skin : 'flat',
-                                customConfig: '',
-                                stylesSet: []
-                            };
-                        } else if (self.options.configset == "standard") {
-                            defaultConfig = {
-                                toolbar: [
-                                     { name: 'basicstyles', groups: ['basicstyles', 'cleanup'], items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'] },
-                                     { name: 'styles', items: ['Styles', 'Format'] },
-                                     { name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align'], items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', ] },
-                                     { name: 'links', items: ['Link', 'Unlink', 'Anchor'] },
-                                     { name: 'insert', items: [ 'Table', 'Smiley', 'SpecialChar',  'Iframe'] },
-                                     { name: 'document', groups: ['mode', 'document', 'doctools'], items: ['Maximize', 'ShowBlocks', 'Source'] }
-                                ],
-                                // Set the most common block elements.
-                                format_tags: 'p;h1;h2;h3;pre;div',
+                            //http://docs.ckeditor.com/#!/guide/dev_allowed_content_rules
+                            extraAllowedContent:
+                            'table tr th td caption[*](*);' +
+                            'div span(*);'
+                            //'a[!href](*);' 
+                            //'img[!src,alt,width,height](*);' +
+                            //'h1 h2 h3 p blockquote strong em(*);' +
+                            ,
 
-                                //http://docs.ckeditor.com/#!/guide/dev_allowed_content_rules
-                                extraAllowedContent:
-                                'table tr th td caption[*](*);' +
-                                'div span(*);' 
-                                //'a[!href](*);' 
-                                //'img[!src,alt,width,height](*);' +
-                                //'h1 h2 h3 p blockquote strong em(*);' +
-                                ,
+                            // Simplify the dialog windows.
+                            removeDialogTabs: 'image:advanced;link:advanced',
+                            // Remove one plugin.
+                            removePlugins: 'elementspath,resize',
+                            extraPlugins: 'dnnpages',
+                            //autoGrow_onStartup : true,
+                            //autoGrow_minHeight : 100,
+                            //autoGrow_maxHeight : 300,
+                            height: 150,
+                            //skin : 'flat',
+                            customConfig: '',
+                            stylesSet: []
+                        };
+                    } else if (self.options.configset == "full") {
+                        defaultConfig = {
+                            toolbar: [
+                                { name: 'document', items: ['Save', 'NewPage', 'DocProps', 'Preview', 'Print', '-', 'Templates'] },
+                                { name: 'clipboard', items: ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'] },
+                                { name: 'editing', items: ['Find', 'Replace', '-', 'SelectAll', '-', 'SpellChecker', 'Scayt'] },
+                                { name: 'forms', items: ['Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton', 'HiddenField'] },
+                                '/',
+                                { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'] },
+                                {
+                                    name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv',
+                                    '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl']
+                                },
+                                { name: 'links', items: ['Link', 'Unlink', 'Anchor'] },
+                                { name: 'insert', items: ['Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe'] },
+                                '/',
+                                { name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize'] },
+                                { name: 'colors', items: ['TextColor', 'BGColor'] },
+                                { name: 'tools', items: ['Maximize', 'ShowBlocks', '-', 'About', '-', 'Source'] }
+                            ],
+                            // Set the most common block elements.
+                            format_tags: 'p;h1;h2;h3;pre;div',
+                            //http://docs.ckeditor.com/#!/api/CKEDITOR.config-cfg-allowedContent
+                            allowedContentRules: true,
+                            // Simplify the dialog windows.
+                            removeDialogTabs: 'image:advanced;link:advanced',
+                            // Remove one plugin.
+                            removePlugins: 'elementspath,resize',
+                            extraPlugins: 'dnnpages',
+                            //autoGrow_onStartup : true,
+                            //autoGrow_minHeight : 100,
+                            //autoGrow_maxHeight : 300,
+                            height: 150,
+                            //skin : 'flat',
+                            customConfig: '',
+                            stylesSet: []
+                        };
+                    }
+                    var config = $.extend({}, defaultConfig, self.options.ckeditor);
 
-                                // Simplify the dialog windows.
-                                removeDialogTabs: 'image:advanced;link:advanced',
-                                // Remove one plugin.
-                                removePlugins: 'elementspath,resize',
-                                extraPlugins: 'dnnpages',
-                                //autoGrow_onStartup : true,
-                                //autoGrow_minHeight : 100,
-                                //autoGrow_maxHeight : 300,
-                                height: 150,
-                                //skin : 'flat',
-                                customConfig: '',
-                                stylesSet: []
-                            };
-                        } else if (self.options.configset == "full") {
-                            defaultConfig = {
-                                toolbar: [
-                                    { name: 'document', items: ['Save', 'NewPage', 'DocProps', 'Preview', 'Print', '-', 'Templates'] },
-	                                { name: 'clipboard', items: ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'] },
-	                                { name: 'editing', items: ['Find', 'Replace', '-', 'SelectAll', '-', 'SpellChecker', 'Scayt'] },
-	                                { name: 'forms', items: ['Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton', 'HiddenField'] },
-	                                '/',
-	                                { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'] },
-	                                {
-	                                    name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv',
-                                        '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl']
-	                                },
-	                                { name: 'links', items: ['Link', 'Unlink', 'Anchor'] },
-	                                { name: 'insert', items: ['Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe'] },
-	                                '/',
-	                                { name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize'] },
-	                                { name: 'colors', items: ['TextColor', 'BGColor'] },
-	                                { name: 'tools', items: ['Maximize', 'ShowBlocks', '-', 'About', '-', 'Source'] }
-                                ],
-                                // Set the most common block elements.
-                                format_tags: 'p;h1;h2;h3;pre;div',
-                                //http://docs.ckeditor.com/#!/api/CKEDITOR.config-cfg-allowedContent
-                                allowedContentRules: true,
-                                // Simplify the dialog windows.
-                                removeDialogTabs: 'image:advanced;link:advanced',
-                                // Remove one plugin.
-                                removePlugins: 'elementspath,resize',
-                                extraPlugins: 'dnnpages',
-                                //autoGrow_onStartup : true,
-                                //autoGrow_minHeight : 100,
-                                //autoGrow_maxHeight : 300,
-                                height: 150,
-                                //skin : 'flat',
-                                customConfig: '',
-                                stylesSet: []
-                            };
+
+
+                    // wait for Alpaca to declare the DOM swapped and ready before we attempt to do anything with CKEditor
+                    self.on("ready", function () {
+                        if (!self.editor) {
+                            self.editor = CKEDITOR.replace($(self.control)[0], config);
+
+                            self.initCKEditorEvents();
                         }
-                        var config = $.extend({}, defaultConfig, self.options.ckeditor);
-
-                        self.editor = CKEDITOR.replace($(self.control)[0], config);
-                        //self.editor = CKEDITOR.replace($(self.control)[0], self.options.ckeditor);
-
-                    }, 1600);
+                    });
                 }
 
                 // if the ckeditor's dom element gets destroyed, make sure we clean up the editor instance
@@ -578,7 +585,9 @@
 
                     if (self.editor) {
                         self.editor.removeAllListeners();
-                        self.editor.destroy(false);
+                        // catch here because CKEditor has an issue if DOM element deletes before CKEditor cleans up
+                        // see: https://github.com/lemonde/angular-ckeditor/issues/7
+                        try { self.editor.destroy(false); } catch (e) { }
                         self.editor = null;
                     }
 
@@ -588,11 +597,10 @@
             });
         },
 
-        initControlEvents: function () {
+        initCKEditorEvents: function () {
             var self = this;
 
-            setTimeout(function () {
-
+            if (self.editor) {
                 // click event
                 self.editor.on("click", function (e) {
                     self.onClick.call(self, e);
@@ -625,20 +633,19 @@
 
                 // NOTE: these do not seem to work with CKEditor?
                 /*
-                // keyup event
-                self.editor.on("keyup", function(e) {
-                    self.onKeyUp.call(self, e);
-                    self.trigger("keyup", e);
-                });
-    
-                // keydown event
-                self.editor.on("keydown", function(e) {
-                    self.onKeyDown.call(self, e);
-                    self.trigger("keydown", e);
-                });
-                */
+                 // keyup event
+                 self.editor.on("keyup", function(e) {
+                 self.onKeyUp.call(self, e);
+                 self.trigger("keyup", e);
+                 });
 
-            }, 1800); // NOTE: odd timing dependencies
+                 // keydown event
+                 self.editor.on("keydown", function(e) {
+                 self.onKeyDown.call(self, e);
+                 self.trigger("keydown", e);
+                 });
+                 */
+            }
         },
 
         setValue: function (value) {
@@ -652,10 +659,13 @@
             }
         },
 
-        getValue: function () {
+        /**
+         * @see Alpaca.Fields.ControlField#getControlValue
+         */
+        getControlValue: function () {
             var self = this;
 
-            var value = this.base();
+            var value = null;
 
             if (self.editor) {
                 value = self.editor.getData();
@@ -668,10 +678,12 @@
          * @see Alpaca.Field#destroy
          */
         destroy: function () {
+            var self = this;
+
             // destroy the plugin instance
-            if (this.editor) {
-                this.editor.destroy();
-                this.editor = null;
+            if (self.editor) {
+                self.editor.destroy();
+                self.editor = null;
             }
 
             // call up to base method
@@ -681,7 +693,7 @@
         /* builder_helpers */
 
         /**
-         * @see Alpaca.Fields.CKEditorField#getTitle
+         * @see Alpaca.Fields.TextAreaField#getTitle
          */
         ,
         getTitle: function () {
@@ -689,7 +701,7 @@
         },
 
         /**
-         * @see Alpaca.Fields.CKEditorField#getDescription
+         * @see Alpaca.Fields.TextAreaField#getDescription
          */
         getDescription: function () {
             return "Provides an instance of a CK Editor control for use in editing HTML.";
@@ -3760,9 +3772,10 @@
             var self = this;
             var el = this.getControlEl();
 
+            
             callback();
 
-            $(this.control.get(0)).after('<img src="/images/Flags/' + this.culture + '.gif" />');
+            $(this.control).parent().find('.select2').after('<img src="/images/Flags/' + this.culture + '.gif" class="flag" />');
             
         },
     });
@@ -5240,7 +5253,7 @@
         handlePostRender: function (callback) {
             var self = this;
             var el = this.getControlEl();
-            $(this.control.get(0)).after('<img src="/images/Flags/'+this.culture+'.gif" />');
+            $(this.control.get(0)).after('<img src="/images/Flags/' + this.culture + '.gif" class="flag" />');
             callback();
         },
         
@@ -5383,7 +5396,7 @@
         handlePostRender: function (callback) {
             var self = this;
             var el = this.getControlEl();
-            $(this.control.get(0)).after('<img src="/images/Flags/'+this.culture+'.gif" />');
+            $(this.control.get(0)).after('<img src="/images/Flags/' + this.culture + '.gif" class="flag" />');
             callback();
         },
         
@@ -5528,7 +5541,7 @@
         handlePostRender2: function (callback) {
             var self = this;
             var el = this.getControlEl();
-            $(this.control.get(0)).after('<img src="/images/Flags/'+this.culture+'.gif" />');
+            $(this.control.get(0)).after('<img src="/images/Flags/' + this.culture + '.gif" class="flag" />');
             callback();
         },
         
@@ -5693,7 +5706,7 @@
         handlePostRender: function (callback) {
             var self = this;
             var el = this.getControlEl();
-            $(this.control.get(0)).after('<img src="/images/Flags/'+this.culture+'.gif" />');
+            $(this.control.get(0)).after('<img src="/images/Flags/' + this.culture + '.gif" class="flag" />');
             //$(this.control.get(0)).after('<div style="background:#eee;margin-bottom: 18px;display:inline-block;padding-bottom:8px;"><span>' + this.culture + '</span></div>');
             callback();
         },
@@ -5837,7 +5850,7 @@
         handlePostRender: function (callback) {
             var self = this;
             var el = this.getControlEl();
-            $(this.control.get(0)).after('<img src="/images/Flags/'+this.culture+'.gif" />');
+            $(this.control.get(0)).after('<img src="/images/Flags/' + this.culture + '.gif" class="flag" />');
             callback();
         },
         
@@ -5979,7 +5992,7 @@
         handlePostRender2: function (callback) {
             var self = this;
             var el = this.getControlEl();
-            $(this.control.get(0)).after('<img src="/images/Flags/' + this.culture + '.gif" />');
+            $(this.control.get(0)).after('<img src="/images/Flags/' + this.culture + '.gif" class="flag" />');
             callback();
         },
 

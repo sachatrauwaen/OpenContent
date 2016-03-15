@@ -85,7 +85,7 @@
         handlePostRender: function (callback) {
             var self = this;
             var el = this.getControlEl();
-            $(this.control.get(0)).after('<img src="/images/Flags/'+this.culture+'.gif" />');
+            $(this.control.get(0)).after('<img src="/images/Flags/' + this.culture + '.gif" class="flag" />');
             callback();
         },
         

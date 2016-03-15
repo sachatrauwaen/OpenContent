@@ -7,7 +7,7 @@
     font-weight: bold;
 }
 .popup div.alpaca {
-    padding-bottom:59px;
+    padding-bottom:65px;
 }
 .popup .dnnActions{
     display: block;
@@ -15,7 +15,7 @@
     position: fixed;
     bottom: 0;
     left: 0;
-    width:100%;
+    width:70%;
     background-color: #fff;
     z-index: 2;
 }
@@ -184,13 +184,21 @@
     max-width: 400px;
 }
 
+.alpaca-container-item{position:relative;}
+
 .alpaca-array-actionbar {
     /* padding-left:32%; */
+/*
     padding-left: 100%;
     margin-left: -150px;
     margin-top: 9px;
     margin-bottom: -25px;
+*/
     z-index: 1;
+    position: absolute;
+    right: 20px;
+    top: 10px;
+
 }
 
 .alpaca-field-wysihtml .alpaca-control {
@@ -445,8 +453,8 @@ h2.dnnFormSectionHead a {
     margin-bottom: 18px;
 } 
 
-.alpaca-field-text img,
-.alpaca-field-wysihtml > img {
+
+.alpaca-field img.flag {
     margin-bottom: 18px;
     margin-left: 5px;
 }
