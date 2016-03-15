@@ -28,7 +28,13 @@ using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Util;
 using Lucene.Net.QueryParsers;
 using Satrabel.OpenContent.Components.Lucene.Mapping;
+using Satrabel.OpenContent.Components.Lucene;
 using Satrabel.OpenContent.Components.Lucene.Config;
+using Satrabel.OpenContent.Components.Lucene.Index;
+
+using DotNetNuke.Entities.Portals;
+using DotNetNuke.Entities.Modules;
+using Satrabel.OpenContent.Components.Manifest;
 
 #endregion
 
@@ -213,10 +219,58 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         private void CheckValidIndexFolder()
         {
-            if (!ValidateIndexFolder())
+            
+                if (!ValidateIndexFolder())
+                    throw new SearchIndexEmptyException(Localization.GetExceptionMessage("SearchIndexingDirectoryNoValid", "Search indexing directory is either empty or does not exist"));
+            
+        }
+
+        private void IndexAll()
+        {
+            LuceneController.ClearInstance();
+            using (LuceneController lc = LuceneController.Instance)
             {
-                throw new SearchIndexEmptyException(Localization.GetExceptionMessage("SearchIndexingDirectoryNoValid", "Search indexing directory is either empty or does not exist"));
+                ModuleController mc = new ModuleController();
+                PortalController pc = new PortalController();
+                foreach (PortalInfo portal in pc.GetPortals())
+                {
+                    ArrayList modules = mc.GetModulesByDefinition(portal.PortalID, "OpenContent");
+                    //foreach (ModuleInfo module in modules.OfType<ModuleInfo>().GroupBy(m => m.ModuleID).Select(g => g.First())){                
+                    foreach (ModuleInfo module in modules.OfType<ModuleInfo>())
+                    {
+                        OpenContentSettings settings = new OpenContentSettings(module.ModuleSettings);
+
+                        if (settings.Template != null && settings.Template.IsListTemplate && !settings.IsOtherModule)
+                        {
+                            //TemplateManifest template = null;
+
+                            bool index = false;
+                            if (settings.TemplateAvailable)
+                            {
+                                index = settings.Manifest.Index;
+                            }
+                            FieldConfig indexConfig = null;
+                            if (index)
+                            {
+                                indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
+                            }
+
+
+                            //lc.DeleteAll();
+                            //lc.Delete(new TermQuery(new Term("$type", ModuleId.ToString())));
+                            OpenContentController occ = new OpenContentController();
+                            foreach (var item in occ.GetContents(module.ModuleID))
+                            {
+                                lc.Add(item, indexConfig);
+                            }
+                        }
+                    }
+                }
+                lc.Commit();
+                lc.OptimizeSearchIndex(true);
             }
+
+            LuceneController.ClearInstance();
         }
 
         private bool ValidateIndexFolder()
@@ -230,11 +284,15 @@ namespace Satrabel.OpenContent.Components.Lucene
         private SearchResults Search(string type, Query Filter, Query Query, Sort Sort, int PageSize, int PageIndex)
         {
             var luceneResults = new SearchResults();
+            
+            
             //validate whether index folder is exist and contains index files, otherwise return null.
             if (!ValidateIndexFolder())
             {
+                IndexAll();
                 return luceneResults;
             }
+            
             var searcher = GetSearcher();
             TopDocs topDocs;
             if (Filter == null)
