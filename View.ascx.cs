@@ -623,6 +623,15 @@ namespace Satrabel.OpenContent
                             }
                         }
                     }
+                    if (!dataList.Any())
+                    {
+                        var data = ctrl.GetFirstContent(info.ModuleId);
+                        if (data != null)
+                        {
+                            info.SetData(dataList, settings.Data);
+                            info.DataExist = true;
+                        }
+                    }
                 }
                 else
                 {
