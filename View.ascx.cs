@@ -614,6 +614,7 @@ namespace Satrabel.OpenContent
                     if (docs != null)
                     {
                         int total = docs.TotalResults;
+                        Log.Logger.DebugFormat("Query returned [{0}] results.", total);
                         foreach (var item in docs.ids)
                         {
                             var content = ctrl.GetContent(int.Parse(item));
@@ -625,6 +626,7 @@ namespace Satrabel.OpenContent
                     }
                     if (!dataList.Any())
                     {
+                        Log.Logger.DebugFormat("Query did not return any results. [{0}]", settings.Query);
                         var data = ctrl.GetFirstContent(info.ModuleId);
                         if (data != null)
                         {
