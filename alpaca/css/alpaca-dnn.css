@@ -184,7 +184,7 @@
     max-width: 400px;
 }
 
-.alpaca-container-item{position:relative;}
+.alpaca-field-array div.alpaca-container-item{position:relative;}
 
 .alpaca-array-actionbar {
     /* padding-left:32%; */
