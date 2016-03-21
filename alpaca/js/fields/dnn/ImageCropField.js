@@ -68,7 +68,7 @@
                 }
                 else if (Alpaca.isObject(value)) {
                     el.val(value.url);
-                    self.cropper(value.url);
+                    self.cropper(value.url, value);
                 }
                 else {
                     el.val(value);

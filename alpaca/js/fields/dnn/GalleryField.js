@@ -2,27 +2,28 @@
 
     var Alpaca = $.alpaca;
 
-    Alpaca.Fields.DocumentsField = Alpaca.Fields.MultiUploadField.extend(
+    Alpaca.Fields.GalleryField = Alpaca.Fields.MultiUploadField.extend(
     {
         setup: function () {
             this.base();
             this.schema.items = {
                 "type": "object",
                 "properties": {
-                    "File": {
-                        "title": "File",
+                
+                    "Image": {
+                        "title": "Image",
                         "type": "string"
-                    },
+                    }
                 }
             };
             Alpaca.merge(this.options.items, {
                 "fields": {
-                    "File": {
-                        "type": "file"
-                    },
+                    "Image": {
+                        "type": "image"
+                    }
                 }
             });
-            this.urlfield = "File";
+            this.urlfield = "Image";
         },
         getTitle: function () {
             return "Gallery";
@@ -62,6 +63,6 @@
 
     });
 
-    Alpaca.registerFieldClass("documents", Alpaca.Fields.DocumentsField);
+    Alpaca.registerFieldClass("gallery", Alpaca.Fields.GalleryField);
 
 })(jQuery);
