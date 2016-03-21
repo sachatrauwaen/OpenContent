@@ -11,9 +11,13 @@
   <!--The order of the <file> elements determines the order of the files in the bundle.-->
   <files>
     <file>AddressField.js</file>
+    <file>MultiUploadField.js</file>
+    <file>GalleryField.js</file>
+    <file>DocumentsField.js</file>
     <file>CKEditorField.js</file>
     <file>DateField.js</file>
     <file>FileField.js</file>
+    <file>ImageCropField.js</file>
     <file>ImageCropperField.js</file>
     <file>ImageField.js</file>
     <file>NumberField.js</file>
