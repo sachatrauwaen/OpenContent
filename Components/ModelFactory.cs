@@ -42,7 +42,7 @@ namespace Satrabel.OpenContent.Components
 
         public JObject Options { get; set; } // alpaca options.json format
 
-        public ModelFactory(string dataJson, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles manifestFiles, ModuleInfo module, PortalSettings portalSettings, int MainTabId, int MainModuleId)
+        public ModelFactory(string dataJson, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles manifestFiles, ModuleInfo module, PortalSettings portalSettings, int mainTabId, int mainModuleId)
         {
             this.dataJson = dataJson;
             this.settingsJson = settingsJson;
@@ -53,11 +53,11 @@ namespace Satrabel.OpenContent.Components
             this.PortalSettings = portalSettings;
             this.PortalId = portalSettings.PortalId;
             this.TemplateManifest = templateManifest;
-            this.MainTabId = MainTabId > 0 ? MainTabId : module.TabID;
+            this.MainTabId = mainTabId > 0 ? mainTabId : module.TabID;
             this.MainTabId = DnnUtils.GetTabByCurrentCulture(this.PortalId, this.MainTabId, GetCurrentCultureCode());
-            this.MainModuleId = MainModuleId > 0 ? MainModuleId : module.ModuleID;
+            this.MainModuleId = mainModuleId > 0 ? mainModuleId : module.ModuleID;
         }
-        public ModelFactory(OpenContentInfo data, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles manifestFiles, ModuleInfo module, PortalSettings portalSettings, int MainTabId, int MainModuleId)
+        public ModelFactory(OpenContentInfo data, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles manifestFiles, ModuleInfo module, PortalSettings portalSettings, int mainTabId, int mainModuleId)
         {
             this.dataJson = data.Json;
             this.Data = data;
@@ -69,11 +69,11 @@ namespace Satrabel.OpenContent.Components
             this.PortalSettings = portalSettings;
             this.PortalId = portalSettings.PortalId;
             this.TemplateManifest = templateManifest;
-            this.MainTabId = MainTabId > 0 ? MainTabId : module.TabID;
+            this.MainTabId = mainTabId > 0 ? mainTabId : module.TabID;
             this.MainTabId = DnnUtils.GetTabByCurrentCulture(this.PortalId, this.MainTabId, GetCurrentCultureCode());
-            this.MainModuleId = MainModuleId > 0 ? MainModuleId : module.ModuleID;
+            this.MainModuleId = mainModuleId > 0 ? mainModuleId : module.ModuleID;
         }
-        public ModelFactory(OpenContentInfo data, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles manifestFiles, ModuleInfo module, int portalId, string cultureCode, int MainTabId, int MainModuleI)
+        public ModelFactory(OpenContentInfo data, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles manifestFiles, ModuleInfo module, int portalId, string cultureCode, int mainTabId, int mainModuleId)
         {
             this.dataJson = data.Json;
             this.Data = data;
@@ -85,11 +85,11 @@ namespace Satrabel.OpenContent.Components
             this.PortalId = portalId;
             this.CultureCode = cultureCode;
             this.TemplateManifest = templateManifest;
-            this.MainTabId = MainTabId > 0 ? MainTabId : module.TabID;
+            this.MainTabId = mainTabId > 0 ? mainTabId : module.TabID;
             this.MainTabId = DnnUtils.GetTabByCurrentCulture(this.PortalId, this.MainTabId, GetCurrentCultureCode());
-            this.MainModuleId = MainModuleId > 0 ? MainModuleId : module.ModuleID;
+            this.MainModuleId = mainModuleId > 0 ? mainModuleId : module.ModuleID;
         }
-        public ModelFactory(IEnumerable<OpenContentInfo> dataList, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles manifestFiles, ModuleInfo module, PortalSettings portalSettings, int MainTabId, int MainModuleId)
+        public ModelFactory(IEnumerable<OpenContentInfo> dataList, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles manifestFiles, ModuleInfo module, PortalSettings portalSettings, int mainTabId, int mainModuleId)
         {
             this.DataList = dataList;
             this.settingsJson = settingsJson;
@@ -100,9 +100,9 @@ namespace Satrabel.OpenContent.Components
             this.PortalSettings = portalSettings;
             this.PortalId = portalSettings.PortalId;
             this.TemplateManifest = templateManifest;
-            this.MainTabId = MainTabId > 0 ? MainTabId : module.TabID;
+            this.MainTabId = mainTabId > 0 ? mainTabId : module.TabID;
             this.MainTabId = DnnUtils.GetTabByCurrentCulture(this.PortalId, this.MainTabId, GetCurrentCultureCode());
-            this.MainModuleId = MainModuleId > 0 ? MainModuleId : module.ModuleID;
+            this.MainModuleId = mainModuleId > 0 ? mainModuleId : module.ModuleID;
         }
         public dynamic GetModelAsDynamic(bool onlyData = false)
         {

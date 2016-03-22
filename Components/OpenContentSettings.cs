@@ -50,7 +50,7 @@ namespace Satrabel.OpenContent.Components
 
 
         public int TabId { get; private set; }
-        internal int ModuleId { get; private set; }
+        public int ModuleId { get; private set; }
 
         public TemplateManifest Template { get; private set; }
         public Manifest.Manifest Manifest { get; private set; }
