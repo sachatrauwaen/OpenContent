@@ -5,6 +5,8 @@ namespace Satrabel.OpenContent.Components.Manifest
 {
     public class Manifest
     {
+        [JsonProperty(PropertyName = "title")]
+        public string Title { get; set; }
         [JsonProperty(PropertyName = "developmentPath")]
         public bool DevelopmentPath { get; set; }
         [JsonProperty(PropertyName = "editWitoutPostback")]

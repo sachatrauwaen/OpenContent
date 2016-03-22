@@ -48,7 +48,7 @@
             return $(this.control.get(0)).find('input[type=text]#' + this.id);
         },
         setValue: function (value) {
-
+            var self = this;
             //var el = $( this.control).filter('#'+this.id);
             //var el = $(this.control.get(0)).find('input[type=text]');
             var el = this.getControlEl();
@@ -59,6 +59,7 @@
                 }
                 else {
                     el.val(value);
+                    $(self.control).parent().find('.alpaca-image-display img').attr('src', value);
                 }
             }
             

@@ -396,6 +396,291 @@
     Alpaca.registerFieldClass("address", Alpaca.Fields.AddressField);
 
 })(jQuery);
+///#source 1 1 MultiUploadField.js
+(function ($) {
+
+    var Alpaca = $.alpaca;
+
+    Alpaca.Fields.MultiUploadField = Alpaca.Fields.ArrayField.extend(
+    {
+        constructor: function (container, data, options, schema, view, connector) {
+            var self = this;
+            this.base(container, data, options, schema, view, connector);
+            this.sf = connector.servicesFramework;
+            this.itemsCount = 0;
+        },
+        setup: function () {
+
+            this.base();
+            if (!this.options.uploadfolder) {
+                this.options.uploadfolder = "";
+            }
+            this.urlfield = "";
+            if (this.options && this.options.items && (this.options.items.fields || this.options.items.type) ) {
+                if (this.options.items.type == "image") {
+
+                } else if (this.options.items.fields ) {
+                    for (var i in this.options.items.fields) {
+                        var f = this.options.items.fields[i];
+                        if (f.type == "image" || f.type == "mlimage" || f.type == "imagecrop") {
+                            this.urlfield = i;
+                            this.options.uploadfolder = f.uploadfolder;
+                            break;
+                        }
+                        else if (f.type == "file" || f.type == "mlfile") {
+                            this.urlfield = i;
+                            this.options.uploadfolder = f.uploadfolder;
+                            break;
+                        } else if (f.type == "image2" || f.type == "mlimage2") {
+                            this.urlfield = i;
+                            this.options.uploadfolder = f.folder;
+                            break;
+                        }
+                        else if (f.type == "file2" || f.type == "mlfile2") {
+                            this.urlfield = i;
+                            this.options.uploadfolder = f.folder;
+                            break;
+                        }
+                    }
+                }
+            }
+        },
+        afterRenderContainer: function (model, callback) {
+            var self = this;
+            this.base(model, function () {
+                var container = self.getContainerEl();
+                //$(container).addClass("alpaca-MultiUpload");
+                if (!self.isDisplayOnly()) {
+                   
+                    $('<div style="clear:both;"></div>').prependTo(container);
+                    var progressBar = $('<div class="progress" ><div class="bar" style="width: 0%;"></div></div>').prependTo(container);
+                    var mapButton = $('<input type="file" multiple="multiple" />').prependTo(container);
+
+                    this.wrapper = $("<span class='dnnInputFileWrapper dnnSecondaryAction' style='margin-bottom:10px;;'></span>");
+                    this.wrapper.text("Upload muliple files");
+                    mapButton.wrap(this.wrapper);
+                    mapButton.fileupload({
+                        dataType: 'json',
+                        url: self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
+                        maxFileSize: 25000000,
+                        formData: { uploadfolder: self.options.uploadfolder },
+                        beforeSend: self.sf.setModuleHeaders,
+                        change: function (e, data) {
+                            self.itemsCount = self.children.length;
+                        },
+                        add: function (e, data) {
+                            //data.context = $(opts.progressContextSelector);
+                            //data.context.find($(opts.progressFileNameSelector)).html(data.files[0].name);
+                            //data.context.show('fade');
+                            data.submit();
+                        },
+                        progressall: function (e, data) {
+                                var progress = parseInt(data.loaded / data.total * 100, 10);
+                                $('.bar', progressBar).css('width', progress + '%').find('span').html(progress + '%');
+                        },
+                        done: function (e, data) {
+                            if (data.result) {
+                                $.each(data.result, function (index, file) {
+                                    self.handleActionBarAddItemClick(self.itemsCount-1, function (item) {
+                                        var val = item.getValue();
+                                        if (self.urlfield == ""){
+                                            val = file.url;
+                                        }  else {
+                                            val[self.urlfield] = file.url;
+                                        }
+                                        item.setValue(val);
+                                        
+                                    });
+                                    self.itemsCount++;
+                                });
+                            }
+                        }
+                    }).data('loaded', true);
+                }
+                callback();
+            });
+        },
+        getTitle: function () {
+            return "Multi Upload";
+        },
+        getDescription: function () {
+            return "Multi Upload for images and files";
+        },
+
+        getSchemaOfOptions: function () {
+            return Alpaca.merge(this.base(), {
+                "properties": {
+                    "validateAddress": {
+                        "title": "Address Validation",
+                        "description": "Enable address validation if true",
+                        "type": "boolean",
+                        "default": true
+                    },
+                    "showMapOnLoad": {
+                        "title": "Whether to show the map when first loaded",
+                        "type": "boolean"
+                    }
+                }
+            });
+        },
+
+        getOptionsForOptions: function () {
+            return Alpaca.merge(this.base(), {
+                "fields": {
+                    "validateAddress": {
+                        "helper": "Address validation if checked",
+                        "rightLabel": "Enable Google Map for address validation?",
+                        "type": "checkbox"
+                    }
+                }
+            });
+        }
+
+    });
+
+    Alpaca.registerFieldClass("multiupload", Alpaca.Fields.MultiUploadField);
+
+})(jQuery);
+///#source 1 1 GalleryField.js
+(function ($) {
+
+    var Alpaca = $.alpaca;
+
+    Alpaca.Fields.GalleryField = Alpaca.Fields.MultiUploadField.extend(
+    {
+        setup: function () {
+            this.base();
+            this.schema.items = {
+                "type": "object",
+                "properties": {
+                
+                    "Image": {
+                        "title": "Image",
+                        "type": "string"
+                    }
+                }
+            };
+            Alpaca.merge(this.options.items, {
+                "fields": {
+                    "Image": {
+                        "type": "image"
+                    }
+                }
+            });
+            this.urlfield = "Image";
+        },
+        getTitle: function () {
+            return "Gallery";
+        },
+        getDescription: function () {
+            return "Image Gallery";
+        },
+
+        getSchemaOfOptions: function () {
+            return Alpaca.merge(this.base(), {
+                "properties": {
+                    "validateAddress": {
+                        "title": "Address Validation",
+                        "description": "Enable address validation if true",
+                        "type": "boolean",
+                        "default": true
+                    },
+                    "showMapOnLoad": {
+                        "title": "Whether to show the map when first loaded",
+                        "type": "boolean"
+                    }
+                }
+            });
+        },
+
+        getOptionsForOptions: function () {
+            return Alpaca.merge(this.base(), {
+                "fields": {
+                    "validateAddress": {
+                        "helper": "Address validation if checked",
+                        "rightLabel": "Enable Google Map for address validation?",
+                        "type": "checkbox"
+                    }
+                }
+            });
+        }
+
+    });
+
+    Alpaca.registerFieldClass("gallery", Alpaca.Fields.GalleryField);
+
+})(jQuery);
+///#source 1 1 DocumentsField.js
+(function ($) {
+
+    var Alpaca = $.alpaca;
+
+    Alpaca.Fields.DocumentsField = Alpaca.Fields.MultiUploadField.extend(
+    {
+        setup: function () {
+            this.base();
+            this.schema.items = {
+                "type": "object",
+                "properties": {
+                    "Title": {
+                        "title": "Title",
+                        "type": "string"
+                    },
+                    "File": {
+                        "title": "File",
+                        "type": "string"
+                    },
+                }
+            };
+            Alpaca.merge(this.options.items, {
+                "fields": {
+                    "File": {
+                        "type": "file"
+                    },
+                }
+            });
+            this.urlfield = "File";
+        },
+        getTitle: function () {
+            return "Gallery";
+        },
+        getDescription: function () {
+            return "Image Gallery";
+        },
+
+        getSchemaOfOptions: function () {
+            return Alpaca.merge(this.base(), {
+                "properties": {
+                    "validateAddress": {
+                        "title": "Address Validation",
+                        "description": "Enable address validation if true",
+                        "type": "boolean",
+                        "default": true
+                    },
+                    "showMapOnLoad": {
+                        "title": "Whether to show the map when first loaded",
+                        "type": "boolean"
+                    }
+                }
+            });
+        },
+
+        getOptionsForOptions: function () {
+            return Alpaca.merge(this.base(), {
+                "fields": {
+                    "validateAddress": {
+                        "helper": "Address validation if checked",
+                        "rightLabel": "Enable Google Map for address validation?",
+                        "type": "checkbox"
+                    }
+                }
+            });
+        }
+
+    });
+    Alpaca.registerFieldClass("documents", Alpaca.Fields.DocumentsField);
+
+})(jQuery);
 ///#source 1 1 CKEditorField.js
 (function ($) {
 
@@ -1353,6 +1638,381 @@
     Alpaca.registerFieldClass("file", Alpaca.Fields.FileField);
 
 })(jQuery);
+///#source 1 1 ImageCropField.js
+(function ($) {
+
+    var Alpaca = $.alpaca;
+    
+    Alpaca.Fields.ImageCropField = Alpaca.Fields.TextField.extend(
+    /**
+     * @lends Alpaca.Fields.ImageField.prototype
+     */
+    {
+        constructor: function(container, data, options, schema, view, connector)
+        {
+            var self = this;
+            this.base(container, data, options, schema, view, connector);
+            this.sf = connector.servicesFramework;
+            //this.cropper = false;
+        },
+
+        /**
+         * @see Alpaca.Fields.TextField#getFieldType
+         */
+        getFieldType: function () {
+            return "imagecrop";
+        }
+        ,
+        setup: function () {
+            if (!this.options.uploadfolder) {
+                this.options.uploadfolder = "";
+            }
+            if (!this.options.uploadhidden) {
+                this.options.uploadhidden = false;
+            }
+            if (!this.options.cropper) {
+                this.options.cropper = {};
+            }
+            this.options.cropper.responsive = false;
+            if (!this.options.cropper.autoCropArea) {
+                this.options.cropper.autoCropArea = 1;
+            }
+            this.base();
+        },
+
+        /**
+         * @see Alpaca.Fields.TextField#getTitle
+         */
+        getTitle: function () {
+            return "Image Crop Field";
+        },
+
+        /**
+         * @see Alpaca.Fields.TextField#getDescription
+         */
+        getDescription: function () {
+            return "Image Crop Field.";
+        },
+        getControlEl: function () {
+            return $(this.control.get(0)).find('input[type=text]#' + this.id);
+        },
+        setValue: function (value) {
+            var self = this;
+            //var el = $( this.control).filter('#'+this.id);
+            //var el = $(this.control.get(0)).find('input[type=text]');
+            var el = this.getControlEl();
+            //$image = $(self.control).parent().find('.alpaca-image-display > img');
+            if (el && el.length > 0) {
+                if (Alpaca.isEmpty(value)) {
+                    el.val("");
+                    self.cropper("");
+                }
+                else if (Alpaca.isObject(value)) {
+                    el.val(value.url);
+                    self.cropper(value.url, value);
+                }
+                else {
+                    el.val(value);
+                    self.cropper(value);
+                }
+            }
+            
+            // be sure to call into base method
+            //this.base(value);
+
+            // if applicable, update the max length indicator
+            this.updateMaxLengthIndicator();
+        },
+
+        getValue: function () {
+            var self = this;
+            var value = null;
+
+            //var el = $(this.control).filter('#' + this.id);
+            //var el = $(this.control.get(0)).find('input[type=text]');
+            var el = this.getControlEl();
+            $image = self.getImage();
+            if (el && el.length > 0) {
+                if (self.cropperExist())
+                    value = $image.cropper('getData', { rounded: true });
+                else
+                    value = {};
+
+                value.url = el.val();
+            }
+            return value;
+        },
+
+        afterRenderControl: function (model, callback) {
+            var self = this;
+            this.base(model, function () {
+                self.handlePostRender(function () {
+                    callback();
+                });
+            });
+        },
+        handlePostRender: function (callback) {
+            var self = this;
+            //var el = this.control;
+            var el = this.getControlEl();
+            $image = $(self.control).parent().find('.alpaca-image-display img');
+            if (self.options.uploadhidden) {
+                $(this.control.get(0)).find('input[type=file]').hide();
+            } else {
+                $(this.control.get(0)).find('input[type=file]').fileupload({
+                    dataType: 'json',
+                    url: self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
+                    maxFileSize: 25000000,
+                    formData: { uploadfolder : self.options.uploadfolder },
+                    beforeSend: self.sf.setModuleHeaders,
+                    add: function (e, data) {
+                        //data.context = $(opts.progressContextSelector);
+                        //data.context.find($(opts.progressFileNameSelector)).html(data.files[0].name);
+                        //data.context.show('fade');
+                        data.submit();
+                    },
+                    progress: function (e, data) {
+                        if (data.context) {
+                            var progress = parseInt(data.loaded / data.total * 100, 10);
+                            data.context.find(opts.progressBarSelector).css('width', progress + '%').find('span').html(progress + '%');
+                        }
+                    },
+                    done: function (e, data) {
+                        if (data.result) {
+                            $.each(data.result, function (index, file) {
+                                //self.setValue(file.url);
+                                $(el).val(file.url);
+                                $(el).change();
+                                //$(el).change();
+                                //$(e.target).parent().find('input[type=text]').val(file.url);
+                                //el.val(file.url);
+                                //$(e.target).parent().find('.alpaca-image-display img').attr('src', file.url);
+                            });
+                        }
+                    }
+                }).data('loaded', true);
+            }
+            $(el).change(function () {
+                //self.cropper = false;
+                var value = $(this).val();
+                self.cropper(value);
+                /*
+                $image.attr('src', value);
+                if (value) {
+                    $image.parent().find('.cropper-container').show();
+                    
+                }
+                else {
+                    $image.parent().find('.cropper-container').hide();
+                    if (self.cropper) {
+                        
+                        //self.cropper = false;
+                    }
+                }
+                */
+
+            });
+
+            if (self.options.manageurl) {
+                var manageButton = $('<a href="' + self.options.manageurl + '" target="_blank" class="alpaca-form-button">Manage files</a>').appendTo($(el).parent());
+            }
+
+            callback();
+            
+        },
+        cropper: function (url, data) {
+            var self = this;
+            $image = self.getImage();
+            $image.attr('src', url);
+            var cropperExist = $image.data('cropper');
+            if (url) {
+                $image.show();
+                if (!cropperExist) {
+                    var config = $.extend({}, {
+                        aspectRatio: 16 / 9,
+                        checkOrientation: false,
+                        autoCropArea: 0.90,
+                        minContainerHeight: 200,
+                        minContainerWidth: 400,
+                        toggleDragModeOnDblclick: false,
+
+                    }, self.options.cropper);
+                    $image.cropper(config);
+                } else {
+                    if (url != cropperExist.originalUrl){
+                        $image.cropper('replace', url);
+                    }
+                    //$image.cropper('reset');
+                }
+                if (data) {
+                    $image.cropper('setData', data);
+                }
+            } else {
+                $image.hide();
+                if (!cropperExist) {
+
+                } else {
+                    $image.cropper('destroy');
+                }
+            }
+        },
+        cropperExist: function () {
+            var self = this;
+            $image = self.getImage();
+            var cropperData = $image.data('cropper');
+            
+            return cropperData;
+        },
+        getImage: function () {
+            var self = this;
+            return $(self.control).parent().find('#'+self.id+'-image'); //.find('.alpaca-image-display > img');
+
+        },
+        applyTypeAhead: function () {
+            var self = this;
+
+            if (self.control.typeahead && self.options.typeahead && !Alpaca.isEmpty(self.options.typeahead)) {
+
+                var tConfig = self.options.typeahead.config;
+                if (!tConfig) {
+                    tConfig = {};
+                }
+                var tDatasets = tDatasets = {};
+                if (!tDatasets.name) {
+                    tDatasets.name = self.getId();
+                }
+
+                var tFolder = self.options.typeahead.Folder;
+                if (!tFolder) {
+                    tFolder = "";
+                }
+
+                var tEvents = tEvents = {};
+
+                var bloodHoundConfig = {
+                    datumTokenizer: function (d) {
+                        return Bloodhound.tokenizers.whitespace(d.value);
+                    },
+                    queryTokenizer: Bloodhound.tokenizers.whitespace
+                };
+
+                /*
+                if (tDatasets.type === "prefetch") {
+                    bloodHoundConfig.prefetch = {
+                        url: tDatasets.source,
+                        ajax: {
+                            //url: sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
+                            beforeSend: connector.servicesFramework.setModuleHeaders,
+        
+                        }
+                    };
+        
+                    if (tDatasets.filter) {
+                        bloodHoundConfig.prefetch.filter = tDatasets.filter;
+                    }
+                }
+                */
+
+                bloodHoundConfig.remote = {
+                    url: self.sf.getServiceRoot('OpenContent') + "DnnEntitiesAPI/Images?q=%QUERY&d=" + tFolder,
+                    ajax: {
+                        beforeSend: self.sf.setModuleHeaders,
+
+                    }
+                };
+
+                if (tDatasets.filter) {
+                    bloodHoundConfig.remote.filter = tDatasets.filter;
+                }
+
+                if (tDatasets.replace) {
+                    bloodHoundConfig.remote.replace = tDatasets.replace;
+                }
+
+
+                var engine = new Bloodhound(bloodHoundConfig);
+                engine.initialize();
+                tDatasets.source = engine.ttAdapter();
+
+                tDatasets.templates = {
+                    "empty": "Nothing found...",
+                    "suggestion": "<div style='width:20%;display:inline-block;background-color:#fff;padding:2px;'><img src='{{value}}' style='height:40px' /></div> {{name}}"
+                };
+
+                // compile templates
+                if (tDatasets.templates) {
+                    for (var k in tDatasets.templates) {
+                        var template = tDatasets.templates[k];
+                        if (typeof (template) === "string") {
+                            tDatasets.templates[k] = Handlebars.compile(template);
+                        }
+                    }
+                }
+
+                //var el = $(this.control.get(0)).find('input[type=text]');
+                var el = this.getControlEl();
+                // process typeahead
+                $(el).typeahead(tConfig, tDatasets);
+
+                // listen for "autocompleted" event and set the value of the field
+                $(el).on("typeahead:autocompleted", function (event, datum) {
+                    //self.setValue(datum.value);
+                    $(el).val(datum.value);
+                    $(el).change();
+                    //$(self.control).parent().find('input[type=text]').val(datum.value);
+                    //$(self.control).parent().find('.alpaca-image-display img').attr('src', datum.value);
+                });
+
+                // listen for "selected" event and set the value of the field
+                $(el).on("typeahead:selected", function (event, datum) {
+                    //self.setValue(datum.value);
+                    $(el).val(datum.value);
+                    $(el).change();
+                    //$(self.control).parent().find('input[type=text]').val(datum.value);
+                    //$(self.control).parent().find('.alpaca-image-display img').attr('src', datum.value);
+                });
+
+                // custom events
+                if (tEvents) {
+                    if (tEvents.autocompleted) {
+                        $(el).on("typeahead:autocompleted", function (event, datum) {
+                            tEvents.autocompleted(event, datum);
+                        });
+                    }
+                    if (tEvents.selected) {
+                        $(el).on("typeahead:selected", function (event, datum) {
+                            tEvents.selected(event, datum);
+                        });
+                    }
+                }
+
+                // when the input value changes, change the query in typeahead
+                // this is to keep the typeahead control sync'd with the actual dom value
+                // only do this if the query doesn't already match
+                //var fi = $(self.control);
+                $(el).change(function () {
+
+                    var value = $(this).val();
+
+                    var newValue = $(el).typeahead('val');
+                    if (newValue !== value) {
+                        $(el).typeahead('val', value);
+                    }
+
+                });
+
+                // some UI cleanup (we don't want typeahead to restyle)
+                $(self.field).find("span.twitter-typeahead").first().css("display", "block"); // SPAN to behave more like DIV, next line
+                $(self.field).find("span.twitter-typeahead input.tt-input").first().css("background-color", "");
+            }
+        }
+
+        /* end_builder_helpers */
+    });
+
+    Alpaca.registerFieldClass("imagecrop", Alpaca.Fields.ImageCropField);
+
+})(jQuery);
 ///#source 1 1 ImageCropperField.js
 (function ($) {
 
@@ -1965,7 +2625,7 @@
             return $(this.control.get(0)).find('input[type=text]#' + this.id);
         },
         setValue: function (value) {
-
+            var self = this;
             //var el = $( this.control).filter('#'+this.id);
             //var el = $(this.control.get(0)).find('input[type=text]');
             var el = this.getControlEl();
@@ -1976,6 +2636,7 @@
                 }
                 else {
                     el.val(value);
+                    $(self.control).parent().find('.alpaca-image-display img').attr('src', value);
                 }
             }
             

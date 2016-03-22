@@ -278,8 +278,12 @@ namespace Satrabel.OpenContent
 
                 if (templateDefined)
                 {
+                    string title = Localization.GetString((listMode && _itemId == Null.NullInteger ? ModuleActionType.AddContent : ModuleActionType.EditContent), LocalResourceFile);
+                    if (!string.IsNullOrEmpty(settings.Manifest.Title)){
+                        title = Localization.GetString((listMode && _itemId == Null.NullInteger ? "Add.Action" : "Edit.Action"), LocalResourceFile) + " "+ settings.Manifest.Title;
+                    }
                     actions.Add(ModuleContext.GetNextActionID(),
-                        Localization.GetString((listMode && _itemId == Null.NullInteger ? ModuleActionType.AddContent : ModuleActionType.EditContent), LocalResourceFile),
+                        title,
                         ModuleActionType.AddContent,
                         "",
                          (listMode && _itemId == Null.NullInteger ? "~/DesktopModules/OpenContent/images/addcontent2.png" : "~/DesktopModules/OpenContent/images/editcontent2.png"),
