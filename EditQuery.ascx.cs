@@ -42,7 +42,6 @@ namespace Satrabel.OpenContent
         }
         protected void bIndex_Click(object sender, EventArgs e)
         {
-            TemplateManifest template = null;
             OpenContentSettings settings = new OpenContentSettings(Settings);
             bool index = false;
             if (settings.TemplateAvailable)
@@ -55,19 +54,8 @@ namespace Satrabel.OpenContent
                 indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
             }
 
-            using (LuceneController lc = LuceneController.Instance)
-            {
-                //lc.DeleteAll();
-                lc.Delete(new TermQuery(new Term("$type", ModuleId.ToString())));
-                OpenContentController occ = new OpenContentController();
-                foreach (var item in occ.GetContents(ModuleId))
-                {
-                    lc.Add(item, indexConfig);
-                }
-                lc.Commit();
-                lc.OptimizeSearchIndex(true);
-                LuceneController.ClearInstance();
-            }
+            LuceneController.Instance.ReIndexModuleData(ModuleId, indexConfig);
+
         }
 
         protected void bGenerate_Click(object sender, EventArgs e)
@@ -98,8 +86,8 @@ namespace Satrabel.OpenContent
             }
 
         }
-        
-        public AlpacaContext AlpacaContext { get; private set ; }
+
+        public AlpacaContext AlpacaContext { get; private set; }
     }
 }
 
