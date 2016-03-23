@@ -281,10 +281,9 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         #endregion
 
-        private SearchResults Search(string type, Query Filter, Query Query, Sort Sort, int PageSize, int PageIndex)
+        private SearchResults Search(string type, Query filter, Query query, Sort sort, int PageSize, int PageIndex)
         {
             var luceneResults = new SearchResults();
-            
             
             //validate whether index folder is exist and contains index files, otherwise return null.
             if (!ValidateIndexFolder())
@@ -295,10 +294,10 @@ namespace Satrabel.OpenContent.Components.Lucene
             
             var searcher = GetSearcher();
             TopDocs topDocs;
-            if (Filter == null)
-                topDocs = searcher.Search(type, Query, (PageIndex + 1) * PageSize, Sort);
+            if (filter == null)
+                topDocs = searcher.Search(type, query, (PageIndex + 1) * PageSize, sort);
             else
-                topDocs = searcher.Search(type, Filter, Query, (PageIndex + 1) * PageSize, Sort);
+                topDocs = searcher.Search(type, filter, query, (PageIndex + 1) * PageSize, sort);
             luceneResults.TotalResults = topDocs.TotalHits;
             luceneResults.ids = topDocs.ScoreDocs.Skip(PageIndex * PageSize).Select(d => searcher.Doc(d.Doc).GetField(JsonMappingUtils.FieldId).StringValue).ToArray();
             return luceneResults;
