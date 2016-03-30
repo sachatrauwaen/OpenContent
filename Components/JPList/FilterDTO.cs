@@ -9,23 +9,25 @@ namespace Satrabel.OpenContent.Components.JPList
     {
         public FilterDTO()
         {
-            names = new List<string>();
-            pathGroup = new List<string>();
+            Names = new List<string>();
+            ExactSearchMultiValue = new List<string>();
         }
-        public string name { 
+
+        public string Name { 
             get
             {
-                return string.Join(",", names.ToArray());
+                return string.Join(",", Names.ToArray());
             }
             set{
-                names = value.Split(new char[] {','}, StringSplitOptions.RemoveEmptyEntries).ToList();
+                Names = value.Split(new char[] {','}, StringSplitOptions.RemoveEmptyEntries).ToList();
             } 
         }
-        public List<string> names { get; set; }
-        public string value { get; set; }
-        
-        public string path { get; set; }
+        public List<string> Names { get; set; }
 
-        public List<string> pathGroup { get; set; }
+        public string WildCardSearchValue { get; set; }
+        
+        public string ExactSearchValue { get; set; }
+
+        public List<string> ExactSearchMultiValue { get; set; }
     }
 }

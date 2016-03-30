@@ -37,11 +37,6 @@ namespace Satrabel.OpenContent.Components.JPList
         {
             try
             {
-                //Stopwatch stopwatch = new Stopwatch();
-                //stopwatch.Start();
-                //stopwatch.Stop();
-                //Debug.WriteLine("List:" + stopwatch.ElapsedMilliseconds); 
-
                 OpenContentSettings settings = ActiveModule.OpenContentSettings();
                 ModuleInfo module = ActiveModule;
                 if (settings.ModuleId > 0)
@@ -140,7 +135,7 @@ namespace Satrabel.OpenContent.Components.JPList
 
         #region Private Methods
 
-        private JpListQueryDTO BuildJpListQuery(List<StatusDTO> statuses)
+        private static JpListQueryDTO BuildJpListQuery(List<StatusDTO> statuses)
         {
             var query = new JpListQueryDTO();
             foreach (StatusDTO status in statuses)
@@ -162,41 +157,37 @@ namespace Satrabel.OpenContent.Components.JPList
 
                     case "filter":
                         {
-                            if (status.type == "textbox" && status.data != null && !String.IsNullOrEmpty(status.name) && !String.IsNullOrEmpty(status.data.value))
+                            if (status.type == "textbox" && status.data != null && !string.IsNullOrEmpty(status.name) && !string.IsNullOrEmpty(status.data.value))
                             {
                                 query.Filters.Add(new FilterDTO()
                                 {
-                                    name = status.name,
-                                    value = status.data.value
+                                    Name = status.name,
+                                    WildCardSearchValue = status.data.value,
                                 });
                             }
-
                             else if ((status.type == "checkbox-group-filter" || status.type == "button-filter-group")
-                                        && status.data != null && !String.IsNullOrEmpty(status.name))
+                                        && status.data != null && !string.IsNullOrEmpty(status.name))
                             {
                                 if (status.data.filterType == "pathGroup" && status.data.pathGroup != null && status.data.pathGroup.Count > 0)
                                 {
                                     query.Filters.Add(new FilterDTO()
                                     {
-                                        name = status.name,
-                                        pathGroup = status.data.pathGroup
-
+                                        Name = status.name,
+                                        ExactSearchMultiValue = status.data.pathGroup
                                     });
                                 }
                             }
-                            else if (status.type == "filter-select" && status.data != null && !String.IsNullOrEmpty(status.name))
+                            else if (status.type == "filter-select" && status.data != null && !string.IsNullOrEmpty(status.name))
                             {
                                 if (status.data.filterType == "path" && status.data.path != null)
                                 {
                                     query.Filters.Add(new FilterDTO()
                                     {
-                                        name = status.name,
-                                        value = status.data.path,
+                                        Name = status.name,
+                                        ExactSearchValue = status.data.path,
                                     });
                                 }
                             }
-
-
                             break;
                         }
 
@@ -225,74 +216,35 @@ namespace Satrabel.OpenContent.Components.JPList
                 return null;
         }
 
-        private string BuildLuceneQuery(JpListQueryDTO jpListQuery)
-        {
 
-            string queryStr = "";
-            if (jpListQuery.Filters.Any())
-            {
-                foreach (FilterDTO f in jpListQuery.Filters)
-                {
-                    if (f.pathGroup != null && f.pathGroup.Any()) //group is bv multicheckbox, vb categories where(categy="" OR category="")
-                    {
-                        string pathStr = "";
-                        foreach (var p in f.pathGroup)
-                        {
-                            pathStr += (string.IsNullOrEmpty(pathStr) ? "" : " OR ") + f.name + ":" + p;
-                        }
-
-                        queryStr += "+" + "(" + pathStr + ")";
-                    }
-                    else
-                    {
-                        var names = f.names;
-                        string pathStr = "";
-                        foreach (var n in names)
-                        {
-                            if (!string.IsNullOrEmpty(f.path))
-                            {
-                                pathStr += (string.IsNullOrEmpty(pathStr) ? "" : " OR ") + n + ":" + f.path;  //for dropdownlists; value is keyword => never partial search
-                            }
-                            else
-                            {
-                                pathStr += (string.IsNullOrEmpty(pathStr) ? "" : " OR ") + n + ":" + f.value + "*";   //textbox
-                            }
-                        }
-                        queryStr += "+" + "(" + pathStr + ")";
-                    }
-                }
-            }
-            return queryStr;
-        }
-
-        private Query BuildLuceneQuery2(JpListQueryDTO jpListQuery, FieldConfig indexConfig)
+        private Query BuildLuceneQuery(JpListQueryDTO jpListQuery, FieldConfig indexConfig)
         {
             if (jpListQuery.Filters.Any())
             {
                 BooleanQuery query = new BooleanQuery();
                 foreach (FilterDTO f in jpListQuery.Filters)
                 {
-                    if (f.pathGroup != null && f.pathGroup.Any()) //group is bv multicheckbox, vb categories where(categy="" OR category="")
+                    if (f.ExactSearchMultiValue != null && f.ExactSearchMultiValue.Any()) //group is bv multicheckbox, vb categories where(categy="" OR category="")
                     {
                         var groupQuery = new BooleanQuery();
-                        foreach (var p in f.pathGroup)
+                        foreach (var p in f.ExactSearchMultiValue)
                         {
-                            var termQuery = new TermQuery(new Term(f.name, p));
+                            var termQuery = new TermQuery(new Term(f.Name, p));
                             groupQuery.Add(termQuery, Occur.SHOULD); // or
                         }
                         query.Add(groupQuery, Occur.MUST); //and
                     }
                     else
                     {
-                        var names = f.names;
+                        var names = f.Names;
                         var groupQuery = new BooleanQuery();
                         foreach (var n in names)
                         {
 
-                            if (!string.IsNullOrEmpty(f.path))
+                            if (!string.IsNullOrEmpty(f.ExactSearchValue))
                             {
                                 //for dropdownlists; value is keyword => never partial search
-                                var termQuery = new TermQuery(new Term(n, f.path));
+                                var termQuery = new TermQuery(new Term(n, f.ExactSearchValue));
                                 groupQuery.Add(termQuery, Occur.SHOULD); // or
                             }
                             else
@@ -305,12 +257,12 @@ namespace Satrabel.OpenContent.Components.JPList
                                 if (field != null &&
                                     (field.IndexType == "key" || (field.Items != null && field.Items.IndexType == "key")))
                                 {
-                                    query1 = new WildcardQuery(new Term(n, f.value));
+                                    query1 = new WildcardQuery(new Term(n, f.WildCardSearchValue));
                                 }
                                 else
                                 {
                                     string fieldName = ml ? n + "." + DnnUtils.GetCurrentCultureCode() : n;
-                                    query1 = LuceneController.ParseQuery(fieldName + ":" + f.value + "*", "Title");
+                                    query1 = LuceneController.ParseQuery(fieldName + ":" + f.WildCardSearchValue + "*", "Title");
                                 }
 
                                 groupQuery.Add(query1, Occur.SHOULD); // or
