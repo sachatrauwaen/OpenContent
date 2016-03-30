@@ -8,7 +8,7 @@
     } else if (typeof exports === 'object') {
         module.exports = factory(require('../moment')); // Node
     } else {
-        factory((typeof global !== 'undefined' ? global : this).moment); // node or other global
+        factory(window.moment); // Browser global
     }
 }(function (moment) {
     var suffixes = {
@@ -44,7 +44,6 @@
         weekdaysMin : 'Bz_BE_ÇA_Çə_CA_Cü_Şə'.split('_'),
         longDateFormat : {
             LT : 'HH:mm',
-            LTS : 'LT:ss',
             L : 'DD.MM.YYYY',
             LL : 'D MMMM YYYY',
             LLL : 'D MMMM YYYY LT',
@@ -73,10 +72,6 @@
             y : 'bir il',
             yy : '%d il'
         },
-        meridiemParse: /gecə|səhər|gündüz|axşam/,
-        isPM : function (input) {
-            return /^(gündüz|axşam)$/.test(input);
-        },
         meridiem : function (hour, minute, isLower) {
             if (hour < 4) {
                 return 'gecə';
@@ -88,7 +83,6 @@
                 return 'axşam';
             }
         },
-        ordinalParse: /\d{1,2}-(ıncı|inci|nci|üncü|ncı|uncu)/,
         ordinal : function (number) {
             if (number === 0) {  // special case for zero
                 return number + '-ıncı';

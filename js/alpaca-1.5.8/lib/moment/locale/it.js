@@ -9,7 +9,7 @@
     } else if (typeof exports === 'object') {
         module.exports = factory(require('../moment')); // Node
     } else {
-        factory((typeof global !== 'undefined' ? global : this).moment); // node or other global
+        factory(window.moment); // Browser global
     }
 }(function (moment) {
     return moment.defineLocale('it', {
@@ -20,7 +20,6 @@
         weekdaysMin : 'D_L_Ma_Me_G_V_S'.split('_'),
         longDateFormat : {
             LT : 'HH:mm',
-            LTS : 'LT:ss',
             L : 'DD/MM/YYYY',
             LL : 'D MMMM YYYY',
             LLL : 'D MMMM YYYY LT',
@@ -31,14 +30,7 @@
             nextDay: '[Domani alle] LT',
             nextWeek: 'dddd [alle] LT',
             lastDay: '[Ieri alle] LT',
-            lastWeek: function () {
-                switch (this.day()) {
-                    case 0:
-                        return '[la scorsa] dddd [alle] LT';
-                    default:
-                        return '[lo scorso] dddd [alle] LT';
-                }
-            },
+            lastWeek: '[lo scorso] dddd [alle] LT',
             sameElse: 'L'
         },
         relativeTime : {
@@ -58,7 +50,6 @@
             y : 'un anno',
             yy : '%d anni'
         },
-        ordinalParse : /\d{1,2}º/,
         ordinal: '%dº',
         week : {
             dow : 1, // Monday is the first day of the week.
