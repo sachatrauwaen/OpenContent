@@ -73,7 +73,7 @@ namespace Satrabel.OpenContent.Components.JPList
                     }
 
                     var jpListQuery = BuildJpListQuery(req.StatusLst);
-                    def.Query = BuildLuceneQuery2(jpListQuery, indexConfig);
+                    def.Query = BuildLuceneQuery(jpListQuery, indexConfig);
                     if (jpListQuery.Sorts.Any())
                     {
                         var sort = jpListQuery.Sorts.First();
