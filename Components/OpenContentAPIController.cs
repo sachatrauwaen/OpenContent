@@ -508,6 +508,11 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
+        /// <summary>
+        /// Lookups the data for Additional Data.
+        /// </summary>
+        /// <param name="req">The req.</param>
+        /// <returns></returns>
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
         [HttpPost]
@@ -635,6 +640,7 @@ namespace Satrabel.OpenContent.Components
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
+
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         [HttpPost]
@@ -710,14 +716,50 @@ namespace Satrabel.OpenContent.Components
         public int moduleid { get; set; }
         public int tabid { get; set; }
         public string dataMember { get; set; }
+        /// <summary>
+        /// Gets or sets the value field.
+        /// </summary>
+        /// <value>
+        /// The Id field. 
+        /// </value>
         public string valueField { get; set; }
+        /// <summary>
+        /// Gets or sets the text field.
+        /// </summary>
+        /// <value>
+        /// The Display text.
+        /// </value>
         public string textField { get; set; }
     }
     public class LookupDataRequestDTO
     {
+        /// <summary>
+        /// Gets or sets the data key.
+        /// </summary>
+        /// <value>
+        /// Which additional data object to search. 
+        /// </value>
         public string dataKey { get; set; }
+        /// <summary>
+        /// Gets or sets the data member.
+        /// </summary>
+        /// <value>
+        /// Optional The data member of the data object to search. 
+        /// </value>
         public string dataMember { get; set; }
+        /// <summary>
+        /// Gets or sets the value field.
+        /// </summary>
+        /// <value>
+        /// The value field.
+        /// </value>
         public string valueField { get; set; }
+        /// <summary>
+        /// Gets or sets the text field.
+        /// </summary>
+        /// <value>
+        /// The text field.
+        /// </value>
         public string textField { get; set; }
     }
 
