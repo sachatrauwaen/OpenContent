@@ -346,6 +346,7 @@
     <Content Include="alpaca\templates\dnn-edit\control-imagecrop.html" />
     <Content Include="alpaca\templates\dnn-edit\control-imagecropper.html" />
     <Content Include="alpaca\templates\dnn-edit\control-image.html" />
+    <Content Include="alpaca\templates\dnn-edit\control-ckeditor.html" />
     <Content Include="alpaca\templates\dnn-edit\control-wysihtml.html" />
     <Content Include="alpaca\templates\dnn-edit\control.html" />
     <Content Include="alpaca\templates\dnn-edit\dnntemplates.html">

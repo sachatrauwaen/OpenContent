@@ -27,7 +27,7 @@
                 this.olddata = {};
                 this.olddata[this.defaultCulture] = this.data;
             }
-
+            
             this.base();
         },
 

@@ -4367,7 +4367,7 @@
                 this.olddata = {};
                 this.olddata[this.defaultCulture] = this.data;
             }
-
+            
             this.base();
         },
 
@@ -5853,8 +5853,23 @@
                 this.olddata = {};
                 this.olddata[this.defaultCulture] = this.data;
             }
+            
+            if (this.culture != this.defaultCulture && this.olddata && this.olddata[this.defaultCulture]) {
+                this.options.placeholder = this.olddata[this.defaultCulture];
+            } else {
+                this.options.placeholder = "";
+            }
+
             this.base();
+
+            if (!self.options.ckeditor) {
+                self.options.ckeditor = {};
+            }
+            if (!self.options.ckeditor.extraPlugins) {
+                self.options.ckeditor.extraPlugins = 'confighelper';
+            }
         },
+
         /**
          * @see Alpaca.Fields.CKEditorField#getValue
          */
@@ -5996,6 +6011,12 @@
                 this.olddata = {};
                 this.olddata[this.defaultCulture] = this.data;
             }
+            if (this.culture != this.defaultCulture && this.olddata && this.olddata[this.defaultCulture]) {
+                this.options.placeholder = this.olddata[this.defaultCulture];
+            } else {
+                this.options.placeholder = "";
+            }
+
             this.base();
         },
         /**
@@ -6139,7 +6160,11 @@
                 this.olddata = {};
                 this.olddata[this.defaultCulture] = this.data;
             }
-
+            if (this.culture != this.defaultCulture && this.olddata && this.olddata[this.defaultCulture]) {
+                this.options.placeholder = this.olddata[this.defaultCulture];
+            } else {
+                this.options.placeholder = "";
+            }
             this.base();
         },
         /**
@@ -6293,7 +6318,13 @@
                 this.olddata = {};
                 this.olddata[this.defaultCulture] = this.data;
             }
-
+            
+            
+            if (this.culture != this.defaultCulture && this.olddata && this.olddata[this.defaultCulture]) {
+                this.options.placeholder = this.olddata[this.defaultCulture];
+            } else {
+                this.options.placeholder = "";
+            }
             this.base();
             /*
             Alpaca.mergeObject(this.options, {
@@ -6449,6 +6480,11 @@
             } else if (this.data) {
                 this.olddata = {};
                 this.olddata[this.defaultCulture] = this.data;
+            }
+            if (this.culture != this.defaultCulture && this.olddata && this.olddata[this.defaultCulture]) {
+                this.options.placeholder = this.olddata[this.defaultCulture];
+            } else {
+                this.options.placeholder = "";
             }
             this.base();
         },

@@ -187,6 +187,11 @@
         <div id="{{id}}" data-placeholder="Go on, start editing..." class="editor editable"></div>
     </div>
 </script>
+<script type="text/x-handlebars-template" id="dnn-edit-control-ckeditor">
+    
+    <textarea id="{{id}}" {{#if options.placeholder}} placeholder="{{options.placeholder}}" {{/if}} cols="80" rows="10"></textarea>
+
+</script>
 <script type="text/x-handlebars-template" id="dnn-edit-control">
 
     <div class="dnnFormItem">
