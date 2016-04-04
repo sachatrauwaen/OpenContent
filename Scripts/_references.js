@@ -135,3 +135,5 @@
 /// <reference path="../alpaca/js/fields/dnn/galleryfield.js" />
 /// <reference path="../alpaca/js/fields/dnn/documentsfield.js" />
 /// <reference path="../alpaca/js/fields/dnn/folder2field.js" />
+/// <reference path="../alpaca/js/fields/dnn/mlfile2field.js" />
+/// <reference path="../alpaca/js/fields/dnn/mlurl2field.js" />
