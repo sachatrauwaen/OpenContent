@@ -354,7 +354,7 @@ namespace Satrabel.OpenContent
                 if (templateDefined && listMode)
                 {
                     //bool queryAvailable = settings.Template.QueryAvailable();
-                    //if (queryAvailable)
+                    if (settings.Manifest.Index)
                     {
                         actions.Add(ModuleContext.GetNextActionID(),
                             Localization.GetString("EditQuery.Action", LocalResourceFile),

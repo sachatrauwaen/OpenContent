@@ -54,13 +54,17 @@ namespace Satrabel.OpenContent
             {
                 indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
             }
-
+            int moduleid = ModuleId;
+            if (settings.IsOtherModule)
+            {
+                moduleid = settings.ModuleId;
+            }
             using (LuceneController lc = LuceneController.Instance)
             {
                 //lc.DeleteAll();
-                lc.Delete(new TermQuery(new Term("$type", ModuleId.ToString())));
+                lc.Delete(new TermQuery(new Term("$type", moduleid.ToString())));
                 OpenContentController occ = new OpenContentController();
-                foreach (var item in occ.GetContents(ModuleId))
+                foreach (var item in occ.GetContents(moduleid))
                 {
                     lc.Add(item, indexConfig);
                 }
