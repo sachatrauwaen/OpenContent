@@ -200,10 +200,12 @@
             "control": "#dnn-edit-control",
             "container": "#dnn-edit-container",
             "control-image": "#dnn-edit-control-image",
+            "control-imagecrop": "#dnn-edit-control-imagecrop",
             "control-imagecropper": "#dnn-edit-control-imagecropper",
             "control-file": "#dnn-edit-control-file",
             "control-wysihtml": "#dnn-edit-control-wysihtml",
-            "control-checkbox": "#dnn-edit-control-checkbox"
+            "control-checkbox": "#dnn-edit-control-checkbox",
+            "control-ckeditor": "#dnn-edit-control-ckeditor",
         }
     });
 

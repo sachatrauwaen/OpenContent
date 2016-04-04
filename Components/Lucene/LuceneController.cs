@@ -5,36 +5,20 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
-
 using DotNetNuke.Common;
-using DotNetNuke.Common.Utilities;
-using DotNetNuke.Entities.Controllers;
-using DotNetNuke.Framework;
-using DotNetNuke.Services.Exceptions;
-using DotNetNuke.Services.Search.Entities;
 using Lucene.Net.Analysis;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.Search;
-using Lucene.Net.Search.Vectorhighlight;
 using Lucene.Net.Store;
-using DotNetNuke.Instrumentation;
-using System.Web;
-using DotNetNuke.Services.Localization;
-using DotNetNuke.Services.Search;
-using Lucene.Net.Analysis.Standard;
-using Lucene.Net.Util;
 using Lucene.Net.QueryParsers;
 using Satrabel.OpenContent.Components.Lucene.Mapping;
-using Satrabel.OpenContent.Components.Lucene;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.Lucene.Index;
 
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Entities.Modules;
-using Satrabel.OpenContent.Components.Manifest;
 
 #endregion
 
@@ -93,7 +77,7 @@ namespace Satrabel.OpenContent.Components.Lucene
         private void CheckDisposed()
         {
             if (Thread.VolatileRead(ref _isDisposed) == DISPOSED)
-                throw new ObjectDisposedException(Localization.GetExceptionMessage("LuceneControlerIsDisposed", "LuceneController is disposed and cannot be used anymore"));
+                throw new ObjectDisposedException("OpenContent LuceneController is disposed and cannot be used anymore");
         }
         #endregion
 
@@ -101,6 +85,7 @@ namespace Satrabel.OpenContent.Components.Lucene
         {
             get
             {
+                Analyzer analyser = JsonMappingUtils.GetAnalyser();
                 if (_writer == null)
                 {
                     lock (_writerLock)
@@ -119,16 +104,13 @@ namespace Satrabel.OpenContent.Components.Lucene
                                 catch (IOException e)
                                 {
 #pragma warning disable 0618
-                                    throw new SearchException(
-                                        Localization.GetExceptionMessage("UnableToCreateLuceneWriter", "Unable to create Lucene writer (lock file is in use). Please recycle AppPool in IIS to release lock."),
-                                        e, new SearchItemInfo());
+                                    throw new Exception("Unable to create Lucene writer (lock file is in use). Please recycle AppPool in IIS to release lock.", e);
 #pragma warning restore 0618
                                 }
                             }
 
                             CheckDisposed();
-                            var writer = new IndexWriter(FSDirectory.Open(IndexFolder),
-                                JsonMappingUtils.GetAnalyser(), IndexWriter.MaxFieldLength.UNLIMITED);
+                            var writer = new IndexWriter(FSDirectory.Open(IndexFolder), analyser, IndexWriter.MaxFieldLength.UNLIMITED);
                             _idxReader = writer.GetReader();
                             Thread.MemoryBarrier();
                             _writer = writer;
@@ -219,58 +201,8 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         private void CheckValidIndexFolder()
         {
-            
-                if (!ValidateIndexFolder())
-                    throw new SearchIndexEmptyException(Localization.GetExceptionMessage("SearchIndexingDirectoryNoValid", "Search indexing directory is either empty or does not exist"));
-            
-        }
-
-        private void IndexAll()
-        {
-            LuceneController.ClearInstance();
-            using (LuceneController lc = LuceneController.Instance)
-            {
-                ModuleController mc = new ModuleController();
-                PortalController pc = new PortalController();
-                foreach (PortalInfo portal in pc.GetPortals())
-                {
-                    ArrayList modules = mc.GetModulesByDefinition(portal.PortalID, "OpenContent");
-                    //foreach (ModuleInfo module in modules.OfType<ModuleInfo>().GroupBy(m => m.ModuleID).Select(g => g.First())){                
-                    foreach (ModuleInfo module in modules.OfType<ModuleInfo>())
-                    {
-                        OpenContentSettings settings = new OpenContentSettings(module.ModuleSettings);
-
-                        if (settings.Template != null && settings.Template.IsListTemplate && !settings.IsOtherModule)
-                        {
-                            //TemplateManifest template = null;
-
-                            bool index = false;
-                            if (settings.TemplateAvailable)
-                            {
-                                index = settings.Manifest.Index;
-                            }
-                            FieldConfig indexConfig = null;
-                            if (index)
-                            {
-                                indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
-                            }
-
-
-                            //lc.DeleteAll();
-                            //lc.Delete(new TermQuery(new Term("$type", ModuleId.ToString())));
-                            OpenContentController occ = new OpenContentController();
-                            foreach (var item in occ.GetContents(module.ModuleID))
-                            {
-                                lc.Add(item, indexConfig);
-                            }
-                        }
-                    }
-                }
-                lc.Commit();
-                lc.OptimizeSearchIndex(true);
-            }
-
-            LuceneController.ClearInstance();
+            if (!ValidateIndexFolder())
+                throw new Exception("OpenContent Search indexing directory is either empty or does not exist");
         }
 
         private bool ValidateIndexFolder()
@@ -281,32 +213,31 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         #endregion
 
-        private SearchResults Search(string type, Query Filter, Query Query, Sort Sort, int PageSize, int PageIndex)
+        private SearchResults Search(string type, Query filter, Query query, Sort sort, int pageSize, int pageIndex)
         {
             var luceneResults = new SearchResults();
-            
-            
+
             //validate whether index folder is exist and contains index files, otherwise return null.
             if (!ValidateIndexFolder())
             {
                 IndexAll();
                 return luceneResults;
             }
-            
+
             var searcher = GetSearcher();
             TopDocs topDocs;
-            if (Filter == null)
-                topDocs = searcher.Search(type, Query, (PageIndex + 1) * PageSize, Sort);
+            if (filter == null)
+                topDocs = searcher.Search(type, query, (pageIndex + 1) * pageSize, sort);
             else
-                topDocs = searcher.Search(type, Filter, Query, (PageIndex + 1) * PageSize, Sort);
+                topDocs = searcher.Search(type, filter, query, (pageIndex + 1) * pageSize, sort);
             luceneResults.TotalResults = topDocs.TotalHits;
-            luceneResults.ids = topDocs.ScoreDocs.Skip(PageIndex * PageSize).Select(d => searcher.Doc(d.Doc).GetField(JsonMappingUtils.FieldId).StringValue).ToArray();
+            luceneResults.ids = topDocs.ScoreDocs.Skip(pageIndex * pageSize).Select(d => searcher.Doc(d.Doc).GetField(JsonMappingUtils.FieldId).StringValue).ToArray();
             return luceneResults;
         }
-        public SearchResults Search(string type, string DefaultFieldName, string Filter, string Query, string Sorts, int PageSize, int PageIndex, FieldConfig IndexConfig)
+        public SearchResults Search(string type, string defaultFieldName, string Filter, string Query, string Sorts, int PageSize, int PageIndex, FieldConfig IndexConfig)
         {
-            Query query = ParseQuery(Query, DefaultFieldName);
-            Query filter = ParseQuery(Filter, DefaultFieldName);
+            Query query = ParseQuery(Query, defaultFieldName);
+            Query filter = ParseQuery(Filter, defaultFieldName);
 
             QueryDefinition def = new QueryDefinition(IndexConfig)
             {
@@ -317,9 +248,9 @@ namespace Satrabel.OpenContent.Components.Lucene
             };
             def.BuildSort(Sorts);
 
-            return Search(type, DefaultFieldName, def);
+            return Search(type, defaultFieldName, def);
         }
-        public SearchResults Search(string type, string DefaultFieldName, QueryDefinition def)
+        public SearchResults Search(string type, string defaultFieldName, QueryDefinition def)
         {
             return Search(type, def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
         }
@@ -372,6 +303,54 @@ namespace Satrabel.OpenContent.Components.Lucene
             }
             return query;
         }
+        private void IndexAll()
+        {
+            LuceneController.ClearInstance();
+            using (LuceneController lc = LuceneController.Instance)
+            {
+                ModuleController mc = new ModuleController();
+                PortalController pc = new PortalController();
+                foreach (PortalInfo portal in pc.GetPortals())
+                {
+                    ArrayList modules = mc.GetModulesByDefinition(portal.PortalID, "OpenContent");
+                    //foreach (ModuleInfo module in modules.OfType<ModuleInfo>().GroupBy(m => m.ModuleID).Select(g => g.First())){                
+                    foreach (ModuleInfo module in modules.OfType<ModuleInfo>())
+                    {
+                        OpenContentSettings settings = new OpenContentSettings(module.ModuleSettings);
+
+                        if (settings.Template != null && settings.Template.IsListTemplate && !settings.IsOtherModule)
+                        {
+                            //TemplateManifest template = null;
+
+                            bool index = false;
+                            if (settings.TemplateAvailable)
+                            {
+                                index = settings.Manifest.Index;
+                            }
+                            FieldConfig indexConfig = null;
+                            if (index)
+                            {
+                                indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
+                            }
+
+
+                            //lc.DeleteAll();
+                            //lc.Delete(new TermQuery(new Term("$type", ModuleId.ToString())));
+                            OpenContentController occ = new OpenContentController();
+                            foreach (var item in occ.GetContents(module.ModuleID))
+                            {
+                                lc.Add(item, indexConfig);
+                            }
+                        }
+                    }
+                }
+                lc.Commit();
+                lc.OptimizeSearchIndex(true);
+            }
+
+            LuceneController.ClearInstance();
+        }
+
         public void Add(Document doc)
         {
             Requires.NotNull("searchDocument", doc);

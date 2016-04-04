@@ -27,7 +27,7 @@
                 this.olddata = {};
                 this.olddata[this.defaultCulture] = this.data;
             }
-
+            
             this.base();
         },
 
@@ -93,9 +93,10 @@
             var self = this;
             var el = this.getControlEl();
 
+            
             callback();
 
-            $(this.control.get(0)).after('<img src="/images/Flags/' + this.culture + '.gif" />');
+            $(this.control).parent().find('.select2').after('<img src="/images/Flags/' + this.culture + '.gif" class="flag" />');
             
         },
     });

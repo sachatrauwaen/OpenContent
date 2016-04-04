@@ -33,6 +33,7 @@ using DotNetNuke.Entities.Content.Common;
 using DotNetNuke.Entities.Modules.Definitions;
 using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components.TemplateHelpers;
+using System.Text.RegularExpressions;
 
 #endregion
 
@@ -145,7 +146,7 @@ namespace Satrabel.OpenContent.Components
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
         [HttpGet]
-        public HttpResponseMessage FilesLookup(string q, string d)
+        public HttpResponseMessage FilesLookup(string q, string d, string filter = "")
         {
             try
             {
@@ -158,8 +159,45 @@ namespace Satrabel.OpenContent.Components
                 {
                     files = files.Where(f => f.FileName.ToLower().Contains(q.ToLower()));
                 }
-                int folderLength = d.Length;
+                if (!string.IsNullOrEmpty(filter))
+                {
+                    var rx = new Regex(filter, RegexOptions.IgnoreCase);
+                    files = files.Where(f => rx.IsMatch(f.FileName));
+                }
+                int folderLength = (d == null)? 0 : d.Length;
                 var res = files.Select(f => new { value = f.FileId.ToString(), url = fileManager.GetUrl(f), text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName /*+ (string.IsNullOrEmpty(f.Folder) ? "" : " (" + f.Folder.Trim('/') + ")")*/ });
+                return Request.CreateResponse(HttpStatusCode.OK, res);
+            }
+            catch (Exception exc)
+            {
+                Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
+
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [HttpGet]
+        public HttpResponseMessage FoldersLookup(string q, string d, string filter = "")
+        {
+            try
+            {
+                var folderManager = FolderManager.Instance;
+                var fileManager = FileManager.Instance;
+                var portalFolder = folderManager.GetFolder(PortalSettings.PortalId, d ?? "");
+                var files = folderManager.GetFolders(portalFolder);
+                
+                if (q != "*" && !string.IsNullOrEmpty(q))
+                {
+                    files = files.Where(f => f.FolderName.ToLower().Contains(q.ToLower()));
+                }
+                if (!string.IsNullOrEmpty(filter))
+                {
+                    var rx = new Regex(filter, RegexOptions.IgnoreCase);
+                    files = files.Where(f => rx.IsMatch(f.FolderName));
+                }
+                int folderLength = (d == null) ? 0 : d.Length;
+                var res = files.Select(f => new { value = f.FolderID.ToString(), url = f.FolderPath, text = f.FolderName.Substring(folderLength).TrimStart('/') });
                 return Request.CreateResponse(HttpStatusCode.OK, res);
             }
             catch (Exception exc)
