@@ -4448,7 +4448,6 @@
 (function($) {
 
     var Alpaca = $.alpaca;
-
     
     Alpaca.Fields.File2Field = Alpaca.Fields.ListField.extend(
     /**
@@ -4482,6 +4481,11 @@
             }
             if (!this.options.folder) {
                 this.options.folder = "";
+            }
+            // filter = serverside c# regexp
+            // exemple :  ^.*\.(jpg|JPG|gif|GIF|doc|DOC|pdf|PDF)$
+            if (!this.options.filter) {
+                this.options.filter = "";
             }
             this.base();
         },
@@ -4606,7 +4610,7 @@
                         model.selectOptions = self.selectOptions;
                         callback();
                     };
-                    var postData = { q : "*", d : self.options.folder };
+                    var postData = { q: "*", d: self.options.folder, filter: self.options.filter };
                     $.ajax({
                         url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "FilesLookup",
                         beforeSend: self.sf.setModuleHeaders,

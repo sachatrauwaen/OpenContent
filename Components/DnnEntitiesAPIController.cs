@@ -33,6 +33,7 @@ using DotNetNuke.Entities.Content.Common;
 using DotNetNuke.Entities.Modules.Definitions;
 using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components.TemplateHelpers;
+using System.Text.RegularExpressions;
 
 #endregion
 
@@ -145,7 +146,7 @@ namespace Satrabel.OpenContent.Components
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
         [HttpGet]
-        public HttpResponseMessage FilesLookup(string q, string d)
+        public HttpResponseMessage FilesLookup(string q, string d, string filter = "")
         {
             try
             {
@@ -158,7 +159,12 @@ namespace Satrabel.OpenContent.Components
                 {
                     files = files.Where(f => f.FileName.ToLower().Contains(q.ToLower()));
                 }
-                int folderLength = d.Length;
+                if (!string.IsNullOrEmpty(filter))
+                {
+                    var rx = new Regex(filter, RegexOptions.IgnoreCase);
+                    files = files.Where(f => rx.IsMatch(f.FileName));
+                }
+                int folderLength = (d == null)? 0 : d.Length;
                 var res = files.Select(f => new { value = f.FileId.ToString(), url = fileManager.GetUrl(f), text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName /*+ (string.IsNullOrEmpty(f.Folder) ? "" : " (" + f.Folder.Trim('/') + ")")*/ });
                 return Request.CreateResponse(HttpStatusCode.OK, res);
             }
