@@ -306,6 +306,7 @@
     <Content Include="alpaca\css\img\Delete_16X16_Gray.png" />
     <Content Include="alpaca\css\img\Dn_16X16_Standard.png" />
     <Content Include="alpaca\css\img\Up_16X16_Standard.png" />
+    <Content Include="alpaca\js\fields\dnn\Folder2Field.js" />
     <Content Include="alpaca\js\fields\dnn\GalleryField.js" />
     <Content Include="alpaca\js\fields\dnn\MultiUploadField.js" />
     <Content Include="alpaca\js\fields\dnn\DocumentsField.js" />
