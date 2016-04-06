@@ -2,6 +2,8 @@
 using System.IO;
 using System.Linq;
 using DotNetNuke.Entities.Modules;
+using Satrabel.OpenContent.Components.Datasource;
+using Newtonsoft.Json.Linq;
 
 namespace Satrabel.OpenContent.Components.Manifest
 {
@@ -19,7 +21,7 @@ namespace Satrabel.OpenContent.Components.Manifest
 
         #region Public Properties
 
-        public int DetailItemId { get; set; }
+        public string DetailItemId { get; set; }
         public string OutputString { get; set; }
 
         #endregion
@@ -32,25 +34,25 @@ namespace Satrabel.OpenContent.Components.Manifest
             SettingsJson = "";
         }
 
-        public void SetData(OpenContentInfo data, string dataJson, string settingsData)
+        public void SetData(IDataItem data, JToken dataJson, string settingsData)
         {
             Data = data;
             DataJson = dataJson;
             SettingsJson = settingsData;
-            if (!string.IsNullOrWhiteSpace(dataJson)) DataExist = true;            
+            DataExist = data != null;            
         }
 
-        public void SetData(IEnumerable<OpenContentInfo> getContents, string settingsData)
+        public void SetData(IEnumerable<IDataItem> getContents, string settingsData)
         {
             DataList = getContents;
             SettingsJson = settingsData;
             if (getContents != null && getContents.Any()) DataExist = true;
         }
 
-        public string DataJson { get; private set; }
+        public JToken DataJson { get; private set; }
         public string SettingsJson { get; private set; }
-        public OpenContentInfo Data { get; private set; }
-        public IEnumerable<OpenContentInfo> DataList { get; private set; }
+        public IDataItem Data { get; private set; }
+        public IEnumerable<IDataItem> DataList { get; private set; }
         public bool DataExist { get; set; }
         public bool ShowDemoData { get; set; }
         public bool ShowInitControl { 

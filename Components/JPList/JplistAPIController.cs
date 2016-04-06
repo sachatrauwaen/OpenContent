@@ -23,6 +23,7 @@ using Lucene.Net.Index;
 using Lucene.Net.QueryParsers;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using Lucene.Net.Documents;
+using Satrabel.OpenContent.Components.Datasource;
 
 
 namespace Satrabel.OpenContent.Components.JPList
@@ -46,14 +47,12 @@ namespace Satrabel.OpenContent.Components.JPList
                 }
                 var manifest = settings.Template.Manifest;
                 var templateManifest = settings.Template;
-
                 TemplateFiles files = null;
                 if (templateManifest != null)
                 {
                     files = templateManifest.Main;
                     // detail not traited !!!
                 }
-
                 string editRole = manifest == null ? "" : manifest.EditRole;
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 if (listMode)
@@ -88,14 +87,23 @@ namespace Satrabel.OpenContent.Components.JPList
                     int total = docs.TotalResults;
                     Log.Logger.DebugFormat("OpenContent.JplistApiController.List() Searched for [{0}], found [{1}] items", def.ToJson(), total);
 
-                    OpenContentController ctrl = new OpenContentController();
-                    var dataList = new List<OpenContentInfo>();
+                    var ds = DataSourceManager.GetDataSource("OpenContent");
+                    var dsContext = new DataSourceContext()
+                    {
+                        ModuleId = module.ModuleID,
+                        TemplateFolder = settings.TemplateDir.FolderPath
+                    };
+                    
+
+                    //OpenContentController ctrl = new OpenContentController();
+                    var dataList = new List<IDataItem>();
                     foreach (var item in docs.ids)
                     {
-                        var content = ctrl.GetContent(int.Parse(item));
-                        if (content != null)
+                        var dsItem = ds.Get(dsContext, item);
+                        //var content = ctrl.GetContent(int.Parse(item));
+                        if (dsItem != null)
                         {
-                            dataList.Add(content);
+                            dataList.Add(dsItem);
                         }
                         else
                         {

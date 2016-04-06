@@ -44,6 +44,7 @@ using DotNetNuke.Services.Installer.Log;
 using Satrabel.OpenContent.Components.Lucene;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.Manifest;
+using Satrabel.OpenContent.Components.Datasource;
 
 #endregion
 
@@ -56,7 +57,7 @@ namespace Satrabel.OpenContent
     /// </summary>
     public partial class View : DotNetNuke.Web.Razor.RazorModuleBase, IActionable
     {
-        private int _itemId = Null.NullInteger;
+        private string _itemId = null;
         private readonly RenderInfo _renderinfo = new RenderInfo();
         private OpenContentSettings _settings;
 
@@ -106,7 +107,7 @@ namespace Satrabel.OpenContent
             base.OnLoad(e);
             if (Page.Request.QueryString["id"] != null)
             {
-                int.TryParse(Page.Request.QueryString["id"], out _itemId);
+                _itemId = Page.Request.QueryString["id"];
             }
             if (!Page.IsPostBack)
             {
@@ -273,22 +274,22 @@ namespace Satrabel.OpenContent
 
                 if (Page.Request.QueryString["id"] != null)
                 {
-                    int.TryParse(Page.Request.QueryString["id"], out _itemId);
+                    _itemId = Page.Request.QueryString["id"];
                 }
 
                 if (templateDefined)
                 {
-                    string title = Localization.GetString((listMode && _itemId == Null.NullInteger ? ModuleActionType.AddContent : ModuleActionType.EditContent), LocalResourceFile);
+                    string title = Localization.GetString((listMode && string.IsNullOrEmpty(_itemId) ? ModuleActionType.AddContent : ModuleActionType.EditContent), LocalResourceFile);
                     if (!string.IsNullOrEmpty(settings.Manifest.Title))
                     {
-                        title = Localization.GetString((listMode && _itemId == Null.NullInteger ? "Add.Action" : "Edit.Action"), LocalResourceFile) + " " + settings.Manifest.Title;
+                        title = Localization.GetString((listMode && string.IsNullOrEmpty(_itemId) ? "Add.Action" : "Edit.Action"), LocalResourceFile) + " " + settings.Manifest.Title;
                     }
                     actions.Add(ModuleContext.GetNextActionID(),
                         title,
                         ModuleActionType.AddContent,
                         "",
-                         (listMode && _itemId == Null.NullInteger ? "~/DesktopModules/OpenContent/images/addcontent2.png" : "~/DesktopModules/OpenContent/images/editcontent2.png"),
-                        (listMode && _itemId != Null.NullInteger ? ModuleContext.EditUrl("id", _itemId.ToString()) : ModuleContext.EditUrl()),
+                         (listMode && string.IsNullOrEmpty(_itemId) ? "~/DesktopModules/OpenContent/images/addcontent2.png" : "~/DesktopModules/OpenContent/images/editcontent2.png"),
+                        (listMode && string.IsNullOrEmpty(_itemId) ? ModuleContext.EditUrl("id", _itemId.ToString()) : ModuleContext.EditUrl()),
                         false,
                         SecurityAccessLevel.Edit,
                         true,
@@ -387,7 +388,7 @@ namespace Satrabel.OpenContent
                         "",
                         "~/DesktopModules/OpenContent/images/edit.png",
                         //ModuleContext.EditUrl("EditData"),
-                        (listMode && _itemId != Null.NullInteger ? ModuleContext.EditUrl("id", _itemId.ToString(), "EditData") : ModuleContext.EditUrl("EditData")),
+                        (listMode && !string.IsNullOrEmpty(_itemId) ? ModuleContext.EditUrl("id", _itemId.ToString(), "EditData") : ModuleContext.EditUrl("EditData")),
                         false,
                         SecurityAccessLevel.Host,
                         true,
@@ -449,7 +450,7 @@ namespace Satrabel.OpenContent
                 if (_renderinfo.Template.IsListTemplate)
                 {
                     // Multi items template
-                    if (_itemId == Null.NullInteger)
+                    if (string.IsNullOrEmpty(_itemId))
                     {
                         // List template
                         if (_renderinfo.Template.Main != null)
@@ -578,23 +579,36 @@ namespace Satrabel.OpenContent
         public void GetData(RenderInfo info, OpenContentSettings settings)
         {
             info.ResetData();
-
-            OpenContentController ctrl = new OpenContentController();
-            var struc = ctrl.GetFirstContent(info.ModuleId);
-            if (struc != null)
+            var ds = DataSourceManager.GetDataSource("OpenContent");
+            var dsContext = new DataSourceContext()
             {
-                info.SetData(struc, struc.Json, settings.Data);
+                ModuleId = info.ModuleId,
+                TemplateFolder = settings.TemplateDir.FolderPath
+            };
+            var dsItem = ds.GetFirst(dsContext);
+            if (dsItem != null)
+            {
+                info.SetData(dsItem, dsItem.Data, settings.Data);
             }
         }
         public void GetDataList(RenderInfo info, OpenContentSettings settings, bool clientSide)
         {
             info.ResetData();
-            OpenContentController ctrl = new OpenContentController();
-            List<OpenContentInfo> dataList = new List<OpenContentInfo>(); ;
+            var ds = DataSourceManager.GetDataSource("OpenContent");
+            var dsContext = new DataSourceContext()
+            {
+                ModuleId = info.ModuleId,
+                TemplateFolder = settings.TemplateDir.FolderPath
+            };
+            
+            //OpenContentController ctrl = new OpenContentController();
+            List<IDataItem> dataList = new List<IDataItem>();
             if (clientSide || !info.Files.DataInTemplate)
             {
-                var data = ctrl.GetFirstContent(info.ModuleId);
-                if (data != null)
+                var dsItem = ds.GetFirst(dsContext);
+                //var data = ctrl.GetFirstContent(info.ModuleId);
+
+                if (dsItem != null)
                 {
                     info.SetData(dataList, settings.Data);
                     info.DataExist = true;
@@ -622,18 +636,20 @@ namespace Satrabel.OpenContent
                         Log.Logger.DebugFormat("Query returned [{0}] results.", total);
                         foreach (var item in docs.ids)
                         {
-                            var content = ctrl.GetContent(int.Parse(item));
-                            if (content != null)
+                            var dsItem = ds.Get(dsContext, item);
+                            //var content = ctrl.GetContent(int.Parse(item));
+                            if (dsItem != null)
                             {
-                                dataList.Add(content);
+                                dataList.Add(dsItem);
                             }
                         }
                     }
                     if (!dataList.Any())
                     {
                         Log.Logger.DebugFormat("Query did not return any results. API request: [{0}], Lucene Filter: [{1}], Lucene Query:[{2}]", settings.Query, queryDef.Filter == null ? "" : queryDef.Filter.ToString(), queryDef.Query == null ? "" : queryDef.Query.ToString());
-                        var data = ctrl.GetFirstContent(info.ModuleId);
-                        if (data != null)
+                        var dsItem = ds.GetFirst(dsContext);
+                        //var data = ctrl.GetFirstContent(info.ModuleId);
+                        if (dsItem != null)
                         {
                             info.SetData(dataList, settings.Data);
                             info.DataExist = true;
@@ -642,7 +658,8 @@ namespace Satrabel.OpenContent
                 }
                 else
                 {
-                    dataList = ctrl.GetContents(info.ModuleId).ToList();
+                    //dataList = ctrl.GetContents(info.ModuleId).ToList();
+                    var dsItemLst = ds.GetAll(dsContext);
                 }
                 if (dataList.Any())
                 {
@@ -654,11 +671,18 @@ namespace Satrabel.OpenContent
         public void GetDetailData(RenderInfo info, OpenContentSettings settings)
         {
             info.ResetData();
-            OpenContentController ctrl = new OpenContentController();
-            var struc = ctrl.GetContent(info.DetailItemId);
-            if (struc != null && struc.ModuleId == info.ModuleId)
+            var ds = DataSourceManager.GetDataSource("OpenContent");
+            var dsContext = new DataSourceContext()
             {
-                info.SetData(struc, struc.Json, settings.Data);
+                ModuleId = info.ModuleId,
+                TemplateFolder = settings.TemplateDir.FolderPath
+            };
+            var dsItem = ds.Get(dsContext, info.DetailItemId);
+            //OpenContentController ctrl = new OpenContentController();
+            //var struc = ctrl.GetContent(info.DetailItemId);
+            if (dsItem != null)
+            {
+                info.SetData(dsItem, dsItem.Data, settings.Data);
             }
         }
 
@@ -704,13 +728,20 @@ namespace Satrabel.OpenContent
         internal bool GetOtherModuleDemoData(RenderInfo info, OpenContentSettings settings)
         {
             info.ResetData();
-            OpenContentController ctrl = new OpenContentController();
-            var struc = ctrl.GetFirstContent(info.ModuleId);
-            if (struc != null)
+            var ds = DataSourceManager.GetDataSource("OpenContent");
+            var dsContext = new DataSourceContext()
+            {
+                ModuleId = info.ModuleId,
+                TemplateFolder = settings.TemplateDir.FolderPath
+            };
+            var dsItem = ds.GetFirst(dsContext);
+            //OpenContentController ctrl = new OpenContentController();
+            //var struc = ctrl.GetFirstContent(info.ModuleId);
+            if (dsItem != null)
             {
                 if (settings.Template != null && info.Template.Uri().FilePath == settings.Template.Uri().FilePath)
                 {
-                    info.SetData(struc, struc.Json, settings.Data);
+                    info.SetData(dsItem, dsItem.Data, settings.Data);
                 }
                 if (string.IsNullOrEmpty(info.SettingsJson))
                 {
@@ -720,14 +751,14 @@ namespace Satrabel.OpenContent
                         string settingsContent = File.ReadAllText(settingsFilename);
                         if (!string.IsNullOrWhiteSpace(settingsContent))
                         {
-                            info.SetData(struc, struc.Json, settingsContent);
+                            info.SetData(dsItem, dsItem.Data, settingsContent);
                         }
                     }
                 }
                 //Als er OtherModuleSettingsJson bestaan en 
                 if (info.OtherModuleTemplate.Uri().FilePath == info.Template.Uri().FilePath && !string.IsNullOrEmpty(info.OtherModuleSettingsJson))
                 {
-                    info.SetData(struc, struc.Json, info.OtherModuleSettingsJson);
+                    info.SetData(dsItem, dsItem.Data, info.OtherModuleSettingsJson);
                 }
 
                 return true;
@@ -737,7 +768,7 @@ namespace Satrabel.OpenContent
 
         #region Render
 
-        private string GenerateOutput(string templateVirtualFolder, TemplateFiles files, string dataJson, string settingsJson)
+        private string GenerateOutput(string templateVirtualFolder, TemplateFiles files, JToken dataJson, string settingsJson)
         {
             // detail template
             try
@@ -747,7 +778,7 @@ namespace Satrabel.OpenContent
                     string physicalTemplateFolder = Server.MapPath(templateVirtualFolder);
                     FileUri template = CheckFiles(templateVirtualFolder, files, physicalTemplateFolder);
 
-                    if (!string.IsNullOrEmpty(dataJson))
+                    if (dataJson != null)
                     {
                         int MainTabId = _settings.DetailTabId > 0 ? _settings.DetailTabId : _settings.TabId;
                         ModelFactory mf = new ModelFactory(_renderinfo.Data, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, ModuleContext.Configuration, ModuleContext.PortalSettings, MainTabId, _settings.ModuleId);
@@ -788,7 +819,7 @@ namespace Satrabel.OpenContent
             return "";
         }
 
-        private string GenerateOutput(FileUri template, string dataJson, string settingsJson, TemplateFiles files)
+        private string GenerateOutput(FileUri template, JToken dataJson, string settingsJson, TemplateFiles files)
         {
             try
             {
@@ -799,7 +830,7 @@ namespace Satrabel.OpenContent
 
                     string templateVirtualFolder = template.UrlFolder;
                     string physicalTemplateFolder = Server.MapPath(templateVirtualFolder);
-                    if (!string.IsNullOrEmpty(dataJson))
+                    if (dataJson != null)
                     {
                         ModelFactory mf;
                         int MainTabId = _settings.DetailTabId > 0 ? _settings.DetailTabId : _settings.TabId;
@@ -841,7 +872,7 @@ namespace Satrabel.OpenContent
             return "";
         }
 
-        private string GenerateListOutput(string templateVirtualFolder, TemplateFiles files, IEnumerable<OpenContentInfo> dataList, string settingsJson)
+        private string GenerateListOutput(string templateVirtualFolder, TemplateFiles files, IEnumerable<IDataItem> dataList, string settingsJson)
         {
             try
             {
@@ -906,7 +937,7 @@ namespace Satrabel.OpenContent
             if (template != null && template.IsListTemplate)
             {
                 // Multi items template
-                if (_renderinfo.DetailItemId == Null.NullInteger)
+                if (string.IsNullOrEmpty(_renderinfo.DetailItemId))
                 {
                     // List template
                     if (template.Main != null)
