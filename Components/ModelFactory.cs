@@ -90,6 +90,24 @@ namespace Satrabel.OpenContent.Components
             this.MainTabId = DnnUtils.GetTabByCurrentCulture(this.PortalId, this.MainTabId, GetCurrentCultureCode());
             this.MainModuleId = mainModuleId > 0 ? mainModuleId : module.ModuleID;
         }
+
+        public ModelFactory(IEnumerable<OpenContentInfo> dataList, ModuleInfo module, PortalSettings portalSettings, int mainTabId)
+        {
+            OpenContentSettings settings = module.OpenContentSettings();
+            this.DataList = dataList;
+            this.settingsJson = settings.Data;
+            this.PhysicalTemplateFolder = settings.Template.Uri().PhysicalFullDirectory + "\\";
+            this.Manifest = settings.Template.Manifest;
+            this.ManifestFiles = settings.Template != null ? settings.Template.Main : null;
+            this.Module = module;
+            this.PortalSettings = portalSettings;
+            this.PortalId = portalSettings.PortalId;
+            this.TemplateManifest = settings.Template;
+            this.MainTabId = mainTabId > 0 ? mainTabId : module.TabID;
+            this.MainTabId = DnnUtils.GetTabByCurrentCulture(this.PortalId, this.MainTabId, GetCurrentCultureCode());
+            this.MainModuleId = settings.ModuleId > 0 ? settings.ModuleId : module.ModuleID;
+        }
+
         public ModelFactory(IEnumerable<OpenContentInfo> dataList, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles manifestFiles, ModuleInfo module, PortalSettings portalSettings, int mainTabId, int mainModuleId)
         {
             this.DataList = dataList;
