@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using Satrabel.OpenContent.Components.Datasource.search;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,8 @@ namespace Satrabel.OpenContent.Components.Datasource
         IDataItem GetEdit(DataSourceContext context, string id);
         IDataItem Get(DataSourceContext context, string id);
         IDataItem GetFirst(DataSourceContext context);
-        IEnumerable<IDataItem> GetAll(DataSourceContext context);
+        IDataItems GetAll(DataSourceContext context);
+        IDataItems GetAll(DataSourceContext context, Select select);
         void AddContent(DataSourceContext context, JObject data);
         void UpdateContent(DataSourceContext context, IDataItem item, JObject data);
     }

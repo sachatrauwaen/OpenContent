@@ -1,11 +1,15 @@
 ﻿using DotNetNuke.Entities.Modules;
+using DotNetNuke.Common.Utilities;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Alpaca;
+using Satrabel.OpenContent.Components.Datasource.search;
 using Satrabel.OpenContent.Components.Json;
+using Satrabel.OpenContent.Components.Lucene;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Satrabel.OpenContent.Components.Lucene.Config;
 
 namespace Satrabel.OpenContent.Components.Datasource
 {
@@ -54,15 +58,49 @@ namespace Satrabel.OpenContent.Components.Datasource
         {
             return Get(context, null);
         }
-        public IEnumerable<IDataItem> GetAll(DataSourceContext context)
+        public IDataItems GetAll(DataSourceContext context)
         {
             OpenContentController ctrl = new OpenContentController();
-            return ctrl.GetContents(context.ModuleId).Select(c => new DefaultDataItem() { 
+            
+            var dataList = ctrl.GetContents(context.ModuleId).Select(c => new DefaultDataItem() { 
                 Id = c.ContentId.ToString(),
                 Data = c.Json.ToJObject("GetContent " + c.ContentId),
                 CreatedByUserId = c.CreatedByUserId,
                 Item = c
             });
+            return new DefaultDataItems()
+            {
+                Items = dataList,
+                Total = dataList.Count()
+            };
+        }
+        public IDataItems GetAll(DataSourceContext context, Select select)
+        {
+            SelectQueryDefinition def = new SelectQueryDefinition();
+            def.Build(select);
+            SearchResults docs = LuceneController.Instance.Search(context.ModuleId.ToString(), def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex );
+            int total = docs.TotalResults;
+            //Log.Logger.DebugFormat("OpenContent.JplistApiController.List() Searched for [{0}], found [{1}] items", select.ToJson(), total);
+            //System.Diagnostics.Debug.WriteLine(select.ToJson());
+            
+            //OpenContentController ctrl = new OpenContentController();
+            var dataList = new List<IDataItem>();
+            foreach (var item in docs.ids)
+            {
+                var dsItem = Get(context, item);
+                if (dsItem != null)
+                {
+                    dataList.Add(dsItem);
+                }
+                else
+                {
+                    Log.Logger.DebugFormat("OpenContent.JplistApiController.List() ContentItem not found [{0}]", item);
+                }
+            }
+            return new DefaultDataItems() { 
+                Items = dataList,
+                Total = total
+            };
         }
         private OpenContentInfo GetContent(int moduleId, string id)
         {

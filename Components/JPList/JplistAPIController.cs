@@ -24,6 +24,8 @@ using Lucene.Net.QueryParsers;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using Lucene.Net.Documents;
 using Satrabel.OpenContent.Components.Datasource;
+using Satrabel.OpenContent.Components.Datasource.search;
+using Satrabel.OpenContent.Components.Alpaca;
 
 
 namespace Satrabel.OpenContent.Components.JPList
@@ -60,17 +62,20 @@ namespace Satrabel.OpenContent.Components.JPList
                     var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
                     QueryDefinition def = new QueryDefinition(indexConfig);
                     //BooleanQuery luceneFilter = null;
-
+                    
+                    QueryBuilder queryBuilder = new QueryBuilder(indexConfig); 
                     if (!string.IsNullOrEmpty(settings.Query))
                     {
                         var query = JObject.Parse(settings.Query);
                         def.Build(query, PortalSettings.UserMode != PortalSettings.Mode.Edit);
+                        queryBuilder.Build(query, PortalSettings.UserMode != PortalSettings.Mode.Edit);
                     }
                     else
                     {
                         def.BuildFilter(PortalSettings.UserMode != PortalSettings.Mode.Edit);
+                        queryBuilder.BuildFilter(PortalSettings.UserMode != PortalSettings.Mode.Edit);
                     }
-
+                    JplistQueryBuilder.MergeJpListQuery(queryBuilder.Select, req.StatusLst);
                     var jpListQuery = BuildJpListQuery(req.StatusLst);
                     def.Query = BuildLuceneQuery(jpListQuery, indexConfig);
                     if (jpListQuery.Sorts.Any())
@@ -78,11 +83,13 @@ namespace Satrabel.OpenContent.Components.JPList
                         var sort = jpListQuery.Sorts.First();
                         string luceneSort = sort.path + " " + sort.order;
                         def.BuildSort(luceneSort);
+                        queryBuilder.BuildSort(luceneSort);
                     }
                     if (jpListQuery.Pagination.number > 0)
                         def.PageSize = jpListQuery.Pagination.number;
                     def.PageIndex = jpListQuery.Pagination.currentPage;
 
+                    /*
                     SearchResults docs = LuceneController.Instance.Search(module.ModuleID.ToString(), "Title", def);
                     int total = docs.TotalResults;
                     Log.Logger.DebugFormat("OpenContent.JplistApiController.List() Searched for [{0}], found [{1}] items", def.ToJson(), total);
@@ -93,7 +100,6 @@ namespace Satrabel.OpenContent.Components.JPList
                         ModuleId = module.ModuleID,
                         TemplateFolder = settings.TemplateDir.FolderPath
                     };
-                    
 
                     //OpenContentController ctrl = new OpenContentController();
                     var dataList = new List<IDataItem>();
@@ -110,8 +116,18 @@ namespace Satrabel.OpenContent.Components.JPList
                             Log.Logger.DebugFormat("OpenContent.JplistApiController.List() ContentItem not found [{0}]", item);
                         }
                     }
+                     */
+
+                    var ds = DataSourceManager.GetDataSource("OpenContent");
+                    var dsContext = new DataSourceContext()
+                    {
+                        ModuleId = module.ModuleID,
+                        TemplateFolder = settings.TemplateDir.FolderPath
+                    };
+                    var dsItems = ds.GetAll(dsContext, queryBuilder.Select);
+
                     int mainTabId = settings.DetailTabId > 0 ? settings.DetailTabId : settings.TabId;
-                    ModelFactory mf = new ModelFactory(dataList, ActiveModule, PortalSettings, mainTabId);
+                    ModelFactory mf = new ModelFactory(dsItems.Items, ActiveModule, PortalSettings, mainTabId);
                     if (!string.IsNullOrEmpty(req.options))
                     {
                         mf.Options = JObject.Parse(req.options);
@@ -122,8 +138,7 @@ namespace Satrabel.OpenContent.Components.JPList
                     var res = new ResultDTO()
                     {
                         data = model,
-                        count = total
-                        
+                        count = dsItems.Total
                     };
 
                     return Request.CreateResponse(HttpStatusCode.OK, res);

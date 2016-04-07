@@ -213,7 +213,7 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         #endregion
 
-        private SearchResults Search(string type, Query filter, Query query, Sort sort, int pageSize, int pageIndex)
+        public SearchResults Search(string type, Query filter, Query query, Sort sort, int pageSize, int pageIndex)
         {
             var luceneResults = new SearchResults();
 
@@ -254,6 +254,7 @@ namespace Satrabel.OpenContent.Components.Lucene
         {
             return Search(type, def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
         }
+
         /*
         public SearchResults FacetSearch(string type, string DefaultFieldName, QueryDefinition def)
         {

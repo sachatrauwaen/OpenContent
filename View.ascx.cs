@@ -289,7 +289,7 @@ namespace Satrabel.OpenContent
                         ModuleActionType.AddContent,
                         "",
                          (listMode && string.IsNullOrEmpty(_itemId) ? "~/DesktopModules/OpenContent/images/addcontent2.png" : "~/DesktopModules/OpenContent/images/editcontent2.png"),
-                        (listMode && string.IsNullOrEmpty(_itemId) ? ModuleContext.EditUrl("id", _itemId.ToString()) : ModuleContext.EditUrl()),
+                        (listMode && !string.IsNullOrEmpty(_itemId) ? ModuleContext.EditUrl("id", _itemId.ToString()) : ModuleContext.EditUrl()),
                         false,
                         SecurityAccessLevel.Edit,
                         true,
