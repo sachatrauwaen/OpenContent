@@ -113,9 +113,9 @@ namespace Satrabel.OpenContent.Components
 
                 var folderManager = FolderManager.Instance;
                 var portalFolder = folderManager.GetFolder(PortalSettings.PortalId, d ?? "");
-                if (portalFolder==null)
+                if (portalFolder == null)
                 {
-                    var exc = new ArgumentException("Folder path not found. Adjust ['folder': "+d+"] in optionfile. ");
+                    var exc = new ArgumentException("Folder path not found. Adjust ['folder': " + d + "] in optionfile. ");
                     Logger.Error(exc);
                     return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
                 }
@@ -127,10 +127,12 @@ namespace Satrabel.OpenContent.Components
                 }
                 int folderLength = d.Length;
 
-                var res = files.Select(f => new { 
-                    value = f.FileId.ToString(), 
+                var res = files.Select(f => new
+                {
+                    value = f.FileId.ToString(),
                     url = ImageHelper.GetImageUrl(f, new Ratio(40, 40)),  //todo for install in application folder is dat niet voldoende ???
-                    text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName })
+                    text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName
+                })
                                .Take(1000);
 
                 return Request.CreateResponse(HttpStatusCode.OK, res);
@@ -164,7 +166,7 @@ namespace Satrabel.OpenContent.Components
                     var rx = new Regex(filter, RegexOptions.IgnoreCase);
                     files = files.Where(f => rx.IsMatch(f.FileName));
                 }
-                int folderLength = (d == null)? 0 : d.Length;
+                int folderLength = (d == null) ? 0 : d.Length;
                 var res = files.Select(f => new { value = f.FileId.ToString(), url = fileManager.GetUrl(f), text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName /*+ (string.IsNullOrEmpty(f.Folder) ? "" : " (" + f.Folder.Trim('/') + ")")*/ });
                 return Request.CreateResponse(HttpStatusCode.OK, res);
             }
@@ -182,22 +184,29 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
+                IEnumerable<IFolderInfo> folders = new List<IFolderInfo>();
                 var folderManager = FolderManager.Instance;
                 var fileManager = FileManager.Instance;
                 var portalFolder = folderManager.GetFolder(PortalSettings.PortalId, d ?? "");
-                var files = folderManager.GetFolders(portalFolder);
-                
-                if (q != "*" && !string.IsNullOrEmpty(q))
+                if (portalFolder != null)
                 {
-                    files = files.Where(f => f.FolderName.ToLower().Contains(q.ToLower()));
-                }
-                if (!string.IsNullOrEmpty(filter))
-                {
-                    var rx = new Regex(filter, RegexOptions.IgnoreCase);
-                    files = files.Where(f => rx.IsMatch(f.FolderName));
+
+                    folders = GetFolders(folderManager, portalFolder);
+
+                    if (q != "*" && !string.IsNullOrEmpty(q))
+                    {
+                        folders = folders.Where(f => f.FolderName.ToLower().Contains(q.ToLower()));
+                    }
+                    if (!string.IsNullOrEmpty(filter))
+                    {
+                        var rx = new Regex(filter, RegexOptions.IgnoreCase);
+                        folders = folders.Where(f => rx.IsMatch(f.FolderName));
+                    }
                 }
                 int folderLength = (d == null) ? 0 : d.Length;
-                var res = files.Select(f => new { value = f.FolderID.ToString(), url = f.FolderPath, text = f.FolderName.Substring(folderLength).TrimStart('/') });
+
+                var res = folders.Select(f => new { value = f.FolderID.ToString(), url = f.FolderPath, text = f.FolderPath.Substring(folderLength).Trim('/') });
+
                 return Request.CreateResponse(HttpStatusCode.OK, res);
             }
             catch (Exception exc)
@@ -205,6 +214,17 @@ namespace Satrabel.OpenContent.Components
                 Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
+        }
+
+        private static IEnumerable<IFolderInfo> GetFolders(IFolderManager folderManager, IFolderInfo portalFolder)
+        {
+            var folders = new List<IFolderInfo>();
+            foreach (var item in folderManager.GetFolders(portalFolder))
+            {
+                folders.Add(item);
+                folders.AddRange(GetFolders(folderManager, item));
+            }
+            return folders;
         }
 
         [ValidateAntiForgeryToken]
