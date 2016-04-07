@@ -144,12 +144,13 @@
     <Compile Include="Components\Common\DateTimeExtensions.cs" />
     <Compile Include="Components\Common\DnnUtils.cs" />
     <Compile Include="Components\Common\PageUtils.cs" />
-    <Compile Include="Components\Datasource\DefaultDataItem.cs" />
     <Compile Include="Components\Datasource\DataSourceContext.cs" />
     <Compile Include="Components\Datasource\DataSourceManager.cs" />
+    <Compile Include="Components\Datasource\DefaultDataItem.cs" />
     <Compile Include="Components\Datasource\IDataItem.cs" />
-    <Compile Include="Components\Datasource\IDataSource.cs" />
+    <Compile Include="Components\Datasource\IDatasource.cs" />
     <Compile Include="Components\Datasource\OpenContentDataSource.cs" />
+    <Compile Include="Components\Dnn\DnnUrlUtils.cs" />
     <Compile Include="Components\Dynamic\DynamicHelper.cs" />
     <Compile Include="Components\ExternalApiController.cs" />
     <Compile Include="Components\FeatureController.cs" />

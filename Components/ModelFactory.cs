@@ -18,6 +18,7 @@ using System.Linq;
 using System.Threading;
 using System.Web;
 using System.Web.UI;
+using Satrabel.OpenContent.Components.Dnn;
 using Satrabel.OpenContent.Components.Handlebars;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.Datasource;
@@ -90,6 +91,24 @@ namespace Satrabel.OpenContent.Components
             this.MainTabId = DnnUtils.GetTabByCurrentCulture(this.PortalId, this.MainTabId, GetCurrentCultureCode());
             this.MainModuleId = mainModuleId > 0 ? mainModuleId : module.ModuleID;
         }
+
+        public ModelFactory(IEnumerable<IDataItem> dataList, ModuleInfo module, PortalSettings portalSettings, int mainTabId)
+        {
+            OpenContentSettings settings = module.OpenContentSettings();
+            this.DataList = dataList;
+            this.settingsJson = settings.Data;
+            this.PhysicalTemplateFolder = settings.Template.Uri().PhysicalFullDirectory + "\\";
+            this.Manifest = settings.Template.Manifest;
+            this.ManifestFiles = settings.Template != null ? settings.Template.Main : null;
+            this.Module = module;
+            this.PortalSettings = portalSettings;
+            this.PortalId = portalSettings.PortalId;
+            this.TemplateManifest = settings.Template;
+            this.MainTabId = mainTabId > 0 ? mainTabId : module.TabID;
+            this.MainTabId = DnnUtils.GetTabByCurrentCulture(this.PortalId, this.MainTabId, GetCurrentCultureCode());
+            this.MainModuleId = settings.ModuleId > 0 ? settings.ModuleId : module.ModuleID;
+        }
+
         public ModelFactory(IEnumerable<IDataItem> dataList, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles manifestFiles, ModuleInfo module, PortalSettings portalSettings, int mainTabId, int mainModuleId)
         {
             this.DataList = dataList;
@@ -172,7 +191,7 @@ namespace Satrabel.OpenContent.Components
                         JObject context = new JObject();
                         dyn["Context"] = context;
                         context["Id"] = item.Id;
-                        context["EditUrl"] = EditUrl("id", item.Id);
+                        context["EditUrl"] = DnnUrlUtils.EditUrl("id", item.Id, Module.ModuleID, PortalSettings);
                         context["IsEditable"] = IsEditable ||
                             (!string.IsNullOrEmpty(editRole) &&
                             OpenContentUtils.HasEditPermissions(PortalSettings, Module, editRole, item.CreatedByUserId));
@@ -461,7 +480,7 @@ namespace Satrabel.OpenContent.Components
                 model["Context"] = context;
                 context["ModuleId"] = Module.ModuleID;
                 context["ModuleTitle"] = Module.ModuleTitle;
-                context["AddUrl"] = EditUrl();
+                context["AddUrl"] = DnnUrlUtils.EditUrl(Module.ModuleID, PortalSettings);
                 context["IsEditable"] = IsEditable ||
                                           (!string.IsNullOrEmpty(editRole) &&
                                             OpenContentUtils.HasEditPermissions(PortalSettings, Module, editRole, -1));
@@ -493,79 +512,6 @@ namespace Satrabel.OpenContent.Components
             }
 
         }
-        private string EditUrl()
-        {
-            return EditUrl("", "", "Edit");
-        }
-        private string EditUrl(string controlKey)
-        {
-            return EditUrl("", "", controlKey);
-        }
-        private string EditUrl(string keyName, string keyValue)
-        {
-            return EditUrl(keyName, keyValue, "Edit");
-        }
-
-        private string EditUrl(string keyName, string keyValue, string controlKey)
-        {
-            var parameters = new string[] { };
-            return EditUrl(keyName, keyValue, controlKey, parameters);
-        }
-
-        private string EditUrl(string keyName, string keyValue, string controlKey, params string[] additionalParameters)
-        {
-            string key = controlKey;
-            if (string.IsNullOrEmpty(key))
-            {
-                key = "Edit";
-            }
-            string moduleIdParam = string.Empty;
-            if (Module != null)
-            {
-                moduleIdParam = string.Format("mid={0}", Module.ModuleID);
-            }
-
-            string[] parameters;
-            if (!string.IsNullOrEmpty(keyName) && !string.IsNullOrEmpty(keyValue))
-            {
-                parameters = new string[2 + additionalParameters.Length];
-                parameters[0] = moduleIdParam;
-                parameters[1] = string.Format("{0}={1}", keyName, keyValue);
-                Array.Copy(additionalParameters, 0, parameters, 2, additionalParameters.Length);
-            }
-            else
-            {
-                parameters = new string[1 + additionalParameters.Length];
-                parameters[0] = moduleIdParam;
-                Array.Copy(additionalParameters, 0, parameters, 1, additionalParameters.Length);
-            }
-
-            return NavigateUrl(PortalSettings.ActiveTab.TabID, key, false, parameters);
-        }
-
-        private string NavigateUrl(int tabId, string controlKey, bool pageRedirect, params string[] additionalParameters)
-        {
-            return NavigateUrl(tabId, controlKey, Globals.glbDefaultPage, pageRedirect, additionalParameters);
-        }
-
-        private string NavigateUrl(int tabId, string controlKey, string pageName, bool pageRedirect, params string[] additionalParameters)
-        {
-            var isSuperTab = Globals.IsHostTab(tabId);
-            var settings = PortalSettings;
-            var language = DnnUtils.GetCultureCode(tabId, isSuperTab, settings);
-            var url = Globals.NavigateURL(tabId, isSuperTab, settings, controlKey, language, pageName, additionalParameters);
-
-            // Making URLs call popups
-            if (PortalSettings != null && PortalSettings.EnablePopUps)
-            {
-                if (!UIUtilities.IsLegacyUI(Module.ModuleID, controlKey, settings.PortalId) && (url.Contains("ctl")))
-                {
-                    url = UrlUtils.PopUpUrl(url, null, PortalSettings, false, pageRedirect);
-                }
-            }
-            return url;
-        }
-
 
         private bool? _isEditable;
 

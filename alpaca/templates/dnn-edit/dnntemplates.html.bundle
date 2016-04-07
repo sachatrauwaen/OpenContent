@@ -17,7 +17,7 @@
     <file>control-imagecrop.html</file>
     <file>control-imagecropper.html</file>
     <file>control-wysihtml.html</file>
-    <file>control-mlckeditor.html</file>
+    <file>control-ckeditor.html</file>
     <file>control.html</file>
   </files>
 </bundle>
