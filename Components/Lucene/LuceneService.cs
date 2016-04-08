@@ -182,7 +182,7 @@ namespace Satrabel.OpenContent.Components.Lucene
         private void CheckValidIndexFolder()
         {
             if (!ValidateIndexFolder())
-                throw new Exception(string.Format("Search indexing directory [{0}] is either empty or does not exist", _searchFolder));
+                throw new Exception(string.Format("OpenContent Search indexing directory [{0}] is either empty or does not exist", _searchFolder));
         }
 
         internal bool ValidateIndexFolder()
@@ -192,6 +192,8 @@ namespace Satrabel.OpenContent.Components.Lucene
         }
 
         #endregion
+
+        #region Operations
 
         public void Add(Document doc)
         {
@@ -235,6 +237,8 @@ namespace Satrabel.OpenContent.Components.Lucene
                 }
             }
         }
+
+        #endregion
 
         public bool OptimizeSearchIndex(bool doWait)
         {
@@ -287,8 +291,7 @@ namespace Satrabel.OpenContent.Components.Lucene
         {
             Writer.DeleteAll();
         }
-
-
+        
         public void Dispose()
         {
             var status = Interlocked.CompareExchange(ref _isDisposed, DISPOSED, UNDISPOSED);
@@ -360,6 +363,4 @@ namespace Satrabel.OpenContent.Components.Lucene
             }
         }
     }
-
-
 }

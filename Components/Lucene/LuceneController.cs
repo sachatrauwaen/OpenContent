@@ -2,21 +2,12 @@
 
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Threading;
-using DotNetNuke.Common;
-using Lucene.Net.Analysis;
-using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.Search;
-using Lucene.Net.Store;
 using Lucene.Net.QueryParsers;
 using Satrabel.OpenContent.Components.Lucene.Mapping;
 using Satrabel.OpenContent.Components.Lucene.Config;
-using Satrabel.OpenContent.Components.Lucene.Index;
-
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Entities.Modules;
 using Version = Lucene.Net.Util.Version;
@@ -29,6 +20,7 @@ namespace Satrabel.OpenContent.Components.Lucene
     {
         private static LuceneController _instance = new LuceneController();
         private LuceneService _serviceInstance;
+		
         public static LuceneController Instance
         {
             get
@@ -48,7 +40,6 @@ namespace Satrabel.OpenContent.Components.Lucene
         #region constructor
         private LuceneController()
         {
-            //var hostController = HostController.Instance;
             _serviceInstance = new LuceneService(@"App_Data\OpenContent\lucene_index", JsonMappingUtils.GetAnalyser());
 
         }
@@ -60,6 +51,9 @@ namespace Satrabel.OpenContent.Components.Lucene
             _instance = new LuceneController();
         }
         #endregion
+
+        #region Search
+
         private SearchResults Search(string type, Query filter, Query query, Sort sort, int pageSize, int pageIndex)
         {
             var luceneResults = new SearchResults();
@@ -81,17 +75,17 @@ namespace Satrabel.OpenContent.Components.Lucene
             luceneResults.ids = topDocs.ScoreDocs.Skip(pageIndex * pageSize).Select(d => searcher.Doc(d.Doc).GetField(JsonMappingUtils.FieldId).StringValue).ToArray();
             return luceneResults;
         }
-        public SearchResults Search(string type, string defaultFieldName, string Filter, string Query, string Sorts, int PageSize, int PageIndex, FieldConfig IndexConfig)
+        public SearchResults Search(string type, string defaultFieldName, string Filter, string Query, string Sorts, int pageSize, int pageIndex, FieldConfig indexConfig)
         {
             Query query = ParseQuery(Query, defaultFieldName);
             Query filter = ParseQuery(Filter, defaultFieldName);
 
-            QueryDefinition def = new QueryDefinition(IndexConfig)
+            QueryDefinition def = new QueryDefinition(indexConfig)
             {
                 Query = query,
                 Filter = filter,
-                PageIndex = PageIndex,
-                PageSize = PageSize
+                PageIndex = pageIndex,
+                PageSize = pageSize
             };
             def.BuildSort(Sorts);
 
@@ -102,6 +96,9 @@ namespace Satrabel.OpenContent.Components.Lucene
             return Search(type, def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
         }
 
+        #endregion
+
+        #region Index
 
         private void IndexAll()
         {
@@ -151,6 +148,67 @@ namespace Satrabel.OpenContent.Components.Lucene
             LuceneController.ClearInstance();
         }
 
+        public void ReIndexModuleData(int moduleId, FieldConfig indexConfig)
+        {
+            using (LuceneController lc = LuceneController.Instance)
+            {
+                lc.Store.Delete(new TermQuery(new Term("$type", moduleId.ToString())));
+                OpenContentController occ = new OpenContentController();
+                foreach (var item in occ.GetContents(moduleId))
+                {
+                    lc.Add(item, indexConfig);
+                }
+                lc.Store.Commit();
+                lc.Store.OptimizeSearchIndex(true);
+                LuceneController.ClearInstance();
+            }
+        }
+
+        #endregion
+
+        #region Operations
+
+        public void Add(OpenContentInfo data, FieldConfig config)
+        {
+            if (null == data)
+            {
+                throw new ArgumentNullException("data");
+            }
+
+            _serviceInstance.Add(JsonMappingUtils.JsonToDocument(data.ModuleId.ToString(), data.ContentId.ToString(), data.Json, config));
+        }
+
+        public void Update(OpenContentInfo data, FieldConfig config)
+        {
+            if (null == data)
+            {
+                throw new ArgumentNullException("data");
+            }
+            Delete(data);
+            Add(data, config);
+        }
+
+        /// <summary>
+        /// Deletes the matching objects in the IndexWriter.
+        /// </summary>
+        /// <param name="controller"></param>
+        public void Delete(OpenContentInfo data)
+        {
+            if (null == data)
+            {
+                throw new ArgumentNullException("data");
+            }
+
+            var selection = new TermQuery(new Term(JsonMappingUtils.FieldId, data.ContentId.ToString()));
+
+            Query deleteQuery = new FilteredQuery(selection, JsonMappingUtils.GetTypeFilter(data.ModuleId.ToString()));
+            _serviceInstance.Delete(deleteQuery);
+        }
+
+        #endregion
+
+        #region Private
+
         internal static Query ParseQuery(string searchQuery, string defaultFieldName)
         {
             var parser = new QueryParser(Version.LUCENE_30, defaultFieldName, JsonMappingUtils.GetAnalyser());
@@ -173,66 +231,12 @@ namespace Satrabel.OpenContent.Components.Lucene
             return query;
         }
 
+        #endregion
+
         public void Dispose()
         {
             _serviceInstance.Dispose();
             _serviceInstance = null;
         }
-
-        public void ReIndexModuleData(int moduleId, FieldConfig indexConfig)
-        {
-            using (LuceneController lc = LuceneController.Instance)
-            {
-                lc.Store.Delete(new TermQuery(new Term("$type", moduleId.ToString())));
-                OpenContentController occ = new OpenContentController();
-                foreach (var item in occ.GetContents(moduleId))
-                {
-                    lc.Add(item, indexConfig);
-                }
-                lc.Store.Commit();
-                lc.Store.OptimizeSearchIndex(true);
-                LuceneController.ClearInstance();
-            }
-        }
-
-        public void Add(OpenContentInfo data, FieldConfig config)
-        {
-            if (null == data)
-            {
-                throw new ArgumentNullException("data");
-            }
-
-            _serviceInstance.Add(JsonMappingUtils.JsonToDocument(data.ModuleId.ToString(), data.ContentId.ToString(), data.Json, config));
-        }
-
-        public void Update(OpenContentInfo data, FieldConfig config)
-        {
-            if (null == data)
-            {
-                throw new ArgumentNullException("data");
-            }
-            Delete(data);
-            Add(data, config);
-        }
-
-
-        /// <summary>
-        /// Deletes the matching objects in the IndexWriter.
-        /// </summary>
-        /// <param name="controller"></param>
-        public void Delete(OpenContentInfo data)
-        {
-            if (null == data)
-            {
-                throw new ArgumentNullException("data");
-            }
-
-            var selection = new TermQuery(new Term(JsonMappingUtils.FieldId, data.ContentId.ToString()));
-
-            Query deleteQuery = new FilteredQuery(selection, JsonMappingUtils.GetTypeFilter(data.ModuleId.ToString()));
-            _serviceInstance.Delete(deleteQuery);
-        }
     }
-
-
 }
