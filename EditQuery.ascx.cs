@@ -62,11 +62,10 @@ namespace Satrabel.OpenContent
 
             LuceneController.Instance.ReIndexModuleData(moduleid, indexConfig);
         }
-
         protected void bGenerate_Click(object sender, EventArgs e)
         {
+            /*
             OpenContentController occ = new OpenContentController();
-
             var oc = occ.GetFirstContent(ModuleId);
             if (oc != null)
             {
@@ -89,7 +88,7 @@ namespace Satrabel.OpenContent
                     occ.AddContent(newoc, true, null);
                 }
             }
-
+            */
         }
 
         public AlpacaContext AlpacaContext { get; private set; }

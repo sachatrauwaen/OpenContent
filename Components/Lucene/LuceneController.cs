@@ -52,9 +52,10 @@ namespace Satrabel.OpenContent.Components.Lucene
         }
         #endregion
 
-        #region Search
 
-        private SearchResults Search(string type, Query filter, Query query, Sort sort, int pageSize, int pageIndex)
+        #region Search
+        
+        public SearchResults Search(string type, Query filter, Query query, Sort sort, int pageSize, int pageIndex)
         {
             var luceneResults = new SearchResults();
 
@@ -100,6 +101,9 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         #region Index
 
+        /// <summary>
+        /// Reindex all portal files.
+        /// </summary>
         private void IndexAll()
         {
             LuceneController.ClearInstance();
@@ -129,7 +133,6 @@ namespace Satrabel.OpenContent.Components.Lucene
                             {
                                 indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
                             }
-
 
                             //lc.DeleteAll();
                             //lc.Delete(new TermQuery(new Term("$type", ModuleId.ToString())));
