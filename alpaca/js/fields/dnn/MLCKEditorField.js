@@ -34,11 +34,11 @@
 
             this.base();
 
-            if (!self.options.ckeditor) {
-                self.options.ckeditor = {};
+            if (!this.options.ckeditor) {
+                this.options.ckeditor = {};
             }
-            if (!self.options.ckeditor.extraPlugins) {
-                self.options.ckeditor.extraPlugins = 'confighelper';
+            if (!this.options.ckeditor.extraPlugins) {
+                this.options.ckeditor.extraPlugins = 'confighelper';
             }
         },
 
