@@ -65,16 +65,10 @@ namespace Satrabel.OpenContent.Components.JPList
                     {
                         queryBuilder.BuildFilter(PortalSettings.UserMode != PortalSettings.Mode.Edit);
                     }
-//<<<<<<< HEAD
 
-//                    var jpListQuery = BuildJpListQuery(req.StatusLst);
-//                    def.Query = LuceneQueryBuilder.BuildLuceneQuery(jpListQuery, indexConfig);
-//                    if (jpListQuery.Sorts.Any())
-//=======
                     JplistQueryBuilder.MergeJpListQuery(queryBuilder.Select, req.StatusLst);
                     var ds = DataSourceManager.GetDataSource(manifest.DataSource);
                     var dsContext = new DataSourceContext()
-//>>>>>>> feature/datasource_provider
                     {
                         ModuleId = module.ModuleID,
                         TemplateFolder = settings.TemplateDir.FolderPath,
