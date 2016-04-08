@@ -38,7 +38,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 }
                 catch (Exception e)
                 {
-                    Logger.ErrorFormat("Unable to create {0} while registering module injection filters.  {1}", filterType.FullName,
+                    Logger.ErrorFormat("Unable to create {0} while GetDatasources.  {1}", filterType.FullName,
                                  e.Message);
                     filter = null;
                 }
@@ -57,6 +57,9 @@ namespace Satrabel.OpenContent.Components.Datasource
 
         public static IDataSource GetDataSource(string name)
         {
+            if (string.IsNullOrEmpty(name))
+                name = "OpenContent";
+
             return _dataSources.SingleOrDefault(ds => ds.Name == name);
         }
     }

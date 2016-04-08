@@ -20,5 +20,6 @@ namespace Satrabel.OpenContent.Components.Datasource
             get;
             set;
         }
+        public string DebugInfo { get; set; }
     }
 }

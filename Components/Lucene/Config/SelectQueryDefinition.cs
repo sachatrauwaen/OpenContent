@@ -13,7 +13,6 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
 {
     public class SelectQueryDefinition
     {
-
         private bool DefaultNoResults;
         private Query _Query;
 
@@ -54,7 +53,6 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
             BuildSort(select);
             return this;
         }
-
         public SelectQueryDefinition BuildPage(Select select)
         {
             PageSize = select.PageSize;
@@ -145,15 +143,18 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
         public SelectQueryDefinition BuildSort(Select select)
         {
             var sort = Sort.RELEVANCE;
-            var sortFields = new List<SortField>();
-            foreach (var rule in select.Sort)
+            if (select.Sort.Any())
             {
-                int sortfieldtype = SortField.STRING;
-                string sortFieldPrefix = "";
-                Sortfieldtype(rule.FieldType, ref sortfieldtype, ref sortFieldPrefix);
-                sortFields.Add(new SortField(sortFieldPrefix + rule.Field, sortfieldtype, rule.Descending));
+                var sortFields = new List<SortField>();
+                foreach (var rule in select.Sort)
+                {
+                    int sortfieldtype = SortField.STRING;
+                    string sortFieldPrefix = "";
+                    Sortfieldtype(rule.FieldType, ref sortfieldtype, ref sortFieldPrefix);
+                    sortFields.Add(new SortField(sortFieldPrefix + rule.Field, sortfieldtype, rule.Descending));
+                }
+                Sort = new Sort(sortFields.ToArray());
             }
-            sort = new Sort(sortFields.ToArray());
             Sort = sort;
             return this;
         }

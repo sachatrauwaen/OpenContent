@@ -26,7 +26,12 @@ namespace Satrabel.OpenContent.Components.Datasource
         {
             var fb = new FormBuilder(new FolderUri(context.TemplateFolder));
             JObject json = fb.BuildForm();
-            var content = GetContent(context.ModuleId, id);
+            OpenContentInfo content = null;
+            OpenContentController ctrl = new OpenContentController();
+            if (!string.IsNullOrEmpty(id) && id != "-1")
+            {
+                content = ctrl.GetContent(int.Parse(id));
+            }
             if (content != null)
             {
                 var dataItem = new DefaultDataItem();
@@ -37,6 +42,46 @@ namespace Satrabel.OpenContent.Components.Datasource
                 dataItem.CreatedByUserId = content.CreatedByUserId;
                 dataItem.Item = content;
                 return dataItem;
+            }
+            return null;
+        }
+        public IDataItem GetFirstEdit(DataSourceContext context)
+        {
+            var fb = new FormBuilder(new FolderUri(context.TemplateFolder));
+            JObject json = fb.BuildForm();
+            OpenContentController ctrl = new OpenContentController();
+            var content = ctrl.GetFirstContent(context.ModuleId);
+            if (content != null)
+            {
+                var dataItem = new DefaultDataItem();
+                dataItem.Id = content.ContentId.ToString();
+                dataItem.Data = json;
+                dataItem.Data["data"] = content.Json.ToJObject("GetFirstEdit");
+                AddVersions(json, content);
+                dataItem.CreatedByUserId = content.CreatedByUserId;
+                dataItem.Item = content;
+                return dataItem;
+            }
+            return null;
+        }
+        public IDataItem GetVersion(DataSourceContext context, string id, DateTime datetime)
+        {
+            var content = GetContent(context.ModuleId, id);
+            if (content != null)
+            {
+                if (!string.IsNullOrEmpty(content.VersionsJson))
+                {
+                    var ver = content.Versions.Single(v => v.CreatedOnDate == datetime);
+                    if (ver != null)
+                    {
+                        var dataItem = new DefaultDataItem();
+                        dataItem.Id = content.ContentId.ToString();
+                        dataItem.Data = ver.Json;
+                        dataItem.CreatedByUserId = content.CreatedByUserId;
+                        dataItem.Item = content;
+                        return dataItem;
+                    }
+                }
             }
             return null;
         }
@@ -61,9 +106,11 @@ namespace Satrabel.OpenContent.Components.Datasource
         public IDataItems GetAll(DataSourceContext context)
         {
             OpenContentController ctrl = new OpenContentController();
-            
-            var dataList = ctrl.GetContents(context.ModuleId).Select(c => new DefaultDataItem() { 
+
+            var dataList = ctrl.GetContents(context.ModuleId).Select(c => new DefaultDataItem()
+            {
                 Id = c.ContentId.ToString(),
+                Title = c.Title,
                 Data = c.Json.ToJObject("GetContent " + c.ContentId),
                 CreatedByUserId = c.CreatedByUserId,
                 Item = c
@@ -78,12 +125,12 @@ namespace Satrabel.OpenContent.Components.Datasource
         {
             SelectQueryDefinition def = new SelectQueryDefinition();
             def.Build(select);
-            SearchResults docs = LuceneController.Instance.Search(context.ModuleId.ToString(), def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex );
+            SearchResults docs = LuceneController.Instance.Search(context.ModuleId.ToString(), def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
             int total = docs.TotalResults;
             //Log.Logger.DebugFormat("OpenContent.JplistApiController.List() Searched for [{0}], found [{1}] items", select.ToJson(), total);
             //System.Diagnostics.Debug.WriteLine(select.ToJson());
-            
-            //OpenContentController ctrl = new OpenContentController();
+
+
             var dataList = new List<IDataItem>();
             foreach (var item in docs.ids)
             {
@@ -97,9 +144,11 @@ namespace Satrabel.OpenContent.Components.Datasource
                     Log.Logger.DebugFormat("OpenContent.JplistApiController.List() ContentItem not found [{0}]", item);
                 }
             }
-            return new DefaultDataItems() { 
+            return new DefaultDataItems()
+            {
                 Items = dataList,
-                Total = total
+                Total = total,
+                DebugInfo = def.Filter.ToString() + " - " + def.Query.ToString() + " - " + def.Sort.ToString()
             };
         }
         private OpenContentInfo GetContent(int moduleId, string id)
@@ -135,9 +184,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 //json["versions"] = JArray.Parse(struc.VersionsJson);
             }
         }
-
-
-        public void AddContent(DataSourceContext context, JObject data)
+        public void Add(DataSourceContext context, JToken data)
         {
             OpenContentController ctrl = new OpenContentController();
             var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder));
@@ -154,7 +201,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             };
             ctrl.AddContent(content, context.Index, indexConfig);
         }
-        public void UpdateContent(DataSourceContext context, IDataItem item, JObject data)
+        public void Update(DataSourceContext context, IDataItem item, JToken data)
         {
             OpenContentController ctrl = new OpenContentController();
             var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder));
@@ -164,6 +211,12 @@ namespace Satrabel.OpenContent.Components.Datasource
             content.LastModifiedByUserId = context.UserId;
             content.LastModifiedOnDate = DateTime.Now;
             ctrl.UpdateContent(content, context.Index, indexConfig);
+        }
+        public void Delete(DataSourceContext context, IDataItem item)
+        {
+            OpenContentController ctrl = new OpenContentController();
+            var content = (OpenContentInfo)item.Item;
+            ctrl.DeleteContent(content, context.Index);
         }
     }
 }

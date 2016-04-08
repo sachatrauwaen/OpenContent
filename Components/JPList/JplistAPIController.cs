@@ -60,69 +60,23 @@ namespace Satrabel.OpenContent.Components.JPList
                 if (listMode)
                 {
                     var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
-                    QueryDefinition def = new QueryDefinition(indexConfig);
-                    //BooleanQuery luceneFilter = null;
-                    
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig); 
                     if (!string.IsNullOrEmpty(settings.Query))
                     {
                         var query = JObject.Parse(settings.Query);
-                        def.Build(query, PortalSettings.UserMode != PortalSettings.Mode.Edit);
                         queryBuilder.Build(query, PortalSettings.UserMode != PortalSettings.Mode.Edit);
                     }
                     else
                     {
-                        def.BuildFilter(PortalSettings.UserMode != PortalSettings.Mode.Edit);
                         queryBuilder.BuildFilter(PortalSettings.UserMode != PortalSettings.Mode.Edit);
                     }
                     JplistQueryBuilder.MergeJpListQuery(queryBuilder.Select, req.StatusLst);
-                    var jpListQuery = BuildJpListQuery(req.StatusLst);
-                    def.Query = BuildLuceneQuery(jpListQuery, indexConfig);
-                    if (jpListQuery.Sorts.Any())
-                    {
-                        var sort = jpListQuery.Sorts.First();
-                        string luceneSort = sort.path + " " + sort.order;
-                        def.BuildSort(luceneSort);
-                        queryBuilder.BuildSort(luceneSort);
-                    }
-                    if (jpListQuery.Pagination.number > 0)
-                        def.PageSize = jpListQuery.Pagination.number;
-                    def.PageIndex = jpListQuery.Pagination.currentPage;
-
-                    /*
-                    SearchResults docs = LuceneController.Instance.Search(module.ModuleID.ToString(), "Title", def);
-                    int total = docs.TotalResults;
-                    Log.Logger.DebugFormat("OpenContent.JplistApiController.List() Searched for [{0}], found [{1}] items", def.ToJson(), total);
-
-                    var ds = DataSourceManager.GetDataSource("OpenContent");
+                    var ds = DataSourceManager.GetDataSource(manifest.DataSource);
                     var dsContext = new DataSourceContext()
                     {
                         ModuleId = module.ModuleID,
-                        TemplateFolder = settings.TemplateDir.FolderPath
-                    };
-
-                    //OpenContentController ctrl = new OpenContentController();
-                    var dataList = new List<IDataItem>();
-                    foreach (var item in docs.ids)
-                    {
-                        var dsItem = ds.Get(dsContext, item);
-                        //var content = ctrl.GetContent(int.Parse(item));
-                        if (dsItem != null)
-                        {
-                            dataList.Add(dsItem);
-                        }
-                        else
-                        {
-                            Log.Logger.DebugFormat("OpenContent.JplistApiController.List() ContentItem not found [{0}]", item);
-                        }
-                    }
-                     */
-
-                    var ds = DataSourceManager.GetDataSource("OpenContent");
-                    var dsContext = new DataSourceContext()
-                    {
-                        ModuleId = module.ModuleID,
-                        TemplateFolder = settings.TemplateDir.FolderPath
+                        TemplateFolder = settings.TemplateDir.FolderPath,
+                        Config = manifest.DataSourceConfig
                     };
                     var dsItems = ds.GetAll(dsContext, queryBuilder.Select);
 
@@ -134,13 +88,12 @@ namespace Satrabel.OpenContent.Components.JPList
                     }
                     var model = mf.GetModelAsJson(false);
 
-                    model["luceneQuery"] = def.Query.ToString();
+                    model["luceneQuery"] = dsItems.DebugInfo;
                     var res = new ResultDTO()
                     {
                         data = model,
                         count = dsItems.Total
                     };
-
                     return Request.CreateResponse(HttpStatusCode.OK, res);
                 }
                 else
@@ -154,154 +107,5 @@ namespace Satrabel.OpenContent.Components.JPList
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
-
-
-        #region Private Methods
-
-        private static JpListQueryDTO BuildJpListQuery(List<StatusDTO> statuses)
-        {
-            var query = new JpListQueryDTO();
-            foreach (StatusDTO status in statuses)
-            {
-                switch (status.action)
-                {
-                    case "paging":
-                        {
-                            int number = 100000;
-                            //  string value (it could be number or "all")
-                            int.TryParse(status.data.number, out number);
-                            query.Pagination = new PaginationDTO()
-                            {
-                                number = number,
-                                currentPage = status.data.currentPage
-                            };
-                            break;
-                        }
-
-                    case "filter":
-                        {
-                            if (status.type == "textbox" && status.data != null && !string.IsNullOrEmpty(status.name) && !string.IsNullOrEmpty(status.data.value))
-                            {
-                                query.Filters.Add(new FilterDTO()
-                                {
-                                    Name = status.name,
-                                    WildCardSearchValue = status.data.value,
-                                });
-                            }
-                            else if ((status.type == "checkbox-group-filter" || status.type == "button-filter-group")
-                                        && status.data != null && !string.IsNullOrEmpty(status.name))
-                            {
-                                if (status.data.filterType == "pathGroup" && status.data.pathGroup != null && status.data.pathGroup.Count > 0)
-                                {
-                                    query.Filters.Add(new FilterDTO()
-                                    {
-                                        Name = status.name,
-                                        ExactSearchMultiValue = status.data.pathGroup
-                                    });
-                                }
-                            }
-                            else if (status.type == "filter-select" && status.data != null && !string.IsNullOrEmpty(status.name))
-                            {
-                                if (status.data.filterType == "path" && status.data.path != null)
-                                {
-                                    query.Filters.Add(new FilterDTO()
-                                    {
-                                        Name = status.name,
-                                        ExactSearchValue = status.data.path,
-                                    });
-                                }
-                            }
-                            break;
-                        }
-
-                    case "sort":
-                        {
-                            query.Sorts.Add(new SortDTO()
-                            {
-                                path = status.data.path, // field name
-                                order = status.data.order
-                            });
-                            break;
-                        }
-                }
-
-            }
-            return query;
-        }
-
-        private DateTime? ParseIsoDateTime(string date)
-        {
-            // "2010-08-20T15:00:00Z"
-            DateTime dt;
-            if (DateTime.TryParse(date, null, System.Globalization.DateTimeStyles.RoundtripKind, out dt))
-                return dt;
-            else
-                return null;
-        }
-
-
-        private Query BuildLuceneQuery(JpListQueryDTO jpListQuery, FieldConfig indexConfig)
-        {
-            if (jpListQuery.Filters.Any())
-            {
-                BooleanQuery query = new BooleanQuery();
-                foreach (FilterDTO f in jpListQuery.Filters)
-                {
-                    if (f.ExactSearchMultiValue != null && f.ExactSearchMultiValue.Any()) //group is bv multicheckbox, vb categories where(categy="" OR category="")
-                    {
-                        var groupQuery = new BooleanQuery();
-                        foreach (var p in f.ExactSearchMultiValue)
-                        {
-                            var termQuery = new TermQuery(new Term(f.Name, p));
-                            groupQuery.Add(termQuery, Occur.SHOULD); // or
-                        }
-                        query.Add(groupQuery, Occur.MUST); //and
-                    }
-                    else
-                    {
-                        var names = f.Names;
-                        var groupQuery = new BooleanQuery();
-                        foreach (var n in names)
-                        {
-
-                            if (!string.IsNullOrEmpty(f.ExactSearchValue))
-                            {
-                                //for dropdownlists; value is keyword => never partial search
-                                var termQuery = new TermQuery(new Term(n, f.ExactSearchValue));
-                                groupQuery.Add(termQuery, Occur.SHOULD); // or
-                            }
-                            else
-                            {
-                                //textbox
-                                Query query1;
-                                var field = indexConfig.Fields.ContainsKey(n) ? indexConfig.Fields[n] : null;
-                                bool ml = field != null && field.MultiLanguage;
-
-                                if (field != null &&
-                                    (field.IndexType == "key" || (field.Items != null && field.Items.IndexType == "key")))
-                                {
-                                    query1 = new WildcardQuery(new Term(n, f.WildCardSearchValue));
-                                }
-                                else
-                                {
-                                    string fieldName = ml ? n + "." + DnnUtils.GetCurrentCultureCode() : n;
-                                    query1 = LuceneController.ParseQuery(fieldName + ":" + f.WildCardSearchValue + "*", "Title");
-                                }
-
-                                groupQuery.Add(query1, Occur.SHOULD); // or
-                            }
-                        }
-                        query.Add(groupQuery, Occur.MUST); //and
-                    }
-                }
-                return query;
-            }
-            else
-            {
-                Query query = new MatchAllDocsQuery();
-                return query;
-            }
-        }
-        #endregion
     }
 }

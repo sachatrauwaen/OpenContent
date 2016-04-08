@@ -41,10 +41,9 @@ using Satrabel.OpenContent.Components.Dynamic;
 using DotNetNuke.Security.Permissions;
 using DotNetNuke.Instrumentation;
 using DotNetNuke.Services.Installer.Log;
-using Satrabel.OpenContent.Components.Lucene;
-using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.Datasource;
+using Satrabel.OpenContent.Components.Alpaca;
 
 #endregion
 
@@ -573,9 +572,6 @@ namespace Satrabel.OpenContent
             }
             return accept;
         }
-
-
-
         public void GetData(RenderInfo info, OpenContentSettings settings)
         {
             info.ResetData();
@@ -600,14 +596,10 @@ namespace Satrabel.OpenContent
                 ModuleId = info.ModuleId,
                 TemplateFolder = settings.TemplateDir.FolderPath
             };
-            
-            //OpenContentController ctrl = new OpenContentController();
-            List<IDataItem> dataList = new List<IDataItem>();
+            IEnumerable<IDataItem> dataList = new List<IDataItem>();
             if (clientSide || !info.Files.DataInTemplate)
             {
                 var dsItem = ds.GetFirst(dsContext);
-                //var data = ctrl.GetFirstContent(info.ModuleId);
-
                 if (dsItem != null)
                 {
                     info.SetData(dataList, settings.Data);
@@ -620,35 +612,23 @@ namespace Satrabel.OpenContent
                 if (useLucene)
                 {
                     var indexConfig = OpenContentUtils.GetIndexConfig(info.Template.Key.TemplateDir);
-                    var queryDef = new QueryDefinition(indexConfig);
+                    bool addWorkFlow = ModuleContext.PortalSettings.UserMode != PortalSettings.Mode.Edit;
+                    QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
                     if (!string.IsNullOrEmpty(settings.Query))
                     {
-                        queryDef.Build(JObject.Parse(settings.Query), ModuleContext.PortalSettings.UserMode != PortalSettings.Mode.Edit, Request.QueryString);
+                        var query = JObject.Parse(settings.Query);
+                        queryBuilder.Build(query, addWorkFlow);
                     }
                     else
                     {
-                        queryDef.BuildFilter(ModuleContext.PortalSettings.UserMode != PortalSettings.Mode.Edit);
+                        queryBuilder.BuildFilter(addWorkFlow);
                     }
-                    SearchResults docs = LuceneController.Instance.Search(info.ModuleId.ToString(), "Title", queryDef);
-                    if (docs != null)
-                    {
-                        int total = docs.TotalResults;
-                        Log.Logger.DebugFormat("Query returned [{0}] results.", total);
-                        foreach (var item in docs.ids)
-                        {
-                            var dsItem = ds.Get(dsContext, item);
-                            //var content = ctrl.GetContent(int.Parse(item));
-                            if (dsItem != null)
-                            {
-                                dataList.Add(dsItem);
-                            }
-                        }
-                    }
+                    dataList = ds.GetAll(dsContext, queryBuilder.Select).Items;
+                    //Log.Logger.DebugFormat("Query returned [{0}] results.", total);
                     if (!dataList.Any())
                     {
-                        Log.Logger.DebugFormat("Query did not return any results. API request: [{0}], Lucene Filter: [{1}], Lucene Query:[{2}]", settings.Query, queryDef.Filter == null ? "" : queryDef.Filter.ToString(), queryDef.Query == null ? "" : queryDef.Query.ToString());
+                        //Log.Logger.DebugFormat("Query did not return any results. API request: [{0}], Lucene Filter: [{1}], Lucene Query:[{2}]", settings.Query, queryDef.Filter == null ? "" : queryDef.Filter.ToString(), queryDef.Query == null ? "" : queryDef.Query.ToString());
                         var dsItem = ds.GetFirst(dsContext);
-                        //var data = ctrl.GetFirstContent(info.ModuleId);
                         if (dsItem != null)
                         {
                             info.SetData(dataList, settings.Data);
@@ -678,8 +658,6 @@ namespace Satrabel.OpenContent
                 TemplateFolder = settings.TemplateDir.FolderPath
             };
             var dsItem = ds.Get(dsContext, info.DetailItemId);
-            //OpenContentController ctrl = new OpenContentController();
-            //var struc = ctrl.GetContent(info.DetailItemId);
             if (dsItem != null)
             {
                 info.SetData(dsItem, dsItem.Data, settings.Data);
@@ -735,8 +713,6 @@ namespace Satrabel.OpenContent
                 TemplateFolder = settings.TemplateDir.FolderPath
             };
             var dsItem = ds.GetFirst(dsContext);
-            //OpenContentController ctrl = new OpenContentController();
-            //var struc = ctrl.GetFirstContent(info.ModuleId);
             if (dsItem != null)
             {
                 if (settings.Template != null && info.Template.Uri().FilePath == settings.Template.Uri().FilePath)
@@ -760,7 +736,6 @@ namespace Satrabel.OpenContent
                 {
                     info.SetData(dsItem, dsItem.Data, info.OtherModuleSettingsJson);
                 }
-
                 return true;
             }
             return false;

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Satrabel.OpenContent.Components.Manifest
 {
@@ -35,6 +36,14 @@ namespace Satrabel.OpenContent.Components.Manifest
 
         [JsonProperty(PropertyName = "additionalData")]
         public Dictionary<string, AdditionalDataManifest> AdditionalData { get; set; }
+
+        [JsonProperty(PropertyName = "dataSource")]
+        public string DataSource { get; set; }
+
+        [JsonProperty(PropertyName = "dataSourceConfig")]
+        public JObject DataSourceConfig { get; set; }
+                
+        //
  
         public bool HasTemplates { get { return (Templates != null); } }
         public FolderUri ManifestDir { get; set; }

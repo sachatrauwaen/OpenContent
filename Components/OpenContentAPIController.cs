@@ -77,7 +77,15 @@ namespace Satrabel.OpenContent.Components
                     ModuleId = module.ModuleID,
                     TemplateFolder = settings.TemplateDir.FolderPath
                 };
-                var dsItem = ds.GetEdit(dsContext, id); 
+                IDataItem dsItem = null;
+                if (listMode)
+                {
+                    dsItem = ds.GetEdit(dsContext, id);
+                }
+                else
+                {
+                    dsItem = ds.GetFirstEdit(dsContext);
+                }
                 int createdByUserid = -1;
                 var json = new JObject();
                 //var content = GetContent(module.ModuleID, listMode, int.Parse(id));
@@ -205,27 +213,6 @@ namespace Satrabel.OpenContent.Components
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
-
-        private OpenContentInfo GetContent(int moduleId, bool listMode, int id)
-        {
-            OpenContentController ctrl = new OpenContentController();
-            if (listMode)
-            {
-                if (id > 0)
-                {
-                    return ctrl.GetContent(id);
-                }
-            }
-            else
-            {
-                return ctrl.GetFirstContent(moduleId);
-
-            }
-            return null;
-        }
-
-        
-
         private static void AddVersions(JObject json, AdditionalDataInfo data)
         {
             if (!string.IsNullOrEmpty(data.VersionsJson))
@@ -250,9 +237,8 @@ namespace Satrabel.OpenContent.Components
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         [HttpGet]
-        public HttpResponseMessage Version(int id, string ticks)
+        public HttpResponseMessage Version(string id, string ticks)
         {
-            //FileUri template = OpenContentUtils.GetTemplate(ActiveModule.ModuleSettings);
             OpenContentSettings settings = ActiveModule.OpenContentSettings();
             ModuleInfo module = ActiveModule;
             if (settings.ModuleId > 0)
@@ -268,16 +254,17 @@ namespace Satrabel.OpenContent.Components
             try
             {
                 int CreatedByUserid = -1;
-                var content = GetContent(module.ModuleID, listMode, id);
-                if (content != null)
+                var ds = DataSourceManager.GetDataSource("OpenContent");
+                var dsContext = new DataSourceContext()
                 {
-                    if (!string.IsNullOrEmpty(content.VersionsJson))
-                    {
-                        var ver = content.Versions.Single(v => v.CreatedOnDate.Ticks.ToString() == ticks);
-                        json = ver.Json;
-
-                    }
-                    CreatedByUserid = content.CreatedByUserId;
+                    ModuleId = module.ModuleID,
+                    TemplateFolder = settings.TemplateDir.FolderPath
+                };
+                var dsItem = ds.GetEdit(dsContext, id);
+                if (dsItem != null)
+                {
+                    json = dsItem.Data;
+                    CreatedByUserid = dsItem.CreatedByUserId;
                 }
                 if (!OpenContentUtils.HasEditPermissions(PortalSettings, module, editRole, CreatedByUserid))
                 {
@@ -348,13 +335,11 @@ namespace Satrabel.OpenContent.Components
                     Index = index,
                     UserId = UserInfo.UserID
                 };
-                 
                 string itemId = null;
                 IDataItem dsItem = null;
                 if (listMode)
                 {
-                    
-                    if (json["id"] != null )
+                    if (json["id"] != null)
                     {
                         dsItem = ds.Get(dsContext, itemId);
                         //content = ctrl.GetContent(itemId);
@@ -369,7 +354,6 @@ namespace Satrabel.OpenContent.Components
                     if (dsItem != null)
                         createdByUserid = dsItem.CreatedByUserId;
                 }
-
                 if (!OpenContentUtils.HasEditPermissions(PortalSettings, module, editRole, createdByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
@@ -377,11 +361,11 @@ namespace Satrabel.OpenContent.Components
                 var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
                 if (dsItem == null)
                 {
-                    ds.AddContent(dsContext, json["form"] as JObject);
+                    ds.Add(dsContext, json["form"] as JObject);
                 }
                 else
                 {
-                    ds.UpdateContent(dsContext, dsItem, json["form"] as JObject);
+                    ds.Update(dsContext, dsItem, json["form"] as JObject);
                 }
                 if (json["form"]["ModuleTitle"] != null && json["form"]["ModuleTitle"].Type == JTokenType.String)
                 {
@@ -409,7 +393,7 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
-                bool Index = false;
+                bool index = false;
                 OpenContentSettings settings = ActiveModule.OpenContentSettings();
                 ModuleInfo module = ActiveModule;
                 if (settings.ModuleId > 0)
@@ -419,27 +403,30 @@ namespace Satrabel.OpenContent.Components
                 }
                 var manifest = settings.Template.Manifest;
                 TemplateManifest templateManifest = settings.Template;
-                Index = manifest.Index;
+                index = manifest.Index;
                 string editRole = manifest == null ? "" : manifest.EditRole;
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 int CreatedByUserid = -1;
-                OpenContentController ctrl = new OpenContentController();
-                OpenContentInfo content = null;
+                var ds = DataSourceManager.GetDataSource("OpenContent");
+                var dsContext = new DataSourceContext()
+                {
+                    ModuleId = module.ModuleID,
+                    TemplateFolder = settings.TemplateDir.FolderPath,
+                    Index = index,
+                    UserId = UserInfo.UserID
+                };
+                IDataItem content = null;
                 if (listMode)
                 {
-                    int ItemId;
-                    if (int.TryParse(json["id"].ToString(), out ItemId))
-                    {
-                        content = ctrl.GetContent(ItemId);
+                        content = ds.Get(dsContext, json["id"].ToString());
                         if (content != null)
                         {
                             CreatedByUserid = content.CreatedByUserId;
                         }
-                    }
                 }
                 else
                 {
-                    content = ctrl.GetFirstContent(module.ModuleID);
+                    content = ds.GetFirst(dsContext);
                     if (content != null)
                     {
                         CreatedByUserid = content.CreatedByUserId;
@@ -451,7 +438,7 @@ namespace Satrabel.OpenContent.Components
                 }
                 if (content != null)
                 {
-                    ctrl.DeleteContent(content, Index);
+                    ds.Delete(dsContext, content);
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, "");
             }
@@ -577,17 +564,24 @@ namespace Satrabel.OpenContent.Components
             List<LookupResultDTO> res = new List<LookupResultDTO>();
             try
             {
-                OpenContentController ctrl = new OpenContentController();
+                var ds = DataSourceManager.GetDataSource("OpenContent");
+                var dsContext = new DataSourceContext()
+                {
+                    ModuleId = module.ModuleID,
+                    TemplateFolder = settings.TemplateDir.FolderPath
+                };
+                //var dsItem = ds.GetEdit(dsContext, id);
+                
                 if (listMode)
                 {
-                    var items = ctrl.GetContents(req.moduleid);
+                    var items = ds.GetAll(dsContext).Items;
                     if (items != null)
                     {
                         foreach (var item in items)
                         {
                             res.Add(new LookupResultDTO()
                             {
-                                value = item.ContentId.ToString(),
+                                value = item.Id,
                                 text = item.Title
                             });
                         }
@@ -595,11 +589,11 @@ namespace Satrabel.OpenContent.Components
                 }
                 else
                 {
-                    var struc = ctrl.GetFirstContent(req.moduleid);
+                    var struc = ds.GetFirst(dsContext);
                     if (struc != null)
                     {
 
-                        JToken json = struc.Json.ToJObject("GetFirstContent data of moduleId " + req.moduleid);
+                        JToken json = struc.Data;
                         if (!string.IsNullOrEmpty(req.dataMember))
                         {
                             json = json[req.dataMember];
@@ -625,7 +619,7 @@ namespace Satrabel.OpenContent.Components
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
-
+        /*
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         [HttpPost]
@@ -648,6 +642,7 @@ namespace Satrabel.OpenContent.Components
                 if (listMode)
                 {
                     var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
+
                     var docs = LuceneController.Instance.Search(module.ModuleID.ToString(), "Title", req.query, "", "", 10, 0, indexConfig);
                     foreach (var item in docs.ids)
                     {
@@ -670,7 +665,7 @@ namespace Satrabel.OpenContent.Components
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
-
+        */
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
         [HttpGet]

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -9,9 +10,8 @@ namespace Satrabel.OpenContent.Components.Datasource
     {
         public int ModuleId { get; set; }
         public string TemplateFolder { get; set; }
-
         public int UserId { get; set; }
-
         public bool Index { get; set; }
+        public JObject Config { get; set; }
     }
 }

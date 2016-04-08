@@ -64,6 +64,7 @@ namespace Satrabel.OpenContent.Components.JPList
 
                     case "sort":
                         {
+                            select.Sort.Clear();
                             select.Sort.Add(new SortRule()
                             {
                                 Field = status.data.path,

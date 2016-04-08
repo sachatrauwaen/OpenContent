@@ -10,5 +10,6 @@ namespace Satrabel.OpenContent.Components.Datasource
     {
         IEnumerable<IDataItem> Items { get; set; }
         int Total { get; set; }
+        string DebugInfo { get; set; }
     }
 }
