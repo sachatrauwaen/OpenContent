@@ -190,7 +190,6 @@ namespace Satrabel.OpenContent.Components
                 var portalFolder = folderManager.GetFolder(PortalSettings.PortalId, d ?? "");
                 if (portalFolder != null)
                 {
-
                     folders = GetFolders(folderManager, portalFolder);
 
                     if (q != "*" && !string.IsNullOrEmpty(q))
