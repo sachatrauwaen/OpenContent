@@ -279,8 +279,9 @@ namespace Satrabel.OpenContent
                 if (templateDefined)
                 {
                     string title = Localization.GetString((listMode && _itemId == Null.NullInteger ? ModuleActionType.AddContent : ModuleActionType.EditContent), LocalResourceFile);
-                    if (!string.IsNullOrEmpty(settings.Manifest.Title)){
-                        title = Localization.GetString((listMode && _itemId == Null.NullInteger ? "Add.Action" : "Edit.Action"), LocalResourceFile) + " "+ settings.Manifest.Title;
+                    if (!string.IsNullOrEmpty(settings.Manifest.Title))
+                    {
+                        title = Localization.GetString((listMode && _itemId == Null.NullInteger ? "Add.Action" : "Edit.Action"), LocalResourceFile) + " " + settings.Manifest.Title;
                     }
                     actions.Add(ModuleContext.GetNextActionID(),
                         title,
@@ -353,7 +354,7 @@ namespace Satrabel.OpenContent
                 if (templateDefined && listMode)
                 {
                     //bool queryAvailable = settings.Template.QueryAvailable();
-                    //if (queryAvailable)
+                    if (settings.Manifest.Index)
                     {
                         actions.Add(ModuleContext.GetNextActionID(),
                             Localization.GetString("EditQuery.Action", LocalResourceFile),
@@ -630,7 +631,7 @@ namespace Satrabel.OpenContent
                     }
                     if (!dataList.Any())
                     {
-                        Log.Logger.DebugFormat("Query did not return any results. API request: [{0}], Lucene Filter: [{1}], Lucene Query:[{2}]", settings.Query, queryDef.Filter.ToString(), queryDef.Query.ToString());
+                        Log.Logger.DebugFormat("Query did not return any results. API request: [{0}], Lucene Filter: [{1}], Lucene Query:[{2}]", settings.Query, queryDef.Filter == null ? "" : queryDef.Filter.ToString(), queryDef.Query == null ? "" : queryDef.Query.ToString());
                         var data = ctrl.GetFirstContent(info.ModuleId);
                         if (data != null)
                         {
@@ -865,7 +866,6 @@ namespace Satrabel.OpenContent
         }
         private string ExecuteRazor(FileUri template, dynamic model)
         {
-           
 
             string webConfig = template.PhysicalFullDirectory; // Path.GetDirectoryName(template.PhysicalFilePath);
             webConfig = webConfig.Remove(webConfig.LastIndexOf("\\")) + "\\web.config";

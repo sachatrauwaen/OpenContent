@@ -8,7 +8,7 @@
     } else if (typeof exports === 'object') {
         module.exports = factory(require('../moment')); // Node
     } else {
-        factory((typeof global !== 'undefined' ? global : this).moment); // node or other global
+        factory(window.moment); // Browser global
     }
 }(function (moment) {
     return moment.defineLocale('el', {
@@ -38,7 +38,6 @@
         meridiemParse : /[ΠΜ]\.?Μ?\.?/i,
         longDateFormat : {
             LT : 'h:mm A',
-            LTS : 'h:mm:ss A',
             L : 'DD/MM/YYYY',
             LL : 'D MMMM YYYY',
             LLL : 'D MMMM YYYY LT',
@@ -72,7 +71,7 @@
         relativeTime : {
             future : 'σε %s',
             past : '%s πριν',
-            s : 'λίγα δευτερόλεπτα',
+            s : 'δευτερόλεπτα',
             m : 'ένα λεπτό',
             mm : '%d λεπτά',
             h : 'μία ώρα',
@@ -84,8 +83,9 @@
             y : 'ένας χρόνος',
             yy : '%d χρόνια'
         },
-        ordinalParse: /\d{1,2}η/,
-        ordinal: '%dη',
+        ordinal : function (number) {
+            return number + 'η';
+        },
         week : {
             dow : 1, // Monday is the first day of the week.
             doy : 4  // The week that contains Jan 4st is the first week of the year.

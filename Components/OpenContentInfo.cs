@@ -27,6 +27,14 @@ namespace Satrabel.OpenContent.Components
     [Scope("ModuleId")]
     public class OpenContentInfo
     {
+        public OpenContentInfo()
+        {
+            
+        }
+        public OpenContentInfo(string json)
+        {
+            Json = json;
+        }
         public int ContentId { get; set; }
         public string Title { get; set; }
         public string Html { get; set; }

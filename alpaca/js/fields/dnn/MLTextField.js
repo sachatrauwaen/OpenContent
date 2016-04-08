@@ -33,7 +33,13 @@
                 this.olddata = {};
                 this.olddata[this.defaultCulture] = this.data;
             }
-
+            
+            
+            if (this.culture != this.defaultCulture && this.olddata && this.olddata[this.defaultCulture]) {
+                this.options.placeholder = this.olddata[this.defaultCulture];
+            } else {
+                this.options.placeholder = "";
+            }
             this.base();
             /*
             Alpaca.mergeObject(this.options, {

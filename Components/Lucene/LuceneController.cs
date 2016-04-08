@@ -40,7 +40,7 @@ namespace Satrabel.OpenContent.Components.Lucene
         {
             get
             {
-                if (_serviceInstance==null)
+                if (_serviceInstance == null)
                     throw new Exception("LuceneController not initialized properly");
                 return _serviceInstance;
             }
@@ -54,7 +54,7 @@ namespace Satrabel.OpenContent.Components.Lucene
         }
         public static void ClearInstance()
         {
-            
+
             _instance.Dispose();
             _instance = null;
             _instance = new LuceneController();
@@ -195,8 +195,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             }
         }
 
-
-        public  void Add(OpenContentInfo data, FieldConfig config)
+        public void Add(OpenContentInfo data, FieldConfig config)
         {
             if (null == data)
             {
@@ -206,11 +205,9 @@ namespace Satrabel.OpenContent.Components.Lucene
             _serviceInstance.Add(JsonMappingUtils.JsonToDocument(data.ModuleId.ToString(), data.ContentId.ToString(), data.Json, config));
         }
 
-
-
-        public  void Update( OpenContentInfo data, FieldConfig config)
+        public void Update(OpenContentInfo data, FieldConfig config)
         {
-             if (null == data)
+            if (null == data)
             {
                 throw new ArgumentNullException("data");
             }
@@ -223,7 +220,7 @@ namespace Satrabel.OpenContent.Components.Lucene
         /// Deletes the matching objects in the IndexWriter.
         /// </summary>
         /// <param name="controller"></param>
-        public void Delete( OpenContentInfo data)
+        public void Delete(OpenContentInfo data)
         {
             if (null == data)
             {

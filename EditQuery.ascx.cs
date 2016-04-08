@@ -54,8 +54,13 @@ namespace Satrabel.OpenContent
                 indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
             }
 
-            LuceneController.Instance.ReIndexModuleData(ModuleId, indexConfig);
+            int moduleid = ModuleId;
+            if (settings.IsOtherModule)
+            {
+                moduleid = settings.ModuleId;
+            }
 
+            LuceneController.Instance.ReIndexModuleData(moduleid, indexConfig);
         }
 
         protected void bGenerate_Click(object sender, EventArgs e)

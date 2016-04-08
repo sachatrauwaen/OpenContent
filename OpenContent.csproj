@@ -144,6 +144,7 @@
     <Compile Include="Components\Common\DateTimeExtensions.cs" />
     <Compile Include="Components\Common\DnnUtils.cs" />
     <Compile Include="Components\Common\PageUtils.cs" />
+    <Compile Include="Components\Dnn\DnnUrlUtils.cs" />
     <Compile Include="Components\Dynamic\DynamicHelper.cs" />
     <Compile Include="Components\ExternalApiController.cs" />
     <Compile Include="Components\FeatureController.cs" />
@@ -153,6 +154,7 @@
     <Compile Include="Components\Lucene\Config\QueryDefinition.cs" />
     <Compile Include="Components\Alpaca\SchemaConfig.cs" />
     <Compile Include="Components\Lucene\LuceneController.cs" />
+    <Compile Include="Components\Lucene\LuceneQueryBuilder.cs" />
     <Compile Include="Components\Lucene\SearchResults.cs" />
     <Compile Include="Components\Manifest\AdditionalDataManifest.cs" />
     <Compile Include="Components\Manifest\Manifest.cs" />
@@ -307,7 +309,10 @@
     <Content Include="alpaca\css\img\Delete_16X16_Gray.png" />
     <Content Include="alpaca\css\img\Dn_16X16_Standard.png" />
     <Content Include="alpaca\css\img\Up_16X16_Standard.png" />
+    <Content Include="alpaca\js\fields\dnn\Folder2Field.js" />
     <Content Include="alpaca\js\fields\dnn\GalleryField.js" />
+    <Content Include="alpaca\js\fields\dnn\MLFile2Field.js" />
+    <Content Include="alpaca\js\fields\dnn\MLUrl2Field.js" />
     <Content Include="alpaca\js\fields\dnn\MultiUploadField.js" />
     <Content Include="alpaca\js\fields\dnn\DocumentsField.js" />
     <Content Include="alpaca\js\fields\dnn\AddressField.js" />
@@ -347,6 +352,7 @@
     <Content Include="alpaca\templates\dnn-edit\control-imagecrop.html" />
     <Content Include="alpaca\templates\dnn-edit\control-imagecropper.html" />
     <Content Include="alpaca\templates\dnn-edit\control-image.html" />
+    <Content Include="alpaca\templates\dnn-edit\control-ckeditor.html" />
     <Content Include="alpaca\templates\dnn-edit\control-wysihtml.html" />
     <Content Include="alpaca\templates\dnn-edit\control.html" />
     <Content Include="alpaca\templates\dnn-edit\dnntemplates.html">

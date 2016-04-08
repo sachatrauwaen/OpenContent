@@ -37,11 +37,6 @@ namespace Satrabel.OpenContent.Components.JPList
         {
             try
             {
-                //Stopwatch stopwatch = new Stopwatch();
-                //stopwatch.Start();
-                //stopwatch.Stop();
-                //Debug.WriteLine("List:" + stopwatch.ElapsedMilliseconds); 
-
                 OpenContentSettings settings = ActiveModule.OpenContentSettings();
                 ModuleInfo module = ActiveModule;
                 if (settings.ModuleId > 0)
@@ -51,13 +46,6 @@ namespace Satrabel.OpenContent.Components.JPList
                 }
                 var manifest = settings.Template.Manifest;
                 var templateManifest = settings.Template;
-
-                TemplateFiles files = null;
-                if (templateManifest != null)
-                {
-                    files = templateManifest.Main;
-                    // detail not traited !!!
-                }
 
                 string editRole = manifest == null ? "" : manifest.EditRole;
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
@@ -78,7 +66,7 @@ namespace Satrabel.OpenContent.Components.JPList
                     }
 
                     var jpListQuery = BuildJpListQuery(req.StatusLst);
-                    def.Query = BuildLuceneQuery2(jpListQuery, indexConfig);
+                    def.Query = LuceneQueryBuilder.BuildLuceneQuery(jpListQuery, indexConfig);
                     if (jpListQuery.Sorts.Any())
                     {
                         var sort = jpListQuery.Sorts.First();
@@ -108,7 +96,7 @@ namespace Satrabel.OpenContent.Components.JPList
                         }
                     }
                     int mainTabId = settings.DetailTabId > 0 ? settings.DetailTabId : settings.TabId;
-                    ModelFactory mf = new ModelFactory(dataList, settings.Data, settings.Template.Uri().PhysicalFullDirectory + "\\", manifest, templateManifest, files, ActiveModule, PortalSettings, mainTabId, settings.ModuleId);
+                    ModelFactory mf = new ModelFactory(dataList, ActiveModule, PortalSettings, mainTabId);
                     if (!string.IsNullOrEmpty(req.options))
                     {
                         mf.Options = JObject.Parse(req.options);
@@ -140,7 +128,7 @@ namespace Satrabel.OpenContent.Components.JPList
 
         #region Private Methods
 
-        private JpListQueryDTO BuildJpListQuery(List<StatusDTO> statuses)
+        private static JpListQueryDTO BuildJpListQuery(List<StatusDTO> statuses)
         {
             var query = new JpListQueryDTO();
             foreach (StatusDTO status in statuses)
@@ -162,41 +150,37 @@ namespace Satrabel.OpenContent.Components.JPList
 
                     case "filter":
                         {
-                            if (status.type == "textbox" && status.data != null && !String.IsNullOrEmpty(status.name) && !String.IsNullOrEmpty(status.data.value))
+                            if (status.type == "textbox" && status.data != null && !string.IsNullOrEmpty(status.name) && !string.IsNullOrEmpty(status.data.value))
                             {
                                 query.Filters.Add(new FilterDTO()
                                 {
-                                    name = status.name,
-                                    value = status.data.value
+                                    Name = status.name,
+                                    WildCardSearchValue = status.data.value,
                                 });
                             }
-
                             else if ((status.type == "checkbox-group-filter" || status.type == "button-filter-group")
-                                        && status.data != null && !String.IsNullOrEmpty(status.name))
+                                        && status.data != null && !string.IsNullOrEmpty(status.name))
                             {
                                 if (status.data.filterType == "pathGroup" && status.data.pathGroup != null && status.data.pathGroup.Count > 0)
                                 {
                                     query.Filters.Add(new FilterDTO()
                                     {
-                                        name = status.name,
-                                        pathGroup = status.data.pathGroup
-
+                                        Name = status.name,
+                                        ExactSearchMultiValue = status.data.pathGroup
                                     });
                                 }
                             }
-                            else if (status.type == "filter-select" && status.data != null && !String.IsNullOrEmpty(status.name))
+                            else if (status.type == "filter-select" && status.data != null && !string.IsNullOrEmpty(status.name))
                             {
                                 if (status.data.filterType == "path" && status.data.path != null)
                                 {
                                     query.Filters.Add(new FilterDTO()
                                     {
-                                        name = status.name,
-                                        value = status.data.path,
+                                        Name = status.name,
+                                        ExactSearchValue = status.data.path,
                                     });
                                 }
                             }
-
-
                             break;
                         }
 
@@ -224,109 +208,7 @@ namespace Satrabel.OpenContent.Components.JPList
             else
                 return null;
         }
-
-        private string BuildLuceneQuery(JpListQueryDTO jpListQuery)
-        {
-
-            string queryStr = "";
-            if (jpListQuery.Filters.Any())
-            {
-                foreach (FilterDTO f in jpListQuery.Filters)
-                {
-                    if (f.pathGroup != null && f.pathGroup.Any()) //group is bv multicheckbox, vb categories where(categy="" OR category="")
-                    {
-                        string pathStr = "";
-                        foreach (var p in f.pathGroup)
-                        {
-                            pathStr += (string.IsNullOrEmpty(pathStr) ? "" : " OR ") + f.name + ":" + p;
-                        }
-
-                        queryStr += "+" + "(" + pathStr + ")";
-                    }
-                    else
-                    {
-                        var names = f.names;
-                        string pathStr = "";
-                        foreach (var n in names)
-                        {
-                            if (!string.IsNullOrEmpty(f.path))
-                            {
-                                pathStr += (string.IsNullOrEmpty(pathStr) ? "" : " OR ") + n + ":" + f.path;  //for dropdownlists; value is keyword => never partial search
-                            }
-                            else
-                            {
-                                pathStr += (string.IsNullOrEmpty(pathStr) ? "" : " OR ") + n + ":" + f.value + "*";   //textbox
-                            }
-                        }
-                        queryStr += "+" + "(" + pathStr + ")";
-                    }
-                }
-            }
-            return queryStr;
-        }
-
-        private Query BuildLuceneQuery2(JpListQueryDTO jpListQuery, FieldConfig indexConfig)
-        {
-            if (jpListQuery.Filters.Any())
-            {
-                BooleanQuery query = new BooleanQuery();
-                foreach (FilterDTO f in jpListQuery.Filters)
-                {
-                    if (f.pathGroup != null && f.pathGroup.Any()) //group is bv multicheckbox, vb categories where(categy="" OR category="")
-                    {
-                        var groupQuery = new BooleanQuery();
-                        foreach (var p in f.pathGroup)
-                        {
-                            var termQuery = new TermQuery(new Term(f.name, p));
-                            groupQuery.Add(termQuery, Occur.SHOULD); // or
-                        }
-                        query.Add(groupQuery, Occur.MUST); //and
-                    }
-                    else
-                    {
-                        var names = f.names;
-                        var groupQuery = new BooleanQuery();
-                        foreach (var n in names)
-                        {
-
-                            if (!string.IsNullOrEmpty(f.path))
-                            {
-                                //for dropdownlists; value is keyword => never partial search
-                                var termQuery = new TermQuery(new Term(n, f.path));
-                                groupQuery.Add(termQuery, Occur.SHOULD); // or
-                            }
-                            else
-                            {
-                                //textbox
-                                Query query1;
-                                var field = indexConfig.Fields.ContainsKey(n) ? indexConfig.Fields[n] : null;
-                                bool ml = field != null && field.MultiLanguage;
-
-                                if (field != null &&
-                                    (field.IndexType == "key" || (field.Items != null && field.Items.IndexType == "key")))
-                                {
-                                    query1 = new WildcardQuery(new Term(n, f.value));
-                                }
-                                else
-                                {
-                                    string fieldName = ml ? n + "." + DnnUtils.GetCurrentCultureCode() : n;
-                                    query1 = LuceneController.ParseQuery(fieldName + ":" + f.value + "*", "Title");
-                                }
-
-                                groupQuery.Add(query1, Occur.SHOULD); // or
-                            }
-                        }
-                        query.Add(groupQuery, Occur.MUST); //and
-                    }
-                }
-                return query;
-            }
-            else
-            {
-                Query query = new MatchAllDocsQuery();
-                return query;
-            }
-        }
+        
         #endregion
     }
 }
