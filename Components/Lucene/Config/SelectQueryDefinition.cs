@@ -13,36 +13,15 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
 {
     public class SelectQueryDefinition
     {
-        private bool DefaultNoResults;
-        private Query _Query;
-
         public SelectQueryDefinition()
         {
-
             Query = new MatchAllDocsQuery();
             Sort = Sort.RELEVANCE;
             PageSize = 100;
         }
         public Query Filter { get; set; }
+        public Query Query { get; set; }
         public Sort Sort { get; set; }
-        public Query Query
-        {
-            get
-            {
-                return _Query;
-            }
-            set
-            {
-                if (DefaultNoResults && value != null && (new MatchAllDocsQuery()).ToString() == value.ToString())
-                {
-                    _Query = new BooleanQuery();
-                }
-                else
-                {
-                    _Query = value;
-                }
-            }
-        }
         public int PageSize { get; set; }
         public int PageIndex { get; set; }
         public SelectQueryDefinition Build(Select select)
@@ -64,7 +43,6 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
         {
             BooleanQuery q = new BooleanQuery();
             q.Add(new MatchAllDocsQuery(), Occur.MUST);
-
             Occur cond = Occur.MUST; // AND
             if (filter.Condition == ConditionEnum.OR)
             {
@@ -108,7 +86,6 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                 {
                     if (rule.FieldType == FieldTypeEnum.DATETIME)
                     {
-
                         var startDate = rule.LowerValue.AsDateTime;
                         var endDate = rule.UpperValue.AsDateTime;
                         q.Add(NumericRangeQuery.NewLongRange(fieldName, startDate.Ticks, endDate.Ticks, true, true), cond);
@@ -134,7 +111,6 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                 }
                 else if (rule.FieldOperator == OperatorEnum.LESS_THEN)
                 {
-
                 }
             }
             q = q.Clauses.Count > 0 ? q : null;

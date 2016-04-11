@@ -129,8 +129,6 @@ namespace Satrabel.OpenContent.Components.Datasource
             int total = docs.TotalResults;
             //Log.Logger.DebugFormat("OpenContent.JplistApiController.List() Searched for [{0}], found [{1}] items", select.ToJson(), total);
             //System.Diagnostics.Debug.WriteLine(select.ToJson());
-
-
             var dataList = new List<IDataItem>();
             foreach (var item in docs.ids)
             {

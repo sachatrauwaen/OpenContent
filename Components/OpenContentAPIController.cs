@@ -71,11 +71,12 @@ namespace Satrabel.OpenContent.Components
             bool listMode = templateManifest != null && templateManifest.IsListTemplate;
             try
             {
-                var ds = DataSourceManager.GetDataSource("OpenContent");
+                var ds = DataSourceManager.GetDataSource(manifest.DataSource);
                 var dsContext = new DataSourceContext()
                 {
                     ModuleId = module.ModuleID,
-                    TemplateFolder = settings.TemplateDir.FolderPath
+                    TemplateFolder = settings.TemplateDir.FolderPath,
+                    Config = manifest.DataSourceConfig
                 };
                 IDataItem dsItem = null;
                 if (listMode)
@@ -254,11 +255,12 @@ namespace Satrabel.OpenContent.Components
             try
             {
                 int CreatedByUserid = -1;
-                var ds = DataSourceManager.GetDataSource("OpenContent");
+                var ds = DataSourceManager.GetDataSource(manifest.DataSource);
                 var dsContext = new DataSourceContext()
                 {
                     ModuleId = module.ModuleID,
-                    TemplateFolder = settings.TemplateDir.FolderPath
+                    TemplateFolder = settings.TemplateDir.FolderPath,
+                    Config = manifest.DataSourceConfig
                 };
                 var dsItem = ds.GetEdit(dsContext, id);
                 if (dsItem != null)
@@ -327,13 +329,14 @@ namespace Satrabel.OpenContent.Components
 
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 int createdByUserid = -1;
-                var ds = DataSourceManager.GetDataSource("OpenContent");
+                var ds = DataSourceManager.GetDataSource(manifest.DataSource);
                 var dsContext = new DataSourceContext()
                 {
                     ModuleId = module.ModuleID,
                     TemplateFolder = settings.TemplateDir.FolderPath,
                     Index = index,
-                    UserId = UserInfo.UserID
+                    UserId = UserInfo.UserID,
+                    Config = manifest.DataSourceConfig
                 };
                 string itemId = null;
                 IDataItem dsItem = null;
@@ -341,6 +344,7 @@ namespace Satrabel.OpenContent.Components
                 {
                     if (json["id"] != null)
                     {
+                        itemId = json["id"].ToString();
                         dsItem = ds.Get(dsContext, itemId);
                         //content = ctrl.GetContent(itemId);
                         if (dsItem != null)
@@ -407,13 +411,14 @@ namespace Satrabel.OpenContent.Components
                 string editRole = manifest == null ? "" : manifest.EditRole;
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 int CreatedByUserid = -1;
-                var ds = DataSourceManager.GetDataSource("OpenContent");
+                var ds = DataSourceManager.GetDataSource(manifest.DataSource);
                 var dsContext = new DataSourceContext()
                 {
                     ModuleId = module.ModuleID,
                     TemplateFolder = settings.TemplateDir.FolderPath,
                     Index = index,
-                    UserId = UserInfo.UserID
+                    UserId = UserInfo.UserID,
+                    Config = manifest.DataSourceConfig
                 };
                 IDataItem content = null;
                 if (listMode)
@@ -564,11 +569,12 @@ namespace Satrabel.OpenContent.Components
             List<LookupResultDTO> res = new List<LookupResultDTO>();
             try
             {
-                var ds = DataSourceManager.GetDataSource("OpenContent");
+                var ds = DataSourceManager.GetDataSource(manifest.DataSource);
                 var dsContext = new DataSourceContext()
                 {
                     ModuleId = module.ModuleID,
-                    TemplateFolder = settings.TemplateDir.FolderPath
+                    TemplateFolder = settings.TemplateDir.FolderPath,
+                    Config = manifest.DataSourceConfig
                 };
                 //var dsItem = ds.GetEdit(dsContext, id);
                 

@@ -575,11 +575,12 @@ namespace Satrabel.OpenContent
         public void GetData(RenderInfo info, OpenContentSettings settings)
         {
             info.ResetData();
-            var ds = DataSourceManager.GetDataSource("OpenContent");
+            var ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
             var dsContext = new DataSourceContext()
             {
                 ModuleId = info.ModuleId,
-                TemplateFolder = settings.TemplateDir.FolderPath
+                TemplateFolder = settings.TemplateDir.FolderPath,
+                Config = settings.Manifest.DataSourceConfig
             };
             var dsItem = ds.GetFirst(dsContext);
             if (dsItem != null)
@@ -590,11 +591,12 @@ namespace Satrabel.OpenContent
         public void GetDataList(RenderInfo info, OpenContentSettings settings, bool clientSide)
         {
             info.ResetData();
-            var ds = DataSourceManager.GetDataSource("OpenContent");
+            var ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
             var dsContext = new DataSourceContext()
             {
                 ModuleId = info.ModuleId,
-                TemplateFolder = settings.TemplateDir.FolderPath
+                TemplateFolder = settings.TemplateDir.FolderPath,
+                Config = settings.Manifest.DataSourceConfig
             };
             IEnumerable<IDataItem> dataList = new List<IDataItem>();
             if (clientSide || !info.Files.DataInTemplate)
@@ -639,7 +641,7 @@ namespace Satrabel.OpenContent
                 else
                 {
                     //dataList = ctrl.GetContents(info.ModuleId).ToList();
-                    var dsItemLst = ds.GetAll(dsContext);
+                    dataList = ds.GetAll(dsContext).Items;
                 }
                 if (dataList.Any())
                 {
@@ -651,11 +653,12 @@ namespace Satrabel.OpenContent
         public void GetDetailData(RenderInfo info, OpenContentSettings settings)
         {
             info.ResetData();
-            var ds = DataSourceManager.GetDataSource("OpenContent");
+            var ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
             var dsContext = new DataSourceContext()
             {
                 ModuleId = info.ModuleId,
-                TemplateFolder = settings.TemplateDir.FolderPath
+                TemplateFolder = settings.TemplateDir.FolderPath,
+                Config = settings.Manifest.DataSourceConfig
             };
             var dsItem = ds.Get(dsContext, info.DetailItemId);
             if (dsItem != null)
@@ -706,11 +709,12 @@ namespace Satrabel.OpenContent
         internal bool GetOtherModuleDemoData(RenderInfo info, OpenContentSettings settings)
         {
             info.ResetData();
-            var ds = DataSourceManager.GetDataSource("OpenContent");
+            var ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
             var dsContext = new DataSourceContext()
             {
                 ModuleId = info.ModuleId,
-                TemplateFolder = settings.TemplateDir.FolderPath
+                TemplateFolder = settings.TemplateDir.FolderPath,
+                Config = settings.Manifest.DataSourceConfig
             };
             var dsItem = ds.GetFirst(dsContext);
             if (dsItem != null)
@@ -919,11 +923,13 @@ namespace Satrabel.OpenContent
                     {
                         // for list templates a main template need to be defined
                         _renderinfo.Files = _renderinfo.Template.Main;
+                        /*
                         GetDataList(_renderinfo, _settings, template.ClientSideData);
                         if (!_renderinfo.SettingsMissing)
                         {
                             _renderinfo.OutputString = GenerateListOutput(_renderinfo.Template.Uri().UrlFolder, template.Main, _renderinfo.DataList, _renderinfo.SettingsJson);
                         }
+                         */
                     }
                 }
             }

@@ -13,11 +13,18 @@ namespace Satrabel.OpenContent.Components.Datasource.search
             Query = new FilterGroup();
             Sort = new List<SortRule>();
         }
-        public FilterGroup Filter { get; set; }
-        public FilterGroup Query { get; set; }
+        public FilterGroup Filter { get; private set; }
+        public FilterGroup Query { get; private set; }
         public List<SortRule> Sort { get; private set; }
         public int PageSize { get; set; }
         public int PageIndex { get; set; }
-        
+        public bool IsQueryEmpty
+        {
+            get
+            {
+                return !Query.FilterRules.Any() && !Query.FilterGroups.Any();
+            }
+        }
+
     }
 }

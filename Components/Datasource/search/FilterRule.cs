@@ -11,7 +11,6 @@ namespace Satrabel.OpenContent.Components.Datasource.search
         {
             FieldOperator = OperatorEnum.EQUAL;
             FieldType = FieldTypeEnum.STRING;
-
         }
         public string Field { get; set; }
         public FieldTypeEnum FieldType { get; set; }
@@ -21,5 +20,6 @@ namespace Satrabel.OpenContent.Components.Datasource.search
         public RuleValue UpperValue { get; set; }
         public float Boost { get; set; }
         public IEnumerable<RuleValue> MultiValue { get; set; }
+                
     }
 }

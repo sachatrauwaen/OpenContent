@@ -71,14 +71,26 @@ namespace Satrabel.OpenContent.Components.JPList
                         queryBuilder.BuildFilter(PortalSettings.UserMode != PortalSettings.Mode.Edit);
                     }
                     JplistQueryBuilder.MergeJpListQuery(queryBuilder.Select, req.StatusLst);
-                    var ds = DataSourceManager.GetDataSource(manifest.DataSource);
-                    var dsContext = new DataSourceContext()
+                    IDataItems dsItems;
+                    if (queryBuilder.DefaultNoResults && queryBuilder.Select.IsQueryEmpty)
                     {
-                        ModuleId = module.ModuleID,
-                        TemplateFolder = settings.TemplateDir.FolderPath,
-                        Config = manifest.DataSourceConfig
-                    };
-                    var dsItems = ds.GetAll(dsContext, queryBuilder.Select);
+                        dsItems = new DefaultDataItems() { 
+                            Items = new List<DefaultDataItem>(),
+                            Total = 0
+                        };
+                    }
+                    else
+                    {
+                        var ds = DataSourceManager.GetDataSource(manifest.DataSource);
+                        var dsContext = new DataSourceContext()
+                        {
+                            ModuleId = module.ModuleID,
+                            TemplateFolder = settings.TemplateDir.FolderPath,
+                            Config = manifest.DataSourceConfig
+                        };
+                        dsItems = ds.GetAll(dsContext, queryBuilder.Select);
+                    }
+                    
 
                     int mainTabId = settings.DetailTabId > 0 ? settings.DetailTabId : settings.TabId;
                     ModelFactory mf = new ModelFactory(dsItems.Items, ActiveModule, PortalSettings, mainTabId);
