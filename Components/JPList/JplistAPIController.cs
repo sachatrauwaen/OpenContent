@@ -49,13 +49,8 @@ namespace Satrabel.OpenContent.Components.JPList
                 }
                 var manifest = settings.Template.Manifest;
                 var templateManifest = settings.Template;
-                TemplateFiles files = null;
-                if (templateManifest != null)
-                {
-                    files = templateManifest.Main;
-                    // detail not traited !!!
-                }
-                string editRole = manifest == null ? "" : manifest.EditRole;
+
+                //string editRole = manifest == null ? "" : manifest.EditRole;
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 if (listMode)
                 {
@@ -70,6 +65,7 @@ namespace Satrabel.OpenContent.Components.JPList
                     {
                         queryBuilder.BuildFilter(PortalSettings.UserMode != PortalSettings.Mode.Edit);
                     }
+
                     JplistQueryBuilder.MergeJpListQuery(queryBuilder.Select, req.StatusLst);
                     IDataItems dsItems;
                     if (queryBuilder.DefaultNoResults && queryBuilder.Select.IsQueryEmpty)
@@ -119,5 +115,6 @@ namespace Satrabel.OpenContent.Components.JPList
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
+
     }
 }

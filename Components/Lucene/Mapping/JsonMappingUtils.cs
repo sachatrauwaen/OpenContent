@@ -31,19 +31,19 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
         public static readonly string FieldId = "$id";
         #endregion
 
-        public static Document JsonToDocument(string type, string id, string source, FieldConfig config, bool StoreSource = false)
+        public static Document JsonToDocument(string type, string id, string source, FieldConfig config, bool storeSource = false)
         {
-            var ObjectMapper = new JsonObjectMapper();
+            var objectMapper = new JsonObjectMapper();
             Document doc = new Document();
             string json = source;  //JsonConvert.SerializeObject(source, typeof(TSource), settings);
             doc.Add(new Field(FieldType, type, Field.Store.YES, Field.Index.NOT_ANALYZED));
             doc.Add(new Field(FieldId, id, Field.Store.YES, Field.Index.NOT_ANALYZED));
-            if (StoreSource)
+            if (storeSource)
             {
                 doc.Add(new Field(FieldSource, json, Field.Store.YES, Field.Index.NO));
             }
             doc.Add(new NumericField(FieldTimestamp, Field.Store.YES, true).SetLongValue(DateTime.UtcNow.Ticks));
-            ObjectMapper.AddJsonToDocument(source, doc, config);
+            objectMapper.AddJsonToDocument(source, doc, config);
             return doc;
         }
         public static Filter GetTypeFilter(string type)

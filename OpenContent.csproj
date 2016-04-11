@@ -182,6 +182,8 @@
     <Compile Include="Components\Lucene\Config\SelectQueryDefinition.cs" />
     <Compile Include="Components\Lucene\Config\QueryDefinition.cs" />
     <Compile Include="Components\Alpaca\SchemaConfig.cs" />
+    <Compile Include="Components\Lucene\LuceneController.cs" />
+    <Compile Include="Components\Lucene\LuceneQueryBuilder.cs" />
     <Compile Include="Components\Lucene\SearchResults.cs" />
     <Compile Include="Components\Manifest\AdditionalDataManifest.cs" />
     <Compile Include="Components\Manifest\Manifest.cs" />
@@ -209,7 +211,7 @@
     <Compile Include="Components\JPList\StatusDataDTO.cs" />
     <Compile Include="Components\JPList\StatusDTO.cs" />
     <Compile Include="Components\Lucene\Index\OpenContentMappingExtensions.cs" />
-    <Compile Include="Components\Lucene\LuceneController.cs" />
+    <Compile Include="Components\Lucene\LuceneService.cs" />
     <Compile Include="Components\Lucene\Mapping\JsonMappingUtils.cs" />
     <Compile Include="Components\Lucene\Mapping\JsonObjectMapper.cs" />
     <Compile Include="Components\Lucene\Search\JsonSearchUtils.cs" />

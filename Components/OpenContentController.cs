@@ -45,7 +45,7 @@ namespace Satrabel.OpenContent.Components
             if (index)
             {
                 LuceneController.Instance.Add(content, indexConfig);
-                LuceneController.Instance.Commit();
+                LuceneController.Instance.Store.Commit();
             }
         }
 
@@ -65,7 +65,7 @@ namespace Satrabel.OpenContent.Components
             if (index)
             {
                 LuceneController.Instance.Delete(content);
-                LuceneController.Instance.Commit();
+                LuceneController.Instance.Store.Commit();
             }
         }
 
@@ -95,7 +95,7 @@ namespace Satrabel.OpenContent.Components
             if (index)
             {
                 LuceneController.Instance.Update(content, indexConfig);
-                LuceneController.Instance.Commit();
+                LuceneController.Instance.Store.Commit();
             }
         }
 
