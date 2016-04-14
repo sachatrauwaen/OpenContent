@@ -11,7 +11,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
 {
     public class QueryBuilder
     {
-       private readonly FieldConfig IndexConfig;
+        private readonly FieldConfig IndexConfig;
 
         public bool DefaultNoResults { get; private set; }
         public Select Select { get; private set; }
@@ -22,7 +22,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
             Select = new Select();
             Select.PageSize = 100;
         }
-       
+
         public QueryBuilder Build(JObject query, bool addWorkflowFilter, NameValueCollection QueryString = null)
         {
             BuildPage(query);
@@ -57,7 +57,8 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
             if (ExcludeCurrentItem && QueryString != null && QueryString["id"] != null)
             {
-                Filter.AddRule(new FilterRule() { 
+                Filter.AddRule(new FilterRule()
+                {
                     Field = "id",
                     Value = new StringRuleValue(QueryString["id"]),
                     FieldOperator = OperatorEnum.NOT_EQUAL
@@ -94,7 +95,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                                 Field = item.Name,
                                 Value = new StringRuleValue(val),
                                 FieldOperator = OperatorEnum.START_WITH
-                            });                            
+                            });
                         }
                     }
                     else if (item.Value is JArray) // enum
@@ -103,7 +104,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                         if (arr.Children().Any())
                         {
                             var arrGroup = new FilterGroup();
-                            
+
                             foreach (var arrItem in arr.Children())
                             {
                                 if (arrItem is JValue)
@@ -113,7 +114,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                                     {
                                         Field = item.Name,
                                         Value = new StringRuleValue(val.ToString())
-                                    });   
+                                    });
                                 }
                             }
                             Filter.FilterGroups.Add(arrGroup);
@@ -124,7 +125,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                             {
                                 Field = item.Name,
                                 Value = new StringRuleValue(QueryString[item.Name])
-                            });  
+                            });
                         }
                     }
                     else if (item.Value is JObject) // range
@@ -156,7 +157,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                                 LowerValue = new DateTimeRuleValue(startDate),
                                 UpperValue = new DateTimeRuleValue(endDate),
                                 FieldOperator = OperatorEnum.BETWEEN
-                            }); 
+                            });
                         }
                     }
                 }
@@ -187,7 +188,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 {
                     Field = "publishstatus",
                     Value = new StringRuleValue("published")
-                }); 
+                });
             }
             if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey("publishstartdate"))
             {
@@ -198,7 +199,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     Field = "publishstartdate",
                     Value = new DateTimeRuleValue(DateTime.Today),
                     FieldOperator = OperatorEnum.LESS_THEN_OR_EQUALS
-                }); 
+                });
             }
             if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey("publishenddate"))
             {
@@ -207,9 +208,9 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 filter.AddRule(new FilterRule()
                 {
                     Field = "publishenddate",
-                    Value = new DateTimeRuleValue(DateTime.Today),                    
+                    Value = new DateTimeRuleValue(DateTime.Today),
                     FieldOperator = OperatorEnum.GREATER_THEN_OR_EQUALS
-                });                 
+                });
             }
         }
 
@@ -234,8 +235,8 @@ namespace Satrabel.OpenContent.Components.Alpaca
                         FieldType = Sortfieldtype(fieldName),
                         Descending = reverse
                     });
-                }                
-            }            
+                }
+            }
             return this;
         }
 
@@ -281,7 +282,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 {
                     sortfieldtype = FieldTypeEnum.HTML;
                 }
-               
+
             }
             return sortfieldtype;
         }
@@ -292,7 +293,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
             if (!string.IsNullOrEmpty(Sorts))
             {
                 var sortArray = Sorts.Split(',');
-                
+
                 foreach (var item in sortArray)
                 {
                     bool reverse = false;
