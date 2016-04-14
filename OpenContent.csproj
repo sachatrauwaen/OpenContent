@@ -183,7 +183,6 @@
     <Compile Include="Components\Lucene\Config\QueryDefinition.cs" />
     <Compile Include="Components\Alpaca\SchemaConfig.cs" />
     <Compile Include="Components\Lucene\LuceneController.cs" />
-    <Compile Include="Components\Lucene\LuceneQueryBuilder.cs" />
     <Compile Include="Components\Lucene\SearchResults.cs" />
     <Compile Include="Components\Manifest\AdditionalDataManifest.cs" />
     <Compile Include="Components\Manifest\Manifest.cs" />
