@@ -22,6 +22,9 @@ namespace Satrabel.OpenContent.Components.Datasource
                 return "OpenContent";
             }
         }
+
+        #region Edit
+
         public IDataItem GetEdit(DataSourceContext context, string id)
         {
             var fb = new FormBuilder(new FolderUri(context.TemplateFolder));
@@ -64,6 +67,9 @@ namespace Satrabel.OpenContent.Components.Datasource
             }
             return null;
         }
+
+        #endregion
+
         public IDataItem GetVersion(DataSourceContext context, string id, DateTime datetime)
         {
             var content = GetContent(context.ModuleId, id);
@@ -182,6 +188,9 @@ namespace Satrabel.OpenContent.Components.Datasource
                 //json["versions"] = JArray.Parse(struc.VersionsJson);
             }
         }
+
+        #region Actions
+
         public void Add(DataSourceContext context, JToken data)
         {
             OpenContentController ctrl = new OpenContentController();
@@ -216,5 +225,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             var content = (OpenContentInfo)item.Item;
             ctrl.DeleteContent(content, context.Index);
         }
+
+        #endregion
     }
 }
