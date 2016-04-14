@@ -6,7 +6,7 @@ using System.Web;
 
 namespace Satrabel.OpenContent.Components.JPList
 {
-    public class JplistQueryBuilder
+    public static class JplistQueryBuilder
     {
         public static Select MergeJpListQuery(Select select, List<StatusDTO> statuses)
         {
