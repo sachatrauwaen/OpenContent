@@ -101,19 +101,6 @@ namespace Satrabel.OpenContent.Components.Lucene
             }
         }
 
-        // made internal to be used in unit tests only; otherwise could be made private
-        internal IndexSearcher GetSearcher()
-        {
-            if (_reader == null || MustRereadIndex)
-            {
-                CheckValidIndexFolder();
-                UpdateLastAccessTimes();
-                InstantiateReader();
-            }
-
-            return _reader.GetSearcher();
-        }
-
         private void InstantiateReader()
         {
             IndexSearcher searcher;
@@ -193,6 +180,23 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         #endregion
 
+        #region Search
+
+        internal IndexSearcher GetSearcher()
+        {
+            // made internal to be used in unit tests only; otherwise could be made private
+            if (_reader == null || MustRereadIndex)
+            {
+                CheckValidIndexFolder();
+                UpdateLastAccessTimes();
+                InstantiateReader();
+            }
+
+            return _reader.GetSearcher();
+        }
+
+        #endregion
+
         #region Operations
 
         public void Add(Document doc)
@@ -238,7 +242,10 @@ namespace Satrabel.OpenContent.Components.Lucene
             }
         }
 
-        #endregion
+        public void DeleteAll()
+        {
+            Writer.DeleteAll();
+        }
 
         public bool OptimizeSearchIndex(bool doWait)
         {
@@ -287,11 +294,10 @@ namespace Satrabel.OpenContent.Components.Lucene
             return searcher.IndexReader.NumDocs();
         }
 
-        public void DeleteAll()
-        {
-            Writer.DeleteAll();
-        }
-        
+        #endregion
+
+        #region Dispose
+
         public void Dispose()
         {
             var status = Interlocked.CompareExchange(ref _isDisposed, DISPOSED, UNDISPOSED);
@@ -333,6 +339,8 @@ namespace Satrabel.OpenContent.Components.Lucene
                 _reader = null;
             }
         }
+
+        #endregion
 
         class CachedReader : IDisposable
         {
