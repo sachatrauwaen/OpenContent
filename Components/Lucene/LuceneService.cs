@@ -5,15 +5,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
-using DotNetNuke.Common;
-using Lucene.Net.Analysis;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.Search;
 using Lucene.Net.Store;
-using Lucene.Net.QueryParsers;
-
-
+using DotNetNuke.Common;
+using Lucene.Net.Analysis;
 
 #endregion
 
@@ -52,7 +49,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             if (string.IsNullOrEmpty(_searchFolder))
                 throw new ArgumentNullException("searchFolder");
             IndexFolder = Path.Combine(Globals.ApplicationMapPath, _searchFolder);
-            _readerTimeSpan = DefaultRereadTimeSpan; //  hostController.GetDouble(Constants.SearchReaderRefreshTimeKey, DefaultRereadTimeSpan);
+            _readerTimeSpan = DefaultRereadTimeSpan; 
         }
 
         private void CheckDisposed()
@@ -169,7 +166,7 @@ namespace Satrabel.OpenContent.Components.Lucene
         private void CheckValidIndexFolder()
         {
             if (!ValidateIndexFolder())
-                throw new Exception(string.Format("OpenContent Search indexing directory [{0}] is either empty or does not exist", _searchFolder));
+                throw new Exception(string.Format("Lucene Search indexing directory [{0}] is either empty or does not exist", _searchFolder));
         }
 
         internal bool ValidateIndexFolder()

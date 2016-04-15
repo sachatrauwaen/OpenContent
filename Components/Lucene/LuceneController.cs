@@ -20,7 +20,7 @@ namespace Satrabel.OpenContent.Components.Lucene
     {
         private static LuceneController _instance = new LuceneController();
         private LuceneService _serviceInstance;
-		
+
         public static LuceneController Instance
         {
             get
@@ -45,16 +45,18 @@ namespace Satrabel.OpenContent.Components.Lucene
         }
         public static void ClearInstance()
         {
-
-            _instance.Dispose();
-            _instance = null;
+            if (_instance != null)
+            {
+                _instance.Dispose();
+                _instance = null;
+            }
             _instance = new LuceneController();
         }
         #endregion
 
 
         #region Search
-        
+
         public SearchResults Search(string type, Query filter, Query query, Sort sort, int pageSize, int pageIndex)
         {
             var luceneResults = new SearchResults();
@@ -107,48 +109,53 @@ namespace Satrabel.OpenContent.Components.Lucene
         private void IndexAll()
         {
             LuceneController.ClearInstance();
-            using (var lc = LuceneController.Instance)
+            try
             {
-                ModuleController mc = new ModuleController();
-                PortalController pc = new PortalController();
-                foreach (PortalInfo portal in pc.GetPortals())
+                using (var lc = LuceneController.Instance)
                 {
-                    ArrayList modules = mc.GetModulesByDefinition(portal.PortalID, "OpenContent");
-                    //foreach (ModuleInfo module in modules.OfType<ModuleInfo>().GroupBy(m => m.ModuleID).Select(g => g.First())){                
-                    foreach (ModuleInfo module in modules.OfType<ModuleInfo>())
+                    ModuleController mc = new ModuleController();
+                    PortalController pc = new PortalController();
+                    foreach (PortalInfo portal in pc.GetPortals())
                     {
-                        OpenContentSettings settings = new OpenContentSettings(module.ModuleSettings);
-
-                        if (settings.Template != null && settings.Template.IsListTemplate && !settings.IsOtherModule)
+                        ArrayList modules = mc.GetModulesByDefinition(portal.PortalID, "OpenContent");
+                        //foreach (ModuleInfo module in modules.OfType<ModuleInfo>().GroupBy(m => m.ModuleID).Select(g => g.First())){                
+                        foreach (ModuleInfo module in modules.OfType<ModuleInfo>())
                         {
-                            //TemplateManifest template = null;
+                            OpenContentSettings settings = new OpenContentSettings(module.ModuleSettings);
 
-                            bool index = false;
-                            if (settings.TemplateAvailable)
+                            if (settings.Template != null && settings.Template.IsListTemplate && !settings.IsOtherModule)
                             {
-                                index = settings.Manifest.Index;
-                            }
-                            FieldConfig indexConfig = null;
-                            if (index)
-                            {
-                                indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
-                            }
+                                //TemplateManifest template = null;
 
-                            //lc.DeleteAll();
-                            //lc.Delete(new TermQuery(new Term("$type", ModuleId.ToString())));
-                            OpenContentController occ = new OpenContentController();
-                            foreach (var item in occ.GetContents(module.ModuleID))
-                            {
-                                lc.Add(item, indexConfig);
+                                bool index = false;
+                                if (settings.TemplateAvailable)
+                                {
+                                    index = settings.Manifest.Index;
+                                }
+                                FieldConfig indexConfig = null;
+                                if (index)
+                                {
+                                    indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
+                                }
+
+                                //lc.DeleteAll();
+                                //lc.Delete(new TermQuery(new Term("$type", ModuleId.ToString())));
+                                OpenContentController occ = new OpenContentController();
+                                foreach (var item in occ.GetContents(module.ModuleID))
+                                {
+                                    lc.Add(item, indexConfig);
+                                }
                             }
                         }
                     }
+                    lc.Store.Commit();
+                    lc.Store.OptimizeSearchIndex(true);
                 }
-                lc.Store.Commit();
-                lc.Store.OptimizeSearchIndex(true);
             }
-
-            LuceneController.ClearInstance();
+            finally
+            {
+                LuceneController.ClearInstance();
+            }
         }
 
         public void ReIndexModuleData(int moduleId, FieldConfig indexConfig)
@@ -178,7 +185,7 @@ namespace Satrabel.OpenContent.Components.Lucene
                 throw new ArgumentNullException("data");
             }
 
-            _serviceInstance.Add(JsonMappingUtils.JsonToDocument(data.ModuleId.ToString(), data.ContentId.ToString(), data.Json, config));
+            Store.Add(JsonMappingUtils.JsonToDocument(data.ModuleId.ToString(), data.ContentId.ToString(), data.Json, config));
         }
 
         public void Update(OpenContentInfo data, FieldConfig config)
@@ -205,7 +212,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             var selection = new TermQuery(new Term(JsonMappingUtils.FieldId, data.ContentId.ToString()));
 
             Query deleteQuery = new FilteredQuery(selection, JsonMappingUtils.GetTypeFilter(data.ModuleId.ToString()));
-            _serviceInstance.Delete(deleteQuery);
+            Store.Delete(deleteQuery);
         }
 
         #endregion
