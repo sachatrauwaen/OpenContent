@@ -201,7 +201,7 @@ namespace Satrabel.OpenContent.Components.Lucene
         /// <summary>
         /// Deletes the matching objects in the IndexWriter.
         /// </summary>
-        /// <param name="controller"></param>
+        /// <param name="data"></param>
         public void Delete(OpenContentInfo data)
         {
             if (null == data)
