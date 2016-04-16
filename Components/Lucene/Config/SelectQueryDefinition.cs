@@ -48,7 +48,25 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
             {
                 cond = Occur.SHOULD;
             }
-            foreach (var rule in filter.FilterRules)
+            AddRulles(q, filter.FilterRules, cond);
+            foreach (var rule in filter.FilterGroups)
+            {
+                Occur groupCond = Occur.MUST; // AND
+                if (rule.Condition == ConditionEnum.OR)
+                {
+                    groupCond = Occur.SHOULD;
+                }
+                BooleanQuery groupQ = new BooleanQuery();
+                AddRulles(groupQ, rule.FilterRules, groupCond);
+                q.Add(groupQ, cond);
+            }
+            q = q.Clauses.Count > 0 ? q : null;
+            return q;
+        }
+
+        private void AddRulles(BooleanQuery q, List<FilterRule> filterRules, Occur cond)
+        {
+            foreach (var rule in filterRules)
             {
                 string fieldName = rule.Field;
                 if (fieldName == "id") fieldName = "$id";
@@ -71,7 +89,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                 }
                 else if (rule.FieldOperator == OperatorEnum.START_WITH)
                 {
-                    q.Add(new WildcardQuery(new Term(fieldName, rule.Value.AsString)), cond);
+                    q.Add(new WildcardQuery(new Term(fieldName, rule.Value.AsString + "*")), cond);
                 }
                 else if (rule.FieldOperator == OperatorEnum.IN)
                 {
@@ -113,8 +131,6 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                 {
                 }
             }
-            q = q.Clauses.Count > 0 ? q : null;
-            return q;
         }
         public SelectQueryDefinition BuildSort(Select select)
         {
