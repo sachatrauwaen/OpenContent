@@ -97,11 +97,12 @@ namespace Satrabel.OpenContent
                     {
                         template = settings.Template;
                     }
-                    var ds = DataSourceManager.GetDataSource("OpenContent");
+                    var ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
                     var dsContext = new DataSourceContext()
                     {
                         ModuleId = ModId,
-                        TemplateFolder = settings.TemplateDir.FolderPath
+                        TemplateFolder = settings.TemplateDir.FolderPath,
+                        Config = settings.Manifest.DataSourceConfig
                     };
                     if (template != null && template.IsListTemplate)
                     {
@@ -203,11 +204,9 @@ namespace Satrabel.OpenContent
 
         private void SaveData()
         {
-            
             TemplateManifest template = null;
             OpenContentSettings settings = this.OpenContentSettings();
             int ModId = settings.IsOtherModule ? settings.ModuleId : ModuleId;
-
             bool index = false;
             if (settings.TemplateAvailable)
             {
@@ -221,13 +220,14 @@ namespace Satrabel.OpenContent
                 indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
             }
              */
-            var ds = DataSourceManager.GetDataSource("OpenContent");
+            var ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
             var dsContext = new DataSourceContext()
             {
                 ModuleId = ModId,
                 TemplateFolder = settings.TemplateDir.FolderPath,
                 Index = index,
-                UserId = UserInfo.UserID
+                UserId = UserInfo.UserID,
+                Config = settings.Manifest.DataSourceConfig
             };
             if (template != null && template.IsListTemplate)
             {
@@ -272,7 +272,6 @@ namespace Satrabel.OpenContent
                     {
                         lst = JArray.Parse(txtSource.Text);
                     }
-
                     var dataList = ds.GetAll(dsContext).Items;
                     foreach (var item in dataList)
                     {

@@ -66,7 +66,7 @@ namespace Satrabel.OpenContent.Components.JPList
                             }
                             else if (status.type == "filter-select" && status.data != null && !string.IsNullOrEmpty(status.name))
                             {
-                                if (status.data.filterType == "path" && status.data.path != null)
+                                if (status.data.filterType == "path" && !string.IsNullOrEmpty(status.data.path))
                                 {
                                     query.AddRule(new FilterRule()
                                     {

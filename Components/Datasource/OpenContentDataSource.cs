@@ -27,8 +27,9 @@ namespace Satrabel.OpenContent.Components.Datasource
 
         public IDataItem GetEdit(DataSourceContext context, string id)
         {
+            var dataItem = new DefaultDataItem();
             var fb = new FormBuilder(new FolderUri(context.TemplateFolder));
-            JObject json = fb.BuildForm();
+            dataItem.Data = fb.BuildForm();
             OpenContentInfo content = null;
             OpenContentController ctrl = new OpenContentController();
             if (!string.IsNullOrEmpty(id) && id != "-1")
@@ -37,16 +38,13 @@ namespace Satrabel.OpenContent.Components.Datasource
             }
             if (content != null)
             {
-                var dataItem = new DefaultDataItem();
                 dataItem.Id = content.ContentId.ToString();
-                dataItem.Data = json;
                 dataItem.Data["data"] = content.Json.ToJObject("GetContent " + id);
-                AddVersions(json, content);
+                AddVersions(dataItem.Data as JObject, content);
                 dataItem.CreatedByUserId = content.CreatedByUserId;
                 dataItem.Item = content;
-                return dataItem;
             }
-            return null;
+            return dataItem;
         }
         public IDataItem GetFirstEdit(DataSourceContext context)
         {

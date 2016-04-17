@@ -37,7 +37,7 @@ namespace Satrabel.OpenContent
             //AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, settings.Template.Uri().FolderPath, "query");
             AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, "", "");
             alpaca.RegisterAll();
-            int ItemId = 0;//Request.QueryString["id"] == null ? -1 : int.Parse(Request.QueryString["id"]);
+            string ItemId = null;//Request.QueryString["id"] == null ? -1 : int.Parse(Request.QueryString["id"]);
             AlpacaContext = new AlpacaContext(PortalId, ModuleId, ItemId, ScopeWrapper.ClientID, hlCancel.ClientID, cmdSave.ClientID, null, null);
         }
         protected void bIndex_Click(object sender, EventArgs e)

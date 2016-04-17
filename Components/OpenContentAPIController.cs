@@ -51,7 +51,7 @@ namespace Satrabel.OpenContent.Components
         [HttpGet]
         public HttpResponseMessage Edit()
         {
-            return Edit("-1");
+            return Edit(null);
         }
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
