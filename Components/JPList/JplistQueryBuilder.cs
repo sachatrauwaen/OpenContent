@@ -28,12 +28,30 @@ namespace Satrabel.OpenContent.Components.JPList
                         {
                             if (status.type == "textbox" && status.data != null && !string.IsNullOrEmpty(status.name) && !string.IsNullOrEmpty(status.data.value))
                             {
-                                query.AddRule(new FilterRule()
+                                var names = status.name.Split(',');
+                                if (names.Length == 1)
                                 {
-                                    Field = status.name,
-                                    FieldOperator = OperatorEnum.START_WITH,
-                                    Value = new StringRuleValue(status.data.value),
-                                });
+                                    query.AddRule(new FilterRule()
+                                    {
+                                        Field = status.name,
+                                        FieldOperator = OperatorEnum.START_WITH,
+                                        Value = new StringRuleValue(status.data.value),
+                                    });
+                                }
+                                else
+                                {
+                                    var group = new FilterGroup() { Condition = ConditionEnum.OR };
+                                    foreach (var n in names)
+                                    {
+                                        group.AddRule(new FilterRule()
+                                        {
+                                            Field = n,
+                                            FieldOperator = OperatorEnum.START_WITH,
+                                            Value = new StringRuleValue(status.data.value),
+                                        });
+                                    }
+                                    query.FilterGroups.Add(group);
+                                }
                             }
                             else if ((status.type == "checkbox-group-filter" || status.type == "button-filter-group")
                                         && status.data != null && !string.IsNullOrEmpty(status.name))
