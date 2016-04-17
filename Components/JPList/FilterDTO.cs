@@ -20,13 +20,13 @@ namespace Satrabel.OpenContent.Components.JPList
             }
             set
             {
-                Names = value.Split(new char[] {','}, StringSplitOptions.RemoveEmptyEntries).ToList();
-            } 
+                Names = value.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            }
         }
         public List<string> Names { get; set; }
 
         public string WildCardSearchValue { get; set; }
-        
+
         public string ExactSearchValue { get; set; }
 
         public List<string> ExactSearchMultiValue { get; set; }

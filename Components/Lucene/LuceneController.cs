@@ -160,16 +160,22 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         public void ReIndexModuleData(int moduleId, FieldConfig indexConfig)
         {
-            using (LuceneController lc = LuceneController.Instance)
+            try
             {
-                lc.Store.Delete(new TermQuery(new Term("$type", moduleId.ToString())));
-                OpenContentController occ = new OpenContentController();
-                foreach (var item in occ.GetContents(moduleId))
+                using (LuceneController lc = LuceneController.Instance)
                 {
-                    lc.Add(item, indexConfig);
+                    lc.Store.Delete(new TermQuery(new Term("$type", moduleId.ToString())));
+                    OpenContentController occ = new OpenContentController();
+                    foreach (var item in occ.GetContents(moduleId))
+                    {
+                        lc.Add(item, indexConfig);
+                    }
+                    lc.Store.Commit();
+                    lc.Store.OptimizeSearchIndex(true);
                 }
-                lc.Store.Commit();
-                lc.Store.OptimizeSearchIndex(true);
+            }
+            finally
+            {
                 LuceneController.ClearInstance();
             }
         }
@@ -201,7 +207,7 @@ namespace Satrabel.OpenContent.Components.Lucene
         /// <summary>
         /// Deletes the matching objects in the IndexWriter.
         /// </summary>
-        /// <param name="controller"></param>
+        /// <param name="data"></param>
         public void Delete(OpenContentInfo data)
         {
             if (null == data)
@@ -245,8 +251,11 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         public void Dispose()
         {
-            _serviceInstance.Dispose();
-            _serviceInstance = null;
+            if (_serviceInstance != null)
+            {
+                _serviceInstance.Dispose();
+                _serviceInstance = null;
+            }
         }
     }
 }
