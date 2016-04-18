@@ -54,13 +54,16 @@ namespace Satrabel.OpenContent.Components.Datasource
             var content = ctrl.GetFirstContent(context.ModuleId);
             if (content != null)
             {
-                var dataItem = new DefaultDataItem();
-                dataItem.Id = content.ContentId.ToString();
-                dataItem.Data = json;
+                var dataItem = new DefaultDataItem
+                {
+                    Id = content.ContentId.ToString(),
+                    Data = json,
+                    CreatedByUserId = content.CreatedByUserId,
+                    Item = content
+                };
                 dataItem.Data["data"] = content.Json.ToJObject("GetFirstEdit");
                 AddVersions(json, content);
-                dataItem.CreatedByUserId = content.CreatedByUserId;
-                dataItem.Item = content;
+
                 return dataItem;
             }
             return null;
@@ -78,11 +81,13 @@ namespace Satrabel.OpenContent.Components.Datasource
                     var ver = content.Versions.Single(v => v.CreatedOnDate == datetime);
                     if (ver != null)
                     {
-                        var dataItem = new DefaultDataItem();
-                        dataItem.Id = content.ContentId.ToString();
-                        dataItem.Data = ver.Json;
-                        dataItem.CreatedByUserId = content.CreatedByUserId;
-                        dataItem.Item = content;
+                        var dataItem = new DefaultDataItem
+                        {
+                            Id = content.ContentId.ToString(),
+                            Data = ver.Json,
+                            CreatedByUserId = content.CreatedByUserId,
+                            Item = content
+                        };
                         return dataItem;
                     }
                 }
@@ -94,11 +99,13 @@ namespace Satrabel.OpenContent.Components.Datasource
             var content = GetContent(context.ModuleId, id);
             if (content != null && content.ModuleId == context.ModuleId)
             {
-                var dataItem = new DefaultDataItem();
-                dataItem.Id = content.ContentId.ToString();
-                dataItem.Data = content.Json.ToJObject("GetContent " + id);
-                dataItem.CreatedByUserId = content.CreatedByUserId;
-                dataItem.Item = content;
+                var dataItem = new DefaultDataItem
+                {
+                    Id = content.ContentId.ToString(),
+                    Data = content.Json.ToJObject("GetContent " + id),
+                    CreatedByUserId = content.CreatedByUserId,
+                    Item = content
+                };
                 return dataItem;
             }
             return null;
