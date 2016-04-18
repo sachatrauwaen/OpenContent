@@ -158,8 +158,10 @@ namespace Satrabel.OpenContent.Components.JPList
                                     WildCardSearchValue = status.data.value,
                                 });
                             }
-                            else if ((status.type == "checkbox-group-filter" || status.type == "button-filter-group")
-                                        && status.data != null && !string.IsNullOrEmpty(status.name))
+                            else if (   
+                                        (status.type == "checkbox-group-filter" || status.type == "button-filter-group" || status.type == "comined")
+                                        && status.data != null && !string.IsNullOrEmpty(status.name)
+                                    )
                             {
                                 if (status.data.filterType == "pathGroup" && status.data.pathGroup != null && status.data.pathGroup.Count > 0)
                                 {

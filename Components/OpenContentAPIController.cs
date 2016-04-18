@@ -545,14 +545,7 @@ namespace Satrabel.OpenContent.Components
                     }
                     if (json is JArray)
                     {
-                        foreach (JToken item in (JArray)json)
-                        {
-                            res.Add(new LookupResultDTO()
-                            {
-                                value = item[req.valueField] == null ? "" : item[req.valueField].ToString(),
-                                text = item[req.textField] == null ? "" : item[req.textField].ToString()
-                            });
-                        }
+                        AddLookupItems(req.valueField, req.textField, req.childrenField, res, json as JArray);
                     }
                     /*
                     else if (json is JObject)
@@ -574,6 +567,24 @@ namespace Satrabel.OpenContent.Components
             {
                 Log.Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
+
+        private static void AddLookupItems(string valueField, string textField, string childrenField, List<LookupResultDTO> res, JArray json, string prefix = "")
+        {
+            foreach (JToken item in json)
+            {
+                res.Add(new LookupResultDTO()
+                {
+                    value = item[valueField] == null ? "" : item[valueField].ToString(),
+                    text = item[textField] == null ? "" : prefix+item[textField].ToString()
+                });
+
+                if (!string.IsNullOrEmpty(childrenField) && item[childrenField] is JArray)
+                {
+                    var childJson = item[childrenField] as JArray;
+                    AddLookupItems(valueField, textField, childrenField, res, childJson, prefix + "..");
+                }
             }
         }
 
@@ -761,6 +772,7 @@ namespace Satrabel.OpenContent.Components
         /// The text field.
         /// </value>
         public string textField { get; set; }
+        public string childrenField { get; set; }
     }
 
     public class LookupResultDTO
