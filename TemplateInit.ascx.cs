@@ -285,10 +285,7 @@ namespace Satrabel.OpenContent
         private void BindOtherModules(int tabId, int moduleId)
         {
             IEnumerable<ModuleInfo> modules = (new ModuleController()).GetModules(ModuleContext.PortalId).Cast<ModuleInfo>();
-
-            //todo: next line should exclude the modules of other languages
             modules = modules.Where(m => m.ModuleDefinition.DefinitionName == "OpenContent" && m.IsDeleted == false && !m.OpenContentSettings().IsOtherModule);
-
             rblDataSource.Items[1].Enabled = modules.Any();
             phDataSource.Visible = rblDataSource.SelectedIndex == 1; // other module
             if (rblDataSource.SelectedIndex == 1) // other module
@@ -306,8 +303,24 @@ namespace Satrabel.OpenContent
                 {
                     var tc = new TabController();
                     var tab = tc.GetTab(item.TabID, ModuleContext.PortalId, false);
+                    if (!tab.IsNeutralCulture && tab.CultureCode != DnnUtils.GetCurrentCultureCode())
+                    {
+                        // skip other cultures
+                        continue;
+                    }
+
+
                     var tabpath = tab.TabPath.Replace("//", "/").TrimEnd(tab.TabName).Trim('/');
-                    var li = new ListItem(string.Format("[{2}]{0} - {1}", tab.TabName, item.ModuleTitle, tabpath), item.TabModuleID.ToString());
+                    ListItem li;
+                    if (string.IsNullOrEmpty(tabpath))
+                    {
+                        li = new ListItem(string.Format("{0} - {1}", tab.TabName, item.ModuleTitle), item.TabModuleID.ToString());
+                    }
+                    else
+                    {
+                        li = new ListItem(string.Format("[{2}]{0} - {1}", tab.TabName, item.ModuleTitle, tabpath), item.TabModuleID.ToString());
+                    }
+                    
                     listItems.Add(li);
                     if (item.TabID == tabId && item.ModuleID == moduleId)
                     {

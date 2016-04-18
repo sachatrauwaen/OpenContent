@@ -218,7 +218,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
         {
             var Sort = Select.Sort;
             var sortArray = query["Sort"] as JArray;
-            if (sortArray != null)
+            if (sortArray != null && sortArray.Any())
             {
                 foreach (JObject item in sortArray)
                 {

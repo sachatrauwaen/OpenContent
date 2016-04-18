@@ -51,7 +51,7 @@ namespace Satrabel.OpenContent.Components.JPList
                                     query.FilterGroups.Add(group);
                                 }
                             }
-                            else if ((status.type == "checkbox-group-filter" || status.type == "button-filter-group")
+                            else if ((status.type == "checkbox-group-filter" || status.type == "button-filter-group" || status.type == "combined")
                                         && status.data != null && !string.IsNullOrEmpty(status.name))
                             {
                                 if (status.data.filterType == "pathGroup" && status.data.pathGroup != null && status.data.pathGroup.Count > 0)
