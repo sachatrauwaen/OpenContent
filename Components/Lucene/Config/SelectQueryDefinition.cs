@@ -34,7 +34,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
         }
         public SelectQueryDefinition BuildPage(Select select)
         {
-            PageSize = select.PageSize;
+            PageSize = select.PageSize == 0 ? 100 : select.PageSize;
             PageIndex = select.PageIndex;
             // ????? DefaultNoResults = ;
             return this;
