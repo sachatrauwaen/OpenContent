@@ -23,6 +23,99 @@ namespace Satrabel.OpenContent.Components.Datasource
             }
         }
 
+        #region Queries
+
+        public IDataItem GetVersion(DataSourceContext context, string id, DateTime datetime)
+        {
+            var content = GetContent(context.ModuleId, id);
+            if (content != null)
+            {
+                if (!string.IsNullOrEmpty(content.VersionsJson))
+                {
+                    var ver = content.Versions.Single(v => v.CreatedOnDate == datetime);
+                    if (ver != null)
+                    {
+                        var dataItem = new DefaultDataItem
+                        {
+                            Id = content.ContentId.ToString(),
+                            Data = ver.Json,
+                            CreatedByUserId = content.CreatedByUserId,
+                            Item = content
+                        };
+                        return dataItem;
+                    }
+                }
+            }
+            return null;
+        }
+
+        public IDataItem Get(DataSourceContext context, string id)
+        {
+            var content = GetContent(context.ModuleId, id);
+            if (content != null && content.ModuleId == context.ModuleId)
+            {
+                var dataItem = new DefaultDataItem
+                {
+                    Id = content.ContentId.ToString(),
+                    Data = content.Json.ToJObject("GetContent " + id),
+                    CreatedByUserId = content.CreatedByUserId,
+                    Item = content
+                };
+                return dataItem;
+            }
+            return null;
+        }
+        public IDataItem GetFirst(DataSourceContext context)
+        {
+            return Get(context, null);
+        }
+        public IDataItems GetAll(DataSourceContext context)
+        {
+            OpenContentController ctrl = new OpenContentController();
+
+            var dataList = ctrl.GetContents(context.ModuleId).Select(c => new DefaultDataItem()
+            {
+                Id = c.ContentId.ToString(),
+                Title = c.Title,
+                Data = c.Json.ToJObject("GetContent " + c.ContentId),
+                CreatedByUserId = c.CreatedByUserId,
+                Item = c
+            });
+            return new DefaultDataItems()
+            {
+                Items = dataList,
+                Total = dataList.Count()
+            };
+        }
+        public IDataItems GetAll(DataSourceContext context, Select select)
+        {
+            SelectQueryDefinition def = new SelectQueryDefinition();
+            def.Build(@select);
+            SearchResults docs = LuceneController.Instance.Search(context.ModuleId.ToString(), def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
+            int total = docs.TotalResults;
+            //Log.Logger.DebugFormat("OpenContent.JplistApiController.List() Searched for [{0}], found [{1}] items", select.ToJson(), total);
+            //System.Diagnostics.Debug.WriteLine(select.ToJson());
+            var dataList = new List<IDataItem>();
+            foreach (var item in docs.ids)
+            {
+                var dsItem = Get(context, item);
+                if (dsItem != null)
+                {
+                    dataList.Add(dsItem);
+                }
+                else
+                {
+                    Log.Logger.DebugFormat("OpenContent.JplistApiController.List() ContentItem not found [{0}]", item);
+                }
+            }
+            return new DefaultDataItems()
+            {
+                Items = dataList,
+                Total = total,
+                DebugInfo = def.Filter.ToString() + " - " + def.Query.ToString() + " - " + def.Sort.ToString()
+            };
+        }
+
         #region Edit
 
         public IDataItem GetEdit(DataSourceContext context, string id)
@@ -71,95 +164,6 @@ namespace Satrabel.OpenContent.Components.Datasource
 
         #endregion
 
-        public IDataItem GetVersion(DataSourceContext context, string id, DateTime datetime)
-        {
-            var content = GetContent(context.ModuleId, id);
-            if (content != null)
-            {
-                if (!string.IsNullOrEmpty(content.VersionsJson))
-                {
-                    var ver = content.Versions.Single(v => v.CreatedOnDate == datetime);
-                    if (ver != null)
-                    {
-                        var dataItem = new DefaultDataItem
-                        {
-                            Id = content.ContentId.ToString(),
-                            Data = ver.Json,
-                            CreatedByUserId = content.CreatedByUserId,
-                            Item = content
-                        };
-                        return dataItem;
-                    }
-                }
-            }
-            return null;
-        }
-        public IDataItem Get(DataSourceContext context, string id)
-        {
-            var content = GetContent(context.ModuleId, id);
-            if (content != null && content.ModuleId == context.ModuleId)
-            {
-                var dataItem = new DefaultDataItem
-                {
-                    Id = content.ContentId.ToString(),
-                    Data = content.Json.ToJObject("GetContent " + id),
-                    CreatedByUserId = content.CreatedByUserId,
-                    Item = content
-                };
-                return dataItem;
-            }
-            return null;
-        }
-        public IDataItem GetFirst(DataSourceContext context)
-        {
-            return Get(context, null);
-        }
-        public IDataItems GetAll(DataSourceContext context)
-        {
-            OpenContentController ctrl = new OpenContentController();
-
-            var dataList = ctrl.GetContents(context.ModuleId).Select(c => new DefaultDataItem()
-            {
-                Id = c.ContentId.ToString(),
-                Title = c.Title,
-                Data = c.Json.ToJObject("GetContent " + c.ContentId),
-                CreatedByUserId = c.CreatedByUserId,
-                Item = c
-            });
-            return new DefaultDataItems()
-            {
-                Items = dataList,
-                Total = dataList.Count()
-            };
-        }
-        public IDataItems GetAll(DataSourceContext context, Select select)
-        {
-            SelectQueryDefinition def = new SelectQueryDefinition();
-            def.Build(select);
-            SearchResults docs = LuceneController.Instance.Search(context.ModuleId.ToString(), def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
-            int total = docs.TotalResults;
-            //Log.Logger.DebugFormat("OpenContent.JplistApiController.List() Searched for [{0}], found [{1}] items", select.ToJson(), total);
-            //System.Diagnostics.Debug.WriteLine(select.ToJson());
-            var dataList = new List<IDataItem>();
-            foreach (var item in docs.ids)
-            {
-                var dsItem = Get(context, item);
-                if (dsItem != null)
-                {
-                    dataList.Add(dsItem);
-                }
-                else
-                {
-                    Log.Logger.DebugFormat("OpenContent.JplistApiController.List() ContentItem not found [{0}]", item);
-                }
-            }
-            return new DefaultDataItems()
-            {
-                Items = dataList,
-                Total = total,
-                DebugInfo = def.Filter.ToString() + " - " + def.Query.ToString() + " - " + def.Sort.ToString()
-            };
-        }
         private OpenContentInfo GetContent(int moduleId, string id)
         {
             OpenContentController ctrl = new OpenContentController();
@@ -172,29 +176,10 @@ namespace Satrabel.OpenContent.Components.Datasource
                 return ctrl.GetFirstContent(moduleId);
             }
         }
-        private static void AddVersions(JObject json, OpenContentInfo struc)
-        {
-            if (!string.IsNullOrEmpty(struc.VersionsJson))
-            {
-                var verLst = new JArray();
-                foreach (var item in struc.Versions)
-                {
-                    var ver = new JObject();
-                    ver["text"] = item.CreatedOnDate.ToShortDateString() + " " + item.CreatedOnDate.ToShortTimeString();
-                    if (verLst.Count == 0) // first
-                    {
-                        ver["text"] = ver["text"] + " ( current )";
-                    }
-                    ver["ticks"] = item.CreatedOnDate.Ticks.ToString();
-                    verLst.Add(ver);
-                }
-                json["versions"] = verLst;
 
-                //json["versions"] = JArray.Parse(struc.VersionsJson);
-            }
-        }
+        #endregion
 
-        #region Actions
+        #region Commands
 
         public void Add(DataSourceContext context, JToken data)
         {
@@ -232,5 +217,27 @@ namespace Satrabel.OpenContent.Components.Datasource
         }
 
         #endregion
+
+        private static void AddVersions(JObject json, OpenContentInfo struc)
+        {
+            if (!string.IsNullOrEmpty(struc.VersionsJson))
+            {
+                var verLst = new JArray();
+                foreach (var item in struc.Versions)
+                {
+                    var ver = new JObject();
+                    ver["text"] = item.CreatedOnDate.ToShortDateString() + " " + item.CreatedOnDate.ToShortTimeString();
+                    if (verLst.Count == 0) // first
+                    {
+                        ver["text"] = ver["text"] + " ( current )";
+                    }
+                    ver["ticks"] = item.CreatedOnDate.Ticks.ToString();
+                    verLst.Add(ver);
+                }
+                json["versions"] = verLst;
+
+                //json["versions"] = JArray.Parse(struc.VersionsJson);
+            }
+        }
     }
 }
