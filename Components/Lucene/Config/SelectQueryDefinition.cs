@@ -145,7 +145,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                     Sortfieldtype(rule.FieldType, ref sortfieldtype, ref sortFieldPrefix);
                     sortFields.Add(new SortField(sortFieldPrefix + rule.Field, sortfieldtype, rule.Descending));
                 }
-                Sort = new Sort(sortFields.ToArray());
+                sort = new Sort(sortFields.ToArray());
             }
             Sort = sort;
             return this;
