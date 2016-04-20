@@ -10,6 +10,7 @@ namespace Satrabel.OpenContent.Components.Datasource
     {
         public int ModuleId { get; set; }
         public string TemplateFolder { get; set; }
+        public int PortalId { get; set; }
         public int UserId { get; set; }
         public bool Index { get; set; }
         public JObject Config { get; set; }

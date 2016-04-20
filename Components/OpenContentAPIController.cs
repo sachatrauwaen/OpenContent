@@ -336,6 +336,7 @@ namespace Satrabel.OpenContent.Components
                     TemplateFolder = settings.TemplateDir.FolderPath,
                     Index = index,
                     UserId = UserInfo.UserID,
+                    PortalId = module.PortalID,
                     Config = manifest.DataSourceConfig
                 };
                 string itemId = null;
@@ -418,6 +419,7 @@ namespace Satrabel.OpenContent.Components
                     TemplateFolder = settings.TemplateDir.FolderPath,
                     Index = index,
                     UserId = UserInfo.UserID,
+                    PortalId = module.PortalID,
                     Config = manifest.DataSourceConfig
                 };
                 IDataItem content = null;
