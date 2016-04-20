@@ -10,32 +10,38 @@ namespace Satrabel.OpenContent.Components.Datasource
     public interface IDataSource
     {
         /// <summary>
-        /// Gets the name.
+        /// Gets the name of the resource that this dataprovider is handling.
         /// </summary>
         /// <value>
         /// The name of the Datasource is a unique identifier.
         /// </value>
         string Name { get; }
 
+        #region Queries
+
         /// <summary>
         /// Gets the specified item of a list datasource.
+        /// Needed to go to the detail page.
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="id">The identifier.</param>
         /// <returns></returns>
         IDataItem Get(DataSourceContext context, string id);
+
         /// <summary>
         /// Gets the item of a non-list datasource.
         /// </summary>
         /// <param name="context">The context.</param>
         /// <returns></returns>
         IDataItem GetFirst(DataSourceContext context);
+
         /// <summary>
         /// Gets all items of a list datasource
         /// </summary>
         /// <param name="context">The context.</param>
         /// <returns></returns>
         IDataItems GetAll(DataSourceContext context);
+
         /// <summary>
         /// Gets items of a list datasource based on a query, 
         /// </summary>
@@ -43,13 +49,18 @@ namespace Satrabel.OpenContent.Components.Datasource
         /// <param name="select">The select.</param>
         /// <returns></returns>
         IDataItems GetAll(DataSourceContext context, Select select);
-
         IDataItem GetEdit(DataSourceContext context, string id);
         IDataItem GetFirstEdit(DataSourceContext context);
         IDataItem GetVersion(DataSourceContext context, string id, DateTime datetime);
+
+        #endregion
+
+        #region Commands
+
         void Add(DataSourceContext context, JToken data);
         void Update(DataSourceContext context, IDataItem item, JToken data);
         void Delete(DataSourceContext context, IDataItem item);
+        #endregion
 
     }
 }

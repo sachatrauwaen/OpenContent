@@ -54,14 +54,14 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
             Filter filter = new QueryWrapperFilter(query);
             return filter;
         }
-        public static Filter GetTypeFilter(string type, Query Filter)
+        public static Filter GetTypeFilter(string type, Query filter)
         {
             var typeTermQuery = new TermQuery(new Term(FieldType, type));
             BooleanQuery query = new BooleanQuery();
             query.Add(typeTermQuery, Occur.MUST);
-            query.Add(Filter, Occur.MUST);
-            Filter filter = new QueryWrapperFilter(query);
-            return filter;
+            query.Add(filter, Occur.MUST);
+            Filter resultFilter = new QueryWrapperFilter(query);
+            return resultFilter;
         }
 
         public static Analyzer GetAnalyser()
