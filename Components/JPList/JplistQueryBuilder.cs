@@ -75,6 +75,33 @@ namespace Satrabel.OpenContent.Components.JPList
                                     });
                                 }
                             }
+                            else if (status.type == "autocomplete" && status.data != null && !string.IsNullOrEmpty(status.data.path) && !string.IsNullOrEmpty(status.data.value))
+                            {
+                                var names = status.data.path.Split(',');
+                                if (names.Length == 1)
+                                {
+                                    query.AddRule(new FilterRule()
+                                    {
+                                        Field = status.data.path,
+                                        FieldOperator = OperatorEnum.START_WITH,
+                                        Value = new StringRuleValue(status.data.value),
+                                    });
+                                }
+                                else
+                                {
+                                    var group = new FilterGroup() { Condition = ConditionEnum.OR };
+                                    foreach (var n in names)
+                                    {
+                                        group.AddRule(new FilterRule()
+                                        {
+                                            Field = n,
+                                            FieldOperator = OperatorEnum.START_WITH,
+                                            Value = new StringRuleValue(status.data.value),
+                                        });
+                                    }
+                                    query.FilterGroups.Add(group);
+                                }
+                            }
                             break;
                         }
 
