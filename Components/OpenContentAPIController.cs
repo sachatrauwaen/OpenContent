@@ -363,7 +363,7 @@ namespace Satrabel.OpenContent.Components
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
-                var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
+                //var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
                 if (dsItem == null)
                 {
                     ds.Add(dsContext, json["form"] as JObject);
@@ -374,13 +374,13 @@ namespace Satrabel.OpenContent.Components
                 }
                 if (json["form"]["ModuleTitle"] != null && json["form"]["ModuleTitle"].Type == JTokenType.String)
                 {
-                    string ModuleTitle = json["form"]["ModuleTitle"].ToString();
-                    OpenContentUtils.UpdateModuleTitle(ActiveModule, ModuleTitle);
+                    string moduleTitle = json["form"]["ModuleTitle"].ToString();
+                    OpenContentUtils.UpdateModuleTitle(ActiveModule, moduleTitle);
                 }
                 else if (json["form"]["ModuleTitle"] != null && json["form"]["ModuleTitle"].Type == JTokenType.Object)
                 {
-                    string ModuleTitle = json["form"]["ModuleTitle"][DnnUtils.GetCurrentCultureCode()].ToString();
-                    OpenContentUtils.UpdateModuleTitle(ActiveModule, ModuleTitle);
+                    string moduleTitle = json["form"]["ModuleTitle"][DnnUtils.GetCurrentCultureCode()].ToString();
+                    OpenContentUtils.UpdateModuleTitle(ActiveModule, moduleTitle);
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, "");
             }
