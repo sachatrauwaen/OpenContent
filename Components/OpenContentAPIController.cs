@@ -95,7 +95,7 @@ namespace Satrabel.OpenContent.Components
                 {
                     //json["data"] = content.Json.ToJObject("GetContent " + id);
                     json = dsItem.Data as JObject;
-                    if (json["schema"]["properties"]["ModuleTitle"] is JObject)
+                    if (json["data"] != null && json["schema"]["properties"]["ModuleTitle"] is JObject)
                     {
                         //json["data"]["ModuleTitle"] = ActiveModule.ModuleTitle;
                         if (json["data"]["ModuleTitle"] != null && json["data"]["ModuleTitle"].Type == JTokenType.String)
