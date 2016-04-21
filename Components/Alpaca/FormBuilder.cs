@@ -307,6 +307,16 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     };
                     newConfig.Fields.Add(prop.Key, newField);
                 }
+                else if (optType == "ckeditor")
+                {
+                    var newField = new FieldConfig()
+                    {
+                        IndexType = "html",
+                        Index = true,
+                        Sort = true
+                    };
+                    newConfig.Fields.Add(prop.Key, newField);
+                }
                 else if (optType == "mltext")
                 {
                     var newField = new FieldConfig()
@@ -319,6 +329,17 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     newConfig.Fields.Add(prop.Key, newField);
                 }
                 else if (optType == "mlwysihtml")
+                {
+                    var newField = new FieldConfig()
+                    {
+                        IndexType = "html",
+                        Index = true,
+                        Sort = true,
+                        MultiLanguage = true
+                    };
+                    newConfig.Fields.Add(prop.Key, newField);
+                }
+                else if (optType == "mlckeditor")
                 {
                     var newField = new FieldConfig()
                     {
