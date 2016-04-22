@@ -2,17 +2,13 @@
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
-using Lucene.Net.QueryParsers;
 using Lucene.Net.Search;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Satrabel.OpenContent.Components.Lucene.Mapping
 {
-    public class JsonMappingUtils
+    public static class JsonMappingUtils
     {
         #region Consts
         /// <summary>
@@ -46,6 +42,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
             objectMapper.AddJsonToDocument(source, doc, config);
             return doc;
         }
+
         public static Filter GetTypeFilter(string type)
         {
             var typeTermQuery = new TermQuery(new Term(FieldType, type));
@@ -68,21 +65,6 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
         {
             var analyser = new StandardAnalyzer(global::Lucene.Net.Util.Version.LUCENE_30);
             return analyser;
-            /*
-            var analyzerList = new List<KeyValuePair<string, Analyzer>>
-            {
-                //new KeyValuePair<string, Analyzer>("PortalId", new KeywordAnalyzer()),
-                //new KeyValuePair<string, Analyzer>("FileId", new KeywordAnalyzer()),
-                new KeyValuePair<string, Analyzer>("Title", new SimpleAnalyzer()),
-                //new KeyValuePair<string, Analyzer>("FileName", new SimpleAnalyzer()),
-                new KeyValuePair<string, Analyzer>("Description", new StandardAnalyzer(global::Lucene.Net.Util.Version.LUCENE_30)),
-                //new KeyValuePair<string, Analyzer>("FileContent", new StandardAnalyzer(Version.LUCENE_30)),
-                //new KeyValuePair<string, Analyzer>("Folder", new LowercaseKeywordAnalyzer()),
-                new KeyValuePair<string, Analyzer>("Category", new KeywordAnalyzer())
-            };
-            return new PerFieldAnalyzerWrapper(new KeywordAnalyzer(), analyzerList);
-            */
-            
         }
     }
 }

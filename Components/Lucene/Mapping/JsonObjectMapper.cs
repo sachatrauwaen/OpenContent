@@ -37,16 +37,13 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
         /// <summary>
         /// Adds the given source object to the specified Document.
         /// </summary>
-        /// <typeparam name="TObject">
-        /// The type of the object to add.
-        /// </typeparam>
         /// <param name="source">
         /// The source object to add.
         /// </param>
         /// <param name="doc">
         /// The Document to add the object to.
         /// </param>
-
+        /// <param name="config"></param>
         public void AddJsonToDocument(string source, Document doc, FieldConfig config)
         {
             JToken token = JToken.Parse(source);
