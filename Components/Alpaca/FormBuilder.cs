@@ -248,7 +248,11 @@ namespace Satrabel.OpenContent.Components.Alpaca
             List<string> fieldLst = new List<string>();
             foreach (var prop in schemaConfig.Properties)
             {
-                var opts = optionsConfig.Fields.ContainsKey(prop.Key) ? optionsConfig.Fields[prop.Key] : null;
+                OptionsConfig opts = null;
+                if (optionsConfig.Fields != null)
+                {
+                    opts = optionsConfig.Fields.ContainsKey(prop.Key) ? optionsConfig.Fields[prop.Key] : null;
+                }
                 string optType = opts == null ? "text" : opts.Type;
                 if (prop.Value.Type == "array" && (prop.Value.Enum != null || optType == "select" || optType == "select2"))
                 {
@@ -303,6 +307,16 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     };
                     newConfig.Fields.Add(prop.Key, newField);
                 }
+                else if (optType == "ckeditor")
+                {
+                    var newField = new FieldConfig()
+                    {
+                        IndexType = "html",
+                        Index = true,
+                        Sort = true
+                    };
+                    newConfig.Fields.Add(prop.Key, newField);
+                }
                 else if (optType == "mltext")
                 {
                     var newField = new FieldConfig()
@@ -315,6 +329,17 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     newConfig.Fields.Add(prop.Key, newField);
                 }
                 else if (optType == "mlwysihtml")
+                {
+                    var newField = new FieldConfig()
+                    {
+                        IndexType = "html",
+                        Index = true,
+                        Sort = true,
+                        MultiLanguage = true
+                    };
+                    newConfig.Fields.Add(prop.Key, newField);
+                }
+                else if (optType == "mlckeditor")
                 {
                     var newField = new FieldConfig()
                     {
