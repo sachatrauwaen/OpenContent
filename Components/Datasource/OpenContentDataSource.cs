@@ -51,15 +51,14 @@ namespace Satrabel.OpenContent.Components.Datasource
             return null;
         }
 
-        public JToken GetVersion(DataSourceContext context, IDataItem item, long ticks)
+        public JToken GetVersion(DataSourceContext context, IDataItem item, DateTime datetime)
         {
             var content = (OpenContentInfo)item.Item;
             if (content != null)
             {
                 if (!string.IsNullOrEmpty(content.VersionsJson))
-                {
-                    var d = new DateTime(ticks);
-                    var ver = content.Versions.Single(v => v.CreatedOnDate == d);
+                {                    
+                    var ver = content.Versions.Single(v => v.CreatedOnDate == datetime);
                     if (ver != null)
                     {
                         return ver.Json;
@@ -263,7 +262,6 @@ namespace Satrabel.OpenContent.Components.Datasource
         }
 
         #endregion
-
 
     }
 }

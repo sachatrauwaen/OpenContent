@@ -66,7 +66,7 @@ namespace Satrabel.OpenContent
             if (dsItem != null)
             {
                 var ticks = long.Parse(ddlVersions.SelectedValue);
-                var ver = ds.GetVersion(dsContext, dsItem, ticks);
+                var ver = ds.GetVersion(dsContext, dsItem, new DateTime(ticks));
                 //var ver = data.Versions.Single(v => v.CreatedOnDate == d);
                 txtSource.Text = ver.ToString();
             }

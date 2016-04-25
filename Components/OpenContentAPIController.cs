@@ -275,7 +275,7 @@ namespace Satrabel.OpenContent.Components
                 var dsItem = ds.Get(dsContext, id);
                 if (dsItem != null)
                 {
-                    var version = ds.GetVersion(dsContext, dsItem, long.Parse(ticks));
+                    var version = ds.GetVersion(dsContext, dsItem, new DateTime(long.Parse(ticks)));
                     if (version != null)
                     {
                         json = version;

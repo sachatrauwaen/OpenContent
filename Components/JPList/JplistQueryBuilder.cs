@@ -1,4 +1,5 @@
 ﻿using Satrabel.OpenContent.Components.Datasource.search;
+using Satrabel.OpenContent.Components.Lucene.Config;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,7 +7,7 @@ namespace Satrabel.OpenContent.Components.JPList
 {
     public static class JplistQueryBuilder
     {
-        public static Select MergeJpListQuery(Select select, List<StatusDTO> statuses)
+        public static Select MergeJpListQuery(FieldConfig config, Select select, List<StatusDTO> statuses)
         {
             var query = select.Query;
             foreach (StatusDTO status in statuses)
@@ -112,7 +113,7 @@ namespace Satrabel.OpenContent.Components.JPList
                             {
                                 Field = status.data.path,
                                 Descending = status.data.order == "desc",
-                                //FieldType = FieldTypeEnum.
+                                FieldType = Sortfieldtype(config, status.data.path)
                                 // todo :
                             });
                             break;
@@ -121,5 +122,53 @@ namespace Satrabel.OpenContent.Components.JPList
             }
             return select;
         }
+
+
+        private static FieldTypeEnum Sortfieldtype(FieldConfig IndexConfig, string fieldName)
+        {
+            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey(fieldName))
+            {
+                var config = IndexConfig.Items == null ? IndexConfig.Fields[fieldName] : IndexConfig.Items;
+                if (config.IndexType == "datetime" || config.IndexType == "date" || config.IndexType == "time")
+                {
+                    return FieldTypeEnum.DATETIME;
+                }
+                else if (config.IndexType == "boolean")
+                {
+                    return FieldTypeEnum.BOOLEAN;
+                }
+                else if (config.IndexType == "int")
+                {
+                    return FieldTypeEnum.INTEGER;
+                }
+                else if (config.IndexType == "long")
+                {
+                    return FieldTypeEnum.LONG;
+                }
+                else if (config.IndexType == "float" || config.IndexType == "double")
+                {
+                    return FieldTypeEnum.FLOAT;
+                }
+                
+                else if (config.IndexType == "key")
+                {
+                    return FieldTypeEnum.KEY;
+                }
+                else if (config.IndexType == "text")
+                {
+                    return FieldTypeEnum.TEXT;
+                }
+                else if (config.IndexType == "html")
+                {
+                    return FieldTypeEnum.HTML;
+                }
+                else
+                {
+                    return FieldTypeEnum.STRING;
+                }
+            }
+            return FieldTypeEnum.STRING;
+        }
+
     }
 }

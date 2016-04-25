@@ -153,6 +153,7 @@
     <Compile Include="Components\Datasource\DataSourceManager.cs" />
     <Compile Include="Components\Datasource\DefaultDataItems.cs" />
     <Compile Include="Components\Datasource\DefaultDataItem.cs" />
+    <Compile Include="Components\Datasource\DefaultDataSource.cs" />
     <Compile Include="Components\Datasource\IDataItems.cs" />
     <Compile Include="Components\Datasource\IDataItem.cs" />
     <Compile Include="Components\Datasource\IDatasource.cs" />

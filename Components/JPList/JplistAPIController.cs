@@ -66,7 +66,7 @@ namespace Satrabel.OpenContent.Components.JPList
                         queryBuilder.BuildFilter(PortalSettings.UserMode != PortalSettings.Mode.Edit);
                     }
 
-                    JplistQueryBuilder.MergeJpListQuery(queryBuilder.Select, req.StatusLst);
+                    JplistQueryBuilder.MergeJpListQuery(indexConfig, queryBuilder.Select, req.StatusLst);
                     IDataItems dsItems;
                     if (queryBuilder.DefaultNoResults && queryBuilder.Select.IsQueryEmpty)
                     {
