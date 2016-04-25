@@ -86,8 +86,6 @@ namespace Satrabel.OpenContent.Components.JPList
                         };
                         dsItems = ds.GetAll(dsContext, queryBuilder.Select);
                     }
-                    
-
                     int mainTabId = settings.DetailTabId > 0 ? settings.DetailTabId : settings.TabId;
                     ModelFactory mf = new ModelFactory(dsItems.Items, ActiveModule, PortalSettings, mainTabId);
                     if (!string.IsNullOrEmpty(req.options))

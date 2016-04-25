@@ -81,20 +81,25 @@ namespace Satrabel.OpenContent.Components
                 IDataItem dsItem = null;
                 if (listMode)
                 {
-                    dsItem = ds.GetEdit(dsContext, id);
+                    if (!string.IsNullOrEmpty(id)) // not a new item
+                    {
+                        dsItem = ds.Get(dsContext, id);
+                    }
                 }
                 else
                 {
-                    dsItem = ds.GetFirstEdit(dsContext);
+                    dsContext.Single = true;
+                    dsItem = ds.Get(dsContext, null);
                 }
                 int createdByUserid = -1;
-                var json = new JObject();
+                var json = ds.GetAlpaca(dsContext, true, true, true);
                 //var content = GetContent(module.ModuleID, listMode, int.Parse(id));
                 //if (content != null)
                 if (dsItem != null)
                 {
                     //json["data"] = content.Json.ToJObject("GetContent " + id);
-                    json = dsItem.Data as JObject;
+                    //json = dsItem.Data as JObject;
+                    json["data"] = dsItem.Data;
                     if (json["schema"]["properties"]["ModuleTitle"] is JObject)
                     {
                         //json["data"]["ModuleTitle"] = ActiveModule.ModuleTitle;
@@ -106,6 +111,11 @@ namespace Satrabel.OpenContent.Components
                         {
                             json["data"]["ModuleTitle"][DnnUtils.GetCurrentCultureCode()] = ActiveModule.ModuleTitle;
                         }
+                    }
+                    var versions = ds.GetVersions(dsContext, dsItem);
+                    if (versions != null)
+                    {
+                        json["versions"]= versions;
                     }
                     //AddVersions(json, content);
                     //createdByUserid = content.CreatedByUserId;
@@ -262,11 +272,15 @@ namespace Satrabel.OpenContent.Components
                     TemplateFolder = settings.TemplateDir.FolderPath,
                     Config = manifest.DataSourceConfig
                 };
-                var dsItem = ds.GetEdit(dsContext, id);
+                var dsItem = ds.Get(dsContext, id);
                 if (dsItem != null)
                 {
-                    json = dsItem.Data;
-                    CreatedByUserid = dsItem.CreatedByUserId;
+                    var version = ds.GetVersion(dsContext, dsItem, long.Parse(ticks));
+                    if (version != null)
+                    {
+                        json = version;
+                        CreatedByUserid = dsItem.CreatedByUserId;
+                    }
                 }
                 if (!OpenContentUtils.HasEditPermissions(PortalSettings, module, editRole, CreatedByUserid))
                 {
@@ -354,7 +368,8 @@ namespace Satrabel.OpenContent.Components
                 }
                 else
                 {
-                    dsItem = ds.GetFirst(dsContext);
+                    dsContext.Single = true;
+                    dsItem = ds.Get(dsContext, null);
                     //dsItem = ctrl.GetFirstContent(module.ModuleID);
                     if (dsItem != null)
                         createdByUserid = dsItem.CreatedByUserId;
@@ -433,7 +448,8 @@ namespace Satrabel.OpenContent.Components
                 }
                 else
                 {
-                    content = ds.GetFirst(dsContext);
+                    dsContext.Single = true;
+                    content = ds.Get(dsContext, null);
                     if (content != null)
                     {
                         CreatedByUserid = content.CreatedByUserId;
@@ -593,7 +609,7 @@ namespace Satrabel.OpenContent.Components
                 
                 if (listMode)
                 {
-                    var items = ds.GetAll(dsContext).Items;
+                    var items = ds.GetAll(dsContext, null).Items;
                     if (items != null)
                     {
                         foreach (var item in items)
@@ -608,10 +624,10 @@ namespace Satrabel.OpenContent.Components
                 }
                 else
                 {
-                    var struc = ds.GetFirst(dsContext);
+                    dsContext.Single = true;
+                    var struc = ds.Get(dsContext, null);
                     if (struc != null)
                     {
-
                         JToken json = struc.Data;
                         if (!string.IsNullOrEmpty(req.dataMember))
                         {

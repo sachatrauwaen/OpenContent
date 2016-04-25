@@ -60,7 +60,12 @@ namespace Satrabel.OpenContent.Components.Datasource
             if (string.IsNullOrEmpty(name))
                 name = "OpenContent";
 
-            return _dataSources.SingleOrDefault(ds => ds.Name == name);
+            var dataSource = _dataSources.SingleOrDefault(ds => ds.Name == name);
+            if (dataSource == null)
+            {
+                throw new ArgumentException(string.Format("DataSource provider {0} dont exist", name));
+            }
+            return dataSource;
         }
     }
 

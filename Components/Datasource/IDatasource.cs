@@ -20,38 +20,41 @@ namespace Satrabel.OpenContent.Components.Datasource
         #region Queries
 
         /// <summary>
+        /// It there any data present.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <returns></returns>
+        bool Any(DataSourceContext context);
+
+        /// <summary>
         /// Gets the specified item of a list datasource.
         /// Needed to go to the detail page.
         /// </summary>
         /// <param name="context">The context.</param>
-        /// <param name="id">The identifier.</param>
+        /// <param name="id">The identifier. (null for single item template)</param>
         /// <returns></returns>
         IDataItem Get(DataSourceContext context, string id);
-
-        /// <summary>
-        /// Gets the item of a non-list datasource.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <returns></returns>
-        IDataItem GetFirst(DataSourceContext context);
-
-        /// <summary>
-        /// Gets all items of a list datasource
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <returns></returns>
-        IDataItems GetAll(DataSourceContext context);
-
+               
         /// <summary>
         /// Gets items of a list datasource based on a query, 
         /// </summary>
         /// <param name="context">The context.</param>
-        /// <param name="select">The select.</param>
+        /// <param name="select">The select. (if null must return all data)</param>
         /// <returns></returns>
         IDataItems GetAll(DataSourceContext context, Select select);
-        IDataItem GetEdit(DataSourceContext context, string id);
-        IDataItem GetFirstEdit(DataSourceContext context);
-        IDataItem GetVersion(DataSourceContext context, string id, DateTime datetime);
+
+        /// <summary>
+        /// Gets Alpaca Schema, Options and View json, 
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="schema">Must return schema information</param>
+        /// <param name="options">Must return options information</param>
+        /// <param name="view">Must return view information</param>
+        /// <returns>Alpaca json object { schema: ..., options : ..., view: ...}  </returns>
+        JObject GetAlpaca(DataSourceContext context, bool schema, bool options, bool view);
+
+        JArray GetVersions(DataSourceContext context, IDataItem item);
+        JToken GetVersion(DataSourceContext context, IDataItem item, DateTime datetime);
 
         #endregion
 

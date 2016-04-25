@@ -491,7 +491,7 @@ namespace Satrabel.OpenContent
                 else
                 {
                     // single item template
-                    GetData(_renderinfo, _settings);
+                    GetSingleData(_renderinfo, _settings);
                     bool settingsNeeded = _renderinfo.Template.SettingsNeeded();
                     if (!_renderinfo.ShowInitControl && (!settingsNeeded || !string.IsNullOrEmpty(_renderinfo.SettingsJson)))
                     {
@@ -572,7 +572,11 @@ namespace Satrabel.OpenContent
             }
             return accept;
         }
-        public void GetData(RenderInfo info, OpenContentSettings settings)
+        /*
+         * Single Mode template
+         * 
+         */
+        public void GetSingleData(RenderInfo info, OpenContentSettings settings)
         {
             info.ResetData();
             var ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
@@ -580,9 +584,11 @@ namespace Satrabel.OpenContent
             {
                 ModuleId = info.ModuleId,
                 TemplateFolder = settings.TemplateDir.FolderPath,
-                Config = settings.Manifest.DataSourceConfig
+                Config = settings.Manifest.DataSourceConfig,
+                Single = true
             };
-            var dsItem = ds.GetFirst(dsContext);
+
+            var dsItem = ds.Get(dsContext, null);
             if (dsItem != null)
             {
                 info.SetData(dsItem, dsItem.Data, settings.Data);
@@ -591,7 +597,7 @@ namespace Satrabel.OpenContent
         public void GetDataList(RenderInfo info, OpenContentSettings settings, bool clientSide)
         {
             info.ResetData();
-            var ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
+            var ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);            
             var dsContext = new DataSourceContext()
             {
                 ModuleId = info.ModuleId,
@@ -601,8 +607,7 @@ namespace Satrabel.OpenContent
             IEnumerable<IDataItem> dataList = new List<IDataItem>();
             if (clientSide || !info.Files.DataInTemplate)
             {
-                var dsItem = ds.GetFirst(dsContext);
-                if (dsItem != null)
+                if (ds.Any(dsContext))
                 {
                     info.SetData(dataList, settings.Data);
                     info.DataExist = true;
@@ -630,8 +635,7 @@ namespace Satrabel.OpenContent
                     if (!dataList.Any())
                     {
                         //Log.Logger.DebugFormat("Query did not return any results. API request: [{0}], Lucene Filter: [{1}], Lucene Query:[{2}]", settings.Query, queryDef.Filter == null ? "" : queryDef.Filter.ToString(), queryDef.Query == null ? "" : queryDef.Query.ToString());
-                        var dsItem = ds.GetFirst(dsContext);
-                        if (dsItem != null)
+                        if (ds.Any(dsContext))
                         {
                             info.SetData(dataList, settings.Data);
                             info.DataExist = true;
@@ -641,7 +645,7 @@ namespace Satrabel.OpenContent
                 else
                 {
                     //dataList = ctrl.GetContents(info.ModuleId).ToList();
-                    dataList = ds.GetAll(dsContext).Items;
+                    dataList = ds.GetAll(dsContext, null).Items;
                 }
                 if (dataList.Any())
                 {
@@ -705,7 +709,7 @@ namespace Satrabel.OpenContent
             }
             return !info.ShowInitControl; //!string.IsNullOrWhiteSpace(info.DataJson) && (!string.IsNullOrWhiteSpace(info.SettingsJson) || !settingsNeeded);
         }
-
+        /*
         internal bool GetOtherModuleDemoData(RenderInfo info, OpenContentSettings settings)
         {
             info.ResetData();
@@ -744,7 +748,7 @@ namespace Satrabel.OpenContent
             }
             return false;
         }
-
+        */
         #region Render
 
         private string GenerateOutput(string templateVirtualFolder, TemplateFiles files, JToken dataJson, string settingsJson)
@@ -943,8 +947,6 @@ namespace Satrabel.OpenContent
                 {
                     _renderinfo.OutputString = GenerateOutput(_renderinfo.Template.Uri(), _renderinfo.DataJson, _renderinfo.SettingsJson, _renderinfo.Template.Main);
                 }
-
-
                 //too many rendering issues 
                 //bool dsDataExist = _datasource.GetOtherModuleDemoData(_info, _info, _settings);
                 //if (dsDataExist)

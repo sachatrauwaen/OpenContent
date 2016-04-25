@@ -113,6 +113,7 @@ namespace Satrabel.OpenContent.Components.JPList
                                 Field = status.data.path,
                                 Descending = status.data.order == "desc",
                                 //FieldType = FieldTypeEnum.
+                                // todo :
                             });
                             break;
                         }

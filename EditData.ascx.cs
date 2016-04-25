@@ -59,15 +59,16 @@ namespace Satrabel.OpenContent
             var dsContext = new DataSourceContext()
             {
                 ModuleId = ModId,
-                TemplateFolder = settings.TemplateDir.FolderPath
+                TemplateFolder = settings.TemplateDir.FolderPath,
+                Single = true
             };
-            var dsItem = ds.GetFirstEdit(dsContext);
+            var dsItem = ds.Get(dsContext, null);
             if (dsItem != null)
             {
-                var d = new DateTime(long.Parse(ddlVersions.SelectedValue));
-                var ver = ds.GetVersion(dsContext, dsItem.Id, d);
+                var ticks = long.Parse(ddlVersions.SelectedValue);
+                var ver = ds.GetVersion(dsContext, dsItem, ticks);
                 //var ver = data.Versions.Single(v => v.CreatedOnDate == d);
-                txtSource.Text = ver.Data.ToString();
+                txtSource.Text = ver.ToString();
             }
         }
         protected override void OnLoad(EventArgs e)
@@ -109,12 +110,13 @@ namespace Satrabel.OpenContent
                         string itemId = Request.QueryString["id"];
                         if (!string.IsNullOrEmpty(itemId))
                         {
-                            var dsItem = ds.GetEdit(dsContext, itemId);
+                            var dsItem = ds.Get(dsContext, itemId);
 
                             if (dsItem != null)
                             {
-                                json = dsItem.Data["data"].ToString();
-                                foreach (var ver in (dsItem.Data["versions"] as JArray))
+                                json = dsItem.Data.ToString();
+                                var versions = ds.GetVersions(dsContext, dsItem);
+                                foreach (var ver in versions)
                                 {
                                     ddlVersions.Items.Add(new ListItem()
                                     {
@@ -128,7 +130,7 @@ namespace Satrabel.OpenContent
                         }
                         else
                         {
-                            var dataList = ds.GetAll(dsContext);
+                            var dataList = ds.GetAll(dsContext, null);
                             if (dataList != null)
                             {
                                 JArray lst = new JArray();
@@ -142,11 +144,13 @@ namespace Satrabel.OpenContent
                     }
                     else
                     {
-                        var dsItem = ds.GetFirstEdit(dsContext);
+                        dsContext.Single = true;
+                        var dsItem = ds.Get(dsContext, null);
                         if (dsItem != null)
                         {
-                            json = dsItem.Data["data"].ToString();
-                            foreach (var ver in (dsItem.Data["versions"] as JArray))
+                            json = dsItem.Data.ToString();
+                            var versions = ds.GetVersions(dsContext, dsItem);
+                            foreach (var ver in versions)
                             {
                                 ddlVersions.Items.Add(new ListItem()
                                 {
@@ -272,7 +276,7 @@ namespace Satrabel.OpenContent
                     {
                         lst = JArray.Parse(txtSource.Text);
                     }
-                    var dataList = ds.GetAll(dsContext).Items;
+                    var dataList = ds.GetAll(dsContext, null).Items;
                     foreach (var item in dataList)
                     {
                         ds.Delete(dsContext, item);
@@ -288,7 +292,8 @@ namespace Satrabel.OpenContent
             }
             else
             {
-                var dsItem = ds.GetFirst(dsContext);
+                dsContext.Single = true;
+                var dsItem = ds.Get(dsContext, null);
                 if (string.IsNullOrEmpty(txtSource.Text))
                 {
                     if (dsItem != null)

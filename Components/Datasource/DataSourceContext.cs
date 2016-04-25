@@ -14,5 +14,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         public int UserId { get; set; }
         public bool Index { get; set; }
         public JObject Config { get; set; }
+
+        public bool Single { get; set; }
     }
 }
