@@ -103,6 +103,11 @@ namespace Satrabel.OpenContent.Components
             return _fileMetaData == null ? null : _fileMetaData[fieldname];
         }
 
+        public int DnnFileId
+        {
+            get { return FileInfo.FileId; }
+        }
+        
         /// <summary>
         /// Get a value from the OpenFiles Metadata attached to a PortalFile.
         /// </summary>
