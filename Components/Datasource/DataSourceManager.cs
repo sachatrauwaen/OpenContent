@@ -8,7 +8,7 @@ using System.Web;
 
 namespace Satrabel.OpenContent.Components.Datasource
 {
-    internal class DataSourceManager
+    public class DataSourceManager
     {
 
         private static readonly ILog Logger = LoggerSource.Instance.GetLogger(typeof(DataSourceManager));

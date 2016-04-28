@@ -124,8 +124,11 @@ namespace Satrabel.OpenContent.Components
             this.MainTabId = DnnUtils.GetTabByCurrentCulture(this.PortalId, this.MainTabId, GetCurrentCultureCode());
             this.MainModuleId = mainModuleId > 0 ? mainModuleId : module.ModuleID;
         }
+       
         public dynamic GetModelAsDynamic(bool onlyData = false)
         {
+            if (PortalSettings == null) onlyData = true;
+
             JToken model = GetModelAsJson(onlyData);
             return JsonUtils.JsonToDynamic(model.ToString());
             //if (DataList == null)
@@ -140,6 +143,8 @@ namespace Satrabel.OpenContent.Components
 
         public JToken GetModelAsJson(bool onlyData = false)
         {
+            if (PortalSettings == null) onlyData = true;
+
             if (DataList == null)
             {
                 return GetModelAsJsonFromJson(onlyData);
@@ -429,7 +434,8 @@ namespace Satrabel.OpenContent.Components
                 foreach (var item in Manifest.AdditionalData)
                 {
                     var dataManifest = Manifest.AdditionalData[item.Key];
-                    string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings, MainModuleId, Module.TabModuleID);
+                    int tabId = this.PortalSettings == null ? MainTabId : PortalSettings.ActiveTab.TabID;
+                    string scope = AdditionalDataUtils.GetScope(dataManifest, PortalId, tabId, MainModuleId, Module.TabModuleID);
                     var dc = new AdditionalDataController();
                     var data = dc.GetData(scope, dataManifest.StorageKey ?? item.Key);
                     JToken dataJson = new JObject();
