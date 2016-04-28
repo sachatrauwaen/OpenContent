@@ -16,7 +16,7 @@ namespace Satrabel.OpenContent.Components
     {
         #region Constructors
 
-        public PortalFileUri(string pathToFile) : base(System.IO.Path.GetDirectoryName(pathToFile))
+        public PortalFileUri(string pathToFile) : base(pathToFile)
         {
             FileInfo = GetFileInfo();
         }
@@ -105,7 +105,10 @@ namespace Satrabel.OpenContent.Components
 
         public int DnnFileId
         {
-            get { return FileInfo.FileId; }
+            get
+            {
+                return FileInfo == null ? 0 : FileInfo.FileId;
+            }
         }
         
         /// <summary>
