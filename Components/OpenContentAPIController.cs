@@ -151,7 +151,7 @@ namespace Satrabel.OpenContent.Components
             var manifest = settings.Manifest;
             TemplateManifest templateManifest = settings.Template;
             var dataManifest = manifest.AdditionalData[key];
-            string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings, module.ModuleID, ActiveModule.TabModuleID);
+            string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings.PortalId, PortalSettings.ActiveTab.TabID, module.ModuleID, ActiveModule.TabModuleID);
             try
             {
                 var templateFolder = string.IsNullOrEmpty(dataManifest.TemplateFolder) ? settings.TemplateDir : settings.TemplateDir.ParentFolder.Append(dataManifest.TemplateFolder);
@@ -192,7 +192,7 @@ namespace Satrabel.OpenContent.Components
                 TemplateManifest templateManifest = settings.Template;
                 string key = json["key"].ToString();
                 var dataManifest = manifest.AdditionalData[key];
-                string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings, module.ModuleID, ActiveModule.TabModuleID);
+                string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings.PortalId, PortalSettings.ActiveTab.TabID, module.ModuleID, ActiveModule.TabModuleID);
                 AdditionalDataController ctrl = new AdditionalDataController();
                 AdditionalDataInfo data = ctrl.GetData(scope, dataManifest.StorageKey ?? key);
                 if (data == null)
@@ -524,7 +524,7 @@ namespace Satrabel.OpenContent.Components
             TemplateManifest templateManifest = settings.Template;
             string key = req.dataKey;
             var dataManifest = manifest.AdditionalData[key];
-            string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings, module.ModuleID, ActiveModule.TabModuleID);
+            string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings.PortalId, PortalSettings.ActiveTab.TabID, module.ModuleID, ActiveModule.TabModuleID);
             List<LookupResultDTO> res = new List<LookupResultDTO>();
             try
             {
