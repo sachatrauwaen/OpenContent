@@ -52,7 +52,7 @@ namespace Satrabel.OpenContent
         }
         private void ddlVersions_SelectedIndexChanged(object sender, EventArgs e)
         {
-            
+
             OpenContentSettings settings = this.OpenContentSettings();
             int ModId = settings.IsOtherModule ? settings.ModuleId : ModuleId;
             var ds = DataSourceManager.GetDataSource("OpenContent");
@@ -116,16 +116,17 @@ namespace Satrabel.OpenContent
                             {
                                 json = dsItem.Data.ToString();
                                 var versions = ds.GetVersions(dsContext, dsItem);
-                                foreach (var ver in versions)
-                                {
-                                    ddlVersions.Items.Add(new ListItem()
+                                if (versions != null)
+                                    foreach (var ver in versions)
                                     {
-                                        //Text = ver.CreatedOnDate.ToShortDateString() + " " + ver.CreatedOnDate.ToShortTimeString(),
-                                        //Value = ver.CreatedOnDate.Ticks.ToString()
-                                        Text = ver["text"].ToString(),
-                                        Value = ver["ticks"].ToString()
-                                    });
-                                }
+                                        ddlVersions.Items.Add(new ListItem()
+                                        {
+                                            //Text = ver.CreatedOnDate.ToShortDateString() + " " + ver.CreatedOnDate.ToShortTimeString(),
+                                            //Value = ver.CreatedOnDate.Ticks.ToString()
+                                            Text = ver["text"].ToString(),
+                                            Value = ver["ticks"].ToString()
+                                        });
+                                    }
                             }
                         }
                         else
@@ -150,16 +151,17 @@ namespace Satrabel.OpenContent
                         {
                             json = dsItem.Data.ToString();
                             var versions = ds.GetVersions(dsContext, dsItem);
-                            foreach (var ver in versions)
-                            {
-                                ddlVersions.Items.Add(new ListItem()
+                            if (versions != null)
+                                foreach (var ver in versions)
                                 {
-                                    //Text = ver.CreatedOnDate.ToShortDateString() + " " + ver.CreatedOnDate.ToShortTimeString(),
-                                    //Value = ver.CreatedOnDate.Ticks.ToString()
-                                    Text = ver["text"].ToString(),
-                                    Value = ver["ticks"].ToString()
-                                });
-                            }
+                                    ddlVersions.Items.Add(new ListItem()
+                                    {
+                                        //Text = ver.CreatedOnDate.ToShortDateString() + " " + ver.CreatedOnDate.ToShortTimeString(),
+                                        //Value = ver.CreatedOnDate.Ticks.ToString()
+                                        Text = ver["text"].ToString(),
+                                        Value = ver["ticks"].ToString()
+                                    });
+                                }
                         }
                     }
                     break;
