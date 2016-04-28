@@ -168,6 +168,11 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 }
             });
         }
+        /// <summary>
+        /// A block helper.
+        /// Returns nothing, executes the template-part if contidions are met.
+        /// </summary>
+        /// <param name="hbs">The HBS.</param>
         private void RegisterEqualHelper(HandlebarsDotNet.IHandlebars hbs)
         {
             hbs.RegisterHelper("equal", (writer, options, context, arguments) =>
@@ -198,11 +203,8 @@ namespace Satrabel.OpenContent.Components.Handlebars
             {
                 HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "<script id=\"jplist-templatex\" type=\"text/x-handlebars-template\">");
                 HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, context);
-
-                //options.Template(writer, (object)context);
                 HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "</script>");
             });
-
         }
         private void RegisterRegisterScriptHelper(HandlebarsDotNet.IHandlebars hbs, Page page, string sourceFolder)
         {
@@ -215,8 +217,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     {
                         jsfilename = sourceFolder + jsfilename;
                     }
-                    ClientResourceManager.RegisterScript(page, page.ResolveUrl(jsfilename), _jsOrder++/*FileOrder.Js.DefaultPriority*/);
-                    //writer.WriteSafeString(Page.ResolveUrl(jsfilename));
+                    ClientResourceManager.RegisterScript(page, page.ResolveUrl(jsfilename), _jsOrder++ /*FileOrder.Js.DefaultPriority*/);
                 }
             });
         }
@@ -246,6 +247,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 }
             });
         }
+
         private void RegisterImageUrlHelper(HandlebarsDotNet.IHandlebars hbs)
         {
             hbs.RegisterHelper("imageurl", (writer, context, parameters) =>
@@ -264,6 +266,12 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 }
             });
         }
+        /// <summary>
+        /// Retrieved an element from a list.
+        /// First param is List, the second param is the int with the position to retrieve. 
+        /// Zero-based retrieval
+        /// </summary>
+        /// <param name="hbs">The HBS.</param>
         private void RegisterArrayIndexHelper(HandlebarsDotNet.IHandlebars hbs)
         {
             hbs.RegisterHelper("arrayindex", (writer, context, parameters) =>
