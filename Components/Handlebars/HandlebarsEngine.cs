@@ -187,6 +187,17 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 }
             });
         }
+        private void RegisterEachPublishedHelper(HandlebarsDotNet.IHandlebars hbs)
+        {
+            hbs.RegisterHelper("eachPublished", (writer, options, context, parameters) =>
+            {
+                foreach (var item in context)
+                {
+                    if (item.publishstatus == "published") //todo: check date
+                        options.Template(writer, (object)item);
+                }
+            });
+        }
         private void RegisterScriptHelper(HandlebarsDotNet.IHandlebars hbs)
         {
             hbs.RegisterHelper("script", (writer, options, context, arguments) =>
