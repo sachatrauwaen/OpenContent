@@ -1,14 +1,11 @@
-﻿using DotNetNuke.Common.Utilities;
+﻿using System;
+using System.Diagnostics;
+using System.Runtime.Serialization.Formatters;
+using DotNetNuke.Common.Utilities;
 using Lucene.Net.Documents;
-//using Lucene.Net.Linq;
-using Lucene.Net.Search;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Lucene.Config;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Runtime.Serialization.Formatters;
 
 namespace Satrabel.OpenContent.Components.Lucene.Mapping
 {
@@ -46,6 +43,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
         /// <param name="config"></param>
         public void AddJsonToDocument(string source, Document doc, FieldConfig config)
         {
+            if(string.IsNullOrEmpty(source)) return;
             JToken token = JToken.Parse(source);
             Add(doc, null, token, config);
         }

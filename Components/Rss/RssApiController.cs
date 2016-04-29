@@ -31,7 +31,6 @@ namespace Satrabel.OpenContent.Components.Rss
         public HttpResponseMessage GetFeed(int moduleId, int tabId, string template, string mediaType)
         {
             ModuleController mc = new ModuleController();
-//            OpenContentController ctrl = new OpenContentController();
             List<IDataItem> dataList = new List<IDataItem>(); ;
             var module = mc.GetModule(moduleId, tabId, false);
             OpenContentSettings settings = module.OpenContentSettings();
@@ -50,7 +49,7 @@ namespace Satrabel.OpenContent.Components.Rss
                 var queryDef = new QueryDefinition(indexConfig);
                 queryDef.BuildFilter(true);
                 queryDef.BuildSort("");
-                SearchResults docs = LuceneController.Instance.Search(moduleId.ToString(), "Title", queryDef);
+                SearchResults docs = LuceneController.Instance.Search(moduleId.ToString(), queryDef);
                 if (docs != null)
                 {
                     int total = docs.TotalResults;

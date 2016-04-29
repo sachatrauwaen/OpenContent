@@ -28,6 +28,7 @@ namespace Satrabel.OpenContent.Components.Lucene
                 return _instance;
             }
         }
+
         public LuceneService Store
         {
             get
@@ -41,8 +42,8 @@ namespace Satrabel.OpenContent.Components.Lucene
         private LuceneController()
         {
             _serviceInstance = new LuceneService(@"App_Data\OpenContent\lucene_index", JsonMappingUtils.GetAnalyser());
-
         }
+
         public static void ClearInstance()
         {
             if (_instance != null)
@@ -54,8 +55,12 @@ namespace Satrabel.OpenContent.Components.Lucene
         }
         #endregion
 
-
         #region Search
+
+        public SearchResults Search(string type, QueryDefinition def)
+        {
+            return Search(type, def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
+        }
 
         public SearchResults Search(string type, Query filter, Query query, Sort sort, int pageSize, int pageIndex)
         {
@@ -77,26 +82,6 @@ namespace Satrabel.OpenContent.Components.Lucene
             luceneResults.TotalResults = topDocs.TotalHits;
             luceneResults.ids = topDocs.ScoreDocs.Skip(pageIndex * pageSize).Select(d => searcher.Doc(d.Doc).GetField(JsonMappingUtils.FieldId).StringValue).ToArray();
             return luceneResults;
-        }
-        public SearchResults Search(string type, string defaultFieldName, string Filter, string Query, string Sorts, int pageSize, int pageIndex, FieldConfig indexConfig)
-        {
-            Query query = ParseQuery(Query, defaultFieldName);
-            Query filter = ParseQuery(Filter, defaultFieldName);
-
-            QueryDefinition def = new QueryDefinition(indexConfig)
-            {
-                Query = query,
-                Filter = filter,
-                PageIndex = pageIndex,
-                PageSize = pageSize
-            };
-            def.BuildSort(Sorts);
-
-            return Search(type, defaultFieldName, def);
-        }
-        public SearchResults Search(string type, string defaultFieldName, QueryDefinition def)
-        {
-            return Search(type, def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
         }
 
         #endregion

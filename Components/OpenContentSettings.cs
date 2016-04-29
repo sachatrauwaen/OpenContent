@@ -16,9 +16,6 @@ namespace Satrabel.OpenContent.Components
     {
         public OpenContentSettings(IDictionary moduleSettings)
         {
-            var sTabId = moduleSettings["tabid"] as string;
-            var sModuleId = moduleSettings["moduleid"] as string;
-
             var template = moduleSettings["template"] as string;    //templatepath+file  or  //manifestpath+key
             if (!string.IsNullOrEmpty(template))
             {
@@ -29,9 +26,14 @@ namespace Satrabel.OpenContent.Components
                 Template = templateManifest;
 
                 if (!TemplateKey.TemplateDir.FolderExists)
-                    Log.Logger.ErrorFormat("Error loading OpenContent Template on page [{1}]. Reason: Template not found [{0}]", templateUri.PhysicalFilePath, sTabId);
+                {
+                    var url = HttpContext.Current == null ? "" : HttpContext.Current.Request.Url.AbsoluteUri;
+                    Log.Logger.ErrorFormat("Error loading OpenContent Template on page [{1}]. Reason: Template not found [{0}]", templateUri.PhysicalFilePath, url);
+                }
             }
-         
+
+            var sTabId = moduleSettings["tabid"] as string;
+            var sModuleId = moduleSettings["moduleid"] as string;
             TabId = -1;
             ModuleId = -1;
             if (sTabId != null && sModuleId != null)
