@@ -197,6 +197,7 @@
     <Compile Include="Components\TemplateHelpers\OpenGraph.cs" />
     <Compile Include="Components\TemplateHelpers\OtherExtentions.cs" />
     <Compile Include="Components\Manifest\TemplateManifest.cs" />
+    <Compile Include="Components\Uri\PortalFolderUri.cs" />
     <Compile Include="Components\Uri\PortalFileUri.cs" />
     <Compile Include="Components\Uri\FolderUri.cs" />
     <Compile Include="Components\Uri\FileUri.cs" />

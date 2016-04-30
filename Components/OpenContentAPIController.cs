@@ -39,11 +39,11 @@ namespace Satrabel.OpenContent.Components
     [SupportedModules("OpenContent")]
     public class OpenContentAPIController : DnnApiController
     {
-        public string BaseDir
+        public PortalFolderUri BaseDir
         {
             get
             {
-                return PortalSettings.HomeDirectory + "/OpenContent/Templates/";
+                return new PortalFolderUri(PortalSettings.PortalId, PortalSettings.HomeDirectory + "/OpenContent/Templates/"); 
             }
         }
         [ValidateAntiForgeryToken]
