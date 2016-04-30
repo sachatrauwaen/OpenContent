@@ -58,6 +58,11 @@ namespace Satrabel.OpenContent.Components.Dnn
             return NavigateUrl(ps.ActiveTab.TabID, moduleId, key, false, ps, parameters);
         }
 
+        public static string NavigateUrl(int tabId)
+        {
+            return Globals.NavigateURL(tabId);
+        }
+
         private static string NavigateUrl(int tabId, int moduleId, string controlKey, bool pageRedirect, PortalSettings ps, params string[] additionalParameters)
         {
             return NavigateUrl(tabId, moduleId, controlKey, Globals.glbDefaultPage, pageRedirect, ps, additionalParameters);

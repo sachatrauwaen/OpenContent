@@ -10,6 +10,7 @@ using Satrabel.OpenContent.Components.Lucene.Mapping;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Entities.Modules;
+using Satrabel.OpenContent.Components.Dnn;
 using Version = Lucene.Net.Util.Version;
 
 #endregion
@@ -107,6 +108,7 @@ namespace Satrabel.OpenContent.Components.Lucene
                         foreach (ModuleInfo module in modules.OfType<ModuleInfo>())
                         {
                             OpenContentSettings settings = new OpenContentSettings(module.ModuleSettings);
+                            CheckOpenContentSettings(module, settings);
 
                             if (settings.Template != null && settings.Template.IsListTemplate && !settings.IsOtherModule)
                             {
@@ -141,6 +143,22 @@ namespace Satrabel.OpenContent.Components.Lucene
             {
                 LuceneController.ClearInstance();
             }
+        }
+
+        private void CheckOpenContentSettings(ModuleInfo module, OpenContentSettings settings)
+        {
+            if (!settings.TemplateKey.TemplateDir.FolderExists)
+            {
+                var template = module.ModuleSettings["template"] as string;    //templatepath+file  or  //manifestpath+key
+
+                var url = DnnUrlUtils.NavigateUrl(module.TabID);
+                Log.Logger.ErrorFormat("Error loading OpenContent Template on page [{1}]. Reason: Template not found [{0}]", settings.TemplateDir.PhysicalFullDirectory, url);
+            }
+            //if (!TemplateKey.TemplateDir.FolderExists)
+            //{
+            //    var url = HttpContext.Current == null ? "" : HttpContext.Current.Request.Url.AbsoluteUri;
+            //    Log.Logger.ErrorFormat("Error loading OpenContent Template on page [{1}]. Reason: Template not found [{0}]", templateUri.PhysicalFilePath, url);
+            //}
         }
 
         public void ReIndexModuleData(int moduleId, FieldConfig indexConfig)

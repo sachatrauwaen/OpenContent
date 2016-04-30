@@ -24,12 +24,6 @@ namespace Satrabel.OpenContent.Components
                 TemplateManifest templateManifest;
                 Manifest = ManifestUtils.GetManifest(TemplateKey, out templateManifest);
                 Template = templateManifest;
-
-                if (!TemplateKey.TemplateDir.FolderExists)
-                {
-                    var url = HttpContext.Current == null ? "" : HttpContext.Current.Request.Url.AbsoluteUri;
-                    Log.Logger.ErrorFormat("Error loading OpenContent Template on page [{1}]. Reason: Template not found [{0}]", templateUri.PhysicalFilePath, url);
-                }
             }
 
             var sTabId = moduleSettings["tabid"] as string;
