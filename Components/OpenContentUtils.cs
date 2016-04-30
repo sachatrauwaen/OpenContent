@@ -30,13 +30,13 @@ namespace Satrabel.OpenContent.Components
 {
     public static class OpenContentUtils
     {
-        public static void UpdateModuleTitle(ModuleInfo Module, string ModuleTitle)
+        public static void UpdateModuleTitle(ModuleInfo module, string moduleTitle)
         {
-            if (Module.ModuleTitle != ModuleTitle)
+            if (module.ModuleTitle != moduleTitle)
             {
                 ModuleController mc = new ModuleController();
-                var mod = mc.GetModule(Module.ModuleID, Module.TabID, true);
-                mod.ModuleTitle = ModuleTitle;
+                var mod = mc.GetModule(module.ModuleID, module.TabID, true);
+                mod.ModuleTitle = moduleTitle;
                 mc.UpdateModule(mod);
             }
         }

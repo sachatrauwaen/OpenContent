@@ -15,7 +15,7 @@ namespace Satrabel.OpenContent.Components
             {
                 throw new ArgumentNullException("pathToFile");
             }
-            FileName = System.IO.Path.GetFileName(NormalizePath(pathToFile));
+            FileName = Path.GetFileName(NormalizePath(pathToFile));
         }
 
         public FileUri(string path, string filename) : base(path)
@@ -33,15 +33,6 @@ namespace Satrabel.OpenContent.Components
                 throw new ArgumentNullException("filename");
             }
             FileName = filename;
-        }
-
-        private static IFileInfo GetFileInfo(int fileId)
-        {
-            var fileInfo = FileManager.Instance.GetFile(fileId);
-            if (fileInfo == null)
-                throw new ArgumentNullException(string.Format("iFileInfo not found for id [{0}]", fileId));
-
-            return fileInfo;
         }
 
         #endregion
