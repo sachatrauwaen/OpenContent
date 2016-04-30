@@ -1,4 +1,5 @@
-﻿using Satrabel.OpenContent.Components.Datasource.search;
+﻿using System;
+using Satrabel.OpenContent.Components.Datasource.search;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using System.Collections.Generic;
 using System.Linq;
@@ -114,7 +115,6 @@ namespace Satrabel.OpenContent.Components.JPList
                                 Field = status.data.path,
                                 Descending = status.data.order == "desc",
                                 FieldType = Sortfieldtype(config, status.data.path)
-                                // todo :
                             });
                             break;
                         }
@@ -123,48 +123,35 @@ namespace Satrabel.OpenContent.Components.JPList
             return select;
         }
 
-
-        private static FieldTypeEnum Sortfieldtype(FieldConfig IndexConfig, string fieldName)
+        private static FieldTypeEnum Sortfieldtype(FieldConfig indexConfig, string fieldName)
         {
-            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey(fieldName))
+            if (string.IsNullOrEmpty(fieldName)) throw new Exception("Sort field is empty");
+            if (indexConfig != null && indexConfig.Fields != null && indexConfig.Fields.ContainsKey(fieldName))
             {
-                var config = IndexConfig.Items == null ? IndexConfig.Fields[fieldName] : IndexConfig.Items;
-                if (config.IndexType == "datetime" || config.IndexType == "date" || config.IndexType == "time")
+                var config = indexConfig.Items == null ? indexConfig.Fields[fieldName] : indexConfig.Items;
+                switch (config.IndexType)
                 {
-                    return FieldTypeEnum.DATETIME;
-                }
-                else if (config.IndexType == "boolean")
-                {
-                    return FieldTypeEnum.BOOLEAN;
-                }
-                else if (config.IndexType == "int")
-                {
-                    return FieldTypeEnum.INTEGER;
-                }
-                else if (config.IndexType == "long")
-                {
-                    return FieldTypeEnum.LONG;
-                }
-                else if (config.IndexType == "float" || config.IndexType == "double")
-                {
-                    return FieldTypeEnum.FLOAT;
-                }
-                
-                else if (config.IndexType == "key")
-                {
-                    return FieldTypeEnum.KEY;
-                }
-                else if (config.IndexType == "text")
-                {
-                    return FieldTypeEnum.TEXT;
-                }
-                else if (config.IndexType == "html")
-                {
-                    return FieldTypeEnum.HTML;
-                }
-                else
-                {
-                    return FieldTypeEnum.STRING;
+                    case "datetime":
+                    case "date":
+                    case "time":
+                        return FieldTypeEnum.DATETIME;
+                    case "boolean":
+                        return FieldTypeEnum.BOOLEAN;
+                    case "int":
+                        return FieldTypeEnum.INTEGER;
+                    case "long":
+                        return FieldTypeEnum.LONG;
+                    case "float":
+                    case "double":
+                        return FieldTypeEnum.FLOAT;
+                    case "key":
+                        return FieldTypeEnum.KEY;
+                    case "text":
+                        return FieldTypeEnum.TEXT;
+                    case "html":
+                        return FieldTypeEnum.HTML;
+                    default:
+                        return FieldTypeEnum.STRING;
                 }
             }
             return FieldTypeEnum.STRING;
