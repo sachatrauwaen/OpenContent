@@ -12,6 +12,7 @@ using System.Globalization;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.TemplateHelpers;
 using Satrabel.OpenContent.Components.Dynamic;
+using System.Collections;
 
 
 namespace Satrabel.OpenContent.Components.Handlebars
@@ -55,6 +56,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterArrayTranslateHelper(hbs);
             RegisterArrayLookupHelper(hbs);
             RegisterIfAndHelper(hbs);
+            RegisterEachPublishedHelper(hbs);
             return CompileTemplate(hbs, source, model);
         }
         public string Execute(Page page, FileUri sourceFilename, dynamic model)
@@ -76,6 +78,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterArrayTranslateHelper(hbs);
             RegisterArrayLookupHelper(hbs);
             RegisterIfAndHelper(hbs);
+            RegisterEachPublishedHelper(hbs);
             return CompileTemplate(hbs, source, model);
         }
         public string Execute(Page page, IModuleControl module, TemplateFiles files, string templateVirtualFolder, dynamic model)
@@ -105,6 +108,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterArrayTranslateHelper(hbs);
             RegisterArrayLookupHelper(hbs);
             RegisterIfAndHelper(hbs);
+            RegisterEachPublishedHelper(hbs);
             return CompileTemplate(hbs, source, model);
         }
 
@@ -189,14 +193,53 @@ namespace Satrabel.OpenContent.Components.Handlebars
         }
         private void RegisterEachPublishedHelper(HandlebarsDotNet.IHandlebars hbs)
         {
-            hbs.RegisterHelper("eachPublished", (writer, options, context, parameters) =>
+            hbs.RegisterHelper("published", (writer, options, context, parameters) =>
             {
-                foreach (var item in context)
+                var lst = new List<dynamic>();
+                foreach (dynamic item in parameters[0] as IEnumerable)
                 {
-                    if (item.publishstatus == "published") //todo: check date
-                        options.Template(writer, (object)item);
+                    bool show = true;
+                    try
+                    {
+                        if (item.publishstatus != "published")
+                        {
+                            show = false;
+                        }
+                    }
+                    catch (Exception)
+                    {
+                    }
+                    try
+                    {
+                        DateTime publishstartdate = DateTime.Parse(item.publishstartdate, null, System.Globalization.DateTimeStyles.RoundtripKind);
+                        if (publishstartdate > DateTime.Today)
+                        {
+                            show = false;
+                        }
+                    }
+                    catch (Exception)
+                    {
+                    }
+                    try
+                    {
+                        DateTime publishenddate = DateTime.Parse(item.publishenddate, null, System.Globalization.DateTimeStyles.RoundtripKind);
+                        if (publishenddate < DateTime.Today)
+                        {
+                            show = false;
+                        }
+                    }
+                    catch (Exception)
+                    {
+                    }
+                    if (show)
+                    {
+                        lst.Add(item);
+                    }
+               
                 }
+                options.Template(writer, lst);
             });
+          
         }
         private void RegisterScriptHelper(HandlebarsDotNet.IHandlebars hbs)
         {
