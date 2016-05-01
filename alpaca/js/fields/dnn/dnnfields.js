@@ -2669,6 +2669,7 @@
         },
         handlePostRender: function (callback) {
             var self = this;
+            
 
             //var el = this.control;
             var el = this.getControlEl();
@@ -2676,6 +2677,7 @@
             if (self.options.uploadhidden) {
                 $(this.control.get(0)).find('input[type=file]').hide();
             } else {
+                if (self.sf){
                 $(this.control.get(0)).find('input[type=file]').fileupload({
                     dataType: 'json',
                     url: self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
@@ -2707,6 +2709,7 @@
                         }
                     }
                 }).data('loaded', true);
+                }
             }
             $(el).change(function () {
 
@@ -2728,7 +2731,7 @@
         applyTypeAhead: function () {
             var self = this;
 
-            if (self.control.typeahead && self.options.typeahead && !Alpaca.isEmpty(self.options.typeahead)) {
+            if (self.control.typeahead && self.options.typeahead && !Alpaca.isEmpty(self.options.typeahead) && self.sf) {
 
                 var tConfig = self.options.typeahead.config;
                 if (!tConfig) {
@@ -3374,30 +3377,20 @@
         beforeRenderControl: function(model, callback)
         {
             var self = this;
-
             this.base(model, function() {
-
-                
-
-                if (self.options.dataService && self.options.dataService) {
-
+                if (self.options.dataService && self.options.dataService && self.sf) {
                     self.selectOptions = [];
-
                     var completionFunction = function () {
                         self.schema.enum = [];
                         self.options.optionLabels = [];
-
                         for (var i = 0; i < self.selectOptions.length; i++) {
                             self.schema.enum.push(self.selectOptions[i].value);
                             self.options.optionLabels.push(self.selectOptions[i].text);
                         }
-
                         // push back to model
                         model.selectOptions = self.selectOptions;
-
                         callback();
                     };
-
                     var postData = "{}";
                     if (self.options.dataService.data){
                         postData = self.options.dataService.data; //JSON.stringify(self.options.dataService.data);
@@ -3436,7 +3429,6 @@
                                             "text": value
                                         });
                                     });
-
                                     completionFunction();
                                 }
                                 else if (Alpaca.isArray(ds)) {
@@ -3449,13 +3441,11 @@
                                             "text": value.text
                                         });
                                     });
-
                                     completionFunction();
                                 }
                             }
                         },
                         "error": function (jqXHR, textStatus, errorThrown) {
-
                             self.errorCallback({
                                 "message": "Unable to load data from uri : " + self.options.dataSource,
                                 "stage": "DATASOURCE_LOADING_ERROR",
@@ -3471,18 +3461,14 @@
                 else {
                     callback();
                 }
-
             });
         },
 
         prepareControlModel: function(callback)
         {
             var self = this;
-
             this.base(function(model) {
-
                 model.selectOptions = self.selectOptions;
-
                 callback(model);
             });
         },
@@ -3541,9 +3527,7 @@
                     }
                     */
                 }
-
                 callback();
-
             });
         },
 
@@ -3555,20 +3539,16 @@
         _validateEnum: function()
         {
             var _this = this;
-
             if (this.schema["enum"])
             {
                 var val = this.data;
-
                 if (!this.isRequired() && Alpaca.isValEmpty(val))
                 {
                     return true;
                 }
-
                 if (this.options.multiple)
                 {
                     var isValid = true;
-
                     if (!val)
                     {
                         val = [];
@@ -3578,17 +3558,13 @@
                     {
                         val = [val];
                     }
-
                     $.each(val, function(i,v) {
-
                         if ($.inArray(v, _this.schema["enum"]) <= -1)
                         {
                             isValid = false;
                             return false;
                         }
-
                     });
-
                     return isValid;
                 }
                 else

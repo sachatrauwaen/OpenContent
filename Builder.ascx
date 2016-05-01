@@ -18,74 +18,46 @@
         </li>
     </ul>
 </asp:Panel>
-
-<script type="text/javascript">
-    $(document).ready(function () {
-        var config = <%=JsonConvert.SerializeObject(AlpacaContext)%>;
-
-        config.editAction = "EditBuilder";
-        config.updateAction = "UpdateBuilder";
-        config.data = { "key": "query"};
-        var engine = new alpacaEngine.engine(config);
-        //engine.init();
-    });
-</script>
-<div class="container">
+<div class="container-fluid">
     <div class="row">
-        <div class="col-md-6">
-
+        <div class="col-sm-6">
             <div id="form"></div>
         </div>
-        <div class="col-md-6">
+        <div class="col-sm-6">
             <div id="form2"></div>
         </div>
     </div>
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-sm-6">
             schema<br />
             <textarea class="form-control" rows="10" id="schema"></textarea>
         </div>
-        <div class="col-md-6">
+        <div class="col-sm-6">
             options<br />
             <textarea class="form-control" rows="10" id="options"></textarea>
         </div>
     </div>
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-sm-12">
             Builder<br />
             <textarea class="form-control" rows="10" id="builder"></textarea>
         </div>
     </div>
+    <button id="load">Load</button>
+
 </div>
-<button id="load">Load</button>
-
-<br />
 <script type="text/javascript">
-    $(document).ready(function() {
-
-        var config = <%=JsonConvert.SerializeObject(AlpacaContext)%>;
-
-        config.editAction = "EditBuilder";
-        config.updateAction = "UpdateBuilder";
-        config.data = { "key": "query"};
-        config.formID = "form";
-        config.alpaca = formbuilderConfig;
-        var engine = new alpacaEngine.engine(config);
-        engine.init();
-
-        return;
-
+    $(document).ready(function () {
         var alpacadata = {};
-                
+
         //var cook = $.cookie('alpacadata');
         var cook = $('#builder').val();
-        if (typeof(cook) != "undefined" && cook){
+        if (typeof (cook) != "undefined" && cook) {
             alpacadata = JSON.parse(cook);
-            formbuilderConfig.data = alpacadata;	
-				                        
+            formbuilderConfig.data = alpacadata;
             showForm(alpacadata);
         }
-            	
+
         $("#form").alpaca(
             formbuilderConfig
             );
@@ -93,16 +65,17 @@
         $("#load").click(function () {
             var alpacadata = Load();
             //$("#form").alpaca("get").setValue({ "formfields": alpacadata });
-                    
+
             var exists = $("#form").alpaca("exists");
             if (exists) {
                 $("#form").alpaca("destroy");
             }
             formbuilderConfig.data = { "formfields": alpacadata };
             $("#form").alpaca(formbuilderConfig);
-                    
+
         });
 
-                
+
     });
-        </script>
+</script>
+

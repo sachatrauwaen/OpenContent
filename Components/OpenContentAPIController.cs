@@ -43,7 +43,7 @@ namespace Satrabel.OpenContent.Components
         {
             get
             {
-                return new PortalFolderUri(PortalSettings.PortalId, PortalSettings.HomeDirectory + "/OpenContent/Templates/"); 
+                return new PortalFolderUri(PortalSettings.PortalId, PortalSettings.HomeDirectory + "/OpenContent/Templates/");
             }
         }
         [ValidateAntiForgeryToken]
@@ -115,7 +115,7 @@ namespace Satrabel.OpenContent.Components
                     var versions = ds.GetVersions(dsContext, dsItem);
                     if (versions != null)
                     {
-                        json["versions"]= versions;
+                        json["versions"] = versions;
                     }
                     //AddVersions(json, content);
                     //createdByUserid = content.CreatedByUserId;
@@ -440,11 +440,11 @@ namespace Satrabel.OpenContent.Components
                 IDataItem content = null;
                 if (listMode)
                 {
-                        content = ds.Get(dsContext, json["id"].ToString());
-                        if (content != null)
-                        {
-                            CreatedByUserid = content.CreatedByUserId;
-                        }
+                    content = ds.Get(dsContext, json["id"].ToString());
+                    if (content != null)
+                    {
+                        CreatedByUserid = content.CreatedByUserId;
+                    }
                 }
                 else
                 {
@@ -493,6 +493,41 @@ namespace Satrabel.OpenContent.Components
                     var form = json["form"].ToString();
                     var key = json["key"].ToString();
                     if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(form)) mc.UpdateModuleSetting(moduleId, key, form);
+                }
+                return Request.CreateResponse(HttpStatusCode.OK, "");
+            }
+            catch (Exception exc)
+            {
+                Log.Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
+
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public HttpResponseMessage UpdateBuilder(JObject json)
+        {
+            try
+            {
+                OpenContentSettings settings = ActiveModule.OpenContentSettings();
+                
+                if (json["data"] != null)
+                {
+                    var key = json["key"].ToString();
+                    string prefix = string.IsNullOrEmpty(key) ? "" : key + "-";
+                    var data = json["data"].ToString();
+                    var file = new FileUri(settings.TemplateDir.UrlFolder + prefix + "builder.json");
+                    try
+                    {
+                        File.WriteAllText(file.PhysicalFilePath, json["data"].ToString());
+                    }
+                    catch (Exception ex)
+                    {
+                        string mess = string.Format("Error while saving file [{0}]", file.FilePath);
+                        Log.Logger.Error(mess, ex);
+                        throw new Exception(mess, ex);
+                    }
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, "");
             }
@@ -572,7 +607,7 @@ namespace Satrabel.OpenContent.Components
                 res.Add(new LookupResultDTO()
                 {
                     value = item[valueField] == null ? "" : item[valueField].ToString(),
-                    text = item[textField] == null ? "" : prefix+item[textField].ToString()
+                    text = item[textField] == null ? "" : prefix + item[textField].ToString()
                 });
 
                 if (!string.IsNullOrEmpty(childrenField) && item[childrenField] is JArray)
@@ -606,7 +641,7 @@ namespace Satrabel.OpenContent.Components
                     Config = manifest.DataSourceConfig
                 };
                 //var dsItem = ds.GetEdit(dsContext, id);
-                
+
                 if (listMode)
                 {
                     var items = ds.GetAll(dsContext, null).Items;
@@ -727,21 +762,17 @@ namespace Satrabel.OpenContent.Components
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
         [HttpGet]
-        public HttpResponseMessage EditBuilder(string key)
+        public HttpResponseMessage LoadBuilder(string key)
         {
-
-            //string data = (string)ActiveModule.ModuleSettings[key];
             try
             {
                 OpenContentSettings settings = ActiveModule.OpenContentSettings();
-                /*
-                var fb = new FormBuilder(settings.TemplateDir);
-                JObject json = fb.BuildForm(key);
-                var dataJson = data.ToJObject("Raw settings json");
+                string prefix = string.IsNullOrEmpty(key) ? "" : key + "-";
+                JObject json = new JObject();
+                var dataJson = JsonUtils.LoadJsonFromFile(settings.TemplateDir.UrlFolder + prefix + "builder.json");
                 if (dataJson != null)
                     json["data"] = dataJson;
-                */
-                var json = new { };
+
                 return Request.CreateResponse(HttpStatusCode.OK, json);
             }
             catch (Exception exc)

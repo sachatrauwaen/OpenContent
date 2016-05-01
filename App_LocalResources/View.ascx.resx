@@ -180,4 +180,7 @@
   <data name="Edit.Action" xml:space="preserve">
     <value>Edit</value>
   </data>
+  <data name="Builder.Action" xml:space="preserve">
+    <value>Builder</value>
+  </data>
 </root>

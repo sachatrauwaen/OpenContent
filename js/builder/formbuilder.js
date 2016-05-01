@@ -68,7 +68,7 @@ function getSchema(formdef) {
     var sch = null; //JSON.parse($("#schema").val());
 
     var schema = {
-        "title": "Generated Alpaca Form",
+        "title": "Form preview",
         "type": "object",
         "properties": {}
     };
@@ -259,7 +259,8 @@ function showForm(value) {
     var options = getOptions(value);
     var config = {
         "schema": schema,
-        "options": options
+        "options": options,
+        "view": "dnnbootstrap-edit"
     };
     //alert(JSON.stringify(value, null, "  "));
     $("#schema").val(JSON.stringify(schema, null, "  "));
@@ -274,7 +275,7 @@ function showForm(value) {
 
 var fieldSchema = 
 {
-    "title": "Field",
+    //"title": "Field",
     "type": "object",
     "properties": {
         "fieldname": {
@@ -405,7 +406,7 @@ fieldOptions.listfields.items.fields = fieldOptions;
 
 var formbuilderConfig = {
     "schema": {
-        "title": "Simple Alpaca Form builder",
+        "title": "Fields",
         "type": "object",
         "properties": {
             "formfields": {
@@ -419,6 +420,7 @@ var formbuilderConfig = {
             "formfields": {
                 "toolbarSticky": true,
                 "items": {
+                    //"collapsible": true,
                     "fieldClass": "fielddiv",
                     "fields": fieldOptions
                 }
@@ -429,11 +431,8 @@ var formbuilderConfig = {
                 "Load": {
                     "title": "Load",
                     "click": function () {
-
                         var alpacadata = Load();
                         this.setValue({ "formfields": alpacadata });
-
-
                     }
                 },
                 "Refresh": {
