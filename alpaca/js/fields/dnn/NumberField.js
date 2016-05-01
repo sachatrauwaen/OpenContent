@@ -38,7 +38,7 @@
          */
         getValue: function()
         {
-            var val = this._getControlVal(true);
+            var val = this._getControlVal(false);
 
             if (typeof(val) == "undefined" || "" == val)
             {

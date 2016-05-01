@@ -37,12 +37,11 @@ namespace Satrabel.OpenContent
             //AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, settings.Template.Uri().FolderPath, "query");
             AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, "", "");
             alpaca.RegisterAll();
-            int ItemId = 0;//Request.QueryString["id"] == null ? -1 : int.Parse(Request.QueryString["id"]);
+            string ItemId = null;//Request.QueryString["id"] == null ? -1 : int.Parse(Request.QueryString["id"]);
             AlpacaContext = new AlpacaContext(PortalId, ModuleId, ItemId, ScopeWrapper.ClientID, hlCancel.ClientID, cmdSave.ClientID, null, null);
         }
         protected void bIndex_Click(object sender, EventArgs e)
         {
-            TemplateManifest template = null;
             OpenContentSettings settings = new OpenContentSettings(Settings);
             bool index = false;
             if (settings.TemplateAvailable)
@@ -55,25 +54,18 @@ namespace Satrabel.OpenContent
                 indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
             }
 
-            using (LuceneController lc = LuceneController.Instance)
+            int moduleid = ModuleId;
+            if (settings.IsOtherModule)
             {
-                //lc.DeleteAll();
-                lc.Delete(new TermQuery(new Term("$type", ModuleId.ToString())));
-                OpenContentController occ = new OpenContentController();
-                foreach (var item in occ.GetContents(ModuleId))
-                {
-                    lc.Add(item, indexConfig);
-                }
-                lc.Commit();
-                lc.OptimizeSearchIndex(true);
-                LuceneController.ClearInstance();
+                moduleid = settings.ModuleId;
             }
-        }
 
+            LuceneController.Instance.ReIndexModuleData(moduleid, indexConfig);
+        }
         protected void bGenerate_Click(object sender, EventArgs e)
         {
+            /*
             OpenContentController occ = new OpenContentController();
-
             var oc = occ.GetFirstContent(ModuleId);
             if (oc != null)
             {
@@ -96,10 +88,10 @@ namespace Satrabel.OpenContent
                     occ.AddContent(newoc, true, null);
                 }
             }
-
+            */
         }
-        
-        public AlpacaContext AlpacaContext { get; private set ; }
+
+        public AlpacaContext AlpacaContext { get; private set; }
     }
 }
 

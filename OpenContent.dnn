@@ -1,6 +1,6 @@
 <dotnetnuke type="Package" version="5.0">
   <packages>
-    <package name="OpenContent" type="Module" version="02.00.04">
+    <package name="OpenContent" type="Module" version="02.01.05">
       <friendlyName>OpenContent</friendlyName>
       <description>OpenContent module by Satrabel.be</description>
       <iconFile>~/DesktopModules/OpenContent/Images/icon_extensions.png</iconFile>
@@ -185,6 +185,15 @@
               </moduleDefinition>
             </moduleDefinitions>
           </desktopModule>
+          <eventMessage>
+            <processorType>DotNetNuke.Entities.Modules.EventMessageProcessor, DotNetNuke</processorType>
+            <processorCommand>UpgradeModule</processorCommand>
+            <attributes>
+              <businessControllerClass>Satrabel.OpenContent.Components.FeatureController</businessControllerClass>
+              <desktopModuleID>[DESKTOPMODULEID]</desktopModuleID>
+              <upgradeVersionsList>02.01.00</upgradeVersionsList>
+            </attributes>
+          </eventMessage>
         </component>
         <component type="Assembly">
           <assemblies>

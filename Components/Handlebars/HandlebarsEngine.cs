@@ -12,6 +12,7 @@ using System.Globalization;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.TemplateHelpers;
 using Satrabel.OpenContent.Components.Dynamic;
+using System.Collections;
 
 
 namespace Satrabel.OpenContent.Components.Handlebars
@@ -55,6 +56,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterArrayTranslateHelper(hbs);
             RegisterArrayLookupHelper(hbs);
             RegisterIfAndHelper(hbs);
+            RegisterEachPublishedHelper(hbs);
             return CompileTemplate(hbs, source, model);
         }
         public string Execute(Page page, FileUri sourceFilename, dynamic model)
@@ -76,6 +78,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterArrayTranslateHelper(hbs);
             RegisterArrayLookupHelper(hbs);
             RegisterIfAndHelper(hbs);
+            RegisterEachPublishedHelper(hbs);
             return CompileTemplate(hbs, source, model);
         }
         public string Execute(Page page, IModuleControl module, TemplateFiles files, string templateVirtualFolder, dynamic model)
@@ -105,6 +108,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterArrayTranslateHelper(hbs);
             RegisterArrayLookupHelper(hbs);
             RegisterIfAndHelper(hbs);
+            RegisterEachPublishedHelper(hbs);
             return CompileTemplate(hbs, source, model);
         }
 
@@ -168,6 +172,11 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 }
             });
         }
+        /// <summary>
+        /// A block helper.
+        /// Returns nothing, executes the template-part if contidions are met.
+        /// </summary>
+        /// <param name="hbs">The HBS.</param>
         private void RegisterEqualHelper(HandlebarsDotNet.IHandlebars hbs)
         {
             hbs.RegisterHelper("equal", (writer, options, context, arguments) =>
@@ -181,6 +190,56 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     options.Inverse(writer, (object)context);
                 }
             });
+        }
+        private void RegisterEachPublishedHelper(HandlebarsDotNet.IHandlebars hbs)
+        {
+            hbs.RegisterHelper("published", (writer, options, context, parameters) =>
+            {
+                var lst = new List<dynamic>();
+                foreach (dynamic item in parameters[0] as IEnumerable)
+                {
+                    bool show = true;
+                    try
+                    {
+                        if (item.publishstatus != "published")
+                        {
+                            show = false;
+                        }
+                    }
+                    catch (Exception)
+                    {
+                    }
+                    try
+                    {
+                        DateTime publishstartdate = DateTime.Parse(item.publishstartdate, null, System.Globalization.DateTimeStyles.RoundtripKind);
+                        if (publishstartdate > DateTime.Today)
+                        {
+                            show = false;
+                        }
+                    }
+                    catch (Exception)
+                    {
+                    }
+                    try
+                    {
+                        DateTime publishenddate = DateTime.Parse(item.publishenddate, null, System.Globalization.DateTimeStyles.RoundtripKind);
+                        if (publishenddate < DateTime.Today)
+                        {
+                            show = false;
+                        }
+                    }
+                    catch (Exception)
+                    {
+                    }
+                    if (show)
+                    {
+                        lst.Add(item);
+                    }
+               
+                }
+                options.Template(writer, lst);
+            });
+          
         }
         private void RegisterScriptHelper(HandlebarsDotNet.IHandlebars hbs)
         {
@@ -198,11 +257,8 @@ namespace Satrabel.OpenContent.Components.Handlebars
             {
                 HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "<script id=\"jplist-templatex\" type=\"text/x-handlebars-template\">");
                 HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, context);
-
-                //options.Template(writer, (object)context);
                 HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "</script>");
             });
-
         }
         private void RegisterRegisterScriptHelper(HandlebarsDotNet.IHandlebars hbs, Page page, string sourceFolder)
         {
@@ -215,8 +271,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     {
                         jsfilename = sourceFolder + jsfilename;
                     }
-                    ClientResourceManager.RegisterScript(page, page.ResolveUrl(jsfilename), _jsOrder++/*FileOrder.Js.DefaultPriority*/);
-                    //writer.WriteSafeString(Page.ResolveUrl(jsfilename));
+                    ClientResourceManager.RegisterScript(page, page.ResolveUrl(jsfilename), _jsOrder++ /*FileOrder.Js.DefaultPriority*/);
                 }
             });
         }
@@ -246,6 +301,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 }
             });
         }
+
         private void RegisterImageUrlHelper(HandlebarsDotNet.IHandlebars hbs)
         {
             hbs.RegisterHelper("imageurl", (writer, context, parameters) =>
@@ -264,6 +320,12 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 }
             });
         }
+        /// <summary>
+        /// Retrieved an element from a list.
+        /// First param is List, the second param is the int with the position to retrieve. 
+        /// Zero-based retrieval
+        /// </summary>
+        /// <param name="hbs">The HBS.</param>
         private void RegisterArrayIndexHelper(HandlebarsDotNet.IHandlebars hbs)
         {
             hbs.RegisterHelper("arrayindex", (writer, context, parameters) =>

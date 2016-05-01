@@ -171,7 +171,13 @@
   <data name="EditInit.Action" xml:space="preserve">
     <value>Change Template</value>
   </data>
-  <data name="Builder.Action" xml:space="preserve">
-    <value>Builder</value>
+  <data name="lDetailPage.Text" xml:space="preserve">
+    <value>Detail Page</value>
+  </data>
+  <data name="Add.Action" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="Edit.Action" xml:space="preserve">
+    <value>Edit</value>
   </data>
 </root>

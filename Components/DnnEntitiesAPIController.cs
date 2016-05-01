@@ -33,6 +33,7 @@ using DotNetNuke.Entities.Content.Common;
 using DotNetNuke.Entities.Modules.Definitions;
 using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components.TemplateHelpers;
+using System.Text.RegularExpressions;
 
 #endregion
 
@@ -112,9 +113,9 @@ namespace Satrabel.OpenContent.Components
 
                 var folderManager = FolderManager.Instance;
                 var portalFolder = folderManager.GetFolder(PortalSettings.PortalId, d ?? "");
-                if (portalFolder==null)
+                if (portalFolder == null)
                 {
-                    var exc = new ArgumentException("Folder path not found. Adjust ['folder': "+d+"] in optionfile. ");
+                    var exc = new ArgumentException("Folder path not found. Adjust ['folder': " + d + "] in optionfile. ");
                     Logger.Error(exc);
                     return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
                 }
@@ -126,11 +127,13 @@ namespace Satrabel.OpenContent.Components
                 }
                 int folderLength = d.Length;
 
-                var res = files.Select(f => new { 
-                    value = f.FileId.ToString(), 
+                var res = files.Select(f => new
+                {
+                    value = f.FileId.ToString(),
                     url = ImageHelper.GetImageUrl(f, new Ratio(40, 40)),  //todo for install in application folder is dat niet voldoende ???
-                    text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName })
-                               .Take(100);
+                    text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName
+                })
+                               .Take(1000);
 
                 return Request.CreateResponse(HttpStatusCode.OK, res);
             }
@@ -145,7 +148,7 @@ namespace Satrabel.OpenContent.Components
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
         [HttpGet]
-        public HttpResponseMessage FilesLookup(string q, string d)
+        public HttpResponseMessage FilesLookup(string q, string d, string filter = "")
         {
             try
             {
@@ -158,7 +161,12 @@ namespace Satrabel.OpenContent.Components
                 {
                     files = files.Where(f => f.FileName.ToLower().Contains(q.ToLower()));
                 }
-                int folderLength = d.Length;
+                if (!string.IsNullOrEmpty(filter))
+                {
+                    var rx = new Regex(filter, RegexOptions.IgnoreCase);
+                    files = files.Where(f => rx.IsMatch(f.FileName));
+                }
+                int folderLength = (d == null) ? 0 : d.Length;
                 var res = files.Select(f => new { value = f.FileId.ToString(), url = fileManager.GetUrl(f), text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName /*+ (string.IsNullOrEmpty(f.Folder) ? "" : " (" + f.Folder.Trim('/') + ")")*/ });
                 return Request.CreateResponse(HttpStatusCode.OK, res);
             }
@@ -167,6 +175,55 @@ namespace Satrabel.OpenContent.Components
                 Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
+        }
+
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [HttpGet]
+        public HttpResponseMessage FoldersLookup(string q, string d, string filter = "")
+        {
+            try
+            {
+                IEnumerable<IFolderInfo> folders = new List<IFolderInfo>();
+                var folderManager = FolderManager.Instance;
+                var fileManager = FileManager.Instance;
+                var portalFolder = folderManager.GetFolder(PortalSettings.PortalId, d ?? "");
+                if (portalFolder != null)
+                {
+                    folders = GetFolders(folderManager, portalFolder);
+
+                    if (q != "*" && !string.IsNullOrEmpty(q))
+                    {
+                        folders = folders.Where(f => f.FolderName.ToLower().Contains(q.ToLower()));
+                    }
+                    if (!string.IsNullOrEmpty(filter))
+                    {
+                        var rx = new Regex(filter, RegexOptions.IgnoreCase);
+                        folders = folders.Where(f => rx.IsMatch(f.FolderName));
+                    }
+                }
+                int folderLength = (d == null) ? 0 : d.Length;
+
+                var res = folders.Select(f => new { value = f.FolderID.ToString(), url = f.FolderPath, text = f.FolderPath.Substring(folderLength).Trim('/') });
+
+                return Request.CreateResponse(HttpStatusCode.OK, res);
+            }
+            catch (Exception exc)
+            {
+                Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
+
+        private static IEnumerable<IFolderInfo> GetFolders(IFolderManager folderManager, IFolderInfo portalFolder)
+        {
+            var folders = new List<IFolderInfo>();
+            foreach (var item in folderManager.GetFolders(portalFolder))
+            {
+                folders.Add(item);
+                folders.AddRange(GetFolders(folderManager, item));
+            }
+            return folders;
         }
 
         [ValidateAntiForgeryToken]

@@ -160,7 +160,6 @@ namespace Satrabel.OpenContent
             if (template != null)
             {
                 //string templateFolder = template.DirectoryName;
-
                 if (template.Main != null)
                 {
                     scriptList.Items.Add(new ListItem("Template", template.Main.Template));
@@ -184,9 +183,6 @@ namespace Satrabel.OpenContent
                     }
                 }
                 scriptList.Items.Add(new ListItem("Manifest", "manifest.json"));
-
-
-
                 scriptList.Items.Add(new ListItem("Stylesheet", template.Key.ShortKey + ".css"));
                 scriptList.Items.Add(new ListItem("Javascript", template.Key.ShortKey + ".js"));
                 scriptList.Items.Add(new ListItem("Schema", "schema.json"));
@@ -201,6 +197,10 @@ namespace Satrabel.OpenContent
                 foreach (Locale item in LocaleController.Instance.GetLocales(PortalId).Values)
                 {
                     scriptList.Items.Add(new ListItem("Settings Layout Options - " + item.Code, template.Key.ShortKey + "-options." + item.Code + ".json"));
+                }
+                foreach (Locale item in LocaleController.Instance.GetLocales(PortalId).Values)
+                {
+                    scriptList.Items.Add(new ListItem("Localization - " + item.Code, item.Code + ".json"));
                 }
             }
         }

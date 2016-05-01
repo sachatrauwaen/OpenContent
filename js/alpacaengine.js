@@ -6,8 +6,8 @@ alpacaEngine.engine = function(config) {
     var self = this;
     self.defaultCulture = config.defaultCulture;
     self.currentCulture = config.currentCulture;
-    self.NumberDecimalSeparator = config.NumberDecimalSeparator;
-    self.AlpacaCulture = config.AlpacaCulture;
+    self.numberDecimalSeparator = config.numberDecimalSeparator;
+    self.alpacaCulture = config.alpacaCulture;
     self.moduleId = config.moduleId;
     self.itemId = config.itemId;
     self.cancelButton = config.cancelButtonID;
@@ -19,11 +19,8 @@ alpacaEngine.engine = function(config) {
     self.updateAction = "Update";
     self.deleteAction = "Delete";
     self.data = {};
-    self.alpaca = config.alpaca;
-    self.formID = "field1";
-    if (config.formID) {
-        self.formID = config.formID;
-    }
+
+    
     if (config.editAction) {
         self.editAction = config.editAction;
     }
@@ -48,8 +45,8 @@ alpacaEngine.engine = function(config) {
                             newHeight,
                             newWidth;
 
-            newHeight = $window.height() - 46;
-            newWidth = Math.min($window.width() - 40, 1100);
+            newHeight = $window.height() - 36;
+            newWidth = Math.min($window.width() - 40, 1200);
 
             popup.dialog("option", {
                 close: function () { window.dnnModal.closePopUp(false, ""); },
@@ -57,7 +54,11 @@ alpacaEngine.engine = function(config) {
                 height: newHeight,
                 width: newWidth,
                 //position: 'center'
+                resizable: false,
             });
+
+            $("div.alpaca").parent().addClass('popup');
+            
 
             $("#"+self.cancelButton).click(function () {
                 dnnModal.closePopUp(false, "");
@@ -121,9 +122,6 @@ alpacaEngine.engine = function(config) {
                 self.FormEdit(config);
             });
             */
-            if (self.alpaca) {
-                $.extend(config, self.alpaca);
-            }
             self.FormEdit(config);
 
         }).fail(function (xhr, result, status) {
@@ -150,18 +148,18 @@ alpacaEngine.engine = function(config) {
             $("#"+self.ddlVersions).hide();
         }
 
-        $.alpaca.setDefaultLocale(self.AlpacaCulture);
+        $.alpaca.setDefaultLocale(self.alpacaCulture);
         self.CreateForm(connector, config, config.data);
 
     };
 
     self.CreateForm = function (connector, config, data) {
 
-        $("#"+self.formID).alpaca({
+        $("#field1").alpaca({
             "schema": config.schema,
             "options": config.options,
             "data": data,
-            "view": "dnnbootstrap-edit-horizontal",
+            "view": config.view ? config.view : "dnn-edit",
             "connector": connector,
             "postRender": function (control) {
                 var selfControl = control;
@@ -224,7 +222,7 @@ alpacaEngine.engine = function(config) {
     };
 
     self.Version = function (id, ticks, control) {
-        if (!id) id = 0;
+        if (!id) id = "";
         var postData = { id: id, ticks: ticks };
         var action = "Version";
 

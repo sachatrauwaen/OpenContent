@@ -34,7 +34,7 @@
         getDescription: function () {
             return "Font Icon Field.";
         },
-        
+
         afterRenderControl: function (model, callback) {
             var self = this;
             this.base(model, function () {
@@ -51,13 +51,13 @@
                 emptyIcon: true,
                 hasSearch: true
             });
-            
+
             callback();
         },
         loadIcons: function () {
             var self = this;
             var icons = [];
-            if (this.options.glyphicons){
+            if (this.options.glyphicons) {
                 $.each(glyphicon_icons, function (i, v) {
                     icons.push('glyphicon ' + v);
                 });

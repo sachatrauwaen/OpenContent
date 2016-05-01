@@ -68,5 +68,11 @@ namespace Satrabel.OpenContent.Components.JPList
         public int currentPage { get; set; }
 
         #endregion
+
+        public string min { get; set; }
+        public string max { get; set; }
+        public string prev { get; set; }
+        public string next { get; set; }
+
     }
 }

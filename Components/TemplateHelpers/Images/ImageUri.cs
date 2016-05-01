@@ -1,9 +1,6 @@
 ﻿using System;
-using DotNetNuke.Common;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Portals;
-using DotNetNuke.Services.FileSystem;
-using DotNetNuke.UI.Modules;
 
 
 namespace Satrabel.OpenContent.Components.TemplateHelpers
@@ -15,10 +12,16 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         public ImageUri(int fileId) : base(fileId)
         {
         }
-        public ImageUri(string fileFullPath) : base(fileFullPath)
+        public ImageUri(string fileFullPath) : base(PortalSettings.Current.PortalId, fileFullPath)
         {
         }
-        public ImageUri(string path, string filename) : base(path, filename)
+        public ImageUri(string path, string filename) : base(PortalSettings.Current.PortalId, path, filename)
+        {
+        }
+        public ImageUri(int portalid, string fileFullPath) : base(portalid, fileFullPath)
+        {
+        }
+        public ImageUri(int portalid, string path, string filename) : base(portalid, path, filename)
         {
         }
         #endregion
@@ -70,24 +73,13 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         [Obsolete("This method is obsolete since dec 2015; use public string EditUrl(ModuleInfo module) instead")]
         public string EditImageUrl(ModuleInfo module)
         {
-            if (module == null) return string.Empty;
-            var mc = new ModuleInstanceContext { Configuration = module };
-            if (!mc.IsEditable) return string.Empty;
-            return EditImageUrl();
+            return EditUrl(module);
         }
 
         [Obsolete("This method is obsolete since dec 2015; use public string EditUrl() instead")]
         public string EditImageUrl()
         {
-            //var url = Globals.NavigateURL(tabFileManager);
-            //var dnnFileManagerModule = DnnUtils.GetDnnModulesByFriendlyName("filemanager", tabFileManager).OrderByDescending(m=> m.ModuleID).FirstOrDefault();
-            var dnnFileManagerModule = DnnUtils.GetLastModuleByFriendlyName("Digital Asset Management");
-            var modId = dnnFileManagerModule.ModuleID;
-            //var modId = 1420; 
-            var url = Globals.NavigateURL(dnnFileManagerModule.TabID, "FileProperties", "mid=" + modId, "popUp=true", "fileId=" + FileInfo.FileId);
-            return string.Format("javascript:dnnModal.show('{0}',/*showReturn*/false,550,950,true,'')", url);
-            //javascript:dnnModal.show('http://localhost:54068/en-us/OpenFiles/ctl/Module/ModuleId/487/view/gridview/pageSize/10?ReturnURL=/en-us/OpenFiles?folderId=42&popUp=true',/*showReturn*/false,550,950,true,'')
-            //return string.Format("javascript:dnnModal.show('{0}/ctl/FileProperties/mid/{2}?popUp=true&fileId={1}')", url, FileInfo.FileId, modId);
+            return EditUrl();
         }
 
     }

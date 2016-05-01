@@ -25,26 +25,32 @@ namespace Satrabel.OpenContent.Components
                 Manifest = ManifestUtils.GetManifest(TemplateKey, out templateManifest);
                 Template = templateManifest;
             }
+
             var sTabId = moduleSettings["tabid"] as string;
             var sModuleId = moduleSettings["moduleid"] as string;
             TabId = -1;
             ModuleId = -1;
-
             if (sTabId != null && sModuleId != null)
             {
                 TabId = int.Parse(sTabId);
                 ModuleId = int.Parse(sModuleId);
             }
-
+            
             Data = moduleSettings["data"] as string;
             Query = moduleSettings["query"] as string;
+            var sDetailTabId = moduleSettings["detailtabid"] as string;
+            DetailTabId = -1;
+            if (!string.IsNullOrEmpty(sDetailTabId))
+            {
+                DetailTabId = int.Parse(sDetailTabId);
+            }
         }
 
         internal TemplateKey TemplateKey { get; private set; }
 
 
         public int TabId { get; private set; }
-        internal int ModuleId { get; private set; }
+        public int ModuleId { get; private set; }
 
         public TemplateManifest Template { get; private set; }
         public Manifest.Manifest Manifest { get; private set; }
@@ -66,6 +72,8 @@ namespace Satrabel.OpenContent.Components
 
         public bool TemplateAvailable { get { return TemplateKey != null; } }
 
-       
+
+
+        public int DetailTabId { get; private set; }
     }
 }

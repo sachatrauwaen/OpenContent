@@ -25,6 +25,7 @@ namespace Satrabel.OpenContent
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            pHelp.Visible = false;
         }
         protected void rblFrom_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -49,6 +50,7 @@ namespace Satrabel.OpenContent
                     tbTemplateName.Text = Path.GetFileNameWithoutExtension(ddlTemplate.Items[0].Value);
                 }
             }
+            ActivateDetailPage();
         }
 
         protected void rblDataSource_SelectedIndexChanged(object sender, EventArgs e)
@@ -80,9 +82,10 @@ namespace Satrabel.OpenContent
             }
             else if (rblUseTemplate.SelectedIndex == 1) // new
             {
-                
+
                 ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplates(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, "OpenContent").ToArray());
             }
+            ActivateDetailPage();
         }
 
         protected void bSave_Click(object sender, EventArgs e)
@@ -107,7 +110,7 @@ namespace Satrabel.OpenContent
                 }
                 else if (rblUseTemplate.SelectedIndex == 1) // new
                 {
-                    
+
                     if (rblFrom.SelectedIndex == 0) // site
                     {
                         string oldFolder = Server.MapPath(ddlTemplate.SelectedValue);
@@ -121,6 +124,7 @@ namespace Satrabel.OpenContent
                         mc.UpdateModuleSetting(ModuleContext.ModuleId, "template", template);
                     }
                 }
+                mc.UpdateModuleSetting(ModuleContext.ModuleId, "detailtabid", ddlDetailPage.SelectedValue);
                 //don't reset settings. Sure they might be invalid, but maybe not. And you can't ever revert.
                 //mc.DeleteModuleSetting(ModuleContext.ModuleId, "data");
                 Response.Redirect(Globals.NavigateURL(), true);
@@ -144,6 +148,7 @@ namespace Satrabel.OpenContent
                     tbTemplateName.Text = Path.GetFileNameWithoutExtension(ddlTemplate.SelectedValue);
                 }
             }
+            ActivateDetailPage();
         }
 
         protected void ddlDataSource_SelectedIndexChanged(object sender, EventArgs e)
@@ -171,6 +176,7 @@ namespace Satrabel.OpenContent
                 rblFrom_SelectedIndexChanged(null, null);
 
             }
+            ActivateDetailPage();
         }
 
         private void BindButtons(OpenContentSettings settings, RenderInfo info)
@@ -179,7 +185,7 @@ namespace Satrabel.OpenContent
             bool settingsDefined = !string.IsNullOrEmpty(settings.Data);
             bool settingsNeeded = false;
 
-            if (rblUseTemplate.SelectedIndex == 0) // existing template
+            if (rblUseTemplate.SelectedIndex == 0 && ddlTemplate.SelectedIndex >= 0) // existing template
             {
                 //create tmp TemplateManifest
                 var templateManifest = new FileUri(ddlTemplate.SelectedValue).ToTemplateManifest();
@@ -208,10 +214,10 @@ namespace Satrabel.OpenContent
                 //hlTempleteExchange.Visible = true;
                 hlEditSettings.Enabled = true;
 
-                bSave.CssClass = "dnnSecondaryAction";
-                bSave.Enabled = false;
-                hlEditSettings.CssClass = "dnnPrimaryAction";
-                hlEditContent.CssClass = "dnnSecondaryAction";
+                //bSave.CssClass = "dnnSecondaryAction";
+                //bSave.Enabled = false;
+                //hlEditSettings.CssClass = "dnnPrimaryAction";
+                //hlEditContent.CssClass = "dnnSecondaryAction";
 
             }
             hlEditContent.Visible = !RenderOnlySaveButton;
@@ -224,21 +230,22 @@ namespace Satrabel.OpenContent
                 hlEditContent.Enabled = true;
                 hlEditContent2.NavigateUrl = ModuleContext.EditUrl("Edit");
                 hlEditContent2.Enabled = true;
-                bSave.CssClass = "dnnSecondaryAction";
-                bSave.Enabled = false;
-                hlEditSettings.CssClass = "dnnSecondaryAction";
-                hlEditContent.CssClass = "dnnPrimaryAction";
+                //bSave.CssClass = "dnnSecondaryAction";
+                //bSave.Enabled = false;
+                //hlEditSettings.CssClass = "dnnSecondaryAction";
+                //hlEditContent.CssClass = "dnnPrimaryAction";
             }
         }
         public void RenderInitForm()
         {
             Renderinfo.ShowDemoData = false;
             pHelp.Visible = true;
-            if (!Page.IsPostBack)
+            if (!Page.IsPostBack || ddlTemplate.Items.Count == 0)
             {
                 rblDataSource.SelectedIndex = (Settings.TabId > 0 && Settings.ModuleId > 0 ? 1 : 0);
                 BindOtherModules(Settings.TabId, Settings.ModuleId);
                 BindTemplates(Settings.Template, (Renderinfo.IsOtherModule ? Renderinfo.Template.Uri() : null));
+                BindDetailPage(Settings.DetailTabId);
             }
             if (rblDataSource.SelectedIndex == 1) // other module
             {
@@ -247,7 +254,7 @@ namespace Satrabel.OpenContent
                 Renderinfo.SetDataSourceModule(dsModule.TabID, dsModule.ModuleID, dsModule, dsSettings.Template, dsSettings.Data);
             }
             BindButtons(Settings, Renderinfo);
-            if (rblUseTemplate.SelectedIndex == 0) // existing template
+            if (rblUseTemplate.SelectedIndex == 0 ) // existing template
             {
                 Renderinfo.Template = new FileUri(ddlTemplate.SelectedValue).ToTemplateManifest();
                 if (rblDataSource.SelectedIndex == 0) // this module
@@ -278,9 +285,7 @@ namespace Satrabel.OpenContent
         private void BindOtherModules(int tabId, int moduleId)
         {
             IEnumerable<ModuleInfo> modules = (new ModuleController()).GetModules(ModuleContext.PortalId).Cast<ModuleInfo>();
-
             modules = modules.Where(m => m.ModuleDefinition.DefinitionName == "OpenContent" && m.IsDeleted == false && !m.OpenContentSettings().IsOtherModule);
-
             rblDataSource.Items[1].Enabled = modules.Any();
             phDataSource.Visible = rblDataSource.SelectedIndex == 1; // other module
             if (rblDataSource.SelectedIndex == 1) // other module
@@ -298,8 +303,24 @@ namespace Satrabel.OpenContent
                 {
                     var tc = new TabController();
                     var tab = tc.GetTab(item.TabID, ModuleContext.PortalId, false);
+                    if (!tab.IsNeutralCulture && tab.CultureCode != DnnUtils.GetCurrentCultureCode())
+                    {
+                        // skip other cultures
+                        continue;
+                    }
+
+
                     var tabpath = tab.TabPath.Replace("//", "/").TrimEnd(tab.TabName).Trim('/');
-                    var li = new ListItem(string.Format("{0} [{2}] - {1}", tab.TabName, item.ModuleTitle, tabpath), item.TabModuleID.ToString());
+                    ListItem li;
+                    if (string.IsNullOrEmpty(tabpath))
+                    {
+                        li = new ListItem(string.Format("{0} - {1}", tab.TabName, item.ModuleTitle), item.TabModuleID.ToString());
+                    }
+                    else
+                    {
+                        li = new ListItem(string.Format("[{2}]{0} - {1}", tab.TabName, item.ModuleTitle, tabpath), item.TabModuleID.ToString());
+                    }
+                    
                     listItems.Add(li);
                     if (item.TabID == tabId && item.ModuleID == moduleId)
                     {
@@ -312,7 +333,51 @@ namespace Satrabel.OpenContent
                 ddlDataSource.Items.Add(li);
             }
         }
+        private void BindDetailPage(int tabId)
+        {
 
+            ActivateDetailPage();
+
+            ddlDetailPage.Items.Clear();
+            ddlDetailPage.Items.Add(new ListItem("Main Module Page", "-1"));
+            var listItems = new List<ListItem>();
+            var tc = new TabController();
+            var tabs = TabController.GetTabPathDictionary(ModuleContext.PortalId, DnnUtils.GetCurrentCultureCode());
+
+            //var tabs = tc.GetTabsByPortal(ModuleContext.PortalId);
+            foreach (var tab in tabs)
+            {
+
+                //var tabpath = tab.TabPath.Replace("//", "/").TrimEnd(tab.TabName).Trim('/');
+                var li = new ListItem(tab.Key.Replace("//", " / ").TrimStart(" / "), tab.Value.ToString());
+                if (!tab.Key.StartsWith("//Admin//"))
+                {
+                    listItems.Add(li);
+                    if (tab.Value == tabId)
+                    {
+                        li.Selected = true;
+                    }
+                }
+            }
+            foreach (ListItem li in listItems.OrderBy(x => x.Text))
+            {
+                ddlDetailPage.Items.Add(li);
+            }
+        }
+
+        private void ActivateDetailPage()
+        {
+            phDetailPage.Visible = false;
+            if (ddlTemplate.SelectedIndex >= 0 && rblUseTemplate.SelectedIndex == 0 ) // existing template
+            {
+                var template = new FileUri(ddlTemplate.SelectedValue);
+                var manifest = template.ToTemplateManifest();
+                if (manifest.IsListTemplate)
+                {
+                    phDetailPage.Visible = true;
+                }
+            }
+        }
 
     }
 }

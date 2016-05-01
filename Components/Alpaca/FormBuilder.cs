@@ -27,6 +27,18 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 Title = "MaxResults",
                 Type = "number"
             });
+            // Default no results
+            newSchema.Properties.Add("DefaultNoResults", new SchemaConfig()
+            {
+                Title = "Default No Results",
+                Type = "boolean"
+            });
+            // Remove current item
+            newSchema.Properties.Add("ExcludeCurrentItem", new SchemaConfig()
+            {
+                Title = "Exclude Current Item",
+                Type = "boolean"
+            });
             // Filter
             SchemaConfig newSchemaFilter = new SchemaConfig(true)
             {
@@ -59,7 +71,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     continue;
                 }
                 if (prop.Value.Type == "object")
-                {                    
+                {
                     continue;
                 }
                 string optType = opts == null ? "text" : opts.Type;
@@ -77,6 +89,11 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     var newField = new OptionsConfig();
                     newOptionsFilter.Fields.Add(prop.Key, newField);
                     newField.Type = "select";
+
+                    fieldLst.Add(prop.Key);
+                }
+                else if (prop.Value.Type == "number")
+                {
 
                     fieldLst.Add(prop.Key);
                 }
@@ -231,7 +248,11 @@ namespace Satrabel.OpenContent.Components.Alpaca
             List<string> fieldLst = new List<string>();
             foreach (var prop in schemaConfig.Properties)
             {
-                var opts = optionsConfig.Fields.ContainsKey(prop.Key) ? optionsConfig.Fields[prop.Key] : null;
+                OptionsConfig opts = null;
+                if (optionsConfig.Fields != null)
+                {
+                    opts = optionsConfig.Fields.ContainsKey(prop.Key) ? optionsConfig.Fields[prop.Key] : null;
+                }
                 string optType = opts == null ? "text" : opts.Type;
                 if (prop.Value.Type == "array" && (prop.Value.Enum != null || optType == "select" || optType == "select2"))
                 {
@@ -246,7 +267,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     };
                     newConfig.Fields.Add(prop.Key, newField);
                 }
-                else if (prop.Value.Enum != null  || optType == "select" || optType == "select2")
+                else if (prop.Value.Enum != null || optType == "select" || optType == "select2")
                 {
                     var newField = new FieldConfig()
                     {
@@ -276,6 +297,26 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     };
                     newConfig.Fields.Add(prop.Key, newField);
                 }
+                else if (optType == "wysihtml")
+                {
+                    var newField = new FieldConfig()
+                    {
+                        IndexType = "html",
+                        Index = true,
+                        Sort = true
+                    };
+                    newConfig.Fields.Add(prop.Key, newField);
+                }
+                else if (optType == "ckeditor")
+                {
+                    var newField = new FieldConfig()
+                    {
+                        IndexType = "html",
+                        Index = true,
+                        Sort = true
+                    };
+                    newConfig.Fields.Add(prop.Key, newField);
+                }
                 else if (optType == "mltext")
                 {
                     var newField = new FieldConfig()
@@ -287,11 +328,43 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     };
                     newConfig.Fields.Add(prop.Key, newField);
                 }
+                else if (optType == "mlwysihtml")
+                {
+                    var newField = new FieldConfig()
+                    {
+                        IndexType = "html",
+                        Index = true,
+                        Sort = true,
+                        MultiLanguage = true
+                    };
+                    newConfig.Fields.Add(prop.Key, newField);
+                }
+                else if (optType == "mlckeditor")
+                {
+                    var newField = new FieldConfig()
+                    {
+                        IndexType = "html",
+                        Index = true,
+                        Sort = true,
+                        MultiLanguage = true
+                    };
+                    newConfig.Fields.Add(prop.Key, newField);
+                }
                 else if (optType == "date")
                 {
                     var newField = new FieldConfig()
                     {
                         IndexType = "datetime",
+                        Index = true,
+                        Sort = true
+                    };
+                    newConfig.Fields.Add(prop.Key, newField);
+                }
+                else if (prop.Value.Type == "number")
+                {
+                    var newField = new FieldConfig()
+                    {
+                        IndexType = "float",
                         Index = true,
                         Sort = true
                     };

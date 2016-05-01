@@ -396,6 +396,291 @@
     Alpaca.registerFieldClass("address", Alpaca.Fields.AddressField);
 
 })(jQuery);
+///#source 1 1 MultiUploadField.js
+(function ($) {
+
+    var Alpaca = $.alpaca;
+
+    Alpaca.Fields.MultiUploadField = Alpaca.Fields.ArrayField.extend(
+    {
+        constructor: function (container, data, options, schema, view, connector) {
+            var self = this;
+            this.base(container, data, options, schema, view, connector);
+            this.sf = connector.servicesFramework;
+            this.itemsCount = 0;
+        },
+        setup: function () {
+
+            this.base();
+            if (!this.options.uploadfolder) {
+                this.options.uploadfolder = "";
+            }
+            this.urlfield = "";
+            if (this.options && this.options.items && (this.options.items.fields || this.options.items.type) ) {
+                if (this.options.items.type == "image") {
+
+                } else if (this.options.items.fields ) {
+                    for (var i in this.options.items.fields) {
+                        var f = this.options.items.fields[i];
+                        if (f.type == "image" || f.type == "mlimage" || f.type == "imagecrop") {
+                            this.urlfield = i;
+                            this.options.uploadfolder = f.uploadfolder;
+                            break;
+                        }
+                        else if (f.type == "file" || f.type == "mlfile") {
+                            this.urlfield = i;
+                            this.options.uploadfolder = f.uploadfolder;
+                            break;
+                        } else if (f.type == "image2" || f.type == "mlimage2") {
+                            this.urlfield = i;
+                            this.options.uploadfolder = f.folder;
+                            break;
+                        }
+                        else if (f.type == "file2" || f.type == "mlfile2") {
+                            this.urlfield = i;
+                            this.options.uploadfolder = f.folder;
+                            break;
+                        }
+                    }
+                }
+            }
+        },
+        afterRenderContainer: function (model, callback) {
+            var self = this;
+            this.base(model, function () {
+                var container = self.getContainerEl();
+                //$(container).addClass("alpaca-MultiUpload");
+                if (!self.isDisplayOnly()) {
+                   
+                    $('<div style="clear:both;"></div>').prependTo(container);
+                    var progressBar = $('<div class="progress" ><div class="bar" style="width: 0%;"></div></div>').prependTo(container);
+                    var mapButton = $('<input type="file" multiple="multiple" />').prependTo(container);
+
+                    this.wrapper = $("<span class='dnnInputFileWrapper dnnSecondaryAction' style='margin-bottom:10px;;'></span>");
+                    this.wrapper.text("Upload muliple files");
+                    mapButton.wrap(this.wrapper);
+                    mapButton.fileupload({
+                        dataType: 'json',
+                        url: self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
+                        maxFileSize: 25000000,
+                        formData: { uploadfolder: self.options.uploadfolder },
+                        beforeSend: self.sf.setModuleHeaders,
+                        change: function (e, data) {
+                            self.itemsCount = self.children.length;
+                        },
+                        add: function (e, data) {
+                            //data.context = $(opts.progressContextSelector);
+                            //data.context.find($(opts.progressFileNameSelector)).html(data.files[0].name);
+                            //data.context.show('fade');
+                            data.submit();
+                        },
+                        progressall: function (e, data) {
+                                var progress = parseInt(data.loaded / data.total * 100, 10);
+                                $('.bar', progressBar).css('width', progress + '%').find('span').html(progress + '%');
+                        },
+                        done: function (e, data) {
+                            if (data.result) {
+                                $.each(data.result, function (index, file) {
+                                    self.handleActionBarAddItemClick(self.itemsCount-1, function (item) {
+                                        var val = item.getValue();
+                                        if (self.urlfield == ""){
+                                            val = file.url;
+                                        }  else {
+                                            val[self.urlfield] = file.url;
+                                        }
+                                        item.setValue(val);
+                                        
+                                    });
+                                    self.itemsCount++;
+                                });
+                            }
+                        }
+                    }).data('loaded', true);
+                }
+                callback();
+            });
+        },
+        getTitle: function () {
+            return "Multi Upload";
+        },
+        getDescription: function () {
+            return "Multi Upload for images and files";
+        },
+
+        getSchemaOfOptions: function () {
+            return Alpaca.merge(this.base(), {
+                "properties": {
+                    "validateAddress": {
+                        "title": "Address Validation",
+                        "description": "Enable address validation if true",
+                        "type": "boolean",
+                        "default": true
+                    },
+                    "showMapOnLoad": {
+                        "title": "Whether to show the map when first loaded",
+                        "type": "boolean"
+                    }
+                }
+            });
+        },
+
+        getOptionsForOptions: function () {
+            return Alpaca.merge(this.base(), {
+                "fields": {
+                    "validateAddress": {
+                        "helper": "Address validation if checked",
+                        "rightLabel": "Enable Google Map for address validation?",
+                        "type": "checkbox"
+                    }
+                }
+            });
+        }
+
+    });
+
+    Alpaca.registerFieldClass("multiupload", Alpaca.Fields.MultiUploadField);
+
+})(jQuery);
+///#source 1 1 GalleryField.js
+(function ($) {
+
+    var Alpaca = $.alpaca;
+
+    Alpaca.Fields.GalleryField = Alpaca.Fields.MultiUploadField.extend(
+    {
+        setup: function () {
+            this.base();
+            this.schema.items = {
+                "type": "object",
+                "properties": {
+                
+                    "Image": {
+                        "title": "Image",
+                        "type": "string"
+                    }
+                }
+            };
+            Alpaca.merge(this.options.items, {
+                "fields": {
+                    "Image": {
+                        "type": "image"
+                    }
+                }
+            });
+            this.urlfield = "Image";
+        },
+        getTitle: function () {
+            return "Gallery";
+        },
+        getDescription: function () {
+            return "Image Gallery";
+        },
+
+        getSchemaOfOptions: function () {
+            return Alpaca.merge(this.base(), {
+                "properties": {
+                    "validateAddress": {
+                        "title": "Address Validation",
+                        "description": "Enable address validation if true",
+                        "type": "boolean",
+                        "default": true
+                    },
+                    "showMapOnLoad": {
+                        "title": "Whether to show the map when first loaded",
+                        "type": "boolean"
+                    }
+                }
+            });
+        },
+
+        getOptionsForOptions: function () {
+            return Alpaca.merge(this.base(), {
+                "fields": {
+                    "validateAddress": {
+                        "helper": "Address validation if checked",
+                        "rightLabel": "Enable Google Map for address validation?",
+                        "type": "checkbox"
+                    }
+                }
+            });
+        }
+
+    });
+
+    Alpaca.registerFieldClass("gallery", Alpaca.Fields.GalleryField);
+
+})(jQuery);
+///#source 1 1 DocumentsField.js
+(function ($) {
+
+    var Alpaca = $.alpaca;
+
+    Alpaca.Fields.DocumentsField = Alpaca.Fields.MultiUploadField.extend(
+    {
+        setup: function () {
+            this.base();
+            this.schema.items = {
+                "type": "object",
+                "properties": {
+                    "Title": {
+                        "title": "Title",
+                        "type": "string"
+                    },
+                    "File": {
+                        "title": "File",
+                        "type": "string"
+                    },
+                }
+            };
+            Alpaca.merge(this.options.items, {
+                "fields": {
+                    "File": {
+                        "type": "file"
+                    },
+                }
+            });
+            this.urlfield = "File";
+        },
+        getTitle: function () {
+            return "Gallery";
+        },
+        getDescription: function () {
+            return "Image Gallery";
+        },
+
+        getSchemaOfOptions: function () {
+            return Alpaca.merge(this.base(), {
+                "properties": {
+                    "validateAddress": {
+                        "title": "Address Validation",
+                        "description": "Enable address validation if true",
+                        "type": "boolean",
+                        "default": true
+                    },
+                    "showMapOnLoad": {
+                        "title": "Whether to show the map when first loaded",
+                        "type": "boolean"
+                    }
+                }
+            });
+        },
+
+        getOptionsForOptions: function () {
+            return Alpaca.merge(this.base(), {
+                "fields": {
+                    "validateAddress": {
+                        "helper": "Address validation if checked",
+                        "rightLabel": "Enable Google Map for address validation?",
+                        "type": "checkbox"
+                    }
+                }
+            });
+        }
+
+    });
+    Alpaca.registerFieldClass("documents", Alpaca.Fields.DocumentsField);
+
+})(jQuery);
 ///#source 1 1 CKEditorField.js
 (function ($) {
 
@@ -407,20 +692,22 @@
      */
     {
         /**
-         * @see Alpaca.Fields.CKEditorField#getFieldType
+         * @see Alpaca.Fields.TextAreaField#getFieldType
          */
         getFieldType: function () {
             return "ckeditor";
         },
 
         /**
-         * @see Alpaca.Fields.CKEditorField#setup
+         * @see Alpaca.Fields.TextAreaField#setup
          */
         setup: function () {
             if (!this.data) {
                 this.data = "";
             }
+
             this.base();
+
             if (typeof (this.options.ckeditor) == "undefined") {
                 this.options.ckeditor = {};
             }
@@ -428,6 +715,7 @@
                 this.options.configset = "";
             }
         },
+
         afterRenderControl: function (model, callback) {
             var self = this;
 
@@ -435,142 +723,146 @@
 
                 // see if we can render CK Editor
                 if (!self.isDisplayOnly() && self.control && typeof (CKEDITOR) !== "undefined") {
-                    // use a timeout because CKEditor has some odd timing dependencies
-                    setTimeout(function () {
 
-                        var defaultConfig = {
+                    var defaultConfig = {
+                        toolbar: [
+                             { name: 'basicstyles', groups: ['basicstyles', 'cleanup'], items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'] },
+                             { name: 'styles', items: ['Styles', 'Format'] },
+                             { name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align'], items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', ] },
+                             { name: 'links', items: ['Link', 'Unlink'] },
+
+                             { name: 'document', groups: ['mode', 'document', 'doctools'], items: ['Source'] },
+                        ],
+                        // Set the most common block elements.
+                        format_tags: 'p;h1;h2;h3;pre',
+
+                        // Simplify the dialog windows.
+                        removeDialogTabs: 'image:advanced;link:advanced',
+
+                        // Remove one plugin.
+                        removePlugins: 'elementspath,resize',
+
+                        extraPlugins: 'dnnpages',
+
+                        //autoGrow_onStartup : true,
+                        //autoGrow_minHeight : 100,
+                        //autoGrow_maxHeight : 300,
+                        height: 150,
+                        //skin : 'flat',
+
+                        customConfig: '',
+                        stylesSet: []
+                    };
+                    if (self.options.configset == "basic") {
+                        defaultConfig = {
                             toolbar: [
                                  { name: 'basicstyles', groups: ['basicstyles', 'cleanup'], items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'] },
                                  { name: 'styles', items: ['Styles', 'Format'] },
                                  { name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align'], items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', ] },
                                  { name: 'links', items: ['Link', 'Unlink'] },
 
-                                 { name: 'document', groups: ['mode', 'document', 'doctools'], items: ['Source'] },
+                                 { name: 'document', groups: ['mode', 'document', 'doctools'], items: ['Maximize', 'Source'] },
                             ],
                             // Set the most common block elements.
                             format_tags: 'p;h1;h2;h3;pre',
-
                             // Simplify the dialog windows.
                             removeDialogTabs: 'image:advanced;link:advanced',
-
                             // Remove one plugin.
                             removePlugins: 'elementspath,resize',
-
                             extraPlugins: 'dnnpages',
-
                             //autoGrow_onStartup : true,
                             //autoGrow_minHeight : 100,
                             //autoGrow_maxHeight : 300,
                             height: 150,
                             //skin : 'flat',
-
                             customConfig: '',
                             stylesSet: []
                         };
-                        if (self.options.configset == "basic") {
-                            defaultConfig = {
-                                toolbar: [
-                                     { name: 'basicstyles', groups: ['basicstyles', 'cleanup'], items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'] },
-                                     { name: 'styles', items: ['Styles', 'Format'] },
-                                     { name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align'], items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', ] },
-                                     { name: 'links', items: ['Link', 'Unlink'] },
+                    } else if (self.options.configset == "standard") {
+                        defaultConfig = {
+                            toolbar: [
+                                 { name: 'basicstyles', groups: ['basicstyles', 'cleanup'], items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'] },
+                                 { name: 'styles', items: ['Styles', 'Format'] },
+                                 { name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align'], items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', ] },
+                                 { name: 'links', items: ['Link', 'Unlink', 'Anchor'] },
+                                 { name: 'insert', items: ['Table', 'Smiley', 'SpecialChar', 'Iframe'] },
+                                 { name: 'document', groups: ['mode', 'document', 'doctools'], items: ['Maximize', 'ShowBlocks', 'Source'] }
+                            ],
+                            // Set the most common block elements.
+                            format_tags: 'p;h1;h2;h3;pre;div',
 
-                                     { name: 'document', groups: ['mode', 'document', 'doctools'], items: ['Maximize', 'Source'] },
-                                ],
-                                // Set the most common block elements.
-                                format_tags: 'p;h1;h2;h3;pre',
-                                // Simplify the dialog windows.
-                                removeDialogTabs: 'image:advanced;link:advanced',
-                                // Remove one plugin.
-                                removePlugins: 'elementspath,resize',
-                                extraPlugins: 'dnnpages',
-                                //autoGrow_onStartup : true,
-                                //autoGrow_minHeight : 100,
-                                //autoGrow_maxHeight : 300,
-                                height: 150,
-                                //skin : 'flat',
-                                customConfig: '',
-                                stylesSet: []
-                            };
-                        } else if (self.options.configset == "standard") {
-                            defaultConfig = {
-                                toolbar: [
-                                     { name: 'basicstyles', groups: ['basicstyles', 'cleanup'], items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'] },
-                                     { name: 'styles', items: ['Styles', 'Format'] },
-                                     { name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align'], items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', ] },
-                                     { name: 'links', items: ['Link', 'Unlink', 'Anchor'] },
-                                     { name: 'insert', items: [ 'Table', 'Smiley', 'SpecialChar',  'Iframe'] },
-                                     { name: 'document', groups: ['mode', 'document', 'doctools'], items: ['Maximize', 'ShowBlocks', 'Source'] }
-                                ],
-                                // Set the most common block elements.
-                                format_tags: 'p;h1;h2;h3;pre;div',
+                            //http://docs.ckeditor.com/#!/guide/dev_allowed_content_rules
+                            extraAllowedContent:
+                            'table tr th td caption[*](*);' +
+                            'div span(*);'
+                            //'a[!href](*);' 
+                            //'img[!src,alt,width,height](*);' +
+                            //'h1 h2 h3 p blockquote strong em(*);' +
+                            ,
 
-                                //http://docs.ckeditor.com/#!/guide/dev_allowed_content_rules
-                                extraAllowedContent:
-                                'table tr th td caption[*](*);' +
-                                'div span(*);' 
-                                //'a[!href](*);' 
-                                //'img[!src,alt,width,height](*);' +
-                                //'h1 h2 h3 p blockquote strong em(*);' +
-                                ,
+                            // Simplify the dialog windows.
+                            removeDialogTabs: 'image:advanced;link:advanced',
+                            // Remove one plugin.
+                            removePlugins: 'elementspath,resize',
+                            extraPlugins: 'dnnpages',
+                            //autoGrow_onStartup : true,
+                            //autoGrow_minHeight : 100,
+                            //autoGrow_maxHeight : 300,
+                            height: 150,
+                            //skin : 'flat',
+                            customConfig: '',
+                            stylesSet: []
+                        };
+                    } else if (self.options.configset == "full") {
+                        defaultConfig = {
+                            toolbar: [
+                                { name: 'document', items: ['Save', 'NewPage', 'DocProps', 'Preview', 'Print', '-', 'Templates'] },
+                                { name: 'clipboard', items: ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'] },
+                                { name: 'editing', items: ['Find', 'Replace', '-', 'SelectAll', '-', 'SpellChecker', 'Scayt'] },
+                                { name: 'forms', items: ['Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton', 'HiddenField'] },
+                                '/',
+                                { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'] },
+                                {
+                                    name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv',
+                                    '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl']
+                                },
+                                { name: 'links', items: ['Link', 'Unlink', 'Anchor'] },
+                                { name: 'insert', items: ['Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe'] },
+                                '/',
+                                { name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize'] },
+                                { name: 'colors', items: ['TextColor', 'BGColor'] },
+                                { name: 'tools', items: ['Maximize', 'ShowBlocks', '-', 'About', '-', 'Source'] }
+                            ],
+                            // Set the most common block elements.
+                            format_tags: 'p;h1;h2;h3;pre;div',
+                            //http://docs.ckeditor.com/#!/api/CKEDITOR.config-cfg-allowedContent
+                            allowedContentRules: true,
+                            // Simplify the dialog windows.
+                            removeDialogTabs: 'image:advanced;link:advanced',
+                            // Remove one plugin.
+                            removePlugins: 'elementspath,resize',
+                            extraPlugins: 'dnnpages',
+                            //autoGrow_onStartup : true,
+                            //autoGrow_minHeight : 100,
+                            //autoGrow_maxHeight : 300,
+                            height: 150,
+                            //skin : 'flat',
+                            customConfig: '',
+                            stylesSet: []
+                        };
+                    }
+                    var config = $.extend({}, defaultConfig, self.options.ckeditor);
 
-                                // Simplify the dialog windows.
-                                removeDialogTabs: 'image:advanced;link:advanced',
-                                // Remove one plugin.
-                                removePlugins: 'elementspath,resize',
-                                extraPlugins: 'dnnpages',
-                                //autoGrow_onStartup : true,
-                                //autoGrow_minHeight : 100,
-                                //autoGrow_maxHeight : 300,
-                                height: 150,
-                                //skin : 'flat',
-                                customConfig: '',
-                                stylesSet: []
-                            };
-                        } else if (self.options.configset == "full") {
-                            defaultConfig = {
-                                toolbar: [
-                                    { name: 'document', items: ['Save', 'NewPage', 'DocProps', 'Preview', 'Print', '-', 'Templates'] },
-	                                { name: 'clipboard', items: ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'] },
-	                                { name: 'editing', items: ['Find', 'Replace', '-', 'SelectAll', '-', 'SpellChecker', 'Scayt'] },
-	                                { name: 'forms', items: ['Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton', 'HiddenField'] },
-	                                '/',
-	                                { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'] },
-	                                {
-	                                    name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv',
-                                        '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl']
-	                                },
-	                                { name: 'links', items: ['Link', 'Unlink', 'Anchor'] },
-	                                { name: 'insert', items: ['Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe'] },
-	                                '/',
-	                                { name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize'] },
-	                                { name: 'colors', items: ['TextColor', 'BGColor'] },
-	                                { name: 'tools', items: ['Maximize', 'ShowBlocks', '-', 'About', '-', 'Source'] }
-                                ],
-                                // Set the most common block elements.
-                                format_tags: 'p;h1;h2;h3;pre;div',
-                                //http://docs.ckeditor.com/#!/api/CKEDITOR.config-cfg-allowedContent
-                                allowedContentRules: true,
-                                // Simplify the dialog windows.
-                                removeDialogTabs: 'image:advanced;link:advanced',
-                                // Remove one plugin.
-                                removePlugins: 'elementspath,resize',
-                                extraPlugins: 'dnnpages',
-                                //autoGrow_onStartup : true,
-                                //autoGrow_minHeight : 100,
-                                //autoGrow_maxHeight : 300,
-                                height: 150,
-                                //skin : 'flat',
-                                customConfig: '',
-                                stylesSet: []
-                            };
+
+
+                    // wait for Alpaca to declare the DOM swapped and ready before we attempt to do anything with CKEditor
+                    self.on("ready", function () {
+                        if (!self.editor) {
+                            self.editor = CKEDITOR.replace($(self.control)[0], config);
+
+                            self.initCKEditorEvents();
                         }
-                        var config = $.extend({}, defaultConfig, self.options.ckeditor);
-
-                        self.editor = CKEDITOR.replace($(self.control)[0], config);
-                        //self.editor = CKEDITOR.replace($(self.control)[0], self.options.ckeditor);
-
-                    }, 1600);
+                    });
                 }
 
                 // if the ckeditor's dom element gets destroyed, make sure we clean up the editor instance
@@ -578,7 +870,9 @@
 
                     if (self.editor) {
                         self.editor.removeAllListeners();
-                        self.editor.destroy(false);
+                        // catch here because CKEditor has an issue if DOM element deletes before CKEditor cleans up
+                        // see: https://github.com/lemonde/angular-ckeditor/issues/7
+                        try { self.editor.destroy(false); } catch (e) { }
                         self.editor = null;
                     }
 
@@ -588,11 +882,10 @@
             });
         },
 
-        initControlEvents: function () {
+        initCKEditorEvents: function () {
             var self = this;
 
-            setTimeout(function () {
-
+            if (self.editor) {
                 // click event
                 self.editor.on("click", function (e) {
                     self.onClick.call(self, e);
@@ -625,20 +918,19 @@
 
                 // NOTE: these do not seem to work with CKEditor?
                 /*
-                // keyup event
-                self.editor.on("keyup", function(e) {
-                    self.onKeyUp.call(self, e);
-                    self.trigger("keyup", e);
-                });
-    
-                // keydown event
-                self.editor.on("keydown", function(e) {
-                    self.onKeyDown.call(self, e);
-                    self.trigger("keydown", e);
-                });
-                */
+                 // keyup event
+                 self.editor.on("keyup", function(e) {
+                 self.onKeyUp.call(self, e);
+                 self.trigger("keyup", e);
+                 });
 
-            }, 1800); // NOTE: odd timing dependencies
+                 // keydown event
+                 self.editor.on("keydown", function(e) {
+                 self.onKeyDown.call(self, e);
+                 self.trigger("keydown", e);
+                 });
+                 */
+            }
         },
 
         setValue: function (value) {
@@ -652,10 +944,13 @@
             }
         },
 
-        getValue: function () {
+        /**
+         * @see Alpaca.Fields.ControlField#getControlValue
+         */
+        getControlValue: function () {
             var self = this;
 
-            var value = this.base();
+            var value = null;
 
             if (self.editor) {
                 value = self.editor.getData();
@@ -668,10 +963,12 @@
          * @see Alpaca.Field#destroy
          */
         destroy: function () {
+            var self = this;
+
             // destroy the plugin instance
-            if (this.editor) {
-                this.editor.destroy();
-                this.editor = null;
+            if (self.editor) {
+                self.editor.destroy();
+                self.editor = null;
             }
 
             // call up to base method
@@ -681,7 +978,7 @@
         /* builder_helpers */
 
         /**
-         * @see Alpaca.Fields.CKEditorField#getTitle
+         * @see Alpaca.Fields.TextAreaField#getTitle
          */
         ,
         getTitle: function () {
@@ -689,7 +986,7 @@
         },
 
         /**
-         * @see Alpaca.Fields.CKEditorField#getDescription
+         * @see Alpaca.Fields.TextAreaField#getDescription
          */
         getDescription: function () {
             return "Provides an instance of a CK Editor control for use in editing HTML.";
@@ -1341,6 +1638,381 @@
     Alpaca.registerFieldClass("file", Alpaca.Fields.FileField);
 
 })(jQuery);
+///#source 1 1 ImageCropField.js
+(function ($) {
+
+    var Alpaca = $.alpaca;
+    
+    Alpaca.Fields.ImageCropField = Alpaca.Fields.TextField.extend(
+    /**
+     * @lends Alpaca.Fields.ImageField.prototype
+     */
+    {
+        constructor: function(container, data, options, schema, view, connector)
+        {
+            var self = this;
+            this.base(container, data, options, schema, view, connector);
+            this.sf = connector.servicesFramework;
+            //this.cropper = false;
+        },
+
+        /**
+         * @see Alpaca.Fields.TextField#getFieldType
+         */
+        getFieldType: function () {
+            return "imagecrop";
+        }
+        ,
+        setup: function () {
+            if (!this.options.uploadfolder) {
+                this.options.uploadfolder = "";
+            }
+            if (!this.options.uploadhidden) {
+                this.options.uploadhidden = false;
+            }
+            if (!this.options.cropper) {
+                this.options.cropper = {};
+            }
+            this.options.cropper.responsive = false;
+            if (!this.options.cropper.autoCropArea) {
+                this.options.cropper.autoCropArea = 1;
+            }
+            this.base();
+        },
+
+        /**
+         * @see Alpaca.Fields.TextField#getTitle
+         */
+        getTitle: function () {
+            return "Image Crop Field";
+        },
+
+        /**
+         * @see Alpaca.Fields.TextField#getDescription
+         */
+        getDescription: function () {
+            return "Image Crop Field.";
+        },
+        getControlEl: function () {
+            return $(this.control.get(0)).find('input[type=text]#' + this.id);
+        },
+        setValue: function (value) {
+            var self = this;
+            //var el = $( this.control).filter('#'+this.id);
+            //var el = $(this.control.get(0)).find('input[type=text]');
+            var el = this.getControlEl();
+            //$image = $(self.control).parent().find('.alpaca-image-display > img');
+            if (el && el.length > 0) {
+                if (Alpaca.isEmpty(value)) {
+                    el.val("");
+                    self.cropper("");
+                }
+                else if (Alpaca.isObject(value)) {
+                    el.val(value.url);
+                    self.cropper(value.url, value);
+                }
+                else {
+                    el.val(value);
+                    self.cropper(value);
+                }
+            }
+            
+            // be sure to call into base method
+            //this.base(value);
+
+            // if applicable, update the max length indicator
+            this.updateMaxLengthIndicator();
+        },
+
+        getValue: function () {
+            var self = this;
+            var value = null;
+
+            //var el = $(this.control).filter('#' + this.id);
+            //var el = $(this.control.get(0)).find('input[type=text]');
+            var el = this.getControlEl();
+            $image = self.getImage();
+            if (el && el.length > 0) {
+                if (self.cropperExist())
+                    value = $image.cropper('getData', { rounded: true });
+                else
+                    value = {};
+
+                value.url = el.val();
+            }
+            return value;
+        },
+
+        afterRenderControl: function (model, callback) {
+            var self = this;
+            this.base(model, function () {
+                self.handlePostRender(function () {
+                    callback();
+                });
+            });
+        },
+        handlePostRender: function (callback) {
+            var self = this;
+            //var el = this.control;
+            var el = this.getControlEl();
+            $image = $(self.control).parent().find('.alpaca-image-display img');
+            if (self.options.uploadhidden) {
+                $(this.control.get(0)).find('input[type=file]').hide();
+            } else {
+                $(this.control.get(0)).find('input[type=file]').fileupload({
+                    dataType: 'json',
+                    url: self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
+                    maxFileSize: 25000000,
+                    formData: { uploadfolder : self.options.uploadfolder },
+                    beforeSend: self.sf.setModuleHeaders,
+                    add: function (e, data) {
+                        //data.context = $(opts.progressContextSelector);
+                        //data.context.find($(opts.progressFileNameSelector)).html(data.files[0].name);
+                        //data.context.show('fade');
+                        data.submit();
+                    },
+                    progress: function (e, data) {
+                        if (data.context) {
+                            var progress = parseInt(data.loaded / data.total * 100, 10);
+                            data.context.find(opts.progressBarSelector).css('width', progress + '%').find('span').html(progress + '%');
+                        }
+                    },
+                    done: function (e, data) {
+                        if (data.result) {
+                            $.each(data.result, function (index, file) {
+                                //self.setValue(file.url);
+                                $(el).val(file.url);
+                                $(el).change();
+                                //$(el).change();
+                                //$(e.target).parent().find('input[type=text]').val(file.url);
+                                //el.val(file.url);
+                                //$(e.target).parent().find('.alpaca-image-display img').attr('src', file.url);
+                            });
+                        }
+                    }
+                }).data('loaded', true);
+            }
+            $(el).change(function () {
+                //self.cropper = false;
+                var value = $(this).val();
+                self.cropper(value);
+                /*
+                $image.attr('src', value);
+                if (value) {
+                    $image.parent().find('.cropper-container').show();
+                    
+                }
+                else {
+                    $image.parent().find('.cropper-container').hide();
+                    if (self.cropper) {
+                        
+                        //self.cropper = false;
+                    }
+                }
+                */
+
+            });
+
+            if (self.options.manageurl) {
+                var manageButton = $('<a href="' + self.options.manageurl + '" target="_blank" class="alpaca-form-button">Manage files</a>').appendTo($(el).parent());
+            }
+
+            callback();
+            
+        },
+        cropper: function (url, data) {
+            var self = this;
+            $image = self.getImage();
+            $image.attr('src', url);
+            var cropperExist = $image.data('cropper');
+            if (url) {
+                $image.show();
+                if (!cropperExist) {
+                    var config = $.extend({}, {
+                        aspectRatio: 16 / 9,
+                        checkOrientation: false,
+                        autoCropArea: 0.90,
+                        minContainerHeight: 200,
+                        minContainerWidth: 400,
+                        toggleDragModeOnDblclick: false,
+
+                    }, self.options.cropper);
+                    $image.cropper(config);
+                } else {
+                    if (url != cropperExist.originalUrl){
+                        $image.cropper('replace', url);
+                    }
+                    //$image.cropper('reset');
+                }
+                if (data) {
+                    $image.cropper('setData', data);
+                }
+            } else {
+                $image.hide();
+                if (!cropperExist) {
+
+                } else {
+                    $image.cropper('destroy');
+                }
+            }
+        },
+        cropperExist: function () {
+            var self = this;
+            $image = self.getImage();
+            var cropperData = $image.data('cropper');
+            
+            return cropperData;
+        },
+        getImage: function () {
+            var self = this;
+            return $(self.control).parent().find('#'+self.id+'-image'); //.find('.alpaca-image-display > img');
+
+        },
+        applyTypeAhead: function () {
+            var self = this;
+
+            if (self.control.typeahead && self.options.typeahead && !Alpaca.isEmpty(self.options.typeahead)) {
+
+                var tConfig = self.options.typeahead.config;
+                if (!tConfig) {
+                    tConfig = {};
+                }
+                var tDatasets = tDatasets = {};
+                if (!tDatasets.name) {
+                    tDatasets.name = self.getId();
+                }
+
+                var tFolder = self.options.typeahead.Folder;
+                if (!tFolder) {
+                    tFolder = "";
+                }
+
+                var tEvents = tEvents = {};
+
+                var bloodHoundConfig = {
+                    datumTokenizer: function (d) {
+                        return Bloodhound.tokenizers.whitespace(d.value);
+                    },
+                    queryTokenizer: Bloodhound.tokenizers.whitespace
+                };
+
+                /*
+                if (tDatasets.type === "prefetch") {
+                    bloodHoundConfig.prefetch = {
+                        url: tDatasets.source,
+                        ajax: {
+                            //url: sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
+                            beforeSend: connector.servicesFramework.setModuleHeaders,
+        
+                        }
+                    };
+        
+                    if (tDatasets.filter) {
+                        bloodHoundConfig.prefetch.filter = tDatasets.filter;
+                    }
+                }
+                */
+
+                bloodHoundConfig.remote = {
+                    url: self.sf.getServiceRoot('OpenContent') + "DnnEntitiesAPI/Images?q=%QUERY&d=" + tFolder,
+                    ajax: {
+                        beforeSend: self.sf.setModuleHeaders,
+
+                    }
+                };
+
+                if (tDatasets.filter) {
+                    bloodHoundConfig.remote.filter = tDatasets.filter;
+                }
+
+                if (tDatasets.replace) {
+                    bloodHoundConfig.remote.replace = tDatasets.replace;
+                }
+
+
+                var engine = new Bloodhound(bloodHoundConfig);
+                engine.initialize();
+                tDatasets.source = engine.ttAdapter();
+
+                tDatasets.templates = {
+                    "empty": "Nothing found...",
+                    "suggestion": "<div style='width:20%;display:inline-block;background-color:#fff;padding:2px;'><img src='{{value}}' style='height:40px' /></div> {{name}}"
+                };
+
+                // compile templates
+                if (tDatasets.templates) {
+                    for (var k in tDatasets.templates) {
+                        var template = tDatasets.templates[k];
+                        if (typeof (template) === "string") {
+                            tDatasets.templates[k] = Handlebars.compile(template);
+                        }
+                    }
+                }
+
+                //var el = $(this.control.get(0)).find('input[type=text]');
+                var el = this.getControlEl();
+                // process typeahead
+                $(el).typeahead(tConfig, tDatasets);
+
+                // listen for "autocompleted" event and set the value of the field
+                $(el).on("typeahead:autocompleted", function (event, datum) {
+                    //self.setValue(datum.value);
+                    $(el).val(datum.value);
+                    $(el).change();
+                    //$(self.control).parent().find('input[type=text]').val(datum.value);
+                    //$(self.control).parent().find('.alpaca-image-display img').attr('src', datum.value);
+                });
+
+                // listen for "selected" event and set the value of the field
+                $(el).on("typeahead:selected", function (event, datum) {
+                    //self.setValue(datum.value);
+                    $(el).val(datum.value);
+                    $(el).change();
+                    //$(self.control).parent().find('input[type=text]').val(datum.value);
+                    //$(self.control).parent().find('.alpaca-image-display img').attr('src', datum.value);
+                });
+
+                // custom events
+                if (tEvents) {
+                    if (tEvents.autocompleted) {
+                        $(el).on("typeahead:autocompleted", function (event, datum) {
+                            tEvents.autocompleted(event, datum);
+                        });
+                    }
+                    if (tEvents.selected) {
+                        $(el).on("typeahead:selected", function (event, datum) {
+                            tEvents.selected(event, datum);
+                        });
+                    }
+                }
+
+                // when the input value changes, change the query in typeahead
+                // this is to keep the typeahead control sync'd with the actual dom value
+                // only do this if the query doesn't already match
+                //var fi = $(self.control);
+                $(el).change(function () {
+
+                    var value = $(this).val();
+
+                    var newValue = $(el).typeahead('val');
+                    if (newValue !== value) {
+                        $(el).typeahead('val', value);
+                    }
+
+                });
+
+                // some UI cleanup (we don't want typeahead to restyle)
+                $(self.field).find("span.twitter-typeahead").first().css("display", "block"); // SPAN to behave more like DIV, next line
+                $(self.field).find("span.twitter-typeahead input.tt-input").first().css("background-color", "");
+            }
+        }
+
+        /* end_builder_helpers */
+    });
+
+    Alpaca.registerFieldClass("imagecrop", Alpaca.Fields.ImageCropField);
+
+})(jQuery);
 ///#source 1 1 ImageCropperField.js
 (function ($) {
 
@@ -1631,17 +2303,19 @@
                         var cropper = self.options.croppers[i];
                         var id = self.id + '-' + i;
                         var $cropbutton = $('#' + id);
-                        var cropdata = { url: res.cropdata[i].url, cropper: res.cropdata[i].crop };
-                        if (cropdata) {
-                            $cropbutton.data('cropdata', cropdata);
+                        if (res.cropdata[i]){
+                            var cropdata = { url: res.cropdata[i].url, cropper: res.cropdata[i].crop };
+                            if (cropdata) {
+                                $cropbutton.data('cropdata', cropdata);
+                            }
                         }
                     }
                     setTimeout(function () {
-                        $(cropButton).css('cursor', 'default');
+                        $(cropButton).css('cursor', 'initial');
                     }, 500);
                 }).fail(function (xhr, result, status) {
                     alert("Uh-oh, something broke: " + status);
-                    $(parentel).css('cursor', 'default');
+                    $(parentel).css('cursor', 'initial');
                 });
                 return false;
             });
@@ -1951,7 +2625,7 @@
             return $(this.control.get(0)).find('input[type=text]#' + this.id);
         },
         setValue: function (value) {
-
+            var self = this;
             //var el = $( this.control).filter('#'+this.id);
             //var el = $(this.control.get(0)).find('input[type=text]');
             var el = this.getControlEl();
@@ -1962,6 +2636,7 @@
                 }
                 else {
                     el.val(value);
+                    $(self.control).parent().find('.alpaca-image-display img').attr('src', value);
                 }
             }
             
@@ -2234,7 +2909,7 @@
          */
         getValue: function()
         {
-            var val = this._getControlVal(true);
+            var val = this._getControlVal(false);
 
             if (typeof(val) == "undefined" || "" == val)
             {
@@ -3692,7 +4367,7 @@
                 this.olddata = {};
                 this.olddata[this.defaultCulture] = this.data;
             }
-
+            
             this.base();
         },
 
@@ -3758,9 +4433,10 @@
             var self = this;
             var el = this.getControlEl();
 
+            
             callback();
 
-            $(this.control.get(0)).after('<img src="/images/Flags/' + this.culture + '.gif" />');
+            $(this.control).parent().find('.select2').after('<img src="/images/Flags/' + this.culture + '.gif" class="flag" />');
             
         },
     });
@@ -3772,7 +4448,6 @@
 (function($) {
 
     var Alpaca = $.alpaca;
-
     
     Alpaca.Fields.File2Field = Alpaca.Fields.ListField.extend(
     /**
@@ -3806,6 +4481,11 @@
             }
             if (!this.options.folder) {
                 this.options.folder = "";
+            }
+            // filter = serverside c# regexp
+            // exemple :  ^.*\.(jpg|JPG|gif|GIF|doc|DOC|pdf|PDF)$
+            if (!this.options.filter) {
+                this.options.filter = "";
             }
             this.base();
         },
@@ -3930,7 +4610,7 @@
                         model.selectOptions = self.selectOptions;
                         callback();
                     };
-                    var postData = { q : "*", d : self.options.folder };
+                    var postData = { q: "*", d: self.options.folder, filter: self.options.filter };
                     $.ajax({
                         url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "FilesLookup",
                         beforeSend: self.sf.setModuleHeaders,
@@ -4328,6 +5008,672 @@
     });
 
     Alpaca.registerFieldClass("file2", Alpaca.Fields.File2Field);
+
+})(jQuery);
+///#source 1 1 MLFile2Field.js
+(function($) {
+
+    var Alpaca = $.alpaca;
+        
+    Alpaca.Fields.MLFile2Field = Alpaca.Fields.File2Field.extend(
+    /**
+     * @lends Alpaca.Fields.File2Field.prototype
+     */
+    {
+        constructor: function (container, data, options, schema, view, connector) {
+            var self = this;
+            this.base(container, data, options, schema, view, connector);
+            this.culture = connector.culture;
+            this.defaultCulture = connector.defaultCulture;
+        },
+        /**
+         * @see Alpaca.Fields.File2Field#setup
+         */
+        setup: function()
+        {
+            var self = this;
+            if (this.data && Alpaca.isObject(this.data)) {
+                this.olddata = this.data;
+            } else if (this.data) {
+                this.olddata = {};
+                this.olddata[this.defaultCulture] = this.data;
+            }
+            this.base();
+        },
+
+        getValue: function () {
+            
+                var val = this.base(val);
+                var self = this;
+                var o = {};
+                if (this.olddata && Alpaca.isObject(this.olddata)) {
+                    $.each(this.olddata, function (key, value) {
+                        var v = Alpaca.copyOf(value);
+                        if (key != self.culture) {
+                            o[key] = v;
+                        }
+                    });
+                }
+                if (val != "") {
+                    o[self.culture] = val;
+                }
+                if ($.isEmptyObject(o)) {
+                    return "";
+                }
+                return o;
+        },
+
+        /**
+         * @see Alpaca.Field#setValue
+         */
+        setValue: function(val)
+        {
+            if (val === "") {
+                return;
+            }
+            if (!val) {
+                this.base("");
+                return;
+            }
+            if (Alpaca.isObject(val)) {
+                var v = val[this.culture];
+                if (!v) {
+                    this.base("");
+                    return;
+                }
+                this.base(v);
+            }
+            else {
+                this.base(val);
+            }
+        },
+        afterRenderControl: function (model, callback) {
+            var self = this;
+            this.base(model, function () {
+                self.handlePostRender2(function () {
+                    callback();
+                });
+            });
+        },
+        handlePostRender2: function (callback) {
+            var self = this;
+            var el = this.getControlEl();
+
+            
+            callback();
+
+            $(this.control).parent().find('.select2').after('<img src="/images/Flags/' + this.culture + '.gif" class="flag" />');
+            
+        },
+    });
+
+    Alpaca.registerFieldClass("mlfile2", Alpaca.Fields.MLFile2Field);
+
+})(jQuery);
+///#source 1 1 Folder2Field.js
+(function($) {
+
+    var Alpaca = $.alpaca;
+    
+    Alpaca.Fields.Folder2Field = Alpaca.Fields.ListField.extend(
+    /**
+     * @lends Alpaca.Fields.File2Field.prototype
+     */
+    {
+        constructor: function (container, data, options, schema, view, connector) {
+            var self = this;
+            this.base(container, data, options, schema, view, connector);
+            this.sf = connector.servicesFramework;
+            this.dataSource = {};
+        },
+        /**
+         * @see Alpaca.Field#getFieldType
+         */
+        getFieldType: function()
+        {
+            return "select";
+        },
+
+        /**
+         * @see Alpaca.Fields.File2Field#setup
+         */
+        setup: function()
+        {
+            var self = this;
+            if (self.schema["type"] && self.schema["type"] === "array") {
+                self.options.multiple = true;
+                self.options.removeDefaultNone = true;
+                //self.options.hideNone = true;
+            }
+            if (!this.options.folder) {
+                this.options.folder = "";
+            }
+            // filter = serverside c# regexp
+            // exemple :  ^.*\.(jpg|JPG|gif|GIF|doc|DOC|pdf|PDF)$
+            if (!this.options.filter) {
+                this.options.filter = "";
+            }
+            this.base();
+        },
+
+        getValue: function () {
+            if (this.control && this.control.length > 0) {
+                var val = this._getControlVal(true);
+                if (typeof (val) === "undefined") {
+                    val = this.data;
+                }
+                else if (Alpaca.isArray(val)) {
+                    for (var i = 0; i < val.length; i++) {
+                        val[i] = this.ensureProperType(val[i]);
+                    }
+                }
+
+                return this.base(val);
+            }
+        },
+
+        /**
+         * @see Alpaca.Field#setValue
+         */
+        setValue: function(val)
+        {
+            if (Alpaca.isArray(val))
+            {
+                if (!Alpaca.compareArrayContent(val, this.getValue()))
+                {
+                    if (!Alpaca.isEmpty(val) && this.control)
+                    {
+                        this.control.val(val);
+                    }
+                    this.base(val);
+                }
+            }
+            else
+            {
+                if (val !== this.getValue())
+                {
+                    /*
+                    if (!Alpaca.isEmpty(val) && this.control)
+                    {
+                        this.control.val(val);
+                    }
+                    */
+                    if (this.control && typeof(val) != "undefined" && val != null)
+                    {
+                        this.control.val(val);
+                    }
+                    this.base(val);
+                }
+            }
+        },
+
+        /**
+         * @see Alpaca.File2Field#getEnum
+         */
+        getEnum: function()
+        {
+            if (this.schema)
+            {
+                if (this.schema["enum"])
+                {
+                    return this.schema["enum"];
+                }
+                else if (this.schema["type"] && this.schema["type"] === "array" && this.schema["items"] && this.schema["items"]["enum"])
+                {
+                    return this.schema["items"]["enum"];
+                }
+            }
+        },
+
+        initControlEvents: function()
+        {
+            var self = this;
+
+            self.base();
+
+            if (self.options.multiple)
+            {
+                var button = this.control.parent().find(".select2-search__field");
+
+                button.focus(function(e) {
+                    if (!self.suspendBlurFocus)
+                    {
+                        self.onFocus.call(self, e);
+                        self.trigger("focus", e);
+                    }
+                });
+
+                button.blur(function(e) {
+                    if (!self.suspendBlurFocus)
+                    {
+                        self.onBlur.call(self, e);
+                        self.trigger("blur", e);
+                    }
+                });
+                this.control.on("change", function (e) {
+                    self.onChange.call(self, e);
+                    self.trigger("change", e);
+
+                });
+            }
+        },
+
+        beforeRenderControl: function(model, callback)
+        {
+            var self = this;
+
+            this.base(model, function() {
+                    self.selectOptions = [];
+
+                    var completionFunction = function () {
+                        self.schema.enum = [];
+                        self.options.optionLabels = [];
+                        for (var i = 0; i < self.selectOptions.length; i++) {
+                            self.schema.enum.push(self.selectOptions[i].value);
+                            self.options.optionLabels.push(self.selectOptions[i].text);
+                        }
+                        // push back to model
+                        model.selectOptions = self.selectOptions;
+                        callback();
+                    };
+                    var postData = { q: "*", d: self.options.folder, filter: self.options.filter };
+                    $.ajax({
+                        url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "FoldersLookup",
+                        beforeSend: self.sf.setModuleHeaders,
+                        type: "get",
+                        dataType: "json",
+                        //contentType: "application/json; charset=utf-8",
+                        data: postData,
+                        success: function (jsonDocument) {
+                            var ds = jsonDocument;
+
+                            if (self.options.dsTransformer && Alpaca.isFunction(self.options.dsTransformer)) {
+                                ds = self.options.dsTransformer(ds);
+                            }
+                            if (ds) {
+                                if (Alpaca.isObject(ds)) {
+                                    // for objects, we walk through one key at a time
+                                    // the insertion order is the order of the keys from the map
+                                    // to preserve order, consider using an array as below
+                                    $.each(ds, function (key, value) {
+                                        self.selectOptions.push({
+                                            "value": key,
+                                            "text": value
+                                        });
+                                    });
+                                    completionFunction();
+                                }
+                                else if (Alpaca.isArray(ds)) {
+                                    // for arrays, we walk through one index at a time
+                                    // the insertion order is dictated by the order of the indices into the array
+                                    // this preserves order
+                                    $.each(ds, function (index, value) {
+                                        self.selectOptions.push({
+                                            "value": value.value,
+                                            "text": value.text
+                                        });
+                                        self.dataSource[value.value] = value;
+                                    });
+                                    completionFunction();
+                                }
+                            }
+                        },
+                        "error": function (jqXHR, textStatus, errorThrown) {
+
+                            self.errorCallback({
+                                "message": "Unable to load data from uri : " + self.options.dataSource,
+                                "stage": "DATASOURCE_LOADING_ERROR",
+                                "details": {
+                                    "jqXHR": jqXHR,
+                                    "textStatus": textStatus,
+                                    "errorThrown": errorThrown
+                                }
+                            });
+                        }
+                    });
+                
+                    //callback();
+                
+
+            });
+        },
+
+        prepareControlModel: function(callback)
+        {
+            var self = this;
+
+            this.base(function(model) {
+
+                model.selectOptions = self.selectOptions;
+
+                callback(model);
+            });
+        },
+
+        afterRenderControl: function(model, callback)
+        {
+            var self = this;
+
+            this.base(model, function() {
+
+                // if emptySelectFirst and nothing currently checked, then pick first item in the value list
+                // set data and visually select it
+                if (Alpaca.isUndefined(self.data) && self.options.emptySelectFirst && self.selectOptions && self.selectOptions.length > 0)
+                {
+                    self.data = self.selectOptions[0].value;
+                }
+
+                // do this little trick so that if we have a default value, it gets set during first render
+                // this causes the state of the control
+                if (self.data)
+                {
+                    self.setValue(self.data);
+                }
+
+                // if we are in multiple mode and the bootstrap multiselect plugin is available, bind it in
+                //if (self.options.multiple && $.fn.multiselect)
+                if ($.fn.select2)
+                {
+                    var settings = null;
+                    if (self.options.select2) {
+                        settings = self.options.select2;
+                    }
+                    else
+                    {
+                        settings = {};
+                    }
+                    /*
+                    if (!settings.nonSelectedText)
+                    {
+                        settings.nonSelectedText = "None";
+                        if (self.options.noneLabel)
+                        {
+                            settings.nonSelectedText = self.options.noneLabel;
+                        }
+                    }
+                    if (self.options.hideNone)
+                    {
+                        delete settings.nonSelectedText;
+                    }
+                    */
+
+                    settings.templateResult = function (state) {
+                        if (!state.id) { return state.text; }
+                        
+                        var $state = $(
+                          '<span>' + state.text + '</span>'
+                        );
+                        return $state;
+                    };
+
+                    settings.templateSelection = function (state) {
+                        if (!state.id) { return state.text; }
+                        
+                        var $state = $(
+                          '<span>' + state.text + '</span>'
+                        );
+                        return $state;
+                    };
+
+                    $(self.getControlEl()).select2(settings);
+                }
+
+                callback();
+
+            });
+        },
+
+        getFileUrl : function(fileid){
+
+            var postData = { fileid: fileid };
+            $.ajax({
+                url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "FileUrl",
+                beforeSend: self.sf.setModuleHeaders,
+                type: "get",
+                asych : false,
+                dataType: "json",
+                //contentType: "application/json; charset=utf-8",
+                data: postData,
+                success: function (data) {
+                    return data;
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    return "";
+                }
+            });
+
+        },
+
+        /**
+         * Validate against enum property.
+         *
+         * @returns {Boolean} True if the element value is part of the enum list, false otherwise.
+         */
+        _validateEnum: function()
+        {
+            var _this = this;
+
+            if (this.schema["enum"])
+            {
+                var val = this.data;
+
+                if (!this.isRequired() && Alpaca.isValEmpty(val))
+                {
+                    return true;
+                }
+
+                if (this.options.multiple)
+                {
+                    var isValid = true;
+
+                    if (!val)
+                    {
+                        val = [];
+                    }
+
+                    if (!Alpaca.isArray(val) && !Alpaca.isObject(val))
+                    {
+                        val = [val];
+                    }
+
+                    $.each(val, function(i,v) {
+
+                        if ($.inArray(v, _this.schema["enum"]) <= -1)
+                        {
+                            isValid = false;
+                            return false;
+                        }
+
+                    });
+
+                    return isValid;
+                }
+                else
+                {
+                    return ($.inArray(val, this.schema["enum"]) > -1);
+                }
+            }
+            else
+            {
+                return true;
+            }
+        },
+
+        /**
+         * @see Alpaca.Field#onChange
+         */
+        onChange: function(e)
+        {
+            this.base(e);
+
+            var _this = this;
+
+            Alpaca.later(25, this, function() {
+                var v = _this.getValue();
+                _this.setValue(v);
+                _this.refreshValidationState();
+            });
+        },
+
+        /**
+         * Validates if number of items has been less than minItems.
+         * @returns {Boolean} true if number of items has been less than minItems
+         */
+        _validateMinItems: function()
+        {
+            if (this.schema.items && this.schema.items.minItems)
+            {
+                if ($(":selected",this.control).length < this.schema.items.minItems)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        },
+
+        /**
+         * Validates if number of items has been over maxItems.
+         * @returns {Boolean} true if number of items has been over maxItems
+         */
+        _validateMaxItems: function()
+        {
+            if (this.schema.items && this.schema.items.maxItems)
+            {
+                if ($(":selected",this.control).length > this.schema.items.maxItems)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        },
+
+        /**
+         * @see Alpaca.ContainerField#handleValidate
+         */
+        handleValidate: function()
+        {
+            var baseStatus = this.base();
+
+            var valInfo = this.validation;
+
+            var status = this._validateMaxItems();
+            valInfo["tooManyItems"] = {
+                "message": status ? "" : Alpaca.substituteTokens(this.getMessage("tooManyItems"), [this.schema.items.maxItems]),
+                "status": status
+            };
+
+            status = this._validateMinItems();
+            valInfo["notEnoughItems"] = {
+                "message": status ? "" : Alpaca.substituteTokens(this.getMessage("notEnoughItems"), [this.schema.items.minItems]),
+                "status": status
+            };
+
+            return baseStatus && valInfo["tooManyItems"]["status"] && valInfo["notEnoughItems"]["status"];
+        },
+
+        /**
+         * @see Alpaca.Field#focus
+         */
+        focus: function(onFocusCallback)
+        {
+            if (this.control && this.control.length > 0)
+            {
+                // set focus onto the select
+                var el = $(this.control).get(0);
+
+                el.focus();
+
+                if (onFocusCallback)
+                {
+                    onFocusCallback(this);
+                }
+            }
+        }
+
+        /* builder_helpers */
+        ,
+
+        /**
+         * @see Alpaca.Field#getTitle
+         */
+        getTitle: function() {
+            return "Select File Field";
+        },
+
+        /**
+         * @see Alpaca.Field#getDescription
+         */
+        getDescription: function() {
+            return "Select File Field";
+        },
+
+        /**
+         * @private
+         * @see Alpaca.Fields.File2Field#getSchemaOfOptions
+         */
+        getSchemaOfOptions: function() {
+            return Alpaca.merge(this.base(), {
+                "properties": {
+                    "multiple": {
+                        "title": "Mulitple Selection",
+                        "description": "Allow multiple selection if true.",
+                        "type": "boolean",
+                        "default": false
+                    },
+                    "size": {
+                        "title": "Displayed Options",
+                        "description": "Number of options to be shown.",
+                        "type": "number"
+                    },
+                    "emptySelectFirst": {
+                        "title": "Empty Select First",
+                        "description": "If the data is empty, then automatically select the first item in the list.",
+                        "type": "boolean",
+                        "default": false
+                    },
+                    "multiselect": {
+                        "title": "Multiselect Plugin Settings",
+                        "description": "Multiselect plugin properties - http://davidstutz.github.io/bootstrap-multiselect",
+                        "type": "any"
+                    }
+                }
+            });
+        },
+
+        /**
+         * @private
+         * @see Alpaca.Fields.File2Field#getOptionsForOptions
+         */
+        getOptionsForOptions: function() {
+            return Alpaca.merge(this.base(), {
+                "fields": {
+                    "multiple": {
+                        "rightLabel": "Allow multiple selection ?",
+                        "helper": "Allow multiple selection if checked",
+                        "type": "checkbox"
+                    },
+                    "size": {
+                        "type": "integer"
+                    },
+                    "emptySelectFirst": {
+                        "type": "checkbox",
+                        "rightLabel": "Empty Select First"
+                    },
+                    "multiselect": {
+                        "type": "object",
+                        "rightLabel": "Multiselect plugin properties - http://davidstutz.github.io/bootstrap-multiselect"
+                    }
+                }
+            });
+        }
+
+        /* end_builder_helpers */
+
+    });
+
+    Alpaca.registerFieldClass("folder2", Alpaca.Fields.Folder2Field);
 
 })(jQuery);
 ///#source 1 1 Url2Field.js
@@ -4860,6 +6206,113 @@
     Alpaca.registerFieldClass("url2", Alpaca.Fields.Url2Field);
 
 })(jQuery);
+///#source 1 1 MLUrl2Field.js
+(function($) {
+
+    var Alpaca = $.alpaca;
+        
+    Alpaca.Fields.MLUrl2Field = Alpaca.Fields.Url2Field.extend(
+    /**
+     * @lends Alpaca.Fields.Url2Field.prototype
+     */
+    {
+        constructor: function (container, data, options, schema, view, connector) {
+            var self = this;
+            this.base(container, data, options, schema, view, connector);
+            //this.sf = connector.servicesFramework;
+            //this.dataSource = {};
+            this.culture = connector.culture;
+            this.defaultCulture = connector.defaultCulture;
+        },
+        /**
+         * @see Alpaca.Fields.Url2Field#setup
+         */
+        setup: function()
+        {
+            var self = this;
+            if (this.data && Alpaca.isObject(this.data)) {
+                this.olddata = this.data;
+            } else if (this.data) {
+                this.olddata = {};
+                this.olddata[this.defaultCulture] = this.data;
+            }
+            
+            this.base();
+        },
+
+        getValue: function () {
+            
+                var val = this.base(val);
+
+                var self = this;
+                var o = {};
+                if (this.olddata && Alpaca.isObject(this.olddata)) {
+                    $.each(this.olddata, function (key, value) {
+                        var v = Alpaca.copyOf(value);
+                        if (key != self.culture) {
+                            o[key] = v;
+                        }
+                    });
+                }
+                if (val != "") {
+                    o[self.culture] = val;
+                }
+                if ($.isEmptyObject(o)) {
+                    return "";
+                }
+                return o;
+            
+        },
+
+        /**
+         * @see Alpaca.Field#setValue
+         */
+        setValue: function(val)
+        {
+            
+            if (val === "") {
+                return;
+            }
+            if (!val) {
+                this.base("");
+                return;
+            }
+            if (Alpaca.isObject(val)) {
+                var v = val[this.culture];
+                if (!v) {
+                    this.base("");
+                    return;
+                }
+                this.base(v);
+            }
+            else {
+                this.base(val);
+            }
+
+        },
+        afterRenderControl: function (model, callback) {
+            var self = this;
+            this.base(model, function () {
+                self.handlePostRender2(function () {
+                    callback();
+                });
+            });
+        },
+        handlePostRender2: function (callback) {
+            var self = this;
+            var el = this.getControlEl();
+
+            
+            callback();
+
+            $(this.control).parent().find('.select2').after('<img src="/images/Flags/' + this.culture + '.gif" class="flag" />');
+            
+        },
+    });
+
+    Alpaca.registerFieldClass("mlurl2", Alpaca.Fields.MLUrl2Field);
+
+})(jQuery);
 ///#source 1 1 UrlField.js
 (function($) {
 
@@ -5177,8 +6630,23 @@
                 this.olddata = {};
                 this.olddata[this.defaultCulture] = this.data;
             }
+            
+            if (this.culture != this.defaultCulture && this.olddata && this.olddata[this.defaultCulture]) {
+                this.options.placeholder = this.olddata[this.defaultCulture];
+            } else {
+                this.options.placeholder = "";
+            }
+
             this.base();
+
+            if (!this.options.ckeditor) {
+                this.options.ckeditor = {};
+            }
+            if (!this.options.ckeditor.extraPlugins) {
+                this.options.ckeditor.extraPlugins = 'confighelper';
+            }
         },
+
         /**
          * @see Alpaca.Fields.CKEditorField#getValue
          */
@@ -5238,7 +6706,7 @@
         handlePostRender: function (callback) {
             var self = this;
             var el = this.getControlEl();
-            $(this.control.get(0)).after('<img src="/images/Flags/'+this.culture+'.gif" />');
+            $(this.control.get(0)).after('<img src="/images/Flags/' + this.culture + '.gif" class="flag" />');
             callback();
         },
         
@@ -5320,6 +6788,12 @@
                 this.olddata = {};
                 this.olddata[this.defaultCulture] = this.data;
             }
+            if (this.culture != this.defaultCulture && this.olddata && this.olddata[this.defaultCulture]) {
+                this.options.placeholder = this.olddata[this.defaultCulture];
+            } else {
+                this.options.placeholder = "";
+            }
+
             this.base();
         },
         /**
@@ -5381,7 +6855,7 @@
         handlePostRender: function (callback) {
             var self = this;
             var el = this.getControlEl();
-            $(this.control.get(0)).after('<img src="/images/Flags/'+this.culture+'.gif" />');
+            $(this.control.get(0)).after('<img src="/images/Flags/' + this.culture + '.gif" class="flag" />');
             callback();
         },
         
@@ -5463,7 +6937,11 @@
                 this.olddata = {};
                 this.olddata[this.defaultCulture] = this.data;
             }
-
+            if (this.culture != this.defaultCulture && this.olddata && this.olddata[this.defaultCulture]) {
+                this.options.placeholder = this.olddata[this.defaultCulture];
+            } else {
+                this.options.placeholder = "";
+            }
             this.base();
         },
         /**
@@ -5526,7 +7004,7 @@
         handlePostRender2: function (callback) {
             var self = this;
             var el = this.getControlEl();
-            $(this.control.get(0)).after('<img src="/images/Flags/'+this.culture+'.gif" />');
+            $(this.control.get(0)).after('<img src="/images/Flags/' + this.culture + '.gif" class="flag" />');
             callback();
         },
         
@@ -5617,7 +7095,13 @@
                 this.olddata = {};
                 this.olddata[this.defaultCulture] = this.data;
             }
-
+            
+            
+            if (this.culture != this.defaultCulture && this.olddata && this.olddata[this.defaultCulture]) {
+                this.options.placeholder = this.olddata[this.defaultCulture];
+            } else {
+                this.options.placeholder = "";
+            }
             this.base();
             /*
             Alpaca.mergeObject(this.options, {
@@ -5691,7 +7175,7 @@
         handlePostRender: function (callback) {
             var self = this;
             var el = this.getControlEl();
-            $(this.control.get(0)).after('<img src="/images/Flags/'+this.culture+'.gif" />');
+            $(this.control.get(0)).after('<img src="/images/Flags/' + this.culture + '.gif" class="flag" />');
             //$(this.control.get(0)).after('<div style="background:#eee;margin-bottom: 18px;display:inline-block;padding-bottom:8px;"><span>' + this.culture + '</span></div>');
             callback();
         },
@@ -5774,6 +7258,11 @@
                 this.olddata = {};
                 this.olddata[this.defaultCulture] = this.data;
             }
+            if (this.culture != this.defaultCulture && this.olddata && this.olddata[this.defaultCulture]) {
+                this.options.placeholder = this.olddata[this.defaultCulture];
+            } else {
+                this.options.placeholder = "";
+            }
             this.base();
         },
         /**
@@ -5835,7 +7324,7 @@
         handlePostRender: function (callback) {
             var self = this;
             var el = this.getControlEl();
-            $(this.control.get(0)).after('<img src="/images/Flags/'+this.culture+'.gif" />');
+            $(this.control.get(0)).after('<img src="/images/Flags/' + this.culture + '.gif" class="flag" />');
             callback();
         },
         
@@ -5977,7 +7466,7 @@
         handlePostRender2: function (callback) {
             var self = this;
             var el = this.getControlEl();
-            $(this.control.get(0)).after('<img src="/images/Flags/' + this.culture + '.gif" />');
+            $(this.control.get(0)).after('<img src="/images/Flags/' + this.culture + '.gif" class="flag" />');
             callback();
         },
 
@@ -6162,7 +7651,7 @@
         getDescription: function () {
             return "Font Icon Field.";
         },
-        
+
         afterRenderControl: function (model, callback) {
             var self = this;
             this.base(model, function () {
@@ -6179,13 +7668,13 @@
                 emptyIcon: true,
                 hasSearch: true
             });
-            
+
             callback();
         },
         loadIcons: function () {
             var self = this;
             var icons = [];
-            if (this.options.glyphicons){
+            if (this.options.glyphicons) {
                 $.each(glyphicon_icons, function (i, v) {
                     icons.push('glyphicon ' + v);
                 });

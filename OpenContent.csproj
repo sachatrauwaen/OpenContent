@@ -84,7 +84,11 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\bin\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\bin\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="PetaPoco, Version=5.0.1.17400, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\PetaPoco.dll</HintPath>
     </Reference>
     <Reference Include="SharpZipLib, Version=0.81.0.1407, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
@@ -141,16 +145,45 @@
     <Compile Include="Components\Alpaca\AlpacaEngine.cs" />
     <Compile Include="Components\Alpaca\FormBuilder.cs" />
     <Compile Include="Components\Alpaca\OptionsConfig.cs" />
+    <Compile Include="Components\Alpaca\QueryBuilder.cs" />
     <Compile Include="Components\Common\DateTimeExtensions.cs" />
     <Compile Include="Components\Common\DnnUtils.cs" />
     <Compile Include="Components\Common\PageUtils.cs" />
+    <Compile Include="Components\Datasource\DataSourceContext.cs" />
+    <Compile Include="Components\Datasource\DataSourceManager.cs" />
+    <Compile Include="Components\Datasource\DefaultDataItems.cs" />
+    <Compile Include="Components\Datasource\DefaultDataItem.cs" />
+    <Compile Include="Components\Datasource\DefaultDataSource.cs" />
+    <Compile Include="Components\Datasource\IDataItems.cs" />
+    <Compile Include="Components\Datasource\IDataItem.cs" />
+    <Compile Include="Components\Datasource\IDatasource.cs" />
+    <Compile Include="Components\Datasource\OpenContentDataSource.cs" />
+    <Compile Include="Components\Datasource\search\ConditionEnum.cs" />
+    <Compile Include="Components\Datasource\search\FilterGroup.cs" />
+    <Compile Include="Components\Datasource\search\BooleanRuleValue.cs" />
+    <Compile Include="Components\Datasource\search\LongRuleValue.cs" />
+    <Compile Include="Components\Datasource\search\RuleValue.cs" />
+    <Compile Include="Components\Datasource\search\SortRule.cs" />
+    <Compile Include="Components\Datasource\search\OperatorEnum.cs" />
+    <Compile Include="Components\Datasource\search\FilterRule.cs" />
+    <Compile Include="Components\Datasource\search\Select.cs" />
+    <Compile Include="Components\Datasource\search\IntegerRuleValue.cs" />
+    <Compile Include="Components\Datasource\search\FloatRuleValue.cs" />
+    <Compile Include="Components\Datasource\search\DateTimeRuleValue.cs" />
+    <Compile Include="Components\Datasource\search\StringRuleValue.cs" />
+    <Compile Include="Components\Datasource\search\FieldTypeEnum.cs" />
+    <Compile Include="Components\Dnn\DnnUrlUtils.cs" />
     <Compile Include="Components\Dynamic\DynamicHelper.cs" />
+    <Compile Include="Components\ExternalApiController.cs" />
     <Compile Include="Components\FeatureController.cs" />
     <Compile Include="Components\FilesStatus.cs" />
     <Compile Include="Components\FileUploadController.cs" />
+    <Compile Include="Components\JPList\JplistQueryBuilder.cs" />
     <Compile Include="Components\Lucene\Config\FieldConfig.cs" />
+    <Compile Include="Components\Lucene\Config\SelectQueryDefinition.cs" />
     <Compile Include="Components\Lucene\Config\QueryDefinition.cs" />
     <Compile Include="Components\Alpaca\SchemaConfig.cs" />
+    <Compile Include="Components\Lucene\LuceneController.cs" />
     <Compile Include="Components\Lucene\SearchResults.cs" />
     <Compile Include="Components\Manifest\AdditionalDataManifest.cs" />
     <Compile Include="Components\Manifest\Manifest.cs" />
@@ -161,10 +194,10 @@
     <Compile Include="Components\Manifest\PartialTemplate.cs" />
     <Compile Include="Components\Razor\RazorEngine.cs" />
     <Compile Include="Components\Rss\RssApiController.cs" />
-    <Compile Include="Components\Solution\Solution.cs" />
-    <Compile Include="Components\Solution\TemplateSolution.cs" />
+    <Compile Include="Components\TemplateHelpers\OpenGraph.cs" />
     <Compile Include="Components\TemplateHelpers\OtherExtentions.cs" />
     <Compile Include="Components\Manifest\TemplateManifest.cs" />
+    <Compile Include="Components\Uri\PortalFolderUri.cs" />
     <Compile Include="Components\Uri\PortalFileUri.cs" />
     <Compile Include="Components\Uri\FolderUri.cs" />
     <Compile Include="Components\Uri\FileUri.cs" />
@@ -179,7 +212,7 @@
     <Compile Include="Components\JPList\StatusDataDTO.cs" />
     <Compile Include="Components\JPList\StatusDTO.cs" />
     <Compile Include="Components\Lucene\Index\OpenContentMappingExtensions.cs" />
-    <Compile Include="Components\Lucene\LuceneController.cs" />
+    <Compile Include="Components\Lucene\LuceneService.cs" />
     <Compile Include="Components\Lucene\Mapping\JsonMappingUtils.cs" />
     <Compile Include="Components\Lucene\Mapping\JsonObjectMapper.cs" />
     <Compile Include="Components\Lucene\Search\JsonSearchUtils.cs" />
@@ -207,13 +240,6 @@
     <Compile Include="Components\TemplateHelpers\MetaTags.cs" />
     <Compile Include="Components\Manifest\RenderInfo.cs" />
     <Compile Include="Components\Common\Utils.cs" />
-    <Compile Include="Builder.ascx.cs">
-      <DependentUpon>Builder.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Builder.ascx.designer.cs">
-      <DependentUpon>Builder.ascx</DependentUpon>
-    </Compile>
     <Compile Include="EditAddData.ascx.cs">
       <DependentUpon>EditAddData.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -308,12 +334,17 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="AddEdit.ascx" />
-    <Content Include="alpaca\css\alpaca-bootstrap.css" />
     <Content Include="alpaca\css\alpaca-dnn.css" />
     <Content Include="alpaca\css\img\Add_16x16_Gray.png" />
     <Content Include="alpaca\css\img\Delete_16X16_Gray.png" />
     <Content Include="alpaca\css\img\Dn_16X16_Standard.png" />
     <Content Include="alpaca\css\img\Up_16X16_Standard.png" />
+    <Content Include="alpaca\js\fields\dnn\Folder2Field.js" />
+    <Content Include="alpaca\js\fields\dnn\GalleryField.js" />
+    <Content Include="alpaca\js\fields\dnn\MLFile2Field.js" />
+    <Content Include="alpaca\js\fields\dnn\MLUrl2Field.js" />
+    <Content Include="alpaca\js\fields\dnn\MultiUploadField.js" />
+    <Content Include="alpaca\js\fields\dnn\DocumentsField.js" />
     <Content Include="alpaca\js\fields\dnn\AddressField.js" />
     <Content Include="alpaca\js\fields\dnn\CKEditorField.js" />
     <Content Include="alpaca\js\fields\dnn\dnnfields.js">
@@ -322,7 +353,9 @@
     <Content Include="alpaca\js\fields\dnn\dnnfields.min.js">
       <DependentUpon>dnnfields.js</DependentUpon>
     </Content>
+    <Content Include="alpaca\js\fields\dnn\GuidField.js" />
     <Content Include="alpaca\js\fields\dnn\IconField.js" />
+    <Content Include="alpaca\js\fields\dnn\ImageField.js" />
     <Content Include="alpaca\js\fields\dnn\MLImage2Field.js" />
     <Content Include="alpaca\js\fields\dnn\Url2Field.js" />
     <Content Include="alpaca\js\fields\dnn\File2Field.js" />
@@ -335,7 +368,7 @@
     <Content Include="alpaca\js\fields\dnn\NumberField.js" />
     <Content Include="alpaca\js\fields\dnn\DateField.js" />
     <Content Include="alpaca\js\fields\dnn\FileField.js" />
-    <Content Include="alpaca\js\fields\dnn\ImageField.js" />
+    <Content Include="alpaca\js\fields\dnn\ImageCropField.js" />
     <Content Include="alpaca\js\fields\dnn\Image2Field.js" />
     <Content Include="alpaca\js\fields\dnn\Select2Field.js" />
     <Content Include="alpaca\js\fields\dnn\UrlField.js" />
@@ -346,8 +379,10 @@
     <Content Include="alpaca\templates\dnn-edit\container.html" />
     <Content Include="alpaca\templates\dnn-edit\control-checkbox.html" />
     <Content Include="alpaca\templates\dnn-edit\control-file.html" />
+    <Content Include="alpaca\templates\dnn-edit\control-imagecrop.html" />
     <Content Include="alpaca\templates\dnn-edit\control-imagecropper.html" />
     <Content Include="alpaca\templates\dnn-edit\control-image.html" />
+    <Content Include="alpaca\templates\dnn-edit\control-ckeditor.html" />
     <Content Include="alpaca\templates\dnn-edit\control-wysihtml.html" />
     <Content Include="alpaca\templates\dnn-edit\control.html" />
     <Content Include="alpaca\templates\dnn-edit\dnntemplates.html">
@@ -374,7 +409,6 @@
     <Content Include="css\images\ui-icons_ef8c08_256x240.png" />
     <Content Include="css\images\ui-icons_ffd27a_256x240.png" />
     <Content Include="css\images\ui-icons_ffffff_256x240.png" />
-    <Content Include="Builder.ascx" />
     <Content Include="EditAddData.ascx" />
     <Content Include="EditInit.ascx" />
     <Content Include="EditQuery.ascx" />
@@ -387,17 +421,176 @@
     <Content Include="images\icon_extensions.png" />
     <Content Include="images\settings.gif" />
     <Content Include="images\settings.png" />
-    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\build\css\bootstrap-datetimepicker.css" />
-    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\build\css\bootstrap-datetimepicker.min.css" />
-    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\build\js\bootstrap-datetimepicker.min.js" />
-    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\Gruntfile.js" />
-    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\src\js\bootstrap-datetimepicker.js" />
-    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\src\nuget\NuGet.exe" />
-    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\tasks\bump_version.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\benchmarks\clone.js" />
+    <Content Include="js\alpaca-1.5.17\alpaca\bootstrap\alpaca.css" />
+    <Content Include="js\alpaca-1.5.17\alpaca\bootstrap\alpaca.js" />
+    <Content Include="js\alpaca-1.5.17\alpaca\bootstrap\alpaca.min.css" />
+    <Content Include="js\alpaca-1.5.17\alpaca\bootstrap\alpaca.min.js" />
+    <Content Include="js\alpaca-1.5.17\alpaca\bootstrap\images\alpaca-icons.png" />
+    <Content Include="js\alpaca-1.5.17\alpaca\bootstrap\images\date.png" />
+    <Content Include="js\alpaca-1.5.17\alpaca\bootstrap\images\down.png" />
+    <Content Include="js\alpaca-1.5.17\alpaca\bootstrap\images\email.png" />
+    <Content Include="js\alpaca-1.5.17\alpaca\bootstrap\images\left.png" />
+    <Content Include="js\alpaca-1.5.17\alpaca\bootstrap\images\phone.png" />
+    <Content Include="js\alpaca-1.5.17\alpaca\bootstrap\images\time.png" />
+    <Content Include="js\alpaca-1.5.17\alpaca\web\alpaca.css" />
+    <Content Include="js\alpaca-1.5.17\alpaca\web\alpaca.js" />
+    <Content Include="js\alpaca-1.5.17\alpaca\web\alpaca.min.css" />
+    <Content Include="js\alpaca-1.5.17\alpaca\web\alpaca.min.js" />
+    <Content Include="js\alpaca-1.5.17\alpaca\web\images\alpaca-icons.png" />
+    <Content Include="js\alpaca-1.5.17\alpaca\web\images\date.png" />
+    <Content Include="js\alpaca-1.5.17\alpaca\web\images\down.png" />
+    <Content Include="js\alpaca-1.5.17\alpaca\web\images\email.png" />
+    <Content Include="js\alpaca-1.5.17\alpaca\web\images\left.png" />
+    <Content Include="js\alpaca-1.5.17\alpaca\web\images\phone.png" />
+    <Content Include="js\alpaca-1.5.17\alpaca\web\images\time.png" />
+    <Content Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\build\css\bootstrap-datetimepicker.css" />
+    <Content Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\build\css\bootstrap-datetimepicker.min.css" />
+    <Content Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\build\js\bootstrap-datetimepicker.min.js" />
+    <Content Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\src\js\bootstrap-datetimepicker.js" />
+    <Content Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\src\nuget\NuGet.exe" />
+    <Content Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\tasks\bump_version.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\benchmarks\clone.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\af.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\ar-ma.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\ar-sa.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\ar-tn.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\ar.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\az.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\be.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\bg.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\bn.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\bo.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\br.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\bs.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\ca.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\cs.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\cv.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\cy.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\da.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\de-at.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\de.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\el.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\en-au.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\en-ca.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\en-gb.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\eo.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\es.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\et.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\eu.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\fa.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\fi.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\fo.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\fr-ca.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\fr.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\fy.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\gl.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\he.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\hi.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\hr.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\hu.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\hy-am.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\id.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\is.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\it.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\ja.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\ka.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\km.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\ko.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\lb.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\lt.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\lv.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\mk.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\ml.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\mr.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\ms-my.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\my.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\nb.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\ne.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\nl.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\nn.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\pl.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\pt-br.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\pt.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\ro.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\ru.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\sk.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\sl.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\sq.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\sr-cyrl.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\sr.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\sv.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\ta.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\th.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\tl-ph.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\tr.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\tzm-latn.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\tzm.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\uk.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\uz.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\vi.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\zh-cn.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\locale\zh-tw.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\meteor\export.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\meteor\test.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\min\locales.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\min\locales.min.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\min\moment-with-locales.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\min\moment-with-locales.min.js" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\min\moment.min.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\dist\bloodhound.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\dist\bloodhound.min.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\dist\typeahead.bundle.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\dist\typeahead.bundle.min.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\dist\typeahead.jquery.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\dist\typeahead.jquery.min.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\src\bloodhound\bloodhound.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\src\bloodhound\lru_cache.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\src\bloodhound\options_parser.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\src\bloodhound\persistent_storage.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\src\bloodhound\search_index.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\src\bloodhound\tokenizers.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\src\bloodhound\transport.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\src\bloodhound\version.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\src\common\utils.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\src\typeahead\css.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\src\typeahead\dataset.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\src\typeahead\dropdown.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\src\typeahead\event_bus.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\src\typeahead\event_emitter.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\src\typeahead\highlight.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\src\typeahead\html.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\src\typeahead\input.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\src\typeahead\plugin.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\src\typeahead\typeahead.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\test\bloodhound_spec.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\test\dataset_view_spec.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\test\dropdown_view_spec.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\test\event_emitter_spec.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\test\fixtures\ajax_responses.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\test\fixtures\data.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\test\fixtures\html.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\test\helpers\typeahead_mocks.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\test\highlight_spec.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\test\input_view_spec.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\test\integration\test.html" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\test\integration\test.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\test\lru_cache_spec.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\test\persistent_storage_spec.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\test\playground.html" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\test\search_index_spec.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\test\tokenizers_spec.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\test\transport_spec.js" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\test\typeahead_view_spec.js" />
+    <Content Include="js\alpaca-1.5.8\lib\handlebars\handlebars.js" />
+    <Content Include="js\alpaca-1.5.8\lib\handlebars\handlebars.min.js" />
+    <Content Include="js\alpaca-1.5.8\lib\handlebars\handlebars.runtime.amd.js" />
+    <Content Include="js\alpaca-1.5.8\lib\handlebars\handlebars.runtime.amd.min.js" />
+    <Content Include="js\alpaca-1.5.8\lib\handlebars\handlebars.runtime.js" />
+    <Content Include="js\alpaca-1.5.8\lib\handlebars\handlebars.runtime.min.js" />
     <Content Include="js\alpaca-1.5.8\lib\moment\locale\af.js" />
     <Content Include="js\alpaca-1.5.8\lib\moment\locale\ar-ma.js" />
     <Content Include="js\alpaca-1.5.8\lib\moment\locale\ar-sa.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\ar-tn.js" />
     <Content Include="js\alpaca-1.5.8\lib\moment\locale\ar.js" />
     <Content Include="js\alpaca-1.5.8\lib\moment\locale\az.js" />
     <Content Include="js\alpaca-1.5.8\lib\moment\locale\be.js" />
@@ -426,6 +619,7 @@
     <Content Include="js\alpaca-1.5.8\lib\moment\locale\fo.js" />
     <Content Include="js\alpaca-1.5.8\lib\moment\locale\fr-ca.js" />
     <Content Include="js\alpaca-1.5.8\lib\moment\locale\fr.js" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\locale\fy.js" />
     <Content Include="js\alpaca-1.5.8\lib\moment\locale\gl.js" />
     <Content Include="js\alpaca-1.5.8\lib\moment\locale\he.js" />
     <Content Include="js\alpaca-1.5.8\lib\moment\locale\hi.js" />
@@ -479,63 +673,7 @@
     <Content Include="js\alpaca-1.5.8\lib\moment\min\moment-with-locales.min.js" />
     <Content Include="js\alpaca-1.5.8\lib\moment\min\moment.min.js" />
     <Content Include="js\alpaca-1.5.8\lib\moment\moment.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\dist\bloodhound.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\dist\bloodhound.min.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\dist\typeahead.bundle.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\dist\typeahead.bundle.min.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\dist\typeahead.jquery.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\dist\typeahead.jquery.min.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\Gruntfile.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\karma.conf.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\src\bloodhound\bloodhound.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\src\bloodhound\lru_cache.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\src\bloodhound\options_parser.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\src\bloodhound\persistent_storage.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\src\bloodhound\search_index.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\src\bloodhound\tokenizers.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\src\bloodhound\transport.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\src\bloodhound\version.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\src\common\utils.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\src\typeahead\css.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\src\typeahead\dataset.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\src\typeahead\dropdown.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\src\typeahead\event_bus.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\src\typeahead\event_emitter.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\src\typeahead\highlight.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\src\typeahead\html.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\src\typeahead\input.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\src\typeahead\plugin.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\src\typeahead\typeahead.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\bloodhound_spec.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\dataset_view_spec.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\dropdown_view_spec.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\event_emitter_spec.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\fixtures\ajax_responses.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\fixtures\data.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\fixtures\html.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\helpers\typeahead_mocks.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\highlight_spec.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\input_view_spec.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\integration\test.html" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\integration\test.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\lru_cache_spec.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\persistent_storage_spec.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\playground.html" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\search_index_spec.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\tokenizers_spec.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\transport_spec.js" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\typeahead_view_spec.js" />
     <Content Include="js\alpacaengine.js" />
-    <Content Include="js\bootstrap\css\bootstrap-theme.css" />
-    <Content Include="js\bootstrap\css\bootstrap-theme.min.css" />
-    <Content Include="js\bootstrap\css\bootstrap.css" />
-    <Content Include="js\bootstrap\css\bootstrap.min.css" />
-    <Content Include="js\bootstrap\fonts\glyphicons-halflings-regular.svg" />
-    <Content Include="js\bootstrap\js\bootstrap.js" />
-    <Content Include="js\bootstrap\js\bootstrap.min.js" />
-    <Content Include="js\builder\formbuilder.css" />
-    <Content Include="js\builder\formbuilder.html" />
-    <Content Include="js\builder\formbuilder.js" />
     <Content Include="js\CodeMirror\addon\mode\loadmode.js" />
     <Content Include="js\CodeMirror\addon\mode\multiplex.js" />
     <Content Include="js\CodeMirror\addon\mode\multiplex_test.js" />
@@ -566,39 +704,38 @@
       <DependentUpon>dnnfields.min.js</DependentUpon>
     </Content>
     <Content Include="alpaca\templates\dnn-edit\dnntemplates.html.bundle" />
-    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\bower.json" />
-    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\build\nuget\Bootstrap.v3.Datetimepicker.4.0.0.nupkg" />
-    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\build\nuget\Bootstrap.v3.Datetimepicker.CSS.4.0.0.nupkg" />
-    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\component.json" />
-    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\composer.json" />
-    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\CONTRIBUTING.md" />
-    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\LICENSE" />
-    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\package.json" />
-    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\README.md" />
-    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\src\less\bootstrap-datetimepicker-build.less" />
-    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\src\less\bootstrap-datetimepicker.less" />
-    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\src\less\_bootstrap-datetimepicker.less" />
-    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\src\nuget\Bootstrap.v3.Datetimepicker.CSS.nuspec" />
-    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\src\nuget\Bootstrap.v3.Datetimepicker.nuspec" />
-    <Content Include="js\alpaca-1.5.8\lib\eonasdan-bootstrap-datetimepicker\src\nuget\install.ps1" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\bower.json" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\CHANGELOG.md" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\LICENSE" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\README.md" />
-    <Content Include="js\alpaca-1.5.8\alpaca\web\alpaca.min.js.map">
-      <DependentUpon>alpaca.min.js</DependentUpon>
-    </Content>
     <Content Include="Providers\DataProviders\SqlDataProvider\02.00.03.SqlDataProvider" />
     <Content Include="js\fontIconPicker\css\iconpicker.eot" />
     <Content Include="js\fontIconPicker\css\iconpicker.ttf" />
     <Content Include="js\fontIconPicker\css\iconpicker.woff" />
-    <Content Include="js\bootstrap\fonts\glyphicons-halflings-regular.eot" />
-    <Content Include="js\bootstrap\fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="js\bootstrap\fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="js\bootstrap\fonts\glyphicons-halflings-regular.woff2" />
-    <Content Include="js\alpaca-1.5.8\alpaca\bootstrap\alpaca.min.js.map">
-      <DependentUpon>alpaca.min.js</DependentUpon>
-    </Content>
+    <Content Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\docs\ChangeLog.md" />
+    <Content Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\docs\ContributorsGuide.md" />
+    <Content Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\docs\Events.md" />
+    <Content Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\docs\Extras.md" />
+    <Content Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\docs\Functions.md" />
+    <Content Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\docs\index.md" />
+    <Content Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\docs\Installing.md" />
+    <Content Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\docs\Options.md" />
+    <Content Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\docs\Version 4 Changelog.md" />
+    <Content Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\docs\Version 4 Contributors guide.md" />
+    <Content Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\src\less\bootstrap-datetimepicker-build.less" />
+    <Content Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\src\less\_bootstrap-datetimepicker.less" />
+    <Content Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\src\nuget\Bootstrap.v3.Datetimepicker.CSS.nuspec" />
+    <Content Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\src\nuget\Bootstrap.v3.Datetimepicker.nuspec" />
+    <Content Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\src\nuget\install.ps1" />
+    <Content Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\src\sass\bootstrap-datetimepicker-build.scss" />
+    <Content Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\src\sass\_bootstrap-datetimepicker.scss" />
+    <Content Include="js\alpaca-1.5.17\lib\handlebars\lib\handlebars\source.rb" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\meteor\README.md" />
+    <Content Include="js\alpaca-1.5.17\lib\moment\scripts\npm_prepublish.sh" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\doc\bloodhound.md" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\doc\jquery_typeahead.md" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\doc\migration\0.10.0.md" />
+    <Content Include="js\alpaca-1.5.17\lib\typeahead.js\test\ci" />
+    <Content Include="js\alpaca-1.5.8\lib\handlebars\README.md" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\CHANGELOG.md" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\LICENSE" />
+    <Content Include="js\alpaca-1.5.8\lib\moment\README.md" />
     <None Include="Scripts\_references.js" />
     <Content Include="js\select2\i18n\az.js" />
     <Content Include="js\select2\i18n\bg.js" />
@@ -651,58 +788,6 @@
     <Content Include="EditData.ascx" />
     <Content Include="EditTemplate.ascx" />
     <Content Include="Edit.ascx" />
-    <Content Include="js\alpaca-1.5.8\alpaca\bootstrap\alpaca.css" />
-    <Content Include="js\alpaca-1.5.8\alpaca\bootstrap\alpaca.js" />
-    <Content Include="js\alpaca-1.5.8\alpaca\bootstrap\alpaca.min.css" />
-    <Content Include="js\alpaca-1.5.8\alpaca\bootstrap\alpaca.min.js" />
-    <Content Include="js\alpaca-1.5.8\alpaca\bootstrap\images\alpaca-icons.png" />
-    <Content Include="js\alpaca-1.5.8\alpaca\bootstrap\images\date.png" />
-    <Content Include="js\alpaca-1.5.8\alpaca\bootstrap\images\down.png" />
-    <Content Include="js\alpaca-1.5.8\alpaca\bootstrap\images\email.png" />
-    <Content Include="js\alpaca-1.5.8\alpaca\bootstrap\images\left.png" />
-    <Content Include="js\alpaca-1.5.8\alpaca\bootstrap\images\phone.png" />
-    <Content Include="js\alpaca-1.5.8\alpaca\bootstrap\images\time.png" />
-    <Content Include="js\alpaca-1.5.8\alpaca\jquerymobile\alpaca.css" />
-    <Content Include="js\alpaca-1.5.8\alpaca\jquerymobile\alpaca.js" />
-    <Content Include="js\alpaca-1.5.8\alpaca\jquerymobile\alpaca.min.css" />
-    <Content Include="js\alpaca-1.5.8\alpaca\jquerymobile\alpaca.min.js" />
-    <Content Include="js\alpaca-1.5.8\alpaca\jquerymobile\images\alpaca-icons.png" />
-    <Content Include="js\alpaca-1.5.8\alpaca\jquerymobile\images\date.png" />
-    <Content Include="js\alpaca-1.5.8\alpaca\jquerymobile\images\down.png" />
-    <Content Include="js\alpaca-1.5.8\alpaca\jquerymobile\images\email.png" />
-    <Content Include="js\alpaca-1.5.8\alpaca\jquerymobile\images\left.png" />
-    <Content Include="js\alpaca-1.5.8\alpaca\jquerymobile\images\phone.png" />
-    <Content Include="js\alpaca-1.5.8\alpaca\jquerymobile\images\time.png" />
-    <Content Include="js\alpaca-1.5.8\alpaca\jqueryui\alpaca.css" />
-    <Content Include="js\alpaca-1.5.8\alpaca\jqueryui\alpaca.js" />
-    <Content Include="js\alpaca-1.5.8\alpaca\jqueryui\alpaca.min.css" />
-    <Content Include="js\alpaca-1.5.8\alpaca\jqueryui\alpaca.min.js" />
-    <Content Include="js\alpaca-1.5.8\alpaca\jqueryui\images\alpaca-icons.png" />
-    <Content Include="js\alpaca-1.5.8\alpaca\jqueryui\images\date.png" />
-    <Content Include="js\alpaca-1.5.8\alpaca\jqueryui\images\down.png" />
-    <Content Include="js\alpaca-1.5.8\alpaca\jqueryui\images\email.png" />
-    <Content Include="js\alpaca-1.5.8\alpaca\jqueryui\images\left.png" />
-    <Content Include="js\alpaca-1.5.8\alpaca\jqueryui\images\phone.png" />
-    <Content Include="js\alpaca-1.5.8\alpaca\jqueryui\images\time.png" />
-    <Content Include="js\alpaca-1.5.8\alpaca\web\alpaca.css" />
-    <Content Include="js\alpaca-1.5.8\alpaca\web\alpaca.js" />
-    <Content Include="js\alpaca-1.5.8\alpaca\web\alpaca.min.css" />
-    <Content Include="js\alpaca-1.5.8\alpaca\web\alpaca.min.js" />
-    <Content Include="js\alpaca-1.5.8\alpaca\web\images\alpaca-icons.png" />
-    <Content Include="js\alpaca-1.5.8\alpaca\web\images\date.png" />
-    <Content Include="js\alpaca-1.5.8\alpaca\web\images\down.png" />
-    <Content Include="js\alpaca-1.5.8\alpaca\web\images\email.png" />
-    <Content Include="js\alpaca-1.5.8\alpaca\web\images\left.png" />
-    <Content Include="js\alpaca-1.5.8\alpaca\web\images\phone.png" />
-    <Content Include="js\alpaca-1.5.8\alpaca\web\images\time.png" />
-    <Content Include="js\alpaca-1.5.8\lib\handlebars\handlebars.amd.js" />
-    <Content Include="js\alpaca-1.5.8\lib\handlebars\handlebars.amd.min.js" />
-    <Content Include="js\alpaca-1.5.8\lib\handlebars\handlebars.js" />
-    <Content Include="js\alpaca-1.5.8\lib\handlebars\handlebars.min.js" />
-    <Content Include="js\alpaca-1.5.8\lib\handlebars\handlebars.runtime.amd.js" />
-    <Content Include="js\alpaca-1.5.8\lib\handlebars\handlebars.runtime.amd.min.js" />
-    <Content Include="js\alpaca-1.5.8\lib\handlebars\handlebars.runtime.js" />
-    <Content Include="js\alpaca-1.5.8\lib\handlebars\handlebars.runtime.min.js" />
     <Content Include="js\wysihtml\parser_rules\advanced_opencontent.js" />
     <Content Include="js\wysihtml\parser_rules\advanced.js" />
     <Content Include="js\wysihtml\parser_rules\advanced_and_extended.js" />
@@ -739,9 +824,6 @@
     <Content Include="Providers\DataProviders\SqlDataProvider\Uninstall.SqlDataProvider" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="css\font-awesome\fonts\fontawesome-webfont.eot" />
     <Content Include="css\font-awesome\fonts\fontawesome-webfont.ttf" />
     <Content Include="css\font-awesome\fonts\fontawesome-webfont.woff" />
@@ -749,16 +831,9 @@
     <Content Include="css\font-awesome\fonts\FontAwesome.otf" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="js\alpaca-1.5.8\lib\handlebars\bower.json" />
-    <Content Include="js\alpaca-1.5.8\lib\handlebars\component.json" />
-    <Content Include="js\alpaca-1.5.8\lib\handlebars\composer.json" />
-    <Content Include="js\alpaca-1.5.8\lib\handlebars\handlebars-source.gemspec" />
-    <Content Include="js\alpaca-1.5.8\lib\handlebars\handlebars.js.nuspec" />
-    <Content Include="js\alpaca-1.5.8\lib\handlebars\lib\handlebars\source.rb" />
-    <Content Include="js\alpaca-1.5.8\lib\handlebars\README.md" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Templates\web.config" />
+    <Content Include="Templates\web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="js\wysihtml\wysihtml-toolbar.min.map" />
@@ -774,23 +849,10 @@
     <Content Include="App_LocalResources\ShareTemplate.ascx.resx" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\bower.json" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\CHANGELOG.md" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\composer.json" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\CONTRIBUTING.md" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\doc\bloodhound.md" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\doc\jquery_typeahead.md" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\doc\migration\0.10.0.md" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\LICENSE" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\package.json" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\README.md" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\test\ci" />
-    <Content Include="js\alpaca-1.5.8\lib\typeahead.js\typeahead.js.jquery.json" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Templates\ViewPage1.cshtml" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
