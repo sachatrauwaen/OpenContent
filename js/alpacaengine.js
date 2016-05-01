@@ -222,7 +222,7 @@ alpacaEngine.engine = function(config) {
     };
 
     self.Version = function (id, ticks, control) {
-        if (!id) id = 0;
+        if (!id) id = "";
         var postData = { id: id, ticks: ticks };
         var action = "Version";
 

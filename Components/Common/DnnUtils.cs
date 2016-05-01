@@ -108,10 +108,10 @@ namespace Satrabel.OpenContent.Components
 
             return cultureCode;
         }
-        public static int GetTabByCurrentCulture(int portalId, int tabId, string CultureCode)
+        public static int GetTabByCurrentCulture(int portalId, int tabId, string cultureCode)
         {
             var tc = new TabController();
-            Locale locale = LocaleController.Instance.GetLocale(CultureCode);
+            Locale locale = LocaleController.Instance.GetLocale(cultureCode);
             var tab = tc.GetTabByCulture(tabId, portalId, locale);
             if (tab != null)
             {

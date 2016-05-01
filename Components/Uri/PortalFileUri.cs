@@ -16,17 +16,17 @@ namespace Satrabel.OpenContent.Components
     {
         #region Constructors
 
-        public PortalFileUri(string pathToFile) : base(System.IO.Path.GetDirectoryName(pathToFile))
+        public PortalFileUri(int portalid, string pathToFile) : base(pathToFile)
         {
-            FileInfo = GetFileInfo();
+            FileInfo = GetFileInfo(portalid);
         }
-        public PortalFileUri(string path, string filename) : base(path, filename)
+        public PortalFileUri(int portalid, string path, string filename) : base(path, filename)
         {
-            FileInfo = GetFileInfo();
+            FileInfo = GetFileInfo(portalid);
         }
-        public PortalFileUri(FolderUri path, string filename) : base(path.FolderPath, filename)
+        public PortalFileUri(PortalFolderUri portalFolderUri, string filename) : base(portalFolderUri.FolderPath, filename)
         {
-            FileInfo = GetFileInfo();
+            FileInfo = GetFileInfo(portalFolderUri.FolderInfo.PortalID);
         }
         public PortalFileUri(IFileInfo fileInfo) : base(GetFilePath(fileInfo))
         {
@@ -40,12 +40,13 @@ namespace Satrabel.OpenContent.Components
 
             FileInfo = fileInfo;
         }
-        private IFileInfo GetFileInfo()
+
+        private IFileInfo GetFileInfo(int portalid)
         {
-            var portalid = PortalSettings.Current.PortalId;
+            //var portalid = PortalSettings.Current.PortalId;
             IFileInfo fileRequested = null;
             var pf = (new PortalController()).GetPortal(portalid).HomeDirectory;
-            var pos =  FilePath.IndexOf(pf, StringComparison.InvariantCultureIgnoreCase);
+            var pos = FilePath.IndexOf(pf, StringComparison.InvariantCultureIgnoreCase);
             if (pos > -1)
             {
                 fileRequested = FileManager.Instance.GetFile(portalid, FilePath.Substring(pos + pf.Length + 1));
@@ -101,6 +102,14 @@ namespace Satrabel.OpenContent.Components
             }
 
             return _fileMetaData == null ? null : _fileMetaData[fieldname];
+        }
+
+        public int DnnFileId
+        {
+            get
+            {
+                return FileInfo == null ? 0 : FileInfo.FileId;
+            }
         }
 
         /// <summary>

@@ -277,7 +277,6 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
             }
 
         }
-
         public QueryDefinition BuildSort(string Sorts)
         {
             var sort = Sort.RELEVANCE;

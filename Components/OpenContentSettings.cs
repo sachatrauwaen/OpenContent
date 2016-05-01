@@ -25,17 +25,17 @@ namespace Satrabel.OpenContent.Components
                 Manifest = ManifestUtils.GetManifest(TemplateKey, out templateManifest);
                 Template = templateManifest;
             }
+
             var sTabId = moduleSettings["tabid"] as string;
             var sModuleId = moduleSettings["moduleid"] as string;
             TabId = -1;
             ModuleId = -1;
-
             if (sTabId != null && sModuleId != null)
             {
                 TabId = int.Parse(sTabId);
                 ModuleId = int.Parse(sModuleId);
             }
-
+            
             Data = moduleSettings["data"] as string;
             Query = moduleSettings["query"] as string;
             var sDetailTabId = moduleSettings["detailtabid"] as string;

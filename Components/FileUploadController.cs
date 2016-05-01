@@ -36,6 +36,8 @@ using DotNetNuke.Web.Api;
 using DotNetNuke.Web.Api.Internal;
 using Newtonsoft.Json;
 using DotNetNuke.Entities.Icons;
+using System.Text;
+using System.Globalization;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -93,7 +95,8 @@ namespace Satrabel.OpenContent.Components
                 var file = context.Request.Files[i];
                 if (file == null) continue;
 
-                var fileName = Path.GetFileName(file.FileName);
+                var fileName = CleanUpFileName(Path.GetFileName(file.FileName));
+                
 
                 if (IsAllowedExtension(fileName))
                 {
@@ -141,5 +144,48 @@ namespace Satrabel.OpenContent.Components
                 }
             }
         }
+
+        private string CleanUpFileName(string filename)
+        {
+            var newName = RemoveDiacritics(filename);
+            newName = returnSafeString(newName);
+            return newName;
+        }
+
+        public static string returnSafeString(string s)
+        {
+            foreach (char character in Path.GetInvalidFileNameChars())
+            {
+                s = s.Replace(character.ToString(), "-");
+            }
+
+            foreach (char character in Path.GetInvalidPathChars())
+            {
+                s = s.Replace(character.ToString(), "-");
+            }
+            foreach (char character in " []|:;`%&$+,/=?@~#<>()¿¡«»!'’–*…^£".ToCharArray())
+            {
+                s = s.Replace(character.ToString(), "_");
+            }
+            return (s);
+        }
+
+        private static string RemoveDiacritics(string text)
+        {
+            var normalizedString = text.Normalize(NormalizationForm.FormD);
+            var stringBuilder = new StringBuilder();
+
+            foreach (var c in normalizedString)
+            {
+                var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
+                if (unicodeCategory != UnicodeCategory.NonSpacingMark)
+                {
+                    stringBuilder.Append(c);
+                }
+            }
+
+            return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
+        }
+
     }
 }
