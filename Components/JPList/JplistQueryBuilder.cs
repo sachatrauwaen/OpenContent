@@ -17,7 +17,7 @@ namespace Satrabel.OpenContent.Components.JPList
                 {
                     case "paging":
                         {
-                            int number = 100000;
+                            int number;
                             //  string value (it could be number or "all")
                             int.TryParse(status.data.number, out number);
                             select.PageSize = number;
