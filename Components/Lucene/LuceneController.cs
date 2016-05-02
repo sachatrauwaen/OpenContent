@@ -100,11 +100,9 @@ namespace Satrabel.OpenContent.Components.Lucene
                 using (var lc = LuceneController.Instance)
                 {
                     ModuleController mc = new ModuleController();
-                    PortalController pc = new PortalController();
-                    foreach (PortalInfo portal in pc.GetPortals())
+                    foreach (PortalInfo portal in PortalController.Instance.GetPortals())
                     {
                         ArrayList modules = mc.GetModulesByDefinition(portal.PortalID, "OpenContent");
-                        //foreach (ModuleInfo module in modules.OfType<ModuleInfo>().GroupBy(m => m.ModuleID).Select(g => g.First())){                
                         foreach (ModuleInfo module in modules.OfType<ModuleInfo>())
                         {
                             OpenContentSettings settings = new OpenContentSettings(module.ModuleSettings);

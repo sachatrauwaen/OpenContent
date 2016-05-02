@@ -193,7 +193,7 @@
                         autoCropArea: 0.90,
                         minContainerHeight: 200,
                         minContainerWidth: 400,
-                        toggleDragModeOnDblclick: false,
+                        toggleDragModeOnDblclick: false
 
                     }, self.options.cropper);
                     $image.cropper(config);
