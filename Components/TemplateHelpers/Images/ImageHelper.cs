@@ -114,7 +114,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
                     }
                     else
                     {
-                        Log.Logger.Info(string.Format("Warning for page {0}. Can't find croppers in {1}. ", HttpContext.Current.Request.RawUrl, contentItem.Content));
+                        Log.Logger.Debug(string.Format("Warning for page {0}. Can't find croppers in {1}. ", HttpContext.Current.Request.RawUrl, contentItem.Content));
                     }
                 }
             }

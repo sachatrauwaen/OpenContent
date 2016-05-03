@@ -22,6 +22,7 @@ using DotNetNuke.UI.Modules;
 using DotNetNuke.Security.Permissions;
 using DotNetNuke.Security;
 using Satrabel.OpenContent.Components.Alpaca;
+using Satrabel.OpenContent.Components.Dnn;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.Lucene.Config;
 
@@ -453,7 +454,17 @@ namespace Satrabel.OpenContent.Components
 
             return result.ToString();
         }
-
+        public static bool CheckOpenContentSettings(ModuleInfo module, OpenContentSettings settings)
+        {
+            bool result = true;
+            if (!settings.TemplateKey.TemplateDir.FolderExists)
+            {
+                var url = DnnUrlUtils.NavigateUrl(module.TabID);
+                Log.Logger.ErrorFormat("Error loading OpenContent Template on page [{1}]. Reason: Template not found [{0}]", settings.TemplateDir.PhysicalFullDirectory, url);
+                result = false;
+            }
+            return result;
+        }
 
         public static string ReverseMapPath(string path)
         {
@@ -466,7 +477,7 @@ namespace Satrabel.OpenContent.Components
                     portalSettings.UserInfo.IsInRole(portalSettings.AdministratorRoleName) ||
                     ModulePermissionController.HasModuleAccess(SecurityAccessLevel.Edit, "CONTENT", module) ||
                     (!string.IsNullOrEmpty(editrole) && portalSettings.UserInfo.IsInRole(editrole) && (CreatedByUserId == -1 || portalSettings.UserId == CreatedByUserId)) ||
-                    (!string.IsNullOrEmpty(editrole) &&  editrole.ToLower() == "all");
+                    (!string.IsNullOrEmpty(editrole) && editrole.ToLower() == "all");
         }
 
 

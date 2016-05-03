@@ -190,6 +190,12 @@ namespace Satrabel.OpenContent
             bool otherModuleWithFilterSettings = _settings.IsOtherModule && !string.IsNullOrEmpty(_settings.Query);
             if (_renderinfo.ShowInitControl && !otherModuleWithFilterSettings)
             {
+                var templatemissing = OpenContentUtils.CheckOpenContentSettings(_renderinfo.Module, _settings);
+                if (templatemissing)
+                {
+                    //todo: show message on screen
+                }
+
                 // no data exist and ... -> show initialization
                 if (ModuleContext.EditMode)
                 {
@@ -597,7 +603,7 @@ namespace Satrabel.OpenContent
         public void GetDataList(RenderInfo info, OpenContentSettings settings, bool clientSide)
         {
             info.ResetData();
-            var ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);            
+            var ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
             var dsContext = new DataSourceContext()
             {
                 ModuleId = info.ModuleId,
