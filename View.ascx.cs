@@ -325,17 +325,7 @@ namespace Satrabel.OpenContent
                                 false);
                 }
                 */
-
-                actions.Add(ModuleContext.GetNextActionID(),
-                    Localization.GetString("EditInit.Action", LocalResourceFile),
-                    ModuleActionType.ContentOptions,
-                    "",
-                    "~/DesktopModules/OpenContent/images/editinit.png",
-                    ModuleContext.EditUrl("EditInit"),
-                    false,
-                    SecurityAccessLevel.Admin,
-                    true,
-                    false);
+                               
 
                 if (templateDefined && settings.Template.SettingsNeeded())
                 {
@@ -350,6 +340,16 @@ namespace Satrabel.OpenContent
                         true,
                         false);
                 }
+                actions.Add(ModuleContext.GetNextActionID(),
+                    Localization.GetString("EditInit.Action", LocalResourceFile),
+                    ModuleActionType.ContentOptions,
+                    "",
+                    "~/DesktopModules/OpenContent/images/editinit.png",
+                    ModuleContext.EditUrl("EditInit"),
+                    false,
+                    SecurityAccessLevel.Admin,
+                    true,
+                    false);
                 if (templateDefined && listMode)
                 {
                     //bool queryAvailable = settings.Template.QueryAvailable();
