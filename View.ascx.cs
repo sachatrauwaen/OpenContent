@@ -380,7 +380,7 @@ namespace Satrabel.OpenContent
                         true,
                         false);
 
-                if (templateDefined)
+                if (templateDefined && settings.Manifest != null && settings.Manifest.FormBuilder)
                     actions.Add(ModuleContext.GetNextActionID(),
                         Localization.GetString("Builder.Action", LocalResourceFile),
                         ModuleActionType.ContentOptions,

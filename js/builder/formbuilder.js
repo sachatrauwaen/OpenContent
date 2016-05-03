@@ -68,7 +68,7 @@ function getSchema(formdef) {
     var sch = null; //JSON.parse($("#schema").val());
 
     var schema = {
-        "title": "Form preview",
+        //"title": "Form preview",
         "type": "object",
         "properties": {}
     };
@@ -98,7 +98,7 @@ function getSchema(formdef) {
         var prop = {
             "type": schematypes[value.fieldtype]
         };
-        if (value.showtitle && value.fieldtype != "checkbox") {
+        if (value.title && value.fieldtype != "checkbox") {
             prop.title = value.title;
         }
         if (value.fieldoptions) {
@@ -169,6 +169,11 @@ var baseFields = function (index, value, oldOptions) {
     var field = {
         "type": value.fieldtype
     };
+
+    if (value.multilanguage) {
+        field.type = "ml" + field.type;
+    }
+
     if (value.fieldtype == "multicheckbox") {
         field.type = "checkbox";
     } else if (value.fieldtype == "relation") {
@@ -189,20 +194,20 @@ var baseFields = function (index, value, oldOptions) {
         });
     }
     if (value.fieldtype == "checkbox") {
-        field.rightLabel = value.title;
+        field.label = value.title;
     }
     //if (value.vertical){
     field.vertical = value.vertical;
     //}
 
-    if (value.showplaceholder) {
+    if (value.placeholder) {
         field.placeholder = value.placeholder;
     }
-    if (value.showhelp) {
+    if (value.helper) {
         field.helper = value.helper;
     }
     if (value.fieldtype == "array" || value.fieldtype == "table") {
-        field.toolbarSticky = true;
+        //field.toolbarSticky = true;
         if (!value.listfields) {
             field.items = {};
         } else if (value.fieldtype == "array" && value.listfields.length == 1) {
@@ -255,12 +260,21 @@ function getOptions(formdef) {
 }
 
 function showForm(value) {
+
+    var ConnectorClass = Alpaca.getConnectorClass("default");
+    var connector = new ConnectorClass("default");
+    //connector.servicesFramework = self.sf;
+    connector.culture = "en-US";
+    connector.defaultCulture = "en-US";
+    connector.numberDecimalSeparator = ".";
+
     var schema = getSchema(value);
     var options = getOptions(value);
     var config = {
         "schema": schema,
         "options": options,
-        "view": "dnnbootstrap-edit"
+        "view": "dnn-edit",
+        "connector": connector
     };
     //alert(JSON.stringify(value, null, "  "));
     $("#schema").val(JSON.stringify(schema, null, "  "));
@@ -285,38 +299,17 @@ var fieldSchema =
         },
         "fieldtype": {
             "type": "string",
+            "default":"text",
             "title": "Type",
             "enum": ["text", "checkbox", "multicheckbox", "select", "radio", "textarea", "email", "date", "number",
                         "image", "icon", "guid", "address",
                         "array", "table", "relation",
                         "wysihtml", "ckeditor"]
         },
-        
-        "multilanguage": {
-            "type": "boolean",
-            "dependencies": "fieldtype"
-        },
-        "showtitle": {
-            "type": "boolean"
-        },
+       
         "title": {
             "type": "string",
-            "dependencies": "showtitle"
-        },
-        "showhelp": {
-            "type": "boolean"
-        },
-        "helper": {
-            "type": "string",
-            "dependencies": "showhelp"
-        },
-        "showplaceholder": {
-            "type": "boolean",
-            "dependencies": "fieldtype"
-        },
-        "placeholder": {
-            "type": "string",
-            "dependencies": ["showplaceholder"]
+            "title": "Label"
         },
         "required": {
             "type": "boolean"
@@ -324,6 +317,24 @@ var fieldSchema =
         "vertical": {
             "type": "boolean",
             "dependencies": "fieldtype"
+        },
+        "advanced": {
+            "type": "boolean",
+            "title": "Advanced"
+        },
+        "helper": {
+            "type": "string",
+            "title": "Helper",
+            "dependencies": "advanced"
+        },
+        "placeholder": {
+            "type": "string",
+            "title": "Placeholder",
+            "dependencies": ["fieldtype", "advanced"]
+        },
+        "multilanguage": {
+            "type": "boolean",
+            "dependencies": ["fieldtype", "advanced"]
         },
         "fieldoptions": {
             "type": "array",
@@ -355,22 +366,16 @@ fieldSchema.properties.listfields.items = fieldSchema;
 
 var fieldOptions = 
 {
-
     "multilanguage": {
-        "rightLabel": "Multi language",
+        "label": "Multi language",
         "dependencies": {
+            "advanced": [true],
             "fieldtype": ["text", "ckeditor", "file", "image", "url", "wysihtml"]
         }
     },
-    "showtitle": {
-        "rightLabel": "Label"
-    },
-    "showhelp": {
-        "rightLabel": "Help text"
-    },
-    "showplaceholder": {
-        "rightLabel": "Show placeholder",
+    "placeholder": {
         "dependencies": {
+            "advanced": [true],
             "fieldtype": ["email", "text", "textarea"]
         }
     },
@@ -384,15 +389,16 @@ var fieldOptions =
         }
     },
     "required": {
-        "rightLabel": "Required"
+        "label": "Required"
     },
     "vertical": {
-        "rightLabel": "Vertical",
+        "label": "Vertical",
         "dependencies": {
             "fieldtype": "radio"
         }
     },
     "listfields": {
+        "collapsible": true,
         "items": {
             "fieldClass": "listfielddiv"
         },
@@ -406,7 +412,7 @@ fieldOptions.listfields.items.fields = fieldOptions;
 
 var formbuilderConfig = {
     "schema": {
-        "title": "Fields",
+        //"title": "Fields",
         "type": "object",
         "properties": {
             "formfields": {
@@ -418,40 +424,16 @@ var formbuilderConfig = {
     "options": {
         "fields": {
             "formfields": {
-                "toolbarSticky": true,
+                //"toolbarSticky": true,
                 "items": {
                     //"collapsible": true,
                     "fieldClass": "fielddiv",
                     "fields": fieldOptions
                 }
             }
-        },
-        "form": {
-            "buttons": {
-                "Load": {
-                    "title": "Load",
-                    "click": function () {
-                        var alpacadata = Load();
-                        this.setValue({ "formfields": alpacadata });
-                    }
-                },
-                "Refresh": {
-                    "title": "Refresh",
-                    "click": function () {
-                        this.refreshValidationState(true);
-                        if (!this.isValid(true)) {
-                            this.focus();
-                            return;
-                        }
-                        var value = this.getValue();
-                        //$.cookie('alpacadata', JSON.stringify(value), { expires: 7, path: '/' });
-                        $('#builder').val(JSON.stringify(value, null, "  "));
-                        showForm(value);
-                    }
-                }
-            }
-        },
+        }
     },
+    "view": "dnn-edit",
     "postRender": function (control) {
         var self = control;
         control.childrenByPropertyId["formfields"].on("change", function () {

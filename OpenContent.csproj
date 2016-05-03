@@ -341,6 +341,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="AddEdit.ascx" />
+    <Content Include="alpaca\css\alpaca-bootstrap.css" />
     <Content Include="alpaca\css\alpaca-dnn.css" />
     <Content Include="alpaca\css\img\Add_16x16_Gray.png" />
     <Content Include="alpaca\css\img\Delete_16X16_Gray.png" />
@@ -940,6 +941,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_LocalResources\Edit.ascx.de-DE.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_LocalResources\Builder.ascx.resx" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

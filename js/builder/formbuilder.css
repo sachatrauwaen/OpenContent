@@ -1,30 +1,35 @@
 .alpaca-array-actionbar.alpaca-array-actionbar-top {
-  
-   
 }
 
 .alpaca-container-label span:hover {
-    
-     color:#337ab7;
+    color: #337ab7;
 }
-
 
 .alpaca-array-actionbar.alpaca-array-actionbar-top.btn-group {
-    
-        
-        
-       
-    display: inline-block !important;
-  
+    /*display: inline-block !important;*/
 }
 
-.fielddiv{
-    
-    background-color:#f7f7f9;
+.fielddiv {
+    background-color: #f7f7f9;
 }
 
+.listfielddiv {
+    background-color: #fff;
+}
+/*
+.col-sm-6 {
+    float: left;
+    width: 50%;
+    position: relative;
+    min-height: 1px;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+*/
 
-.listfielddiv{
-    
-    background-color:#fff;
+
+.form-builder h2{
+    font-size: 18px;
+    margin-top: 0;
+    margin-bottom: 5px;
 }

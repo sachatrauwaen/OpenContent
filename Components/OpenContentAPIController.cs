@@ -511,20 +511,26 @@ namespace Satrabel.OpenContent.Components
             try
             {
                 OpenContentSettings settings = ActiveModule.OpenContentSettings();
-                
-                if (json["data"] != null)
+
+                if (json["data"] != null && json["schema"] != null && json["options"] != null)
                 {
                     var key = json["key"].ToString();
                     string prefix = string.IsNullOrEmpty(key) ? "" : key + "-";
+                    var schema = json["schema"].ToString();
+                    var options = json["options"].ToString();
                     var data = json["data"].ToString();
-                    var file = new FileUri(settings.TemplateDir.UrlFolder + prefix + "builder.json");
+                    var datafile = new FileUri(settings.TemplateDir.UrlFolder + prefix + "builder.json");
+                    var schemafile = new FileUri(settings.TemplateDir.UrlFolder + prefix + "schema.json");
+                    var optionsfile = new FileUri(settings.TemplateDir.UrlFolder + prefix + "options.json");
                     try
                     {
-                        File.WriteAllText(file.PhysicalFilePath, json["data"].ToString());
+                        File.WriteAllText(datafile.PhysicalFilePath, data);
+                        File.WriteAllText(schemafile.PhysicalFilePath, schema);
+                        File.WriteAllText(optionsfile.PhysicalFilePath, options);
                     }
                     catch (Exception ex)
                     {
-                        string mess = string.Format("Error while saving file [{0}]", file.FilePath);
+                        string mess = string.Format("Error while saving file [{0}]", datafile.FilePath);
                         Log.Logger.Error(mess, ex);
                         throw new Exception(mess, ex);
                     }

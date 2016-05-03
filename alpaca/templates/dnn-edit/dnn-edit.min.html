@@ -186,15 +186,20 @@
             <label class="{{#if options.labelClass}}{{options.labelClass}}{{/if}} control-label alpaca-control-label" for="{{id}}">
                 <span>{{{options.label}}}</span>
             </label>
-            {{#if options.helper}}
+            {{#if options.helpers}}
             <a tabindex="-1" class="dnnFormHelp" href="#"></a>
             <div class="dnnTooltip">
                 <div class="dnnFormHelpContent dnnClear" style="visibility: hidden;">
-                    <span class="dnnHelpText">{{{options.helper}}}</span>
+                    <span class="dnnHelpText">
+                        {{#each options.helpers}}
+                            {{{.}}}
+                        {{/each}}
+                    </span>
                     <a href="#" class="pinHelp"></a>
                 </div>
             </div>
             {{/if}}
+
         </div>
         {{/if}}
 
