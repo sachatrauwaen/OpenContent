@@ -656,3 +656,8 @@ div.progress {
      transition: width .6s ease; 
          border-radius: 4px;
 }
+
+
+.dnnFormItem.alpaca-field-select select {
+    width: 45%;
+}

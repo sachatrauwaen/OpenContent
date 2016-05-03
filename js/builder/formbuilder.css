@@ -28,8 +28,40 @@
 */
 
 
-.form-builder h2{
+
+
+.form-builder h2 {
     font-size: 18px;
     margin-top: 0;
     margin-bottom: 5px;
+}
+/*
+#form button.alpaca-array-actionbar-action {display:block;width:32px;}
+    */
+.dnnForm{width:auto;}
+
+#form .dnnLabel {
+    width: 22.075%;
+}
+
+
+.fb-container {
+    display: table;
+    width: 100%;
+    margin-right: -15px;
+    margin-left: -15px;
+}
+
+.fb-left, .fb-right {
+    display: table-cell;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+.fb-left {
+    width: 50%;
+}
+
+.fb-right {
+    width: 50%;
 }

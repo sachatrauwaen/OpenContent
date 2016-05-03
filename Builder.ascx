@@ -2,13 +2,13 @@
 <%@ Import Namespace="Newtonsoft.Json" %>
 
 <asp:Panel ID="ScopeWrapper" runat="server" CssClass="form-builder">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-sm-6">
+    <div class="">
+        <div class="fb-container">
+            <div class="fb-left">
                 <h2>Fields</h2>
                 <div id="form"></div>
             </div>
-            <div class="col-sm-6">
+            <div class="fb-right">
                 <h2>Form preview</h2>
                 <div id="form2"></div>
             </div>
@@ -59,7 +59,7 @@
                             newWidth;
 
             newHeight = $window.height() - 36;
-            newWidth = Math.min($window.width() - 40, 1200);
+            newWidth = Math.min($window.width() - 40, 1600);
 
             popup.dialog("option", {
                 close: function () { window.dnnModal.closePopUp(false, ""); },
