@@ -13,6 +13,7 @@ using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.TemplateHelpers;
 using Satrabel.OpenContent.Components.Dynamic;
 using System.Collections;
+using DotNetNuke.Entities.Portals;
 
 
 namespace Satrabel.OpenContent.Components.Handlebars
@@ -195,51 +196,59 @@ namespace Satrabel.OpenContent.Components.Handlebars
         {
             hbs.RegisterHelper("published", (writer, options, context, parameters) =>
             {
-                var lst = new List<dynamic>();
-                foreach (dynamic item in parameters[0] as IEnumerable)
+                bool EditMode = PortalSettings.Current.UserMode == PortalSettings.Mode.Edit;
+                if (EditMode)
                 {
-                    bool show = true;
-                    try
-                    {
-                        if (item.publishstatus != "published")
-                        {
-                            show = false;
-                        }
-                    }
-                    catch (Exception)
-                    {
-                    }
-                    try
-                    {
-                        DateTime publishstartdate = DateTime.Parse(item.publishstartdate, null, System.Globalization.DateTimeStyles.RoundtripKind);
-                        if (publishstartdate > DateTime.Today)
-                        {
-                            show = false;
-                        }
-                    }
-                    catch (Exception)
-                    {
-                    }
-                    try
-                    {
-                        DateTime publishenddate = DateTime.Parse(item.publishenddate, null, System.Globalization.DateTimeStyles.RoundtripKind);
-                        if (publishenddate < DateTime.Today)
-                        {
-                            show = false;
-                        }
-                    }
-                    catch (Exception)
-                    {
-                    }
-                    if (show)
-                    {
-                        lst.Add(item);
-                    }
-               
+                    options.Template(writer, parameters[0]);
                 }
-                options.Template(writer, lst);
+                else
+                {
+                    var lst = new List<dynamic>();
+                    foreach (dynamic item in parameters[0] as IEnumerable)
+                    {
+                        bool show = true;
+                        try
+                        {
+                            if (item.publishstatus != "published")
+                            {
+                                show = false;
+                            }
+                        }
+                        catch (Exception)
+                        {
+                        }
+                        try
+                        {
+                            DateTime publishstartdate = DateTime.Parse(item.publishstartdate, null, System.Globalization.DateTimeStyles.RoundtripKind);
+                            if (publishstartdate > DateTime.Today)
+                            {
+                                show = false;
+                            }
+                        }
+                        catch (Exception)
+                        {
+                        }
+                        try
+                        {
+                            DateTime publishenddate = DateTime.Parse(item.publishenddate, null, System.Globalization.DateTimeStyles.RoundtripKind);
+                            if (publishenddate < DateTime.Today)
+                            {
+                                show = false;
+                            }
+                        }
+                        catch (Exception)
+                        {
+                        }
+                        if (show)
+                        {
+                            lst.Add(item);
+                        }
+
+                    }
+                    options.Template(writer, lst);
+                }
             });
-          
+
         }
         private void RegisterScriptHelper(HandlebarsDotNet.IHandlebars hbs)
         {
