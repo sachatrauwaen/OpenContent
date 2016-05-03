@@ -47,8 +47,7 @@ namespace Satrabel.OpenContent.Components
         }
 
         internal TemplateKey TemplateKey { get; private set; }
-
-
+        
         public int TabId { get; private set; }
         public int ModuleId { get; private set; }
 
@@ -71,8 +70,6 @@ namespace Satrabel.OpenContent.Components
         }
 
         public bool TemplateAvailable { get { return TemplateKey != null; } }
-
-
 
         public int DetailTabId { get; private set; }
     }

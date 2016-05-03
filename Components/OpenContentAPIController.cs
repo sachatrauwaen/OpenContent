@@ -189,7 +189,6 @@ namespace Satrabel.OpenContent.Components
                     module = mc.GetModule(settings.ModuleId, settings.TabId, false);
                 }
                 var manifest = settings.Template.Manifest;
-                TemplateManifest templateManifest = settings.Template;
                 string key = json["key"].ToString();
                 var dataManifest = manifest.AdditionalData[key];
                 string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings.PortalId, PortalSettings.ActiveTab.TabID, module.ModuleID, ActiveModule.TabModuleID);

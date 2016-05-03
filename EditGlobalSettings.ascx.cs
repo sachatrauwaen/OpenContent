@@ -46,7 +46,6 @@ namespace Satrabel.OpenContent
             base.OnLoad(e);
             if (!Page.IsPostBack)
             {
-                var pc = new PortalController();
                 ddlRoles.Items.Add(new ListItem("None", "-1"));
                 var rc = new RoleController();
                 foreach (var role in rc.GetRoles(PortalId))

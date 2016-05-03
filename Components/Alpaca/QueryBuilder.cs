@@ -23,10 +23,10 @@ namespace Satrabel.OpenContent.Components.Alpaca
             Select.PageSize = 100;
         }
 
-        public QueryBuilder Build(JObject query, bool addWorkflowFilter, NameValueCollection QueryString = null)
+        public QueryBuilder Build(JObject query, bool addWorkflowFilter, NameValueCollection queryString = null)
         {
             BuildPage(query);
-            BuildFilter(query, addWorkflowFilter, QueryString);
+            BuildFilter(query, addWorkflowFilter, queryString);
             BuildSort(query);
             return this;
         }
@@ -46,21 +46,21 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
             return this;
         }
-        public QueryBuilder BuildFilter(JObject query, bool addWorkflowFilter, NameValueCollection QueryString = null)
+        public QueryBuilder BuildFilter(JObject query, bool addWorkflowFilter, NameValueCollection queryString = null)
         {
-            var Filter = Select.Filter;
+            var workFlowFilter = Select.Filter;
             var vExcludeCurrentItem = query["ExcludeCurrentItem"] as JValue;
-            bool ExcludeCurrentItem = false;
+            bool excludeCurrentItem = false;
             if (vExcludeCurrentItem != null && vExcludeCurrentItem.Type == JTokenType.Boolean)
             {
-                ExcludeCurrentItem = (bool)vExcludeCurrentItem.Value;
+                excludeCurrentItem = (bool)vExcludeCurrentItem.Value;
             }
-            if (ExcludeCurrentItem && QueryString != null && QueryString["id"] != null)
+            if (excludeCurrentItem && queryString != null && queryString["id"] != null)
             {
-                Filter.AddRule(new FilterRule()
+                workFlowFilter.AddRule(new FilterRule()
                 {
                     Field = "id",
-                    Value = new StringRuleValue(QueryString["id"]),
+                    Value = new StringRuleValue(queryString["id"]),
                     FieldOperator = OperatorEnum.NOT_EQUAL
                 });
             }
@@ -81,7 +81,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                             bool bval;
                             if (bool.TryParse(val, out bval))
                             {
-                                Filter.AddRule(new FilterRule()
+                                workFlowFilter.AddRule(new FilterRule()
                                 {
                                     Field = item.Name,
                                     Value = new BooleanRuleValue(bval)
@@ -90,7 +90,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                         }
                         else if (!string.IsNullOrEmpty(val))
                         {
-                            Filter.AddRule(new FilterRule()
+                            workFlowFilter.AddRule(new FilterRule()
                             {
                                 Field = item.Name,
                                 Value = new StringRuleValue(val),
@@ -117,14 +117,14 @@ namespace Satrabel.OpenContent.Components.Alpaca
                                     });
                                 }
                             }
-                            Filter.FilterGroups.Add(arrGroup);
+                            workFlowFilter.FilterGroups.Add(arrGroup);
                         }
-                        else if (QueryString != null && QueryString[item.Name] != null)
+                        else if (queryString != null && queryString[item.Name] != null)
                         {
-                            Filter.AddRule(new FilterRule()
+                            workFlowFilter.AddRule(new FilterRule()
                             {
                                 Field = item.Name,
-                                Value = new StringRuleValue(QueryString[item.Name])
+                                Value = new StringRuleValue(queryString[item.Name])
                             });
                         }
                     }
@@ -151,7 +151,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                             catch (Exception)
                             {
                             }
-                            Filter.AddRule(new FilterRule()
+                            workFlowFilter.AddRule(new FilterRule()
                             {
                                 Field = item.Name,
                                 LowerValue = new DateTimeRuleValue(startDate),
@@ -164,12 +164,12 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
             if (addWorkflowFilter)
             {
-                AddWorkflowFilter(Filter);
+                AddWorkflowFilter(workFlowFilter);
             }
             //Filter = Filter.FilterRules.Any() || Filter.FilterGroups.Any() > 0 ? q : null;
             return this;
         }
-        public QueryBuilder BuildFilter(bool addWorkflowFilter, NameValueCollection QueryString = null)
+        public QueryBuilder BuildFilter(bool addWorkflowFilter, NameValueCollection queryString = null)
         {
             if (addWorkflowFilter)
             {
