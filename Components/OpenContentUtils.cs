@@ -457,7 +457,7 @@ namespace Satrabel.OpenContent.Components
         public static bool CheckOpenContentSettings(ModuleInfo module, OpenContentSettings settings)
         {
             bool result = true;
-            if (!settings.TemplateKey.TemplateDir.FolderExists)
+            if (settings != null && settings.TemplateKey != null && settings.TemplateKey.TemplateDir != null && settings.TemplateKey.TemplateDir.FolderExists)
             {
                 var url = DnnUrlUtils.NavigateUrl(module.TabID);
                 Log.Logger.ErrorFormat("Error loading OpenContent Template on page [{1}]. Reason: Template not found [{0}]", settings.TemplateDir.PhysicalFullDirectory, url);
