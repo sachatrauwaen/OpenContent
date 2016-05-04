@@ -84,6 +84,7 @@
             beforeSend: sf.setModuleHeaders
         }).done(function (res) {
             $('#builder').val(JSON.stringify(res.data, null, "  "));
+            if (!res.data) res.data = {};
             showForm(res.data);
             formbuilderConfig.data = res.data;
             $("#form").alpaca(
