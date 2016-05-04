@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Web;
+using DotNetNuke.Services.Personalization;
 using Satrabel.OpenContent.Components.Dnn;
 using Satrabel.OpenContent.Components.Handlebars;
 using Satrabel.OpenContent.Components.Manifest;
@@ -512,7 +514,6 @@ namespace Satrabel.OpenContent.Components
         }
 
         private bool? _isEditable;
-
         private bool IsEditable
         {
             get
@@ -521,6 +522,18 @@ namespace Satrabel.OpenContent.Components
                 //role lookup on every property access (instead caching the result)
                 if (!_isEditable.HasValue)
                 {
+                    //first check some weird Dnn issue
+                    if (HttpContext.Current != null && HttpContext.Current.Request.IsAuthenticated)
+                    {
+                        var personalization = (PersonalizationInfo)HttpContext.Current.Items["Personalization"];
+                        if (personalization != null && personalization.UserId == -1)
+                        {
+                            //this should never happen. 
+                            //Let us make sure that the wrong value is no longer cached 
+                            HttpContext.Current.Items.Remove("Personalization");
+                        }
+                    }
+
                     bool blnPreview = (PortalSettings.UserMode == PortalSettings.Mode.View);
                     if (Globals.IsHostTab(PortalSettings.ActiveTab.TabID))
                     {
