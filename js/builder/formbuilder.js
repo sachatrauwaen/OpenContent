@@ -428,7 +428,7 @@ var formbuilderConfig = {
     "options": {
         "fields": {
             "formfields": {
-                //"toolbarSticky": true,
+                "toolbarSticky": true,
                 "items": {
                     //"collapsible": true,
                     "fieldClass": "fielddiv",
