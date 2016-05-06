@@ -73,6 +73,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                                       IndexConfig.Fields.ContainsKey(item.Name)
                         ? IndexConfig.Fields[item.Name]
                         : null;
+
                     if (item.Value is JValue) // text
                     {
                         var val = item.Value.ToString();
@@ -160,6 +161,28 @@ namespace Satrabel.OpenContent.Components.Alpaca
                             });
                         }
                     }
+                }
+            }
+            if (queryString != null)
+            {
+                foreach (string key in queryString)
+                {
+                    var indexConfig = IndexConfig != null && IndexConfig.Fields != null &&
+                                      IndexConfig.Fields.ContainsKey(key)
+                        ? IndexConfig.Fields[key]
+                        : null;
+
+                    if (indexConfig != null)
+                    {
+                        string val = queryString[key];
+                        workFlowFilter.AddRule(new FilterRule()
+                        {
+                            Field = key,
+                            Value = new StringRuleValue(val),
+                            FieldOperator = OperatorEnum.EQUAL
+                        });
+                    }
+                    
                 }
             }
             if (addWorkflowFilter)

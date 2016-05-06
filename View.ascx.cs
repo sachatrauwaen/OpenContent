@@ -190,12 +190,13 @@ namespace Satrabel.OpenContent
             bool otherModuleWithFilterSettings = _settings.IsOtherModule && !string.IsNullOrEmpty(_settings.Query);
             if (_renderinfo.ShowInitControl && !otherModuleWithFilterSettings)
             {
+                /* thows error because _renderinfo.Module is null
                 var templatemissing = OpenContentUtils.CheckOpenContentSettings(_renderinfo.Module, _settings);
                 if (templatemissing)
                 {
                     //todo: show message on screen
                 }
-
+                */
                 // no data exist and ... -> show initialization
                 if (ModuleContext.EditMode)
                 {
@@ -630,11 +631,11 @@ namespace Satrabel.OpenContent
                     if (!string.IsNullOrEmpty(settings.Query))
                     {
                         var query = JObject.Parse(settings.Query);
-                        queryBuilder.Build(query, addWorkFlow);
+                        queryBuilder.Build(query, addWorkFlow, Request.QueryString);
                     }
                     else
                     {
-                        queryBuilder.BuildFilter(addWorkFlow);
+                        queryBuilder.BuildFilter(addWorkFlow, Request.QueryString);
                     }
                     dataList = ds.GetAll(dsContext, queryBuilder.Select).Items;
                     //Log.Logger.DebugFormat("Query returned [{0}] results.", total);

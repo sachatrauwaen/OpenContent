@@ -7556,6 +7556,14 @@
             this.base(value);
 
         },
+        getValue: function () {
+            var value = this.base();
+            if (Alpaca.isEmpty(value) || value == "") {
+                value = this.createGuid();
+            }
+
+            return value;
+        },
         createGuid: function ()
         {
             return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
