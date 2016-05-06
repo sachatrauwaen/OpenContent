@@ -454,13 +454,14 @@ namespace Satrabel.OpenContent.Components
 
             return result.ToString();
         }
+
         public static bool CheckOpenContentSettings(ModuleInfo module, OpenContentSettings settings)
         {
             bool result = true;
-            if (settings != null && settings.TemplateKey != null && settings.TemplateKey.TemplateDir != null && settings.TemplateKey.TemplateDir.FolderExists)
+            if (module != null && settings != null && settings.TemplateKey != null && settings.TemplateKey.TemplateDir != null && !settings.TemplateKey.TemplateDir.FolderExists)
             {
                 var url = DnnUrlUtils.NavigateUrl(module.TabID);
-                Log.Logger.ErrorFormat("Error loading OpenContent Template on page [{1}]. Reason: Template not found [{0}]", settings.TemplateDir.PhysicalFullDirectory, url);
+                Log.Logger.ErrorFormat("Error loading OpenContent Template on page [{1}] module [{2}-{3}]. Reason: Template not found [{0}]", settings.TemplateDir.PhysicalFullDirectory, url, module.ModuleID, module.ModuleTitle);
                 result = false;
             }
             return result;

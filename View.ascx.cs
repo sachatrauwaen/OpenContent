@@ -190,13 +190,16 @@ namespace Satrabel.OpenContent
             bool otherModuleWithFilterSettings = _settings.IsOtherModule && !string.IsNullOrEmpty(_settings.Query);
             if (_renderinfo.ShowInitControl && !otherModuleWithFilterSettings)
             {
-                /* thows error because _renderinfo.Module is null
-                var templatemissing = OpenContentUtils.CheckOpenContentSettings(_renderinfo.Module, _settings);
-                if (templatemissing)
+                if (_renderinfo.Module != null)
                 {
-                    //todo: show message on screen
+                    //Check if template hasn't been deleted
+                    var templatemissing = OpenContentUtils.CheckOpenContentSettings(_renderinfo.Module, _settings);
+                    if (templatemissing)
+                    {
+                        //todo: show message on screen
+                    }
                 }
-                */
+
                 // no data exist and ... -> show initialization
                 if (ModuleContext.EditMode)
                 {
