@@ -167,22 +167,17 @@ namespace Satrabel.OpenContent.Components.Alpaca
             {
                 foreach (string key in queryString)
                 {
-                    var indexConfig = IndexConfig != null && IndexConfig.Fields != null &&
-                                      IndexConfig.Fields.ContainsKey(key)
-                        ? IndexConfig.Fields[key]
-                        : null;
-
-                    if (indexConfig != null)
+                    if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.Any(f => f.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase)))
                     {
+                        var indexConfig = IndexConfig.Fields.Single(f => f.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase));
                         string val = queryString[key];
                         workFlowFilter.AddRule(new FilterRule()
                         {
-                            Field = key,
+                            Field = indexConfig.Key,
                             Value = new StringRuleValue(val),
                             FieldOperator = OperatorEnum.EQUAL
                         });
                     }
-                    
                 }
             }
             if (addWorkflowFilter)
