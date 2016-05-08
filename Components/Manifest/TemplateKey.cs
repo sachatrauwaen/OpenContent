@@ -14,13 +14,13 @@
         public string ShortKey { get; private set; }
         public string Extention { get; private set; }
 
-           public string FullKeyString()
+        public override string ToString()
         {
-               if (Extention == "manifest")
-               {
-                   return _folder + "/" + ShortKey;
-               }
-               return _folder + "/" + ShortKey + Extention;
+            if (Extention == "manifest")
+            {
+                return _folder + "/" + ShortKey;
+            }
+            return _folder + "/" + ShortKey + Extention;
         }
     }
 }

@@ -145,7 +145,7 @@ namespace Satrabel.OpenContent.Components
                                     templateName = templateName + " - " + template.Value.Title;
                                 }
                                 var item = new ListItem(templateCat + " : " + templateName, templateUri.FilePath);
-                                if (selectedTemplate != null && templateUri.FilePath.ToLowerInvariant() == selectedTemplate.Key.FullKeyString().ToLowerInvariant())
+                                if (selectedTemplate != null && templateUri.FilePath.ToLowerInvariant() == selectedTemplate.Key.ToString().ToLowerInvariant())
                                 {
                                     item.Selected = true;
                                 }
@@ -175,7 +175,7 @@ namespace Satrabel.OpenContent.Components
                             scriptName = scriptName.Replace("\\", " - ");
 
                         var item = new ListItem(templateCat + " : " + scriptName, templateUri.FilePath);
-                        if (selectedTemplate != null && templateUri.FilePath.ToLowerInvariant() == selectedTemplate.Key.FullKeyString().ToLowerInvariant())
+                        if (selectedTemplate != null && templateUri.FilePath.ToLowerInvariant() == selectedTemplate.Key.ToString().ToLowerInvariant())
                         {
                             item.Selected = true;
                         }
@@ -202,7 +202,7 @@ namespace Satrabel.OpenContent.Components
 
                         string scriptPath = FolderUri.ReverseMapPath(script);
                         var item = new ListItem(templateCat + " : " + scriptName, scriptPath);
-                        if (selectedTemplate != null && scriptPath.ToLowerInvariant() == selectedTemplate.Key.FullKeyString().ToLowerInvariant())
+                        if (selectedTemplate != null && scriptPath.ToLowerInvariant() == selectedTemplate.Key.ToString().ToLowerInvariant())
                         {
                             item.Selected = true;
                         }
@@ -244,7 +244,7 @@ namespace Satrabel.OpenContent.Components
 
                 string scriptPath = FolderUri.ReverseMapPath(dir);
                 var item = new ListItem(scriptName, scriptPath);
-                if (selectedTemplate != null && scriptPath.ToLowerInvariant() == selectedTemplate.Key.FullKeyString().ToLowerInvariant())
+                if (selectedTemplate != null && scriptPath.ToLowerInvariant() == selectedTemplate.Key.ToString().ToLowerInvariant())
                 {
                     item.Selected = true;
                 }
@@ -261,7 +261,7 @@ namespace Satrabel.OpenContent.Components
                     scriptName = templateCat + ":" + scriptName.Substring(scriptName.LastIndexOf("\\") + 1);
                     string scriptPath = FolderUri.ReverseMapPath(dir);
                     var item = new ListItem(scriptName, scriptPath);
-                    if (selectedTemplate != null && scriptPath.ToLowerInvariant() == selectedTemplate.Key.FullKeyString().ToLowerInvariant())
+                    if (selectedTemplate != null && scriptPath.ToLowerInvariant() == selectedTemplate.Key.ToString().ToLowerInvariant())
                     {
                         item.Selected = true;
                     }
@@ -273,13 +273,13 @@ namespace Satrabel.OpenContent.Components
 
         public static string CopyTemplate(int portalId, string fromFolder, string newTemplateName)
         {
-            string FolderName = "OpenContent/Templates/" + newTemplateName;
-            var folder = FolderManager.Instance.GetFolder(portalId, FolderName);
+            string folderName = "OpenContent/Templates/" + newTemplateName;
+            var folder = FolderManager.Instance.GetFolder(portalId, folderName);
             if (folder != null)
             {
                 throw new Exception("Template already exist " + folder.FolderPath);
             }
-            folder = FolderManager.Instance.AddFolder(portalId, FolderName);
+            folder = FolderManager.Instance.AddFolder(portalId, folderName);
             foreach (var item in Directory.GetFiles(fromFolder))
             {
                 File.Copy(item, folder.PhysicalPath + Path.GetFileName(item));
@@ -460,7 +460,7 @@ namespace Satrabel.OpenContent.Components
             if (module != null && settings != null && settings.TemplateKey != null && settings.TemplateKey.TemplateDir != null && !settings.TemplateKey.TemplateDir.FolderExists)
             {
                 var url = DnnUrlUtils.NavigateUrl(module.TabID);
-                Log.Logger.ErrorFormat("Error loading OpenContent Template on page [{1}] module [{2}-{3}]. Reason: Template not found [{0}]", settings.TemplateDir.PhysicalFullDirectory, url, module.ModuleID, module.ModuleTitle);
+                Log.Logger.ErrorFormat("Error loading OpenContent Template on page [{1}] module [{2}-{3}]. Reason: Template not found [{0}]", settings.TemplateKey.ToString(), url, module.ModuleID, module.ModuleTitle);
                 result = false;
             }
             return result;
