@@ -14,6 +14,7 @@ using Satrabel.OpenContent.Components.TemplateHelpers;
 using Satrabel.OpenContent.Components.Dynamic;
 using System.Collections;
 using DotNetNuke.Entities.Portals;
+using Satrabel.OpenContent.Components.Loging;
 
 
 namespace Satrabel.OpenContent.Components.Handlebars
@@ -62,25 +63,33 @@ namespace Satrabel.OpenContent.Components.Handlebars
         }
         public string Execute(Page page, FileUri sourceFilename, dynamic model)
         {
-            string source = File.ReadAllText(sourceFilename.PhysicalFilePath);
-            string sourceFolder = sourceFilename.UrlFolder.Replace("\\", "/") + "/";
-            var hbs = HandlebarsDotNet.Handlebars.Create();
-            RegisterDivideHelper(hbs);
-            RegisterMultiplyHelper(hbs);
-            RegisterEqualHelper(hbs);
-            RegisterFormatNumberHelper(hbs);
-            RegisterFormatDateTimeHelper(hbs);
-            RegisterImageUrlHelper(hbs);
-            RegisterScriptHelper(hbs);
-            RegisterHandlebarsHelper(hbs);
-            RegisterRegisterStylesheetHelper(hbs, page, sourceFolder);
-            RegisterRegisterScriptHelper(hbs, page, sourceFolder);
-            RegisterArrayIndexHelper(hbs);
-            RegisterArrayTranslateHelper(hbs);
-            RegisterArrayLookupHelper(hbs);
-            RegisterIfAndHelper(hbs);
-            RegisterEachPublishedHelper(hbs);
-            return CompileTemplate(hbs, source, model);
+            try
+            {
+                string source = File.ReadAllText(sourceFilename.PhysicalFilePath);
+                string sourceFolder = sourceFilename.UrlFolder.Replace("\\", "/") + "/";
+                var hbs = HandlebarsDotNet.Handlebars.Create();
+                RegisterDivideHelper(hbs);
+                RegisterMultiplyHelper(hbs);
+                RegisterEqualHelper(hbs);
+                RegisterFormatNumberHelper(hbs);
+                RegisterFormatDateTimeHelper(hbs);
+                RegisterImageUrlHelper(hbs);
+                RegisterScriptHelper(hbs);
+                RegisterHandlebarsHelper(hbs);
+                RegisterRegisterStylesheetHelper(hbs, page, sourceFolder);
+                RegisterRegisterScriptHelper(hbs, page, sourceFolder);
+                RegisterArrayIndexHelper(hbs);
+                RegisterArrayTranslateHelper(hbs);
+                RegisterArrayLookupHelper(hbs);
+                RegisterIfAndHelper(hbs);
+                RegisterEachPublishedHelper(hbs);
+                return CompileTemplate(hbs, source, model);
+            }
+            catch (Exception ex)
+            {
+                Log.Logger.Error(string.Format("Failed to render Handlebar template source:[{0}], model:[{1}]", sourceFilename, model), ex);
+                throw new TemplateException("Failed to render Handlebar template " + sourceFilename.FilePath, ex, model, sourceFilename.FilePath);
+            }
         }
         public string Execute(Page page, IModuleControl module, TemplateFiles files, string templateVirtualFolder, dynamic model)
         {
@@ -123,7 +132,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             catch (Exception ex)
             {
                 Log.Logger.Error(string.Format("Failed to render Handlebar template source:[{0}], model:[{1}]", source, model), ex);
-                throw new Exception("failed to render Handlebar template. See log for more details");
+                throw new TemplateException("Failed to render Handlebar template.", ex, model, source);
             }
         }
 
