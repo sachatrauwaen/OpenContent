@@ -59,7 +59,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             if (content != null)
             {
                 if (!string.IsNullOrEmpty(content.VersionsJson))
-                {                    
+                {
                     var ver = content.Versions.Single(v => v.CreatedOnDate == datetime);
                     if (ver != null)
                     {
@@ -82,7 +82,11 @@ namespace Satrabel.OpenContent.Components.Datasource
             {
                 content = ctrl.GetFirstContent(context.ModuleId); // single item
             }
-            if (content != null && content.ModuleId == context.ModuleId)
+            if (content == null) 
+            {
+                Log.Logger.WarnFormat("Item not shown because no content item found. Id [{0}]. Context ModuleId [{1}]", id, context.ModuleId);
+            }
+            else if (content.ModuleId == context.ModuleId)
             {
                 var dataItem = new DefaultDataItem
                 {
@@ -93,9 +97,13 @@ namespace Satrabel.OpenContent.Components.Datasource
                 };
                 return dataItem;
             }
+            else
+            {
+                Log.Logger.WarnFormat("Item not shown because module is not confired to show data of that module: This module {0}, Content from module {1} ", context.ModuleId, content.ModuleId);
+            }
             return null;
         }
-      
+
         public IDataItems GetAll(DataSourceContext context)
         {
             OpenContentController ctrl = new OpenContentController();

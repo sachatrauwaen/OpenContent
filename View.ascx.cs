@@ -463,6 +463,19 @@ namespace Satrabel.OpenContent
                 return actions;
             }
         }
+
+        private string RemoveHost(string editUrl)
+        {
+            //Dnn sometimes adds an incorrect alias.
+            //To fix this just remove the host. Give the browser a relative url
+
+            if (string.IsNullOrEmpty(editUrl)) return editUrl;
+            editUrl = editUrl.Replace("//", "");
+            var pos = editUrl.IndexOf("/");
+            if (pos == -1) return editUrl;
+            return editUrl.Remove(0, pos);
+        }
+
         #endregion
         private void InitTemplateInfo()
         {
