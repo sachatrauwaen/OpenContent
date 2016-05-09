@@ -33,7 +33,7 @@ namespace Satrabel.OpenContent.Components.Loging
                     FriendlyMessage += "<br/>" + lastExc.Message;
                 }
                 //FriendlyMessage += "<hr />";
-                return FriendlyMessage;
+                return FriendlyMessage.Replace("\n", "<br />");
             }
         }
         public List<string> MessageAsList

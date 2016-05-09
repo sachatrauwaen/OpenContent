@@ -278,13 +278,6 @@
     <Compile Include="EditSettings.ascx.designer.cs">
       <DependentUpon>EditSettings.ascx</DependentUpon>
     </Compile>
-    <Compile Include="LogInfo.ascx.cs">
-      <DependentUpon>LogInfo.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="LogInfo.ascx.designer.cs">
-      <DependentUpon>LogInfo.ascx</DependentUpon>
-    </Compile>
     <Compile Include="ShareTemplate.ascx.cs">
       <DependentUpon>ShareTemplate.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -708,7 +701,6 @@
     <Content Include="js\fontIconPicker\themes\inverted-theme\jquery.fonticonpicker.inverted.css" />
     <Content Include="js\fontIconPicker\themes\inverted-theme\jquery.fonticonpicker.inverted.min.css" />
     <Content Include="js\opencontent.js" />
-    <Content Include="LogInfo.ascx" />
     <Content Include="Providers\DataProviders\SqlDataProvider\01.04.01.SqlDataProvider" />
     <Content Include="alpaca\js\fields\dnn\dnnfields.js.bundle" />
     <Content Include="alpaca\js\fields\dnn\dnnfields.min.js.map">

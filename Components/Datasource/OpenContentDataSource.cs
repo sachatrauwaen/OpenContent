@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Satrabel.OpenContent.Components.Lucene.Config;
+using DotNetNuke.Entities.Portals;
+using Satrabel.OpenContent.Components.Loging;
 
 namespace Satrabel.OpenContent.Components.Datasource
 {
@@ -135,6 +137,16 @@ namespace Satrabel.OpenContent.Components.Datasource
             {
                 SelectQueryDefinition def = new SelectQueryDefinition();
                 def.Build(@select);
+                if (LogContext.IsLogActive)
+                {
+                    var logKey = "Lucene query";
+                    LogContext.Log(context.ModuleId, logKey, "Filter", def.Filter.ToString());
+                    LogContext.Log(context.ModuleId, logKey, "Query", def.Query.ToString());
+                    LogContext.Log(context.ModuleId, logKey, "Sort", def.Sort.ToString());
+                    LogContext.Log(context.ModuleId, logKey, "PageIndex", def.PageIndex);
+                    LogContext.Log(context.ModuleId, logKey, "PageSize", def.PageSize);
+                }
+
                 SearchResults docs = LuceneController.Instance.Search(context.ModuleId.ToString(), def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
                 int total = docs.TotalResults;
                 //Log.Logger.DebugFormat("OpenContent.JplistApiController.List() Searched for [{0}], found [{1}] items", select.ToJson(), total);

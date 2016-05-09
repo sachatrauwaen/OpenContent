@@ -11,7 +11,9 @@ namespace Satrabel.OpenContent
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-
+            
         }
+
+        public DotNetNuke.UI.Modules.ModuleInstanceContext ModuleContext { get; set; }
     }
 }

@@ -64,6 +64,9 @@ namespace Satrabel.OpenContent
                 }
                 string OpenContent_AutoAttach = PortalController.GetPortalSetting("OpenContent_AutoAttach", ModuleContext.PortalId, "False");
                 cbMLContent.Checked = bool.Parse(OpenContent_AutoAttach);
+                
+                string OpenContent_Logging = PortalController.GetPortalSetting("OpenContent_Logging", ModuleContext.PortalId, "none");
+                ddlLogging.SelectedValue = OpenContent_Logging;
             }
         }
         protected void cmdSave_Click(object sender, EventArgs e)
@@ -74,6 +77,8 @@ namespace Satrabel.OpenContent
                 PortalController.DeletePortalSetting(PortalId, "OpenContent_EditorsRoleId");
 
             PortalController.UpdatePortalSetting(PortalId, "OpenContent_AutoAttach", cbMLContent.Checked.ToString(), true);
+
+            PortalController.UpdatePortalSetting(PortalId, "OpenContent_Logging", ddlLogging.SelectedValue, true);
 
             Response.Redirect(Globals.NavigateURL(), true);
         }

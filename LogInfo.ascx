@@ -2,17 +2,8 @@
 <%@ Import Namespace="Newtonsoft.Json" %>
 
 <script type="text/javascript">
-    $(document).ready(function () {
-        var Logs = <%= JsonConvert.SerializeObject(Satrabel.OpenContent.Components.Loging.LogContext.Curent.Logs) %>;
-        if (window.console) {
-
-            for (var i in Logs) {
-                console.group(i);
-                for (var j = 0; j < Logs[i].length; j++) {
-                    console.log(Logs[i][j].Label, Logs[i][j].Message);
-                }
-                console.groupEnd();
-            }
-        }
-    });
+    //$(document).ready(function () {
+        var logs = <%= JsonConvert.SerializeObject(Satrabel.OpenContent.Components.Loging.LogContext.Curent.ModuleLogs(ModuleContext.ModuleId)) %>;
+        //$.fn.openContent.printLogs('Module <%= ModuleContext.ModuleId %> - <%= ModuleContext.Configuration.ModuleTitle %>', logs);
+    //});
 </script>
