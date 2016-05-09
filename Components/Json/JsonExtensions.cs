@@ -15,9 +15,22 @@ namespace Satrabel.OpenContent.Components.Json
     {
         public static bool IsEmpty(this JObject json)
         {
+            if (json == null) return true;
             return !json.HasValues;
         }
-
+        public static bool IsEmpty(this JToken json)
+        {
+            if (json == null) return true;
+            return string.IsNullOrEmpty(json.ToString());
+        }
+        public static bool Exists(this JObject json)
+        {
+            return !json.IsEmpty();
+        }
+        public static bool Exists(this JToken json)
+        {
+            return !json.IsEmpty();
+        }
         public static JToken ToJObject(this FileUri file)
         {
             try
