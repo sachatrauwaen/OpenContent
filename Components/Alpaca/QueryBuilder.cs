@@ -163,6 +163,17 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     }
                 }
             }
+            BuildQueryStringFilter(queryString, workFlowFilter);
+            if (addWorkflowFilter)
+            {
+                AddWorkflowFilter(workFlowFilter);
+            }
+            //Filter = Filter.FilterRules.Any() || Filter.FilterGroups.Any() > 0 ? q : null;
+            return this;
+        }
+
+        private void BuildQueryStringFilter(NameValueCollection queryString, FilterGroup workFlowFilter)
+        {
             if (queryString != null)
             {
                 foreach (string key in queryString)
@@ -180,15 +191,10 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     }
                 }
             }
-            if (addWorkflowFilter)
-            {
-                AddWorkflowFilter(workFlowFilter);
-            }
-            //Filter = Filter.FilterRules.Any() || Filter.FilterGroups.Any() > 0 ? q : null;
-            return this;
         }
         public QueryBuilder BuildFilter(bool addWorkflowFilter, NameValueCollection queryString = null)
         {
+            BuildQueryStringFilter(queryString, Select.Filter);
             if (addWorkflowFilter)
             {
                 AddWorkflowFilter(Select.Filter);
