@@ -56,7 +56,7 @@ namespace Satrabel.OpenContent.Components.Json
             }
             catch (Exception ex)
             {
-                string mess = string.Format("Error while parsing [{0}]", desc);
+                string mess = string.Format("Error while parsing text [{0}]", desc);
                 Log.Logger.Error(mess, ex);
                 throw new Exception(mess, ex);
             }
@@ -70,7 +70,7 @@ namespace Satrabel.OpenContent.Components.Json
             }
             catch (Exception ex)
             {
-                string mess = string.Format("Error while parsing [{0}]", desc);
+                string mess = string.Format("Error while parsing object [{0}]", desc);
                 Log.Logger.Error(mess, ex);
                 throw new Exception(mess, ex);
             }
