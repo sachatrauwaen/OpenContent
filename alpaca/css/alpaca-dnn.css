@@ -33,8 +33,8 @@
 }
 
 .alpaca-field-table table {
-    padding-left: 35%;
-    /*margin-left: -38px;*/
+    padding-left: 0;
+    margin-left: 0;
     width: 100%;
     display: none;
     margin-bottom: 18px;
@@ -49,9 +49,18 @@
 }
 
     .alpaca-field-table table tr td .alpaca-field .alpaca-control {
-        width: auto;
+        /*width: auto;*/
         margin: 0;
     }
+
+
+.alpaca-field-table table tr td .alpaca-array-actionbar {
+    position: relative;
+    right: auto;
+    top: auto;
+
+}
+
 
 .alpaca-field-table .form-group {
     margin-bottom: 0px;
@@ -613,40 +622,41 @@ select.oc-ddl-versions {
     background-image: none;
     border: 1px solid transparent;
     border-radius: 4px;
-
     color: #fff;
     background-color: #5cb85c;
     border-color: #4cae4c;
 }
-.fileinput-button input {
-    position: absolute;
-    top: 0;
-    right: 0;
-    margin: 0;
-    opacity: 0;
-    -ms-filter: 'alpha(opacity=0)';
-    font-size: 200px !important;
-    direction: ltr;
-    cursor: pointer;
-}
+
+    .fileinput-button input {
+        position: absolute;
+        top: 0;
+        right: 0;
+        margin: 0;
+        opacity: 0;
+        -ms-filter: 'alpha(opacity=0)';
+        font-size: 200px !important;
+        direction: ltr;
+        cursor: pointer;
+    }
+
 div.progress {
     padding: 10px;
     margin-left: 150px;
 }
 
 .progress div.bar {
-        height: 18px;
+    height: 18px;
     float: left;
     width: 0;
     font-size: 12px;
     line-height: 20px;
     color: #fff;
     text-align: center;
-     background-color: #aaa; 
-     -webkit-box-shadow: inset 0 -1px 0 rgba(0,0,0,.15); 
-     box-shadow: inset 0 -1px 0 rgba(0,0,0,.15); 
-     -webkit-transition: width .6s ease; 
+    background-color: #aaa;
+    -webkit-box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);
+    box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);
+    -webkit-transition: width .6s ease;
     -o-transition: width .6s ease;
-     transition: width .6s ease; 
-         border-radius: 4px;
+    transition: width .6s ease;
+    border-radius: 4px;
 }
