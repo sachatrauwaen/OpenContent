@@ -72,13 +72,13 @@ namespace Satrabel.OpenContent
         protected void cmdSave_Click(object sender, EventArgs e)
         {
             if (ddlRoles.SelectedIndex > 0)
-                PortalController.UpdatePortalSetting(PortalId, "OpenContent_EditorsRoleId", ddlRoles.SelectedValue, true);
+                PortalController.UpdatePortalSetting(ModuleContext.PortalId, "OpenContent_EditorsRoleId", ddlRoles.SelectedValue, true);
             else
-                PortalController.DeletePortalSetting(PortalId, "OpenContent_EditorsRoleId");
+                PortalController.DeletePortalSetting(ModuleContext.PortalId, "OpenContent_EditorsRoleId");
 
-            PortalController.UpdatePortalSetting(PortalId, "OpenContent_AutoAttach", cbMLContent.Checked.ToString(), true);
+            PortalController.UpdatePortalSetting(ModuleContext.PortalId, "OpenContent_AutoAttach", cbMLContent.Checked.ToString(), true);
 
-            PortalController.UpdatePortalSetting(PortalId, "OpenContent_Logging", ddlLogging.SelectedValue, true);
+            PortalController.UpdatePortalSetting(ModuleContext.PortalId, "OpenContent_Logging", ddlLogging.SelectedValue, true);
 
             Response.Redirect(Globals.NavigateURL(), true);
         }
