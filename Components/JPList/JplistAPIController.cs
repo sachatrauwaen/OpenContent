@@ -26,6 +26,7 @@ using Lucene.Net.Documents;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Datasource.search;
 using Satrabel.OpenContent.Components.Alpaca;
+using Satrabel.OpenContent.Components.Logging;
 using Satrabel.OpenContent.Components.Loging;
 
 
@@ -102,7 +103,7 @@ namespace Satrabel.OpenContent.Components.JPList
                         LogContext.Log(ActiveModule.ModuleID, logKey, "select", queryBuilder.Select);
                         LogContext.Log(ActiveModule.ModuleID, logKey, "result", dsItems);
                         LogContext.Log(ActiveModule.ModuleID, logKey, "model", model);
-                        model["Logs"] = JToken.FromObject(LogContext.Curent.ModuleLogs(ActiveModule.ModuleID));
+                        model["Logs"] = JToken.FromObject(LogContext.Current.ModuleLogs(ActiveModule.ModuleID));
                     }
                     var res = new ResultDTO()
                     {

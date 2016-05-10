@@ -47,6 +47,7 @@ using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Loging;
 using Newtonsoft.Json;
 using System.Text;
+using Satrabel.OpenContent.Components.Logging;
 
 #endregion
 
@@ -268,7 +269,7 @@ namespace Satrabel.OpenContent
                 StringBuilder logScript = new StringBuilder();
                 logScript.AppendLine("<script type=\"text/javascript\"> ");
                 logScript.AppendLine("$(document).ready(function () { ");
-                logScript.AppendLine("var logs = " + JsonConvert.SerializeObject(Satrabel.OpenContent.Components.Loging.LogContext.Curent.ModuleLogs(ModuleContext.ModuleId)) + "; ");
+                logScript.AppendLine("var logs = " + JsonConvert.SerializeObject(LogContext.Current.ModuleLogs(ModuleContext.ModuleId)) + "; ");
                 logScript.AppendLine("$.fn.openContent.printLogs('Module " + ModuleContext.ModuleId + " - " + ModuleContext.Configuration.ModuleTitle + "', logs);");
                 logScript.AppendLine("});");
                 logScript.AppendLine("</script>");
