@@ -947,7 +947,7 @@
     <Content Include="App_LocalResources\Edit.ascx.de-DE.resx" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_LocalResources\Builder.ascx.resx" />
+    <Content Include="App_LocalResources\AlpacaFormBuilder.ascx.resx" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

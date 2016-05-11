@@ -46,6 +46,9 @@
         <li>
             <asp:LinkButton ID="cmdCustom" resourcekey="cmdCustom" runat="server" CssClass="dnnSecondaryAction" />
         </li>
+        <li>
+            <asp:LinkButton ID="cmdBuilder" resourcekey="cmdBuilder" runat="server" CssClass="dnnSecondaryAction" />
+        </li>
     </ul>
 </div>
 <script type="text/javascript">

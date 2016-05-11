@@ -152,6 +152,7 @@ function getSchema(formdef) {
         }
         //return prop;
     };
+    if (formdef.formfields){
     $.each(formdef.formfields, function (index, value) {
         var oldSchema = null; // sch.properties[value.fieldname];
         var prop = baseProps(index, value, oldSchema);
@@ -160,6 +161,7 @@ function getSchema(formdef) {
         }
         schema.properties[value.fieldname] = prop;
     });
+    }
     return schema;
 }
 
@@ -247,12 +249,14 @@ function getOptions(formdef) {
     var options = {
         "fields": {}
     };
-    $.each(formdef.formfields, function (index, value) {
-        var oldOptions = opts && opts.fields ? opts.fields[value.fieldname] : null;
+    if (formdef.formfields) {
+        $.each(formdef.formfields, function (index, value) {
+            var oldOptions = opts && opts.fields ? opts.fields[value.fieldname] : null;
 
-        var field = baseFields(index, value, oldOptions);
-        options.fields[value.fieldname] = field;
-    });
+            var field = baseFields(index, value, oldOptions);
+            options.fields[value.fieldname] = field;
+        });
+    }
     return options;
 }
 

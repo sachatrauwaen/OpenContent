@@ -10,8 +10,6 @@ namespace Satrabel.OpenContent.Components.Manifest
         public string Title { get; set; }
         [JsonProperty(PropertyName = "developmentPath")]
         public bool DevelopmentPath { get; set; }
-        [JsonProperty(PropertyName = "formBuilder")]
-        public bool FormBuilder { get; set; }
         [JsonProperty(PropertyName = "editWitoutPostback")]
         public bool EditWitoutPostback { get; set; }
         [JsonProperty(PropertyName = "templates")]

@@ -43,9 +43,26 @@ namespace Satrabel.OpenContent
             cmdSaveClose.Click += cmdSaveAndClose_Click;
             cmdCancel.Click += cmdCancel_Click;
             cmdCustom.Click += cmdCustom_Click;
+            cmdBuilder.Click += cmdBuilder_Click;
             //var js = string.Format("javascript:return confirm('{0}');", Localization.GetSafeJSString(LocalizeString("OverwriteTemplate")));
             //cmdCustom.Attributes.Add("onClick", js);
             scriptList.SelectedIndexChanged += scriptList_SelectedIndexChanged;
+        }
+
+        private void cmdBuilder_Click(object sender, EventArgs e)
+        {
+            if (scriptList.SelectedValue.EndsWith("schema.json"))
+            {
+                FileUri template = ModuleContext.OpenContentSettings().Template.Uri();
+                string templateFolder = Path.GetDirectoryName(template.FilePath);
+                string scriptFile = templateFolder + "/" + scriptList.SelectedValue.Replace("schema.json", "builder.json");
+                string srcFile = Server.MapPath(scriptFile);
+                if (!File.Exists(srcFile))
+                {
+                    File.WriteAllText(srcFile, "{}");
+                }
+                Response.Redirect(Globals.NavigateURL(), true);
+            }
         }
 
         private void cmdCustom_Click(object sender, EventArgs e)
@@ -116,6 +133,7 @@ namespace Satrabel.OpenContent
                 txtSource.Text = "";
             }
             SetFileType(srcFile);
+            cmdBuilder.Visible = scriptList.SelectedValue.Equals("schema.json");
         }
         private void SetFileType(string filePath)
         {
@@ -186,7 +204,7 @@ namespace Satrabel.OpenContent
                 scriptList.Items.Add(new ListItem("Manifest", "manifest.json"));
                 scriptList.Items.Add(new ListItem("Stylesheet", template.Key.ShortKey + ".css"));
                 scriptList.Items.Add(new ListItem("Javascript", template.Key.ShortKey + ".js"));
-                if (settings.Manifest == null || !settings.Manifest.FormBuilder)
+                if (!OpenContentUtils.BuilderExist(settings.Template.ManifestDir))
                 {
                     scriptList.Items.Add(new ListItem("Schema", "schema.json"));
                     scriptList.Items.Add(new ListItem("Layout Options", "options.json"));
