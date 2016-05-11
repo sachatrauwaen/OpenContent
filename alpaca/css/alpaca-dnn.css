@@ -390,11 +390,12 @@ h2.dnnFormSectionHead a {
 /** ************************************** **/
 
 .twitter-typeahead {
-    float: left;
+ /*float: left;*/	
     width: 45%;
     max-width: 462px;
-    display: inline-block;
+    display: inline-block !important;
     margin: 0 !important;
+	height:34px;
 }
 
     .twitter-typeahead .tt-dropdown-menu {

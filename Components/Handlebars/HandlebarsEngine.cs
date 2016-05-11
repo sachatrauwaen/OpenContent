@@ -126,7 +126,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 var hbs = HandlebarsDotNet.Handlebars.Create();
                 if (files.PartialTemplates != null)
                 {
-                    foreach (var part in files.PartialTemplates)
+                    foreach (var part in files.PartialTemplates.Where(t=> t.Value.ClientSide == false))
                     {
                         RegisterTemplate(hbs, part.Key, templateVirtualFolder + "/" + part.Value.Template);
                     }

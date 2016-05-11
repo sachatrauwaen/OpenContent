@@ -501,7 +501,10 @@ namespace Satrabel.OpenContent
                     else
                     {
                         // detail template
-                        GetDetailData(_renderinfo, _settings);
+                        if (_renderinfo.Template.Detail != null)
+                        {
+                            GetDetailData(_renderinfo, _settings);
+                        }
                         if (_renderinfo.Template.Detail != null && !_renderinfo.ShowInitControl)
                         {
                             _renderinfo.Files = _renderinfo.Template.Detail;
@@ -952,7 +955,7 @@ namespace Satrabel.OpenContent
 
         private void RenderTemplateException(TemplateException ex)
         {
-            DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "<p><b>Template error</b></p>" + ex.MessageAsHtml , DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
+            DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "<p><b>Template error</b></p>" + ex.MessageAsHtml, DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
             //DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "<p><b>Template source</b></p>" + Server.HtmlEncode(ex.TemplateSource).Replace("\n", "<br/>"), DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.BlueInfo);
             //DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "<p><b>Template model</b></p> <pre>" + JsonConvert.SerializeObject(ex.TemplateModel, Formatting.Indented)/*.Replace("\n", "<br/>")*/+"</pre>", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.BlueInfo);
             //lErrorMessage.Text = ex.HtmlMessage;
