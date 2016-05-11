@@ -186,6 +186,9 @@
     <Compile Include="Components\FilesStatus.cs" />
     <Compile Include="Components\FileUploadController.cs" />
     <Compile Include="Components\JPList\JplistQueryBuilder.cs" />
+    <Compile Include="Components\Logging\ExceptionUtils.cs" />
+    <Compile Include="Components\Logging\LogContext.cs" />
+    <Compile Include="Components\Logging\TemplateException.cs" />
     <Compile Include="Components\Lucene\Config\FieldConfig.cs" />
     <Compile Include="Components\Lucene\Config\SelectQueryDefinition.cs" />
     <Compile Include="Components\Lucene\Config\QueryDefinition.cs" />
@@ -202,6 +205,7 @@
     <Compile Include="Components\OpenDataController.cs" />
     <Compile Include="Components\Razor\RazorEngine.cs" />
     <Compile Include="Components\Rss\RssApiController.cs" />
+    <Compile Include="Components\TemplateHelpers\Images\ImageFactory.cs" />
     <Compile Include="Components\TemplateHelpers\OpenGraph.cs" />
     <Compile Include="Components\TemplateHelpers\OtherExtentions.cs" />
     <Compile Include="Components\Manifest\TemplateManifest.cs" />

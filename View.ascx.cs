@@ -44,6 +44,10 @@ using DotNetNuke.Services.Installer.Log;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Alpaca;
+using Satrabel.OpenContent.Components.Loging;
+using Newtonsoft.Json;
+using System.Text;
+using Satrabel.OpenContent.Components.Logging;
 
 #endregion
 
@@ -190,16 +194,13 @@ namespace Satrabel.OpenContent
             bool otherModuleWithFilterSettings = _settings.IsOtherModule && !string.IsNullOrEmpty(_settings.Query);
             if (_renderinfo.ShowInitControl && !otherModuleWithFilterSettings)
             {
-                if (_renderinfo.Module != null)
+                /* thows error because _renderinfo.Module is null
+                var templatemissing = OpenContentUtils.CheckOpenContentSettings(_renderinfo.Module, _settings);
+                if (templatemissing)
                 {
-                    //Check if template hasn't been deleted
-                    var templatemissing = OpenContentUtils.CheckOpenContentSettings(_renderinfo.Module, _settings);
-                    if (templatemissing)
-                    {
-                        //todo: show message on screen
-                    }
+                    //todo: show message on screen
                 }
-
+                */
                 // no data exist and ... -> show initialization
                 if (ModuleContext.EditMode)
                 {
@@ -261,6 +262,18 @@ namespace Satrabel.OpenContent
 
                     }
                 }
+            }
+            if (LogContext.IsLogActive)
+            {
+                ClientResourceManager.RegisterScript(Page, Page.ResolveUrl("~/DesktopModules/OpenContent/js/opencontent.js"), FileOrder.Js.DefaultPriority);
+                StringBuilder logScript = new StringBuilder();
+                logScript.AppendLine("<script type=\"text/javascript\"> ");
+                logScript.AppendLine("$(document).ready(function () { ");
+                logScript.AppendLine("var logs = " + JsonConvert.SerializeObject(LogContext.Current.ModuleLogs(ModuleContext.ModuleId)) + "; ");
+                logScript.AppendLine("$.fn.openContent.printLogs('Module " + ModuleContext.ModuleId + " - " + ModuleContext.Configuration.ModuleTitle + "', logs);");
+                logScript.AppendLine("});");
+                logScript.AppendLine("</script>");
+                Page.ClientScript.RegisterClientScriptBlock(this.GetType(), "logScript" + ModuleContext.ModuleId, logScript.ToString());
             }
         }
         private void RenderInitForm()
@@ -624,6 +637,7 @@ namespace Satrabel.OpenContent
             };
 
             var dsItem = ds.Get(dsContext, null);
+
             if (dsItem != null)
             {
                 info.SetData(dsItem, dsItem.Data, settings.Data);
@@ -666,6 +680,12 @@ namespace Satrabel.OpenContent
                         queryBuilder.BuildFilter(addWorkFlow, Request.QueryString);
                     }
                     dataList = ds.GetAll(dsContext, queryBuilder.Select).Items;
+                    if (LogContext.IsLogActive)
+                    {
+                        var logKey = "Query";
+                        LogContext.Log(ModuleContext.ModuleId, logKey, "select", queryBuilder.Select);
+                        LogContext.Log(ModuleContext.ModuleId, logKey, "result", dataList);
+                    }
                     //Log.Logger.DebugFormat("Query returned [{0}] results.", total);
                     if (!dataList.Any())
                     {
@@ -681,6 +701,11 @@ namespace Satrabel.OpenContent
                 {
                     //dataList = ctrl.GetContents(info.ModuleId).ToList();
                     dataList = ds.GetAll(dsContext, null).Items;
+                    if (LogContext.IsLogActive)
+                    {
+                        var logKey = "Get all data of module";
+                        LogContext.Log(ModuleContext.ModuleId, logKey, "result", dataList);
+                    }
                 }
                 if (dataList.Any())
                 {
@@ -700,6 +725,12 @@ namespace Satrabel.OpenContent
                 Config = settings.Manifest.DataSourceConfig
             };
             var dsItem = ds.Get(dsContext, info.DetailItemId);
+            if (LogContext.IsLogActive)
+            {
+                var logKey = "Get detail data";
+                LogContext.Log(ModuleContext.ModuleId, logKey, "result", dsItem);
+            }
+
             if (dsItem != null)
             {
                 info.SetData(dsItem, dsItem.Data, settings.Data);
@@ -802,6 +833,7 @@ namespace Satrabel.OpenContent
                         ModelFactory mf = new ModelFactory(_renderinfo.Data, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, ModuleContext.Configuration, ModuleContext.PortalSettings, MainTabId, _settings.ModuleId);
                         dynamic model = mf.GetModelAsDynamic();
 
+
                         if (!string.IsNullOrEmpty(_renderinfo.Template.Manifest.DetailMetaTitle))
                         {
                             HandlebarsEngine hbEngine = new HandlebarsEngine();
@@ -832,7 +864,7 @@ namespace Satrabel.OpenContent
             }
             catch (Exception ex)
             {
-                Exceptions.ProcessModuleLoadException(this, ex);
+                ExceptionUtils.ProcessModuleLoadException(this, ex);
             }
             return "";
         }
@@ -862,6 +894,13 @@ namespace Satrabel.OpenContent
                             mf = new ModelFactory(_renderinfo.Data, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, ModuleContext.Configuration, ModuleContext.PortalSettings, MainTabId, _settings.ModuleId);
                         }
                         dynamic model = mf.GetModelAsDynamic();
+                        if (LogContext.IsLogActive)
+                        {
+                            var logKey = "Render single item template";
+                            LogContext.Log(ModuleContext.ModuleId, logKey, "template", template.FilePath);
+                            LogContext.Log(ModuleContext.ModuleId, logKey, "model", model);
+                        }
+
                         if (template.Extension != ".hbs")
                         {
                             return ExecuteRazor(template, model);
@@ -882,9 +921,14 @@ namespace Satrabel.OpenContent
                     return "";
                 }
             }
+            catch (TemplateException ex)
+            {
+                RenderTemplateException(ex);
+            }
             catch (Exception ex)
             {
-                Exceptions.ProcessModuleLoadException(this, ex);
+                ExceptionUtils.ProcessModuleLoadException(this, ex);
+                //Exceptions.ProcessModuleLoadException(this, ex);
 
             }
             return "";
@@ -907,11 +951,35 @@ namespace Satrabel.OpenContent
                     }
                 }
             }
+            catch (TemplateException ex)
+            {
+                RenderTemplateException(ex);
+            }
             catch (Exception ex)
             {
-                Exceptions.ProcessModuleLoadException(this, ex);
+                ExceptionUtils.ProcessModuleLoadException(this, ex);
+                //Exceptions.ProcessModuleLoadException(this, ex);
             }
             return "";
+        }
+
+        private void RenderTemplateException(TemplateException ex)
+        {
+            DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "<p><b>Template error</b></p>" + ex.MessageAsHtml , DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
+            //DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "<p><b>Template source</b></p>" + Server.HtmlEncode(ex.TemplateSource).Replace("\n", "<br/>"), DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.BlueInfo);
+            //DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "<p><b>Template model</b></p> <pre>" + JsonConvert.SerializeObject(ex.TemplateModel, Formatting.Indented)/*.Replace("\n", "<br/>")*/+"</pre>", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.BlueInfo);
+            //lErrorMessage.Text = ex.HtmlMessage;
+            //lErrorModel.Text = "<pre>" + JsonConvert.SerializeObject(ex.TemplateModel, Formatting.Indented)/*.Replace("\n", "<br/>")*/+"</pre>";
+            if (LogContext.IsLogActive)
+            {
+                var logKey = "Error in tempate";
+                LogContext.Log(ModuleContext.ModuleId, logKey, "Error", ex.MessageAsList);
+                LogContext.Log(ModuleContext.ModuleId, logKey, "Model", ex.TemplateModel);
+                LogContext.Log(ModuleContext.ModuleId, logKey, "Source", ex.TemplateSource);
+                //LogContext.Log(logKey, "StackTrace", ex.StackTrace);
+                //DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "<p>More info is availale on de browser console (F12)</p>", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.BlueInfo);
+            }
+            //Exceptions.ProcessModuleLoadException(ex.MessageAsHtml, this, ex);
         }
         private string ExecuteRazor(FileUri template, dynamic model)
         {
@@ -925,10 +993,26 @@ namespace Satrabel.OpenContent
             }
             try
             {
-                var razorEngine = new RazorEngine("~/" + template.FilePath, ModuleContext, LocalResourceFile);
                 var writer = new StringWriter();
-                RazorRender(razorEngine.Webpage, writer, model);
+                try
+                {
+                    var razorEngine = new RazorEngine("~/" + template.FilePath, ModuleContext, LocalResourceFile);
+                    RazorRender(razorEngine.Webpage, writer, model);
+                }
+                catch (Exception ex)
+                {
+                    Log.Logger.Error(string.Format("Failed to render Razor template source:[{0}], model:[{1}]", template.FilePath, model), ex);
+
+                    string stack = string.Join("\n", ex.StackTrace.Split('\n').Where(s => s.Contains("\\Portals\\") && s.Contains("in")).Select(s => s.Substring(s.IndexOf("in"))).ToArray());
+
+                    throw new TemplateException("Failed to render Razor template " + template.FilePath + "\n" + stack, ex, model, template.FilePath);
+                }
                 return writer.ToString();
+            }
+            catch (TemplateException ex)
+            {
+                RenderTemplateException(ex);
+                return "";
             }
             catch (Exception ex)
             {
@@ -938,6 +1022,12 @@ namespace Satrabel.OpenContent
         }
         private string ExecuteTemplate(string templateVirtualFolder, TemplateFiles files, FileUri template, dynamic model)
         {
+            if (LogContext.IsLogActive)
+            {
+                var logKey = "Render template";
+                LogContext.Log(ModuleContext.ModuleId, logKey, "template", template.FilePath);
+                LogContext.Log(ModuleContext.ModuleId, logKey, "model", model);
+            }
             if (template.Extension != ".hbs")
             {
                 return ExecuteRazor(template, model);

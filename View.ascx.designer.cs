@@ -13,7 +13,7 @@ namespace Satrabel.OpenContent {
     public partial class View {
         
         /// <summary>
-        /// TemplateInit control.
+        /// TemplateInitControl control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
