@@ -191,7 +191,7 @@ namespace Satrabel.OpenContent
                 var templateManifest = new FileUri(ddlTemplate.SelectedValue).ToTemplateManifest();
                 settingsNeeded = templateManifest.SettingsNeeded();
 
-                templateDefined = templateDefined && (!ddlTemplate.Visible || (settings.Template.Key.FullKeyString() == ddlTemplate.SelectedValue));
+                templateDefined = templateDefined && (!ddlTemplate.Visible || (settings.Template.Key.ToString() == ddlTemplate.SelectedValue));
                 settingsDefined = settingsDefined || !settingsNeeded;
             }
             else // new template

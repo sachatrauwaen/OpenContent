@@ -424,7 +424,7 @@ namespace Satrabel.OpenContent.Components
             // additional data
             if (ManifestFiles != null && ManifestFiles.AdditionalDataInTemplate && Manifest.AdditionalData != null)
             {
-                var AdditionalData = model["AdditionalData"] = new JObject();
+                var additionalData = model["AdditionalData"] = new JObject();
                 foreach (var item in Manifest.AdditionalData)
                 {
                     var dataManifest = Manifest.AdditionalData[item.Key];
@@ -441,7 +441,7 @@ namespace Satrabel.OpenContent.Components
                             JsonUtils.SimplifyJson(dataJson, GetCurrentCultureCode());
                         }
                     }
-                    AdditionalData[item.Value.ModelKey ?? item.Key] = dataJson;
+                    additionalData[item.Value.ModelKey ?? item.Key] = dataJson;
                 }
             }
             // settings

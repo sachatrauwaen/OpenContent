@@ -33,12 +33,12 @@ namespace Satrabel.OpenContent
             base.OnInit(e);
             hlCancel.NavigateUrl = Globals.NavigateURL();
             cmdSave.NavigateUrl = Globals.NavigateURL();
-            OpenContentSettings settings = this.OpenContentSettings();
+            //OpenContentSettings settings = this.OpenContentSettings();
             //AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, settings.Template.Uri().FolderPath, "query");
             AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, "", "");
             alpaca.RegisterAll();
-            string ItemId = null;//Request.QueryString["id"] == null ? -1 : int.Parse(Request.QueryString["id"]);
-            AlpacaContext = new AlpacaContext(PortalId, ModuleId, ItemId, ScopeWrapper.ClientID, hlCancel.ClientID, cmdSave.ClientID, null, null);
+            string itemId = null;//Request.QueryString["id"] == null ? -1 : int.Parse(Request.QueryString["id"]);
+            AlpacaContext = new AlpacaContext(PortalId, ModuleId, itemId, ScopeWrapper.ClientID, hlCancel.ClientID, cmdSave.ClientID, null, null);
         }
         protected void bIndex_Click(object sender, EventArgs e)
         {

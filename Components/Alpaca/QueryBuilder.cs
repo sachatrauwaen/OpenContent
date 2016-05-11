@@ -73,6 +73,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                                       IndexConfig.Fields.ContainsKey(item.Name)
                         ? IndexConfig.Fields[item.Name]
                         : null;
+
                     if (item.Value is JValue) // text
                     {
                         var val = item.Value.ToString();
@@ -159,6 +160,23 @@ namespace Satrabel.OpenContent.Components.Alpaca
                                 FieldOperator = OperatorEnum.BETWEEN
                             });
                         }
+                    }
+                }
+            }
+            if (queryString != null)
+            {
+                foreach (string key in queryString)
+                {
+                    if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.Any(f => f.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase)))
+                    {
+                        var indexConfig = IndexConfig.Fields.Single(f => f.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase));
+                        string val = queryString[key];
+                        workFlowFilter.AddRule(new FilterRule()
+                        {
+                            Field = indexConfig.Key,
+                            Value = new StringRuleValue(val),
+                            FieldOperator = OperatorEnum.EQUAL
+                        });
                     }
                 }
             }

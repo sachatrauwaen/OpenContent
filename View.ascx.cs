@@ -190,10 +190,14 @@ namespace Satrabel.OpenContent
             bool otherModuleWithFilterSettings = _settings.IsOtherModule && !string.IsNullOrEmpty(_settings.Query);
             if (_renderinfo.ShowInitControl && !otherModuleWithFilterSettings)
             {
-                var templatemissing = OpenContentUtils.CheckOpenContentSettings(_renderinfo.Module, _settings);
-                if (templatemissing)
+                if (_renderinfo.Module != null)
                 {
-                    //todo: show message on screen
+                    //Check if template hasn't been deleted
+                    var templatemissing = OpenContentUtils.CheckOpenContentSettings(_renderinfo.Module, _settings);
+                    if (templatemissing)
+                    {
+                        //todo: show message on screen
+                    }
                 }
 
                 // no data exist and ... -> show initialization
@@ -459,6 +463,19 @@ namespace Satrabel.OpenContent
                 return actions;
             }
         }
+
+        private string RemoveHost(string editUrl)
+        {
+            //Dnn sometimes adds an incorrect alias.
+            //To fix this just remove the host. Give the browser a relative url
+
+            if (string.IsNullOrEmpty(editUrl)) return editUrl;
+            editUrl = editUrl.Replace("//", "");
+            var pos = editUrl.IndexOf("/");
+            if (pos == -1) return editUrl;
+            return editUrl.Remove(0, pos);
+        }
+
         #endregion
         private void InitTemplateInfo()
         {
@@ -642,11 +659,11 @@ namespace Satrabel.OpenContent
                     if (!string.IsNullOrEmpty(settings.Query))
                     {
                         var query = JObject.Parse(settings.Query);
-                        queryBuilder.Build(query, addWorkFlow);
+                        queryBuilder.Build(query, addWorkFlow, Request.QueryString);
                     }
                     else
                     {
-                        queryBuilder.BuildFilter(addWorkFlow);
+                        queryBuilder.BuildFilter(addWorkFlow, Request.QueryString);
                     }
                     dataList = ds.GetAll(dsContext, queryBuilder.Select).Items;
                     //Log.Logger.DebugFormat("Query returned [{0}] results.", total);
