@@ -138,12 +138,15 @@
     <Compile Include="AddEdit.ascx.designer.cs">
       <DependentUpon>AddEdit.ascx</DependentUpon>
     </Compile>
-    <Compile Include="Builder.ascx.cs">
-      <DependentUpon>Builder.ascx</DependentUpon>
+    <Compile Include="Components\Logging\ExceptionUtils.cs" />
+    <Compile Include="Components\Logging\LogContext.cs" />
+    <Compile Include="Components\Logging\TemplateException.cs" />
+    <Compile Include="AlpacaFormBuilder.ascx.cs">
+      <DependentUpon>AlpacaFormBuilder.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Builder.ascx.designer.cs">
-      <DependentUpon>Builder.ascx</DependentUpon>
+    <Compile Include="AlpacaFormBuilder.ascx.designer.cs">
+      <DependentUpon>AlpacaFormBuilder.ascx</DependentUpon>
     </Compile>
     <Compile Include="Components\AdditionalDataController.cs" />
     <Compile Include="Components\AdditionalDataInfo.cs" />
@@ -186,9 +189,6 @@
     <Compile Include="Components\FilesStatus.cs" />
     <Compile Include="Components\FileUploadController.cs" />
     <Compile Include="Components\JPList\JplistQueryBuilder.cs" />
-    <Compile Include="Components\Logging\ExceptionUtils.cs" />
-    <Compile Include="Components\Logging\LogContext.cs" />
-    <Compile Include="Components\Logging\TemplateException.cs" />
     <Compile Include="Components\Lucene\Config\FieldConfig.cs" />
     <Compile Include="Components\Lucene\Config\SelectQueryDefinition.cs" />
     <Compile Include="Components\Lucene\Config\QueryDefinition.cs" />
@@ -205,7 +205,6 @@
     <Compile Include="Components\OpenDataController.cs" />
     <Compile Include="Components\Razor\RazorEngine.cs" />
     <Compile Include="Components\Rss\RssApiController.cs" />
-    <Compile Include="Components\TemplateHelpers\Images\ImageFactory.cs" />
     <Compile Include="Components\TemplateHelpers\OpenGraph.cs" />
     <Compile Include="Components\TemplateHelpers\OtherExtentions.cs" />
     <Compile Include="Components\Manifest\TemplateManifest.cs" />
@@ -404,7 +403,7 @@
     <Content Include="alpaca\templates\dnn-edit\dnntemplates.min.html">
       <DependentUpon>dnntemplates.html</DependentUpon>
     </Content>
-    <Content Include="Builder.ascx" />
+    <Content Include="AlpacaFormBuilder.ascx" />
     <Content Include="css\edit.css" />
     <Content Include="css\font-awesome\css\font-awesome.css" />
     <Content Include="css\font-awesome\css\font-awesome.min.css" />

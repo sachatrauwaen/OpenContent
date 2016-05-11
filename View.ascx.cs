@@ -409,7 +409,7 @@ namespace Satrabel.OpenContent
                         ModuleActionType.ContentOptions,
                         "",
                         "~/DesktopModules/OpenContent/images/edittemplate.png",
-                        ModuleContext.EditUrl("Builder"),
+                        ModuleContext.EditUrl("FormBuilder"),
                         false,
                         SecurityAccessLevel.Host,
                         true,

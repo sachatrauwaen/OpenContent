@@ -10,7 +10,7 @@
 namespace Satrabel.OpenContent {
     
     
-    public partial class Builder {
+    public partial class AlpacaFormBuilder {
         
         /// <summary>
         /// ScopeWrapper control.

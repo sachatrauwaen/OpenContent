@@ -22,7 +22,7 @@ using DotNetNuke.Web.Client;
 
 namespace Satrabel.OpenContent
 {
-    public partial class Builder : PortalModuleBase
+    public partial class AlpacaFormBuilder : PortalModuleBase
     {
         protected override void OnInit(EventArgs e)
         {
@@ -30,7 +30,6 @@ namespace Satrabel.OpenContent
             hlCancel.NavigateUrl = Globals.NavigateURL();
             cmdSave.NavigateUrl = Globals.NavigateURL();
             OpenContentSettings settings = this.OpenContentSettings();
-
             AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, "" /*settings.Template.Uri().FolderPath*/, "builder");
             alpaca.RegisterAll(false);
             //string ItemId = Request.QueryString["id"];
@@ -40,7 +39,7 @@ namespace Satrabel.OpenContent
             //ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/bootstrap/js/bootstrap.min.js", FileOrder.Js.DefaultPriority);
             //ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/bootstrap/css/bootstrap.min.css", FileOrder.Css.DefaultPriority);
         }
-        public AlpacaContext AlpacaContext { get; private set ; }
+        //public AlpacaContext AlpacaContext { get; private set ; }
 
 
     }
