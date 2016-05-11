@@ -1,11 +1,10 @@
-﻿using DotNetNuke.Entities.Portals;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Web;
+using DotNetNuke.Entities.Portals;
+using Newtonsoft.Json;
 
-namespace Satrabel.OpenContent.Components.Loging
+namespace Satrabel.OpenContent.Components.Logging
 {
     public class LogContext
     {
@@ -16,21 +15,21 @@ namespace Satrabel.OpenContent.Components.Loging
         }
 
         //private static LogContext Context = null;
-        public static LogContext Curent
+        public static LogContext Current
         {
             get
             {
-                LogContext Context;
+                LogContext context;
                 if (HttpContext.Current.Items.Contains("OpenContentLogs"))
                 {
-                    Context = (LogContext)HttpContext.Current.Items["OpenContentLogs"];
+                    context = (LogContext)HttpContext.Current.Items["OpenContentLogs"];
                 }
                 else
                 {
-                    Context = new LogContext();
-                    HttpContext.Current.Items.Add("OpenContentLogs", Context);
+                    context = new LogContext();
+                    HttpContext.Current.Items.Add("OpenContentLogs", context);
                 }
-                return Context;
+                return context;
             }
         }
         public static bool IsLogActive
@@ -38,8 +37,8 @@ namespace Satrabel.OpenContent.Components.Loging
             get
             {
                 var ps = PortalSettings.Current;
-                string OpenContent_Logging = PortalController.GetPortalSetting("OpenContent_Logging", ps.PortalId, "none");
-                return OpenContent_Logging == "allways" || (OpenContent_Logging == "host" && ps.UserInfo.IsSuperUser);
+                string openContentLogging = PortalController.GetPortalSetting("OpenContent_Logging", ps.PortalId, "none");
+                return openContentLogging == "allways" || (openContentLogging == "host" && ps.UserInfo.IsSuperUser);
             }
         }
         public static void Log(int moduleId, string key, string label, object message)
@@ -47,9 +46,9 @@ namespace Satrabel.OpenContent.Components.Loging
             {
                 ModuleLogInfo module;
                 List<LogInfo> messages;
-                if (Curent.Logs.ContainsKey(moduleId))
+                if (Current.Logs.ContainsKey(moduleId))
                 {
-                    module = Curent.Logs[moduleId];
+                    module = Current.Logs[moduleId];
                     if (module.Logs.ContainsKey(key))
                     {
                         messages = module.Logs[key];
@@ -63,7 +62,7 @@ namespace Satrabel.OpenContent.Components.Loging
                 else
                 {
                     module = new ModuleLogInfo();
-                    Curent.Logs.Add(moduleId, module);
+                    Current.Logs.Add(moduleId, module);
                     messages = new List<LogInfo>();
                     module.Logs.Add(key, messages);
                 }
