@@ -75,9 +75,18 @@ namespace Satrabel.OpenContent.Components.Datasource
         {
             OpenContentController ctrl = new OpenContentController();
             OpenContentInfo content;
-            if (!string.IsNullOrEmpty(id) && id != "-1")
+
+            if (!string.IsNullOrEmpty(id) && id != "-1" )
             {
-                content = ctrl.GetContent(int.Parse(id));
+                int idint;
+                if (int.TryParse(id, out idint)){
+                    content = ctrl.GetContent(idint);
+                }
+                else
+                {
+                    // the id is not corresponding to this module
+                    return null;
+                }
             }
             else
             {
