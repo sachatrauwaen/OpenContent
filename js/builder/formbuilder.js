@@ -408,7 +408,7 @@ var fieldOptions =
     "fieldtype": {
         "optionLabels": ["Text", "Checkbox", "Multi checkbox", "Dropdown list (select)", "Radio buttons", "Text area", "Email address", "Date", "Number",
                             "Image (upload & autocomplete)", "File (upload & autocomplete)", "Url (autocomplete for pages)", "Font Awesome Icons", "Guid (auto id)", "Address (autocomplete & geocode)",
-                            "List (array)", "Table (array)", "relation (Additional Data)",
+                            "List (array)", "Table (array)", "Relation (Additional Data)",
                             "Wysihtml", "CK Editor", "Image Gallery", "Documents"]
     },
     "fieldoptions": {
