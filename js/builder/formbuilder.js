@@ -91,7 +91,9 @@ function getSchema(formdef) {
         "wysihtml": "string",
         "ckeditor": "string",
         "address": "object",
-        "relation": "string"
+        "relation": "string",
+        "gallery": "array",
+        "documents": "array"
     };
 
     var baseProps = function (index, value, oldSchema) {
@@ -301,7 +303,7 @@ var fieldSchema =
             "enum": ["text", "checkbox", "multicheckbox", "select", "radio", "textarea", "email", "date", "number",
                         "image", "file", "url", "icon", "guid", "address",
                         "array", "table", /*"relation",*/
-                        "wysihtml", "ckeditor"]
+                        "wysihtml", "ckeditor", "gallery", "documents"]
         },
         "fieldname": {
             "type": "string",
@@ -388,7 +390,7 @@ var fieldOptions =
         "optionLabels": ["Text", "Checkbox", "Multi checkbox", "Dropdown list (select)", "Radio buttons", "Text area", "Email address", "Date", "Number",
                             "Image (upload & autocomplete)", "File (upload & autocomplete)", "Url (autocomplete for pages)", "Font Awesome Icons", "Guid (auto id)", "Address (autocomplete & geocode)",
                             "List (array)", "Table (array)", /*"relation (Additional Data)",*/
-                            "Wysihtml", "CK Editor"]
+                            "Wysihtml", "CK Editor", "Image Gallery", "Documents"]
     },
     "fieldoptions": {
         "type": "table",

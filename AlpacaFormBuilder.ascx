@@ -1,10 +1,7 @@
 <%@ Control Language="C#" AutoEventWireup="false" Inherits="Satrabel.OpenContent.AlpacaFormBuilder" CodeBehind="AlpacaFormBuilder.ascx.cs" %>
 <%@ Import Namespace="Newtonsoft.Json" %>
 
-<asp:Panel ID="ScopeWrapper" runat="server" CssClass="form-builder">
-
-
-
+<asp:Panel ID="ScopeWrapper" runat="server" CssClass="dnnForm form-builder">
     <div class="">
         <div class="fb-container">
             <div class="fb-left">
@@ -17,12 +14,12 @@
             </div>
             <div style="clear: both;"></div>
         </div>
-        <div class="row" style="display: none;">
-            <div class="col-sm-6">
+        <div class="fb-container" _style="display: none;">
+            <div class="fb-left">
                 schema<br />
                 <textarea class="form-control" rows="10" id="schema"></textarea>
             </div>
-            <div class="col-sm-6">
+            <div class="fb-right">
                 options<br />
                 <textarea class="form-control" rows="10" id="options"></textarea>
             </div>
