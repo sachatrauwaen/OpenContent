@@ -349,7 +349,7 @@ namespace Satrabel.OpenContent
             {
 
                 //var tabpath = tab.TabPath.Replace("//", "/").TrimEnd(tab.TabName).Trim('/');
-                var li = new ListItem(tab.Key.Replace("//", " / ").TrimStart(" / "), tab.Value.ToString());
+                var li = new ListItem(string.Format("{1} [{0}]", tab.Value, tab.Key.Replace("//", " / ").TrimStart(" / ")), tab.Value.ToString());
                 if (!tab.Key.StartsWith("//Admin//"))
                 {
                     listItems.Add(li);
