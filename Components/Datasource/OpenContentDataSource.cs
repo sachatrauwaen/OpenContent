@@ -74,27 +74,26 @@ namespace Satrabel.OpenContent.Components.Datasource
         public IDataItem Get(DataSourceContext context, string id)
         {
             OpenContentController ctrl = new OpenContentController();
-            OpenContentInfo content;
+            OpenContentInfo content = null;
 
-            if (!string.IsNullOrEmpty(id) && id != "-1" )
+            if (!string.IsNullOrEmpty(id) && id != "-1")
             {
+                LogContext.Log(context.ModuleId, "Get DataItem", "Request", string.Format("{0}.Get() with id {1}", Name, id));
                 int idint;
-                if (int.TryParse(id, out idint)){
-                    content = ctrl.GetContent(idint);
-                }
-                else
+                if (int.TryParse(id, out idint))
                 {
-                    // the id is not corresponding to this module
-                    return null;
+                    content = ctrl.GetContent(idint);
                 }
             }
             else
             {
+                LogContext.Log(context.ModuleId, "Get DataItem", "Request", string.Format("{0}.Get() with id {1}. Returning first item of module.", Name, id));
                 content = ctrl.GetFirstContent(context.ModuleId); // single item
             }
-            if (content == null) 
+            if (content == null)
             {
                 Log.Logger.WarnFormat("Item not shown because no content item found. Id [{0}]. Context ModuleId [{1}]", id, context.ModuleId);
+                LogContext.Log(context.ModuleId, "Get DataItem", "Result", "not item found with id " + id);
             }
             else if (content.ModuleId == context.ModuleId)
             {
@@ -105,11 +104,13 @@ namespace Satrabel.OpenContent.Components.Datasource
                     CreatedByUserId = content.CreatedByUserId,
                     Item = content
                 };
+                LogContext.Log(context.ModuleId, "Get DataItem", "Result", dataItem);
                 return dataItem;
             }
             else
             {
                 Log.Logger.WarnFormat("Item not shown because module is not confired to show data of that module: This module {0}, Content from module {1} ", context.ModuleId, content.ModuleId);
+                LogContext.Log(context.ModuleId, "Get DataItem", "Result", string.Format("no item returned as incompatible module ids {0}-{1}", content.ModuleId, context.ModuleId));
             }
             return null;
         }
