@@ -41,7 +41,7 @@ namespace Satrabel.OpenContent.Components.Logging
                 return openContentLogging == "allways" || (openContentLogging == "host" && ps.UserInfo.IsSuperUser);
             }
         }
-        public static void Log(int moduleId, string key, string label, object message)
+        public static void Log(int moduleId, string title, string label, object message)
         {
             {
                 ModuleLogInfo module;
@@ -49,14 +49,14 @@ namespace Satrabel.OpenContent.Components.Logging
                 if (Current.Logs.ContainsKey(moduleId))
                 {
                     module = Current.Logs[moduleId];
-                    if (module.Logs.ContainsKey(key))
+                    if (module.Logs.ContainsKey(title))
                     {
-                        messages = module.Logs[key];
+                        messages = module.Logs[title];
                     }
                     else
                     {
                         messages = new List<LogInfo>();
-                        module.Logs.Add(key, messages);
+                        module.Logs.Add(title, messages);
                     }
                 }
                 else
@@ -64,7 +64,7 @@ namespace Satrabel.OpenContent.Components.Logging
                     module = new ModuleLogInfo();
                     Current.Logs.Add(moduleId, module);
                     messages = new List<LogInfo>();
-                    module.Logs.Add(key, messages);
+                    module.Logs.Add(title, messages);
                 }
                 messages.Add(new LogInfo()
                 {

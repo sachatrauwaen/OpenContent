@@ -309,7 +309,6 @@ namespace Satrabel.OpenContent
                         continue;
                     }
 
-
                     var tabpath = tab.TabPath.Replace("//", "/").TrimEnd(tab.TabName).Trim('/');
                     ListItem li;
                     if (string.IsNullOrEmpty(tabpath))
@@ -341,19 +340,15 @@ namespace Satrabel.OpenContent
             ddlDetailPage.Items.Clear();
             ddlDetailPage.Items.Add(new ListItem("Main Module Page", "-1"));
             var listItems = new List<ListItem>();
-            var tc = new TabController();
-            var tabs = TabController.GetTabPathDictionary(ModuleContext.PortalId, DnnUtils.GetCurrentCultureCode());
+            Dictionary<string, int> tabs = TabController.GetTabPathDictionary(ModuleContext.PortalId, DnnUtils.GetCurrentCultureCode());
 
-            //var tabs = tc.GetTabsByPortal(ModuleContext.PortalId);
             foreach (var tab in tabs)
             {
-
-                //var tabpath = tab.TabPath.Replace("//", "/").TrimEnd(tab.TabName).Trim('/');
                 var li = new ListItem(string.Format("{1} [{0}]", tab.Value, tab.Key.Replace("//", " / ").TrimStart(" / ")), tab.Value.ToString());
                 if (!tab.Key.StartsWith("//Admin//"))
                 {
                     listItems.Add(li);
-                    if (tab.Value == tabId)
+                    if (tab.Value == currentDetailTabId)
                     {
                         li.Selected = true;
                     }

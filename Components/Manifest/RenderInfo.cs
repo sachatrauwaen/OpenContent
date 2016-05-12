@@ -15,7 +15,6 @@ namespace Satrabel.OpenContent.Components.Manifest
             DataJson = "";
             OutputString = "";
             Template = null;
-            //Manifest = null;
             Files = null;
         }
 

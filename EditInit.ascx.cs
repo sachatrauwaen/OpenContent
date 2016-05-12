@@ -31,32 +31,31 @@ namespace Satrabel.OpenContent
         protected override void OnInit(EventArgs e)
         {
             base.OnInit(e);
-            var _settings = ModuleContext.OpenContentSettings();
-            RenderInfo _renderinfo = new RenderInfo();
-            _renderinfo.Template = _settings.Template;
+            var settings = ModuleContext.OpenContentSettings();
+            RenderInfo renderinfo = new RenderInfo();
+            renderinfo.Template = settings.Template;
 
-            if (_settings.TabId > 0 && _settings.ModuleId > 0) // other module
+            if (settings.TabId > 0 && settings.ModuleId > 0) // other module
             {
                 ModuleController mc = new ModuleController();
-                _renderinfo.SetDataSourceModule(_settings.TabId, _settings.ModuleId,
-                    mc.GetModule(_renderinfo.ModuleId, _renderinfo.TabId, false), null, "");
+                renderinfo.SetDataSourceModule(settings.TabId, settings.ModuleId,
+                    mc.GetModule(renderinfo.ModuleId, renderinfo.TabId, false), null, "");
             }
             else // this module
             {
-                _renderinfo.SetDataSourceModule(_settings.TabId, ModuleContext.ModuleId, ModuleContext.Configuration,
-                    null, "");
+                renderinfo.SetDataSourceModule(settings.TabId, ModuleContext.ModuleId, ModuleContext.Configuration, null, "");
             }
 
-            OpenContent.TemplateInit ti = (TemplateInit) TemplateInitControl;
+            OpenContent.TemplateInit ti = (TemplateInit)TemplateInitControl;
             ti.ModuleContext = ModuleContext;
-            ti.Settings = _settings;
-            ti.Renderinfo = _renderinfo;
+            ti.Settings = settings;
+            ti.Renderinfo = renderinfo;
             ti.RenderOnlySaveButton = true;
         }
 
         protected override void OnPreRender(EventArgs e)
         {
-             OpenContent.TemplateInit ti = (TemplateInit) TemplateInitControl;
+            OpenContent.TemplateInit ti = (TemplateInit)TemplateInitControl;
             ti.RenderInitForm();
         }
     }
