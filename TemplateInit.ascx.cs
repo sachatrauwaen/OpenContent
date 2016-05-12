@@ -245,7 +245,7 @@ namespace Satrabel.OpenContent
                 rblDataSource.SelectedIndex = (Settings.TabId > 0 && Settings.ModuleId > 0 ? 1 : 0);
                 BindOtherModules(Settings.TabId, Settings.ModuleId);
                 BindTemplates(Settings.Template, (Renderinfo.IsOtherModule ? Renderinfo.Template.Uri() : null));
-                BindDetailPage(Settings.DetailTabId);
+                BindDetailPage(Settings.DetailTabId, Settings.TabId);
             }
             if (rblDataSource.SelectedIndex == 1) // other module
             {
@@ -332,13 +332,20 @@ namespace Satrabel.OpenContent
                 ddlDataSource.Items.Add(li);
             }
         }
-        private void BindDetailPage(int tabId)
+        private void BindDetailPage(int currentDetailTabId, int otherModuleTabId)
         {
 
             ActivateDetailPage();
 
             ddlDetailPage.Items.Clear();
-            ddlDetailPage.Items.Add(new ListItem("Main Module Page", "-1"));
+            ddlDetailPage.Items.Add(new ListItem(string.Format("Main Module Page [{0}]", otherModuleTabId), "-1"));
+            if (otherModuleTabId>0)
+            {
+                //todo: add li with "CurrentPage"
+            }
+            
+            //todo: wegfilteren van redirected tabs
+
             var listItems = new List<ListItem>();
             Dictionary<string, int> tabs = TabController.GetTabPathDictionary(ModuleContext.PortalId, DnnUtils.GetCurrentCultureCode());
 
