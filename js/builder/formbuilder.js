@@ -183,9 +183,9 @@ var baseFields = function (index, value, oldOptions) {
         field.dataService = {
             "action": "LookupData",
             "data": {
-                "dataKey": "Categories",                
-                "valueField": "Id",
-                "textField": "Title"
+                "dataKey": value.relationoptions.datakey,
+                "valueField": value.relationoptions.valuefield,
+                "textField": value.relationoptions.textfield
             }
         };
     }
@@ -302,7 +302,7 @@ var fieldSchema =
             "title": "Type",
             "enum": ["text", "checkbox", "multicheckbox", "select", "radio", "textarea", "email", "date", "number",
                         "image", "file", "url", "icon", "guid", "address",
-                        "array", "table", /*"relation",*/
+                        "array", "table", "relation",
                         "wysihtml", "ckeditor", "gallery", "documents"]
         },
         "fieldname": {
@@ -362,6 +362,25 @@ var fieldSchema =
             "type": "array",
             "title": "List Fields",
             "dependencies": "fieldtype"
+        },
+        "relationoptions": {
+            "type": "object",
+            "title": "Options",
+            "dependencies": "fieldtype",
+            "properties": {
+                "datakey": {
+                    "type": "string",
+                    "title": "Add. Data Key"
+                },
+                "valuefield": {
+                    "type": "string",
+                    "title": "Value Field"
+                },
+                "textfield": {
+                    "type": "string",
+                    "title": "Text Field"
+                },
+            }
         }
     }
 };
@@ -389,7 +408,7 @@ var fieldOptions =
     "fieldtype": {
         "optionLabels": ["Text", "Checkbox", "Multi checkbox", "Dropdown list (select)", "Radio buttons", "Text area", "Email address", "Date", "Number",
                             "Image (upload & autocomplete)", "File (upload & autocomplete)", "Url (autocomplete for pages)", "Font Awesome Icons", "Guid (auto id)", "Address (autocomplete & geocode)",
-                            "List (array)", "Table (array)", /*"relation (Additional Data)",*/
+                            "List (array)", "Table (array)", "relation (Additional Data)",
                             "Wysihtml", "CK Editor", "Image Gallery", "Documents"]
     },
     "fieldoptions": {
@@ -414,6 +433,12 @@ var fieldOptions =
         },
         "dependencies": {
             "fieldtype": ["array", "table"]
+        }
+    },
+    "relationoptions": {
+        "collapsible": true,
+        "dependencies": {
+            "fieldtype": ["relation"]
         }
     }
 };

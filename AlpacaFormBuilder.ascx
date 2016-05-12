@@ -14,7 +14,7 @@
             </div>
             <div style="clear: both;"></div>
         </div>
-        <div class="fb-container" _style="display: none;">
+        <div class="fb-container" style="display: none;">
             <div class="fb-left">
                 schema<br />
                 <textarea class="form-control" rows="10" id="schema"></textarea>
