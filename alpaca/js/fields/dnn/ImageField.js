@@ -92,6 +92,7 @@
         },
         handlePostRender: function (callback) {
             var self = this;
+            
 
             //var el = this.control;
             var el = this.getControlEl();
@@ -99,6 +100,7 @@
             if (self.options.uploadhidden) {
                 $(this.control.get(0)).find('input[type=file]').hide();
             } else {
+                if (self.sf){
                 $(this.control.get(0)).find('input[type=file]').fileupload({
                     dataType: 'json',
                     url: self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
@@ -130,6 +132,7 @@
                         }
                     }
                 }).data('loaded', true);
+                }
             }
             $(el).change(function () {
 
@@ -151,7 +154,7 @@
         applyTypeAhead: function () {
             var self = this;
 
-            if (self.control.typeahead && self.options.typeahead && !Alpaca.isEmpty(self.options.typeahead)) {
+            if (self.control.typeahead && self.options.typeahead && !Alpaca.isEmpty(self.options.typeahead) && self.sf) {
 
                 var tConfig = self.options.typeahead.config;
                 if (!tConfig) {

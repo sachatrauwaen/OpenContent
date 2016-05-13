@@ -19880,7 +19880,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
                         // check array value
                         //if (conditionalDependencies[dependentOnPropertyId] && $.inArray(dependentOnData, conditionalDependencies[dependentOnPropertyId]) == -1)
-                        if (Alpaca.anyEquality(dependentOnData, conditionalData))
+                        if (!Alpaca.anyEquality(dependentOnData, conditionalData))
                         {
                             valid = false;
                         }

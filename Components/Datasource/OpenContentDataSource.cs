@@ -10,6 +10,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Satrabel.OpenContent.Components.Lucene.Config;
+using DotNetNuke.Entities.Portals;
+using Satrabel.OpenContent.Components.Logging;
+using Satrabel.OpenContent.Components.Loging;
 
 namespace Satrabel.OpenContent.Components.Datasource
 {
@@ -71,18 +74,26 @@ namespace Satrabel.OpenContent.Components.Datasource
         public IDataItem Get(DataSourceContext context, string id)
         {
             OpenContentController ctrl = new OpenContentController();
-            OpenContentInfo content;
+            OpenContentInfo content = null;
+
             if (!string.IsNullOrEmpty(id) && id != "-1")
             {
-                content = ctrl.GetContent(int.Parse(id));
+                LogContext.Log(context.ModuleId, "Get DataItem", "Request", string.Format("{0}.Get() with id {1}", Name, id));
+                int idint;
+                if (int.TryParse(id, out idint))
+                {
+                    content = ctrl.GetContent(idint);
+                }
             }
             else
             {
+                LogContext.Log(context.ModuleId, "Get DataItem", "Request", string.Format("{0}.Get() with id {1}. Returning first item of module.", Name, id));
                 content = ctrl.GetFirstContent(context.ModuleId); // single item
             }
-            if (content == null) 
+            if (content == null)
             {
                 Log.Logger.WarnFormat("Item not shown because no content item found. Id [{0}]. Context ModuleId [{1}]", id, context.ModuleId);
+                LogContext.Log(context.ModuleId, "Get DataItem", "Result", "not item found with id " + id);
             }
             else if (content.ModuleId == context.ModuleId)
             {
@@ -93,11 +104,13 @@ namespace Satrabel.OpenContent.Components.Datasource
                     CreatedByUserId = content.CreatedByUserId,
                     Item = content
                 };
+                LogContext.Log(context.ModuleId, "Get DataItem", "Result", dataItem);
                 return dataItem;
             }
             else
             {
                 Log.Logger.WarnFormat("Item not shown because module is not confired to show data of that module: This module {0}, Content from module {1} ", context.ModuleId, content.ModuleId);
+                LogContext.Log(context.ModuleId, "Get DataItem", "Result", string.Format("no item returned as incompatible module ids {0}-{1}", content.ModuleId, context.ModuleId));
             }
             return null;
         }
@@ -143,6 +156,16 @@ namespace Satrabel.OpenContent.Components.Datasource
             {
                 SelectQueryDefinition def = new SelectQueryDefinition();
                 def.Build(@select);
+                if (LogContext.IsLogActive)
+                {
+                    var logKey = "Lucene query";
+                    LogContext.Log(context.ModuleId, logKey, "Filter", def.Filter.ToString());
+                    LogContext.Log(context.ModuleId, logKey, "Query", def.Query.ToString());
+                    LogContext.Log(context.ModuleId, logKey, "Sort", def.Sort.ToString());
+                    LogContext.Log(context.ModuleId, logKey, "PageIndex", def.PageIndex);
+                    LogContext.Log(context.ModuleId, logKey, "PageSize", def.PageSize);
+                }
+
                 SearchResults docs = LuceneController.Instance.Search(context.ModuleId.ToString(), def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
                 int total = docs.TotalResults;
                 //Log.Logger.DebugFormat("OpenContent.JplistApiController.List() Searched for [{0}], found [{1}] items", select.ToJson(), total);

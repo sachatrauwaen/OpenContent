@@ -19,7 +19,7 @@
         setValue: function (value) {
             // be sure to call into base method
             this.base(value);
-            this.loadIcons();
+            //this.loadIcons();
         },
         /**
          * @see Alpaca.Fields.TextField#getTitle
@@ -51,7 +51,7 @@
                 emptyIcon: true,
                 hasSearch: true
             });
-
+            this.loadIcons();
             callback();
         },
         loadIcons: function () {

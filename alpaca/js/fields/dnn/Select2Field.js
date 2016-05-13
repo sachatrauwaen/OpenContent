@@ -143,30 +143,20 @@
         beforeRenderControl: function(model, callback)
         {
             var self = this;
-
             this.base(model, function() {
-
-                
-
-                if (self.options.dataService && self.options.dataService) {
-
+                if (self.options.dataService && self.options.dataService && self.sf) {
                     self.selectOptions = [];
-
                     var completionFunction = function () {
                         self.schema.enum = [];
                         self.options.optionLabels = [];
-
                         for (var i = 0; i < self.selectOptions.length; i++) {
                             self.schema.enum.push(self.selectOptions[i].value);
                             self.options.optionLabels.push(self.selectOptions[i].text);
                         }
-
                         // push back to model
                         model.selectOptions = self.selectOptions;
-
                         callback();
                     };
-
                     var postData = "{}";
                     if (self.options.dataService.data){
                         postData = self.options.dataService.data; //JSON.stringify(self.options.dataService.data);
@@ -205,7 +195,6 @@
                                             "text": value
                                         });
                                     });
-
                                     completionFunction();
                                 }
                                 else if (Alpaca.isArray(ds)) {
@@ -218,13 +207,11 @@
                                             "text": value.text
                                         });
                                     });
-
                                     completionFunction();
                                 }
                             }
                         },
                         "error": function (jqXHR, textStatus, errorThrown) {
-
                             self.errorCallback({
                                 "message": "Unable to load data from uri : " + self.options.dataSource,
                                 "stage": "DATASOURCE_LOADING_ERROR",
@@ -240,18 +227,14 @@
                 else {
                     callback();
                 }
-
             });
         },
 
         prepareControlModel: function(callback)
         {
             var self = this;
-
             this.base(function(model) {
-
                 model.selectOptions = self.selectOptions;
-
                 callback(model);
             });
         },
@@ -310,9 +293,7 @@
                     }
                     */
                 }
-
                 callback();
-
             });
         },
 
@@ -324,20 +305,16 @@
         _validateEnum: function()
         {
             var _this = this;
-
             if (this.schema["enum"])
             {
                 var val = this.data;
-
                 if (!this.isRequired() && Alpaca.isValEmpty(val))
                 {
                     return true;
                 }
-
                 if (this.options.multiple)
                 {
                     var isValid = true;
-
                     if (!val)
                     {
                         val = [];
@@ -347,17 +324,13 @@
                     {
                         val = [val];
                     }
-
                     $.each(val, function(i,v) {
-
                         if ($.inArray(v, _this.schema["enum"]) <= -1)
                         {
                             isValid = false;
                             return false;
                         }
-
                     });
-
                     return isValid;
                 }
                 else

@@ -450,7 +450,7 @@
             this.base(model, function () {
                 var container = self.getContainerEl();
                 //$(container).addClass("alpaca-MultiUpload");
-                if (!self.isDisplayOnly()) {
+                if (!self.isDisplayOnly() ) {
                    
                     $('<div style="clear:both;"></div>').prependTo(container);
                     var progressBar = $('<div class="progress" ><div class="bar" style="width: 0%;"></div></div>').prependTo(container);
@@ -459,6 +459,7 @@
                     this.wrapper = $("<span class='dnnInputFileWrapper dnnSecondaryAction' style='margin-bottom:10px;;'></span>");
                     this.wrapper.text("Upload muliple files");
                     mapButton.wrap(this.wrapper);
+                    if (self.sf){
                     mapButton.fileupload({
                         dataType: 'json',
                         url: self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
@@ -496,6 +497,7 @@
                             }
                         }
                     }).data('loaded', true);
+                    }
                 }
                 callback();
             });
@@ -1460,46 +1462,47 @@
 
             //var el = this.control;
             var el = this.getControlEl();
+            if (self.sf) {
 
-
-            $(this.control.get(0)).find('input[type=file]').fileupload({
-                dataType: 'json',
-                url: self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
-                maxFileSize: 25000000,
-                formData: { uploadfolder: self.options.uploadfolder },
-                beforeSend: self.sf.setModuleHeaders,
-                add: function (e, data) {
-                    //data.context = $(opts.progressContextSelector);
-                    //data.context.find($(opts.progressFileNameSelector)).html(data.files[0].name);
-                    //data.context.show('fade');
-                    data.submit();
-                },
-                progress: function (e, data) {
-                    if (data.context) {
-                        var progress = parseInt(data.loaded / data.total * 100, 10);
-                        data.context.find(opts.progressBarSelector).css('width', progress + '%').find('span').html(progress + '%');
+                $(this.control.get(0)).find('input[type=file]').fileupload({
+                    dataType: 'json',
+                    url: self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
+                    maxFileSize: 25000000,
+                    formData: { uploadfolder: self.options.uploadfolder },
+                    beforeSend: self.sf.setModuleHeaders,
+                    add: function (e, data) {
+                        //data.context = $(opts.progressContextSelector);
+                        //data.context.find($(opts.progressFileNameSelector)).html(data.files[0].name);
+                        //data.context.show('fade');
+                        data.submit();
+                    },
+                    progress: function (e, data) {
+                        if (data.context) {
+                            var progress = parseInt(data.loaded / data.total * 100, 10);
+                            data.context.find(opts.progressBarSelector).css('width', progress + '%').find('span').html(progress + '%');
+                        }
+                    },
+                    done: function (e, data) {
+                        if (data.result) {
+                            $.each(data.result, function (index, file) {
+                                self.setValue(file.url);
+                                $(el).change();
+                                //$(el).change();
+                                //$(e.target).parent().find('input[type=text]').val(file.url);
+                                //el.val(file.url);
+                                //$(e.target).parent().find('.alpaca-image-display img').attr('src', file.url);
+                            });
+                        }
                     }
-                },
-                done: function (e, data) {
-                    if (data.result) {
-                        $.each(data.result, function (index, file) {
-                            self.setValue(file.url);
-                            $(el).change();
-                            //$(el).change();
-                            //$(e.target).parent().find('input[type=text]').val(file.url);
-                            //el.val(file.url);
-                            //$(e.target).parent().find('.alpaca-image-display img').attr('src', file.url);
-                        });
-                    }
-                }
-            }).data('loaded', true);
+                }).data('loaded', true);
+            }
 
             callback();
         },
         applyTypeAhead: function () {
             var self = this;
 
-            if (self.control.typeahead && self.options.typeahead && !Alpaca.isEmpty(self.options.typeahead)) {
+            if (self.control.typeahead && self.options.typeahead && !Alpaca.isEmpty(self.options.typeahead)  && self.sf) {
 
                 var tConfig = self.options.typeahead.config;
                 if (!tConfig) {
@@ -2670,6 +2673,7 @@
         },
         handlePostRender: function (callback) {
             var self = this;
+            
 
             //var el = this.control;
             var el = this.getControlEl();
@@ -2677,6 +2681,7 @@
             if (self.options.uploadhidden) {
                 $(this.control.get(0)).find('input[type=file]').hide();
             } else {
+                if (self.sf){
                 $(this.control.get(0)).find('input[type=file]').fileupload({
                     dataType: 'json',
                     url: self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
@@ -2708,6 +2713,7 @@
                         }
                     }
                 }).data('loaded', true);
+                }
             }
             $(el).change(function () {
 
@@ -2729,7 +2735,7 @@
         applyTypeAhead: function () {
             var self = this;
 
-            if (self.control.typeahead && self.options.typeahead && !Alpaca.isEmpty(self.options.typeahead)) {
+            if (self.control.typeahead && self.options.typeahead && !Alpaca.isEmpty(self.options.typeahead) && self.sf) {
 
                 var tConfig = self.options.typeahead.config;
                 if (!tConfig) {
@@ -3375,30 +3381,20 @@
         beforeRenderControl: function(model, callback)
         {
             var self = this;
-
             this.base(model, function() {
-
-                
-
-                if (self.options.dataService && self.options.dataService) {
-
+                if (self.options.dataService && self.options.dataService && self.sf) {
                     self.selectOptions = [];
-
                     var completionFunction = function () {
                         self.schema.enum = [];
                         self.options.optionLabels = [];
-
                         for (var i = 0; i < self.selectOptions.length; i++) {
                             self.schema.enum.push(self.selectOptions[i].value);
                             self.options.optionLabels.push(self.selectOptions[i].text);
                         }
-
                         // push back to model
                         model.selectOptions = self.selectOptions;
-
                         callback();
                     };
-
                     var postData = "{}";
                     if (self.options.dataService.data){
                         postData = self.options.dataService.data; //JSON.stringify(self.options.dataService.data);
@@ -3437,7 +3433,6 @@
                                             "text": value
                                         });
                                     });
-
                                     completionFunction();
                                 }
                                 else if (Alpaca.isArray(ds)) {
@@ -3450,13 +3445,11 @@
                                             "text": value.text
                                         });
                                     });
-
                                     completionFunction();
                                 }
                             }
                         },
                         "error": function (jqXHR, textStatus, errorThrown) {
-
                             self.errorCallback({
                                 "message": "Unable to load data from uri : " + self.options.dataSource,
                                 "stage": "DATASOURCE_LOADING_ERROR",
@@ -3472,18 +3465,14 @@
                 else {
                     callback();
                 }
-
             });
         },
 
         prepareControlModel: function(callback)
         {
             var self = this;
-
             this.base(function(model) {
-
                 model.selectOptions = self.selectOptions;
-
                 callback(model);
             });
         },
@@ -3542,9 +3531,7 @@
                     }
                     */
                 }
-
                 callback();
-
             });
         },
 
@@ -3556,20 +3543,16 @@
         _validateEnum: function()
         {
             var _this = this;
-
             if (this.schema["enum"])
             {
                 var val = this.data;
-
                 if (!this.isRequired() && Alpaca.isValEmpty(val))
                 {
                     return true;
                 }
-
                 if (this.options.multiple)
                 {
                     var isValid = true;
-
                     if (!val)
                     {
                         val = [];
@@ -3579,17 +3562,13 @@
                     {
                         val = [val];
                     }
-
                     $.each(val, function(i,v) {
-
                         if ($.inArray(v, _this.schema["enum"]) <= -1)
                         {
                             isValid = false;
                             return false;
                         }
-
                     });
-
                     return isValid;
                 }
                 else
@@ -6334,40 +6313,43 @@
         },
         applyTypeAhead: function () {
             var self = this;
-            var tConfig = tConfig = {};
-            var tDatasets = tDatasets = {};
-            if (!tDatasets.name) {
-                tDatasets.name = self.getId();
-            }
 
-            var tEvents = tEvents = {};
-                
-            var bloodHoundConfig = {
-                datumTokenizer: function (d) {
-                    return Bloodhound.tokenizers.whitespace(d.value);
-                },
-                queryTokenizer: Bloodhound.tokenizers.whitespace
-            };
+            if (self.control.typeahead && self.options.typeahead && !Alpaca.isEmpty(self.options.typeahead) && self.sf) {
 
-            /*
-            if (tDatasets.type === "prefetch") {
-                bloodHoundConfig.prefetch = {
-                    url: tDatasets.source,
-                    ajax: {
-                        //url: sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
-                        beforeSend: connector.servicesFramework.setModuleHeaders,
+                var tConfig = tConfig = {};
+                var tDatasets = tDatasets = {};
+                if (!tDatasets.name) {
+                    tDatasets.name = self.getId();
+                }
 
-                    }
+                var tEvents = tEvents = {};
+
+                var bloodHoundConfig = {
+                    datumTokenizer: function (d) {
+                        return Bloodhound.tokenizers.whitespace(d.value);
+                    },
+                    queryTokenizer: Bloodhound.tokenizers.whitespace
                 };
 
-                if (tDatasets.filter) {
-                    bloodHoundConfig.prefetch.filter = tDatasets.filter;
+                /*
+                if (tDatasets.type === "prefetch") {
+                    bloodHoundConfig.prefetch = {
+                        url: tDatasets.source,
+                        ajax: {
+                            //url: sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
+                            beforeSend: connector.servicesFramework.setModuleHeaders,
+    
+                        }
+                    };
+    
+                    if (tDatasets.filter) {
+                        bloodHoundConfig.prefetch.filter = tDatasets.filter;
+                    }
                 }
-            }
-            */
-                    
+                */
+
                 bloodHoundConfig.remote = {
-                    url: self.sf.getServiceRoot('OpenContent') + "DnnEntitiesAPI/Tabs?q=%QUERY&l="+self.culture,
+                    url: self.sf.getServiceRoot('OpenContent') + "DnnEntitiesAPI/Tabs?q=%QUERY&l=" + self.culture,
                     ajax: {
                         beforeSend: self.sf.setModuleHeaders,
                     }
@@ -6380,75 +6362,75 @@
                 if (tDatasets.replace) {
                     bloodHoundConfig.remote.replace = tDatasets.replace;
                 }
-                    
 
-            var engine = new Bloodhound(bloodHoundConfig);
-            engine.initialize();
-            tDatasets.source = engine.ttAdapter();
-                
-            tDatasets.templates = {
-                "empty": "Nothing found...",
-                "suggestion": "{{name}}"
-            };
 
-            // compile templates
-            if (tDatasets.templates) {
-                for (var k in tDatasets.templates) {
-                    var template = tDatasets.templates[k];
-                    if (typeof (template) === "string") {
-                        tDatasets.templates[k] = Handlebars.compile(template);
+                var engine = new Bloodhound(bloodHoundConfig);
+                engine.initialize();
+                tDatasets.source = engine.ttAdapter();
+
+                tDatasets.templates = {
+                    "empty": "Nothing found...",
+                    "suggestion": "{{name}}"
+                };
+
+                // compile templates
+                if (tDatasets.templates) {
+                    for (var k in tDatasets.templates) {
+                        var template = tDatasets.templates[k];
+                        if (typeof (template) === "string") {
+                            tDatasets.templates[k] = Handlebars.compile(template);
+                        }
                     }
                 }
+
+                // process typeahead
+                $(self.control).typeahead(tConfig, tDatasets);
+
+                // listen for "autocompleted" event and set the value of the field
+                $(self.control).on("typeahead:autocompleted", function (event, datum) {
+                    self.setValue(datum.value);
+                    $(self.control).change();
+                });
+
+                // listen for "selected" event and set the value of the field
+                $(self.control).on("typeahead:selected", function (event, datum) {
+                    self.setValue(datum.value);
+                    $(self.control).change();
+                });
+
+                // custom events
+                if (tEvents) {
+                    if (tEvents.autocompleted) {
+                        $(self.control).on("typeahead:autocompleted", function (event, datum) {
+                            tEvents.autocompleted(event, datum);
+                        });
+                    }
+                    if (tEvents.selected) {
+                        $(self.control).on("typeahead:selected", function (event, datum) {
+                            tEvents.selected(event, datum);
+                        });
+                    }
+                }
+
+                // when the input value changes, change the query in typeahead
+                // this is to keep the typeahead control sync'd with the actual dom value
+                // only do this if the query doesn't already match
+                var fi = $(self.control);
+                $(self.control).change(function () {
+
+                    var value = $(this).val();
+
+                    var newValue = $(fi).typeahead('val');
+                    if (newValue !== value) {
+                        $(fi).typeahead('val', newValue);
+                    }
+
+                });
+
+                // some UI cleanup (we don't want typeahead to restyle)
+                $(self.field).find("span.twitter-typeahead").first().css("display", "block"); // SPAN to behave more like DIV, next line
+                $(self.field).find("span.twitter-typeahead input.tt-input").first().css("background-color", "");
             }
-
-            // process typeahead
-            $(self.control).typeahead(tConfig, tDatasets);
-
-            // listen for "autocompleted" event and set the value of the field
-            $(self.control).on("typeahead:autocompleted", function (event, datum) {
-                self.setValue(datum.value);
-                $(self.control).change();
-            });
-
-            // listen for "selected" event and set the value of the field
-            $(self.control).on("typeahead:selected", function (event, datum) {
-                self.setValue(datum.value);
-                $(self.control).change();
-            });
-
-            // custom events
-            if (tEvents) {
-                if (tEvents.autocompleted) {
-                    $(self.control).on("typeahead:autocompleted", function (event, datum) {
-                        tEvents.autocompleted(event, datum);
-                    });
-                }
-                if (tEvents.selected) {
-                    $(self.control).on("typeahead:selected", function (event, datum) {
-                        tEvents.selected(event, datum);
-                    });
-                }
-            }
-
-            // when the input value changes, change the query in typeahead
-            // this is to keep the typeahead control sync'd with the actual dom value
-            // only do this if the query doesn't already match
-            var fi = $(self.control);
-            $(self.control).change(function () {
-
-                var value = $(this).val();
-
-                var newValue = $(fi).typeahead('val');
-                if (newValue !== value) {
-                    $(fi).typeahead('val', newValue);
-                }
-
-            });
-
-            // some UI cleanup (we don't want typeahead to restyle)
-            $(self.field).find("span.twitter-typeahead").first().css("display", "block"); // SPAN to behave more like DIV, next line
-            $(self.field).find("span.twitter-typeahead input.tt-input").first().css("background-color", "");
-            
         }
     });
     Alpaca.registerFieldClass("url", Alpaca.Fields.DnnUrlField);
@@ -7645,7 +7627,7 @@
         setValue: function (value) {
             // be sure to call into base method
             this.base(value);
-            this.loadIcons();
+            //this.loadIcons();
         },
         /**
          * @see Alpaca.Fields.TextField#getTitle
@@ -7677,7 +7659,7 @@
                 emptyIcon: true,
                 hasSearch: true
             });
-
+            this.loadIcons();
             callback();
         },
         loadIcons: function () {

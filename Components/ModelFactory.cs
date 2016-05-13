@@ -464,7 +464,7 @@ namespace Satrabel.OpenContent.Components
                 string fileContent = File.ReadAllText(localizationFilename);
                 if (!string.IsNullOrWhiteSpace(fileContent))
                 {
-                    localizationJson = fileContent.ToJObject("Options");
+                    localizationJson = fileContent.ToJObject("Localization: " + localizationFilename);
                 }
             }
             if (localizationJson != null)

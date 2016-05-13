@@ -91,27 +91,63 @@ namespace Satrabel.OpenContent
             switch (selectedDataType)
             {
                 case cData:
-                    TemplateManifest template = null;
-                    OpenContentSettings settings = this.OpenContentSettings();
-                    int ModId = settings.IsOtherModule ? settings.ModuleId : ModuleId;
-                    if (settings.TemplateAvailable)
                     {
-                        template = settings.Template;
-                    }
-                    var ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
-                    var dsContext = new DataSourceContext()
-                    {
-                        ModuleId = ModId,
-                        TemplateFolder = settings.TemplateDir.FolderPath,
-                        Config = settings.Manifest.DataSourceConfig
-                    };
-                    if (template != null && template.IsListTemplate)
-                    {
-                        string itemId = Request.QueryString["id"];
-                        if (!string.IsNullOrEmpty(itemId))
+                        TemplateManifest template = null;
+                        OpenContentSettings settings = this.OpenContentSettings();
+                        int ModId = settings.IsOtherModule ? settings.ModuleId : ModuleId;
+                        if (settings.TemplateAvailable)
                         {
-                            var dsItem = ds.Get(dsContext, itemId);
+                            template = settings.Template;
+                        }
+                        var ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
+                        var dsContext = new DataSourceContext()
+                        {
+                            ModuleId = ModId,
+                            TemplateFolder = settings.TemplateDir.FolderPath,
+                            Config = settings.Manifest.DataSourceConfig
+                        };
+                        if (template != null && template.IsListTemplate)
+                        {
+                            string itemId = Request.QueryString["id"];
+                            if (!string.IsNullOrEmpty(itemId))
+                            {
+                                var dsItem = ds.Get(dsContext, itemId);
 
+                                if (dsItem != null)
+                                {
+                                    json = dsItem.Data.ToString();
+                                    var versions = ds.GetVersions(dsContext, dsItem);
+                                    if (versions != null)
+                                        foreach (var ver in versions)
+                                        {
+                                            ddlVersions.Items.Add(new ListItem()
+                                            {
+                                                //Text = ver.CreatedOnDate.ToShortDateString() + " " + ver.CreatedOnDate.ToShortTimeString(),
+                                                //Value = ver.CreatedOnDate.Ticks.ToString()
+                                                Text = ver["text"].ToString(),
+                                                Value = ver["ticks"].ToString()
+                                            });
+                                        }
+                                }
+                            }
+                            else
+                            {
+                                var dataList = ds.GetAll(dsContext, null);
+                                if (dataList != null)
+                                {
+                                    JArray lst = new JArray();
+                                    foreach (var item in dataList.Items)
+                                    {
+                                        lst.Add(item.Data);
+                                    }
+                                    json = lst.ToString();
+                                }
+                            }
+                        }
+                        else
+                        {
+                            dsContext.Single = true;
+                            var dsItem = ds.Get(dsContext, null);
                             if (dsItem != null)
                             {
                                 json = dsItem.Data.ToString();
@@ -129,40 +165,6 @@ namespace Satrabel.OpenContent
                                     }
                             }
                         }
-                        else
-                        {
-                            var dataList = ds.GetAll(dsContext, null);
-                            if (dataList != null)
-                            {
-                                JArray lst = new JArray();
-                                foreach (var item in dataList.Items)
-                                {
-                                    lst.Add(item.Data);
-                                }
-                                json = lst.ToString();
-                            }
-                        }
-                    }
-                    else
-                    {
-                        dsContext.Single = true;
-                        var dsItem = ds.Get(dsContext, null);
-                        if (dsItem != null)
-                        {
-                            json = dsItem.Data.ToString();
-                            var versions = ds.GetVersions(dsContext, dsItem);
-                            if (versions != null)
-                                foreach (var ver in versions)
-                                {
-                                    ddlVersions.Items.Add(new ListItem()
-                                    {
-                                        //Text = ver.CreatedOnDate.ToShortDateString() + " " + ver.CreatedOnDate.ToShortTimeString(),
-                                        //Value = ver.CreatedOnDate.Ticks.ToString()
-                                        Text = ver["text"].ToString(),
-                                        Value = ver["ticks"].ToString()
-                                    });
-                                }
-                        }
                     }
                     break;
                 case cSettings:
@@ -171,6 +173,20 @@ namespace Satrabel.OpenContent
                 case cFilter:
                     json = ModuleContext.Settings["query"] as string;
                     break;
+                default:
+                    {
+                        OpenContentSettings settings = this.OpenContentSettings();
+                        int ModId = settings.IsOtherModule ? settings.ModuleId : ModuleId;
+                        var manifest = settings.Manifest;
+                        string key = selectedDataType;
+                        var dataManifest = manifest.AdditionalData[key];
+                        string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings.PortalId, PortalSettings.ActiveTab.TabID, ModId, this.TabModuleId);
+                        var dc = new AdditionalDataController();
+                        var data = dc.GetData(scope, dataManifest.StorageKey ?? key);
+                        
+                        json = data == null ? "" : data.Json;
+                        break;
+                    }
             }
 
             txtSource.Text = json;
@@ -178,10 +194,19 @@ namespace Satrabel.OpenContent
 
         private void LoadFiles()
         {
+            TemplateManifest template = ModuleContext.OpenContentSettings().Template;
             sourceList.Items.Clear();
             sourceList.Items.Add(new ListItem(cData, cData));
             sourceList.Items.Add(new ListItem(cSettings, cSettings));
             sourceList.Items.Add(new ListItem(cFilter, cFilter));
+            if (template.Manifest.AdditionalData != null)
+            {
+                foreach (var addData in template.Manifest.AdditionalData)
+                {
+                    string title = string.IsNullOrEmpty(addData.Value.Title) ? addData.Key : addData.Value.Title;
+                    sourceList.Items.Add(new ListItem(title, addData.Key));
+                }
+            }
         }
 
         protected void cmdSave_Click(object sender, EventArgs e)
@@ -198,7 +223,44 @@ namespace Satrabel.OpenContent
             {
                 SaveFilter();
             }
+            else
+            {
+                SaveAdditionalData(sourceList.SelectedValue);
+            }
             Response.Redirect(Globals.NavigateURL(), true);
+        }
+
+        private void SaveAdditionalData(string key)
+        {
+            OpenContentSettings settings = this.OpenContentSettings();
+            int ModId = settings.IsOtherModule ? settings.ModuleId : ModuleId;
+            var manifest = settings.Manifest;
+            var dataManifest = manifest.AdditionalData[key];
+            string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings.PortalId, PortalSettings.ActiveTab.TabID, ModId, this.TabModuleId);
+            var dc = new AdditionalDataController();
+            var data = dc.GetData(scope, dataManifest.StorageKey ?? key);
+            if (data == null)
+            {
+
+                data = new AdditionalDataInfo()
+                {
+                    CreatedByUserId = UserId,
+                    CreatedOnDate = DateTime.Now,
+                    DataKey = key,
+                    Json = txtSource.Text,
+                    LastModifiedByUserId = UserId,
+                    LastModifiedOnDate = DateTime.Now,
+                    Scope = scope
+                };
+                dc.AddData(data);
+            }
+            else
+            {
+                data.Json = txtSource.Text;
+                data.LastModifiedByUserId = UserId;
+                data.LastModifiedOnDate = DateTime.Now;
+                dc.UpdateData(data);
+            }
         }
 
         private void SaveFilter()

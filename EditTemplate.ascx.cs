@@ -43,9 +43,26 @@ namespace Satrabel.OpenContent
             cmdSaveClose.Click += cmdSaveAndClose_Click;
             cmdCancel.Click += cmdCancel_Click;
             cmdCustom.Click += cmdCustom_Click;
+            cmdBuilder.Click += cmdBuilder_Click;
             //var js = string.Format("javascript:return confirm('{0}');", Localization.GetSafeJSString(LocalizeString("OverwriteTemplate")));
             //cmdCustom.Attributes.Add("onClick", js);
             scriptList.SelectedIndexChanged += scriptList_SelectedIndexChanged;
+        }
+
+        private void cmdBuilder_Click(object sender, EventArgs e)
+        {
+            if (scriptList.SelectedValue.EndsWith("schema.json"))
+            {
+                FileUri template = ModuleContext.OpenContentSettings().Template.Uri();
+                string templateFolder = Path.GetDirectoryName(template.FilePath);
+                string scriptFile = templateFolder + "/" + scriptList.SelectedValue.Replace("schema.json", "builder.json");
+                string srcFile = Server.MapPath(scriptFile);
+                if (!File.Exists(srcFile))
+                {
+                    File.WriteAllText(srcFile, "{}");
+                }
+                Response.Redirect(Globals.NavigateURL(), true);
+            }
         }
 
         private void cmdCustom_Click(object sender, EventArgs e)
@@ -69,7 +86,7 @@ namespace Satrabel.OpenContent
             }
             ModuleController mc = new ModuleController();
 
-            var newtemplate = new FileUri(ModuleTemplateDirectory , "schema.json");
+            var newtemplate = new FileUri(ModuleTemplateDirectory, "schema.json");
             mc.UpdateModuleSetting(ModuleId, "template", newtemplate.FilePath);
             ModuleContext.Settings["template"] = newtemplate.FilePath;
             settings = ModuleContext.OpenContentSettings();
@@ -116,6 +133,7 @@ namespace Satrabel.OpenContent
                 txtSource.Text = "";
             }
             SetFileType(srcFile);
+            cmdBuilder.Visible = scriptList.SelectedValue.EndsWith("schema.json");
         }
         private void SetFileType(string filePath)
         {
@@ -156,6 +174,7 @@ namespace Satrabel.OpenContent
         }
         private void LoadFiles(TemplateManifest template)
         {
+            var settings = ModuleContext.OpenContentSettings();
             scriptList.Items.Clear();
             if (template != null)
             {
@@ -182,21 +201,44 @@ namespace Satrabel.OpenContent
                         }
                     }
                 }
-                scriptList.Items.Add(new ListItem("Manifest", "manifest.json"));
                 scriptList.Items.Add(new ListItem("Stylesheet", template.Key.ShortKey + ".css"));
                 scriptList.Items.Add(new ListItem("Javascript", template.Key.ShortKey + ".js"));
-                scriptList.Items.Add(new ListItem("Schema", "schema.json"));
-                scriptList.Items.Add(new ListItem("Layout Options", "options.json"));
-                //scriptList.Items.Add(new ListItem("Edit Layout Options - Template File Overides", "options." + template.FileNameWithoutExtension + ".json"));
-                foreach (Locale item in LocaleController.Instance.GetLocales(PortalId).Values)
+                scriptList.Items.Add(new ListItem("Manifest", "manifest.json"));
+                if (!OpenContentUtils.BuilderExist(settings.Template.ManifestDir))
                 {
-                    scriptList.Items.Add(new ListItem("Layout Options - " + item.Code, "options." + item.Code + ".json"));
+                    string title = string.IsNullOrEmpty(template.Manifest.Title) ? "Data " : template.Manifest.Title + " ";
+                    scriptList.Items.Add(new ListItem(title + "Schema", "schema.json"));
+                    scriptList.Items.Add(new ListItem(title + "Options", "options.json"));
+                    //scriptList.Items.Add(new ListItem("Edit Layout Options - Template File Overides", "options." + template.FileNameWithoutExtension + ".json"));
+                    foreach (Locale item in LocaleController.Instance.GetLocales(PortalId).Values)
+                    {
+                        scriptList.Items.Add(new ListItem(title + "Options - " + item.Code, "options." + item.Code + ".json"));
+                    }
                 }
-                scriptList.Items.Add(new ListItem("Settings Schema", template.Key.ShortKey + "-schema.json"));
-                scriptList.Items.Add(new ListItem("Settings Layout Options", template.Key.ShortKey + "-options.json"));
-                foreach (Locale item in LocaleController.Instance.GetLocales(PortalId).Values)
+                if (!OpenContentUtils.BuilderExist(settings.Template.ManifestDir, template.Key.ShortKey))
                 {
-                    scriptList.Items.Add(new ListItem("Settings Layout Options - " + item.Code, template.Key.ShortKey + "-options." + item.Code + ".json"));
+                    scriptList.Items.Add(new ListItem("Settings Schema", template.Key.ShortKey + "-schema.json"));
+                    scriptList.Items.Add(new ListItem("Settings Options", template.Key.ShortKey + "-options.json"));
+                    foreach (Locale item in LocaleController.Instance.GetLocales(PortalId).Values)
+                    {
+                        scriptList.Items.Add(new ListItem("Settings Options - " + item.Code, template.Key.ShortKey + "-options." + item.Code + ".json"));
+                    }
+                }
+                if (template.Manifest.AdditionalData != null)
+                {
+                    foreach (var addData in template.Manifest.AdditionalData)
+                    {
+                        if (!OpenContentUtils.BuilderExist(settings.Template.ManifestDir, addData.Key))
+                        {
+                            string title = string.IsNullOrEmpty(addData.Value.Title) ? addData.Key : addData.Value.Title;
+                            scriptList.Items.Add(new ListItem(title + " Schema", addData.Key + "-schema.json"));
+                            scriptList.Items.Add(new ListItem(title + " Options", addData.Key + "-options.json"));
+                            foreach (Locale item in LocaleController.Instance.GetLocales(PortalId).Values)
+                            {
+                                scriptList.Items.Add(new ListItem(title + " Options - " + item.Code, addData.Key + "-options." + item.Code + ".json"));
+                            }
+                        }
+                    }
                 }
                 foreach (Locale item in LocaleController.Instance.GetLocales(PortalId).Values)
                 {

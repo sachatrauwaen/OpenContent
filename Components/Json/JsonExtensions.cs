@@ -18,10 +18,13 @@ namespace Satrabel.OpenContent.Components.Json
             if (json == null) return true;
             return !json.HasValues;
         }
-        public static bool IsEmpty(this JToken json)
+        public static bool IsEmpty(this JToken jtoken)
         {
-            if (json == null) return true;
-            return string.IsNullOrEmpty(json.ToString());
+            //tried using HasValues, but string value is not detected that way.
+            if (jtoken == null) return true;
+            string json = jtoken.ToString();
+            if (json == "[]") return true;
+            return string.IsNullOrEmpty(json);
         }
         public static bool Exists(this JObject json)
         {
@@ -56,7 +59,7 @@ namespace Satrabel.OpenContent.Components.Json
             }
             catch (Exception ex)
             {
-                string mess = string.Format("Error while parsing [{0}]", desc);
+                string mess = string.Format("Error while parsing text [{0}]", desc);
                 Log.Logger.Error(mess, ex);
                 throw new Exception(mess, ex);
             }
@@ -70,7 +73,7 @@ namespace Satrabel.OpenContent.Components.Json
             }
             catch (Exception ex)
             {
-                string mess = string.Format("Error while parsing [{0}]", desc);
+                string mess = string.Format("Error while parsing object [{0}]", desc);
                 Log.Logger.Error(mess, ex);
                 throw new Exception(mess, ex);
             }

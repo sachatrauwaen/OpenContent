@@ -3,13 +3,26 @@
 
     var OpenContent = function () {
         return {
-            version: { major: 1, minor: 2, patch: 0 }
+            version: { major: 2, minor: 1, patch: 1 }
         };
     }
 
     $.fn.openContent = function (options) {
         return OpenContent();
     };
+    $.fn.openContent.printLogs = function myfunction(title, logs) {
+        if (window.console) {
+            console.group(title);
+            for (var i in logs) {
+                console.group(i);
+                for (var j = 0; j < logs[i].length; j++) {
+                    console.log(logs[i][j].label, logs[i][j].message);
+                }
+                console.groupEnd();
+            }
+            console.groupEnd();
+        }
+    }
     /*
     var myString = $(this).closest("div[class*='DnnModule-']").attr('class');
     var myRegexp = /DnnModule-(\d+)/g;

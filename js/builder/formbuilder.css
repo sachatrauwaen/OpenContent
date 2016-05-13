@@ -1,0 +1,67 @@
+.alpaca-array-actionbar.alpaca-array-actionbar-top {
+}
+
+.alpaca-container-label span:hover {
+    color: #337ab7;
+}
+
+.alpaca-array-actionbar.alpaca-array-actionbar-top.btn-group {
+    /*display: inline-block !important;*/
+}
+
+.fielddiv {
+    background-color: #f7f7f9;
+}
+
+.listfielddiv {
+    background-color: #fff;
+}
+/*
+.col-sm-6 {
+    float: left;
+    width: 50%;
+    position: relative;
+    min-height: 1px;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+*/
+
+
+
+
+.form-builder h2 {
+    font-size: 18px;
+    margin-top: 0;
+    margin-bottom: 5px;
+}
+/*
+#form button.alpaca-array-actionbar-action {display:block;width:32px;}
+    */
+.dnnForm{width:auto;}
+
+#form .dnnLabel {
+    width: 22.075%;
+}
+
+
+.fb-container {
+    display: table;
+    width: 100%;
+    margin-right: -15px;
+    margin-left: -15px;
+}
+
+.fb-left, .fb-right {
+    display: table-cell;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+.fb-left {
+    width: 50%;
+}
+
+.fb-right {
+    width: 50%;
+}

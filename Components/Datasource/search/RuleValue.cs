@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -14,6 +15,7 @@ namespace Satrabel.OpenContent.Components.Datasource.search
                 throw new NotImplementedException();
             }
         }
+        [JsonIgnore]
         public virtual int AsInteger
         {
             get
@@ -21,6 +23,7 @@ namespace Satrabel.OpenContent.Components.Datasource.search
                 throw new NotImplementedException();
             }
         }
+        [JsonIgnore]
         public virtual float AsFloat
         {
             get
@@ -28,6 +31,7 @@ namespace Satrabel.OpenContent.Components.Datasource.search
                 throw new NotImplementedException();
             }
         }
+        [JsonIgnore]
         public virtual long AsLong
         {
             get
@@ -35,6 +39,7 @@ namespace Satrabel.OpenContent.Components.Datasource.search
                 throw new NotImplementedException();
             }
         }
+        [JsonIgnore]
         public virtual DateTime AsDateTime
         {
             get
@@ -42,6 +47,7 @@ namespace Satrabel.OpenContent.Components.Datasource.search
                 throw new NotImplementedException();
             }
         }
+        [JsonIgnore]
         public virtual bool AsBoolean
         {
             get

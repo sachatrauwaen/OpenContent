@@ -46,6 +46,9 @@
         <li>
             <asp:LinkButton ID="cmdCustom" resourcekey="cmdCustom" runat="server" CssClass="dnnSecondaryAction" />
         </li>
+        <li>
+            <asp:LinkButton ID="cmdBuilder" resourcekey="cmdBuilder" runat="server" CssClass="dnnSecondaryAction" />
+        </li>
     </ul>
 </div>
 <script type="text/javascript">
@@ -85,7 +88,7 @@
                 $('window.frameElement, body, html').css('overflow', 'hidden');
 
 
-                var containerHeight = $(window).height() - 18 - 52 - 52 - 18 - 30;
+                var containerHeight = $(window).height() - 18 - 52 - 52 - 30;
 
                 //$('.editorContainer').height(containerHeight - $('.editorContainer').offset().top - 110);
                 //$('.editorContainer').height(containerHeight - 250);
@@ -93,6 +96,26 @@
 
                 cm.refresh();
             };
+            var windowTop = parent;
+            var popup = windowTop.jQuery("#iPopUp");
+            if (popup.length) {
+
+                var $window = $(windowTop),
+                                newHeight,
+                                newWidth;
+
+                newHeight = $window.height() - 36;
+                newWidth = Math.min($window.width() - 40, 1200);
+
+                popup.dialog("option", {
+                    close: function () { window.dnnModal.closePopUp(false, ""); },
+                    //'position': 'top',
+                    height: newHeight,
+                    width: newWidth,
+                    //position: 'center'
+                    resizable: false,
+                });
+            }
 
             if (window.frameElement && window.frameElement.id == "iPopUp") {
 
