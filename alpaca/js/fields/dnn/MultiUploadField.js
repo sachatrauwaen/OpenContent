@@ -51,7 +51,7 @@
             this.base(model, function () {
                 var container = self.getContainerEl();
                 //$(container).addClass("alpaca-MultiUpload");
-                if (!self.isDisplayOnly()) {
+                if (!self.isDisplayOnly() ) {
                    
                     $('<div style="clear:both;"></div>').prependTo(container);
                     var progressBar = $('<div class="progress" ><div class="bar" style="width: 0%;"></div></div>').prependTo(container);
@@ -60,6 +60,7 @@
                     this.wrapper = $("<span class='dnnInputFileWrapper dnnSecondaryAction' style='margin-bottom:10px;;'></span>");
                     this.wrapper.text("Upload muliple files");
                     mapButton.wrap(this.wrapper);
+                    if (self.sf){
                     mapButton.fileupload({
                         dataType: 'json',
                         url: self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
@@ -97,6 +98,7 @@
                             }
                         }
                     }).data('loaded', true);
+                    }
                 }
                 callback();
             });

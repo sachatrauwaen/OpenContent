@@ -17,6 +17,7 @@ using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Manifest;
 using DotNetNuke.Web.Client.ClientResourceManagement;
 using DotNetNuke.Web.Client;
+using System.Web.UI.WebControls;
 
 #endregion
 
@@ -38,6 +39,28 @@ namespace Satrabel.OpenContent
             ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/builder/formbuilder.css", FileOrder.Css.DefaultPriority);
             //ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/bootstrap/js/bootstrap.min.js", FileOrder.Js.DefaultPriority);
             //ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/bootstrap/css/bootstrap.min.css", FileOrder.Css.DefaultPriority);
+
+            if (OpenContentUtils.BuilderExist(settings.Template.ManifestDir))
+            {
+                string title = string.IsNullOrEmpty(settings.Template.Manifest.Title) ? "Data" : settings.Template.Manifest.Title + " ";
+                ddlForms.Items.Add(new ListItem(title, ""));
+            }
+            if (OpenContentUtils.BuilderExist(settings.Template.ManifestDir, settings.Template.Key.ShortKey))
+            {
+                ddlForms.Items.Add(new ListItem("Settings", settings.Template.Key.ShortKey));
+            }
+            if (settings.Template.Manifest.AdditionalData != null)
+            {
+                foreach (var addData in settings.Template.Manifest.AdditionalData)
+                {
+                    if (OpenContentUtils.BuilderExist(settings.Template.ManifestDir, addData.Key))
+                    {
+                        string title = string.IsNullOrEmpty(addData.Value.Title) ? addData.Key : addData.Value.Title;
+                        ddlForms.Items.Add(new ListItem(title, addData.Key));
+                    }
+                }
+            }
+
         }
         //public AlpacaContext AlpacaContext { get; private set ; }
 

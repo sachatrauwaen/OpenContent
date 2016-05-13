@@ -403,7 +403,7 @@ namespace Satrabel.OpenContent
                         true,
                         false);
 
-                if (templateDefined && OpenContentUtils.BuilderExist(settings.Template.ManifestDir))
+                if (templateDefined && OpenContentUtils.BuildersExist(settings.Template.ManifestDir))
                     actions.Add(ModuleContext.GetNextActionID(),
                         Localization.GetString("Builder.Action", LocalResourceFile),
                         ModuleActionType.ContentOptions,

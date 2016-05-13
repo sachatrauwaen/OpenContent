@@ -1,7 +1,7 @@
 <%@ Control Language="C#" AutoEventWireup="false" Inherits="Satrabel.OpenContent.AlpacaFormBuilder" CodeBehind="AlpacaFormBuilder.ascx.cs" %>
 <%@ Import Namespace="Newtonsoft.Json" %>
 
-<asp:Panel ID="ScopeWrapper" runat="server" CssClass="form-builder">
+<asp:Panel ID="ScopeWrapper" runat="server" CssClass="dnnForm form-builder">
     <div class="">
         <div class="fb-container">
             <div class="fb-left">
@@ -12,26 +12,26 @@
                 <h2>Form preview</h2>
                 <div id="form2"></div>
             </div>
-            <div style="clear:both;"></div>
+            <div style="clear: both;"></div>
         </div>
-        <div class="row" style="display:none;">
-            <div class="col-sm-6">
+        <div class="fb-container" style="display: none;">
+            <div class="fb-left">
                 schema<br />
                 <textarea class="form-control" rows="10" id="schema"></textarea>
             </div>
-            <div class="col-sm-6">
+            <div class="fb-right">
                 options<br />
                 <textarea class="form-control" rows="10" id="options"></textarea>
             </div>
-            <div style="clear:both;"></div>
+            <div style="clear: both;"></div>
         </div>
-        <div class="row" style="display:none;">
+        <div class="row" style="display: none;">
             <div class="col-sm-12">
                 Builder<br />
                 <textarea class="form-control" rows="10" id="builder"></textarea>
             </div>
         </div>
-        
+
     </div>
     <ul class="dnnActions dnnClear" _style="display: block; padding-left: 35%">
         <li>
@@ -40,10 +40,12 @@
         <li>
             <asp:HyperLink ID="hlCancel" runat="server" class="dnnSecondaryAction" resourcekey="cmdCancel" />
         </li>
-         <li>
+        <li>
             <asp:HyperLink ID="hlRefresh" runat="server" class="dnnSecondaryAction" resourcekey="cmdRefresh" />
         </li>
-
+        <li>
+            <asp:DropDownList ID="ddlForms" runat="server" AutoPostBack="true"></asp:DropDownList>
+        </li>
     </ul>
 </asp:Panel>
 
@@ -75,7 +77,7 @@
                 self = moduleScope,
                 sf = $.ServicesFramework(<%=ModuleId %>);
 
-        var getData = { key: "" };
+        var getData = { key: $("#<%=ddlForms.ClientID %>").val() };
 
         $.ajax({
             type: "GET",
@@ -100,7 +102,7 @@
             var data = form.getValue();
             var schema = getSchema(data);
             var options = getOptions(data);
-            var postData = JSON.stringify({ 'data': data, 'schema': schema, 'options': options, 'key': "" });
+            var postData = JSON.stringify({ 'data': data, 'schema': schema, 'options': options, 'key': $("#<%=ddlForms.ClientID %>").val() });
             var action = "UpdateBuilder";
             $.ajax({
                 type: "POST",
