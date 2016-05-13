@@ -496,6 +496,7 @@ namespace Satrabel.OpenContent
             {
                 if (_renderinfo.Template.IsListTemplate)
                 {
+                    LogContext.Log(ModuleContext.ModuleId, "RequestContext", "QueryParam Id", _itemId);
                     // Multi items template
                     if (string.IsNullOrEmpty(_itemId))
                     {
