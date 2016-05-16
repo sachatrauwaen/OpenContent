@@ -26,7 +26,7 @@ function getBuilder(schema, options) {
             "required": sch.required ? true : false,
             "vertical": opt ? opt.vertical : false,
             "fieldoptions": [],
-            "listfields": []
+            "subfields": []
         };
         if (d.fieldtype.substr(0, 2) == "ml") {
             d.fieldtype = d.fieldtype.substr(2, d.fieldtype.length - 2);
@@ -52,11 +52,11 @@ function getBuilder(schema, options) {
         if (sch.type == "array") {
             if (d.fieldtype == "checkbox") {
                 d.fieldtype = "multicheckbox";
-            } else if (d.fieldtype == "text") { 
+            } else if (d.fieldtype == "text") {
                 d.fieldtype = "array";
             }
-            var b = getBuilder(sch.items, opt && opt.items? opt.items : null);
-            d.listfields = b;
+            var b = getBuilder(sch.items, opt && opt.items ? opt.items : null);
+            d.subfields = b;
         }
         data.push(d);
     }
@@ -64,15 +64,12 @@ function getBuilder(schema, options) {
 }
 
 function getSchema(formdef) {
-
     var sch = null; //JSON.parse($("#schema").val());
-
     var schema = {
         //"title": "Form preview",
         "type": "object",
         "properties": {}
     };
-
     var schematypes = {
         "text": "string",
         "select": "string",
@@ -93,13 +90,25 @@ function getSchema(formdef) {
         "address": "object",
         "relation": "string",
         "gallery": "array",
-        "documents": "array"
+        "documents": "array",
+        "object": "object"
     };
 
     var baseProps = function (index, value, oldSchema) {
         var prop = {
             "type": schematypes[value.fieldtype]
         };
+        if (value.fieldtype == "publishstatus") {
+            prop.enum = ["draft", "published"];
+            prop.required = true;
+            prop.default = "draft";
+        } else if (value.fieldtype == "publishstartdate") {
+            prop.required = true;
+            prop.default = "today";
+        } else if (value.fieldtype == "publishenddate") {
+            prop.required = true;
+            prop.default = "2099-12-31";
+        }
         if (value.title && value.fieldtype != "checkbox") {
             prop.title = value.title;
         }
@@ -116,14 +125,17 @@ function getSchema(formdef) {
         if (value.required) {
             prop.required = value.required;
         }
+        if (value.default) {
+            prop.default = value.default;
+        }
         if (value.fieldtype == "array" || value.fieldtype == "table") {
 
-            if (!value.listfields) {
+            if (!value.subfields) {
                 prop.items = {};
-            } else if (value.fieldtype == "array" && value.listfields.length == 1) {
+            } else if (value.fieldtype == "array" && value.subfields.length == 1) {
                 var listOldSchema = oldSchema && oldSchema.items ? oldSchema.items : null;
                 var listindex = 0;
-                var listvalue = value.listfields[0];
+                var listvalue = value.subfields[0];
                 var listprop = baseProps(listindex, listvalue, listOldSchema);
                 if (!listvalue.fieldname) {
                     listvalue.fieldname = 'field_' + listindex;
@@ -136,13 +148,30 @@ function getSchema(formdef) {
                     "properties": {
                     }
                 };
-                $.each(value.listfields, function (listindex, listvalue) {
+                $.each(value.subfields, function (listindex, listvalue) {
                     var listOldSchema = oldSchema && oldSchema.items && oldSchema.items.properties ? oldSchema.items.properties[listvalue.fieldname] : null;
                     var listprop = baseProps(listindex, listvalue, listOldSchema);
                     if (!listvalue.fieldname) {
                         listvalue.fieldname = 'field_' + listindex;
                     }
                     prop.items.properties[listvalue.fieldname] = listprop;
+                });
+            }
+        }
+        if (value.fieldtype == "object") {
+            delete value.type;
+            if (!value.subfields) {
+                prop.properties = {};
+            } else {
+                prop.properties = {
+                };
+                $.each(value.subfields, function (objectindex, objectvalue) {
+                    var objectOldSchema = oldSchema && oldSchema.properties ? oldSchema.properties[objectvalue.fieldname] : null;
+                    var objectprop = baseProps(objectindex, objectvalue, objectOldSchema);
+                    if (!objectvalue.fieldname) {
+                        objectvalue.fieldname = 'field_' + listindex;
+                    }
+                    prop.properties[objectvalue.fieldname] = objectprop;
                 });
             }
         }
@@ -154,15 +183,15 @@ function getSchema(formdef) {
         }
         //return prop;
     };
-    if (formdef.formfields){
-    $.each(formdef.formfields, function (index, value) {
-        var oldSchema = null; // sch.properties[value.fieldname];
-        var prop = baseProps(index, value, oldSchema);
-        if (!value.fieldname) {
-            value.fieldname = 'field_' + index;
-        }
-        schema.properties[value.fieldname] = prop;
-    });
+    if (formdef.formfields) {
+        $.each(formdef.formfields, function (index, value) {
+            var oldSchema = null; // sch.properties[value.fieldname];
+            var prop = baseProps(index, value, oldSchema);
+            if (!value.fieldname) {
+                value.fieldname = 'field_' + index;
+            }
+            schema.properties[value.fieldname] = prop;
+        });
     }
     return schema;
 }
@@ -188,6 +217,24 @@ var baseFields = function (index, value, oldOptions) {
                 "textField": value.relationoptions.textfield
             }
         };
+    } else if (value.fieldtype == "date" && value.dateoptions) {
+        field.picker = value.dateoptions;
+    } else if (value.fieldtype == "publishstartdate") {
+        field.type = "date";
+        field.picker = {
+            //"format": "DD/MM/YYYY",
+            "minDate": "2000-01-01",
+            "maxDate": "2099-12-31",
+            //"locale": "nl"
+        };
+    } else if (value.fieldtype == "publishenddate") {
+        field.type = "date";
+        field.picker = {
+            //"format": "DD/MM/YYYY",
+            "minDate": "2000-01-01",
+            "maxDate": "2099-12-31",
+            //"locale": "nl"
+        };
     }
     if (value.fieldoptions) {
         field.optionLabels = $.map(value.fieldoptions, function (v, i) {
@@ -209,30 +256,47 @@ var baseFields = function (index, value, oldOptions) {
     }
     if (value.fieldtype == "array" || value.fieldtype == "table") {
         //field.toolbarSticky = true;
-        if (!value.listfields) {
+        if (!value.subfields) {
             field.items = {};
-        } else if (value.fieldtype == "array" && value.listfields.length == 1) {
+        } else if (value.fieldtype == "array" && value.subfields.length == 1) {
             var listOldOptions = oldOptions && oldOptions.items ? oldOptions.items : null;
             var listindex = 0;
-            var listvalue = value.listfields[0];
+            var listvalue = value.subfields[0];
             var listfield = baseFields(listindex, listvalue, listOldOptions);
             if (!listvalue.fieldname) {
                 listvalue.fieldname = 'field_' + listindex;
             }
             field.items = listfield;
         } else {
-            
+
             field.items = {
                 //"fieldClass":"listfielddiv",
                 "fields": {}
             };
-            $.each(value.listfields, function (listindex, listvalue) {
+            $.each(value.subfields, function (listindex, listvalue) {
                 var listOldOptions = oldOptions && oldOptions.items && oldOptions.items.fields ? oldOptions.items.fields[listvalue.fieldname] : null;
                 var listfield = baseFields(listindex, listvalue, listOldOptions);
                 if (!listvalue.fieldname) {
                     listvalue.fieldname = 'field_' + listindex;
                 }
                 field.items.fields[listvalue.fieldname] = listfield;
+            });
+        }
+    }
+    if (value.fieldtype == "object") {
+        //field.toolbarSticky = true;
+        if (!value.subfields) {
+            field.fields = {};
+        } else {
+            field.fields = {
+            };
+            $.each(value.subfields, function (objectindex, objectvalue) {
+                var objectOldOptions = oldOptions && oldOptions.fields ? oldOptions.fields[objectvalue.fieldname] : null;
+                var objectfield = baseFields(objectindex, objectvalue, objectOldOptions);
+                if (!objectvalue.fieldname) {
+                    objectvalue.fieldname = 'field_' + objectindex;
+                }
+                field.fields[objectvalue.fieldname] = objectfield;
             });
         }
     }
@@ -247,7 +311,7 @@ var baseFields = function (index, value, oldOptions) {
 
 function getOptions(formdef) {
     var opts = null; //JSON.parse($("#options").val());
-    
+
     var options = {
         "fields": {}
     };
@@ -290,7 +354,7 @@ function showForm(value) {
     $("#form2").alpaca(config);
 }
 
-var fieldSchema = 
+var fieldSchema =
 {
     //"title": "Field",
     "type": "object",
@@ -303,7 +367,8 @@ var fieldSchema =
             "enum": ["text", "checkbox", "multicheckbox", "select", "radio", "textarea", "email", "date", "number",
                         "image", "file", "url", "icon", "guid", "address",
                         "array", "table", "relation",
-                        "wysihtml", "ckeditor", "gallery", "documents"]
+                        "wysihtml", "ckeditor", "gallery", "documents", "object" /*,
+                        "publishstatus", "publishstartdate", "publishenddate"*/]
         },
         "fieldname": {
             "type": "string",
@@ -324,6 +389,11 @@ var fieldSchema =
         },
         "required": {
             "type": "boolean",
+            "dependencies": "advanced"
+        },
+        "default": {
+            "title": "Default",
+            "type": "string",
             "dependencies": "advanced"
         },
         "helper": {
@@ -358,9 +428,9 @@ var fieldSchema =
             },
             "dependencies": "fieldtype"
         },
-        "listfields": {
+        "subfields": {
             "type": "array",
-            "title": "List Fields",
+            "title": "Fields",
             "dependencies": "fieldtype"
         },
         "relationoptions": {
@@ -370,7 +440,7 @@ var fieldSchema =
             "properties": {
                 "datakey": {
                     "type": "string",
-                    "title": "Add. Data Key"
+                    "title": "Additional Data Key"
                 },
                 "valuefield": {
                     "type": "string",
@@ -381,13 +451,32 @@ var fieldSchema =
                     "title": "Text Field"
                 },
             }
+        },
+        "dateoptions": {
+            "type": "object",
+            "title": "Options",
+            "dependencies": "fieldtype",
+            "properties": {
+                "format": {
+                    "type": "string",
+                    "title": "Format (momentjs)"
+                },
+                "minDate": {
+                    "type": "string",
+                    "title": "Min date (iso)"
+                },
+                "maxDate": {
+                    "type": "string",
+                    "title": "Max date (iso)"
+                }
+            }
         }
     }
 };
 
-fieldSchema.properties.listfields.items = fieldSchema;
+fieldSchema.properties.subfields.items = fieldSchema;
 
-var fieldOptions = 
+var fieldOptions =
 {
     "multilanguage": {
         "label": "Multi language",
@@ -409,7 +498,8 @@ var fieldOptions =
         "optionLabels": ["Text", "Checkbox", "Multi checkbox", "Dropdown list (select)", "Radio buttons", "Text area", "Email address", "Date", "Number",
                             "Image (upload & autocomplete)", "File (upload & autocomplete)", "Url (autocomplete for pages)", "Font Awesome Icons", "Guid (auto id)", "Address (autocomplete & geocode)",
                             "List (array)", "Table (array)", "Relation (Additional Data)",
-                            "Wysihtml", "CK Editor", "Image Gallery", "Documents"]
+                            "Wysihtml", "CK Editor", "Image Gallery", "Documents", "Group (object)" /*,
+                            "Publish status", "Publish start date", "Publish end date"*/]
     },
     "fieldoptions": {
         "type": "table",
@@ -426,13 +516,13 @@ var fieldOptions =
             "fieldtype": "radio"
         }
     },
-    "listfields": {
+    "subfields": {
         "collapsible": true,
         "items": {
             "fieldClass": "listfielddiv"
         },
         "dependencies": {
-            "fieldtype": ["array", "table"]
+            "fieldtype": ["array", "table", "object"]
         }
     },
     "relationoptions": {
@@ -440,10 +530,16 @@ var fieldOptions =
         "dependencies": {
             "fieldtype": ["relation"]
         }
+    },
+    "dateoptions": {
+        "collapsible": true,
+        "dependencies": {
+            "fieldtype": ["date"]
+        }
     }
 };
 
-fieldOptions.listfields.items.fields = fieldOptions;
+fieldOptions.subfields.items.fields = fieldOptions;
 
 var formbuilderConfig = {
     "schema": {

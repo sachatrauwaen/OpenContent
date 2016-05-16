@@ -19,6 +19,9 @@ using DotNetNuke.Services.Localization;
 using System.IO;
 using Satrabel.OpenContent.Components;
 using Satrabel.OpenContent.Components.Manifest;
+using Satrabel.OpenContent.Components.Alpaca;
+using Satrabel.OpenContent.Components.Json;
+using Newtonsoft.Json.Linq;
 
 #endregion
 
@@ -53,16 +56,142 @@ namespace Satrabel.OpenContent
         {
             if (scriptList.SelectedValue.EndsWith("schema.json"))
             {
-                FileUri template = ModuleContext.OpenContentSettings().Template.Uri();
+                var settings = ModuleContext.OpenContentSettings();
+                FileUri template = settings.Template.Uri();
                 string templateFolder = Path.GetDirectoryName(template.FilePath);
                 string scriptFile = templateFolder + "/" + scriptList.SelectedValue.Replace("schema.json", "builder.json");
                 string srcFile = Server.MapPath(scriptFile);
+
+                var schema = JsonUtils.LoadJsonFromFile(templateFolder + "/" + scriptList.SelectedValue) as JObject;
+                var options = JsonUtils.LoadJsonFromFile(templateFolder + "/" + scriptList.SelectedValue.Replace("schema.json", "options.json")) as JObject;
+
+                JObject builder = new JObject();
+                builder["formfields"] = GetBuilder(schema, options);
+
                 if (!File.Exists(srcFile))
                 {
-                    File.WriteAllText(srcFile, "{}");
+                    File.WriteAllText(srcFile, builder.ToString());
                 }
                 Response.Redirect(Globals.NavigateURL(), true);
             }
+        }
+
+        private JToken GetBuilder(JObject schema, JObject options)
+        {
+            var formfields = new JArray();
+
+            var schemaProperties = schema["properties"] as JObject;
+            foreach (var schProp in schemaProperties.Properties())
+            {
+                var sch = schProp.Value as JObject;
+                var opt = options != null && options["fields"] != null ? options["fields"][schProp.Name] : null;
+                var field = new JObject();
+                field["fieldname"] = schProp.Name;
+                string schematype = sch["type"] != null ? sch["type"].ToString() : "string";
+                string fieldtype = opt != null && opt["type"] != null ? opt["type"].ToString() : "text";
+                if (fieldtype.Substring(0, 2) == "ml")
+                {
+                    fieldtype = fieldtype.Substring(2, fieldtype.Length - 2);
+                    field["multilanguage"] = true;
+                }
+                if (sch["enum"] != null)
+                {
+                    if (fieldtype == "text")
+                    {
+                        fieldtype = "select";
+                    }
+                    JArray optionLabels = null;
+                    if (opt != null && opt["optionLabels"] != null)
+                    {
+                        optionLabels = opt["optionLabels"] as JArray;
+                    }
+                    JArray fieldoptions = new JArray();
+                    int i = 0;
+                    foreach (var item in sch["enum"] as JArray)
+                    {
+                        var fieldOpt = new JObject();
+                        fieldOpt["value"] = item.ToString();
+                        fieldOpt["text"] = optionLabels != null ? optionLabels[i].ToString() : item.ToString();
+                        fieldoptions.Add(fieldOpt);
+                        i++;
+                    }
+                    field["fieldoptions"] = fieldoptions;
+                };
+                if (schematype == "boolean")
+                {
+                    fieldtype = "checkbox";
+                }
+                else if (schematype == "array")
+                {
+                    if (fieldtype == "checkbox")
+                    {
+                        fieldtype = "multicheckbox";
+                    }
+                    else if (fieldtype == "text")
+                    {
+                        fieldtype = "array";
+                    }
+                    if (sch["items"] != null)
+                    {
+                        var b = GetBuilder(sch["items"] as JObject, opt != null && opt["items"] != null ? opt["items"] as JObject : null);
+                        field["subfields"] = b;
+                    }
+                }
+                else if (schematype == "object")
+                {
+                    fieldtype = "object";
+                    var b = GetBuilder(sch, opt as JObject);
+                    field["subfields"] = b;
+                }
+                if (fieldtype == "select2" && opt["dataService"] != null && opt["dataService"]["data"] != null)
+                {
+                    fieldtype = "relation";
+                    field["relationoptions"] = new JObject();
+                    field["relationoptions"]["datakey"] = opt["dataService"]["data"]["dataKey"];
+                    field["relationoptions"]["valuefield"] = opt["dataService"]["data"]["valueField"];
+                    field["relationoptions"]["textfield"] = opt["dataService"]["data"]["textField"];
+                }
+                if (fieldtype == "date" && opt["picker"] != null)
+                {
+                    field["dateoptions"] = new JObject();
+                    field["dateoptions"] = opt["picker"];
+                }
+                field["fieldtype"] = fieldtype;
+                if (sch["title"] != null)
+                {
+                    field["title"] = sch["title"];
+                }
+                if (sch["default"] != null)
+                {
+                    field["default"] = sch["default"];
+                    field["advanced"] = true;
+                }
+                if (opt != null && opt["label"] != null)
+                {
+                    field["title"] = opt["label"];
+                }
+                if (opt != null && opt["helper"] != null)
+                {
+                    field["helper"] = opt["helper"];
+                    field["advanced"] = true;
+                }
+                if (opt != null && opt["placeholder"] != null)
+                {
+                    field["placeholder"] = opt["placeholder"];
+                    field["advanced"] = true;
+                }
+                if (sch["required"] != null)
+                {
+                    field["required"] = sch["required"];
+                    field["advanced"] = true;
+                }
+                if (opt != null && opt["vertical"] != null)
+                {
+                    field["vertical"] = opt["vertical"];
+                }
+                formfields.Add(field);
+            }
+            return formfields;
         }
 
         private void cmdCustom_Click(object sender, EventArgs e)

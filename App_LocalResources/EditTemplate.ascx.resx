@@ -133,6 +133,6 @@
     <value>File</value>
   </data>
   <data name="cmdBuilder.Text" xml:space="preserve">
-    <value>Activate Builder (and start from scratch)</value>
+    <value>Activate Builder (not full alpaca support)</value>
   </data>
 </root>
