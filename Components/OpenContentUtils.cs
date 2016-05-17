@@ -25,6 +25,7 @@ using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Dnn;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.Lucene.Config;
+using Satrabel.OpenContent.Components.TemplateHelpers;
 
 
 namespace Satrabel.OpenContent.Components
@@ -430,6 +431,12 @@ namespace Satrabel.OpenContent.Components
                 if (Debugger.IsAttached) Debugger.Break();
                 return null;
             }
+        }
+
+        [Obsolete("This method is obsolete since may 2016; use UrlHelpers.CleanupUrl(string url) instead")]
+        public static string CleanupUrl(string url)
+        {
+            return url.CleanupUrl();
         }
 
         internal static bool BuilderExist(FolderUri folder, string prefix = "")
