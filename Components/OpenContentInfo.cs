@@ -29,7 +29,7 @@ namespace Satrabel.OpenContent.Components
     {
         public OpenContentInfo()
         {
-            
+
         }
         public OpenContentInfo(string json)
         {

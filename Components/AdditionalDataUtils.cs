@@ -33,7 +33,7 @@ namespace Satrabel.OpenContent.Components
         {
             if (scopeType == "portal")
             {
-                return scopeType+"/"+portalId;
+                return scopeType + "/" + portalId;
             }
             else if (scopeType == "tab")
             {

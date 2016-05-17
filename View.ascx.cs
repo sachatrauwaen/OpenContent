@@ -348,7 +348,7 @@ namespace Satrabel.OpenContent
                                 false);
                 }
                 */
-                               
+
 
                 if (templateDefined && settings.Template.SettingsNeeded())
                 {

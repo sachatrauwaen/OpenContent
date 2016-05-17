@@ -22,7 +22,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             {
                 int leftPart;
                 int rightPart;
-                if (int.TryParse(elements[0], out leftPart) && int.TryParse(elements[1], out rightPart)) 
+                if (int.TryParse(elements[0], out leftPart) && int.TryParse(elements[1], out rightPart))
                 {
                     Width = leftPart;
                     Height = rightPart;

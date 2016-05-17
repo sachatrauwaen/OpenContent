@@ -9,7 +9,8 @@ namespace Satrabel.OpenContent.Components
     {
         #region Constructors
 
-        public FileUri(string pathToFile) : base(System.IO.Path.GetDirectoryName(pathToFile))
+        public FileUri(string pathToFile)
+            : base(System.IO.Path.GetDirectoryName(pathToFile))
         {
             if (string.IsNullOrEmpty(pathToFile))
             {
@@ -18,7 +19,8 @@ namespace Satrabel.OpenContent.Components
             FileName = Path.GetFileName(NormalizePath(pathToFile));
         }
 
-        public FileUri(string path, string filename) : base(path)
+        public FileUri(string path, string filename)
+            : base(path)
         {
             if (string.IsNullOrEmpty(filename))
             {
@@ -26,7 +28,8 @@ namespace Satrabel.OpenContent.Components
             }
             FileName = filename;
         }
-        public FileUri(FolderUri path, string filename) : base(path.FolderPath)
+        public FileUri(FolderUri path, string filename)
+            : base(path.FolderPath)
         {
             if (string.IsNullOrEmpty(filename))
             {

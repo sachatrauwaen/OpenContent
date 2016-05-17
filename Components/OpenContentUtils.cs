@@ -434,8 +434,8 @@ namespace Satrabel.OpenContent.Components
 
         internal static bool BuilderExist(FolderUri folder, string prefix = "")
         {
-            
-            return File.Exists(folder.PhysicalFullDirectory +"\\"+ (string.IsNullOrEmpty(prefix) ? "" : prefix+"-") + "builder.json");
+
+            return File.Exists(folder.PhysicalFullDirectory + "\\" + (string.IsNullOrEmpty(prefix) ? "" : prefix + "-") + "builder.json");
         }
 
         internal static bool BuildersExist(FolderUri folder)

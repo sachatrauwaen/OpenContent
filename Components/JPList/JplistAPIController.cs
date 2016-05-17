@@ -57,7 +57,7 @@ namespace Satrabel.OpenContent.Components.JPList
                 if (listMode)
                 {
                     var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
-                    QueryBuilder queryBuilder = new QueryBuilder(indexConfig); 
+                    QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
                     if (!string.IsNullOrEmpty(settings.Query))
                     {
                         var query = JObject.Parse(settings.Query);
@@ -72,7 +72,8 @@ namespace Satrabel.OpenContent.Components.JPList
                     IDataItems dsItems;
                     if (queryBuilder.DefaultNoResults && queryBuilder.Select.IsQueryEmpty)
                     {
-                        dsItems = new DefaultDataItems() { 
+                        dsItems = new DefaultDataItems()
+                        {
                             Items = new List<DefaultDataItem>(),
                             Total = 0
                         };

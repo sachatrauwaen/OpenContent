@@ -9,19 +9,24 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
     {
         #region Constructors
 
-        public ImageUri(int fileId) : base(fileId)
+        public ImageUri(int fileId)
+            : base(fileId)
         {
         }
-        public ImageUri(string fileFullPath) : base(PortalSettings.Current.PortalId, fileFullPath)
+        public ImageUri(string fileFullPath)
+            : base(PortalSettings.Current.PortalId, fileFullPath)
         {
         }
-        public ImageUri(string path, string filename) : base(PortalSettings.Current.PortalId, path, filename)
+        public ImageUri(string path, string filename)
+            : base(PortalSettings.Current.PortalId, path, filename)
         {
         }
-        public ImageUri(int portalid, string fileFullPath) : base(portalid, fileFullPath)
+        public ImageUri(int portalid, string fileFullPath)
+            : base(portalid, fileFullPath)
         {
         }
-        public ImageUri(int portalid, string path, string filename) : base(portalid, path, filename)
+        public ImageUri(int portalid, string path, string filename)
+            : base(portalid, path, filename)
         {
         }
         #endregion

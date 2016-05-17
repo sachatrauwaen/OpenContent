@@ -254,7 +254,7 @@ namespace Satrabel.OpenContent
                 Renderinfo.SetDataSourceModule(dsModule.TabID, dsModule.ModuleID, dsModule, dsSettings.Template, dsSettings.Data);
             }
             BindButtons(Settings, Renderinfo);
-            if (rblUseTemplate.SelectedIndex == 0 ) // existing template
+            if (rblUseTemplate.SelectedIndex == 0) // existing template
             {
                 Renderinfo.Template = new FileUri(ddlTemplate.SelectedValue).ToTemplateManifest();
                 if (rblDataSource.SelectedIndex == 0) // this module
@@ -319,7 +319,7 @@ namespace Satrabel.OpenContent
                     {
                         li = new ListItem(string.Format("[{2}]{0} - {1}", tab.TabName, item.ModuleTitle, tabpath), item.TabModuleID.ToString());
                     }
-                    
+
                     listItems.Add(li);
                     if (item.TabID == tabId && item.ModuleID == moduleId)
                     {
@@ -339,11 +339,11 @@ namespace Satrabel.OpenContent
 
             ddlDetailPage.Items.Clear();
             ddlDetailPage.Items.Add(new ListItem(string.Format("Main Module Page [{0}]", otherModuleTabId), "-1"));
-            if (otherModuleTabId>0)
+            if (otherModuleTabId > 0)
             {
                 //todo: add li with "CurrentPage"
             }
-            
+
             //todo: wegfilteren van redirected tabs
 
             var listItems = new List<ListItem>();
@@ -370,7 +370,7 @@ namespace Satrabel.OpenContent
         private void ActivateDetailPage()
         {
             phDetailPage.Visible = false;
-            if (ddlTemplate.SelectedIndex >= 0 && rblUseTemplate.SelectedIndex == 0 ) // existing template
+            if (ddlTemplate.SelectedIndex >= 0 && rblUseTemplate.SelectedIndex == 0) // existing template
             {
                 var template = new FileUri(ddlTemplate.SelectedValue);
                 var manifest = template.ToTemplateManifest();

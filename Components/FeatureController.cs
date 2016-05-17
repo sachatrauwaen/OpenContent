@@ -153,18 +153,18 @@ namespace Satrabel.OpenContent.Components
                 var pc = new PortalController();
                 foreach (var p in pc.GetPortals().Cast<PortalInfo>())
                 {
-                    string webConfig =  HostingEnvironment.MapPath("~/"+p.HomeDirectory+"/OpenContent/Templates/web.config");
+                    string webConfig = HostingEnvironment.MapPath("~/" + p.HomeDirectory + "/OpenContent/Templates/web.config");
                     res += webConfig;
                     if (File.Exists(webConfig))
                     {
-                        res += " : found \n"; 
+                        res += " : found \n";
                         File.Delete(webConfig);
                         string filename = HostingEnvironment.MapPath("~/DesktopModules/OpenContent/Templates/web.config");
                         File.Copy(filename, webConfig);
-                    }    
+                    }
                 }
             }
-            return Version + res; 
+            return Version + res;
         }
     }
 }

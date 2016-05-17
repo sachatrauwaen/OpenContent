@@ -22,7 +22,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
 
                     placeholder.Controls.Add(AddPropertyToMeta(new HtmlMeta
                     {
-                        Content = DnnUtils.GetCurrentCultureCode().Replace('-','_')
+                        Content = DnnUtils.GetCurrentCultureCode().Replace('-', '_')
                     }, "og:locale"));
 
                     placeholder.Controls.Add(AddPropertyToMeta(new HtmlMeta
@@ -137,7 +137,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         }
 
         #endregion
-        
+
         #region OpenGraph Products
 
         public class Product

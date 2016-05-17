@@ -86,7 +86,7 @@ namespace Satrabel.OpenContent.Components.Json
                     opt = options["fields"][child.Name] as JObject;
                 }
                 if (opt == null) continue;
-                bool lookup = opt != null && 
+                bool lookup = opt != null &&
                     opt["type"] != null &&
                     opt["type"].ToString() == "select2" &&
                     opt["dataService"] != null &&
@@ -102,7 +102,7 @@ namespace Satrabel.OpenContent.Components.Json
                     dataMember = opt["dataService"]["data"]["dataMember"] == null ? "" : opt["dataService"]["data"]["dataMember"].ToString();
                     valueField = opt["dataService"]["data"]["valueField"] == null ? "Id" : opt["dataService"]["data"]["valueField"].ToString();
                 }
-                              
+
                 var childProperty = child;
 
                 if (childProperty.Value is JArray)
@@ -176,11 +176,11 @@ namespace Satrabel.OpenContent.Components.Json
                 bool image = opt != null &&
                     opt["type"] != null && opt["type"].ToString() == "image2";
 
-                
+
                 if (image && reqOpt != null)
                 {
-                                       
-                    
+
+
                 }
 
                 var childProperty = child;

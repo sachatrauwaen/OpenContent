@@ -78,7 +78,7 @@ namespace Satrabel.OpenContent.Components
             var dnnpage = page as DotNetNuke.Framework.CDefault;
             if (dnnpage != null)
             {
-                var htmlMeta = new LiteralControl(meta); 
+                var htmlMeta = new LiteralControl(meta);
                 dnnpage.FindControl("Head").Controls.Add(htmlMeta);
             }
         }

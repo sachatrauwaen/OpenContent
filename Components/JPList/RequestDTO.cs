@@ -12,7 +12,7 @@ namespace Satrabel.OpenContent.Components.JPList
     {
         public string statuses { get; set; }
         public string options { get; set; }
-        
+
         public List<StatusDTO> StatusLst
         {
             get
@@ -20,7 +20,7 @@ namespace Satrabel.OpenContent.Components.JPList
                 var lst = new List<StatusDTO>();
                 if (!String.IsNullOrEmpty(statuses))
                 {
-                    lst  = JsonConvert.DeserializeObject<List<StatusDTO>>(HttpUtility.UrlDecode(statuses));
+                    lst = JsonConvert.DeserializeObject<List<StatusDTO>>(HttpUtility.UrlDecode(statuses));
                     if (lst != null)
                     {
 

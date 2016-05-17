@@ -23,7 +23,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
         public bool? RemoveDefaultNone { get; set; }
         [JsonProperty(PropertyName = "dataService", NullValueHandling = NullValueHandling.Ignore)]
         public JObject DataService { get; set; }
-        
+
 
     }
 }

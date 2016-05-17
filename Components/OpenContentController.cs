@@ -22,7 +22,7 @@ using Satrabel.OpenContent.Components.Lucene.Config;
 
 namespace Satrabel.OpenContent.Components
 {
-    public class OpenContentController 
+    public class OpenContentController
     {
         #region Commands
 

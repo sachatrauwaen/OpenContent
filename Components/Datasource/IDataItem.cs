@@ -13,6 +13,6 @@ namespace Satrabel.OpenContent.Components.Datasource
         JToken Data { get; set; }
         int CreatedByUserId { get; set; }
         object Item { get; set; }
-        
+
     }
 }

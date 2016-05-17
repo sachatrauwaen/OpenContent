@@ -43,7 +43,7 @@ namespace Satrabel.OpenContent.Components
 {
     public class FileUploadController : DnnApiController
     {
-    	private static readonly ILog Logger = LoggerSource.Instance.GetLogger(typeof (FileUploadController));
+        private static readonly ILog Logger = LoggerSource.Instance.GetLogger(typeof(FileUploadController));
         private readonly IFileManager _fileManager = FileManager.Instance;
         private readonly IFolderManager _folderManager = FolderManager.Instance;
 
@@ -96,7 +96,7 @@ namespace Satrabel.OpenContent.Components
                 if (file == null) continue;
 
                 var fileName = CleanUpFileName(Path.GetFileName(file.FileName));
-                
+
 
                 if (IsAllowedExtension(fileName))
                 {

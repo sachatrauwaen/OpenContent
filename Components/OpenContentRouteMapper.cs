@@ -25,5 +25,5 @@ namespace Satrabel.OpenContent.Components
             DataSourceManager.RegisterDataSources();
         }
     }
-} 
+}
 

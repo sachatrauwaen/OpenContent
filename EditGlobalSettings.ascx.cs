@@ -64,7 +64,7 @@ namespace Satrabel.OpenContent
                 }
                 string OpenContent_AutoAttach = PortalController.GetPortalSetting("OpenContent_AutoAttach", ModuleContext.PortalId, "False");
                 cbMLContent.Checked = bool.Parse(OpenContent_AutoAttach);
-                
+
                 string OpenContent_Logging = PortalController.GetPortalSetting("OpenContent_Logging", ModuleContext.PortalId, "none");
                 ddlLogging.SelectedValue = OpenContent_Logging;
             }
@@ -87,6 +87,6 @@ namespace Satrabel.OpenContent
         }
         #endregion
 
-       
+
     }
 }

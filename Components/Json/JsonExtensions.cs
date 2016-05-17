@@ -68,7 +68,7 @@ namespace Satrabel.OpenContent.Components.Json
         {
             try
             {
-                if (obj==null) return null;
+                if (obj == null) return null;
                 return JToken.Parse(obj.ToJson());
             }
             catch (Exception ex)

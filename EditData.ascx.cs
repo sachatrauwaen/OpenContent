@@ -183,7 +183,7 @@ namespace Satrabel.OpenContent
                         string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings.PortalId, PortalSettings.ActiveTab.TabID, ModId, this.TabModuleId);
                         var dc = new AdditionalDataController();
                         var data = dc.GetData(scope, dataManifest.StorageKey ?? key);
-                        
+
                         json = data == null ? "" : data.Json;
                         break;
                     }

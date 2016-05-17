@@ -26,7 +26,7 @@ namespace Lucene.Net.Search
         #region With Sort
         public static TopDocs Search(this Searcher searcher, string type, Query query, int numResults, Sort sort)
         {
-            var res = searcher.Search(query, JsonMappingUtils.GetTypeFilter(type), numResults , sort);
+            var res = searcher.Search(query, JsonMappingUtils.GetTypeFilter(type), numResults, sort);
             return res;
         }
         public static TopDocs Search(this Searcher searcher, string type, Query query, Query filter, int numResults, Sort sort)
@@ -57,7 +57,7 @@ namespace Lucene.Net.Search
             searcher.Search(query, JsonMappingUtils.GetTypeFilter(type), results);
         }
 
-       
+
         #endregion
     }
 }
