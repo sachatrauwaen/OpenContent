@@ -75,9 +75,9 @@ namespace Satrabel.OpenContent.Components
         {
             if (selectedTemplate == null)
             {
-                return GetTemplatesFiles(portalSettings, moduleId, null, moduleSubDir, null);
+                return GetTemplates(portalSettings, moduleId, "", moduleSubDir);
             }
-            return GetTemplatesFiles(portalSettings, moduleId, selectedTemplate.ToTemplateManifest(), moduleSubDir, null);
+            return GetTemplates(portalSettings, moduleId, selectedTemplate.ToTemplateManifest(), moduleSubDir);
         }
 
         /// <summary>
