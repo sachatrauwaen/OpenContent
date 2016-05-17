@@ -109,7 +109,6 @@ namespace Satrabel.OpenContent.Components.Datasource
             }
             else
             {
-                Log.Logger.WarnFormat("Item not shown because module is not confired to show data of that module: This module {0}, Content from module {1} ", context.ModuleId, content.ModuleId);
                 LogContext.Log(context.ModuleId, "Get DataItem", "Result", string.Format("no item returned as incompatible module ids {0}-{1}", content.ModuleId, context.ModuleId));
             }
             return null;

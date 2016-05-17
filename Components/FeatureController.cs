@@ -1,5 +1,5 @@
 /*
-' Copyright (c) 2015 Satrabel.be
+' Copyright (c) 2015-2016 Satrabel.be
 '  All rights reserved.
 ' 
 ' THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
