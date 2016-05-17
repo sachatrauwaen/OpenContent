@@ -92,7 +92,7 @@ namespace Satrabel.OpenContent.Components
         {
             return GetTemplatesFiles(portalSettings, moduleId, selectedTemplate, moduleSubDir, null);
         }
-        
+
         public static List<ListItem> GetTemplatesFiles(PortalSettings portalSettings, int moduleId, TemplateManifest selectedTemplate, string moduleSubDir, FileUri otherModuleTemplate)
         {
             string basePath = HostingEnvironment.MapPath(GetSiteTemplateFolder(portalSettings, moduleSubDir));
@@ -389,12 +389,6 @@ namespace Satrabel.OpenContent.Components
             }
             return FileUri.ReverseMapPath(Template);
         }
-        /*
-        public static bool IsListTemplate(string Template)
-        {
-            return template.IsDefined() && Template.EndsWith("$.hbs");
-        }
-        */
         public static string CleanupUrl(string Url)
         {
             string replaceWith = "-";
