@@ -196,7 +196,7 @@ namespace Satrabel.OpenContent.Components
                         context["IsEditable"] = IsEditable ||
                             (!string.IsNullOrEmpty(editRole) &&
                             OpenContentUtils.HasEditPermissions(PortalSettings, Module, editRole, item.CreatedByUserId));
-                        context["DetailUrl"] = Globals.NavigateURL(MainTabId, false, PortalSettings, "", GetCurrentCultureCode(), OpenContentUtils.CleanupUrl(url), "id=" + item.Id);
+                        context["DetailUrl"] = Globals.NavigateURL(MainTabId, false, PortalSettings, "", GetCurrentCultureCode(), url.CleanupUrl(), "id=" + item.Id);
                         context["MainUrl"] = Globals.NavigateURL(MainTabId, false, PortalSettings, "", GetCurrentCultureCode(), "");
                     }
                     items.Add(dyn);
@@ -344,7 +344,7 @@ namespace Satrabel.OpenContent.Components
                         dynamic dynForHBS = JsonUtils.JsonToDynamic(model.ToString());
                         url = hbEngine.Execute(Manifest.DetailUrl, dynForHBS);
                     }
-                    context["DetailUrl"] = Globals.NavigateURL(MainTabId, false, PortalSettings, "", GetCurrentCultureCode(), OpenContentUtils.CleanupUrl(url), "id=" + Data.Id);
+                    context["DetailUrl"] = Globals.NavigateURL(MainTabId, false, PortalSettings, "", GetCurrentCultureCode(), url.CleanupUrl(), "id=" + Data.Id);
                 }
             }
         }

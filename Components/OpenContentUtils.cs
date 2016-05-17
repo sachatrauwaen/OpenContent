@@ -390,68 +390,6 @@ namespace Satrabel.OpenContent.Components
             return FileUri.ReverseMapPath(Template);
         }
 
-        public static string CleanupUrl(string Url)
-        {
-            const string replaceWith = "-";
-
-            const string accentFrom = "ÀÁÂÃÄÅàáâãäåảạăắằẳẵặấầẩẫậÒÓÔÕÖØòóôõöøỏõọồốổỗộơớờởợÈÉÊËèéêëẻẽẹếềểễệÌÍÎÏìíîïỉĩịÙÚÛÜùúûüủũụưứừửữựÿýỳỷỹỵÑñÇçĞğİıŞş₤€ßđ";
-            const string accentTo = "AAAAAAaaaaaaaaaaaaaaaaaaaOOOOOOoooooooooooooooooooEEEEeeeeeeeeeeeeIIIIiiiiiiiUUUUuuuuuuuuuuuuuyyyyyyNnCcGgIiSsLEsd";
-
-            Url = Url.ToLower().Trim();
-
-            StringBuilder result = new StringBuilder(Url.Length);
-            int i = 0; int last = Url.ToCharArray().GetUpperBound(0);
-            foreach (char c in Url.ToCharArray())
-            {
-
-                //use string for manipulation
-                var ch = c.ToString();
-                if (ch == " ")
-                {
-                    ch = replaceWith;
-                }
-                else if (@".[]|:;`%\\""".Contains(ch))
-                    ch = "";
-                else if (@" &$+,/=?@~#<>()¿¡«»!'’–*…".Contains(ch))
-                    ch = replaceWith;
-                else
-                {
-                    for (int ii = 0; ii < accentFrom.Length; ii++)
-                    {
-                        if (ch == accentFrom[ii].ToString())
-                        {
-                            ch = accentTo[ii].ToString();
-                        }
-                    }
-                }
-
-                if (i == last)
-                {
-                    if (!(ch == "-" || ch == replaceWith))
-                    {   //only append if not the same as the replacement character
-                        result.Append(ch);
-                    }
-                }
-                else
-                    result.Append(ch);
-                i++;//increment counter
-            }
-            string retval = result.ToString();
-            if (!string.IsNullOrEmpty(replaceWith))
-            {
-                while (retval.Contains(replaceWith + replaceWith))
-                {
-                    retval = retval.Replace(replaceWith + replaceWith, replaceWith);
-                }
-                foreach (char c in replaceWith)
-                {
-                    retval = retval.Trim(c);
-                }
-            }
-
-            return retval;
-        }
-
         public static bool CheckOpenContentSettings(ModuleInfo module, OpenContentSettings settings)
         {
             bool result = true;
