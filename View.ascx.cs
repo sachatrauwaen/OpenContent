@@ -391,6 +391,18 @@ namespace Satrabel.OpenContent
                     }
                 }
 
+                if (templateDefined && OpenContentUtils.BuildersExist(settings.Template.ManifestDir))
+                    actions.Add(ModuleContext.GetNextActionID(),
+                        Localization.GetString("Builder.Action", LocalResourceFile),
+                        ModuleActionType.ContentOptions,
+                        "",
+                        "~/DesktopModules/OpenContent/images/formbuilder.png",
+                        ModuleContext.EditUrl("FormBuilder"),
+                        false,
+                        SecurityAccessLevel.Admin,
+                        true,
+                        false);
+
                 if (templateDefined)
                     actions.Add(ModuleContext.GetNextActionID(),
                         Localization.GetString("EditTemplate.Action", LocalResourceFile),
@@ -403,17 +415,7 @@ namespace Satrabel.OpenContent
                         true,
                         false);
 
-                if (templateDefined && OpenContentUtils.BuildersExist(settings.Template.ManifestDir))
-                    actions.Add(ModuleContext.GetNextActionID(),
-                        Localization.GetString("Builder.Action", LocalResourceFile),
-                        ModuleActionType.ContentOptions,
-                        "",
-                        "~/DesktopModules/OpenContent/images/edittemplate.png",
-                        ModuleContext.EditUrl("FormBuilder"),
-                        false,
-                        SecurityAccessLevel.Host,
-                        true,
-                        false);
+                
 
                 if (templateDefined || settings.Manifest != null)
                     actions.Add(ModuleContext.GetNextActionID(),
