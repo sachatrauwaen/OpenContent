@@ -7,9 +7,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Satrabel.OpenContent {
-    
-    
-    public partial class AddEdit {
+namespace Satrabel.OpenContent
+{
+
+
+    public partial class AddEdit
+    {
     }
 }

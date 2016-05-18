@@ -34,7 +34,7 @@ namespace Satrabel.OpenContent.Components.Rss
             List<IDataItem> dataList = new List<IDataItem>(); ;
             var module = mc.GetModule(moduleId, tabId, false);
             OpenContentSettings settings = module.OpenContentSettings();
-            var rssTemplate = new FileUri(settings.TemplateDir, template+".hbs");
+            var rssTemplate = new FileUri(settings.TemplateDir, template + ".hbs");
             string source = File.ReadAllText(rssTemplate.PhysicalFilePath);
             var ds = DataSourceManager.GetDataSource("OpenContent");
             var dsContext = new DataSourceContext()
@@ -65,10 +65,10 @@ namespace Satrabel.OpenContent.Components.Rss
                 }
             }
 
-            ModelFactory mf = new ModelFactory(dataList, null, settings.TemplateDir.PhysicalFullDirectory,null, null, null, module, PortalSettings, tabId, moduleId);
+            ModelFactory mf = new ModelFactory(dataList, null, settings.TemplateDir.PhysicalFullDirectory, null, null, null, module, PortalSettings, tabId, moduleId);
             dynamic model = mf.GetModelAsDynamic();
             HandlebarsEngine hbEngine = new HandlebarsEngine();
-            string res =  hbEngine.Execute(source, model);
+            string res = hbEngine.Execute(source, model);
             var response = new HttpResponseMessage();
             response.Content = new StringContent(res);
             response.Content.Headers.ContentType = new MediaTypeHeaderValue(mediaType);

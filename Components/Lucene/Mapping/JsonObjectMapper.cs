@@ -43,7 +43,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
         /// <param name="config"></param>
         public void AddJsonToDocument(string source, Document doc, FieldConfig config)
         {
-            if(string.IsNullOrEmpty(source)) return;
+            if (string.IsNullOrEmpty(source)) return;
             JToken token = JToken.Parse(source);
             Add(doc, null, token, config);
         }
@@ -99,7 +99,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
                         if (index || sort)
                         {
                             doc.Add(new NumericField(prefix, Field.Store.NO, true).SetLongValue(((DateTime)value.Value).Ticks));
-                            
+
                             //doc.Add(new Field(prefix, DateTools.DateToString((DateTime)value.Value, DateTools.Resolution.SECOND), Field.Store.NO, Field.Index.NOT_ANALYZED));
 
                             /*

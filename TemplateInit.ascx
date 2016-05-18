@@ -1,7 +1,7 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="TemplateInit.ascx.cs" Inherits="Satrabel.OpenContent.TemplateInit" %>
 <asp:Panel ID="pHelp" runat="server" Visible="false" CssClass="dnnForm">
     <fieldset>
-         <div class="dnnFormItem">
+        <div class="dnnFormItem">
             <asp:Label ID="lUseContent" runat="server" ControlName="rblDataSource" ResourceKey="lUseContent" CssClass="dnnLabel" />
             <asp:RadioButtonList runat="server" ID="rblDataSource" AutoPostBack="true" OnSelectedIndexChanged="rblDataSource_SelectedIndexChanged"
                 RepeatDirection="Horizontal" CssClass="dnnFormRadioButtons">
@@ -9,7 +9,7 @@
                 <asp:ListItem Text="Other module" />
             </asp:RadioButtonList>
         </div>
-         <asp:PlaceHolder ID="phDataSource" runat="server" Visible="false">
+        <asp:PlaceHolder ID="phDataSource" runat="server" Visible="false">
             <div class="dnnFormItem">
                 <asp:Label runat="server" ControlName="ddlDataSource" ResourceKey="lDataSource" CssClass="dnnLabel" />
                 <asp:DropDownList runat="server" ID="ddlDataSource" AutoPostBack="true" OnSelectedIndexChanged="ddlDataSource_SelectedIndexChanged">
@@ -47,10 +47,10 @@
                 <asp:TextBox ID="tbTemplateName" runat="server"></asp:TextBox>
             </div>
         </asp:PlaceHolder>
-         <asp:PlaceHolder ID="phDetailPage" runat="server" Visible="false">
+        <asp:PlaceHolder ID="phDetailPage" runat="server" Visible="false">
             <div class="dnnFormItem">
                 <asp:Label runat="server" ControlName="ddlDetailPage" ResourceKey="lDetailPage" CssClass="dnnLabel" />
-                <asp:DropDownList runat="server" ID="ddlDetailPage" >
+                <asp:DropDownList runat="server" ID="ddlDetailPage">
                 </asp:DropDownList>
             </div>
         </asp:PlaceHolder>
@@ -62,10 +62,10 @@
             <asp:LinkButton ID="bSave" runat="server" CssClass="dnnPrimaryAction" ResourceKey="Save" OnClick="bSave_Click" />
         </li>
         <li>
-             <asp:HyperLink ID="hlEditSettings" runat="server" Enabled="false"  CssClass="dnnSecondaryAction" >Template Settings</asp:HyperLink>
+            <asp:HyperLink ID="hlEditSettings" runat="server" Enabled="false" CssClass="dnnSecondaryAction">Template Settings</asp:HyperLink>
         </li>
         <li>
-             <asp:HyperLink ID="hlEditContent" runat="server" Enabled="false" CssClass="dnnSecondaryAction" >Edit Content</asp:HyperLink>
+            <asp:HyperLink ID="hlEditContent" runat="server" Enabled="false" CssClass="dnnSecondaryAction">Edit Content</asp:HyperLink>
         </li>
     </ul>
 </asp:Panel>

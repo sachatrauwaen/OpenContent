@@ -35,7 +35,7 @@ namespace Satrabel.OpenContent.Components
                 TabId = int.Parse(sTabId);
                 ModuleId = int.Parse(sModuleId);
             }
-            
+
             Data = moduleSettings["data"] as string;
             Query = moduleSettings["query"] as string;
             var sDetailTabId = moduleSettings["detailtabid"] as string;
@@ -47,7 +47,7 @@ namespace Satrabel.OpenContent.Components
         }
 
         internal TemplateKey TemplateKey { get; private set; }
-        
+
         public int TabId { get; private set; }
         public int ModuleId { get; private set; }
 

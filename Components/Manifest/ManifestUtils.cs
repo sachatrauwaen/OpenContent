@@ -37,7 +37,7 @@ namespace Satrabel.OpenContent.Components.Manifest
                 //if (manifest == null)
                 //    manifest = GetVirtualManifest(templateKey);
                 //else if (manifest.Templates == null)
-                    manifest = GetVirtualManifest(templateKey);
+                manifest = GetVirtualManifest(templateKey);
             }
 
             if (manifest != null && manifest.HasTemplates)

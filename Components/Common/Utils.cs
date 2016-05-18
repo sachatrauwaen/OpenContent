@@ -42,7 +42,7 @@ namespace Satrabel.OpenContent.Components
             /// Compiled regular expression for performance.
             /// </summary>
             private static readonly Regex HtmlRegex = new Regex("<.*?>", RegexOptions.Compiled);
-            
+
             /// <summary>
             /// Remove HTML from string with compiled Regex.
             /// </summary>

@@ -34,7 +34,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         /// <param name="id">The identifier. (null for single item template)</param>
         /// <returns></returns>
         IDataItem Get(DataSourceContext context, string id);
-               
+
         /// <summary>
         /// Gets items of a list datasource based on a query, 
         /// </summary>

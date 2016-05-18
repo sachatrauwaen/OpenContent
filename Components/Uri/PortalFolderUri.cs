@@ -16,15 +16,18 @@ namespace Satrabel.OpenContent.Components
     {
         #region Constructors
 
-        public PortalFolderUri(int portalid, string pathToFolder) : base(pathToFolder)
+        public PortalFolderUri(int portalid, string pathToFolder)
+            : base(pathToFolder)
         {
             FolderInfo = GetFolderInfo(portalid);
         }
-        public PortalFolderUri(IFolderInfo folderInfo):  base(GetFolderPath(folderInfo))
+        public PortalFolderUri(IFolderInfo folderInfo)
+            : base(GetFolderPath(folderInfo))
         {
             FolderInfo = folderInfo;
         }
-        public PortalFolderUri(int folderId) : base(GetFolderPath(folderId))
+        public PortalFolderUri(int folderId)
+            : base(GetFolderPath(folderId))
         {
             var folderInfo = FolderManager.Instance.GetFolder(folderId);
             if (folderInfo == null)
@@ -37,7 +40,7 @@ namespace Satrabel.OpenContent.Components
             IFolderInfo folderRequested = null;
             //var portalid = PortalSettings.Current.PortalId;
             var pf = (new PortalController()).GetPortal(portalid).HomeDirectory;
-            var pos =  FolderPath.IndexOf(pf, StringComparison.InvariantCultureIgnoreCase);
+            var pos = FolderPath.IndexOf(pf, StringComparison.InvariantCultureIgnoreCase);
             if (pos > -1)
             {
                 folderRequested = FolderManager.Instance.GetFolder(portalid, FolderPath.Substring(pos + pf.Length + 1));
@@ -67,7 +70,7 @@ namespace Satrabel.OpenContent.Components
         /// </value>
         /// <remarks>This is only available for folders under the Dnn Portal Directory</remarks>
         public IFolderInfo FolderInfo { get; private set; }
-        
+
         public int DnnFolderId
         {
             get

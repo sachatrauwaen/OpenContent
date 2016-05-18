@@ -138,7 +138,7 @@
     <Compile Include="AddEdit.ascx.designer.cs">
       <DependentUpon>AddEdit.ascx</DependentUpon>
     </Compile>
-    <Compile Include="Components\Logging\ExceptionUtils.cs" />
+    <Compile Include="Components\Logging\LoggingUtils.cs" />
     <Compile Include="Components\Logging\LogContext.cs" />
     <Compile Include="Components\Logging\TemplateException.cs" />
     <Compile Include="AlpacaFormBuilder.ascx.cs">
@@ -205,9 +205,11 @@
     <Compile Include="Components\OpenDataController.cs" />
     <Compile Include="Components\Razor\RazorEngine.cs" />
     <Compile Include="Components\Rss\RssApiController.cs" />
+    <Compile Include="Components\TemplateHelpers\Images\ImageFactory.cs" />
     <Compile Include="Components\TemplateHelpers\OpenGraph.cs" />
     <Compile Include="Components\TemplateHelpers\OtherExtentions.cs" />
     <Compile Include="Components\Manifest\TemplateManifest.cs" />
+    <Compile Include="Components\TemplateHelpers\UrlHelpers.cs" />
     <Compile Include="Components\Uri\PortalFolderUri.cs" />
     <Compile Include="Components\Uri\PortalFileUri.cs" />
     <Compile Include="Components\Uri\FolderUri.cs" />
@@ -408,20 +410,6 @@
     <Content Include="css\font-awesome\css\font-awesome.css" />
     <Content Include="css\font-awesome\css\font-awesome.min.css" />
     <Content Include="css\font-awesome\fonts\fontawesome-webfont.svg" />
-    <Content Include="css\images\ui-bg_diagonals-thick_18_b81900_40x40.png" />
-    <Content Include="css\images\ui-bg_diagonals-thick_20_666666_40x40.png" />
-    <Content Include="css\images\ui-bg_flat_10_000000_40x100.png" />
-    <Content Include="css\images\ui-bg_glass_100_f6f6f6_1x400.png" />
-    <Content Include="css\images\ui-bg_glass_100_fdf5ce_1x400.png" />
-    <Content Include="css\images\ui-bg_glass_65_ffffff_1x400.png" />
-    <Content Include="css\images\ui-bg_gloss-wave_35_f6a828_500x100.png" />
-    <Content Include="css\images\ui-bg_highlight-soft_100_eeeeee_1x100.png" />
-    <Content Include="css\images\ui-bg_highlight-soft_75_ffe45c_1x100.png" />
-    <Content Include="css\images\ui-icons_222222_256x240.png" />
-    <Content Include="css\images\ui-icons_228ef1_256x240.png" />
-    <Content Include="css\images\ui-icons_ef8c08_256x240.png" />
-    <Content Include="css\images\ui-icons_ffd27a_256x240.png" />
-    <Content Include="css\images\ui-icons_ffffff_256x240.png" />
     <Content Include="EditAddData.ascx" />
     <Content Include="EditInit.ascx" />
     <Content Include="EditQuery.ascx" />
@@ -580,7 +568,6 @@
     <Content Include="js\lib\eonasdan-bootstrap-datetimepicker\build\js\bootstrap-datetimepicker.min.js" />
     <Content Include="js\lib\eonasdan-bootstrap-datetimepicker\Gruntfile.js" />
     <Content Include="js\lib\eonasdan-bootstrap-datetimepicker\src\js\bootstrap-datetimepicker.js" />
-    <Content Include="js\lib\eonasdan-bootstrap-datetimepicker\src\nuget\NuGet.exe" />
     <Content Include="js\lib\eonasdan-bootstrap-datetimepicker\tasks\bump_version.js" />
     <Content Include="js\lib\handlebars\handlebars.amd.js" />
     <Content Include="js\lib\handlebars\handlebars.amd.min.js" />

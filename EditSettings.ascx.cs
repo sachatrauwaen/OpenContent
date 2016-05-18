@@ -41,7 +41,7 @@ namespace Satrabel.OpenContent
             var settings = ModuleContext.OpenContentSettings();
             if (settings.TemplateAvailable)
             {
-                AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, settings.TemplateDir.FolderPath, settings.TemplateKey.ShortKey );
+                AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, settings.TemplateDir.FolderPath, settings.TemplateKey.ShortKey);
                 alpaca.RegisterAll();
             }
         }
@@ -51,7 +51,7 @@ namespace Satrabel.OpenContent
             base.OnLoad(e);
             if (!Page.IsPostBack)
             {
-                                
+
                 //var settings = ModuleContext.OpenContentSettings();
                 //scriptList.Items.AddRange(OpenContentUtils.GetTemplatesFiles(PortalSettings, ModuleId, settings.Template, "OpenContent", (settings.IsOtherModule ? settings.Template.Uri() : null)).ToArray());
             }

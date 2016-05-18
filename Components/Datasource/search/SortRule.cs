@@ -10,6 +10,6 @@ namespace Satrabel.OpenContent.Components.Datasource.search
         public string Field { get; set; }
         public FieldTypeEnum FieldType { get; set; }
         public bool Descending { get; set; }
-        
+
     }
 }

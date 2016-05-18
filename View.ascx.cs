@@ -348,7 +348,7 @@ namespace Satrabel.OpenContent
                                 false);
                 }
                 */
-                               
+
 
                 if (templateDefined && settings.Template.SettingsNeeded())
                 {
@@ -868,7 +868,7 @@ namespace Satrabel.OpenContent
             }
             catch (Exception ex)
             {
-                ExceptionUtils.ProcessModuleLoadException(this, ex);
+                LoggingUtils.ProcessModuleLoadException(this, ex);
             }
             return "";
         }
@@ -931,7 +931,7 @@ namespace Satrabel.OpenContent
             }
             catch (Exception ex)
             {
-                ExceptionUtils.ProcessModuleLoadException(this, ex);
+                LoggingUtils.ProcessModuleLoadException(this, ex);
                 //Exceptions.ProcessModuleLoadException(this, ex);
 
             }
@@ -961,7 +961,7 @@ namespace Satrabel.OpenContent
             }
             catch (Exception ex)
             {
-                ExceptionUtils.ProcessModuleLoadException(this, ex);
+                LoggingUtils.ProcessModuleLoadException(this, ex);
                 //Exceptions.ProcessModuleLoadException(this, ex);
             }
             return "";

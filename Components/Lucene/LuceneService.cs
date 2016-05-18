@@ -49,7 +49,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             if (string.IsNullOrEmpty(_searchFolder))
                 throw new ArgumentNullException("searchFolder");
             IndexFolder = Path.Combine(Globals.ApplicationMapPath, _searchFolder);
-            _readerTimeSpan = DefaultRereadTimeSpan; 
+            _readerTimeSpan = DefaultRereadTimeSpan;
         }
 
         private void CheckDisposed()

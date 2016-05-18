@@ -25,6 +25,7 @@ using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Dnn;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.Lucene.Config;
+using Satrabel.OpenContent.Components.TemplateHelpers;
 
 
 namespace Satrabel.OpenContent.Components
@@ -73,7 +74,11 @@ namespace Satrabel.OpenContent.Components
         [Obsolete("This method is obsolete since dec 2015; use GetTemplatesFiles(PortalSettings portalSettings, int moduleId, TemplateManifest selectedTemplate, string moduleSubDir) instead")]
         public static List<ListItem> GetTemplates(PortalSettings portalSettings, int moduleId, FileUri selectedTemplate, string moduleSubDir)
         {
-            return GetTemplatesFiles(portalSettings, moduleId, selectedTemplate.ToTemplateManifest(), moduleSubDir);
+            if (selectedTemplate == null)
+            {
+                return GetTemplates(portalSettings, moduleId, "", moduleSubDir);
+            }
+            return GetTemplates(portalSettings, moduleId, selectedTemplate.ToTemplateManifest(), moduleSubDir);
         }
 
         /// <summary>
@@ -385,74 +390,6 @@ namespace Satrabel.OpenContent.Components
             }
             return FileUri.ReverseMapPath(Template);
         }
-        /*
-        public static bool IsListTemplate(string Template)
-        {
-            return template.IsDefined() && Template.EndsWith("$.hbs");
-        }
-        */
-        public static string CleanupUrl(string Url)
-        {
-            string replaceWith = "-";
-
-            string AccentFrom = "ÀÁÂÃÄÅàáâãäåảạăắằẳẵặấầẩẫậÒÓÔÕÖØòóôõöøỏõọồốổỗộơớờởợÈÉÊËèéêëẻẽẹếềểễệÌÍÎÏìíîïỉĩịÙÚÛÜùúûüủũụưứừửữựÿýỳỷỹỵÑñÇçĞğİıŞş₤€ßđ";
-            string AccentTo = "AAAAAAaaaaaaaaaaaaaaaaaaaOOOOOOoooooooooooooooooooEEEEeeeeeeeeeeeeIIIIiiiiiiiUUUUuuuuuuuuuuuuuyyyyyyNnCcGgIiSsLEsd";
-
-            Url = Url.ToLower().Trim();
-
-            StringBuilder result = new StringBuilder(Url.Length);
-            string ch = ""; int i = 0; int last = Url.ToCharArray().GetUpperBound(0);
-            foreach (char c in Url.ToCharArray())
-            {
-
-                //use string for manipulation
-                ch = c.ToString();
-                if (ch == " ")
-                {
-                    ch = replaceWith;
-                }
-                else if (@".[]|:;`%\\""".Contains(ch))
-                    ch = "";
-                else if (@" &$+,/=?@~#<>()¿¡«»!'’–*…".Contains(ch))
-                    ch = replaceWith;
-                else
-                {
-                    for (int ii = 0; ii < AccentFrom.Length; ii++)
-                    {
-                        if (ch == AccentFrom[ii].ToString())
-                        {
-                            ch = AccentTo[ii].ToString();
-                        }
-                    }
-                }
-
-                if (i == last)
-                {
-                    if (!(ch == "-" || ch == replaceWith))
-                    {   //only append if not the same as the replacement character
-                        result.Append(ch);
-                    }
-                }
-                else
-                    result.Append(ch);
-                i++;//increment counter
-            }
-            result = result.Replace(replaceWith + replaceWith, replaceWith);
-            result = result.Replace(replaceWith + replaceWith, replaceWith);
-
-            // remove ending -
-            while (result.Length > 1 && result[result.Length - 1] == replaceWith[0])
-            {
-                result.Remove(result.Length - 1, 1);
-            }
-            // remove starting -
-            while (result.Length > 1 && result[0] == replaceWith[0])
-            {
-                result.Remove(0, 1);
-            }
-
-            return result.ToString();
-        }
 
         public static bool CheckOpenContentSettings(ModuleInfo module, OpenContentSettings settings)
         {
@@ -496,10 +433,16 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
+        [Obsolete("This method is obsolete since may 2016; use UrlHelpers.CleanupUrl(string url) instead")]
+        public static string CleanupUrl(string url)
+        {
+            return url.CleanupUrl();
+        }
+
         internal static bool BuilderExist(FolderUri folder, string prefix = "")
         {
-            
-            return File.Exists(folder.PhysicalFullDirectory +"\\"+ (string.IsNullOrEmpty(prefix) ? "" : prefix+"-") + "builder.json");
+
+            return File.Exists(folder.PhysicalFullDirectory + "\\" + (string.IsNullOrEmpty(prefix) ? "" : prefix + "-") + "builder.json");
         }
 
         internal static bool BuildersExist(FolderUri folder)

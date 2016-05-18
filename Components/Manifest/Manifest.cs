@@ -42,9 +42,9 @@ namespace Satrabel.OpenContent.Components.Manifest
 
         [JsonProperty(PropertyName = "dataSourceConfig")]
         public JObject DataSourceConfig { get; set; }
-                
+
         //
- 
+
         public bool HasTemplates { get { return (Templates != null); } }
         public FolderUri ManifestDir { get; set; }
         public TemplateManifest GetTemplateManifest(FileUri template)

@@ -7,11 +7,13 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Satrabel.OpenContent {
-    
-    
-    public partial class AlpacaFormBuilder {
-        
+namespace Satrabel.OpenContent
+{
+
+
+    public partial class AlpacaFormBuilder
+    {
+
         /// <summary>
         /// ScopeWrapper control.
         /// </summary>
@@ -20,7 +22,7 @@ namespace Satrabel.OpenContent {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Panel ScopeWrapper;
-        
+
         /// <summary>
         /// cmdSave control.
         /// </summary>
@@ -29,7 +31,7 @@ namespace Satrabel.OpenContent {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.HyperLink cmdSave;
-        
+
         /// <summary>
         /// hlCancel control.
         /// </summary>
@@ -38,7 +40,7 @@ namespace Satrabel.OpenContent {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.HyperLink hlCancel;
-        
+
         /// <summary>
         /// hlRefresh control.
         /// </summary>
@@ -47,7 +49,7 @@ namespace Satrabel.OpenContent {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.HyperLink hlRefresh;
-        
+
         /// <summary>
         /// ddlForms control.
         /// </summary>

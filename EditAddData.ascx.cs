@@ -40,8 +40,8 @@ namespace Satrabel.OpenContent
             string ItemId = null;//Request.QueryString["id"] == null ? -1 : int.Parse(Request.QueryString["id"]);
             AlpacaContext = new AlpacaContext(PortalId, ModuleId, ItemId, ScopeWrapper.ClientID, hlCancel.ClientID, cmdSave.ClientID, null, null);
         }
-        
-        public AlpacaContext AlpacaContext { get; private set ; }
+
+        public AlpacaContext AlpacaContext { get; private set; }
 
         public string Key { get; private set; }
     }

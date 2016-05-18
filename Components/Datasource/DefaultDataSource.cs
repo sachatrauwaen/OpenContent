@@ -17,11 +17,11 @@ namespace Satrabel.OpenContent.Components.Datasource
 
         public virtual IDataItem Get(DataSourceContext context, string id)
         {
-            return GetAll(context, null).Items.SingleOrDefault(i=> i.Id == id);
+            return GetAll(context, null).Items.SingleOrDefault(i => i.Id == id);
         }
         public abstract IDataItems GetAll(DataSourceContext context, search.Select select);
 
-        public virtual  JObject GetAlpaca(DataSourceContext context, bool schema, bool options, bool view)
+        public virtual JObject GetAlpaca(DataSourceContext context, bool schema, bool options, bool view)
         {
             var fb = new FormBuilder(new FolderUri(context.TemplateFolder));
             return fb.BuildForm();
@@ -44,6 +44,6 @@ namespace Satrabel.OpenContent.Components.Datasource
         public abstract void Delete(DataSourceContext context, IDataItem item);
 
         public abstract string Name { get; }
-       
+
     }
 }

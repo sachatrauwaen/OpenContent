@@ -20,6 +20,6 @@ namespace Satrabel.OpenContent.Components.Datasource.search
         public RuleValue UpperValue { get; set; }
         public float Boost { get; set; }
         public IEnumerable<RuleValue> MultiValue { get; set; }
-                
+
     }
 }

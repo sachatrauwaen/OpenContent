@@ -38,7 +38,7 @@ namespace Satrabel.OpenContent.Components.Manifest
             Data = data;
             DataJson = dataJson;
             SettingsJson = settingsData;
-            DataExist = data != null;            
+            DataExist = data != null;
         }
 
         public void SetData(IEnumerable<IDataItem> getContents, string settingsData)
@@ -54,15 +54,19 @@ namespace Satrabel.OpenContent.Components.Manifest
         public IEnumerable<IDataItem> DataList { get; private set; }
         public bool DataExist { get; set; }
         public bool ShowDemoData { get; set; }
-        public bool ShowInitControl { 
-            get { 
-                return !DataExist || (string.IsNullOrEmpty(SettingsJson) && Template.SettingsNeeded()); 
-            } 
+        public bool ShowInitControl
+        {
+            get
+            {
+                return !DataExist || (string.IsNullOrEmpty(SettingsJson) && Template.SettingsNeeded());
+            }
         }
 
-        public bool SettingsMissing {
-            get{
-                return string.IsNullOrEmpty(SettingsJson) && Template.SettingsNeeded(); 
+        public bool SettingsMissing
+        {
+            get
+            {
+                return string.IsNullOrEmpty(SettingsJson) && Template.SettingsNeeded();
             }
         }
 
@@ -87,7 +91,7 @@ namespace Satrabel.OpenContent.Components.Manifest
 
         #endregion
 
-        
+
 
         public TemplateManifest Template { get; set; }
 

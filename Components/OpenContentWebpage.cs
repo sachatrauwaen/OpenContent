@@ -77,5 +77,5 @@ namespace Satrabel.OpenContent.Components
     {
         //public T Model { get; set; }
     }
-   
+
 }

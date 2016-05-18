@@ -78,11 +78,11 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         {
             if (file == null)
                 throw new NoNullAllowedException("FileInfo should not be null");
-            
-            if (ModuleDefinitionController.GetModuleDefinitionByFriendlyName("OpenFiles") == null) 
+
+            if (ModuleDefinitionController.GetModuleDefinitionByFriendlyName("OpenFiles") == null)
             {
                 return file.ToUrl();
-            } 
+            }
             var url = file.ToUrlWithoutLinkClick();
             if (url.Contains("LinkClick.aspx")) return url;
             url = url.RemoveQueryParams();

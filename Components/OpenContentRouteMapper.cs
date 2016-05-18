@@ -1,7 +1,7 @@
 #region Copyright
 
 // 
-// Copyright (c) 2015
+// Copyright (c) 2015-2016
 // by Satrabel
 // 
 
@@ -25,5 +25,5 @@ namespace Satrabel.OpenContent.Components
             DataSourceManager.RegisterDataSources();
         }
     }
-} 
+}
 
