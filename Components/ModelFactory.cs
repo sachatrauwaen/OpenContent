@@ -228,14 +228,7 @@ namespace Satrabel.OpenContent.Components
             {
                 // schema
                 string schemaFilename = PhysicalTemplateFolder + "schema.json";
-                try
-                {
-                    model["Schema"] = JObject.Parse(File.ReadAllText(schemaFilename));
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(string.Format("Invalid json-schema. Please verify file {0}.", schemaFilename), ex);
-                }
+                model["Schema"] = JsonUtils.GetJsonFromFile(schemaFilename);
             }
             if (ManifestFiles != null && ManifestFiles.OptionsInTemplate)
             {
