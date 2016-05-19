@@ -345,6 +345,8 @@ namespace Satrabel.OpenContent.Components
                         url = hbEngine.Execute(Manifest.DetailUrl, dynForHBS);
                     }
                     context["DetailUrl"] = Globals.NavigateURL(MainTabId, false, PortalSettings, "", GetCurrentCultureCode(), url.CleanupUrl(), "id=" + Data.Id);
+                    context["Id"] = Data.Id;
+                    context["EditUrl"] = DnnUrlUtils.EditUrl("id", Data.Id, Module.ModuleID, PortalSettings);
                 }
             }
         }
