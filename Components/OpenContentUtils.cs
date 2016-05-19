@@ -353,7 +353,7 @@ namespace Satrabel.OpenContent.Components
 
         public static string GetDefaultTemplate(string physicalFolder)
         {
-            string Template = "";
+            string template = "";
             FolderUri folder = new FolderUri(FolderUri.ReverseMapPath(physicalFolder));
             var manifest = ManifestUtils.GetFileManifest(folder);
             if (manifest != null && manifest.HasTemplates)
@@ -361,7 +361,7 @@ namespace Satrabel.OpenContent.Components
                 //get the requested template key
                 //var templateManifest = manifest.Templates.First().Value;
                 //var templateUri = new FileUri(folder, templateManifest.Main.Template);
-                Template = folder.FolderPath + "/" + manifest.Templates.First().Key;
+                template = folder.FolderPath + "/" + manifest.Templates.First().Key;
             }
             else
             {
@@ -370,25 +370,25 @@ namespace Satrabel.OpenContent.Components
                     string fileName = Path.GetFileName(item).ToLower();
                     if (fileName == "template.hbs")
                     {
-                        Template = item;
+                        template = item;
                         break;
                     }
                     else if (fileName == "template.cshtml")
                     {
-                        Template = item;
+                        template = item;
                         break;
                     }
                     if (fileName.EndsWith(".hbs"))
                     {
-                        Template = item;
+                        template = item;
                     }
                     if (fileName.EndsWith(".cshtml"))
                     {
-                        Template = item;
+                        template = item;
                     }
                 }
             }
-            return FileUri.ReverseMapPath(Template);
+            return FileUri.ReverseMapPath(template);
         }
 
         public static bool CheckOpenContentSettings(ModuleInfo module, OpenContentSettings settings)
