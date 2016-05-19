@@ -234,7 +234,7 @@ namespace Satrabel.OpenContent.Components
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception(string.Format("Invalid json-schema. Please verify file {0}. \r\n{1}", schemaFilename, LoggingUtils.HttpRequestLoggingInfo(HttpContext.Current)), ex);
+                    throw new Exception(string.Format("Invalid json-schema. Please verify file {0}.", schemaFilename), ex);
                 }
             }
             if (ManifestFiles != null && ManifestFiles.OptionsInTemplate)

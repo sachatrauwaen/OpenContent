@@ -578,11 +578,11 @@ namespace Satrabel.OpenContent
         private FileUri CheckFiles(string templateVirtualFolder, TemplateFiles files, string templateFolder)
         {
             if (files == null)
-                Exceptions.ProcessModuleLoadException(this, new Exception("Manifest.json missing or incomplete"));
+                LoggingUtils.ProcessModuleLoadException(this, new Exception("Manifest.json missing or incomplete"));
             string templateFile = templateFolder + "\\" + files.Template;
             string template = templateVirtualFolder + "/" + files.Template;
             if (!File.Exists(templateFile))
-                Exceptions.ProcessModuleLoadException(this, new Exception(template + " don't exist"));
+                LoggingUtils.ProcessModuleLoadException(this, new Exception("Template " + template + " don't exist"));
             if (files.PartialTemplates != null)
             {
                 foreach (var partial in files.PartialTemplates)
@@ -590,7 +590,7 @@ namespace Satrabel.OpenContent
                     templateFile = templateFolder + "\\" + partial.Value.Template;
                     string partialTemplate = templateVirtualFolder + "/" + partial.Value.Template;
                     if (!File.Exists(templateFile))
-                        Exceptions.ProcessModuleLoadException(this, new Exception(partialTemplate + " don't exist"));
+                        LoggingUtils.ProcessModuleLoadException(this, new Exception("PartialTemplate " + partialTemplate + " don't exist"));
                 }
             }
             return new FileUri(template);
@@ -939,6 +939,7 @@ namespace Satrabel.OpenContent
                 //LogContext.Log(logKey, "StackTrace", ex.StackTrace);
                 //DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "<p>More info is availale on de browser console (F12)</p>", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.BlueInfo);
             }
+            LoggingUtils.ProcessLogFileException(this, ex);
         }
         private string ExecuteRazor(FileUri template, dynamic model)
         {
@@ -960,8 +961,6 @@ namespace Satrabel.OpenContent
                 }
                 catch (Exception ex)
                 {
-                    Log.Logger.Error(string.Format("Failed to render Razor template source:[{0}], model:[{1}]", template.FilePath, model), ex);
-
                     string stack = string.Join("\n", ex.StackTrace.Split('\n').Where(s => s.Contains("\\Portals\\") && s.Contains("in")).Select(s => s.Substring(s.IndexOf("in"))).ToArray());
                     throw new TemplateException("Failed to render Razor template " + template.FilePath + "\n" + stack, ex, model, template.FilePath);
                 }
@@ -974,7 +973,7 @@ namespace Satrabel.OpenContent
             }
             catch (Exception ex)
             {
-                Exceptions.ProcessModuleLoadException(string.Format("Error while loading template {0} on page {1}", template.FilePath, this.Request.RawUrl), this, ex);
+                LoggingUtils.ProcessModuleLoadException(this, ex);
                 return "";
             }
         }
