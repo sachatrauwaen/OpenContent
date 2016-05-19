@@ -441,14 +441,16 @@ namespace Satrabel.OpenContent.Components
 
         internal static bool BuilderExist(FolderUri folder, string prefix = "")
         {
-
-            return File.Exists(folder.PhysicalFullDirectory + "\\" + (string.IsNullOrEmpty(prefix) ? "" : prefix + "-") + "builder.json");
+            if (folder.FolderExists)
+                return File.Exists(folder.PhysicalFullDirectory + "\\" + (string.IsNullOrEmpty(prefix) ? "" : prefix + "-") + "builder.json");
+            return false;
         }
 
         internal static bool BuildersExist(FolderUri folder)
         {
-
-            return Directory.GetFiles(folder.PhysicalFullDirectory, "*builder.json").Length > 0;
+            if (folder.FolderExists)
+                return Directory.GetFiles(folder.PhysicalFullDirectory, "*builder.json").Length > 0;
+            return false;
         }
 
     }
