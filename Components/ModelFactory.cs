@@ -23,7 +23,7 @@ namespace Satrabel.OpenContent.Components
 {
     public class ModelFactory
     {
-        readonly JToken dataJson;
+        JToken dataJson;
         readonly IDataItem Data;
         readonly string settingsJson;
         readonly string PhysicalTemplateFolder;
@@ -121,6 +121,23 @@ namespace Satrabel.OpenContent.Components
             this.MainModuleId = mainModuleId > 0 ? mainModuleId : module.ModuleID;
         }
 
+        
+        public ModelFactory(IEnumerable<IDataItem> dataList, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles manifestFiles, ModuleInfo module, int portalId, string cultureCode, int mainTabId, int mainModuleId)
+        {
+            this.DataList = dataList;
+            this.settingsJson = settingsJson;
+            this.PhysicalTemplateFolder = physicalTemplateFolder;
+            this.Manifest = manifest;
+            this.ManifestFiles = manifestFiles;
+            this.Module = module;
+            this.PortalId = portalId;
+            this.CultureCode = cultureCode;
+            this.TemplateManifest = templateManifest;
+            this.MainTabId = mainTabId > 0 ? mainTabId : module.TabID;
+            this.MainTabId = DnnUtils.GetTabByCurrentCulture(this.PortalId, this.MainTabId, GetCurrentCultureCode());
+            this.MainModuleId = mainModuleId > 0 ? mainModuleId : module.ModuleID;
+        }
+
         public dynamic GetModelAsDynamic(bool onlyData = false)
         {
             if (PortalSettings == null) onlyData = true;
@@ -135,6 +152,36 @@ namespace Satrabel.OpenContent.Components
             //{
             //    return GetModelAsDynamicFromList();
             //}
+        }
+
+        public IEnumerable<dynamic> GetModelAsDynamicLst(bool onlyData = false)
+        {
+            if (PortalSettings == null) onlyData = true;
+
+            
+            var completeModel = new JObject();
+            CompleteModel(completeModel, onlyData);
+            if (DataList != null)
+            {
+                foreach (var item in DataList)
+                {
+                    var model = item.Data as JObject;
+                    if (LocaleController.Instance.GetLocales(PortalId).Count > 1)
+                    {
+                        JsonUtils.SimplifyJson(model, GetCurrentCultureCode());
+                    }
+                    if (Manifest.AdditionalData != null && completeModel["AdditionalData"] != null && completeModel["Options"] != null)
+                    {
+                        JsonUtils.LookupJson(model, completeModel["AdditionalData"] as JObject, completeModel["Options"] as JObject);
+                    }
+                    //JsonUtils.Merge(model, completeModel);
+                    JObject context = new JObject();
+                    model["Context"] = context;
+                    context["Id"] = item.Id;
+
+                    yield return JsonUtils.JsonToDynamic(model.ToString());
+                }
+            }
         }
 
         public JToken GetModelAsJson(bool onlyData = false)
@@ -180,7 +227,29 @@ namespace Satrabel.OpenContent.Components
                     {
                         JsonUtils.ImagesJson(dyn, Options, model["Options"] as JObject);
                     }
-                    if (!onlyData)
+                    JObject context = new JObject();
+                    dyn["Context"] = context;
+                    context["Id"] = item.Id;
+                    if (onlyData)
+                    {
+                        if (model["Settings"] != null)
+                        {
+                            model.Remove("Settings");
+                        }
+                        if (model["Schema"] != null)
+                        {
+                            model.Remove("Schema");
+                        }
+                        if (model["Options"] != null)
+                        {
+                            model.Remove("Options");
+                        }
+                        if (model["AdditionalData"] != null)
+                        {
+                            model.Remove("AdditionalData");
+                        }
+                    }
+                    else
                     {
                         string url = "";
                         if (Manifest != null && !string.IsNullOrEmpty(Manifest.DetailUrl))
@@ -189,9 +258,7 @@ namespace Satrabel.OpenContent.Components
                             dynamic dynForHBS = JsonUtils.JsonToDynamic(dyn.ToString());
                             url = hbEngine.Execute(Manifest.DetailUrl, dynForHBS);
                         }
-                        JObject context = new JObject();
-                        dyn["Context"] = context;
-                        context["Id"] = item.Id;
+                        
                         context["EditUrl"] = DnnUrlUtils.EditUrl("id", item.Id, Module.ModuleID, PortalSettings);
                         context["IsEditable"] = IsEditable ||
                             (!string.IsNullOrEmpty(editRole) &&
@@ -224,7 +291,7 @@ namespace Satrabel.OpenContent.Components
 
         private void CompleteModel(JObject model, bool onlyData)
         {
-            if (ManifestFiles != null && ManifestFiles.SchemaInTemplate)
+            if (!onlyData && ManifestFiles != null && ManifestFiles.SchemaInTemplate)
             {
                 // schema
                 string schemaFilename = PhysicalTemplateFolder + "schema.json";
@@ -294,7 +361,7 @@ namespace Satrabel.OpenContent.Components
                 }
             }
             // settings
-            if (TemplateManifest.SettingsNeeded() && !string.IsNullOrEmpty(settingsJson))
+            if (!onlyData && TemplateManifest.SettingsNeeded() && !string.IsNullOrEmpty(settingsJson))
             {
                 try
                 {
@@ -306,19 +373,22 @@ namespace Satrabel.OpenContent.Components
                 }
             }
             // static localization
-            JToken localizationJson = null;
-            string localizationFilename = PhysicalTemplateFolder + GetCurrentCultureCode() + ".json";
-            if (File.Exists(localizationFilename))
+            if (!onlyData)
             {
-                string fileContent = File.ReadAllText(localizationFilename);
-                if (!string.IsNullOrWhiteSpace(fileContent))
+                JToken localizationJson = null;
+                string localizationFilename = PhysicalTemplateFolder + GetCurrentCultureCode() + ".json";
+                if (File.Exists(localizationFilename))
                 {
-                    localizationJson = fileContent.ToJObject("Localization: " + localizationFilename);
+                    string fileContent = File.ReadAllText(localizationFilename);
+                    if (!string.IsNullOrWhiteSpace(fileContent))
+                    {
+                        localizationJson = fileContent.ToJObject("Localization: " + localizationFilename);
+                    }
                 }
-            }
-            if (localizationJson != null)
-            {
-                model["Localization"] = localizationJson;
+                if (localizationJson != null)
+                {
+                    model["Localization"] = localizationJson;
+                }
             }
 
             string editRole = Manifest == null ? "" : Manifest.EditRole;

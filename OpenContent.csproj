@@ -253,6 +253,8 @@
     <Compile Include="Components\TemplateHelpers\MetaTags.cs" />
     <Compile Include="Components\Manifest\RenderInfo.cs" />
     <Compile Include="Components\Common\Utils.cs" />
+    <Compile Include="Components\UrlRewriter\OpenContentUrlRule.cs" />
+    <Compile Include="Components\UrlRewriter\OpenContentUrlProvider.cs" />
     <Compile Include="EditAddData.ascx.cs">
       <DependentUpon>EditAddData.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
