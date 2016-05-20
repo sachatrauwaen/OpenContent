@@ -41,9 +41,8 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                         dataList = ds.GetAll(dsContext, null).Items;
                         if (dataList.Count() > 1000)
                         {
-                            //continue;
+                            continue;
                         }
-
                         var physicalTemplateFolder = settings.TemplateDir.PhysicalFullDirectory + "\\";
                         HandlebarsEngine hbEngine = new HandlebarsEngine();
                         if (!string.IsNullOrEmpty(settings.Manifest.DetailUrl))
@@ -54,14 +53,11 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                         {
                             string CultureCode = key.Value.Code;
                             string RuleCultureCode = (dicLocales.Count > 1 ? CultureCode : null);
-
                             ModelFactory mf = new ModelFactory(dataList, settings.Data, physicalTemplateFolder, settings.Template.Manifest, settings.Template, settings.Template.Main, module, PortalId, CultureCode, MainTabId, MainModuleId);
                             //dynamic model = mf.GetModelAsDynamic(true);
                             //dynamic items = model.Items;
-                            IEnumerable<dynamic> items = mf.GetModelAsDynamicLst(true);
-
+                            IEnumerable<dynamic> items = mf.GetModelAsDynamicList();
                             Log.Logger.Error("OCUR/" + module.TabID + "/" + MainTabId + "/" + module.ModuleID + "/" + MainModuleId + "/" + CultureCode + "/" + dataList.Count() + "/" + module.ModuleTitle);
-
                             //foreach (IDataItem content in dataList)
                             foreach (dynamic content in items)
                             {

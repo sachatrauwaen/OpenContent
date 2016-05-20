@@ -153,14 +153,13 @@ namespace Satrabel.OpenContent.Components
             //    return GetModelAsDynamicFromList();
             //}
         }
-
-        public IEnumerable<dynamic> GetModelAsDynamicLst(bool onlyData = false)
+        /*
+         * For Url Rewriter
+         */
+        public IEnumerable<dynamic> GetModelAsDynamicList()
         {
-            if (PortalSettings == null) onlyData = true;
-
-            
             var completeModel = new JObject();
-            CompleteModel(completeModel, onlyData);
+            CompleteModel(completeModel, true);
             if (DataList != null)
             {
                 foreach (var item in DataList)
@@ -178,7 +177,6 @@ namespace Satrabel.OpenContent.Components
                     JObject context = new JObject();
                     model["Context"] = context;
                     context["Id"] = item.Id;
-
                     yield return JsonUtils.JsonToDynamic(model.ToString());
                 }
             }
