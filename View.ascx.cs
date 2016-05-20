@@ -44,10 +44,9 @@ using DotNetNuke.Services.Installer.Log;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Alpaca;
-using Satrabel.OpenContent.Components.Loging;
+using Satrabel.OpenContent.Components.Logging;
 using Newtonsoft.Json;
 using System.Text;
-using Satrabel.OpenContent.Components.Logging;
 
 #endregion
 
@@ -415,7 +414,7 @@ namespace Satrabel.OpenContent
                         true,
                         false);
 
-                
+
 
                 if (templateDefined || settings.Manifest != null)
                     actions.Add(ModuleContext.GetNextActionID(),
@@ -888,6 +887,10 @@ namespace Satrabel.OpenContent
             {
                 RenderTemplateException(ex);
             }
+            catch (InvalidJsonFileException ex)
+            {
+                RenderJsonException(ex);
+            }
             catch (Exception ex)
             {
                 LoggingUtils.ProcessModuleLoadException(this, ex);
@@ -916,6 +919,10 @@ namespace Satrabel.OpenContent
             {
                 RenderTemplateException(ex);
             }
+            catch (InvalidJsonFileException ex)
+            {
+                RenderJsonException(ex);
+            }
             catch (Exception ex)
             {
                 LoggingUtils.ProcessModuleLoadException(this, ex);
@@ -936,6 +943,19 @@ namespace Satrabel.OpenContent
                 LogContext.Log(ModuleContext.ModuleId, logKey, "Error", ex.MessageAsList);
                 LogContext.Log(ModuleContext.ModuleId, logKey, "Model", ex.TemplateModel);
                 LogContext.Log(ModuleContext.ModuleId, logKey, "Source", ex.TemplateSource);
+                //LogContext.Log(logKey, "StackTrace", ex.StackTrace);
+                //DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "<p>More info is availale on de browser console (F12)</p>", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.BlueInfo);
+            }
+            LoggingUtils.ProcessLogFileException(this, ex);
+        }
+        private void RenderJsonException(InvalidJsonFileException ex)
+        {
+            DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "<p><b>Json error</b></p>" + ex.MessageAsHtml, DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
+            if (LogContext.IsLogActive)
+            {
+                var logKey = "Error in json";
+                LogContext.Log(ModuleContext.ModuleId, logKey, "Error", ex.MessageAsList);
+                LogContext.Log(ModuleContext.ModuleId, logKey, "Filename", ex.Filename);
                 //LogContext.Log(logKey, "StackTrace", ex.StackTrace);
                 //DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "<p>More info is availale on de browser console (F12)</p>", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.BlueInfo);
             }
@@ -969,6 +989,11 @@ namespace Satrabel.OpenContent
             catch (TemplateException ex)
             {
                 RenderTemplateException(ex);
+                return "";
+            }
+            catch (InvalidJsonFileException ex)
+            {
+                RenderJsonException(ex);
                 return "";
             }
             catch (Exception ex)

@@ -138,8 +138,10 @@
     <Compile Include="AddEdit.ascx.designer.cs">
       <DependentUpon>AddEdit.ascx</DependentUpon>
     </Compile>
+    <Compile Include="Components\Json\InvalidJsonFileException.cs" />
     <Compile Include="Components\Logging\LoggingUtils.cs" />
     <Compile Include="Components\Logging\LogContext.cs" />
+    <Compile Include="Components\Logging\OpenContentException.cs" />
     <Compile Include="Components\Logging\TemplateException.cs" />
     <Compile Include="AlpacaFormBuilder.ascx.cs">
       <DependentUpon>AlpacaFormBuilder.ascx</DependentUpon>

@@ -12,7 +12,6 @@ using System.Web;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components.Logging;
-using Satrabel.OpenContent.Components.Loging;
 
 namespace Satrabel.OpenContent.Components.Datasource
 {

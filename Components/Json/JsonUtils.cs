@@ -312,16 +312,16 @@ namespace Satrabel.OpenContent.Components.Json
             }
         }
 
-        public static JObject GetJsonFromFile(string schemaFilename)
+        public static JObject GetJsonFromFile(string filename)
         {
             JObject retval;
             try
             {
-                retval = JObject.Parse(File.ReadAllText(schemaFilename));
+                retval = JObject.Parse(File.ReadAllText(filename));
             }
             catch (Exception ex)
             {
-                throw new Exception(string.Format("Invalid json-schema. Please verify file {0}.", schemaFilename), ex);
+                throw new InvalidJsonFileException(string.Format("Invalid json in file {0}", filename), ex, filename);
             }
             return retval;
         }

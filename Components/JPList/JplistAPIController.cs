@@ -27,8 +27,6 @@ using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Datasource.search;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Logging;
-using Satrabel.OpenContent.Components.Loging;
-
 
 namespace Satrabel.OpenContent.Components.JPList
 {
