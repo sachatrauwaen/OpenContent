@@ -76,7 +76,7 @@ namespace Satrabel.OpenContent.Components
         {
             if (selectedTemplate == null)
             {
-                return GetTemplates(portalSettings, moduleId, "", moduleSubDir);
+                return GetTemplates(portalSettings, moduleId, null as TemplateManifest, moduleSubDir);
             }
             return GetTemplates(portalSettings, moduleId, selectedTemplate.ToTemplateManifest(), moduleSubDir);
         }
@@ -353,7 +353,7 @@ namespace Satrabel.OpenContent.Components
 
         public static string GetDefaultTemplate(string physicalFolder)
         {
-            string Template = "";
+            string template = "";
             FolderUri folder = new FolderUri(FolderUri.ReverseMapPath(physicalFolder));
             var manifest = ManifestUtils.GetFileManifest(folder);
             if (manifest != null && manifest.HasTemplates)
@@ -361,7 +361,7 @@ namespace Satrabel.OpenContent.Components
                 //get the requested template key
                 //var templateManifest = manifest.Templates.First().Value;
                 //var templateUri = new FileUri(folder, templateManifest.Main.Template);
-                Template = folder.FolderPath + "/" + manifest.Templates.First().Key;
+                template = folder.FolderPath + "/" + manifest.Templates.First().Key;
             }
             else
             {
@@ -370,25 +370,25 @@ namespace Satrabel.OpenContent.Components
                     string fileName = Path.GetFileName(item).ToLower();
                     if (fileName == "template.hbs")
                     {
-                        Template = item;
+                        template = item;
                         break;
                     }
                     else if (fileName == "template.cshtml")
                     {
-                        Template = item;
+                        template = item;
                         break;
                     }
                     if (fileName.EndsWith(".hbs"))
                     {
-                        Template = item;
+                        template = item;
                     }
                     if (fileName.EndsWith(".cshtml"))
                     {
-                        Template = item;
+                        template = item;
                     }
                 }
             }
-            return FileUri.ReverseMapPath(Template);
+            return FileUri.ReverseMapPath(template);
         }
 
         public static bool CheckOpenContentSettings(ModuleInfo module, OpenContentSettings settings)
@@ -441,14 +441,16 @@ namespace Satrabel.OpenContent.Components
 
         internal static bool BuilderExist(FolderUri folder, string prefix = "")
         {
-
-            return File.Exists(folder.PhysicalFullDirectory + "\\" + (string.IsNullOrEmpty(prefix) ? "" : prefix + "-") + "builder.json");
+            if (folder.FolderExists)
+                return File.Exists(folder.PhysicalFullDirectory + "\\" + (string.IsNullOrEmpty(prefix) ? "" : prefix + "-") + "builder.json");
+            return false;
         }
 
         internal static bool BuildersExist(FolderUri folder)
         {
-
-            return Directory.GetFiles(folder.PhysicalFullDirectory, "*builder.json").Length > 0;
+            if (folder.FolderExists)
+                return Directory.GetFiles(folder.PhysicalFullDirectory, "*builder.json").Length > 0;
+            return false;
         }
 
     }

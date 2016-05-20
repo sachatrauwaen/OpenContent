@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.IO;
+using System.Linq;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.TemplateHelpers;
@@ -308,6 +310,20 @@ namespace Satrabel.OpenContent.Components.Json
             {
                 model[prop.Name] = prop.Value;
             }
+        }
+
+        public static JObject GetJsonFromFile(string schemaFilename)
+        {
+            JObject retval;
+            try
+            {
+                retval = JObject.Parse(File.ReadAllText(schemaFilename));
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(string.Format("Invalid json-schema. Please verify file {0}.", schemaFilename), ex);
+            }
+            return retval;
         }
     }
 }

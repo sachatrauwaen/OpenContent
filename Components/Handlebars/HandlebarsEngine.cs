@@ -14,6 +14,7 @@ using Satrabel.OpenContent.Components.TemplateHelpers;
 using Satrabel.OpenContent.Components.Dynamic;
 using System.Collections;
 using DotNetNuke.Entities.Portals;
+using Satrabel.OpenContent.Components.Logging;
 using Satrabel.OpenContent.Components.Loging;
 
 

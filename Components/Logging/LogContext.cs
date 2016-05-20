@@ -8,7 +8,8 @@ namespace Satrabel.OpenContent.Components.Logging
 {
     public class LogContext
     {
-        public Dictionary<int, ModuleLogInfo> Logs { get; private set; }
+        private Dictionary<int, ModuleLogInfo> Logs { get; set; }
+
         private LogContext()
         {
             Logs = new Dictionary<int, ModuleLogInfo>();
@@ -102,5 +103,10 @@ namespace Satrabel.OpenContent.Components.Logging
         public string Label { get; set; }
         [JsonProperty("message")]
         public object Message { get; set; }
+
+        public override string ToString()
+        {
+            return string.Format("{0} - {1} - {2}", Date, Label, Message);
+        }
     }
 }
