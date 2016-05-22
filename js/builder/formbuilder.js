@@ -423,34 +423,7 @@ var fieldSchema =
         "vertical": {
             "type": "boolean",
             "dependencies": "fieldtype"
-        },
-        "advanced": {
-            "type": "boolean",
-            "title": "Advanced"
-        },
-        "required": {
-            "type": "boolean",
-            "dependencies": "advanced"
-        },
-        "default": {
-            "title": "Default",
-            "type": "string",
-            "dependencies": "advanced"
-        },
-        "helper": {
-            "type": "string",
-            "title": "Helper",
-            "dependencies": "advanced"
-        },
-        "placeholder": {
-            "type": "string",
-            "title": "Placeholder",
-            "dependencies": ["fieldtype", "advanced"]
-        },
-        "multilanguage": {
-            "type": "boolean",
-            "dependencies": ["fieldtype", "advanced"]
-        },
+        },        
         "fieldoptions": {
             "type": "array",
             "title": "Options",
@@ -574,6 +547,33 @@ var fieldSchema =
                     "title": "Folder"
                 }
             }
+        },
+        "advanced": {
+            "type": "boolean",
+            "title": "Advanced"
+        },
+        "required": {
+            "type": "boolean",
+            "dependencies": "advanced"
+        },
+        "default": {
+            "title": "Default",
+            "type": "string",
+            "dependencies": "advanced"
+        },
+        "helper": {
+            "type": "string",
+            "title": "Helper",
+            "dependencies": "advanced"
+        },
+        "placeholder": {
+            "type": "string",
+            "title": "Placeholder",
+            "dependencies": ["fieldtype", "advanced"]
+        },
+        "multilanguage": {
+            "type": "boolean",
+            "dependencies": ["fieldtype", "advanced"]
         },
         "dependencies": {
             "type": "array",
