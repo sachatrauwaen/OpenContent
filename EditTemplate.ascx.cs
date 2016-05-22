@@ -151,10 +151,27 @@ namespace Satrabel.OpenContent
                     field["relationoptions"]["valuefield"] = opt["dataService"]["data"]["valueField"];
                     field["relationoptions"]["textfield"] = opt["dataService"]["data"]["textField"];
                 }
-                if (fieldtype == "date" && opt["picker"] != null)
+                else if (fieldtype == "date" && opt["picker"] != null)
                 {
                     field["dateoptions"] = new JObject();
                     field["dateoptions"] = opt["picker"];
+                }
+                else if (fieldtype == "file" && opt["folder"] != null)
+                {
+                    field["fileoptions"] = new JObject();
+                    field["fileoptions"]["folder"] = opt["folder"];
+                }
+                else if (fieldtype == "file2")
+                {
+                    field["file2options"] = new JObject();
+                    if (opt["folder"] != null)
+                    {
+                        field["file2options"]["folder"] = opt["folder"];
+                    }
+                    if (opt["filter"] != null)
+                    {
+                        field["file2options"]["filter"] = opt["filter"];
+                    }
                 }
                 field["fieldtype"] = fieldtype;
                 if (sch["title"] != null)

@@ -91,7 +91,11 @@ function getSchema(formdef) {
         "relation": "string",
         "gallery": "array",
         "documents": "array",
-        "object": "object"
+        "object": "object",
+        "folder2": "string",
+        "file2": "string", 
+        "url2": "string", 
+        "image2": "string"
     };
 
     var baseProps = function (index, value, oldSchema) {
@@ -127,6 +131,13 @@ function getSchema(formdef) {
         }
         if (value.default) {
             prop.default = value.default;
+        }
+        if (value.dependencies) {
+            var deps = [];
+            for (var i = 0; i < value.dependencies.length; i++) {
+                deps.push(value.dependencies[i].fieldname);
+            }
+            prop.dependencies = deps;
         }
         if (value.fieldtype == "array" || value.fieldtype == "table") {
 
@@ -219,6 +230,23 @@ var baseFields = function (index, value, oldOptions) {
         };
     } else if (value.fieldtype == "date" && value.dateoptions) {
         field.picker = value.dateoptions;
+    } else if (value.fieldtype == "file" && value.fileoptions) {
+        field.uploadfolder = value.fileoptions.folder;
+        field.typeahead = {};
+        field.typeahead.Folder = value.fileoptions.folder;
+    } else if (value.fieldtype == "file2" && value.file2options) {
+        field.folder = value.file2options.folder;
+        field.filter = value.file2options.filter;
+    } else if (value.fieldtype == "folder2" && value.folder2options) {
+        field.folder = value.folder2options.folder;
+        field.filter = value.folder2options.filter;
+    } else if (value.fieldtype == "image" && value.imageoptions) {
+        field.uploadfolder = value.imageoptions.folder;
+        field.typeahead = {};
+        field.typeahead.Folder = value.imageoptions.folder;
+    } else if (value.fieldtype == "image2" && value.image2options) {
+        field.folder = value.image2options.folder;
+        field.filter = value.image2options.filter;
     } else if (value.fieldtype == "publishstartdate") {
         field.type = "date";
         field.picker = {
@@ -253,6 +281,18 @@ var baseFields = function (index, value, oldOptions) {
     }
     if (value.helper) {
         field.helper = value.helper;
+    }
+    if (value.dependencies) {
+
+        for (var i = 0; i < value.dependencies.length; i++) {
+            if (value.dependencies[i].values) {
+                if (!field.dependencies) {
+                    field.dependencies = {};
+                }
+                var values = value.dependencies[i].values.split(",");
+                field.dependencies[value.dependencies[i].fieldname] = values;
+            }
+        }
     }
     if (value.fieldtype == "array" || value.fieldtype == "table") {
         //field.toolbarSticky = true;
@@ -367,6 +407,7 @@ var fieldSchema =
             "enum": ["text", "checkbox", "multicheckbox", "select", "radio", "textarea", "email", "date", "number",
                         "image", "file", "url", "icon", "guid", "address",
                         "array", "table", "relation",
+                        "folder2","file2", "url2", "image2",
                         "wysihtml", "ckeditor", "gallery", "documents", "object" /*,
                         "publishstatus", "publishstartdate", "publishenddate"*/]
         },
@@ -470,6 +511,87 @@ var fieldSchema =
                     "title": "Max date (iso)"
                 }
             }
+        },
+        "fileoptions": {
+            "type": "object",
+            "title": "Options",
+            "dependencies": "fieldtype",
+            "properties": {
+                "folder": {
+                    "type": "string",
+                    "title": "Folder"
+                }
+            }
+        },
+        "file2options": {
+            "type": "object",
+            "title": "Options",
+            "dependencies": "fieldtype",
+            "properties": {
+                "folder": {
+                    "type": "string",
+                    "title": "Folder"
+                },
+                "filter": {
+                    "type": "string",
+                    "title": "Filter patern"
+                }
+            }
+        },
+        "folder2options": {
+            "type": "object",
+            "title": "Options",
+            "dependencies": "fieldtype",
+            "properties": {
+                "folder": {
+                    "type": "string",
+                    "title": "Folder"
+                },
+                "filter": {
+                    "type": "string",
+                    "title": "Filter patern"
+                }
+            }
+        },
+        "imageoptions": {
+            "type": "object",
+            "title": "Options",
+            "dependencies": "fieldtype",
+            "properties": {
+                "folder": {
+                    "type": "string",
+                    "title": "Folder"
+                }
+            }
+        },
+        "image2options": {
+            "type": "object",
+            "title": "Options",
+            "dependencies": "fieldtype",
+            "properties": {
+                "folder": {
+                    "type": "string",
+                    "title": "Folder"
+                }
+            }
+        },
+        "dependencies": {
+            "type": "array",
+            "title": "Dependencies",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "fieldname": {
+                        "title": "Field",
+                        "type": "string"
+                    },
+                    "values": {
+                        "title": "Values (value1, value2, ...)",
+                        "type": "string"
+                    }
+                }
+            },
+            "dependencies": ["advanced"]
         }
     }
 };
@@ -482,7 +604,7 @@ var fieldOptions =
         "label": "Multi language",
         "dependencies": {
             "advanced": [true],
-            "fieldtype": ["text", "ckeditor", "file", "image", "url", "wysihtml"]
+            "fieldtype": ["text", "ckeditor", "file", "image", "url", "wysihtml", "file2", "url2",  "image2"]
         }
     },
     "placeholder": {
@@ -498,6 +620,7 @@ var fieldOptions =
         "optionLabels": ["Text", "Checkbox", "Multi checkbox", "Dropdown list (select)", "Radio buttons", "Text area", "Email address", "Date", "Number",
                             "Image (upload & autocomplete)", "File (upload & autocomplete)", "Url (autocomplete for pages)", "Font Awesome Icons", "Guid (auto id)", "Address (autocomplete & geocode)",
                             "List (array)", "Table (array)", "Relation (Additional Data)",
+                            "Folder2 (folderID)", "File2 (fileID)", "Url2 (tabID)", "Image2 (fileID)",
                             "Wysihtml", "CK Editor", "Image Gallery", "Documents", "Group (object)" /*,
                             "Publish status", "Publish start date", "Publish end date"*/]
     },
@@ -536,6 +659,39 @@ var fieldOptions =
         "dependencies": {
             "fieldtype": ["date"]
         }
+    },
+    "fileoptions": {
+        "collapsible": true,
+        "dependencies": {
+            "fieldtype": ["file"]
+        }
+    },
+    "file2options": {
+        "collapsible": true,
+        "dependencies": {
+            "fieldtype": ["file2"]
+        }
+    },
+    "folder2options": {
+        "collapsible": true,
+        "dependencies": {
+            "fieldtype": ["folder2"]
+        }
+    },
+    "imageoptions": {
+        "collapsible": true,
+        "dependencies": {
+            "fieldtype": ["image"]
+        }
+    },
+    "image2options": {
+        "collapsible": true,
+        "dependencies": {
+            "fieldtype": ["image2"]
+        }
+    },
+    "dependencies": {
+        "type": "table"
     }
 };
 
