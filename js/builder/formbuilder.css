@@ -27,8 +27,9 @@
 }
 */
 
-
-
+label.control-label {
+    font-weight: bold;
+}
 
 .form-builder h2 {
     font-size: 18px;
@@ -38,7 +39,9 @@
 /*
 #form button.alpaca-array-actionbar-action {display:block;width:32px;}
     */
-.dnnForm{width:auto;}
+.dnnForm {
+    width: auto;
+}
 
 #form .dnnLabel {
     width: 22.075%;
