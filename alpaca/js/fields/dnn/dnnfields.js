@@ -1756,6 +1756,7 @@
         },
         handlePostRender: function (callback) {
             var self = this;
+            if (self.sf){
             //var el = this.control;
             var el = this.getControlEl();
             $image = $(self.control).parent().find('.alpaca-image-display img');
@@ -1819,7 +1820,7 @@
             if (self.options.manageurl) {
                 var manageButton = $('<a href="' + self.options.manageurl + '" target="_blank" class="alpaca-form-button">Manage files</a>').appendTo($(el).parent());
             }
-
+            }
             callback();
             
         },
@@ -1874,7 +1875,7 @@
         applyTypeAhead: function () {
             var self = this;
 
-            if (self.control.typeahead && self.options.typeahead && !Alpaca.isEmpty(self.options.typeahead)) {
+            if (self.control.typeahead && self.options.typeahead && !Alpaca.isEmpty(self.options.typeahead) && self.sf) {
 
                 var tConfig = self.options.typeahead.config;
                 if (!tConfig) {

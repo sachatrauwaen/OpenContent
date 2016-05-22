@@ -95,7 +95,8 @@ function getSchema(formdef) {
         "folder2": "string",
         "file2": "string", 
         "url2": "string", 
-        "image2": "string"
+        "image2": "string",
+        "imagecrop": "string"
     };
 
     var baseProps = function (index, value, oldSchema) {
@@ -247,6 +248,9 @@ var baseFields = function (index, value, oldOptions) {
     } else if (value.fieldtype == "image2" && value.image2options) {
         field.folder = value.image2options.folder;
         field.filter = value.image2options.filter;
+    } else if (value.fieldtype == "imagecrop" && value.imagecropoptions) {
+        field.cropper = {};
+        field.cropper.aspectRatio = value.imagecropoptions.ratio;
     } else if (value.fieldtype == "publishstartdate") {
         field.type = "date";
         field.picker = {
@@ -416,7 +420,8 @@ var fieldSchema =
             "enum": ["text", "checkbox", "multicheckbox", "select", "radio", "textarea", "email", "date", "number",
                         "image", "file", "url", "icon", "guid", "address",
                         "array", "table", "relation",
-                        "folder2","file2", "url2", "image2",
+                        "folder2", "file2", "url2", "image2",
+                        "imagecrop",
                         "wysihtml", "ckeditor", "gallery", "documents", "object" /*,
                         "publishstatus", "publishstartdate", "publishenddate"*/]
         },
@@ -548,6 +553,17 @@ var fieldSchema =
                 }
             }
         },
+        "imagecropoptions": {
+            "type": "object",
+            "title": "Options",
+            "dependencies": "fieldtype",
+            "properties": {
+                "ratio": {
+                    "type": "number",
+                    "title": "Ratio"
+                }
+            }
+        },
         "advanced": {
             "type": "boolean",
             "title": "Advanced"
@@ -621,6 +637,7 @@ var fieldOptions =
                             "Image (upload & autocomplete)", "File (upload & autocomplete)", "Url (autocomplete for pages)", "Font Awesome Icons", "Guid (auto id)", "Address (autocomplete & geocode)",
                             "List (array)", "Table (array)", "Relation (Additional Data)",
                             "Folder2 (folderID)", "File2 (fileID)", "Url2 (tabID)", "Image2 (fileID)",
+                            "Image (with croppper)",
                             "Wysihtml", "CK Editor", "Image Gallery", "Documents", "Group (object)" /*,
                             "Publish status", "Publish start date", "Publish end date"*/]
     },
@@ -710,6 +727,12 @@ var fieldOptions =
         "collapsible": true,
         "dependencies": {
             "fieldtype": ["image2"]
+        }
+    },
+    "imagecropoptions": {
+        "collapsible": true,
+        "dependencies": {
+            "fieldtype": ["imagecrop"]
         }
     },
     "dependencies": {
