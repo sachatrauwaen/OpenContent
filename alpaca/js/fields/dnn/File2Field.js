@@ -150,7 +150,9 @@
             var self = this;
 
             this.base(model, function() {
-                    self.selectOptions = [];
+                self.selectOptions = [];
+
+                if (self.sf) {
 
                     var completionFunction = function () {
                         self.schema.enum = [];
@@ -218,10 +220,10 @@
                             });
                         }
                     });
-                
-                    //callback();
-                
-
+                }
+                else {
+                    callback();
+                }
             });
         },
 
@@ -311,24 +313,24 @@
         },
 
         getFileUrl : function(fileid){
-
-            var postData = { fileid: fileid };
-            $.ajax({
-                url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "FileUrl",
-                beforeSend: self.sf.setModuleHeaders,
-                type: "get",
-                asych : false,
-                dataType: "json",
-                //contentType: "application/json; charset=utf-8",
-                data: postData,
-                success: function (data) {
-                    return data;
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    return "";
-                }
-            });
-
+            if (self.sf){
+                var postData = { fileid: fileid };
+                $.ajax({
+                    url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "FileUrl",
+                    beforeSend: self.sf.setModuleHeaders,
+                    type: "get",
+                    asych : false,
+                    dataType: "json",
+                    //contentType: "application/json; charset=utf-8",
+                    data: postData,
+                    success: function (data) {
+                        return data;
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        return "";
+                    }
+                });
+            }
         },
 
         /**

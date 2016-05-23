@@ -393,8 +393,11 @@ namespace Satrabel.OpenContent.Components
                 }
                 else if (json["form"]["ModuleTitle"] != null && json["form"]["ModuleTitle"].Type == JTokenType.Object)
                 {
-                    string moduleTitle = json["form"]["ModuleTitle"][DnnUtils.GetCurrentCultureCode()].ToString();
-                    OpenContentUtils.UpdateModuleTitle(ActiveModule, moduleTitle);
+                    if (json["form"]["ModuleTitle"][DnnUtils.GetCurrentCultureCode()] != null)
+                    {
+                        string moduleTitle = json["form"]["ModuleTitle"][DnnUtils.GetCurrentCultureCode()].ToString();
+                        OpenContentUtils.UpdateModuleTitle(ActiveModule, moduleTitle);
+                    }
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, "");
             }
