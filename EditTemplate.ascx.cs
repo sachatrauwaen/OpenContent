@@ -150,6 +150,10 @@ namespace Satrabel.OpenContent
                     field["relationoptions"]["datakey"] = opt["dataService"]["data"]["dataKey"];
                     field["relationoptions"]["valuefield"] = opt["dataService"]["data"]["valueField"];
                     field["relationoptions"]["textfield"] = opt["dataService"]["data"]["textField"];
+                    if (schematype == "array")
+                    {
+                        field["relationoptions"]["many"] = true;
+                    }
                 }
                 else if (fieldtype == "date" && opt["picker"] != null)
                 {

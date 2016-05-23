@@ -117,6 +117,9 @@ function getSchema(formdef) {
         if (value.title && value.fieldtype != "checkbox") {
             prop.title = value.title;
         }
+        if (value.fieldtype == "relation" && value.relationoptions && value.relationoptions.many) {
+            prop.type = "array";
+        }
         if (value.fieldoptions) {
 
             prop.enum = $.map(value.fieldoptions, function (v, i) {
@@ -133,7 +136,7 @@ function getSchema(formdef) {
         if (value.default) {
             prop.default = value.default;
         }
-        if (value.dependencies) {
+        if (value.dependencies && value.dependencies.length > 0) {
             var deps = [];
             for (var i = 0; i < value.dependencies.length; i++) {
                 deps.push(value.dependencies[i].fieldname);
@@ -144,6 +147,7 @@ function getSchema(formdef) {
 
             if (!value.subfields) {
                 prop.items = {};
+            /*
             } else if (value.fieldtype == "array" && value.subfields.length == 1) {
                 var listOldSchema = oldSchema && oldSchema.items ? oldSchema.items : null;
                 var listindex = 0;
@@ -153,6 +157,7 @@ function getSchema(formdef) {
                     listvalue.fieldname = 'field_' + listindex;
                 }
                 prop.items = listprop;
+            */
             } else {
                 prop.items = {
                     //"title": "Field",
@@ -286,8 +291,7 @@ var baseFields = function (index, value, oldOptions) {
     if (value.helper) {
         field.helper = value.helper;
     }
-    if (value.dependencies) {
-
+    if (value.dependencies && value.dependencies.length > 0) {
         for (var i = 0; i < value.dependencies.length; i++) {
             if (value.dependencies[i].values) {
                 if (!field.dependencies) {
@@ -302,6 +306,7 @@ var baseFields = function (index, value, oldOptions) {
         //field.toolbarSticky = true;
         if (!value.subfields) {
             field.items = {};
+        /*
         } else if (value.fieldtype == "array" && value.subfields.length == 1) {
             var listOldOptions = oldOptions && oldOptions.items ? oldOptions.items : null;
             var listindex = 0;
@@ -311,6 +316,7 @@ var baseFields = function (index, value, oldOptions) {
                 listvalue.fieldname = 'field_' + listindex;
             }
             field.items = listfield;
+        */
         } else {
 
             field.items = {
@@ -457,6 +463,10 @@ var fieldSchema =
             "title": "Options",
             "dependencies": "fieldtype",
             "properties": {
+                "many": {
+                    "type": "boolean",
+                    "title": "Many"
+                },
                 "datakey": {
                     "type": "string",
                     "title": "Additional Data Key"
