@@ -7,6 +7,8 @@ namespace Satrabel.OpenContent.Components
 {
     public class FileUri : FolderUri
     {
+        private readonly string _fileName;
+
         #region Constructors
 
         public FileUri(string pathToFile)
@@ -16,7 +18,17 @@ namespace Satrabel.OpenContent.Components
             {
                 throw new ArgumentNullException("pathToFile");
             }
-            FileName = Path.GetFileName(NormalizePath(pathToFile));
+            _fileName = Path.GetFileName(NormalizePath(pathToFile));
+            if (string.IsNullOrEmpty(_fileName))
+            {
+                throw new ArgumentNullException("pathToFile");
+            }
+            var cleanfile = SanitizeFilename(_fileName);
+            if (!_fileName.Equals(cleanfile, StringComparison.InvariantCultureIgnoreCase))
+            {
+                Log.Logger.WarnFormat("Original filename [{0}] was Sanitized into [{1}]", _fileName, cleanfile);
+                _fileName = cleanfile;
+            }
         }
 
         public FileUri(string path, string filename)
@@ -26,7 +38,7 @@ namespace Satrabel.OpenContent.Components
             {
                 throw new ArgumentNullException("filename");
             }
-            FileName = filename;
+            _fileName = SanitizeFilename(filename);
         }
         public FileUri(FolderUri path, string filename)
             : base(path.FolderPath)
@@ -35,7 +47,7 @@ namespace Satrabel.OpenContent.Components
             {
                 throw new ArgumentNullException("filename");
             }
-            FileName = filename;
+            _fileName = SanitizeFilename(filename);
         }
 
         #endregion
@@ -66,7 +78,10 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
-        public string FileName { get; private set; }
+        public string FileName
+        {
+            get { return _fileName; }
+        }
 
         public string FileNameWithoutExtension
         {
@@ -86,6 +101,15 @@ namespace Satrabel.OpenContent.Components
             {
                 return File.Exists(PhysicalFilePath);
             }
+        }
+
+        private static string SanitizeFilename(string fileName)
+        {
+            foreach (var c in Path.GetInvalidFileNameChars())
+            {
+                fileName = fileName.Replace(c, '-');
+            }
+            return fileName; //string.Concat(fileName.Split(Path.GetInvalidFileNameChars()));
         }
 
         #region Static Utils
