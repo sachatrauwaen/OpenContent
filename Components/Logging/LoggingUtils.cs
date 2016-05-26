@@ -23,7 +23,7 @@ namespace Satrabel.OpenContent.Components.Logging
             Exception lastExc = exc;
             while (lastExc.InnerException != null)
             {
-                lastExc = exc.InnerException;
+                lastExc = lastExc.InnerException;
                 friendlyMessage += "\n" + lastExc.Message;
             }
             return friendlyMessage;
