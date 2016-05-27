@@ -70,6 +70,19 @@ function getSchema(formdef) {
         "type": "object",
         "properties": {}
     };
+    var properties = schema.properties;
+    if (formdef.formtype == "array") {
+        schema = {
+            //"title": "Form preview",
+            "type": "array",
+            "items": {
+                "type": "object",
+                //"title": "Category",
+                "properties": {}
+            }
+        };
+        properties = schema.items.properties;
+    }
     var schematypes = {
         "text": "string",
         "select": "string",
@@ -132,7 +145,7 @@ function getSchema(formdef) {
         }
         if (value.required) {
             prop.required = value.required;
-        }
+        }        
         if (value.default) {
             prop.default = value.default;
         }
@@ -207,7 +220,7 @@ function getSchema(formdef) {
             if (!value.fieldname) {
                 value.fieldname = 'field_' + index;
             }
-            schema.properties[value.fieldname] = prop;
+            properties[value.fieldname] = prop;
         });
     }
     return schema;
@@ -217,6 +230,7 @@ var baseFields = function (index, value, oldOptions) {
     var field = {
         "type": value.fieldtype
     };
+    
 
     if (value.multilanguage) {
         field.type = "ml" + field.type;
@@ -236,7 +250,7 @@ var baseFields = function (index, value, oldOptions) {
         };
     } else if (value.fieldtype == "date" && value.dateoptions) {
         field.picker = value.dateoptions;
-    } else if (value.fieldtype == "file" && value.fileoptions) {
+    } else if (value.fieldtype == "file" && value.fileoptions && value.fileoptions.folder) {
         field.uploadfolder = value.fileoptions.folder;
         field.typeahead = {};
         field.typeahead.Folder = value.fileoptions.folder;
@@ -246,7 +260,7 @@ var baseFields = function (index, value, oldOptions) {
     } else if (value.fieldtype == "folder2" && value.folder2options) {
         field.folder = value.folder2options.folder;
         field.filter = value.folder2options.filter;
-    } else if (value.fieldtype == "image" && value.imageoptions) {
+    } else if (value.fieldtype == "image" && value.imageoptions && value.imageoptions.folder) {
         field.uploadfolder = value.imageoptions.folder;
         field.typeahead = {};
         field.typeahead.Folder = value.imageoptions.folder;
@@ -281,10 +295,12 @@ var baseFields = function (index, value, oldOptions) {
     if (value.fieldtype == "checkbox") {
         field.label = value.title;
     }
-    //if (value.vertical){
-    field.vertical = value.vertical;
-    //}
-
+    if (value.fieldtype == "radio") {
+        field.vertical = value.vertical;
+    }
+    if (value.hidden) {
+        field.hidden = value.hidden;
+    }
     if (value.placeholder) {
         field.placeholder = value.placeholder;
     }
@@ -365,12 +381,24 @@ function getOptions(formdef) {
     var options = {
         "fields": {}
     };
+
+    var fields = options.fields;
+    if (formdef.formtype == "array") {
+        options = {
+            "items": {
+                "type": "object",
+                "fields": {}
+            }
+        };
+        fields = options.items.fields;
+    }
+
     if (formdef.formfields) {
         $.each(formdef.formfields, function (index, value) {
             var oldOptions = opts && opts.fields ? opts.fields[value.fieldname] : null;
 
             var field = baseFields(index, value, oldOptions);
-            options.fields[value.fieldname] = field;
+            fields[value.fieldname] = field;
         });
     }
     return options;
@@ -582,6 +610,10 @@ var fieldSchema =
             "type": "boolean",
             "dependencies": "advanced"
         },
+        "hidden": {
+            "type": "boolean",
+            "dependencies": "advanced"
+        },
         "default": {
             "title": "Default",
             "type": "string",
@@ -659,6 +691,9 @@ var fieldOptions =
     },
     "required": {
         "label": "Required"
+    },
+    "hidden": {
+        "label": "Hidden"
     },
     "vertical": {
         "label": "Vertical",
@@ -760,6 +795,12 @@ var formbuilderConfig = {
             "formfields": {
                 "type": "array",
                 "items": fieldSchema
+            },
+            "formtype": {
+                "type": "string",
+                "title": "Form type",
+                "enum": ["object", "array"],
+                "required": true
             }
         }
     },
@@ -772,6 +813,10 @@ var formbuilderConfig = {
                     "fieldClass": "fielddiv",
                     "fields": fieldOptions
                 }
+            },
+            "formtype": {
+                "type": "select",
+                "optionLabels": ["Default (object)", "Additional data (array)"]
             }
         }
     },
@@ -785,6 +830,7 @@ var formbuilderConfig = {
             $('#builder').val(JSON.stringify(value, null, "  "));
             showForm(value);
         });
+        $(".form-builder div.loading").hide();
     }
 
 };

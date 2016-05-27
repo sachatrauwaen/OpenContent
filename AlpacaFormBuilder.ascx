@@ -7,6 +7,9 @@
             <div class="fb-left">
                 <h2>Fields</h2>
                 <div id="form"></div>
+                <div class="loading">
+                    <img src="/DesktopModules/OpenContent/images/loading.gif" alt="Loading"  />
+                </div>
             </div>
             <div class="fb-right">
                 <h2>Form preview</h2>

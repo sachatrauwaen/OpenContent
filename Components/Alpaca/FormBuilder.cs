@@ -134,9 +134,14 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     newProp.Properties.Add("EndDays", new SchemaConfig()
                     {
                         Type = "number",
-                        Title = prop.Value.Title + " : to x days in the future"
+                        Title = prop.Value.Title + " : until x days in the future"
                     });
                     fieldLst.Add(prop.Key);
+                    /*
+                    var newField = new OptionsConfig();
+                    newOptionsFilter.Fields.Add(prop.Key, newField);
+                    newField.Helper = "Use 0 for today";
+                    */
                 }
             }
             // Sort

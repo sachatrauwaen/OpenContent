@@ -53,6 +53,7 @@ label.control-label {
     width: 100%;
     margin-right: -15px;
     margin-left: -15px;
+    min-height:300px;
 }
 
 .fb-left, .fb-right {
@@ -67,4 +68,10 @@ label.control-label {
 
 .fb-right {
     width: 50%;
+}
+
+.loading{
+        left: 20%;
+        top:20%;
+    position: absolute;
 }

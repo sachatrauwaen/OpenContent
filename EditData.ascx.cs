@@ -45,10 +45,25 @@ namespace Satrabel.OpenContent
             base.OnInit(e);
             cmdSave.Click += cmdSave_Click;
             cmdCancel.Click += cmdCancel_Click;
+            cmdImport.Click += cmdImport_Click;
             //ServicesFramework.Instance.RequestAjaxScriptSupport();
             //ServicesFramework.Instance.RequestAjaxAntiForgerySupport();
             sourceList.SelectedIndexChanged += sourceList_SelectedIndexChanged;
             ddlVersions.SelectedIndexChanged += ddlVersions_SelectedIndexChanged;
+        }
+
+        private void cmdImport_Click(object sender, EventArgs e)
+        {
+            OpenContentSettings settings = this.OpenContentSettings();
+
+            switch (sourceList.SelectedValue)
+            {
+                case cData:
+                    {
+                        txtSource.Text = File.ReadAllText(settings.TemplateDir.PhysicalFullDirectory + "\\data.json");
+                    }
+                    break;
+            }
         }
         private void ddlVersions_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -87,6 +102,7 @@ namespace Satrabel.OpenContent
 
         private void DisplayFile(string selectedDataType)
         {
+            cmdImport.Visible = false;
             string json = string.Empty;
             switch (selectedDataType)
             {
@@ -165,7 +181,9 @@ namespace Satrabel.OpenContent
                                     }
                             }
                         }
+                        cmdImport.Visible = string.IsNullOrEmpty(json) && File.Exists(settings.TemplateDir.PhysicalFullDirectory + "\\data.json");
                     }
+
                     break;
                 case cSettings:
                     json = ModuleContext.Settings["data"] as string;
