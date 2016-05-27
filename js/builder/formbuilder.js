@@ -419,7 +419,11 @@ function showForm(value) {
         "schema": schema,
         "options": options,
         "view": "dnn-edit",
-        "connector": connector
+        "connector": connector,
+        "postRender": function (control) {
+            var self = control;
+            $('#form2 .dnnTooltip').dnnTooltip();
+        }
     };
     //alert(JSON.stringify(value, null, "  "));
     $("#schema").val(JSON.stringify(schema, null, "  "));
@@ -430,6 +434,10 @@ function showForm(value) {
     }
     config.options.focus = "";
     $("#form2").alpaca(config);
+
+    
+
+
 }
 
 var fieldSchema =
@@ -488,7 +496,7 @@ var fieldSchema =
         },
         "relationoptions": {
             "type": "object",
-            "title": "Options",
+            "title": "Relation Options",
             "dependencies": "fieldtype",
             "properties": {
                 "many": {
@@ -511,7 +519,7 @@ var fieldSchema =
         },
         "dateoptions": {
             "type": "object",
-            "title": "Options",
+            "title": "Date Options",
             "dependencies": "fieldtype",
             "properties": {
                 "format": {
@@ -530,7 +538,7 @@ var fieldSchema =
         },
         "fileoptions": {
             "type": "object",
-            "title": "Options",
+            "title": "File Options",
             "dependencies": "fieldtype",
             "properties": {
                 "folder": {
@@ -541,7 +549,7 @@ var fieldSchema =
         },
         "file2options": {
             "type": "object",
-            "title": "Options",
+            "title": "File Options",
             "dependencies": "fieldtype",
             "properties": {
                 "folder": {
@@ -556,7 +564,7 @@ var fieldSchema =
         },
         "folder2options": {
             "type": "object",
-            "title": "Options",
+            "title": "Folder Options",
             "dependencies": "fieldtype",
             "properties": {
                 "folder": {
@@ -571,7 +579,7 @@ var fieldSchema =
         },
         "imageoptions": {
             "type": "object",
-            "title": "Options",
+            "title": "Image Options",
             "dependencies": "fieldtype",
             "properties": {
                 "folder": {
@@ -582,7 +590,7 @@ var fieldSchema =
         },
         "image2options": {
             "type": "object",
-            "title": "Options",
+            "title": "Image Options",
             "dependencies": "fieldtype",
             "properties": {
                 "folder": {
@@ -593,7 +601,7 @@ var fieldSchema =
         },
         "imagecropoptions": {
             "type": "object",
-            "title": "Options",
+            "title": "Crop Options",
             "dependencies": "fieldtype",
             "properties": {
                 "ratio": {
@@ -673,6 +681,7 @@ var fieldOptions =
     },
     "fieldname": {
         "showMessages": false
+        //"fieldClass":"fieldname"
     },
     "fieldtype": {
         "optionLabels": ["Text", "Checkbox", "Multi checkbox", "Dropdown list (select)", "Radio buttons", "Text area", "Email address", "Date", "Number",
@@ -800,7 +809,8 @@ var formbuilderConfig = {
                 "type": "string",
                 "title": "Form type",
                 "enum": ["object", "array"],
-                "required": true
+                "required": true,
+                "default": "object"
             }
         }
     },
@@ -831,6 +841,7 @@ var formbuilderConfig = {
             showForm(value);
         });
         $(".form-builder div.loading").hide();
+        $(".form-builder .dnnActions").show();
     }
 
 };
