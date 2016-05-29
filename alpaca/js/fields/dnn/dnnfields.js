@@ -1756,10 +1756,10 @@
         },
         handlePostRender: function (callback) {
             var self = this;
+            var el = this.getControlEl();
+            $image = $(self.control).parent().find('.alpaca-image-display img');
             if (self.sf){
                 //var el = this.control;
-                var el = this.getControlEl();
-                $image = $(self.control).parent().find('.alpaca-image-display img');
                 if (self.options.uploadhidden) {
                     $(this.control.get(0)).find('input[type=file]').hide();
                 } else {
