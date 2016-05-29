@@ -127,7 +127,7 @@ function getSchema(formdef) {
             prop.required = true;
             prop.default = "2099-12-31";
         }
-        if (value.title && value.fieldtype != "checkbox") {
+        if (value.title ) {
             prop.title = value.title;
         }
         if (value.fieldtype == "relation" && value.relationoptions && value.relationoptions.many) {
@@ -292,9 +292,7 @@ var baseFields = function (index, value, oldOptions) {
             return v.text;
         });
     }
-    if (value.fieldtype == "checkbox") {
-        field.label = value.title;
-    }
+    
     if (value.fieldtype == "radio") {
         field.vertical = value.vertical;
     }
