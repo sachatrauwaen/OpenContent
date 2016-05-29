@@ -668,7 +668,7 @@ var fieldOptions =
         "label": "Multi language",
         "dependencies": {
             "advanced": [true],
-            "fieldtype": ["text", "ckeditor", "file", "image", "url", "wysihtml", "file2", "url2",  "image2"]
+            "fieldtype": ["text", "textarea", "ckeditor", "file", "image", "url", "wysihtml", "file2", "url2",  "image2"]
         }
     },
     "placeholder": {

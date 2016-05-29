@@ -35,6 +35,7 @@
     <file>MLFileField.js</file>
     <file>MLImageField.js</file>
     <file>MLTextField.js</file>
+    <file>MLTextAreaField.js</file>
     <file>MLUrlField.js</file>
     <file>mlwysihtmlField.js</file>
     <file>GuidField.js</file>
