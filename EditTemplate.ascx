@@ -90,7 +90,7 @@
                 //$('window.frameElement, body, html').css('overflow', 'hidden');
 
 
-                var containerHeight = $(window).height() - 18 - 52 - 52 - 30;
+                var containerHeight = $(window).height() - 18 - 52 - 52 - 30 -30;
 
                 //$('.editorContainer').height(containerHeight - $('.editorContainer').offset().top - 110);
                 //$('.editorContainer').height(containerHeight - 250);
