@@ -19,7 +19,7 @@
         <div class="dnnFormItem">
             <dnn:Label ID="lblAction" ControlName="scriptList" runat="server" />
             <asp:DropDownList ID="rblAction" runat="server" AutoPostBack="true" OnSelectedIndexChanged="rblAction_SelectedIndexChanged">
-                <asp:ListItem Text="--select--" ></asp:ListItem>
+                <asp:ListItem Text="--select--"></asp:ListItem>
                 <asp:ListItem Text="Import from file" Value="importfile"></asp:ListItem>
                 <asp:ListItem Text="Import from web" Value="importweb"></asp:ListItem>
                 <asp:ListItem Text="Copy template" Value="copy"></asp:ListItem>
@@ -39,10 +39,10 @@
             </div>
             <div class="dnnFormItem">
                 <dnn:Label ID="lblImportName" ControlName="tbImportName" runat="server" />
-                <asp:TextBox runat="server" ID="tbImportName" /> 
+                <asp:TextBox runat="server" ID="tbImportName" />
             </div>
         </fieldset>
-        <ul class="dnnActions dnnClear" style="display:block;padding-left:35%">
+        <ul class="dnnActions dnnClear" style="display: block; padding-left: 35%">
             <li>
                 <asp:LinkButton ID="cmdImport" resourcekey="cmdImport" runat="server" CssClass="dnnPrimaryAction" OnClick="cmdImport_Click" />
             </li>
@@ -58,7 +58,7 @@
                 <asp:DropDownList ID="ddlTemplates" runat="server" />
             </div>
         </fieldset>
-        <ul class="dnnActions dnnClear" style="display:block;padding-left:35%">
+        <ul class="dnnActions dnnClear" style="display: block; padding-left: 35%">
             <li>
                 <asp:LinkButton ID="cmdExport" resourcekey="cmdExport" runat="server" CssClass="dnnPrimaryAction" OnClick="cmdExport_Click" />
             </li>
@@ -79,7 +79,7 @@
                 <asp:HyperLink ID="hlMoreInfo" runat="server" NavigateUrl="http://www.openextensions.net/templates/open-content" Target="_blank">Template exchange on OpenExtensions.net</asp:HyperLink>
             </div>
         </fieldset>
-        <ul class="dnnActions dnnClear" style="display:block;padding-left:35%">
+        <ul class="dnnActions dnnClear" style="display: block; padding-left: 35%">
             <li>
                 <asp:LinkButton ID="cmdImportWeb" resourcekey="cmdImport" runat="server" CssClass="dnnPrimaryAction" OnClick="cmdImportWeb_Click" />
             </li>
@@ -96,10 +96,10 @@
             </div>
             <div class="dnnFormItem">
                 <dnn:Label ID="lCopyName" ControlName="tbCopyName" runat="server" />
-                <asp:TextBox runat="server" ID="tbCopyName" /> 
+                <asp:TextBox runat="server" ID="tbCopyName" />
             </div>
         </fieldset>
-        <ul class="dnnActions dnnClear" style="display:block;padding-left:35%">
+        <ul class="dnnActions dnnClear" style="display: block; padding-left: 35%">
             <li>
                 <asp:LinkButton ID="lbCopy" resourcekey="cmdCopy" runat="server" CssClass="dnnPrimaryAction" OnClick="lbCopy_Click" />
             </li>

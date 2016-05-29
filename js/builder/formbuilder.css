@@ -1,0 +1,77 @@
+.alpaca-array-actionbar.alpaca-array-actionbar-top {
+}
+
+.alpaca-container-label span:hover {
+    color: #337ab7;
+}
+
+.alpaca-array-actionbar.alpaca-array-actionbar-top.btn-group {
+    /*display: inline-block !important;*/
+}
+
+.fielddiv {
+    background-color: #f7f7f9;
+}
+
+.listfielddiv {
+    background-color: #fff;
+}
+
+label.control-label {
+    font-weight: bold;
+}
+
+.form-builder h2 {
+    font-size: 18px;
+    margin-top: 0;
+    margin-bottom: 5px;
+    margin-left: 10px;
+}
+/*
+#form button.alpaca-array-actionbar-action {display:block;width:32px;}
+    */
+.dnnForm {
+    width: auto;
+}
+
+#form .dnnLabel {
+    width: 22.075%;
+}
+
+.fb-container {
+    display: table;
+    width: 100%;
+    margin-right: -15px;
+    margin-left: -15px;
+    min-height: 300px;
+}
+
+.fb-left, .fb-right {
+    display: table-cell;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+.fb-left {
+    width: 50%;
+}
+
+.fb-right {
+    width: 50%;
+}
+
+.loading {
+    left: 40%;
+    top: 40%;
+    position: absolute;
+}
+
+.fieldname input {
+    color: #317eac;
+    font-weight: bold;
+}
+
+.dnnActions select {
+    border-radius: 3px;
+    padding: 7px;
+}

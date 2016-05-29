@@ -1,3 +1,15 @@
 .aspNetDisabled, a.aspNetDisabled, .dnnDisabled, a.dnnDisabled {
     color: #ccc !important;
 }
+
+.dnnFormPopup .ui-dialog-titlebar {
+    position: relative;
+    
+    border-bottom: none; 
+    
+    font-size: 14px;
+    font-weight: bold;
+    color:#585858;
+    /*margin-bottom: 5px;*/
+}
+

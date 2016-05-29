@@ -12,6 +12,10 @@ using System.Globalization;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.TemplateHelpers;
 using Satrabel.OpenContent.Components.Dynamic;
+using System.Collections;
+using DotNetNuke.Entities.Portals;
+using Satrabel.OpenContent.Components.Logging;
+using Satrabel.OpenContent.Components.Logging;
 
 
 namespace Satrabel.OpenContent.Components.Handlebars
@@ -23,103 +27,140 @@ namespace Satrabel.OpenContent.Components.Handlebars
 
         public void Compile(string source)
         {
-            var hbs = HandlebarsDotNet.Handlebars.Create();
-            RegisterDivideHelper(hbs);
-            RegisterMultiplyHelper(hbs);
-            RegisterEqualHelper(hbs);
-            RegisterFormatNumberHelper(hbs);
-            RegisterFormatDateTimeHelper(hbs);
-            RegisterImageUrlHelper(hbs);
-            RegisterArrayIndexHelper(hbs);
-            RegisterArrayTranslateHelper(hbs);
-            RegisterIfAndHelper(hbs);
-            _template = hbs.Compile(source);
+            try
+            {
+                var hbs = HandlebarsDotNet.Handlebars.Create();
+                RegisterDivideHelper(hbs);
+                RegisterMultiplyHelper(hbs);
+                RegisterEqualHelper(hbs);
+                RegisterFormatNumberHelper(hbs);
+                RegisterFormatDateTimeHelper(hbs);
+                RegisterImageUrlHelper(hbs);
+                RegisterArrayIndexHelper(hbs);
+                RegisterArrayTranslateHelper(hbs);
+                RegisterIfAndHelper(hbs);
+                _template = hbs.Compile(source);
+            }
+            catch (Exception ex)
+            {
+                Log.Logger.Error(string.Format("Failed to render Handlebar template source:[{0}]", source), ex);
+                throw new TemplateException("Failed to render Handlebar template " + source, ex, null, source);
+            }
         }
 
         public string Execute(dynamic model)
         {
-            var result = _template(model);
-            return result;
+            try
+            {
+                var result = _template(model);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Log.Logger.Error(string.Format("Failed to execute Handlebar template with model:[{1}]", "", model), ex);
+                throw new TemplateException("Failed to render Handlebar template ", ex, model, "");
+            }
         }
 
         public string Execute(string source, dynamic model)
         {
-            var hbs = HandlebarsDotNet.Handlebars.Create();
-            RegisterDivideHelper(hbs);
-            RegisterMultiplyHelper(hbs);
-            RegisterEqualHelper(hbs);
-            RegisterFormatNumberHelper(hbs);
-            RegisterFormatDateTimeHelper(hbs);
-            RegisterImageUrlHelper(hbs);
-            RegisterArrayIndexHelper(hbs);
-            RegisterArrayTranslateHelper(hbs);
-            RegisterArrayLookupHelper(hbs);
-            RegisterIfAndHelper(hbs);
-            return CompileTemplate(hbs, source, model);
-        }
-        public string Execute(Page page, FileUri sourceFilename, dynamic model)
-        {
-            string source = File.ReadAllText(sourceFilename.PhysicalFilePath);
-            string sourceFolder = sourceFilename.UrlFolder.Replace("\\", "/") + "/";
-            var hbs = HandlebarsDotNet.Handlebars.Create();
-            RegisterDivideHelper(hbs);
-            RegisterMultiplyHelper(hbs);
-            RegisterEqualHelper(hbs);
-            RegisterFormatNumberHelper(hbs);
-            RegisterFormatDateTimeHelper(hbs);
-            RegisterImageUrlHelper(hbs);
-            RegisterScriptHelper(hbs);
-            RegisterHandlebarsHelper(hbs);
-            RegisterRegisterStylesheetHelper(hbs, page, sourceFolder);
-            RegisterRegisterScriptHelper(hbs, page, sourceFolder);
-            RegisterArrayIndexHelper(hbs);
-            RegisterArrayTranslateHelper(hbs);
-            RegisterArrayLookupHelper(hbs);
-            RegisterIfAndHelper(hbs);
-            return CompileTemplate(hbs, source, model);
-        }
-        public string Execute(Page page, IModuleControl module, TemplateFiles files, string templateVirtualFolder, dynamic model)
-        {
-            string source = File.ReadAllText(System.Web.Hosting.HostingEnvironment.MapPath(templateVirtualFolder + "/" + files.Template));
-            string sourceFolder = templateVirtualFolder.Replace("\\", "/") + "/";
-            var hbs = HandlebarsDotNet.Handlebars.Create();
-            if (files.PartialTemplates != null)
-            {
-                foreach (var part in files.PartialTemplates)
-                {
-                    RegisterTemplate(hbs, part.Key, templateVirtualFolder + "/" + part.Value.Template);
-                }
-            }
-            RegisterDivideHelper(hbs);
-            RegisterMultiplyHelper(hbs);
-            RegisterEqualHelper(hbs);
-            RegisterFormatNumberHelper(hbs);
-            RegisterFormatDateTimeHelper(hbs);
-            RegisterImageUrlHelper(hbs);
-            RegisterScriptHelper(hbs);
-            RegisterHandlebarsHelper(hbs);
-            RegisterRegisterStylesheetHelper(hbs, page, sourceFolder);
-            RegisterRegisterScriptHelper(hbs, page, sourceFolder);
-            //RegisterEditUrlHelper(hbs, module);
-            RegisterArrayIndexHelper(hbs);
-            RegisterArrayTranslateHelper(hbs);
-            RegisterArrayLookupHelper(hbs);
-            RegisterIfAndHelper(hbs);
-            return CompileTemplate(hbs, source, model);
-        }
-
-        private string CompileTemplate(IHandlebars hbs, string source, dynamic model)
-        {
             try
             {
-                var compiledTemplate = hbs.Compile(source);
-                return compiledTemplate(model);
+                var hbs = HandlebarsDotNet.Handlebars.Create();
+                RegisterDivideHelper(hbs);
+                RegisterMultiplyHelper(hbs);
+                RegisterEqualHelper(hbs);
+                RegisterFormatNumberHelper(hbs);
+                RegisterFormatDateTimeHelper(hbs);
+                RegisterImageUrlHelper(hbs);
+                RegisterArrayIndexHelper(hbs);
+                RegisterArrayTranslateHelper(hbs);
+                RegisterArrayLookupHelper(hbs);
+                RegisterIfAndHelper(hbs);
+                RegisterEachPublishedHelper(hbs);
+                return CompileTemplate(hbs, source, model);
             }
             catch (Exception ex)
             {
                 Log.Logger.Error(string.Format("Failed to render Handlebar template source:[{0}], model:[{1}]", source, model), ex);
-                throw new Exception("failed to render Handlebar template. See log for more details");
+                throw new TemplateException("Failed to render Handlebar template ", ex, model, source);
             }
+        }
+        public string Execute(Page page, FileUri sourceFilename, dynamic model)
+        {
+            try
+            {
+                string source = File.ReadAllText(sourceFilename.PhysicalFilePath);
+                string sourceFolder = sourceFilename.UrlFolder.Replace("\\", "/") + "/";
+                var hbs = HandlebarsDotNet.Handlebars.Create();
+                RegisterDivideHelper(hbs);
+                RegisterMultiplyHelper(hbs);
+                RegisterEqualHelper(hbs);
+                RegisterFormatNumberHelper(hbs);
+                RegisterFormatDateTimeHelper(hbs);
+                RegisterImageUrlHelper(hbs);
+                RegisterScriptHelper(hbs);
+                RegisterHandlebarsHelper(hbs);
+                RegisterRegisterStylesheetHelper(hbs, page, sourceFolder);
+                RegisterRegisterScriptHelper(hbs, page, sourceFolder);
+                RegisterArrayIndexHelper(hbs);
+                RegisterArrayTranslateHelper(hbs);
+                RegisterArrayLookupHelper(hbs);
+                RegisterIfAndHelper(hbs);
+                RegisterEachPublishedHelper(hbs);
+                return CompileTemplate(hbs, source, model);
+            }
+            catch (Exception ex)
+            {
+                Log.Logger.Error(string.Format("Failed to render Handlebar template source:[{0}], model:[{1}]", sourceFilename, model), ex);
+                throw new TemplateException("Failed to render Handlebar template " + sourceFilename.FilePath, ex, model, sourceFilename.FilePath);
+            }
+        }
+        public string Execute(Page page, IModuleControl module, TemplateFiles files, string templateVirtualFolder, dynamic model)
+        {
+            string sourceFilename = System.Web.Hosting.HostingEnvironment.MapPath(templateVirtualFolder + "/" + files.Template);
+            try
+            {
+
+                string source = File.ReadAllText(sourceFilename);
+                string sourceFolder = templateVirtualFolder.Replace("\\", "/") + "/";
+                var hbs = HandlebarsDotNet.Handlebars.Create();
+                if (files.PartialTemplates != null)
+                {
+                    foreach (var part in files.PartialTemplates.Where(t => t.Value.ClientSide == false))
+                    {
+                        RegisterTemplate(hbs, part.Key, templateVirtualFolder + "/" + part.Value.Template);
+                    }
+                }
+                RegisterDivideHelper(hbs);
+                RegisterMultiplyHelper(hbs);
+                RegisterEqualHelper(hbs);
+                RegisterFormatNumberHelper(hbs);
+                RegisterFormatDateTimeHelper(hbs);
+                RegisterImageUrlHelper(hbs);
+                RegisterScriptHelper(hbs);
+                RegisterHandlebarsHelper(hbs);
+                RegisterRegisterStylesheetHelper(hbs, page, sourceFolder);
+                RegisterRegisterScriptHelper(hbs, page, sourceFolder);
+                //RegisterEditUrlHelper(hbs, module);
+                RegisterArrayIndexHelper(hbs);
+                RegisterArrayTranslateHelper(hbs);
+                RegisterArrayLookupHelper(hbs);
+                RegisterIfAndHelper(hbs);
+                RegisterEachPublishedHelper(hbs);
+                return CompileTemplate(hbs, source, model);
+            }
+            catch (Exception ex)
+            {
+                Log.Logger.Error(string.Format("Failed to render Handlebar template source:[{0}], model:[{1}]", sourceFilename, model), ex);
+                throw new TemplateException("Failed to render Handlebar template " + sourceFilename, ex, model, sourceFilename);
+            }
+        }
+
+        private string CompileTemplate(IHandlebars hbs, string source, dynamic model)
+        {
+            var compiledTemplate = hbs.Compile(source);
+            return compiledTemplate(model);
         }
 
         private void RegisterTemplate(HandlebarsDotNet.IHandlebars hbs, string name, string sourceFilename)
@@ -168,6 +209,11 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 }
             });
         }
+        /// <summary>
+        /// A block helper.
+        /// Returns nothing, executes the template-part if contidions are met.
+        /// </summary>
+        /// <param name="hbs">The HBS.</param>
         private void RegisterEqualHelper(HandlebarsDotNet.IHandlebars hbs)
         {
             hbs.RegisterHelper("equal", (writer, options, context, arguments) =>
@@ -181,6 +227,64 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     options.Inverse(writer, (object)context);
                 }
             });
+        }
+        private void RegisterEachPublishedHelper(HandlebarsDotNet.IHandlebars hbs)
+        {
+            hbs.RegisterHelper("published", (writer, options, context, parameters) =>
+            {
+                bool EditMode = PortalSettings.Current.UserMode == PortalSettings.Mode.Edit;
+                if (EditMode)
+                {
+                    options.Template(writer, parameters[0]);
+                }
+                else
+                {
+                    var lst = new List<dynamic>();
+                    foreach (dynamic item in parameters[0] as IEnumerable)
+                    {
+                        bool show = true;
+                        try
+                        {
+                            if (item.publishstatus != "published")
+                            {
+                                show = false;
+                            }
+                        }
+                        catch (Exception)
+                        {
+                        }
+                        try
+                        {
+                            DateTime publishstartdate = DateTime.Parse(item.publishstartdate, null, System.Globalization.DateTimeStyles.RoundtripKind);
+                            if (publishstartdate > DateTime.Today)
+                            {
+                                show = false;
+                            }
+                        }
+                        catch (Exception)
+                        {
+                        }
+                        try
+                        {
+                            DateTime publishenddate = DateTime.Parse(item.publishenddate, null, System.Globalization.DateTimeStyles.RoundtripKind);
+                            if (publishenddate < DateTime.Today)
+                            {
+                                show = false;
+                            }
+                        }
+                        catch (Exception)
+                        {
+                        }
+                        if (show)
+                        {
+                            lst.Add(item);
+                        }
+
+                    }
+                    options.Template(writer, lst);
+                }
+            });
+
         }
         private void RegisterScriptHelper(HandlebarsDotNet.IHandlebars hbs)
         {
@@ -198,11 +302,8 @@ namespace Satrabel.OpenContent.Components.Handlebars
             {
                 HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "<script id=\"jplist-templatex\" type=\"text/x-handlebars-template\">");
                 HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, context);
-
-                //options.Template(writer, (object)context);
                 HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "</script>");
             });
-
         }
         private void RegisterRegisterScriptHelper(HandlebarsDotNet.IHandlebars hbs, Page page, string sourceFolder)
         {
@@ -215,8 +316,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     {
                         jsfilename = sourceFolder + jsfilename;
                     }
-                    ClientResourceManager.RegisterScript(page, page.ResolveUrl(jsfilename), _jsOrder++/*FileOrder.Js.DefaultPriority*/);
-                    //writer.WriteSafeString(Page.ResolveUrl(jsfilename));
+                    ClientResourceManager.RegisterScript(page, page.ResolveUrl(jsfilename), _jsOrder++ /*FileOrder.Js.DefaultPriority*/);
                 }
             });
         }
@@ -246,6 +346,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 }
             });
         }
+
         private void RegisterImageUrlHelper(HandlebarsDotNet.IHandlebars hbs)
         {
             hbs.RegisterHelper("imageurl", (writer, context, parameters) =>
@@ -264,6 +365,12 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 }
             });
         }
+        /// <summary>
+        /// Retrieved an element from a list.
+        /// First param is List, the second param is the int with the position to retrieve. 
+        /// Zero-based retrieval
+        /// </summary>
+        /// <param name="hbs">The HBS.</param>
         private void RegisterArrayIndexHelper(HandlebarsDotNet.IHandlebars hbs)
         {
             hbs.RegisterHelper("arrayindex", (writer, context, parameters) =>

@@ -6,7 +6,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
     {
         private int PortalId;
 
-        public AlpacaContext(int PortalId, int ModuleId, int ItemId,
+        public AlpacaContext(int PortalId, int ModuleId, string ItemId,
                             string ScopeWrapperID,
                             string CancelButtonID, string SaveButtonID, string DeleteButtonID, string VersionsID)
         {
@@ -33,7 +33,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
         [JsonProperty(PropertyName = "moduleId")]
         public int ModuleId { get; private set; }
         [JsonProperty(PropertyName = "itemId")]
-        public int ItemId { get; set; }
+        public string ItemId { get; set; }
         [JsonProperty(PropertyName = "currentCulture")]
         public string CurrentCulture
         {

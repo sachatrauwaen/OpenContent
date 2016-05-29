@@ -142,7 +142,10 @@
         {
             var self = this;
             this.base(model, function() {
-                    self.selectOptions = [];
+                self.selectOptions = [];
+
+                if (self.sf) {
+
                     var completionFunction = function () {
                         self.schema.enum = [];
                         self.options.optionLabels = [];
@@ -209,7 +212,9 @@
                             });
                         }
                     });
-                    //callback();
+                } else {
+                    callback();
+                }
             });
         },
 

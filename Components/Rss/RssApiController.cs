@@ -14,6 +14,7 @@ using DotNetNuke.Entities.Portals;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Lucene;
 using Satrabel.OpenContent.Components.Lucene.Config;
+using Satrabel.OpenContent.Components.Datasource;
 
 namespace Satrabel.OpenContent.Components.Rss
 {
@@ -30,13 +31,17 @@ namespace Satrabel.OpenContent.Components.Rss
         public HttpResponseMessage GetFeed(int moduleId, int tabId, string template, string mediaType)
         {
             ModuleController mc = new ModuleController();
-            OpenContentController ctrl = new OpenContentController();
-            List<OpenContentInfo> dataList = new List<OpenContentInfo>(); ;
+            List<IDataItem> dataList = new List<IDataItem>(); ;
             var module = mc.GetModule(moduleId, tabId, false);
             OpenContentSettings settings = module.OpenContentSettings();
-            var rssTemplate = new FileUri(settings.TemplateDir, template+".hbs");
+            var rssTemplate = new FileUri(settings.TemplateDir, template + ".hbs");
             string source = File.ReadAllText(rssTemplate.PhysicalFilePath);
-
+            var ds = DataSourceManager.GetDataSource("OpenContent");
+            var dsContext = new DataSourceContext()
+            {
+                ModuleId = moduleId,
+                TemplateFolder = settings.TemplateDir.FolderPath
+            };
             bool useLucene = settings.Template.Manifest.Index;
             if (useLucene)
             {
@@ -44,26 +49,26 @@ namespace Satrabel.OpenContent.Components.Rss
                 var queryDef = new QueryDefinition(indexConfig);
                 queryDef.BuildFilter(true);
                 queryDef.BuildSort("");
-
-                SearchResults docs = LuceneController.Instance.Search(moduleId.ToString(), "Title", queryDef);
+                SearchResults docs = LuceneController.Instance.Search(moduleId.ToString(), queryDef);
                 if (docs != null)
                 {
                     int total = docs.TotalResults;
                     foreach (var item in docs.ids)
                     {
-                        var content = ctrl.GetContent(int.Parse(item));
-                        if (content != null)
+                        var dsItem = ds.Get(dsContext, item);
+                        //var content = ctrl.GetContent(int.Parse(item));
+                        if (dsItem != null)
                         {
-                            dataList.Add(content);
+                            dataList.Add(dsItem);
                         }
                     }
                 }
             }
 
-            ModelFactory mf = new ModelFactory(dataList, null, settings.TemplateDir.PhysicalFullDirectory,null, null, null, module, PortalSettings, tabId, moduleId);
+            ModelFactory mf = new ModelFactory(dataList, null, settings.TemplateDir.PhysicalFullDirectory, null, null, null, module, PortalSettings, tabId, moduleId);
             dynamic model = mf.GetModelAsDynamic();
             HandlebarsEngine hbEngine = new HandlebarsEngine();
-            string res =  hbEngine.Execute(source, model);
+            string res = hbEngine.Execute(source, model);
             var response = new HttpResponseMessage();
             response.Content = new StringContent(res);
             response.Content.Headers.ContentType = new MediaTypeHeaderValue(mediaType);

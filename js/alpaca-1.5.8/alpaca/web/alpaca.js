@@ -19119,7 +19119,7 @@ function program13(depth0,data,depth1) {
 
                         // check array value
                         //if (conditionalDependencies[dependentOnPropertyId] && $.inArray(dependentOnData, conditionalDependencies[dependentOnPropertyId]) == -1)
-                        if (Alpaca.anyEquality(dependentOnData, conditionalData))
+                        if (!Alpaca.anyEquality(dependentOnData, conditionalData))
                         {
                             valid = false;
                         }

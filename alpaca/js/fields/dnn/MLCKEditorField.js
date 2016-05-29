@@ -25,8 +25,23 @@
                 this.olddata = {};
                 this.olddata[this.defaultCulture] = this.data;
             }
+            
+            if (this.culture != this.defaultCulture && this.olddata && this.olddata[this.defaultCulture]) {
+                this.options.placeholder = this.olddata[this.defaultCulture];
+            } else {
+                this.options.placeholder = "";
+            }
+
             this.base();
+
+            if (!this.options.ckeditor) {
+                this.options.ckeditor = {};
+            }
+            if (!this.options.ckeditor.extraPlugins) {
+                this.options.ckeditor.extraPlugins = 'confighelper';
+            }
         },
+
         /**
          * @see Alpaca.Fields.CKEditorField#getValue
          */
@@ -86,7 +101,7 @@
         handlePostRender: function (callback) {
             var self = this;
             var el = this.getControlEl();
-            $(this.control.get(0)).after('<img src="/images/Flags/'+this.culture+'.gif" />');
+            $(this.control.get(0)).after('<img src="/images/Flags/' + this.culture + '.gif" class="flag" />');
             callback();
         },
         

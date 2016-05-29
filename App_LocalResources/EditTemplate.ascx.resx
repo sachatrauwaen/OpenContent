@@ -132,4 +132,7 @@
   <data name="scriptsLabel.Text" xml:space="preserve">
     <value>File</value>
   </data>
+  <data name="cmdBuilder.Text" xml:space="preserve">
+    <value>Activate Form Builder (Do Backup Before)</value>
+  </data>
 </root>

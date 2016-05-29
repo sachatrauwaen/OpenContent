@@ -19,7 +19,7 @@
 <dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/mode/handlebars/handlebars.js" Priority="103" />
 
 <div class="dnnForm dnnRazorHostEditScript dnnClear" id="dnnEditScript">
-    <fieldset>
+    <fieldset >
         <div class="dnnFormItem">
             <dnn:Label id="scriptsLabel" runat="Server" controlname="scriptList" />
             <asp:DropDownList ID="scriptList" runat="server" AutoPostBack="true" />
@@ -35,6 +35,7 @@
             <asp:TextBox ID="txtSource" runat="server" TextMode="MultiLine" Rows="30" Columns="140" />
         </div>
     </fieldset>
+    <asp:Label ID="lError" runat="server" Visible="false" CssClass="dnnFormMessage dnnFormValidationSummary" ></asp:Label>
     <ul class="dnnActions dnnClear">
         <li>
             <asp:LinkButton ID="cmdSave" resourcekey="cmdSave" runat="server" CssClass="dnnPrimaryAction" /></li>
@@ -44,8 +45,12 @@
             <asp:LinkButton ID="cmdCancel" resourcekey="cmdCancel" runat="server" CssClass="dnnSecondaryAction" CausesValidation="False" />
         </li>
         <li>
-            <asp:LinkButton ID="cmdCustom" resourcekey="cmdCustom" runat="server" CssClass="dnnSecondaryAction" />
+            <asp:LinkButton ID="cmdCustom" resourcekey="cmdCustom" runat="server" CssClass="dnnSecondaryAction" Visible="false" />
         </li>
+        <li>
+            <asp:LinkButton ID="cmdBuilder" resourcekey="cmdBuilder" runat="server" CssClass="dnnSecondaryAction" />
+        </li>
+       
     </ul>
 </div>
 <script type="text/javascript">
@@ -82,10 +87,10 @@
 
             var resizeModule = function resizeDnnEditHtml() {
                 //$('#dnnEditScript fieldset').height($(window).height() - $('#dnnEditScript ul dnnActions').height() - 18 - 52);
-                $('window.frameElement, body, html').css('overflow', 'hidden');
+                //$('window.frameElement, body, html').css('overflow', 'hidden');
 
 
-                var containerHeight = $(window).height() - 18 - 52 - 52 - 18 - 30;
+                var containerHeight = $(window).height() - 18 - 52 - 52 - 30 -30;
 
                 //$('.editorContainer').height(containerHeight - $('.editorContainer').offset().top - 110);
                 //$('.editorContainer').height(containerHeight - 250);
@@ -93,6 +98,26 @@
 
                 cm.refresh();
             };
+            var windowTop = parent;
+            var popup = windowTop.jQuery("#iPopUp");
+            if (popup.length) {
+
+                var $window = $(windowTop),
+                                newHeight,
+                                newWidth;
+
+                newHeight = $window.height() - 36;
+                newWidth = Math.min($window.width() - 40, 1200);
+
+                popup.dialog("option", {
+                    close: function () { window.dnnModal.closePopUp(false, ""); },
+                    //'position': 'top',
+                    height: newHeight,
+                    width: newWidth,
+                    //position: 'center'
+                    resizable: false,
+                });
+            }
 
             if (window.frameElement && window.frameElement.id == "iPopUp") {
 

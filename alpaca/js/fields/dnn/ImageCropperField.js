@@ -287,7 +287,7 @@
                         var cropper = self.options.croppers[i];
                         var id = self.id + '-' + i;
                         var $cropbutton = $('#' + id);
-                        if (res.cropdata[i]){
+                        if (res.cropdata[i]) {
                             var cropdata = { url: res.cropdata[i].url, cropper: res.cropdata[i].crop };
                             if (cropdata) {
                                 $cropbutton.data('cropdata', cropdata);
@@ -340,6 +340,7 @@
             }
 
             var $image = $(parentel).find('.alpaca-image-display img.image');
+            //.cropper is a call to external cropper.js file. AlpacaEngine is responsible for loading that file.
             $image.cropper(self.options.cropper).on('built.cropper', function () {
                 var cropopt = $(firstCropButton).data('cropopt');
                 if (cropopt) {

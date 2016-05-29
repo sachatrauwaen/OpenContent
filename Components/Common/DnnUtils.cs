@@ -20,7 +20,6 @@ namespace Satrabel.OpenContent.Components
         /// </summary>
         /// <param name="friendlyName">Friendly name of the module.</param>
         /// <returns></returns>
-        /// <exception cref="System.NotImplementedException"></exception>
         internal static ModuleInfo GetLastModuleByFriendlyName(string friendlyName)
         {
             //DesktopModuleController dmc = new DesktopModuleController();
@@ -33,7 +32,7 @@ namespace Satrabel.OpenContent.Components
             foreach (var mod in modules)
             {
                 var tab = tc.GetTab(mod.TabID, portalid, false);
-                if (tab.CultureCode == culture || tab.CultureCode == null)
+                if (tab.CultureCode == culture || string.IsNullOrEmpty(tab.CultureCode))
                 {
                     return mod;
                 }
@@ -109,10 +108,10 @@ namespace Satrabel.OpenContent.Components
 
             return cultureCode;
         }
-        public static int GetTabByCurrentCulture(int portalId, int tabId, string CultureCode)
+        public static int GetTabByCurrentCulture(int portalId, int tabId, string cultureCode)
         {
             var tc = new TabController();
-            Locale locale = LocaleController.Instance.GetLocale(CultureCode);
+            Locale locale = LocaleController.Instance.GetLocale(cultureCode);
             var tab = tc.GetTabByCulture(tabId, portalId, locale);
             if (tab != null)
             {

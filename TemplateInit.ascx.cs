@@ -191,7 +191,7 @@ namespace Satrabel.OpenContent
                 var templateManifest = new FileUri(ddlTemplate.SelectedValue).ToTemplateManifest();
                 settingsNeeded = templateManifest.SettingsNeeded();
 
-                templateDefined = templateDefined && (!ddlTemplate.Visible || (settings.Template.Key.FullKeyString() == ddlTemplate.SelectedValue));
+                templateDefined = templateDefined && (!ddlTemplate.Visible || (settings.Template.Key.ToString() == ddlTemplate.SelectedValue));
                 settingsDefined = settingsDefined || !settingsNeeded;
             }
             else // new template
@@ -245,7 +245,7 @@ namespace Satrabel.OpenContent
                 rblDataSource.SelectedIndex = (Settings.TabId > 0 && Settings.ModuleId > 0 ? 1 : 0);
                 BindOtherModules(Settings.TabId, Settings.ModuleId);
                 BindTemplates(Settings.Template, (Renderinfo.IsOtherModule ? Renderinfo.Template.Uri() : null));
-                BindDetailPage(Settings.DetailTabId);
+                BindDetailPage(Settings.DetailTabId, Settings.TabId);
             }
             if (rblDataSource.SelectedIndex == 1) // other module
             {
@@ -254,7 +254,7 @@ namespace Satrabel.OpenContent
                 Renderinfo.SetDataSourceModule(dsModule.TabID, dsModule.ModuleID, dsModule, dsSettings.Template, dsSettings.Data);
             }
             BindButtons(Settings, Renderinfo);
-            if (rblUseTemplate.SelectedIndex == 0 ) // existing template
+            if (rblUseTemplate.SelectedIndex == 0) // existing template
             {
                 Renderinfo.Template = new FileUri(ddlTemplate.SelectedValue).ToTemplateManifest();
                 if (rblDataSource.SelectedIndex == 0) // this module
@@ -285,10 +285,7 @@ namespace Satrabel.OpenContent
         private void BindOtherModules(int tabId, int moduleId)
         {
             IEnumerable<ModuleInfo> modules = (new ModuleController()).GetModules(ModuleContext.PortalId).Cast<ModuleInfo>();
-
-            //todo: next line should exclude the modules of other languages
             modules = modules.Where(m => m.ModuleDefinition.DefinitionName == "OpenContent" && m.IsDeleted == false && !m.OpenContentSettings().IsOtherModule);
-
             rblDataSource.Items[1].Enabled = modules.Any();
             phDataSource.Visible = rblDataSource.SelectedIndex == 1; // other module
             if (rblDataSource.SelectedIndex == 1) // other module
@@ -306,8 +303,23 @@ namespace Satrabel.OpenContent
                 {
                     var tc = new TabController();
                     var tab = tc.GetTab(item.TabID, ModuleContext.PortalId, false);
+                    if (!tab.IsNeutralCulture && tab.CultureCode != DnnUtils.GetCurrentCultureCode())
+                    {
+                        // skip other cultures
+                        continue;
+                    }
+
                     var tabpath = tab.TabPath.Replace("//", "/").TrimEnd(tab.TabName).Trim('/');
-                    var li = new ListItem(string.Format("[{2}]{0} - {1}", tab.TabName, item.ModuleTitle, tabpath), item.TabModuleID.ToString());
+                    ListItem li;
+                    if (string.IsNullOrEmpty(tabpath))
+                    {
+                        li = new ListItem(string.Format("{0} - {1}", tab.TabName, item.ModuleTitle), item.TabModuleID.ToString());
+                    }
+                    else
+                    {
+                        li = new ListItem(string.Format("[{2}]{0} - {1}", tab.TabName, item.ModuleTitle, tabpath), item.TabModuleID.ToString());
+                    }
+
                     listItems.Add(li);
                     if (item.TabID == tabId && item.ModuleID == moduleId)
                     {
@@ -320,27 +332,30 @@ namespace Satrabel.OpenContent
                 ddlDataSource.Items.Add(li);
             }
         }
-        private void BindDetailPage(int tabId)
+        private void BindDetailPage(int currentDetailTabId, int otherModuleTabId)
         {
 
             ActivateDetailPage();
 
             ddlDetailPage.Items.Clear();
-            ddlDetailPage.Items.Add(new ListItem("Main Module Page", "-1"));
-            var listItems = new List<ListItem>();
-            var tc = new TabController();
-            var tabs = TabController.GetTabPathDictionary(ModuleContext.PortalId, DnnUtils.GetCurrentCultureCode());
+            ddlDetailPage.Items.Add(new ListItem(string.Format("Main Module Page [{0}]", otherModuleTabId), "-1"));
+            if (otherModuleTabId > 0)
+            {
+                //todo: add li with "CurrentPage"
+            }
 
-            //var tabs = tc.GetTabsByPortal(ModuleContext.PortalId);
+            //todo: wegfilteren van redirected tabs
+
+            var listItems = new List<ListItem>();
+            Dictionary<string, int> tabs = TabController.GetTabPathDictionary(ModuleContext.PortalId, DnnUtils.GetCurrentCultureCode());
+
             foreach (var tab in tabs)
             {
-
-                //var tabpath = tab.TabPath.Replace("//", "/").TrimEnd(tab.TabName).Trim('/');
-                var li = new ListItem(tab.Key.Replace("//", " / ").TrimStart(" / "), tab.Value.ToString());
+                var li = new ListItem(string.Format("{1} [{0}]", tab.Value, tab.Key.Replace("//", " / ").TrimStart(" / ")), tab.Value.ToString());
                 if (!tab.Key.StartsWith("//Admin//"))
                 {
                     listItems.Add(li);
-                    if (tab.Value == tabId)
+                    if (tab.Value == currentDetailTabId)
                     {
                         li.Selected = true;
                     }
@@ -355,7 +370,7 @@ namespace Satrabel.OpenContent
         private void ActivateDetailPage()
         {
             phDetailPage.Visible = false;
-            if (ddlTemplate.SelectedIndex >= 0 && rblUseTemplate.SelectedIndex == 0 ) // existing template
+            if (ddlTemplate.SelectedIndex >= 0 && rblUseTemplate.SelectedIndex == 0) // existing template
             {
                 var template = new FileUri(ddlTemplate.SelectedValue);
                 var manifest = template.ToTemplateManifest();

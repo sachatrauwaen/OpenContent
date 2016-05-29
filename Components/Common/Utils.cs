@@ -42,7 +42,7 @@ namespace Satrabel.OpenContent.Components
             /// Compiled regular expression for performance.
             /// </summary>
             private static readonly Regex HtmlRegex = new Regex("<.*?>", RegexOptions.Compiled);
-            
+
             /// <summary>
             /// Remove HTML from string with compiled Regex.
             /// </summary>
@@ -85,15 +85,26 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
+        /// <summary>
+        /// Returns a string starting from the (last occurence of the) value provided until the end.
+        /// </summary>
+        /// <param name="text">The text.</param>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
         public static string TrimStart(this string text, string value)
         {
             if (string.IsNullOrEmpty(text)) return text;
-            //remove any query parameters
             int qIndex = text.IndexOf(value, StringComparison.Ordinal);
             if (qIndex == 0) text = text.Substring(value.Length);
             return text;
         }
 
+        /// <summary>
+        /// Removes the end of the string, starting from the (last occurence of the) value provided until the end.
+        /// </summary>
+        /// <param name="text">The text.</param>
+        /// <param name="value">The value to search for.</param>
+        /// <returns></returns>
         public static string TrimEnd(this string text, string value)
         {
             if (string.IsNullOrEmpty(text)) return text;

@@ -208,7 +208,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
         {
             var sortArray = query["Sort"] as JArray;
             var sort = Sort.RELEVANCE;
-            if (sortArray != null)
+            if (sortArray != null && sortArray.Any())
             {
                 var sortFields = new List<SortField>();
                 foreach (JObject item in sortArray)
@@ -277,7 +277,6 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
             }
 
         }
-
         public QueryDefinition BuildSort(string Sorts)
         {
             var sort = Sort.RELEVANCE;

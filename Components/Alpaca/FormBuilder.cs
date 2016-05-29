@@ -134,9 +134,14 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     newProp.Properties.Add("EndDays", new SchemaConfig()
                     {
                         Type = "number",
-                        Title = prop.Value.Title + " : to x days in the future"
+                        Title = prop.Value.Title + " : until x days in the future"
                     });
                     fieldLst.Add(prop.Key);
+                    /*
+                    var newField = new OptionsConfig();
+                    newOptionsFilter.Fields.Add(prop.Key, newField);
+                    newField.Helper = "Use 0 for today";
+                    */
                 }
             }
             // Sort
@@ -248,7 +253,11 @@ namespace Satrabel.OpenContent.Components.Alpaca
             List<string> fieldLst = new List<string>();
             foreach (var prop in schemaConfig.Properties)
             {
-                var opts = optionsConfig.Fields.ContainsKey(prop.Key) ? optionsConfig.Fields[prop.Key] : null;
+                OptionsConfig opts = null;
+                if (optionsConfig.Fields != null)
+                {
+                    opts = optionsConfig.Fields.ContainsKey(prop.Key) ? optionsConfig.Fields[prop.Key] : null;
+                }
                 string optType = opts == null ? "text" : opts.Type;
                 if (prop.Value.Type == "array" && (prop.Value.Enum != null || optType == "select" || optType == "select2"))
                 {
@@ -303,6 +312,16 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     };
                     newConfig.Fields.Add(prop.Key, newField);
                 }
+                else if (optType == "ckeditor")
+                {
+                    var newField = new FieldConfig()
+                    {
+                        IndexType = "html",
+                        Index = true,
+                        Sort = true
+                    };
+                    newConfig.Fields.Add(prop.Key, newField);
+                }
                 else if (optType == "mltext")
                 {
                     var newField = new FieldConfig()
@@ -315,6 +334,17 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     newConfig.Fields.Add(prop.Key, newField);
                 }
                 else if (optType == "mlwysihtml")
+                {
+                    var newField = new FieldConfig()
+                    {
+                        IndexType = "html",
+                        Index = true,
+                        Sort = true,
+                        MultiLanguage = true
+                    };
+                    newConfig.Fields.Add(prop.Key, newField);
+                }
+                else if (optType == "mlckeditor")
                 {
                     var newField = new FieldConfig()
                     {

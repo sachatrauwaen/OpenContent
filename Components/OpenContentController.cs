@@ -1,5 +1,5 @@
 ﻿/*
-' Copyright (c) 2015 Satrabel.be
+' Copyright (c) 2015-2016 Satrabel.be
 '  All rights reserved.
 ' 
 ' THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
@@ -22,7 +22,7 @@ using Satrabel.OpenContent.Components.Lucene.Config;
 
 namespace Satrabel.OpenContent.Components
 {
-    public class OpenContentController 
+    public class OpenContentController
     {
         #region Commands
 
@@ -45,7 +45,7 @@ namespace Satrabel.OpenContent.Components
             if (index)
             {
                 LuceneController.Instance.Add(content, indexConfig);
-                LuceneController.Instance.Commit();
+                LuceneController.Instance.Store.Commit();
             }
         }
 
@@ -65,7 +65,7 @@ namespace Satrabel.OpenContent.Components
             if (index)
             {
                 LuceneController.Instance.Delete(content);
-                LuceneController.Instance.Commit();
+                LuceneController.Instance.Store.Commit();
             }
         }
 
@@ -95,7 +95,7 @@ namespace Satrabel.OpenContent.Components
             if (index)
             {
                 LuceneController.Instance.Update(content, indexConfig);
-                LuceneController.Instance.Commit();
+                LuceneController.Instance.Store.Commit();
             }
         }
 

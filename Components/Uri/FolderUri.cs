@@ -18,25 +18,7 @@ namespace Satrabel.OpenContent.Components
             FolderPath = NormalizePath(pathToFolder);
         }
 
-        protected FolderUri(IFileInfo pathToFolder)
-        {
-            if (pathToFolder == null)
-            {
-                throw new ArgumentNullException("pathToFolder");
-            }
-            FolderPath = NormalizePath(pathToFolder.Folder);
-        }
-
         #endregion
-
-        /// <summary>
-        /// Gets or sets the Dnn file information object.
-        /// </summary>
-        /// <value>
-        /// The Dnn file information object.
-        /// </value>
-        /// <remarks>This is only available for files under the Dnn Portal Directory</remarks>
-        public IFolderInfo FolderInfo { get; protected set; }
 
         /// <summary>
         /// Gets the folder path relative to the Application. No leading /.

@@ -1,14 +1,11 @@
-﻿using DotNetNuke.Common.Utilities;
+﻿using System;
+using System.Diagnostics;
+using System.Runtime.Serialization.Formatters;
+using DotNetNuke.Common.Utilities;
 using Lucene.Net.Documents;
-//using Lucene.Net.Linq;
-using Lucene.Net.Search;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Lucene.Config;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Runtime.Serialization.Formatters;
 
 namespace Satrabel.OpenContent.Components.Lucene.Mapping
 {
@@ -37,18 +34,16 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
         /// <summary>
         /// Adds the given source object to the specified Document.
         /// </summary>
-        /// <typeparam name="TObject">
-        /// The type of the object to add.
-        /// </typeparam>
         /// <param name="source">
         /// The source object to add.
         /// </param>
         /// <param name="doc">
         /// The Document to add the object to.
         /// </param>
-
+        /// <param name="config"></param>
         public void AddJsonToDocument(string source, Document doc, FieldConfig config)
         {
+            if (string.IsNullOrEmpty(source)) return;
             JToken token = JToken.Parse(source);
             Add(doc, null, token, config);
         }
@@ -104,7 +99,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
                         if (index || sort)
                         {
                             doc.Add(new NumericField(prefix, Field.Store.NO, true).SetLongValue(((DateTime)value.Value).Ticks));
-                            
+
                             //doc.Add(new Field(prefix, DateTools.DateToString((DateTime)value.Value, DateTools.Resolution.SECOND), Field.Store.NO, Field.Index.NOT_ANALYZED));
 
                             /*

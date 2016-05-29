@@ -1,7 +1,6 @@
 ﻿(function($) {
 
     var Alpaca = $.alpaca;
-
     
     Alpaca.Fields.File2Field = Alpaca.Fields.ListField.extend(
     /**
@@ -35,6 +34,11 @@
             }
             if (!this.options.folder) {
                 this.options.folder = "";
+            }
+            // filter = serverside c# regexp
+            // exemple :  ^.*\.(jpg|JPG|gif|GIF|doc|DOC|pdf|PDF)$
+            if (!this.options.filter) {
+                this.options.filter = "";
             }
             this.base();
         },
@@ -146,7 +150,9 @@
             var self = this;
 
             this.base(model, function() {
-                    self.selectOptions = [];
+                self.selectOptions = [];
+
+                if (self.sf) {
 
                     var completionFunction = function () {
                         self.schema.enum = [];
@@ -159,7 +165,7 @@
                         model.selectOptions = self.selectOptions;
                         callback();
                     };
-                    var postData = { q : "*", d : self.options.folder };
+                    var postData = { q: "*", d: self.options.folder, filter: self.options.filter };
                     $.ajax({
                         url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "FilesLookup",
                         beforeSend: self.sf.setModuleHeaders,
@@ -214,10 +220,10 @@
                             });
                         }
                     });
-                
-                    //callback();
-                
-
+                }
+                else {
+                    callback();
+                }
             });
         },
 
@@ -307,24 +313,24 @@
         },
 
         getFileUrl : function(fileid){
-
-            var postData = { fileid: fileid };
-            $.ajax({
-                url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "FileUrl",
-                beforeSend: self.sf.setModuleHeaders,
-                type: "get",
-                asych : false,
-                dataType: "json",
-                //contentType: "application/json; charset=utf-8",
-                data: postData,
-                success: function (data) {
-                    return data;
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    return "";
-                }
-            });
-
+            if (self.sf){
+                var postData = { fileid: fileid };
+                $.ajax({
+                    url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "FileUrl",
+                    beforeSend: self.sf.setModuleHeaders,
+                    type: "get",
+                    asych : false,
+                    dataType: "json",
+                    //contentType: "application/json; charset=utf-8",
+                    data: postData,
+                    success: function (data) {
+                        return data;
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        return "";
+                    }
+                });
+            }
         },
 
         /**

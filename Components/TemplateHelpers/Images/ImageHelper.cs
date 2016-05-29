@@ -78,11 +78,11 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         {
             if (file == null)
                 throw new NoNullAllowedException("FileInfo should not be null");
-            
-            if (ModuleDefinitionController.GetModuleDefinitionByFriendlyName("OpenFiles") == null) 
+
+            if (ModuleDefinitionController.GetModuleDefinitionByFriendlyName("OpenFiles") == null)
             {
                 return file.ToUrl();
-            } 
+            }
             var url = file.ToUrlWithoutLinkClick();
             if (url.Contains("LinkClick.aspx")) return url;
             url = url.RemoveQueryParams();
@@ -114,7 +114,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
                     }
                     else
                     {
-                        Log.Logger.Info(string.Format("Warning for page {0}. Can't find croppers in {1}. ", HttpContext.Current.Request.RawUrl, contentItem.Content));
+                        Log.Logger.Debug(string.Format("Warning for page {0}. Can't find croppers in {1}. ", HttpContext.Current.Request.RawUrl, contentItem.Content));
                     }
                 }
             }
