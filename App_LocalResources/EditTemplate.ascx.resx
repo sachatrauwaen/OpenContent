@@ -133,6 +133,6 @@
     <value>File</value>
   </data>
   <data name="cmdBuilder.Text" xml:space="preserve">
-    <value>Activate Builder (not full alpaca support)</value>
+    <value>Activate Form Builder (Do Backup Before)</value>
   </data>
 </root>

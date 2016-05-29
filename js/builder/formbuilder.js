@@ -70,6 +70,19 @@ function getSchema(formdef) {
         "type": "object",
         "properties": {}
     };
+    var properties = schema.properties;
+    if (formdef.formtype == "array") {
+        schema = {
+            //"title": "Form preview",
+            "type": "array",
+            "items": {
+                "type": "object",
+                //"title": "Category",
+                "properties": {}
+            }
+        };
+        properties = schema.items.properties;
+    }
     var schematypes = {
         "text": "string",
         "select": "string",
@@ -114,8 +127,11 @@ function getSchema(formdef) {
             prop.required = true;
             prop.default = "2099-12-31";
         }
-        if (value.title && value.fieldtype != "checkbox") {
+        if (value.title ) {
             prop.title = value.title;
+        }
+        if (value.fieldtype == "relation" && value.relationoptions && value.relationoptions.many) {
+            prop.type = "array";
         }
         if (value.fieldoptions) {
 
@@ -129,11 +145,11 @@ function getSchema(formdef) {
         }
         if (value.required) {
             prop.required = value.required;
-        }
+        }        
         if (value.default) {
             prop.default = value.default;
         }
-        if (value.dependencies) {
+        if (value.dependencies && value.dependencies.length > 0) {
             var deps = [];
             for (var i = 0; i < value.dependencies.length; i++) {
                 deps.push(value.dependencies[i].fieldname);
@@ -144,6 +160,7 @@ function getSchema(formdef) {
 
             if (!value.subfields) {
                 prop.items = {};
+            /*
             } else if (value.fieldtype == "array" && value.subfields.length == 1) {
                 var listOldSchema = oldSchema && oldSchema.items ? oldSchema.items : null;
                 var listindex = 0;
@@ -153,6 +170,7 @@ function getSchema(formdef) {
                     listvalue.fieldname = 'field_' + listindex;
                 }
                 prop.items = listprop;
+            */
             } else {
                 prop.items = {
                     //"title": "Field",
@@ -202,7 +220,7 @@ function getSchema(formdef) {
             if (!value.fieldname) {
                 value.fieldname = 'field_' + index;
             }
-            schema.properties[value.fieldname] = prop;
+            properties[value.fieldname] = prop;
         });
     }
     return schema;
@@ -212,6 +230,7 @@ var baseFields = function (index, value, oldOptions) {
     var field = {
         "type": value.fieldtype
     };
+    
 
     if (value.multilanguage) {
         field.type = "ml" + field.type;
@@ -231,7 +250,7 @@ var baseFields = function (index, value, oldOptions) {
         };
     } else if (value.fieldtype == "date" && value.dateoptions) {
         field.picker = value.dateoptions;
-    } else if (value.fieldtype == "file" && value.fileoptions) {
+    } else if (value.fieldtype == "file" && value.fileoptions && value.fileoptions.folder) {
         field.uploadfolder = value.fileoptions.folder;
         field.typeahead = {};
         field.typeahead.Folder = value.fileoptions.folder;
@@ -241,7 +260,7 @@ var baseFields = function (index, value, oldOptions) {
     } else if (value.fieldtype == "folder2" && value.folder2options) {
         field.folder = value.folder2options.folder;
         field.filter = value.folder2options.filter;
-    } else if (value.fieldtype == "image" && value.imageoptions) {
+    } else if (value.fieldtype == "image" && value.imageoptions && value.imageoptions.folder) {
         field.uploadfolder = value.imageoptions.folder;
         field.typeahead = {};
         field.typeahead.Folder = value.imageoptions.folder;
@@ -273,21 +292,20 @@ var baseFields = function (index, value, oldOptions) {
             return v.text;
         });
     }
-    if (value.fieldtype == "checkbox") {
-        field.label = value.title;
+    
+    if (value.fieldtype == "radio") {
+        field.vertical = value.vertical;
     }
-    //if (value.vertical){
-    field.vertical = value.vertical;
-    //}
-
+    if (value.hidden) {
+        field.hidden = value.hidden;
+    }
     if (value.placeholder) {
         field.placeholder = value.placeholder;
     }
     if (value.helper) {
         field.helper = value.helper;
     }
-    if (value.dependencies) {
-
+    if (value.dependencies && value.dependencies.length > 0) {
         for (var i = 0; i < value.dependencies.length; i++) {
             if (value.dependencies[i].values) {
                 if (!field.dependencies) {
@@ -302,6 +320,7 @@ var baseFields = function (index, value, oldOptions) {
         //field.toolbarSticky = true;
         if (!value.subfields) {
             field.items = {};
+        /*
         } else if (value.fieldtype == "array" && value.subfields.length == 1) {
             var listOldOptions = oldOptions && oldOptions.items ? oldOptions.items : null;
             var listindex = 0;
@@ -311,6 +330,7 @@ var baseFields = function (index, value, oldOptions) {
                 listvalue.fieldname = 'field_' + listindex;
             }
             field.items = listfield;
+        */
         } else {
 
             field.items = {
@@ -359,12 +379,24 @@ function getOptions(formdef) {
     var options = {
         "fields": {}
     };
+
+    var fields = options.fields;
+    if (formdef.formtype == "array") {
+        options = {
+            "items": {
+                "type": "object",
+                "fields": {}
+            }
+        };
+        fields = options.items.fields;
+    }
+
     if (formdef.formfields) {
         $.each(formdef.formfields, function (index, value) {
             var oldOptions = opts && opts.fields ? opts.fields[value.fieldname] : null;
 
             var field = baseFields(index, value, oldOptions);
-            options.fields[value.fieldname] = field;
+            fields[value.fieldname] = field;
         });
     }
     return options;
@@ -385,7 +417,11 @@ function showForm(value) {
         "schema": schema,
         "options": options,
         "view": "dnn-edit",
-        "connector": connector
+        "connector": connector,
+        "postRender": function (control) {
+            var self = control;
+            $('#form2 .dnnTooltip').dnnTooltip();
+        }
     };
     //alert(JSON.stringify(value, null, "  "));
     $("#schema").val(JSON.stringify(schema, null, "  "));
@@ -396,6 +432,10 @@ function showForm(value) {
     }
     config.options.focus = "";
     $("#form2").alpaca(config);
+
+    
+
+
 }
 
 var fieldSchema =
@@ -454,9 +494,13 @@ var fieldSchema =
         },
         "relationoptions": {
             "type": "object",
-            "title": "Options",
+            "title": "Relation Options",
             "dependencies": "fieldtype",
             "properties": {
+                "many": {
+                    "type": "boolean",
+                    "title": "Many"
+                },
                 "datakey": {
                     "type": "string",
                     "title": "Additional Data Key"
@@ -473,7 +517,7 @@ var fieldSchema =
         },
         "dateoptions": {
             "type": "object",
-            "title": "Options",
+            "title": "Date Options",
             "dependencies": "fieldtype",
             "properties": {
                 "format": {
@@ -492,7 +536,7 @@ var fieldSchema =
         },
         "fileoptions": {
             "type": "object",
-            "title": "Options",
+            "title": "File Options",
             "dependencies": "fieldtype",
             "properties": {
                 "folder": {
@@ -503,7 +547,7 @@ var fieldSchema =
         },
         "file2options": {
             "type": "object",
-            "title": "Options",
+            "title": "File Options",
             "dependencies": "fieldtype",
             "properties": {
                 "folder": {
@@ -518,7 +562,7 @@ var fieldSchema =
         },
         "folder2options": {
             "type": "object",
-            "title": "Options",
+            "title": "Folder Options",
             "dependencies": "fieldtype",
             "properties": {
                 "folder": {
@@ -533,7 +577,7 @@ var fieldSchema =
         },
         "imageoptions": {
             "type": "object",
-            "title": "Options",
+            "title": "Image Options",
             "dependencies": "fieldtype",
             "properties": {
                 "folder": {
@@ -544,7 +588,7 @@ var fieldSchema =
         },
         "image2options": {
             "type": "object",
-            "title": "Options",
+            "title": "Image Options",
             "dependencies": "fieldtype",
             "properties": {
                 "folder": {
@@ -555,7 +599,7 @@ var fieldSchema =
         },
         "imagecropoptions": {
             "type": "object",
-            "title": "Options",
+            "title": "Crop Options",
             "dependencies": "fieldtype",
             "properties": {
                 "ratio": {
@@ -569,6 +613,10 @@ var fieldSchema =
             "title": "Advanced"
         },
         "required": {
+            "type": "boolean",
+            "dependencies": "advanced"
+        },
+        "hidden": {
             "type": "boolean",
             "dependencies": "advanced"
         },
@@ -631,6 +679,7 @@ var fieldOptions =
     },
     "fieldname": {
         "showMessages": false
+        //"fieldClass":"fieldname"
     },
     "fieldtype": {
         "optionLabels": ["Text", "Checkbox", "Multi checkbox", "Dropdown list (select)", "Radio buttons", "Text area", "Email address", "Date", "Number",
@@ -649,6 +698,9 @@ var fieldOptions =
     },
     "required": {
         "label": "Required"
+    },
+    "hidden": {
+        "label": "Hidden"
     },
     "vertical": {
         "label": "Vertical",
@@ -750,6 +802,13 @@ var formbuilderConfig = {
             "formfields": {
                 "type": "array",
                 "items": fieldSchema
+            },
+            "formtype": {
+                "type": "string",
+                "title": "Form type",
+                "enum": ["object", "array"],
+                "required": true,
+                "default": "object"
             }
         }
     },
@@ -762,6 +821,10 @@ var formbuilderConfig = {
                     "fieldClass": "fielddiv",
                     "fields": fieldOptions
                 }
+            },
+            "formtype": {
+                "type": "select",
+                "optionLabels": ["Default (object)", "Additional data (array)"]
             }
         }
     },
@@ -775,6 +838,8 @@ var formbuilderConfig = {
             $('#builder').val(JSON.stringify(value, null, "  "));
             showForm(value);
         });
+        $(".form-builder div.loading").hide();
+        $(".form-builder .dnnActions").show();
     }
 
 };

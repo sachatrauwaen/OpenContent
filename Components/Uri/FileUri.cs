@@ -23,14 +23,7 @@ namespace Satrabel.OpenContent.Components
             {
                 throw new ArgumentNullException("pathToFile");
             }
-            var cleanfile = SanitizeFilename(_fileName);
-            if (!_fileName.Equals(cleanfile, StringComparison.InvariantCultureIgnoreCase))
-            {
-                Log.Logger.WarnFormat("Original filename [{0}] was Sanitized into [{1}]", _fileName, cleanfile);
-                _fileName = cleanfile;
-            }
         }
-
         public FileUri(string path, string filename)
             : base(path)
         {
@@ -38,7 +31,7 @@ namespace Satrabel.OpenContent.Components
             {
                 throw new ArgumentNullException("filename");
             }
-            _fileName = SanitizeFilename(filename);
+            _fileName = filename;
         }
         public FileUri(FolderUri path, string filename)
             : base(path.FolderPath)
@@ -47,7 +40,7 @@ namespace Satrabel.OpenContent.Components
             {
                 throw new ArgumentNullException("filename");
             }
-            _fileName = SanitizeFilename(filename);
+            _fileName = filename;
         }
 
         #endregion
@@ -103,14 +96,29 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
-        private static string SanitizeFilename(string fileName)
-        {
-            foreach (var c in Path.GetInvalidFileNameChars())
-            {
-                fileName = fileName.Replace(c, '-');
-            }
-            return fileName; //string.Concat(fileName.Split(Path.GetInvalidFileNameChars()));
-        }
+        //private static string SanitizeFilenameKeepingTheOptionalVersion(string fileName)
+        //{
+        //    if (string.IsNullOrEmpty(fileName)) return fileName;
+        //    var version = fileName.TrimStart("?ver=");
+        //    var cleanfile = SanitizeFilename(fileName.TrimEnd("?ver="));
+
+        //    return cleanfile + version;
+        //}
+
+        //private static string SanitizeFilename(string fileName)
+        //{
+        //    if (string.IsNullOrEmpty(fileName)) return fileName;
+        //    var cleanfile = fileName;
+        //    foreach (var c in Path.GetInvalidFileNameChars())
+        //    {
+        //        cleanfile = cleanfile.Replace(c, '-');
+        //    }
+        //    if (!fileName.Equals(cleanfile, StringComparison.InvariantCultureIgnoreCase))
+        //    {
+        //        Log.Logger.InfoFormat("Original filename [{0}] was Sanitized into [{1}]", fileName, cleanfile);
+        //    }
+        //    return cleanfile;
+        //}
 
         #region Static Utils
 

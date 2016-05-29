@@ -24,6 +24,9 @@ namespace Satrabel.OpenContent.Components.Alpaca
         [JsonProperty(PropertyName = "dataService", NullValueHandling = NullValueHandling.Ignore)]
         public JObject DataService { get; set; }
 
+        [JsonProperty(PropertyName = "helper", NullValueHandling = NullValueHandling.Ignore)]
+        public string Helper { get; set; }
+
 
     }
 }

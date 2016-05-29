@@ -47,6 +47,7 @@ using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Logging;
 using Newtonsoft.Json;
 using System.Text;
+using Satrabel.OpenContent.Components.Lucene.Config;
 
 #endregion
 
@@ -506,10 +507,14 @@ namespace Satrabel.OpenContent
                         {
                             // for list templates a main template need to be defined
                             _renderinfo.Files = _renderinfo.Template.Main;
-                            GetDataList(_renderinfo, _settings, _renderinfo.Template.ClientSideData);
+                            string templateKey = GetDataList(_renderinfo, _settings, _renderinfo.Template.ClientSideData);
+                            if (!string.IsNullOrEmpty(templateKey) && _renderinfo.Template.Views != null && _renderinfo.Template.Views.ContainsKey(templateKey))
+                            {
+                                _renderinfo.Files = _renderinfo.Template.Views[templateKey];
+                            }
                             if (!_renderinfo.SettingsMissing)
                             {
-                                _renderinfo.OutputString = GenerateListOutput(_settings.Template.Uri().UrlFolder, _renderinfo.Template.Main, _renderinfo.DataList, _renderinfo.SettingsJson);
+                                _renderinfo.OutputString = GenerateListOutput(_settings.Template.Uri().UrlFolder, _renderinfo.Files, _renderinfo.DataList, _renderinfo.SettingsJson);
                             }
                         }
                     }
@@ -532,10 +537,14 @@ namespace Satrabel.OpenContent
                             {
                                 // for list templates a main template need to be defined
                                 _renderinfo.Files = _renderinfo.Template.Main;
-                                GetDataList(_renderinfo, _settings, _renderinfo.Template.ClientSideData);
+                                string templateKey = GetDataList(_renderinfo, _settings, _renderinfo.Template.ClientSideData);
+                                if (!string.IsNullOrEmpty(templateKey) && _renderinfo.Template.Views != null && _renderinfo.Template.Views.ContainsKey(templateKey))
+                                {
+                                    _renderinfo.Files = _renderinfo.Template.Views[templateKey];
+                                }
                                 if (!_renderinfo.ShowInitControl)
                                 {
-                                    _renderinfo.OutputString = GenerateListOutput(_settings.Template.Uri().UrlFolder, _renderinfo.Template.Main, _renderinfo.DataList, _renderinfo.SettingsJson);
+                                    _renderinfo.OutputString = GenerateListOutput(_settings.Template.Uri().UrlFolder, _renderinfo.Files, _renderinfo.DataList, _renderinfo.SettingsJson);
                                 }
                             }
                         }
@@ -648,8 +657,9 @@ namespace Satrabel.OpenContent
                 info.SetData(dsItem, dsItem.Data, settings.Data);
             }
         }
-        public void GetDataList(RenderInfo info, OpenContentSettings settings, bool clientSide)
+        public string GetDataList(RenderInfo info, OpenContentSettings settings, bool clientSide)
         {
+            string templateKey = "";
             info.ResetData();
             var ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
             var dsContext = new DataSourceContext()
@@ -666,6 +676,12 @@ namespace Satrabel.OpenContent
                     info.SetData(dataList, settings.Data);
                     info.DataExist = true;
                 }
+                
+                if (info.Template.Views != null)
+                {
+                    var indexConfig = OpenContentUtils.GetIndexConfig(info.Template.Key.TemplateDir);
+                    templateKey = GetTemplateKey(indexConfig);
+                }
             }
             else
             {
@@ -673,6 +689,10 @@ namespace Satrabel.OpenContent
                 if (useLucene)
                 {
                     var indexConfig = OpenContentUtils.GetIndexConfig(info.Template.Key.TemplateDir);
+                    if (info.Template.Views != null)
+                    {
+                        templateKey = GetTemplateKey(indexConfig);
+                    }
                     bool addWorkFlow = ModuleContext.PortalSettings.UserMode != PortalSettings.Mode.Edit;
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
                     if (!string.IsNullOrEmpty(settings.Query))
@@ -717,6 +737,29 @@ namespace Satrabel.OpenContent
                     info.SetData(dataList, settings.Data);
                 }
             }
+            return templateKey;
+        }
+
+        private string GetTemplateKey(FieldConfig IndexConfig)
+        {
+            string templateKey = "";
+            var queryString = Request.QueryString;
+            if (queryString != null)
+            {
+                foreach (string key in queryString)
+                {
+                    if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.Any(f => f.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase)))
+                    {
+                        var indexConfig = IndexConfig.Fields.Single(f => f.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase));
+                        string val = queryString[key];
+                        if (string.IsNullOrEmpty(templateKey))
+                            templateKey = key;
+                        else
+                            templateKey += "-" + key;
+                    }
+                }
+            }
+            return templateKey;
         }
 
         public void GetDetailData(RenderInfo info, OpenContentSettings settings)

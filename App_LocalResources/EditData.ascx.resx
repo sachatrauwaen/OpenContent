@@ -126,4 +126,7 @@
   <data name="Versions.Text" xml:space="preserve">
     <value>Versions</value>
   </data>
+  <data name="cmdImport.Text" xml:space="preserve">
+    <value>Import Demo Data</value>
+  </data>
 </root>

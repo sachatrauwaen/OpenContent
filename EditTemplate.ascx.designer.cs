@@ -67,6 +67,15 @@ namespace Satrabel.OpenContent {
         protected global::System.Web.UI.WebControls.TextBox txtSource;
         
         /// <summary>
+        /// lError control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lError;
+        
+        /// <summary>
         /// cmdSave control.
         /// </summary>
         /// <remarks>

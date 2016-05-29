@@ -32,6 +32,9 @@
         <li>
             <asp:LinkButton ID="cmdCancel" resourcekey="cmdCancel" runat="server" CssClass="dnnSecondaryAction" CausesValidation="False" />
         </li>
+          <li>
+            <asp:LinkButton ID="cmdImport" resourcekey="cmdImport" runat="server" CssClass="dnnSecondaryAction" CausesValidation="False" Visible="false" />
+        </li>
 
         <asp:PlaceHolder ID="phVersions" runat="server">
             <li style="padding-left: 10px;">

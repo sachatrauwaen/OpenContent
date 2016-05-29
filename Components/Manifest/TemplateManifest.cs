@@ -1,5 +1,6 @@
 using System.Security;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace Satrabel.OpenContent.Components.Manifest
 {
@@ -19,6 +20,9 @@ namespace Satrabel.OpenContent.Components.Manifest
 
         [JsonProperty(PropertyName = "detail")]
         public TemplateFiles Detail { get; set; }
+
+        [JsonProperty(PropertyName = "views")]
+        public Dictionary<string, TemplateFiles> Views { get; set; }
 
         [JsonProperty(PropertyName = "clientSideData")]
         public bool ClientSideData { get; set; }

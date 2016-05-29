@@ -5,12 +5,33 @@
     <div class="">
         <div class="fb-container">
             <div class="fb-left">
-                <h2>Fields</h2>
-                <div id="form"></div>
+                <div class="fb-wrap">
+                    <h2>Fields</h2>
+                    <div id="form"></div>
+                    <div class="loading">
+                        <img src="/DesktopModules/OpenContent/images/loading.gif" alt="Loading" />
+                    </div>
+                    <ul class="dnnActions dnnClear" style="display: none;">
+                        <li>
+                            <asp:HyperLink ID="cmdSave" runat="server" class="dnnPrimaryAction" resourcekey="cmdSave" />
+                        </li>
+                        <li>
+                            <asp:HyperLink ID="hlCancel" runat="server" class="dnnSecondaryAction" resourcekey="cmdCancel" />
+                        </li>
+                        <li>
+                            <asp:HyperLink ID="hlRefresh" runat="server" class="dnnSecondaryAction" resourcekey="cmdRefresh" />
+                        </li>
+                        <li>
+                            <asp:DropDownList ID="ddlForms" runat="server" AutoPostBack="true"></asp:DropDownList>
+                        </li>
+                    </ul>
+                </div>
             </div>
             <div class="fb-right">
-                <h2>Form preview</h2>
-                <div id="form2"></div>
+                <div class="fb-wrap">
+                    <h2>Form preview</h2>
+                    <div id="form2"></div>
+                </div>
             </div>
             <div style="clear: both;"></div>
         </div>
@@ -33,20 +54,7 @@
         </div>
 
     </div>
-    <ul class="dnnActions dnnClear" _style="display: block; padding-left: 35%">
-        <li>
-            <asp:HyperLink ID="cmdSave" runat="server" class="dnnPrimaryAction" resourcekey="cmdSave" />
-        </li>
-        <li>
-            <asp:HyperLink ID="hlCancel" runat="server" class="dnnSecondaryAction" resourcekey="cmdCancel" />
-        </li>
-        <li>
-            <asp:HyperLink ID="hlRefresh" runat="server" class="dnnSecondaryAction" resourcekey="cmdRefresh" />
-        </li>
-        <li>
-            <asp:DropDownList ID="ddlForms" runat="server" AutoPostBack="true"></asp:DropDownList>
-        </li>
-    </ul>
+
 </asp:Panel>
 
 <script type="text/javascript">
@@ -71,6 +79,8 @@
                 //position: 'center'
                 resizable: false,
             });
+
+            $(".form-builder .fb-wrap").height('100%').width('50%').css('overflow-y', 'auto').css('position', 'fixed');
         }
 
         var moduleScope = $('#<%=ScopeWrapper.ClientID %>'),

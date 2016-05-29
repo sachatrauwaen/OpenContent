@@ -16,16 +16,6 @@
 .listfielddiv {
     background-color: #fff;
 }
-/*
-.col-sm-6 {
-    float: left;
-    width: 50%;
-    position: relative;
-    min-height: 1px;
-    padding-right: 15px;
-    padding-left: 15px;
-}
-*/
 
 label.control-label {
     font-weight: bold;
@@ -35,6 +25,7 @@ label.control-label {
     font-size: 18px;
     margin-top: 0;
     margin-bottom: 5px;
+    margin-left: 10px;
 }
 /*
 #form button.alpaca-array-actionbar-action {display:block;width:32px;}
@@ -47,12 +38,12 @@ label.control-label {
     width: 22.075%;
 }
 
-
 .fb-container {
     display: table;
     width: 100%;
     margin-right: -15px;
     margin-left: -15px;
+    min-height: 300px;
 }
 
 .fb-left, .fb-right {
@@ -67,4 +58,20 @@ label.control-label {
 
 .fb-right {
     width: 50%;
+}
+
+.loading {
+    left: 40%;
+    top: 40%;
+    position: absolute;
+}
+
+.fieldname input {
+    color: #317eac;
+    font-weight: bold;
+}
+
+.dnnActions select {
+    border-radius: 3px;
+    padding: 7px;
 }
