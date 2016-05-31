@@ -85,6 +85,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                                 workFlowFilter.AddRule(new FilterRule()
                                 {
                                     Field = item.Name,
+                                    FieldType = FieldTypeEnum.BOOLEAN,
                                     Value = new BooleanRuleValue(bval)
                                 });
                             }
@@ -276,7 +277,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 }
                 else if (config.IndexType == "boolean")
                 {
-                    sortfieldtype = FieldTypeEnum.INTEGER;
+                    sortfieldtype = FieldTypeEnum.BOOLEAN;
                 }
                 else if (config.IndexType == "int")
                 {
