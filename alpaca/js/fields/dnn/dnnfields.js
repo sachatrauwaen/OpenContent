@@ -1844,16 +1844,21 @@
                         toggleDragModeOnDblclick: false
 
                     }, self.options.cropper);
+                    if (data) {
+                        config.data = data;
+                    }
+
                     $image.cropper(config);
                 } else {
                     if (url != cropperExist.originalUrl){
                         $image.cropper('replace', url);
                     }
                     //$image.cropper('reset');
+                    if (data) {
+                        $image.cropper('setData', data);
+                    }
                 }
-                if (data) {
-                    $image.cropper('setData', data);
-                }
+                
             } else {
                 $image.hide();
                 if (!cropperExist) {
