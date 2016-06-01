@@ -1756,10 +1756,10 @@
         },
         handlePostRender: function (callback) {
             var self = this;
+            var el = this.getControlEl();
+            $image = $(self.control).parent().find('.alpaca-image-display img');
             if (self.sf){
                 //var el = this.control;
-                var el = this.getControlEl();
-                $image = $(self.control).parent().find('.alpaca-image-display img');
                 if (self.options.uploadhidden) {
                     $(this.control.get(0)).find('input[type=file]').hide();
                 } else {
@@ -1844,16 +1844,21 @@
                         toggleDragModeOnDblclick: false
 
                     }, self.options.cropper);
+                    if (data) {
+                        config.data = data;
+                    }
+
                     $image.cropper(config);
                 } else {
                     if (url != cropperExist.originalUrl){
                         $image.cropper('replace', url);
                     }
                     //$image.cropper('reset');
+                    if (data) {
+                        $image.cropper('setData', data);
+                    }
                 }
-                if (data) {
-                    $image.cropper('setData', data);
-                }
+                
             } else {
                 $image.hide();
                 if (!cropperExist) {
@@ -6309,7 +6314,7 @@
 
 })(jQuery);
 ///#source 1 1 UrlField.js
-(function($) {
+(function ($) {
 
     var Alpaca = $.alpaca;
 
@@ -6328,123 +6333,121 @@
         },
         applyTypeAhead: function () {
             var self = this;
+            if (self.sf){
+            var tConfig = tConfig = {};
+            var tDatasets = tDatasets = {};
+            if (!tDatasets.name) {
+                tDatasets.name = self.getId();
+            }
 
-            if (self.control.typeahead && self.options.typeahead && !Alpaca.isEmpty(self.options.typeahead) && self.sf) {
+            var tEvents = tEvents = {};
 
-                var tConfig = tConfig = {};
-                var tDatasets = tDatasets = {};
-                if (!tDatasets.name) {
-                    tDatasets.name = self.getId();
-                }
+            var bloodHoundConfig = {
+                datumTokenizer: function (d) {
+                    return Bloodhound.tokenizers.whitespace(d.value);
+                },
+                queryTokenizer: Bloodhound.tokenizers.whitespace
+            };
 
-                var tEvents = tEvents = {};
-
-                var bloodHoundConfig = {
-                    datumTokenizer: function (d) {
-                        return Bloodhound.tokenizers.whitespace(d.value);
-                    },
-                    queryTokenizer: Bloodhound.tokenizers.whitespace
-                };
-
-                /*
-                if (tDatasets.type === "prefetch") {
-                    bloodHoundConfig.prefetch = {
-                        url: tDatasets.source,
-                        ajax: {
-                            //url: sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
-                            beforeSend: connector.servicesFramework.setModuleHeaders,
-    
-                        }
-                    };
-    
-                    if (tDatasets.filter) {
-                        bloodHoundConfig.prefetch.filter = tDatasets.filter;
-                    }
-                }
-                */
-
-                bloodHoundConfig.remote = {
-                    url: self.sf.getServiceRoot('OpenContent') + "DnnEntitiesAPI/Tabs?q=%QUERY&l=" + self.culture,
+            /*
+            if (tDatasets.type === "prefetch") {
+                bloodHoundConfig.prefetch = {
+                    url: tDatasets.source,
                     ajax: {
-                        beforeSend: self.sf.setModuleHeaders,
+                        //url: sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
+                        beforeSend: connector.servicesFramework.setModuleHeaders,
+
                     }
                 };
 
                 if (tDatasets.filter) {
-                    bloodHoundConfig.remote.filter = tDatasets.filter;
+                    bloodHoundConfig.prefetch.filter = tDatasets.filter;
                 }
+            }
+            */
 
-                if (tDatasets.replace) {
-                    bloodHoundConfig.remote.replace = tDatasets.replace;
+            bloodHoundConfig.remote = {
+                url: self.sf.getServiceRoot('OpenContent') + "DnnEntitiesAPI/Tabs?q=%QUERY&l=" + self.culture,
+                ajax: {
+                    beforeSend: self.sf.setModuleHeaders,
                 }
+            };
+
+            if (tDatasets.filter) {
+                bloodHoundConfig.remote.filter = tDatasets.filter;
+            }
+
+            if (tDatasets.replace) {
+                bloodHoundConfig.remote.replace = tDatasets.replace;
+            }
 
 
-                var engine = new Bloodhound(bloodHoundConfig);
-                engine.initialize();
-                tDatasets.source = engine.ttAdapter();
+            var engine = new Bloodhound(bloodHoundConfig);
+            engine.initialize();
+            tDatasets.source = engine.ttAdapter();
 
-                tDatasets.templates = {
-                    "empty": "Nothing found...",
-                    "suggestion": "{{name}}"
-                };
+            tDatasets.templates = {
+                "empty": "Nothing found...",
+                "suggestion": "{{name}}"
+            };
 
-                // compile templates
-                if (tDatasets.templates) {
-                    for (var k in tDatasets.templates) {
-                        var template = tDatasets.templates[k];
-                        if (typeof (template) === "string") {
-                            tDatasets.templates[k] = Handlebars.compile(template);
-                        }
+            // compile templates
+            if (tDatasets.templates) {
+                for (var k in tDatasets.templates) {
+                    var template = tDatasets.templates[k];
+                    if (typeof (template) === "string") {
+                        tDatasets.templates[k] = Handlebars.compile(template);
                     }
                 }
+            }
 
-                // process typeahead
-                $(self.control).typeahead(tConfig, tDatasets);
+            // process typeahead
+            $(self.control).typeahead(tConfig, tDatasets);
 
-                // listen for "autocompleted" event and set the value of the field
-                $(self.control).on("typeahead:autocompleted", function (event, datum) {
-                    self.setValue(datum.value);
-                    $(self.control).change();
-                });
+            // listen for "autocompleted" event and set the value of the field
+            $(self.control).on("typeahead:autocompleted", function (event, datum) {
+                self.setValue(datum.value);
+                $(self.control).change();
+            });
 
-                // listen for "selected" event and set the value of the field
-                $(self.control).on("typeahead:selected", function (event, datum) {
-                    self.setValue(datum.value);
-                    $(self.control).change();
-                });
+            // listen for "selected" event and set the value of the field
+            $(self.control).on("typeahead:selected", function (event, datum) {
+                self.setValue(datum.value);
+                $(self.control).change();
+            });
 
-                // custom events
-                if (tEvents) {
-                    if (tEvents.autocompleted) {
-                        $(self.control).on("typeahead:autocompleted", function (event, datum) {
-                            tEvents.autocompleted(event, datum);
-                        });
-                    }
-                    if (tEvents.selected) {
-                        $(self.control).on("typeahead:selected", function (event, datum) {
-                            tEvents.selected(event, datum);
-                        });
-                    }
+            // custom events
+            if (tEvents) {
+                if (tEvents.autocompleted) {
+                    $(self.control).on("typeahead:autocompleted", function (event, datum) {
+                        tEvents.autocompleted(event, datum);
+                    });
+                }
+                if (tEvents.selected) {
+                    $(self.control).on("typeahead:selected", function (event, datum) {
+                        tEvents.selected(event, datum);
+                    });
+                }
+            }
+
+            // when the input value changes, change the query in typeahead
+            // this is to keep the typeahead control sync'd with the actual dom value
+            // only do this if the query doesn't already match
+            var fi = $(self.control);
+            $(self.control).change(function () {
+
+                var value = $(this).val();
+
+                var newValue = $(fi).typeahead('val');
+                if (newValue !== value) {
+                    $(fi).typeahead('val', newValue);
                 }
 
-                // when the input value changes, change the query in typeahead
-                // this is to keep the typeahead control sync'd with the actual dom value
-                // only do this if the query doesn't already match
-                var fi = $(self.control);
-                $(self.control).change(function () {
+            });
 
-                    var value = $(this).val();
-
-                    var newValue = $(fi).typeahead('val');
-                    if (newValue !== value) {
-                        $(fi).typeahead('val', newValue);
-                    }
-
-                });
-
-                // some UI cleanup (we don't want typeahead to restyle)
-                $(self.field).find("span.twitter-typeahead").first().css("display", "block"); // SPAN to behave more like DIV, next line
-                $(self.field).find("span.twitter-typeahead input.tt-input").first().css("background-color", "");
+            // some UI cleanup (we don't want typeahead to restyle)
+            $(self.field).find("span.twitter-typeahead").first().css("display", "block"); // SPAN to behave more like DIV, next line
+            $(self.field).find("span.twitter-typeahead input.tt-input").first().css("background-color", "");
             }
         }
     });
@@ -6640,9 +6643,11 @@
             if (!this.options.ckeditor) {
                 this.options.ckeditor = {};
             }
+            /*
             if (!this.options.ckeditor.extraPlugins) {
                 this.options.ckeditor.extraPlugins = 'confighelper';
             }
+            */
         },
 
         /**
@@ -7227,6 +7232,178 @@
     });
 
     Alpaca.registerFieldClass("mltext", Alpaca.Fields.MLTextField);
+
+})(jQuery);
+///#source 1 1 MLTextAreaField.js
+(function ($) {
+
+    var Alpaca = $.alpaca;
+
+    Alpaca.Fields.MLTextAreaField = Alpaca.Fields.TextAreaField.extend(
+    /**
+     * @lends Alpaca.Fields.TagField.prototype
+     */
+    {
+        constructor: function (container, data, options, schema, view, connector) {
+            var self = this;
+            this.base(container, data, options, schema, view, connector);
+            this.culture = connector.culture;
+            this.defaultCulture = connector.defaultCulture;
+        },
+        /**
+         * @see Alpaca.Fields.TextField#getFieldType
+        */
+        /*
+        getFieldType: function () {
+            return "text";
+        },
+        */
+
+        /**
+         * @see Alpaca.Fields.TextField#setup
+         */
+        setup: function () {
+
+            if (this.data && Alpaca.isObject(this.data)) {             
+                this.olddata = this.data;
+            } else if (this.data) {
+                this.olddata = {};
+                this.olddata[this.defaultCulture] = this.data;
+            }
+            
+            
+            if (this.culture != this.defaultCulture && this.olddata && this.olddata[this.defaultCulture]) {
+                this.options.placeholder = this.olddata[this.defaultCulture];
+            } else {
+                this.options.placeholder = "";
+            }
+            this.base();
+            /*
+            Alpaca.mergeObject(this.options, {
+                "fieldClass": "flag-"+this.culture
+            });
+            */
+        },
+        /**
+         * @see Alpaca.Fields.TextField#getValue
+         */
+        getValue: function () {
+            var val = this.base();
+            var self = this;
+            /*
+            if (val === "") {
+                return [];
+            }
+            */
+
+            var o = {};
+            if (this.olddata && Alpaca.isObject(this.olddata)) {
+                $.each(this.olddata, function (key, value) {
+                    var v = Alpaca.copyOf(value);
+                    if (key != self.culture) {
+                        o[key] = v;
+                    }
+                });
+            }
+            if (val != "") {
+                o[self.culture] = val;
+            }
+            if ($.isEmptyObject(o)) {
+                return "";
+            }
+            //o["_type"] = "languages";
+            return o;
+        },
+
+        /**
+         * @see Alpaca.Fields.TextField#setValue
+         */
+        setValue: function (val) {
+            if (val === "") {
+                return;
+            }
+            if (!val) {
+                this.base("");
+                return;
+            }
+            if (Alpaca.isObject(val)) {
+                var v = val[this.culture];
+                if (!v) {
+                    this.base("");
+                    return;
+                }
+                this.base(v);
+            }
+            else
+            {
+                this.base(val);
+            }
+        },
+        afterRenderControl: function (model, callback) {
+            var self = this;
+            this.base(model, function () {
+                self.handlePostRender(function () {
+                    callback();
+                });
+            });
+        },
+        handlePostRender: function (callback) {
+            var self = this;
+            var el = this.getControlEl();
+            $(this.control.get(0)).after('<img src="/images/Flags/' + this.culture + '.gif" class="flag" />');
+            //$(this.control.get(0)).after('<div style="background:#eee;margin-bottom: 18px;display:inline-block;padding-bottom:8px;"><span>' + this.culture + '</span></div>');
+            callback();
+        },
+        
+        /**
+         * @see Alpaca.Fields.TextField#getTitle
+         */
+        getTitle: function () {
+            return "Multi Language Text Field";
+        },
+
+        /**
+         * @see Alpaca.Fields.TextField#getDescription
+         */
+        getDescription: function () {
+            return "Multi Language Text field .";
+        },
+
+        /**
+         * @private
+         * @see Alpaca.Fields.TextField#getSchemaOfOptions
+         */
+        getSchemaOfOptions: function () {
+            return Alpaca.merge(this.base(), {
+                "properties": {
+                    "separator": {
+                        "title": "Separator",
+                        "description": "Separator used to split tags.",
+                        "type": "string",
+                        "default": ","
+                    }
+                }
+            });
+        },
+
+        /**
+         * @private
+         * @see Alpaca.Fields.TextField#getOptionsForOptions
+         */
+        getOptionsForOptions: function () {
+            return Alpaca.merge(this.base(), {
+                "fields": {
+                    "separator": {
+                        "type": "text"
+                    }
+                }
+            });
+        }
+
+        /* end_builder_helpers */
+    });
+
+    Alpaca.registerFieldClass("mltextarea", Alpaca.Fields.MLTextAreaField);
 
 })(jQuery);
 ///#source 1 1 MLUrlField.js

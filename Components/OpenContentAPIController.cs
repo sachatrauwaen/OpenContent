@@ -122,7 +122,7 @@ namespace Satrabel.OpenContent.Components
                     createdByUserid = dsItem.CreatedByUserId;
                 }
 
-                if (!OpenContentUtils.HasEditPermissions(PortalSettings, module, editRole, createdByUserid))
+                if (!OpenContentUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, createdByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
@@ -281,7 +281,7 @@ namespace Satrabel.OpenContent.Components
                         CreatedByUserid = dsItem.CreatedByUserId;
                     }
                 }
-                if (!OpenContentUtils.HasEditPermissions(PortalSettings, module, editRole, CreatedByUserid))
+                if (!OpenContentUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, CreatedByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
@@ -373,7 +373,7 @@ namespace Satrabel.OpenContent.Components
                     if (dsItem != null)
                         createdByUserid = dsItem.CreatedByUserId;
                 }
-                if (!OpenContentUtils.HasEditPermissions(PortalSettings, module, editRole, createdByUserid))
+                if (!OpenContentUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, createdByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
@@ -457,7 +457,7 @@ namespace Satrabel.OpenContent.Components
                         CreatedByUserid = content.CreatedByUserId;
                     }
                 }
-                if (!OpenContentUtils.HasEditPermissions(PortalSettings, module, editRole, CreatedByUserid))
+                if (!OpenContentUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, CreatedByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }

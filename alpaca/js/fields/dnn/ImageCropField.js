@@ -112,10 +112,10 @@
         },
         handlePostRender: function (callback) {
             var self = this;
+            var el = this.getControlEl();
+            $image = $(self.control).parent().find('.alpaca-image-display img');
             if (self.sf){
                 //var el = this.control;
-                var el = this.getControlEl();
-                $image = $(self.control).parent().find('.alpaca-image-display img');
                 if (self.options.uploadhidden) {
                     $(this.control.get(0)).find('input[type=file]').hide();
                 } else {
@@ -200,16 +200,21 @@
                         toggleDragModeOnDblclick: false
 
                     }, self.options.cropper);
+                    if (data) {
+                        config.data = data;
+                    }
+
                     $image.cropper(config);
                 } else {
                     if (url != cropperExist.originalUrl){
                         $image.cropper('replace', url);
                     }
                     //$image.cropper('reset');
+                    if (data) {
+                        $image.cropper('setData', data);
+                    }
                 }
-                if (data) {
-                    $image.cropper('setData', data);
-                }
+                
             } else {
                 $image.hide();
                 if (!cropperExist) {
