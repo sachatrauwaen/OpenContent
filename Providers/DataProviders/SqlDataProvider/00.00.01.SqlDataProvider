@@ -36,18 +36,6 @@ ALTER TABLE {databaseOwner}{objectQualifier}OpenContent_Items ADD CONSTRAINT
 
 GO
 
-ALTER TABLE {databaseOwner}{objectQualifier}OpenContent_Items
-ADD CONSTRAINT
-FK_OpenContent_Items_Modules FOREIGN KEY
-(
-ModuleId
-) REFERENCES {databaseOwner}{objectQualifier}Modules
-(
-ModuleID
-) ON UPDATE NO ACTION 
-ON DELETE CASCADE 
-GO
-
 /************************************************************/
 /*****              SqlDataProvider                     *****/
 /************************************************************/
