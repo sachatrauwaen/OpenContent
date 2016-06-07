@@ -19,6 +19,9 @@ using System.Web.UI.HtmlControls;
 
 namespace Satrabel.OpenContent.Components.Alpaca
 {
+    using DotNetNuke.Framework.Providers;
+    using DotNetNuke.Services.Installer.Packages;
+
     public class AlpacaEngine
     {
         private string _virtualDirectory;
@@ -151,23 +154,35 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
             if (allFields || fieldTypes.Contains("ckeditor") || fieldTypes.Contains("mlckeditor"))
             {
-                var form = Page.FindControl("Form");
+                var form = this.Page.FindControl("Form");
                 if (form.FindControl("CKDNNporid") == null)
                 {
-                    if (File.Exists(HostingEnvironment.MapPath("~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js")))
+                    string ckEditorJSLocation = null;
+
+                    var ckHtmlEditorProviderPackage = PackageController.Instance.GetExtensionPackage(this.ModuleContext.PortalId, packageInfo => packageInfo.Name == "DotNetNuke.CKHtmlEditorProvider");
+                    var dnnConnectCKEditorProviderPackage = PackageController.Instance.GetExtensionPackage(this.ModuleContext.PortalId, packageInfo => packageInfo.Name == "DNNConnect.CKEditorProvider");
+
+                    if (ckHtmlEditorProviderPackage != null)
                     {
-                        ClientResourceManager.RegisterScript(Page, "~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js", FileOrder.Js.DefaultPriority);
-                        DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "PortalId", ModuleContext.PortalId.ToString(), true);
-                        var CKDNNporid = new HiddenField();
-                        CKDNNporid.ID = "CKDNNporid";
-                        CKDNNporid.ClientIDMode = ClientIDMode.Static;
+                        ckEditorJSLocation = "~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js";
+                    }
+                    else if (dnnConnectCKEditorProviderPackage != null)
+                    {
+                        ckEditorJSLocation = "~/Providers/HtmlEditorProviders/DNNConnect.CKE/js/ckeditor/4.5.3/ckeditor.js";
+                    }
+
+                    if (ckEditorJSLocation != null && File.Exists(HostingEnvironment.MapPath(ckEditorJSLocation)))
+                    {
+                        ClientResourceManager.RegisterScript(this.Page, ckEditorJSLocation, FileOrder.Js.DefaultPriority);
+                        DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(this.Page, "PortalId", this.ModuleContext.PortalId.ToString(), true);
+                        var CKDNNporid = new HiddenField { ID = "CKDNNporid", ClientIDMode = ClientIDMode.Static };
 
                         form.Controls.Add(CKDNNporid);
-                        CKDNNporid.Value = ModuleContext.PortalId.ToString();
+                        CKDNNporid.Value = this.ModuleContext.PortalId.ToString();
                     }
                     else
                     {
-                        Log.Logger.Warn("Failed to load CKEeditor. Can not find ~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js");
+                        Log.Logger.Warn("Failed to load CKEeditor. Please install a DNN CKEditor Provider.");
                     }
                 }
             }
