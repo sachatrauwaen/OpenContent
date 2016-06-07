@@ -98,17 +98,24 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
                     {
                         foreach (var cropperobj in crop["croppers"].Children())
                         {
-                            var cropper = cropperobj.Children().First();
-                            int left = int.Parse(cropper["x"].ToString());
-                            int top = int.Parse(cropper["y"].ToString());
-                            int w = int.Parse(cropper["width"].ToString());
-                            int h = int.Parse(cropper["height"].ToString());
-                            var definedCropRatio = new Ratio(w, h);
-
-                            if (Math.Abs(definedCropRatio.AsFloat - requestedCropRatio.AsFloat) < 0.02) //allow 2% margin
+                            try
                             {
-                                //crop first then resize (order defined by the processors definition order in the config file)
-                                return url + string.Format("?crop={0},{1},{2},{3}&width={4}&height={5}", left, top, w, h, requestedCropRatio.Width, requestedCropRatio.Height);
+                                var cropper = cropperobj.Children().First();
+                                int left = int.Parse(cropper["x"].ToString());
+                                int top = int.Parse(cropper["y"].ToString());
+                                int w = int.Parse(cropper["width"].ToString());
+                                int h = int.Parse(cropper["height"].ToString());
+                                var definedCropRatio = new Ratio(w, h);
+
+                                if (Math.Abs(definedCropRatio.AsFloat - requestedCropRatio.AsFloat) < 0.02) //allow 2% margin
+                                {
+                                    //crop first then resize (order defined by the processors definition order in the config file)
+                                    return url + string.Format("?crop={0},{1},{2},{3}&width={4}&height={5}", left, top, w, h, requestedCropRatio.Width, requestedCropRatio.Height);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Logger.Warn(string.Format("Warning for page {0}. Error processing croppers in {1}. {2}", HttpContext.Current.Request.RawUrl, contentItem.Content, ex.Message));
                             }
                         }
                     }
