@@ -178,15 +178,10 @@ namespace Satrabel.OpenContent.Components.Json
                 bool image = opt != null &&
                     opt["type"] != null && opt["type"].ToString() == "image2";
 
-
                 if (image && reqOpt != null)
                 {
-
-
                 }
-
                 var childProperty = child;
-
                 if (childProperty.Value is JArray)
                 {
                     var array = childProperty.Value as JArray;
@@ -196,7 +191,7 @@ namespace Satrabel.OpenContent.Components.Json
                         var obj = value as JObject;
                         if (obj != null)
                         {
-                            LookupJson(obj, reqOpt, opt["items"] as JObject);
+                            //LookupJson(obj, reqOpt, opt["items"] as JObject);
                         }
                         else if (image)
                         {
