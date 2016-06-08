@@ -6,7 +6,16 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
     {
         public static ImageUri CreateImage(dynamic imageId)
         {
-            return CreateImage(Convert.ToInt32(imageId));
+            ImageUri retval = null;
+            try
+            {
+                retval = CreateImage(Convert.ToInt32(imageId));
+            }
+            catch (Exception ex)
+            {
+                Log.Logger.ErrorFormat("Error while trying to create ImageUri: ", ex);
+            }
+            return retval;
         }
 
         public static ImageUri CreateImage(string imageId)
@@ -19,11 +28,11 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             ImageUri retval = null;
             try
             {
-                retval = imageId == 0 ? null : new ImageUri(Convert.ToInt32(imageId));
+                retval = imageId == 0 ? null : new ImageUri(imageId);
             }
             catch (Exception ex)
             {
-                Log.Logger.ErrorFormat("Error while trying to creaet ImageUri: ", ex);
+                Log.Logger.ErrorFormat("Error while trying to create ImageUri: ", ex);
             }
             return retval;
         }
