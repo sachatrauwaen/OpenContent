@@ -17,7 +17,8 @@ namespace Satrabel.OpenContent.Components
         public OpenContentSettings(IDictionary moduleSettings)
         {
             var template = moduleSettings["template"] as string;    //templatepath+file  or  //manifestpath+key
-            if (!string.IsNullOrEmpty(template))
+            FirstTimeInitialisation = string.IsNullOrEmpty(template);
+            if (!FirstTimeInitialisation)
             {
                 var templateUri = new FileUri(template);
                 TemplateKey = new TemplateKey(templateUri);
@@ -72,5 +73,6 @@ namespace Satrabel.OpenContent.Components
         public bool TemplateAvailable { get { return TemplateKey != null; } }
 
         public int DetailTabId { get; private set; }
+        public bool FirstTimeInitialisation { get; private set; }
     }
 }

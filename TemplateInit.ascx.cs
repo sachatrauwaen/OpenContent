@@ -26,6 +26,7 @@ namespace Satrabel.OpenContent
         protected void Page_Load(object sender, EventArgs e)
         {
             pHelp.Visible = false;
+            phCurrentTemplate.Visible = false;
         }
         protected void rblFrom_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -197,6 +198,12 @@ namespace Satrabel.OpenContent
             else // new template
             {
                 templateDefined = false;
+            }
+
+            if (!templateDefined && !settings.FirstTimeInitialisation)
+            {
+                txtCurrentTemplate.Text = settings.TemplateKey.ToString();
+                phCurrentTemplate.Visible = true;
             }
 
             bSave.CssClass = "dnnPrimaryAction";
