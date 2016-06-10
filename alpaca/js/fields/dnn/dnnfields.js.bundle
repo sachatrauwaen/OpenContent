@@ -27,6 +27,7 @@
     <file>File2Field.js</file>
     <file>MLFile2Field.js</file>
     <file>Folder2Field.js</file>
+    <file>MLFolder2Field.js</file>
     <file>Url2Field.js</file>
     <file>MLUrl2Field.js</file>
     <file>UrlField.js</file>

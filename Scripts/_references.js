@@ -277,3 +277,4 @@
 /// <reference path="../js/lib/typeahead.js/test/integration/test.js" />
 /// <reference path="../js/builder/formbuilder.js" />
 /// <reference path="../alpaca/js/fields/dnn/mltextareafield.js" />
+/// <reference path="../alpaca/js/fields/dnn/mlfolder2field.js" />
