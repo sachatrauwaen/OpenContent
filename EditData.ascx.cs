@@ -217,7 +217,7 @@ namespace Satrabel.OpenContent
             sourceList.Items.Add(new ListItem(cData, cData));
             sourceList.Items.Add(new ListItem(cSettings, cSettings));
             sourceList.Items.Add(new ListItem(cFilter, cFilter));
-            if (template.Manifest.AdditionalData != null)
+            if (template != null && template.Manifest != null && template.Manifest.AdditionalData != null)
             {
                 foreach (var addData in template.Manifest.AdditionalData)
                 {
