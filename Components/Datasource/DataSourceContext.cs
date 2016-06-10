@@ -16,5 +16,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         public JObject Config { get; set; }
 
         public bool Single { get; set; }
+
+        public JObject Options { get; set; }
     }
 }

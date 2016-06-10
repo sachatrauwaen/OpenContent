@@ -49,11 +49,16 @@ namespace Satrabel.OpenContent.Components.JPList
                 }
                 var manifest = settings.Template.Manifest;
                 var templateManifest = settings.Template;
-
+                JObject reqOptions = null;
+                if (!string.IsNullOrEmpty(req.options))
+                {
+                    reqOptions = JObject.Parse(req.options);
+                }
                 //string editRole = manifest == null ? "" : manifest.EditRole;
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 if (listMode)
                 {
+
                     var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
                     if (!string.IsNullOrEmpty(settings.Query))
@@ -82,17 +87,16 @@ namespace Satrabel.OpenContent.Components.JPList
                         var dsContext = new DataSourceContext()
                         {
                             ModuleId = module.ModuleID,
+                            UserId = UserInfo.UserID,
                             TemplateFolder = settings.TemplateDir.FolderPath,
-                            Config = manifest.DataSourceConfig
+                            Config = manifest.DataSourceConfig,
+                            Options = reqOptions
                         };
                         dsItems = ds.GetAll(dsContext, queryBuilder.Select);
                     }
                     int mainTabId = settings.DetailTabId > 0 ? settings.DetailTabId : settings.TabId;
                     ModelFactory mf = new ModelFactory(dsItems.Items, ActiveModule, PortalSettings, mainTabId);
-                    if (!string.IsNullOrEmpty(req.options))
-                    {
-                        mf.Options = JObject.Parse(req.options);
-                    }
+                    mf.Options = reqOptions;
                     var model = mf.GetModelAsJson(false);
 
                     //model["luceneQuery"] = dsItems.DebugInfo;
