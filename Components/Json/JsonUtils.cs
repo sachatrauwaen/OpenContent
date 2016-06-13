@@ -42,7 +42,6 @@ namespace Satrabel.OpenContent.Components.Json
                 var array = childProperty.Value as JArray;
                 if (array != null)
                 {
-
                     foreach (var value in array)
                     {
                         var obj = value as JObject;
