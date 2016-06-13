@@ -356,7 +356,12 @@ namespace Satrabel.OpenContent.Components
             {
                 try
                 {
-                    model["Settings"] = JObject.Parse(settingsJson);
+                    dataJson = JToken.Parse(settingsJson);
+                    if (LocaleController.Instance.GetLocales(PortalId).Count > 1)
+                    {
+                        JsonUtils.SimplifyJson(dataJson, GetCurrentCultureCode());
+                    }
+                    model["Settings"] = dataJson;
                 }
                 catch (Exception ex)
                 {
