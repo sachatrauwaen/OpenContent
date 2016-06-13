@@ -31,6 +31,7 @@ namespace Satrabel.OpenContent
         protected override void OnInit(EventArgs e)
         {
             base.OnInit(e);
+            bIndexAll.Visible = UserInfo.IsSuperUser;
             hlCancel.NavigateUrl = Globals.NavigateURL();
             cmdSave.NavigateUrl = Globals.NavigateURL();
             //OpenContentSettings settings = this.OpenContentSettings();
@@ -43,24 +44,11 @@ namespace Satrabel.OpenContent
         protected void bIndex_Click(object sender, EventArgs e)
         {
             OpenContentSettings settings = new OpenContentSettings(Settings);
-            bool index = false;
-            if (settings.TemplateAvailable)
-            {
-                index = settings.Manifest.Index;
-            }
-            FieldConfig indexConfig = null;
-            if (index)
-            {
-                indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
-            }
-
-            int moduleid = ModuleId;
-            if (settings.IsOtherModule)
-            {
-                moduleid = settings.ModuleId;
-            }
-
-            LuceneController.Instance.ReIndexModuleData(moduleid, indexConfig);
+            LuceneController.Instance.ReIndexModuleData(ModuleId, settings);
+        }
+        protected void bIndexAll_Click(object sender, EventArgs e)
+        {
+            LuceneController.Instance.IndexAll();
         }
         protected void bGenerate_Click(object sender, EventArgs e)
         {

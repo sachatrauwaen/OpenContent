@@ -89,10 +89,27 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         #region Index
 
+        public void ReIndexModuleData(int moduleId, OpenContentSettings settings)
+        {
+            try
+            {
+                using (LuceneController lc = LuceneController.Instance)
+                {
+                    IndexModuleData(lc, moduleId, settings);
+                    lc.Store.Commit();
+                    lc.Store.OptimizeSearchIndex(true);
+                }
+            }
+            finally
+            {
+                LuceneController.ClearInstance();
+            }
+        }
+
         /// <summary>
-        /// Reindex all portal files.
+        /// Reindex all OpenContent modules of all portals.
         /// </summary>
-        private void IndexAll()
+        internal void IndexAll()
         {
             LuceneController.ClearInstance();
             try
@@ -105,32 +122,7 @@ namespace Satrabel.OpenContent.Components.Lucene
                         ArrayList modules = mc.GetModulesByDefinition(portal.PortalID, "OpenContent");
                         foreach (ModuleInfo module in modules.OfType<ModuleInfo>())
                         {
-                            OpenContentSettings settings = new OpenContentSettings(module.ModuleSettings);
-                            OpenContentUtils.CheckOpenContentSettings(module, settings);
-
-                            if (settings.Template != null && settings.Template.IsListTemplate && !settings.IsOtherModule)
-                            {
-                                //TemplateManifest template = null;
-
-                                bool index = false;
-                                if (settings.TemplateAvailable)
-                                {
-                                    index = settings.Manifest.Index;
-                                }
-                                FieldConfig indexConfig = null;
-                                if (index)
-                                {
-                                    indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
-                                }
-
-                                //lc.DeleteAll();
-                                //lc.Delete(new TermQuery(new Term("$type", ModuleId.ToString())));
-                                OpenContentController occ = new OpenContentController();
-                                foreach (var item in occ.GetContents(module.ModuleID))
-                                {
-                                    lc.Add(item, indexConfig);
-                                }
-                            }
+                            IndexModule(lc, module);
                         }
                     }
                     lc.Store.Commit();
@@ -143,25 +135,40 @@ namespace Satrabel.OpenContent.Components.Lucene
             }
         }
 
-        public void ReIndexModuleData(int moduleId, FieldConfig indexConfig)
+        private void IndexModule(LuceneController lc, ModuleInfo module)
         {
-            try
+            OpenContentSettings settings = new OpenContentSettings(module.ModuleSettings);
+            OpenContentUtils.CheckOpenContentSettings(module, settings);
+
+            if (settings.Template != null && settings.Template.IsListTemplate && !settings.IsOtherModule)
             {
-                using (LuceneController lc = LuceneController.Instance)
-                {
-                    lc.Store.Delete(new TermQuery(new Term("$type", moduleId.ToString())));
-                    OpenContentController occ = new OpenContentController();
-                    foreach (var item in occ.GetContents(moduleId))
-                    {
-                        lc.Add(item, indexConfig);
-                    }
-                    lc.Store.Commit();
-                    lc.Store.OptimizeSearchIndex(true);
-                }
+                IndexModuleData(lc, module.ModuleID, settings);
             }
-            finally
+        }
+
+        private void IndexModuleData(LuceneController lc, int moduleId, OpenContentSettings settings)
+        {
+            bool index = false;
+            if (settings.TemplateAvailable)
             {
-                LuceneController.ClearInstance();
+                index = settings.Manifest.Index;
+            }
+            FieldConfig indexConfig = null;
+            if (index)
+            {
+                indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
+            }
+
+            if (settings.IsOtherModule)
+            {
+                moduleId = settings.ModuleId;
+            }
+
+            lc.Store.Delete(new TermQuery(new Term("$type", moduleId.ToString())));
+            OpenContentController occ = new OpenContentController();
+            foreach (var item in occ.GetContents(moduleId))
+            {
+                lc.Add(item, indexConfig);
             }
         }
 
