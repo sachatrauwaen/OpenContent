@@ -121,7 +121,7 @@ namespace Satrabel.OpenContent.Components
             this.MainModuleId = mainModuleId > 0 ? mainModuleId : module.ModuleID;
         }
 
-        
+
         public ModelFactory(IEnumerable<IDataItem> dataList, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles manifestFiles, ModuleInfo module, int portalId, string cultureCode, int mainTabId, int mainModuleId)
         {
             this.DataList = dataList;
@@ -256,7 +256,7 @@ namespace Satrabel.OpenContent.Components
                             dynamic dynForHBS = JsonUtils.JsonToDynamic(dyn.ToString());
                             url = hbEngine.Execute(Manifest.DetailUrl, dynForHBS);
                         }
-                        
+
                         context["EditUrl"] = DnnUrlUtils.EditUrl("id", item.Id, Module.ModuleID, PortalSettings);
                         context["IsEditable"] = IsEditable ||
                             (!string.IsNullOrEmpty(editRole) &&
@@ -356,7 +356,12 @@ namespace Satrabel.OpenContent.Components
             {
                 try
                 {
-                    model["Settings"] = JObject.Parse(settingsJson);
+                    dataJson = JToken.Parse(settingsJson);
+                    if (LocaleController.Instance.GetLocales(PortalId).Count > 1)
+                    {
+                        JsonUtils.SimplifyJson(dataJson, GetCurrentCultureCode());
+                    }
+                    model["Settings"] = dataJson;
                 }
                 catch (Exception ex)
                 {

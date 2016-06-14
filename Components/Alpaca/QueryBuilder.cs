@@ -193,6 +193,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 }
             }
         }
+
         public QueryBuilder BuildFilter(bool addWorkflowFilter, NameValueCollection queryString = null)
         {
             BuildQueryStringFilter(queryString, Select.Filter);
@@ -200,7 +201,6 @@ namespace Satrabel.OpenContent.Components.Alpaca
             {
                 AddWorkflowFilter(Select.Filter);
             }
-            //Filter = q.Clauses.Count > 0 ? q : null;
             return this;
         }
 
@@ -217,8 +217,8 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
             if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey("publishstartdate"))
             {
-                DateTime startDate = DateTime.MinValue;
-                DateTime endDate = DateTime.Today;
+                //DateTime startDate = DateTime.MinValue;
+                //DateTime endDate = DateTime.Today;
                 filter.AddRule(new FilterRule()
                 {
                     Field = "publishstartdate",
@@ -228,8 +228,8 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
             if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey("publishenddate"))
             {
-                DateTime startDate = DateTime.Today;
-                DateTime endDate = DateTime.MaxValue;
+                //DateTime startDate = DateTime.Today;
+                //DateTime endDate = DateTime.MaxValue;
                 filter.AddRule(new FilterRule()
                 {
                     Field = "publishenddate",

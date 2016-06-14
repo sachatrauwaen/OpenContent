@@ -676,7 +676,7 @@ namespace Satrabel.OpenContent
                     info.SetData(dataList, settings.Data);
                     info.DataExist = true;
                 }
-                
+
                 if (info.Template.Views != null)
                 {
                     var indexConfig = OpenContentUtils.GetIndexConfig(info.Template.Key.TemplateDir);
