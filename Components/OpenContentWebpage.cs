@@ -29,7 +29,7 @@ namespace Satrabel.OpenContent.Components
 
         public void RegisterStyleSheet(string filePath)
         {
-            if (!filePath.StartsWith("http") && !filePath.Contains("/"))
+            if (!filePath.StartsWith("http") && !filePath.StartsWith("/"))
             {
                 filePath = VirtualPath + filePath;
             }
