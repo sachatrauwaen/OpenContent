@@ -43,19 +43,9 @@ namespace Satrabel.OpenContent.Components
             CSSOrder++;
         }
 
-        public void RegisterScript(string filePath)
+        public void RegisterScript(string jsfilename)
         {
-            if (!filePath.StartsWith("http") && !filePath.StartsWith("/"))
-            {
-                filePath = VirtualPath + filePath;
-            }
-            else if (!filePath.StartsWith("http"))
-            {
-                var file = new FileUri(filePath);
-                filePath = file.UrlFilePath;
-            }
-
-            ClientResourceManager.RegisterScript((Page)HttpContext.Current.CurrentHandler, filePath, JSOrder);
+            DnnUtils.RegisterScript((Page)HttpContext.Current.CurrentHandler, VirtualPath, jsfilename, JSOrder);
             JSOrder++;
         }
 

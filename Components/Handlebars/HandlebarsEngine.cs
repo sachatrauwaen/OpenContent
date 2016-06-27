@@ -86,12 +86,12 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 throw new TemplateException("Failed to render Handlebar template ", ex, model, source);
             }
         }
-        public string Execute(Page page, FileUri sourceFilename, dynamic model)
+        public string Execute(Page page, FileUri sourceFileUri, dynamic model)
         {
             try
             {
-                string source = File.ReadAllText(sourceFilename.PhysicalFilePath);
-                string sourceFolder = sourceFilename.UrlFolder.Replace("\\", "/") + "/";
+                string source = File.ReadAllText(sourceFileUri.PhysicalFilePath);
+                string sourceFolder = sourceFileUri.UrlFolder; //.Replace("\\", "/") + "/";
                 var hbs = HandlebarsDotNet.Handlebars.Create();
                 RegisterDivideHelper(hbs);
                 RegisterMultiplyHelper(hbs);
@@ -112,18 +112,17 @@ namespace Satrabel.OpenContent.Components.Handlebars
             }
             catch (Exception ex)
             {
-                Log.Logger.Error(string.Format("Failed to render Handlebar template source:[{0}], model:[{1}]", sourceFilename, model), ex);
-                throw new TemplateException("Failed to render Handlebar template " + sourceFilename.FilePath, ex, model, sourceFilename.FilePath);
+                Log.Logger.Error(string.Format("Failed to render Handlebar template source:[{0}], model:[{1}]", sourceFileUri, model), ex);
+                throw new TemplateException("Failed to render Handlebar template " + sourceFileUri.FilePath, ex, model, sourceFileUri.FilePath);
             }
         }
         public string Execute(Page page, IModuleControl module, TemplateFiles files, string templateVirtualFolder, dynamic model)
         {
-            string sourceFilename = System.Web.Hosting.HostingEnvironment.MapPath(templateVirtualFolder + "/" + files.Template);
+            var sourceFileUri = new FileUri(templateVirtualFolder + "/" + files.Template);
             try
             {
-
-                string source = File.ReadAllText(sourceFilename);
-                string sourceFolder = templateVirtualFolder.Replace("\\", "/") + "/";
+                string source = File.ReadAllText(sourceFileUri.PhysicalFilePath);
+                string sourceFolder = sourceFileUri.UrlFolder;
                 var hbs = HandlebarsDotNet.Handlebars.Create();
                 if (files.PartialTemplates != null)
                 {
@@ -152,8 +151,8 @@ namespace Satrabel.OpenContent.Components.Handlebars
             }
             catch (Exception ex)
             {
-                Log.Logger.Error(string.Format("Failed to render Handlebar template source:[{0}], model:[{1}]", sourceFilename, model), ex);
-                throw new TemplateException("Failed to render Handlebar template " + sourceFilename, ex, model, sourceFilename);
+                Log.Logger.Error(string.Format("Failed to render Handlebar template source:[{0}], model:[{1}]", sourceFileUri.PhysicalFilePath, model), ex);
+                throw new TemplateException("Failed to render Handlebar template " + sourceFileUri.PhysicalFilePath, ex, model, sourceFileUri.PhysicalFilePath);
             }
         }
 
@@ -312,11 +311,8 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 if (parameters.Length == 1)
                 {
                     string jsfilename = parameters[0].ToString();
-                    if (!jsfilename.StartsWith("/") && !jsfilename.Contains("//"))
-                    {
-                        jsfilename = sourceFolder + jsfilename;
-                    }
-                    ClientResourceManager.RegisterScript(page, page.ResolveUrl(jsfilename), _jsOrder++ /*FileOrder.Js.DefaultPriority*/);
+                    DnnUtils.RegisterScript(page, sourceFolder, jsfilename, _jsOrder);
+                    _jsOrder++;
                 }
             });
         }
