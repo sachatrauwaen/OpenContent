@@ -250,7 +250,7 @@ namespace Satrabel.OpenContent
                     {
                         try
                         {
-                            var f = new FileUri(_renderinfo.Template.ManifestDir.FolderPath, item.Value.Template);
+                            var f = new FileUri(_renderinfo.Template.ManifestFolderUri.FolderPath, item.Value.Template);
                             string s = File.ReadAllText(f.PhysicalFilePath);
                             var litPartial = new LiteralControl(s);
                             Controls.Add(litPartial);
@@ -391,7 +391,7 @@ namespace Satrabel.OpenContent
                     }
                 }
 
-                if (templateDefined && OpenContentUtils.BuildersExist(settings.Template.ManifestDir))
+                if (templateDefined && OpenContentUtils.BuildersExist(settings.Template.ManifestFolderUri))
                     actions.Add(ModuleContext.GetNextActionID(),
                         Localization.GetString("Builder.Action", LocalResourceFile),
                         ModuleActionType.ContentOptions,
@@ -557,7 +557,7 @@ namespace Satrabel.OpenContent
                     bool settingsNeeded = _renderinfo.Template.SettingsNeeded();
                     if (!_renderinfo.ShowInitControl && (!settingsNeeded || !string.IsNullOrEmpty(_renderinfo.SettingsJson)))
                     {
-                        _renderinfo.OutputString = GenerateOutput(_renderinfo.Template.Uri(), _renderinfo.DataJson, _renderinfo.SettingsJson, _renderinfo.Template.Main);
+                        _renderinfo.OutputString = GenerateOutput(_renderinfo.Template.MainTemplateUri(), _renderinfo.DataJson, _renderinfo.SettingsJson, _renderinfo.Template.Main);
                     }
                 }
             }
@@ -569,12 +569,12 @@ namespace Satrabel.OpenContent
             {
                 //JavaScript.RequestRegistration() 
                 //string templateBase = template.FilePath.Replace("$.hbs", ".hbs");
-                var cssfilename = new FileUri(Path.ChangeExtension(template.Uri().FilePath, "css"));
+                var cssfilename = new FileUri(Path.ChangeExtension(template.MainTemplateUri().FilePath, "css"));
                 if (cssfilename.FileExists)
                 {
                     ClientResourceManager.RegisterStyleSheet(Page, Page.ResolveUrl(cssfilename.UrlFilePath), FileOrder.Css.PortalCss);
                 }
-                var jsfilename = new FileUri(Path.ChangeExtension(template.Uri().FilePath, "js"));
+                var jsfilename = new FileUri(Path.ChangeExtension(template.MainTemplateUri().FilePath, "js"));
                 if (jsfilename.FileExists)
                 {
                     ClientResourceManager.RegisterScript(Page, Page.ResolveUrl(jsfilename.UrlFilePath), FileOrder.Js.DefaultPriority + 100);
@@ -583,25 +583,29 @@ namespace Satrabel.OpenContent
             }
         }
 
-        private FileUri CheckFiles(string templateVirtualFolder, TemplateFiles files, string templateFolder)
+        private FileUri CheckFiles(TemplateManifest templateManifest, TemplateFiles files)
         {
             if (files == null)
+            {
                 LoggingUtils.ProcessModuleLoadException(this, new Exception("Manifest.json missing or incomplete"));
-            string templateFile = templateFolder + "\\" + files.Template;
-            string template = templateVirtualFolder + "/" + files.Template;
-            if (!File.Exists(templateFile))
-                LoggingUtils.ProcessModuleLoadException(this, new Exception("Template " + template + " don't exist"));
+                return null;
+            }
+
+            var templateUri = new FileUri(templateManifest.ManifestFolderUri, files.Template);
+
+            if (!templateUri.FileExists)
+                LoggingUtils.ProcessModuleLoadException(this, new Exception("Template " + templateUri.UrlFilePath + " don't exist"));
+
             if (files.PartialTemplates != null)
             {
                 foreach (var partial in files.PartialTemplates)
                 {
-                    templateFile = templateFolder + "\\" + partial.Value.Template;
-                    string partialTemplate = templateVirtualFolder + "/" + partial.Value.Template;
-                    if (!File.Exists(templateFile))
-                        LoggingUtils.ProcessModuleLoadException(this, new Exception("PartialTemplate " + partialTemplate + " don't exist"));
+                    var partialTemplateUri = new FileUri(templateManifest.ManifestFolderUri, partial.Value.Template);
+                    if (!partialTemplateUri.FileExists)
+                        LoggingUtils.ProcessModuleLoadException(this, new Exception("PartialTemplate " + partialTemplateUri.UrlFilePath + " don't exist"));
                 }
             }
-            return new FileUri(template);
+            return templateUri;
         }
 
         private bool Filter(string json, string key, string value)
@@ -792,7 +796,7 @@ namespace Satrabel.OpenContent
             FileUri dataFilename = null;
             if (info.Template != null)
             {
-                dataFilename = new FileUri(info.Template.Uri().UrlFolder, "data.json"); ;
+                dataFilename = new FileUri(info.Template.ManifestFolderUri.UrlFolder, "data.json"); ;
             }
             if (dataFilename != null && dataFilename.FileExists)
             {
@@ -800,13 +804,13 @@ namespace Satrabel.OpenContent
                 string settingContent = "";
                 if (!string.IsNullOrWhiteSpace(fileContent))
                 {
-                    if (settings.Template != null && info.Template.Uri().FilePath == settings.Template.Uri().FilePath)
+                    if (settings.Template != null && info.Template.MainTemplateUri().FilePath == settings.Template.MainTemplateUri().FilePath)
                     {
                         settingContent = settings.Data;
                     }
                     if (string.IsNullOrEmpty(settingContent))
                     {
-                        var settingsFilename = info.Template.Uri().PhysicalFullDirectory + "\\" + info.Template.Key.ShortKey + "-data.json";
+                        var settingsFilename = info.Template.MainTemplateUri().PhysicalFullDirectory + "\\" + info.Template.Key.ShortKey + "-data.json";
                         if (File.Exists(settingsFilename))
                         {
                             settingContent = File.ReadAllText(settingsFilename);
@@ -831,11 +835,11 @@ namespace Satrabel.OpenContent
             // detail template
             try
             {
-                var templateVirtualFolder = templateManifest.Uri().UrlFolder;
+                var templateVirtualFolder = templateManifest.ManifestFolderUri.UrlFolder;
                 if (!string.IsNullOrEmpty(files.Template))
                 {
                     string physicalTemplateFolder = Server.MapPath(templateVirtualFolder);
-                    FileUri templateUri = CheckFiles(templateVirtualFolder, files, physicalTemplateFolder);
+                    FileUri templateUri = CheckFiles(templateManifest, files);
 
                     if (dataJson != null)
                     {
@@ -946,11 +950,11 @@ namespace Satrabel.OpenContent
         {
             try
             {
-                var templateVirtualFolder = templateManifest.Uri().UrlFolder;
+                var templateVirtualFolder = templateManifest.ManifestFolderUri.UrlFolder;
                 if (!string.IsNullOrEmpty(files.Template))
                 {
                     string physicalTemplateFolder = Server.MapPath(templateVirtualFolder);
-                    FileUri templateUri = CheckFiles(templateVirtualFolder, files, physicalTemplateFolder);
+                    FileUri templateUri = CheckFiles(templateManifest, files);
                     if (dataList != null)
                     {
                         int mainTabId = _settings.DetailTabId > 0 ? _settings.DetailTabId : _settings.TabId;
@@ -1049,7 +1053,7 @@ namespace Satrabel.OpenContent
         }
         private string ExecuteTemplate(TemplateManifest templateManifest, TemplateFiles files, FileUri templateUri, dynamic model)
         {
-            var templateVirtualFolder = templateManifest.Uri().UrlFolder;
+            var templateVirtualFolder = templateManifest.ManifestFolderUri.UrlFolder;
             if (LogContext.IsLogActive)
             {
                 var logKey = "Render template";
@@ -1098,7 +1102,7 @@ namespace Satrabel.OpenContent
 
                 if (demoExist && (!settingsNeeded || !string.IsNullOrEmpty(_renderinfo.SettingsJson)))
                 {
-                    _renderinfo.OutputString = GenerateOutput(_renderinfo.Template.Uri(), _renderinfo.DataJson, _renderinfo.SettingsJson, _renderinfo.Template.Main);
+                    _renderinfo.OutputString = GenerateOutput(_renderinfo.Template.MainTemplateUri(), _renderinfo.DataJson, _renderinfo.SettingsJson, _renderinfo.Template.Main);
                 }
                 //too many rendering issues 
                 //bool dsDataExist = _datasource.GetOtherModuleDemoData(_info, _info, _settings);

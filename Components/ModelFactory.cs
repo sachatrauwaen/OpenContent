@@ -29,7 +29,7 @@ namespace Satrabel.OpenContent.Components
         readonly string PhysicalTemplateFolder;
         readonly Manifest.Manifest Manifest;
         readonly TemplateManifest TemplateManifest;
-        readonly TemplateFiles ManifestFiles;
+        readonly TemplateFiles TemplateFiles;
         readonly ModuleInfo Module;
         readonly PortalSettings PortalSettings;
         readonly int PortalId;
@@ -40,13 +40,13 @@ namespace Satrabel.OpenContent.Components
 
         public JObject Options { get; set; } // alpaca options.json format
 
-        public ModelFactory(JToken dataJson, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles manifestFiles, ModuleInfo module, PortalSettings portalSettings, int mainTabId, int mainModuleId)
+        public ModelFactory(JToken dataJson, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, ModuleInfo module, PortalSettings portalSettings, int mainTabId, int mainModuleId)
         {
             this.dataJson = dataJson;
             this.settingsJson = settingsJson;
             this.PhysicalTemplateFolder = physicalTemplateFolder;
             this.Manifest = manifest;
-            this.ManifestFiles = manifestFiles;
+            this.TemplateFiles = templateFiles;
             this.Module = module;
             this.PortalSettings = portalSettings;
             this.PortalId = portalSettings.PortalId;
@@ -55,14 +55,14 @@ namespace Satrabel.OpenContent.Components
             this.MainTabId = DnnUtils.GetTabByCurrentCulture(this.PortalId, this.MainTabId, GetCurrentCultureCode());
             this.MainModuleId = mainModuleId > 0 ? mainModuleId : module.ModuleID;
         }
-        public ModelFactory(IDataItem data, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles manifestFiles, ModuleInfo module, PortalSettings portalSettings, int mainTabId, int mainModuleId)
+        public ModelFactory(IDataItem data, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, ModuleInfo module, PortalSettings portalSettings, int mainTabId, int mainModuleId)
         {
             this.dataJson = data.Data;
             this.Data = data;
             this.settingsJson = settingsJson;
             this.PhysicalTemplateFolder = physicalTemplateFolder;
             this.Manifest = manifest;
-            this.ManifestFiles = manifestFiles;
+            this.TemplateFiles = templateFiles;
             this.Module = module;
             this.PortalSettings = portalSettings;
             this.PortalId = portalSettings.PortalId;
@@ -71,14 +71,14 @@ namespace Satrabel.OpenContent.Components
             this.MainTabId = DnnUtils.GetTabByCurrentCulture(this.PortalId, this.MainTabId, GetCurrentCultureCode());
             this.MainModuleId = mainModuleId > 0 ? mainModuleId : module.ModuleID;
         }
-        public ModelFactory(IDataItem data, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles manifestFiles, ModuleInfo module, int portalId, string cultureCode, int mainTabId, int mainModuleId)
+        public ModelFactory(IDataItem data, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, ModuleInfo module, int portalId, string cultureCode, int mainTabId, int mainModuleId)
         {
             this.dataJson = data.Data;
             this.Data = data;
             this.settingsJson = settingsJson;
             this.PhysicalTemplateFolder = physicalTemplateFolder;
             this.Manifest = manifest;
-            this.ManifestFiles = manifestFiles;
+            this.TemplateFiles = templateFiles;
             this.Module = module;
             this.PortalId = portalId;
             this.CultureCode = cultureCode;
@@ -93,9 +93,9 @@ namespace Satrabel.OpenContent.Components
             OpenContentSettings settings = module.OpenContentSettings();
             this.DataList = dataList;
             this.settingsJson = settings.Data;
-            this.PhysicalTemplateFolder = settings.Template.Uri().PhysicalFullDirectory + "\\";
+            this.PhysicalTemplateFolder = settings.Template.ManifestFolderUri.PhysicalFullDirectory + "\\";
             this.Manifest = settings.Template.Manifest;
-            this.ManifestFiles = settings.Template != null ? settings.Template.Main : null;
+            this.TemplateFiles = settings.Template != null ? settings.Template.Main : null;
             this.Module = module;
             this.PortalSettings = portalSettings;
             this.PortalId = portalSettings.PortalId;
@@ -105,13 +105,13 @@ namespace Satrabel.OpenContent.Components
             this.MainModuleId = settings.ModuleId > 0 ? settings.ModuleId : module.ModuleID;
         }
 
-        public ModelFactory(IEnumerable<IDataItem> dataList, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles manifestFiles, ModuleInfo module, PortalSettings portalSettings, int mainTabId, int mainModuleId)
+        public ModelFactory(IEnumerable<IDataItem> dataList, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, ModuleInfo module, PortalSettings portalSettings, int mainTabId, int mainModuleId)
         {
             this.DataList = dataList;
             this.settingsJson = settingsJson;
             this.PhysicalTemplateFolder = physicalTemplateFolder;
             this.Manifest = manifest;
-            this.ManifestFiles = manifestFiles;
+            this.TemplateFiles = templateFiles;
             this.Module = module;
             this.PortalSettings = portalSettings;
             this.PortalId = portalSettings.PortalId;
@@ -122,13 +122,13 @@ namespace Satrabel.OpenContent.Components
         }
 
 
-        public ModelFactory(IEnumerable<IDataItem> dataList, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles manifestFiles, ModuleInfo module, int portalId, string cultureCode, int mainTabId, int mainModuleId)
+        public ModelFactory(IEnumerable<IDataItem> dataList, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, ModuleInfo module, int portalId, string cultureCode, int mainTabId, int mainModuleId)
         {
             this.DataList = dataList;
             this.settingsJson = settingsJson;
             this.PhysicalTemplateFolder = physicalTemplateFolder;
             this.Manifest = manifest;
-            this.ManifestFiles = manifestFiles;
+            this.TemplateFiles = templateFiles;
             this.Module = module;
             this.PortalId = portalId;
             this.CultureCode = cultureCode;
@@ -289,13 +289,13 @@ namespace Satrabel.OpenContent.Components
 
         private void CompleteModel(JObject model, bool onlyData)
         {
-            if (!onlyData && ManifestFiles != null && ManifestFiles.SchemaInTemplate)
+            if (!onlyData && TemplateFiles != null && TemplateFiles.SchemaInTemplate)
             {
                 // schema
                 string schemaFilename = PhysicalTemplateFolder + "schema.json";
                 model["Schema"] = JsonUtils.GetJsonFromFile(schemaFilename);
             }
-            if (ManifestFiles != null && ManifestFiles.OptionsInTemplate)
+            if (TemplateFiles != null && TemplateFiles.OptionsInTemplate)
             {
                 // options
                 JToken optionsJson = null;
@@ -329,7 +329,7 @@ namespace Satrabel.OpenContent.Components
                 }
             }
             // additional data
-            if (ManifestFiles != null && ManifestFiles.AdditionalDataInTemplate && Manifest.AdditionalData != null)
+            if (TemplateFiles != null && TemplateFiles.AdditionalDataInTemplate && Manifest.AdditionalData != null)
             {
                 var additionalData = model["AdditionalData"] = new JObject();
                 foreach (var item in Manifest.AdditionalData)
