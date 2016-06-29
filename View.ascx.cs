@@ -12,6 +12,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Diagnostics;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Modules.Actions;
 using DotNetNuke.Services.Localization;
@@ -269,7 +270,10 @@ namespace Satrabel.OpenContent
                 StringBuilder logScript = new StringBuilder();
                 logScript.AppendLine("<script type=\"text/javascript\"> ");
                 logScript.AppendLine("$(document).ready(function () { ");
-                logScript.AppendLine("var logs = " + JsonConvert.SerializeObject(LogContext.Current.ModuleLogs(ModuleContext.ModuleId)) + "; ");
+                if (Debugger.IsAttached)
+                    logScript.AppendLine("var logs = " + JsonConvert.SerializeObject("info not available in Visual Studio Debug mode") + "; ");  //too slow
+                else
+                    logScript.AppendLine("var logs = " + JsonConvert.SerializeObject(LogContext.Current.ModuleLogs(ModuleContext.ModuleId)) + "; ");
                 logScript.AppendLine("$.fn.openContent.printLogs('Module " + ModuleContext.ModuleId + " - " + ModuleContext.Configuration.ModuleTitle + "', logs);");
                 logScript.AppendLine("});");
                 logScript.AppendLine("</script>");
@@ -279,7 +283,6 @@ namespace Satrabel.OpenContent
         private void RenderInitForm()
         {
             OpenContent.TemplateInit ti = (TemplateInit)TemplateInitControl;
-
             ti.RenderInitForm();
         }
         public DotNetNuke.Entities.Modules.Actions.ModuleActionCollection ModuleActions
