@@ -215,7 +215,7 @@ namespace Satrabel.OpenContent.Components.Json
                 else if (childProperty.Value is JObject)
                 {
                     var obj = childProperty.Value as JObject;
-                    LookupJson(obj, reqOpt, opt);
+                    
                 }
                 else if (childProperty.Value is JValue)
                 {
@@ -245,7 +245,12 @@ namespace Satrabel.OpenContent.Components.Json
             int fileId = int.Parse(p);
             var file = FileManager.Instance.GetFile(fileId);
             var imageUrl = ImageHelper.GetImageUrl(file, ratio);
-            return new JValue(imageUrl);
+
+            var obj = new JObject();
+            obj["imageUrl"] = imageUrl;
+            obj["editUrl"] = "...";
+            return obj;
+            //return new JValue(imageUrl);
         }
 
         private static JObject GenerateObject(JObject additionalData, string key, string id, string dataMember, string valueField)
