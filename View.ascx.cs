@@ -264,16 +264,13 @@ namespace Satrabel.OpenContent
                     }
                 }
             }
-            if (LogContext.IsLogActive)
+            if (LogContext.IsLogActive && !Debugger.IsAttached)
             {
                 ClientResourceManager.RegisterScript(Page, Page.ResolveUrl("~/DesktopModules/OpenContent/js/opencontent.js"), FileOrder.Js.DefaultPriority);
                 StringBuilder logScript = new StringBuilder();
                 logScript.AppendLine("<script type=\"text/javascript\"> ");
                 logScript.AppendLine("$(document).ready(function () { ");
-                if (Debugger.IsAttached)
-                    logScript.AppendLine("var logs = " + JsonConvert.SerializeObject("info not available in Visual Studio Debug mode") + "; ");  //too slow
-                else
-                    logScript.AppendLine("var logs = " + JsonConvert.SerializeObject(LogContext.Current.ModuleLogs(ModuleContext.ModuleId)) + "; ");
+                logScript.AppendLine("var logs = " + JsonConvert.SerializeObject(LogContext.Current.ModuleLogs(ModuleContext.ModuleId)) + "; ");
                 logScript.AppendLine("$.fn.openContent.printLogs('Module " + ModuleContext.ModuleId + " - " + ModuleContext.Configuration.ModuleTitle + "', logs);");
                 logScript.AppendLine("});");
                 logScript.AppendLine("</script>");
