@@ -343,6 +343,11 @@ namespace Satrabel.OpenContent.Components.Handlebars
             });
         }
 
+        /// <summary>
+        /// Retrieves image URL.
+        /// Param1 is imageId, Param2 is Size of the image. In Bootstrap 12th, Param3 is ratio string (eg '1x1'), 
+        /// </summary>
+        /// <param name="hbs">The HBS.</param>
         private void RegisterImageUrlHelper(HandlebarsDotNet.IHandlebars hbs)
         {
             hbs.RegisterHelper("imageurl", (writer, context, parameters) =>

@@ -223,7 +223,7 @@ namespace Satrabel.OpenContent.Components
                     }
                     if (Options != null && model["Options"] != null)
                     {
-                        JsonUtils.ImagesJson(dyn, Options, model["Options"] as JObject);
+                        JsonUtils.ImagesJson(dyn, Options, model["Options"] as JObject, IsEditable);
                     }
                     JObject context = new JObject();
                     dyn["Context"] = context;
