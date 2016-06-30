@@ -23,7 +23,7 @@ using Satrabel.OpenContent.Components.Datasource.search;
 namespace Satrabel.OpenContent.Components.Rest
 {
 
-    //[SupportedModules("OpenContent")]
+    
     [AllowAnonymous]
     public class RestController : DnnApiController
     {
@@ -32,7 +32,7 @@ namespace Satrabel.OpenContent.Components.Rest
         //[DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Anonymous)]
         //[HttpGet]
         //[HttpOptions]
-
+        [SupportedModules("OpenContent")]
         public HttpResponseMessage Get(string entity, string id)
         {
             try
@@ -148,7 +148,7 @@ namespace Satrabel.OpenContent.Components.Rest
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
-
+        [SupportedModules("OpenContent")]
         public HttpResponseMessage Get(string entity, int pageIndex, int pageSize, string filter, string sort)  
         {
             try
@@ -272,6 +272,50 @@ namespace Satrabel.OpenContent.Components.Rest
                 {
                     return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "not supported because not in multi items template ");
                 }
+            }
+            catch (Exception exc)
+            {
+                Log.Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
+
+        public HttpResponseMessage Get(string entity)
+        {
+            OpenContentSettings settings = ActiveModule.OpenContentSettings();
+            ModuleInfo module = ActiveModule;
+            if (settings.ModuleId > 0)
+            {
+                ModuleController mc = new ModuleController();
+                module = mc.GetModule(settings.ModuleId, settings.TabId, false);
+            }
+            var manifest = settings.Manifest;
+            TemplateManifest templateManifest = settings.Template;
+            if (!manifest.AdditionalData.ContainsKey(entity))
+            {                
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "entity don't exist in additionalData (" + entity+")");
+            }
+
+            var dataManifest = manifest.AdditionalData[entity];
+            string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings.PortalId, PortalSettings.ActiveTab.TabID, module.ModuleID, ActiveModule.TabModuleID);
+            try
+            {
+                var templateFolder = string.IsNullOrEmpty(dataManifest.TemplateFolder) ? settings.TemplateDir : settings.TemplateDir.ParentFolder.Append(dataManifest.TemplateFolder);
+                //var fb = new FormBuilder(templateFolder);
+                //JObject json = fb.BuildForm(entity);
+                var res = new JObject();
+
+                int createdByUserid = -1;
+                var dc = new AdditionalDataController();
+                var data = dc.GetData(scope, dataManifest.StorageKey ?? entity);
+                if (data != null)
+                {
+                    var json = data.Json.ToJObject("GetContent " + scope + "/" + entity);                    
+                    createdByUserid = data.CreatedByUserId;
+                    JsonUtils.IdJson(json);
+                    res[entity] = json;
+                }
+                return Request.CreateResponse(HttpStatusCode.OK, res);
             }
             catch (Exception exc)
             {

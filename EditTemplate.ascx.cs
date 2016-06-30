@@ -68,7 +68,7 @@ namespace Satrabel.OpenContent
 
                 JObject builder = new JObject();
 
-                if (schema["items"] != null)
+                if (schema != null && schema["items"] != null)
                 {
                     builder["formtype"] = "array";
                     builder["formfields"] = GetBuilder(schema["items"] as JObject, options != null && options["items"] != null ? options["items"] as JObject : null);
@@ -90,7 +90,7 @@ namespace Satrabel.OpenContent
         {
             var formfields = new JArray();
 
-            if (schema["properties"] != null)
+            if (schema != null && schema["properties"] != null)
             {
                 var schemaProperties = schema["properties"] as JObject;
                 foreach (var schProp in schemaProperties.Properties())
