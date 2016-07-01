@@ -333,5 +333,45 @@ namespace Satrabel.OpenContent.Components.Json
             }
             return retval;
         }
+
+        internal static void IdJson(JToken o)
+        {
+
+            var array = o as JArray;
+            if (array != null)
+            {
+                foreach (var value in array)
+                {
+                    var obj = value as JObject;
+                    if (obj != null)
+                    {
+                        
+                        if (obj["id"] == null)
+                        {
+                            obj["id"] = Guid.NewGuid().ToString();
+                        }
+                        IdJson(obj);
+                    }
+                }
+            }
+            else
+            {
+                var obj = o as JObject;
+                if (obj != null)
+                {
+                    if (obj["id"] == null)
+                    {
+                        obj["id"] = Guid.NewGuid().ToString();
+                    }
+                    foreach (var child in o.Children<JProperty>().ToList())
+                    {
+
+                        IdJson(child.Value);
+                    
+                    }
+                    
+                }
+            }
+        }
     }
 }

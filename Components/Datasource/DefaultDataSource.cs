@@ -42,6 +42,10 @@ namespace Satrabel.OpenContent.Components.Datasource
         public abstract void Update(DataSourceContext context, IDataItem item, JToken data);
 
         public abstract void Delete(DataSourceContext context, IDataItem item);
+        public virtual void Action(DataSourceContext context, string action, IDataItem item, JToken data)
+        {
+            throw new NotImplementedException();
+        }
 
         public abstract string Name { get; }
 

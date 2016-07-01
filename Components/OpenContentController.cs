@@ -30,7 +30,7 @@ namespace Satrabel.OpenContent.Components
         {
             OpenContentVersion ver = new OpenContentVersion()
             {
-                Json = content.Json.ToJObject("Adding Content"),
+                Json = content.JsonAsJToken,
                 CreatedByUserId = content.LastModifiedByUserId,
                 CreatedOnDate = content.LastModifiedOnDate
             };
@@ -44,6 +44,7 @@ namespace Satrabel.OpenContent.Components
             }
             if (index)
             {
+                
                 LuceneController.Instance.Add(content, indexConfig);
                 LuceneController.Instance.Store.Commit();
             }
@@ -73,7 +74,7 @@ namespace Satrabel.OpenContent.Components
         {
             OpenContentVersion ver = new OpenContentVersion()
             {
-                Json = content.Json.ToJObject("UpdateContent"),
+                Json = content.JsonAsJToken,
                 CreatedByUserId = content.LastModifiedByUserId,
                 CreatedOnDate = content.LastModifiedOnDate
             };
@@ -94,6 +95,16 @@ namespace Satrabel.OpenContent.Components
             }
             if (index)
             {
+                if (indexConfig != null && indexConfig.Fields != null && indexConfig.Fields["publishstartdate"] != null
+                    && content.JsonAsJToken != null && content.JsonAsJToken["publishstartdate"] == null)
+                {
+                    content.JsonAsJToken["publishstartdate"] = DateTime.MinValue;
+                }
+                if (indexConfig != null && indexConfig.Fields != null && indexConfig.Fields["publishenddate"] != null
+                    && content.JsonAsJToken != null && content.JsonAsJToken["publishenddate"] == null)
+                {
+                    content.JsonAsJToken["publishenddate"] = DateTime.MaxValue;
+                }
                 LuceneController.Instance.Update(content, indexConfig);
                 LuceneController.Instance.Store.Commit();
             }

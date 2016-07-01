@@ -183,7 +183,7 @@ namespace Satrabel.OpenContent.Components.Lucene
                 throw new ArgumentNullException("data");
             }
 
-            Store.Add(JsonMappingUtils.JsonToDocument(data.ModuleId.ToString(), data.ContentId.ToString(), data.Json, config));
+            Store.Add(JsonMappingUtils.JsonToDocument(data.ModuleId.ToString(), data.ContentId.ToString(), data.JsonAsJToken, data.Json, config));
         }
 
         public void Update(OpenContentInfo data, FieldConfig config)
