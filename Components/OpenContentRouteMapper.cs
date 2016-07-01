@@ -22,7 +22,7 @@ namespace Satrabel.OpenContent.Components
         public void RegisterRoutes(IMapRoute mapRouteManager)
         {
             mapRouteManager.MapHttpRoute("OpenContent", "default", "{controller}/{action}", new[] { "Satrabel.OpenContent.Components", "Satrabel.OpenContent.Components.JpList", "Satrabel.OpenContent.Components.Rss" });
-            mapRouteManager.MapHttpRoute("OpenContent", "rest", "{controller}/v1/{entity}/{id}", new { id = RouteParameter.Optional }, new[] { "Satrabel.OpenContent.Components.Rest" });
+            mapRouteManager.MapHttpRoute("OpenContent", "rest", "{controller}/v1/{entity}/{id}/{memberAction}", new { id = RouteParameter.Optional, memberAction = RouteParameter.Optional }, new[] { "Satrabel.OpenContent.Components.Rest" });
             DataSourceManager.RegisterDataSources();
         }
     }

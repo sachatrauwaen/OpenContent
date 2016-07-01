@@ -409,6 +409,75 @@ namespace Satrabel.OpenContent.Components.Rest
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
+        public HttpResponseMessage Put(string entity, string id, string memberAction, [FromBody]JObject value)
+        {
+
+            try
+            {
+                bool index = false;
+                OpenContentSettings settings = ActiveModule.OpenContentSettings();
+                ModuleInfo module = ActiveModule;
+                if (settings.ModuleId > 0)
+                {
+                    ModuleController mc = new ModuleController();
+                    module = mc.GetModule(settings.ModuleId, settings.TabId, false);
+                }
+                var manifest = settings.Template.Manifest;
+                TemplateManifest templateManifest = settings.Template;
+                index = settings.Template.Manifest.Index;
+                string editRole = manifest == null ? "" : manifest.EditRole;
+
+                bool listMode = templateManifest != null && templateManifest.IsListTemplate;
+                int createdByUserid = -1;
+                var ds = DataSourceManager.GetDataSource(manifest.DataSource);
+                var dsContext = new DataSourceContext()
+                {
+                    ModuleId = module.ModuleID,
+                    TemplateFolder = settings.TemplateDir.FolderPath,
+                    Index = index,
+                    UserId = UserInfo.UserID,
+                    PortalId = module.PortalID,
+                    Config = manifest.DataSourceConfig
+                };
+                string itemId = null;
+                IDataItem dsItem = null;
+                if (listMode)
+                {
+                    if (id != null)
+                    {
+                        itemId = id;
+                        dsItem = ds.Get(dsContext, itemId);
+                        //content = ctrl.GetContent(itemId);
+                        if (dsItem != null)
+                            createdByUserid = dsItem.CreatedByUserId;
+                    }
+                }
+                else
+                {
+                    dsContext.Single = true;
+                    dsItem = ds.Get(dsContext, null);
+                    //dsItem = ctrl.GetFirstContent(module.ModuleID);
+                    if (dsItem != null)
+                        createdByUserid = dsItem.CreatedByUserId;
+                }
+                if (!OpenContentUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, createdByUserid))
+                {
+                    //return Request.CreateResponse(HttpStatusCode.Unauthorized);
+                }
+                //var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
+                if (dsItem != null)
+                {
+                    ds.Action(dsContext, memberAction, dsItem,value);
+                }
+                
+                return Request.CreateResponse(HttpStatusCode.OK, "");
+            }
+            catch (Exception exc)
+            {
+                Log.Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
 
         public HttpResponseMessage Post(string entity, [FromBody]JObject value)
         {
@@ -560,9 +629,5 @@ namespace Satrabel.OpenContent.Components.Rest
         }
     }
 
-    class MyClass
-    {
-        public int id { get; set; }
-        public string name { get; set; }
-    }
+    
 }

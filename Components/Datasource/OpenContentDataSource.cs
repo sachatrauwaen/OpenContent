@@ -17,7 +17,7 @@ namespace Satrabel.OpenContent.Components.Datasource
 {
     public class OpenContentDataSource : IDataSource
     {
-        public string Name
+        public virtual string Name
         {
             get
             {
@@ -99,7 +99,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 var dataItem = new DefaultDataItem
                 {
                     Id = content.ContentId.ToString(),
-                    Data = content.Json.ToJObject("GetContent " + id),
+                    Data = content.JsonAsJToken,
                     CreatedByUserId = content.CreatedByUserId,
                     Item = content
                 };
@@ -121,7 +121,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             {
                 Id = c.ContentId.ToString(),
                 Title = c.Title,
-                Data = c.Json.ToJObject("GetContent " + c.ContentId),
+                Data = c.JsonAsJToken,
                 CreatedByUserId = c.CreatedByUserId,
                 Item = c
             });
@@ -140,7 +140,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 {
                     Id = c.ContentId.ToString(),
                     Title = c.Title,
-                    Data = c.Json.ToJObject("GetContent " + c.ContentId),
+                    Data = c.JsonAsJToken,
                     CreatedByUserId = c.CreatedByUserId,
                     Item = c
                 });
@@ -177,7 +177,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                         dataList.Add(new DefaultDataItem
                         {
                             Id = content.ContentId.ToString(),
-                            Data = content.Json.ToJObject("GetContent " + item),
+                            Data = content.JsonAsJToken,
                             CreatedByUserId = content.CreatedByUserId,
                             Item = content
                         });
@@ -264,6 +264,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 ModuleId = context.ModuleId,
                 Title = data["Title"] == null ? "" : data["Title"].ToString(),
                 Json = data.ToString(),
+                JsonAsJToken = data,
                 CreatedByUserId = context.UserId,
                 CreatedOnDate = DateTime.Now,
                 LastModifiedByUserId = context.UserId,
@@ -279,6 +280,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             var content = (OpenContentInfo)item.Item;
             content.Title = data["Title"] == null ? "" : data["Title"].ToString();
             content.Json = data.ToString();
+            content.JsonAsJToken = data;
             content.LastModifiedByUserId = context.UserId;
             content.LastModifiedOnDate = DateTime.Now;
             ctrl.UpdateContent(content, context.Index, indexConfig);
@@ -290,7 +292,11 @@ namespace Satrabel.OpenContent.Components.Datasource
             ctrl.DeleteContent(content, context.Index);
         }
 
+        public virtual void Action(DataSourceContext context, string action, IDataItem item, JToken data)
+        {
+            throw new NotImplementedException();
+        }
+ 
         #endregion
-
     }
 }
