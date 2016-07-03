@@ -231,37 +231,23 @@ namespace Satrabel.OpenContent.Components.Rest
                     ModelFactory mf = new ModelFactory(dsItems.Items, activeModule, PortalSettings, mainTabId);
                     mf.Options = reqOptions;
                     var model = mf.GetModelAsJson(false);
-
-                    //model["luceneQuery"] = dsItems.DebugInfo;
+                    var res = new JObject();
+                    res["meta"] = new JObject();
                     if (LogContext.IsLogActive)
                     {
                         var logKey = "Query";
                         LogContext.Log(activeModule.ModuleID, logKey, "select", queryBuilder.Select);
                         LogContext.Log(activeModule.ModuleID, logKey, "result", dsItems);
                         LogContext.Log(activeModule.ModuleID, logKey, "model", model);
-                        model["Logs"] = JToken.FromObject(LogContext.Current.ModuleLogs(activeModule.ModuleID));
+                        res["meta"]["logs"] = JToken.FromObject(LogContext.Current.ModuleLogs(activeModule.ModuleID));
                     }
                     foreach (var item in model["Items"] as JArray)
                     {
                         item["id"] = item["Context"]["Id"];
                         JsonUtils.IdJson(item);
-
-
-                        //if (item["Gallery"] is JArray)
-                        //{
-                        //    foreach (var i in item["Gallery"] as JArray)
-                        //    {
-                        //        i["id"] = Guid.NewGuid().ToString();
-                        //    }
-                        //}
                     }
-
-                    var res = new JObject();
                     res[entity] = model["Items"];
-
-                    res["meta"] = new JObject();
-                    res["meta"]["count"] = dsItems.Total;
-                    res["meta"]["logs"] = model["Logs"];
+                    res["meta"]["total"] = dsItems.Total;                    
                     if (restSelect != null)
                     {
                         res["meta"]["select"] = JObject.FromObject(restSelect);
@@ -465,12 +451,13 @@ namespace Satrabel.OpenContent.Components.Rest
                     //return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
                 //var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
+                JToken res = null;
                 if (dsItem != null)
                 {
-                    ds.Action(dsContext, memberAction, dsItem,value);
+                    res = ds.Action(dsContext, memberAction, dsItem,value);
                 }
                 
-                return Request.CreateResponse(HttpStatusCode.OK, "");
+                return Request.CreateResponse(HttpStatusCode.OK, res);
             }
             catch (Exception exc)
             {

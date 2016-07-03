@@ -95,12 +95,12 @@ namespace Satrabel.OpenContent.Components
             }
             if (index)
             {
-                if (indexConfig != null && indexConfig.Fields != null && indexConfig.Fields["publishstartdate"] != null
+                if (indexConfig != null && indexConfig.Fields != null && !indexConfig.Fields.ContainsKey("publishstartdate")
                     && content.JsonAsJToken != null && content.JsonAsJToken["publishstartdate"] == null)
                 {
                     content.JsonAsJToken["publishstartdate"] = DateTime.MinValue;
                 }
-                if (indexConfig != null && indexConfig.Fields != null && indexConfig.Fields["publishenddate"] != null
+                if (indexConfig != null && indexConfig.Fields != null && !indexConfig.Fields.ContainsKey("publishenddate")
                     && content.JsonAsJToken != null && content.JsonAsJToken["publishenddate"] == null)
                 {
                     content.JsonAsJToken["publishenddate"] = DateTime.MaxValue;
