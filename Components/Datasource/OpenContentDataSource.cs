@@ -292,7 +292,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             ctrl.DeleteContent(content, context.Index);
         }
 
-        public virtual void Action(DataSourceContext context, string action, IDataItem item, JToken data)
+        public virtual JToken Action(DataSourceContext context, string action, IDataItem item, JToken data)
         {
             throw new NotImplementedException();
         }
