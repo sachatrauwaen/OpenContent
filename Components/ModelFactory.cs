@@ -169,7 +169,7 @@ namespace Satrabel.OpenContent.Components
                     {
                         JsonUtils.SimplifyJson(model, GetCurrentCultureCode());
                     }
-                    if (Manifest.AdditionalData != null && completeModel["AdditionalData"] != null && completeModel["Options"] != null)
+                    if (Manifest.AdditionalDataExists() && completeModel["AdditionalData"] != null && completeModel["Options"] != null)
                     {
                         JsonUtils.LookupJson(model, completeModel["AdditionalData"] as JObject, completeModel["Options"] as JObject);
                     }
@@ -217,7 +217,7 @@ namespace Satrabel.OpenContent.Components
                     {
                         JsonUtils.SimplifyJson(dyn, GetCurrentCultureCode());
                     }
-                    if (Manifest.AdditionalData != null && model["AdditionalData"] != null && model["Options"] != null)
+                    if (Manifest.AdditionalDataExists() && model["AdditionalData"] != null && model["Options"] != null)
                     {
                         JsonUtils.LookupJson(dyn, model["AdditionalData"] as JObject, model["Options"] as JObject);
                     }
@@ -279,7 +279,7 @@ namespace Satrabel.OpenContent.Components
             }
             var completeModel = new JObject();
             CompleteModel(completeModel, onlyData);
-            if (Manifest.AdditionalData != null && completeModel["AdditionalData"] != null && completeModel["Options"] != null)
+            if (Manifest.AdditionalDataExists() && completeModel["AdditionalData"] != null && completeModel["Options"] != null)
             {
                 JsonUtils.LookupJson(model, completeModel["AdditionalData"] as JObject, completeModel["Options"] as JObject);
             }
@@ -329,12 +329,12 @@ namespace Satrabel.OpenContent.Components
                 }
             }
             // additional data
-            if (TemplateFiles != null && TemplateFiles.AdditionalDataInTemplate && Manifest.AdditionalData != null)
+            if (TemplateFiles != null && TemplateFiles.AdditionalDataInTemplate && Manifest.AdditionalDataExists())
             {
                 var additionalData = model["AdditionalData"] = new JObject();
                 foreach (var item in Manifest.AdditionalData)
                 {
-                    var dataManifest = Manifest.AdditionalData[item.Key];
+                    var dataManifest = Manifest.GetAdditionalData(item.Key);
                     int tabId = this.PortalSettings == null ? MainTabId : PortalSettings.ActiveTab.TabID;
                     string scope = AdditionalDataUtils.GetScope(dataManifest, PortalId, tabId, MainModuleId, Module.TabModuleID);
                     var dc = new AdditionalDataController();
@@ -348,7 +348,7 @@ namespace Satrabel.OpenContent.Components
                             JsonUtils.SimplifyJson(dataJson, GetCurrentCultureCode());
                         }
                     }
-                    additionalData[item.Value.ModelKey ?? item.Key] = dataJson;
+                    additionalData[(item.Value.ModelKey ?? item.Key).ToLowerInvariant()] = dataJson;
                 }
             }
             // settings

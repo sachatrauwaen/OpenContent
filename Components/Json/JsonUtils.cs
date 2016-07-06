@@ -264,7 +264,7 @@ namespace Satrabel.OpenContent.Components.Json
 
         private static JObject GenerateObject(JObject additionalData, string key, string id, string dataMember, string valueField)
         {
-            var json = additionalData[key];
+            var json = additionalData[key.ToLowerInvariant()];
             if (!string.IsNullOrEmpty(dataMember))
             {
                 json = json[dataMember];
@@ -345,7 +345,7 @@ namespace Satrabel.OpenContent.Components.Json
                     var obj = value as JObject;
                     if (obj != null)
                     {
-                        
+
                         if (obj["id"] == null)
                         {
                             obj["id"] = Guid.NewGuid().ToString();
@@ -367,9 +367,9 @@ namespace Satrabel.OpenContent.Components.Json
                     {
 
                         IdJson(child.Value);
-                    
+
                     }
-                    
+
                 }
             }
         }

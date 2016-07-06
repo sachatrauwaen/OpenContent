@@ -316,7 +316,7 @@ namespace Satrabel.OpenContent
                         true,
                         false);
                 }
-                if (templateDefined && template.Manifest.AdditionalData != null)
+                if (templateDefined && template.Manifest.AdditionalDataExists())
                 {
                     foreach (var addData in template.Manifest.AdditionalData)
                     {
@@ -416,7 +416,7 @@ namespace Satrabel.OpenContent
                         false);
 
 
-
+                //Edit Raw Data
                 if (templateDefined || settings.Manifest != null)
                     actions.Add(ModuleContext.GetNextActionID(),
                         Localization.GetString("EditData.Action", LocalResourceFile),

@@ -23,7 +23,7 @@ using Satrabel.OpenContent.Components.Datasource.search;
 namespace Satrabel.OpenContent.Components.Rest
 {
 
-    
+
     [AllowAnonymous]
     public class RestController : DnnApiController
     {
@@ -37,7 +37,7 @@ namespace Satrabel.OpenContent.Components.Rest
         {
             try
             {
-                
+
 
                 //int ModuleId = int.Parse(Request.Headers.GetValues("ModuleId").First());
                 //int TabId = int.Parse(Request.Headers.GetValues("TabId").First());
@@ -119,7 +119,7 @@ namespace Satrabel.OpenContent.Components.Rest
                         LogContext.Log(activeModule.ModuleID, logKey, "select", queryBuilder.Select);
                         LogContext.Log(activeModule.ModuleID, logKey, "result", dsItems);
                         LogContext.Log(activeModule.ModuleID, logKey, "model", model);
-                        res["meta"]["logs"] = JToken.FromObject(LogContext.Current.ModuleLogs(activeModule.ModuleID));                         
+                        res["meta"]["logs"] = JToken.FromObject(LogContext.Current.ModuleLogs(activeModule.ModuleID));
                     }
                     foreach (var item in model["Items"] as JArray)
                     {
@@ -149,11 +149,12 @@ namespace Satrabel.OpenContent.Components.Rest
             }
         }
         [SupportedModules("OpenContent")]
-        public HttpResponseMessage Get(string entity, int pageIndex, int pageSize, string filter, string sort)  
+        public HttpResponseMessage Get(string entity, int pageIndex, int pageSize, string filter, string sort)
         {
             try
             {
-                RestSelect restSelect = new RestSelect() { 
+                RestSelect restSelect = new RestSelect()
+                {
                     PageIndex = pageIndex,
                     PageSize = pageSize
                 };
@@ -247,7 +248,7 @@ namespace Satrabel.OpenContent.Components.Rest
                         JsonUtils.IdJson(item);
                     }
                     res[entity] = model["Items"];
-                    res["meta"]["total"] = dsItems.Total;                    
+                    res["meta"]["total"] = dsItems.Total;
                     if (restSelect != null)
                     {
                         res["meta"]["select"] = JObject.FromObject(restSelect);
@@ -277,12 +278,12 @@ namespace Satrabel.OpenContent.Components.Rest
             }
             var manifest = settings.Manifest;
             TemplateManifest templateManifest = settings.Template;
-            if (!manifest.AdditionalData.ContainsKey(entity))
-            {                
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "entity don't exist in additionalData (" + entity+")");
+            if (!manifest.AdditionalDataExists(entity))
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "entity don't exist in additionalData (" + entity + ")");
             }
 
-            var dataManifest = manifest.AdditionalData[entity];
+            var dataManifest = manifest.GetAdditionalData(entity);
             string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings.PortalId, PortalSettings.ActiveTab.TabID, module.ModuleID, ActiveModule.TabModuleID);
             try
             {
@@ -296,7 +297,7 @@ namespace Satrabel.OpenContent.Components.Rest
                 var data = dc.GetData(scope, dataManifest.StorageKey ?? entity);
                 if (data != null)
                 {
-                    var json = data.Json.ToJObject("GetContent " + scope + "/" + entity);                    
+                    var json = data.Json.ToJObject("GetContent " + scope + "/" + entity);
                     createdByUserid = data.CreatedByUserId;
                     JsonUtils.IdJson(json);
                     res[entity] = json;
@@ -454,9 +455,9 @@ namespace Satrabel.OpenContent.Components.Rest
                 JToken res = null;
                 if (dsItem != null)
                 {
-                    res = ds.Action(dsContext, memberAction, dsItem,value);
+                    res = ds.Action(dsContext, memberAction, dsItem, value);
                 }
-                
+
                 return Request.CreateResponse(HttpStatusCode.OK, res);
             }
             catch (Exception exc)
@@ -496,13 +497,13 @@ namespace Satrabel.OpenContent.Components.Rest
                     PortalId = module.PortalID,
                     Config = manifest.DataSourceConfig
                 };
-                
+
                 if (!OpenContentUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, createdByUserid))
                 {
                     //return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
                 //var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
-                    ds.Add(dsContext, value.Properties().First().Value as JObject);
+                ds.Add(dsContext, value.Properties().First().Value as JObject);
                 //if (json["form"]["ModuleTitle"] != null && json["form"]["ModuleTitle"].Type == JTokenType.String)
                 //{
                 //    string moduleTitle = json["form"]["ModuleTitle"].ToString();
@@ -582,7 +583,7 @@ namespace Satrabel.OpenContent.Components.Rest
                 //var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
                 if (dsItem == null)
                 {
-                    
+
                 }
                 else
                 {
@@ -616,5 +617,5 @@ namespace Satrabel.OpenContent.Components.Rest
         }
     }
 
-    
+
 }

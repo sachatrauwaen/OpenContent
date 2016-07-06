@@ -49,7 +49,7 @@ namespace Satrabel.OpenContent
             {
                 ddlForms.Items.Add(new ListItem("Settings", settings.Template.Key.ShortKey));
             }
-            if (settings.Template.Manifest.AdditionalData != null)
+            if (settings.Template.Manifest.AdditionalDataExists())
             {
                 foreach (var addData in settings.Template.Manifest.AdditionalData)
                 {

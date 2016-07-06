@@ -58,19 +58,26 @@ namespace Satrabel.OpenContent.Components
         [HttpGet]
         public HttpResponseMessage Edit(string id)
         {
-            OpenContentSettings settings = ActiveModule.OpenContentSettings();
-            ModuleInfo module = ActiveModule;
-            if (settings.ModuleId > 0)
-            {
-                ModuleController mc = new ModuleController();
-                module = mc.GetModule(settings.ModuleId, settings.TabId, false);
-            }
-            var manifest = settings.Manifest;
-            TemplateManifest templateManifest = settings.Template;
-            string editRole = manifest == null ? "" : manifest.EditRole;
-            bool listMode = templateManifest != null && templateManifest.IsListTemplate;
+
             try
             {
+
+
+                OpenContentSettings settings = ActiveModule.OpenContentSettings();
+                ModuleInfo module = ActiveModule;
+                if (settings.ModuleId > 0)
+                {
+                    ModuleController mc = new ModuleController();
+                    module = mc.GetModule(settings.ModuleId, settings.TabId, false);
+                }
+                var manifest = settings.Manifest;
+                TemplateManifest templateManifest = settings.Template;
+                string editRole = manifest == null ? "" : manifest.EditRole;
+                bool listMode = templateManifest != null && templateManifest.IsListTemplate;
+
+
+
+
                 var ds = DataSourceManager.GetDataSource(manifest.DataSource);
                 var dsContext = new DataSourceContext()
                 {
@@ -141,19 +148,22 @@ namespace Satrabel.OpenContent.Components
         [HttpGet]
         public HttpResponseMessage EditData(string key)
         {
-            OpenContentSettings settings = ActiveModule.OpenContentSettings();
-            ModuleInfo module = ActiveModule;
-            if (settings.ModuleId > 0)
-            {
-                ModuleController mc = new ModuleController();
-                module = mc.GetModule(settings.ModuleId, settings.TabId, false);
-            }
-            var manifest = settings.Manifest;
-            TemplateManifest templateManifest = settings.Template;
-            var dataManifest = manifest.AdditionalData[key];
-            string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings.PortalId, PortalSettings.ActiveTab.TabID, module.ModuleID, ActiveModule.TabModuleID);
             try
             {
+
+                OpenContentSettings settings = ActiveModule.OpenContentSettings();
+                ModuleInfo module = ActiveModule;
+                if (settings.ModuleId > 0)
+                {
+                    ModuleController mc = new ModuleController();
+                    module = mc.GetModule(settings.ModuleId, settings.TabId, false);
+                }
+                var manifest = settings.Manifest;
+                TemplateManifest templateManifest = settings.Template;
+                var dataManifest = manifest.GetAdditionalData(key);
+                string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings.PortalId, PortalSettings.ActiveTab.TabID, module.ModuleID, ActiveModule.TabModuleID);
+
+
                 var templateFolder = string.IsNullOrEmpty(dataManifest.TemplateFolder) ? settings.TemplateDir : settings.TemplateDir.ParentFolder.Append(dataManifest.TemplateFolder);
                 var fb = new FormBuilder(templateFolder);
                 JObject json = fb.BuildForm(key);
@@ -190,7 +200,7 @@ namespace Satrabel.OpenContent.Components
                 }
                 var manifest = settings.Template.Manifest;
                 string key = json["key"].ToString();
-                var dataManifest = manifest.AdditionalData[key];
+                var dataManifest = manifest.GetAdditionalData(key);
                 string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings.PortalId, PortalSettings.ActiveTab.TabID, module.ModuleID, ActiveModule.TabModuleID);
                 AdditionalDataController ctrl = new AdditionalDataController();
                 AdditionalDataInfo data = ctrl.GetData(scope, dataManifest.StorageKey ?? key);
@@ -566,7 +576,7 @@ namespace Satrabel.OpenContent.Components
             var manifest = settings.Template.Manifest;
             TemplateManifest templateManifest = settings.Template;
             string key = req.dataKey;
-            var dataManifest = manifest.AdditionalData[key];
+            var dataManifest = manifest.GetAdditionalData(key);
             string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings.PortalId, PortalSettings.ActiveTab.TabID, module.ModuleID, ActiveModule.TabModuleID);
             List<LookupResultDTO> res = new List<LookupResultDTO>();
             try
