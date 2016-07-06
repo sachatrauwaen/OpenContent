@@ -165,6 +165,17 @@ namespace Satrabel.OpenContent.Components.Alpaca
                         form.Controls.Add(CKDNNporid);
                         CKDNNporid.Value = ModuleContext.PortalId.ToString();
                     }
+                    else if (File.Exists(HostingEnvironment.MapPath("~/Providers/HtmlEditorProviders/DNNConnect.CKE/js/ckeditor/4.5.3/ckeditor.js")))
+                    {
+                        ClientResourceManager.RegisterScript(Page, "~/Providers/HtmlEditorProviders/DNNConnect.CKE/js/ckeditor/4.5.3/ckeditor.js", FileOrder.Js.DefaultPriority);
+                        DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "PortalId", ModuleContext.PortalId.ToString(), true);
+                        var CKDNNporid = new HiddenField();
+                        CKDNNporid.ID = "CKDNNporid";
+                        CKDNNporid.ClientIDMode = ClientIDMode.Static;
+
+                        form.Controls.Add(CKDNNporid);
+                        CKDNNporid.Value = ModuleContext.PortalId.ToString();
+                    }
                     else
                     {
                         Log.Logger.Warn("Failed to load CKEeditor. Can not find ~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js");
