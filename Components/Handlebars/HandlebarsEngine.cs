@@ -15,7 +15,6 @@ using Satrabel.OpenContent.Components.Dynamic;
 using System.Collections;
 using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components.Logging;
-using Satrabel.OpenContent.Components.Logging;
 
 
 namespace Satrabel.OpenContent.Components.Handlebars
@@ -39,6 +38,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 RegisterArrayIndexHelper(hbs);
                 RegisterArrayTranslateHelper(hbs);
                 RegisterIfAndHelper(hbs);
+                RegisterConvertHtmlToTextHelper(hbs);
                 _template = hbs.Compile(source);
             }
             catch (Exception ex)
@@ -78,6 +78,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 RegisterArrayLookupHelper(hbs);
                 RegisterIfAndHelper(hbs);
                 RegisterEachPublishedHelper(hbs);
+                RegisterConvertHtmlToTextHelper(hbs);
                 return CompileTemplate(hbs, source, model);
             }
             catch (Exception ex)
@@ -108,6 +109,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 RegisterArrayLookupHelper(hbs);
                 RegisterIfAndHelper(hbs);
                 RegisterEachPublishedHelper(hbs);
+                RegisterConvertHtmlToTextHelper(hbs);
                 return CompileTemplate(hbs, source, model);
             }
             catch (Exception ex)
@@ -147,6 +149,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 RegisterArrayLookupHelper(hbs);
                 RegisterIfAndHelper(hbs);
                 RegisterEachPublishedHelper(hbs);
+                RegisterConvertHtmlToTextHelper(hbs);
                 return CompileTemplate(hbs, source, model);
             }
             catch (Exception ex)
@@ -534,6 +537,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 }
             });
         }
+
         private void RegisterFormatDateTimeHelper(HandlebarsDotNet.IHandlebars hbs)
         {
             hbs.RegisterHelper("formatDateTime", (writer, context, parameters) =>
@@ -592,6 +596,22 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 else
                 {
                     options.Inverse(writer, (object)context);
+                }
+            });
+        }
+        private void RegisterConvertHtmlToTextHelper(HandlebarsDotNet.IHandlebars hbs)
+        {
+            hbs.RegisterHelper("convertHtmlToText", (writer, context, parameters) =>
+            {
+                try
+                {
+                    string html = parameters[0].ToString();
+                    string res = DotNetNuke.Services.Mail.Mail.ConvertToText(html);
+                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, res);
+                }
+                catch (Exception)
+                {
+                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "");
                 }
             });
         }
