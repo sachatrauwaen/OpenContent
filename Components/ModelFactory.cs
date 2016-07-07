@@ -334,7 +334,8 @@ namespace Satrabel.OpenContent.Components
                 var additionalData = model["AdditionalData"] = new JObject();
                 foreach (var item in Manifest.AdditionalData)
                 {
-                    var dataManifest = Manifest.GetAdditionalData(item.Key);
+                    //AdditionalDataManifest dataManifest = Manifest.GetAdditionalData(item.Key);
+                    var dataManifest = item.Value;
                     int tabId = this.PortalSettings == null ? MainTabId : PortalSettings.ActiveTab.TabID;
                     string scope = AdditionalDataUtils.GetScope(dataManifest, PortalId, tabId, MainModuleId, Module.TabModuleID);
                     var dc = new AdditionalDataController();
