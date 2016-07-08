@@ -69,7 +69,7 @@ namespace Satrabel.OpenContent.Components.Razor
         {
             try
             {
-                if ((Webpage) is OpenContentWebPage)
+                if (Webpage is OpenContentWebPage)
                 {
                     var mv = (OpenContentWebPage)Webpage;
                     mv.Model = model;
@@ -99,7 +99,7 @@ namespace Satrabel.OpenContent.Components.Razor
         {
             var compiledType = BuildManager.GetCompiledType(RazorScriptFile);
             object objectValue = null;
-            if (((compiledType != null)))
+            if (compiledType != null)
             {
                 objectValue = RuntimeHelpers.GetObjectValue(Activator.CreateInstance(compiledType));
             }
@@ -118,12 +118,12 @@ namespace Satrabel.OpenContent.Components.Razor
             if (!string.IsNullOrEmpty(RazorScriptFile))
             {
                 var objectValue = RuntimeHelpers.GetObjectValue(CreateWebPageInstance());
-                if ((objectValue == null))
+                if (objectValue == null)
                 {
                     throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "The webpage found at '{0}' was not created.", new object[] { RazorScriptFile }));
                 }
                 Webpage = objectValue as OpenContentWebPage;
-                if ((Webpage == null))
+                if (Webpage == null)
                 {
                     throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "The webpage at '{0}' must derive from OpenContentWebPage.", new object[] { RazorScriptFile }));
                 }
