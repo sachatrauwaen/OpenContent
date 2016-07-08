@@ -74,7 +74,8 @@ namespace Satrabel.OpenContent.Components.Razor
                     var mv = (OpenContentWebPage)Webpage;
                     mv.Model = model;
                 }
-                Webpage.ExecutePageHierarchy(new WebPageContext(HttpContext, Webpage, null), writer, Webpage);
+                if (Webpage != null)
+                    Webpage.ExecutePageHierarchy(new WebPageContext(HttpContext, Webpage, null), writer, Webpage);
             }
             catch (Exception exc)
             {

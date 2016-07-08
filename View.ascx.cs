@@ -1026,7 +1026,7 @@ namespace Satrabel.OpenContent
                 try
                 {
                     var razorEngine = new RazorEngine("~/" + template.FilePath, ModuleContext, LocalResourceFile);
-                    RazorRender(razorEngine.Webpage, writer, model);
+                    razorEngine.Render(writer, model);
                 }
                 catch (Exception ex)
                 {
@@ -1110,18 +1110,6 @@ namespace Satrabel.OpenContent
                 //    _info.OutputString = GenerateOutput(_info.Template.Uri(), _info.DataJson, _info.SettingsJson, null);
 
             }
-        }
-
-        private void RazorRender(WebPageBase webpage, TextWriter writer, dynamic model)
-        {
-            var httpContext = new HttpContextWrapper(System.Web.HttpContext.Current);
-            if ((webpage) is OpenContentWebPage)
-            {
-                var mv = (OpenContentWebPage)webpage;
-                mv.Model = model;
-            }
-            if (webpage != null)
-                webpage.ExecutePageHierarchy(new WebPageContext(httpContext, webpage, null), writer, webpage);
         }
 
         #endregion
