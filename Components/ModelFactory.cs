@@ -217,7 +217,7 @@ namespace Satrabel.OpenContent.Components
                     {
                         JsonUtils.SimplifyJson(dyn, GetCurrentCultureCode());
                     }
-                    if (Manifest.AdditionalData != null && model["AdditionalData"] != null && model["Options"] != null)
+                    if (Manifest != null && Manifest.AdditionalData != null && model["AdditionalData"] != null && model["Options"] != null)
                     {
                         JsonUtils.LookupJson(dyn, model["AdditionalData"] as JObject, model["Options"] as JObject);
                     }
