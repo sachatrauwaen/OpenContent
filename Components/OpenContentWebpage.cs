@@ -53,6 +53,10 @@ namespace Satrabel.OpenContent.Components
 
         #region BaseClass Overrides
 
+        /// <summary>
+        /// When RenderPage() is called inside a Razor template, this method is called.
+        /// </summary>
+        /// <param name="parentPage">The parent page from which to read configuration information.</param>
         protected override void ConfigurePage(WebPageBase parentPage)
         {
             base.ConfigurePage(parentPage);

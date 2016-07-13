@@ -47,7 +47,7 @@ namespace Satrabel.OpenContent.Components.Razor
         protected string LocalResourceFile { get; set; }
         public OpenContentWebPage Webpage { get; set; }
 
-        protected HttpContextBase HttpContext
+        protected HttpContextBase HttpContextBase
         {
             get { return new HttpContextWrapper(System.Web.HttpContext.Current); }
         }
@@ -75,11 +75,13 @@ namespace Satrabel.OpenContent.Components.Razor
                     mv.Model = model;
                 }
                 if (Webpage != null)
-                    Webpage.ExecutePageHierarchy(new WebPageContext(HttpContext, Webpage, null), writer, Webpage);
+                    Webpage.ExecutePageHierarchy(new WebPageContext(HttpContextBase, Webpage, null), writer, Webpage);
             }
             catch (Exception exc)
             {
                 Exceptions.LogException(exc);
+                //todo: throw only if Host/Admin user. Otherwise return less intrusive message?
+                throw exc;
             }
         }
 
@@ -87,7 +89,7 @@ namespace Satrabel.OpenContent.Components.Razor
         {
             try
             {
-                Webpage.ExecutePageHierarchy(new WebPageContext(HttpContext, Webpage, null), writer, Webpage);
+                Webpage.ExecutePageHierarchy(new WebPageContext(HttpContextBase, Webpage, null), writer, Webpage);
             }
             catch (Exception exc)
             {
@@ -127,7 +129,7 @@ namespace Satrabel.OpenContent.Components.Razor
                 {
                     throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "The webpage at '{0}' must derive from OpenContentWebPage.", new object[] { RazorScriptFile }));
                 }
-                Webpage.Context = HttpContext;
+                Webpage.Context = HttpContextBase;
                 Webpage.VirtualPath = VirtualPathUtility.GetDirectory(RazorScriptFile);
                 InitHelpers(Webpage);
             }
