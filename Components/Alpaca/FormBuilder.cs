@@ -292,6 +292,16 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     };
                     newConfig.Fields.Add(prop.Key, newField);
                 }
+                else if (prop.Value.Type == "number")
+                {
+                    var newField = new FieldConfig()
+                    {
+                        IndexType = "float",
+                        Index = true,
+                        Sort = true
+                    };
+                    newConfig.Fields.Add(prop.Key, newField);
+                }
                 else if (optType == "text")
                 {
                     var newField = new FieldConfig()
@@ -365,16 +375,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     };
                     newConfig.Fields.Add(prop.Key, newField);
                 }
-                else if (prop.Value.Type == "number")
-                {
-                    var newField = new FieldConfig()
-                    {
-                        IndexType = "float",
-                        Index = true,
-                        Sort = true
-                    };
-                    newConfig.Fields.Add(prop.Key, newField);
-                }
+
             }
             //var json = JObject.FromObject(newConfig);
             //File.WriteAllText(templateUri.PhysicalFullDirectory + "\\test.json", json.ToString());
