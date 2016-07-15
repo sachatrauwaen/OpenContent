@@ -115,6 +115,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                                     arrGroup.AddRule(new FilterRule()
                                     {
                                         Field = item.Name,
+                                        FieldType = FieldTypeEnum.KEY,
                                         Value = new StringRuleValue(val.ToString())
                                     });
                                 }
