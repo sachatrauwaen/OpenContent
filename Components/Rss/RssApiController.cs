@@ -40,6 +40,7 @@ namespace Satrabel.OpenContent.Components.Rss
             var dsContext = new DataSourceContext()
             {
                 ModuleId = moduleId,
+                ActiveModuleId = module.ModuleID,
                 TemplateFolder = settings.TemplateDir.FolderPath
             };
             bool useLucene = settings.Template.Manifest.Index;
