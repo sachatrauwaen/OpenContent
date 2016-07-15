@@ -698,7 +698,7 @@ namespace Satrabel.OpenContent
                     if (!string.IsNullOrEmpty(settings.Query))
                     {
                         var query = JObject.Parse(settings.Query);
-                        queryBuilder.Build(query, addWorkFlow, Request.QueryString);
+                        queryBuilder.Build(query, addWorkFlow, ModuleContext.PortalSettings.UserId, Request.QueryString);
                     }
                     else
                     {

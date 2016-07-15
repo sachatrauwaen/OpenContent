@@ -9,7 +9,7 @@ namespace Satrabel.OpenContent.Components.Rest
 {
     public class RestQueryBuilder
     {
-        public static Select MergeJpListQuery(FieldConfig config, Select select, RestSelect restSelect)
+        public static Select MergeQuery(FieldConfig config, Select select, RestSelect restSelect)
         {
             var query = select.Query;
             select.PageSize = restSelect.PageSize;
