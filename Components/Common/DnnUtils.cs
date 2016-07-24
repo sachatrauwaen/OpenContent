@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
+using System.Web.UI;
 using DotNetNuke.Common.Utilities;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Portals;
@@ -10,6 +11,7 @@ using DotNetNuke.Entities.Tabs;
 using DotNetNuke.Services.FileSystem;
 using DotNetNuke.Services.Localization;
 using DotNetNuke.UI.Modules;
+using DotNetNuke.Web.Client.ClientResourceManagement;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -133,6 +135,24 @@ namespace Satrabel.OpenContent.Components
         public static OpenContentSettings OpenContentSettings(this PortalModuleBase module)
         {
             return new OpenContentSettings(module.Settings);
+        }
+
+        internal static void RegisterScript(Page page, string sourceFolder, string jsfilename, int jsOrder)
+        {
+            if (page == null) return;
+            if (string.IsNullOrEmpty(jsfilename)) return;
+
+            if (!jsfilename.StartsWith("/") && !jsfilename.Contains("//"))
+            {
+                jsfilename = sourceFolder + jsfilename;
+            }
+            else if (!jsfilename.Contains("//"))
+            {
+                var file = new FileUri(jsfilename);
+                jsfilename = file.UrlFilePath;
+            }
+            ClientResourceManager.RegisterScript(page, jsfilename, jsOrder);
+            //ClientResourceManager.RegisterScript(page, page.ResolveUrl(jsfilename), jsOrder);
         }
     }
 }

@@ -197,7 +197,7 @@ namespace Satrabel.OpenContent
                         int ModId = settings.IsOtherModule ? settings.ModuleId : ModuleId;
                         var manifest = settings.Manifest;
                         string key = selectedDataType;
-                        var dataManifest = manifest.AdditionalData[key];
+                        var dataManifest = manifest.GetAdditionalData(key);
                         string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings.PortalId, PortalSettings.ActiveTab.TabID, ModId, this.TabModuleId);
                         var dc = new AdditionalDataController();
                         var data = dc.GetData(scope, dataManifest.StorageKey ?? key);
@@ -217,7 +217,7 @@ namespace Satrabel.OpenContent
             sourceList.Items.Add(new ListItem(cData, cData));
             sourceList.Items.Add(new ListItem(cSettings, cSettings));
             sourceList.Items.Add(new ListItem(cFilter, cFilter));
-            if (template != null && template.Manifest != null && template.Manifest.AdditionalData != null)
+            if (template != null && template.Manifest != null && template.Manifest.AdditionalDataExists())
             {
                 foreach (var addData in template.Manifest.AdditionalData)
                 {
@@ -253,7 +253,7 @@ namespace Satrabel.OpenContent
             OpenContentSettings settings = this.OpenContentSettings();
             int ModId = settings.IsOtherModule ? settings.ModuleId : ModuleId;
             var manifest = settings.Manifest;
-            var dataManifest = manifest.AdditionalData[key];
+            var dataManifest = manifest.GetAdditionalData(key);
             string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings.PortalId, PortalSettings.ActiveTab.TabID, ModId, this.TabModuleId);
             var dc = new AdditionalDataController();
             var data = dc.GetData(scope, dataManifest.StorageKey ?? key);

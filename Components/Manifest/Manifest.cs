@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -6,6 +8,8 @@ namespace Satrabel.OpenContent.Components.Manifest
 {
     public class Manifest
     {
+        private Dictionary<string, AdditionalDataManifest> _additionalData;
+
         [JsonProperty(PropertyName = "title")]
         public string Title { get; set; }
         [JsonProperty(PropertyName = "developmentPath")]
@@ -35,7 +39,11 @@ namespace Satrabel.OpenContent.Components.Manifest
         public string DetailUrl { get; set; }
 
         [JsonProperty(PropertyName = "additionalData")]
-        public Dictionary<string, AdditionalDataManifest> AdditionalData { get; set; }
+        public Dictionary<string, AdditionalDataManifest> AdditionalData
+        {
+            get { return _additionalData; }
+            set { _additionalData = new Dictionary<string, AdditionalDataManifest>(value, StringComparer.OrdinalIgnoreCase); }
+        }
 
         [JsonProperty(PropertyName = "dataSource")]
         public string DataSource { get; set; }
@@ -70,6 +78,18 @@ namespace Satrabel.OpenContent.Components.Manifest
                 return Templates[templateKey];
             }
             return null;
+        }
+        public AdditionalDataManifest GetAdditionalData(string key)
+        {
+            return AdditionalData[key.ToLowerInvariant()];
+        }
+
+        public bool AdditionalDataExists(string key = "")
+        {
+            if (key == "")
+                return AdditionalData != null;
+            else
+                return AdditionalData.ContainsKey(key.ToLowerInvariant());
         }
     }
 }
