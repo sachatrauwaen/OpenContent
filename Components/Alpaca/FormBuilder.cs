@@ -39,6 +39,12 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 Title = "Exclude Current Item",
                 Type = "boolean"
             });
+            // Show only Current User Items
+            newSchema.Properties.Add("CurrentUserItems", new SchemaConfig()
+            {
+                Title = "Only Current User Items",
+                Type = "boolean"
+            });
             // Filter
             SchemaConfig newSchemaFilter = new SchemaConfig(true)
             {
