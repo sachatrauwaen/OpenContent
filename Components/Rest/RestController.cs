@@ -68,7 +68,7 @@ namespace Satrabel.OpenContent.Components.Rest
                     if (!string.IsNullOrEmpty(settings.Query))
                     {
                         var query = JObject.Parse(settings.Query);
-                        queryBuilder.Build(query, PortalSettings.UserMode != PortalSettings.Mode.Edit);
+                        queryBuilder.Build(query, PortalSettings.UserMode != PortalSettings.Mode.Edit, UserInfo.UserID);
                     }
                     else
                     {
@@ -196,7 +196,7 @@ namespace Satrabel.OpenContent.Components.Rest
                     if (!string.IsNullOrEmpty(settings.Query))
                     {
                         var query = JObject.Parse(settings.Query);
-                        queryBuilder.Build(query, PortalSettings.UserMode != PortalSettings.Mode.Edit);
+                        queryBuilder.Build(query, PortalSettings.UserMode != PortalSettings.Mode.Edit, UserInfo.UserID);
                     }
                     else
                     {
@@ -204,7 +204,7 @@ namespace Satrabel.OpenContent.Components.Rest
                     }
                     if (restSelect != null)
                     {
-                        RestQueryBuilder.MergeJpListQuery(indexConfig, queryBuilder.Select, restSelect);
+                        RestQueryBuilder.MergeQuery(indexConfig, queryBuilder.Select, restSelect);
                     }
                     IDataItems dsItems;
                     if (queryBuilder.DefaultNoResults && queryBuilder.Select.IsQueryEmpty)
@@ -269,40 +269,44 @@ namespace Satrabel.OpenContent.Components.Rest
 
         public HttpResponseMessage Get(string entity)
         {
-            OpenContentSettings settings = ActiveModule.OpenContentSettings();
-            ModuleInfo module = ActiveModule;
-            if (settings.ModuleId > 0)
-            {
-                ModuleController mc = new ModuleController();
-                module = mc.GetModule(settings.ModuleId, settings.TabId, false);
-            }
-            var manifest = settings.Manifest;
-            TemplateManifest templateManifest = settings.Template;
-            if (!manifest.AdditionalDataExists(entity))
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "entity don't exist in additionalData (" + entity + ")");
-            }
-
-            var dataManifest = manifest.GetAdditionalData(entity);
-            string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings.PortalId, PortalSettings.ActiveTab.TabID, module.ModuleID, ActiveModule.TabModuleID);
             try
             {
-                var templateFolder = string.IsNullOrEmpty(dataManifest.TemplateFolder) ? settings.TemplateDir : settings.TemplateDir.ParentFolder.Append(dataManifest.TemplateFolder);
-                //var fb = new FormBuilder(templateFolder);
-                //JObject json = fb.BuildForm(entity);
-                var res = new JObject();
-
-                int createdByUserid = -1;
-                var dc = new AdditionalDataController();
-                var data = dc.GetData(scope, dataManifest.StorageKey ?? entity);
-                if (data != null)
+                OpenContentSettings settings = ActiveModule.OpenContentSettings();
+                ModuleInfo module = ActiveModule;
+                if (settings.ModuleId > 0)
                 {
-                    var json = data.Json.ToJObject("GetContent " + scope + "/" + entity);
-                    createdByUserid = data.CreatedByUserId;
-                    JsonUtils.IdJson(json);
-                    res[entity] = json;
+                    ModuleController mc = new ModuleController();
+                    module = mc.GetModule(settings.ModuleId, settings.TabId, false);
                 }
-                return Request.CreateResponse(HttpStatusCode.OK, res);
+                var manifest = settings.Manifest;
+                TemplateManifest templateManifest = settings.Template;
+                if (manifest.AdditionalDataExists(entity))
+                {
+                    var dataManifest = manifest.AdditionalData[entity];
+                    string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings.PortalId, PortalSettings.ActiveTab.TabID, module.ModuleID, ActiveModule.TabModuleID);
+
+                    var templateFolder = string.IsNullOrEmpty(dataManifest.TemplateFolder) ? settings.TemplateDir : settings.TemplateDir.ParentFolder.Append(dataManifest.TemplateFolder);
+                    //var fb = new FormBuilder(templateFolder);
+                    //JObject json = fb.BuildForm(entity);
+                    var res = new JObject();
+
+                    int createdByUserid = -1;
+                    var dc = new AdditionalDataController();
+                    var data = dc.GetData(scope, dataManifest.StorageKey ?? entity);
+                    if (data != null)
+                    {
+                        var json = data.Json.ToJObject("GetContent " + scope + "/" + entity);
+                        createdByUserid = data.CreatedByUserId;
+                        JsonUtils.IdJson(json);
+                        res[entity] = json;
+                    }
+                    return Request.CreateResponse(HttpStatusCode.OK, res);
+                }
+                else
+                {
+                    return Get(entity, 0, 100, null, null);
+                }
+
             }
             catch (Exception exc)
             {
@@ -313,7 +317,7 @@ namespace Satrabel.OpenContent.Components.Rest
 
         public HttpResponseMessage Put(string entity, string id, [FromBody]JObject value)
         {
-
+            // update
             try
             {
                 bool index = false;
@@ -398,7 +402,7 @@ namespace Satrabel.OpenContent.Components.Rest
         }
         public HttpResponseMessage Put(string entity, string id, string memberAction, [FromBody]JObject value)
         {
-
+            // action
             try
             {
                 bool index = false;
@@ -469,7 +473,7 @@ namespace Satrabel.OpenContent.Components.Rest
 
         public HttpResponseMessage Post(string entity, [FromBody]JObject value)
         {
-
+            // Add
             try
             {
                 bool index = false;

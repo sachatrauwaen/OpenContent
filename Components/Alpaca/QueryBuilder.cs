@@ -23,10 +23,10 @@ namespace Satrabel.OpenContent.Components.Alpaca
             Select.PageSize = 100;
         }
 
-        public QueryBuilder Build(JObject query, bool addWorkflowFilter, NameValueCollection queryString = null)
+        public QueryBuilder Build(JObject query, bool addWorkflowFilter, int userId, NameValueCollection queryString = null)
         {
             BuildPage(query);
-            BuildFilter(query, addWorkflowFilter, queryString);
+            BuildFilter(query, addWorkflowFilter, userId, queryString);
             BuildSort(query);
             return this;
         }
@@ -46,7 +46,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
             return this;
         }
-        public QueryBuilder BuildFilter(JObject query, bool addWorkflowFilter, NameValueCollection queryString = null)
+        public QueryBuilder BuildFilter(JObject query, bool addWorkflowFilter, int userId, NameValueCollection queryString = null)
         {
             var workFlowFilter = Select.Filter;
             var vExcludeCurrentItem = query["ExcludeCurrentItem"] as JValue;
@@ -62,6 +62,21 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     Field = "id",
                     Value = new StringRuleValue(queryString["id"]),
                     FieldOperator = OperatorEnum.NOT_EQUAL
+                });
+            }
+            var vCurrentUserItems = query["CurrentUserItems"] as JValue;
+            bool currentUserItems = false;
+            if (vCurrentUserItems != null && vCurrentUserItems.Type == JTokenType.Boolean)
+            {
+                currentUserItems = (bool)vCurrentUserItems.Value;
+            }
+            if (currentUserItems)
+            {
+                workFlowFilter.AddRule(new FilterRule()
+                {
+                    Field = "userid",
+                    Value = new StringRuleValue(userId.ToString()),
+                    FieldOperator = OperatorEnum.EQUAL
                 });
             }
             var filter = query["Filter"] as JObject;

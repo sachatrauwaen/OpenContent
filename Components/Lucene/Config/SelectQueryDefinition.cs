@@ -70,6 +70,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
             {
                 string fieldName = rule.Field;
                 if (fieldName == "id") fieldName = "$id";
+                if (fieldName == "userid") fieldName = "$userid";
 
                 if (rule.FieldOperator == OperatorEnum.EQUAL)
                 {
