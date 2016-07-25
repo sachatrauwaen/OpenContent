@@ -40,12 +40,20 @@ namespace Satrabel.OpenContent.Components.Rss
 
             var rssTemplate = new FileUri(settings.TemplateDir, template + ".hbs");
             string source = File.ReadAllText(rssTemplate.PhysicalFilePath);
-            
+
+            //var ds = DataSourceManager.GetDataSource("OpenContent");
+            //var dsContext = new DataSourceContext()
+            //{
+            //    ModuleId = moduleId,
+            //    ActiveModuleId = module.ModuleID,
+            //    TemplateFolder = settings.TemplateDir.FolderPath
+            //};
+
             bool useLucene = settings.Template.Manifest.Index;
             if (useLucene)
             {
                 var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
-                
+
                 QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
                 if (!string.IsNullOrEmpty(settings.Query))
                 {

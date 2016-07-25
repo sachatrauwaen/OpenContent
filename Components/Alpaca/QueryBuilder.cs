@@ -111,7 +111,8 @@ namespace Satrabel.OpenContent.Components.Alpaca
                             {
                                 Field = item.Name,
                                 Value = new StringRuleValue(val),
-                                FieldOperator = OperatorEnum.START_WITH
+                                FieldOperator = OperatorEnum.START_WITH,
+                                FieldType = Sortfieldtype(item.Name)
                             });
                         }
                     }
@@ -129,8 +130,8 @@ namespace Satrabel.OpenContent.Components.Alpaca
                                     var val = (JValue)arrItem;
                                     arrGroup.AddRule(new FilterRule()
                                     {
-                                        Field = item.Name,
-                                        FieldType = FieldTypeEnum.KEY,
+                                        Field = item.Name,                                        
+                                        FieldType = Sortfieldtype(item.Name),
                                         Value = new StringRuleValue(val.ToString())
                                     });
                                 }
@@ -142,6 +143,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                             workFlowFilter.AddRule(new FilterRule()
                             {
                                 Field = item.Name,
+                                FieldType = Sortfieldtype(item.Name),
                                 Value = new StringRuleValue(queryString[item.Name])
                             });
                         }
@@ -204,7 +206,8 @@ namespace Satrabel.OpenContent.Components.Alpaca
                         {
                             Field = indexConfig.Key,
                             Value = new StringRuleValue(val),
-                            FieldOperator = OperatorEnum.EQUAL
+                            FieldOperator = OperatorEnum.EQUAL,
+                            FieldType = Sortfieldtype(indexConfig.Key)
                         });
                     }
                 }
@@ -229,7 +232,8 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 filter.AddRule(new FilterRule()
                 {
                     Field = "publishstatus",
-                    Value = new StringRuleValue("published")
+                    Value = new StringRuleValue("published"),
+                    FieldType = FieldTypeEnum.KEY
                 });
             }
             if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey("publishstartdate"))
@@ -240,7 +244,8 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 {
                     Field = "publishstartdate",
                     Value = new DateTimeRuleValue(DateTime.Today),
-                    FieldOperator = OperatorEnum.LESS_THEN_OR_EQUALS
+                    FieldOperator = OperatorEnum.LESS_THEN_OR_EQUALS,
+                    FieldType = FieldTypeEnum.DATETIME
                 });
             }
             if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey("publishenddate"))
@@ -251,7 +256,8 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 {
                     Field = "publishenddate",
                     Value = new DateTimeRuleValue(DateTime.Today),
-                    FieldOperator = OperatorEnum.GREATER_THEN_OR_EQUALS
+                    FieldOperator = OperatorEnum.GREATER_THEN_OR_EQUALS,
+                    FieldType = FieldTypeEnum.DATETIME
                 });
             }
         }
@@ -285,9 +291,9 @@ namespace Satrabel.OpenContent.Components.Alpaca
         private FieldTypeEnum Sortfieldtype(string fieldName)
         {
             var sortfieldtype = FieldTypeEnum.STRING;
-            if (IndexConfig != null && IndexConfig.Fields.ContainsKey(fieldName))
+            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey(fieldName))
             {
-                var config = IndexConfig.Items == null ? IndexConfig.Fields[fieldName] : IndexConfig.Items;
+                var config = IndexConfig.Fields[fieldName].Items == null ? IndexConfig.Fields[fieldName] : IndexConfig.Fields[fieldName].Items;
                 if (config.IndexType == "datetime" || config.IndexType == "date" || config.IndexType == "time")
                 {
                     sortfieldtype = FieldTypeEnum.DATETIME;

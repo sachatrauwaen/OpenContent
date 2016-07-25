@@ -80,6 +80,7 @@ namespace Satrabel.OpenContent.Components.JPList
                         var dsContext = new DataSourceContext()
                         {
                             ModuleId = module.ModuleID,
+                            ActiveModuleId = ActiveModule.ModuleID,
                             UserId = UserInfo.UserID,
                             TemplateFolder = settings.TemplateDir.FolderPath,
                             Config = manifest.DataSourceConfig,

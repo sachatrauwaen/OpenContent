@@ -82,6 +82,7 @@ namespace Satrabel.OpenContent.Components
                 var dsContext = new DataSourceContext()
                 {
                     ModuleId = module.ModuleID,
+                    ActiveModuleId = ActiveModule.ModuleID,
                     TemplateFolder = settings.TemplateDir.FolderPath,
                     Config = manifest.DataSourceConfig
                 };
@@ -278,6 +279,7 @@ namespace Satrabel.OpenContent.Components
                 var dsContext = new DataSourceContext()
                 {
                     ModuleId = module.ModuleID,
+                    ActiveModuleId = ActiveModule.ModuleID,
                     TemplateFolder = settings.TemplateDir.FolderPath,
                     Config = manifest.DataSourceConfig
                 };
@@ -356,6 +358,7 @@ namespace Satrabel.OpenContent.Components
                 var dsContext = new DataSourceContext()
                 {
                     ModuleId = module.ModuleID,
+                    ActiveModuleId = ActiveModule.ModuleID,
                     TemplateFolder = settings.TemplateDir.FolderPath,
                     Index = index,
                     UserId = UserInfo.UserID,
@@ -443,6 +446,7 @@ namespace Satrabel.OpenContent.Components
                 var dsContext = new DataSourceContext()
                 {
                     ModuleId = module.ModuleID,
+                    ActiveModuleId = ActiveModule.ModuleID,
                     TemplateFolder = settings.TemplateDir.FolderPath,
                     Index = index,
                     UserId = UserInfo.UserID,
@@ -655,6 +659,7 @@ namespace Satrabel.OpenContent.Components
                 var dsContext = new DataSourceContext()
                 {
                     ModuleId = module.ModuleID,
+                    ActiveModuleId = ActiveModule.ModuleID,
                     TemplateFolder = settings.TemplateDir.FolderPath,
                     Config = manifest.DataSourceConfig
                 };
