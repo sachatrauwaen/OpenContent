@@ -194,10 +194,10 @@ namespace Satrabel.OpenContent.Components
             return string.Concat(CachePrefix, "M-", moduleId);
         }
 
-        private void ClearCache(OpenContentInfo content)
+        private static void ClearCache(OpenContentInfo content)
         {
-            DataCache.ClearCache(GetContentIdCacheKey(content.ContentId));
-            DataCache.ClearCache(GetModuleIdCacheKey(content.ModuleId));
+            if (content.ContentId > 0) DataCache.ClearCache(GetContentIdCacheKey(content.ContentId));
+            if (content.ModuleId > 0) DataCache.ClearCache(GetModuleIdCacheKey(content.ModuleId));
         }
 
         #endregion
