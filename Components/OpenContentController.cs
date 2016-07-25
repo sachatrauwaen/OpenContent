@@ -133,7 +133,7 @@ namespace Satrabel.OpenContent.Components
 
         public IEnumerable<OpenContentInfo> GetContents(int moduleId)
         {
-            var cacheArgs = new CacheItemArgs(GetModuleIdCacheKey(moduleId), CacheTime);
+            var cacheArgs = new CacheItemArgs(GetModuleIdCacheKey(moduleId, "GetContents"), CacheTime);
             return DataCache.GetCachedData<IEnumerable<OpenContentInfo>>(cacheArgs, args => 
                 {
                     IEnumerable<OpenContentInfo> content;
@@ -165,8 +165,7 @@ namespace Satrabel.OpenContent.Components
 
         public OpenContentInfo GetFirstContent(int moduleId)
         {
-            var cacheArgs = new CacheItemArgs(GetModuleIdCacheKey(moduleId), CacheTime);
-
+            var cacheArgs = new CacheItemArgs(GetModuleIdCacheKey(moduleId) + "GetFirstContent", CacheTime);
             return DataCache.GetCachedData<OpenContentInfo>(cacheArgs, args =>
                 {
                     OpenContentInfo content;
@@ -189,9 +188,9 @@ namespace Satrabel.OpenContent.Components
             return string.Concat(CachePrefix, "C-", contentId);
         }
 
-        private static string GetModuleIdCacheKey(int moduleId)
+        private static string GetModuleIdCacheKey(int moduleId, string suffix = null)
         {
-            return string.Concat(CachePrefix, "M-", moduleId);
+            return string.Concat(CachePrefix, "M-", moduleId, string.IsNullOrEmpty(suffix) ? string.Empty : string.Concat("-", suffix));
         }
 
         private static void ClearCache(OpenContentInfo content)
