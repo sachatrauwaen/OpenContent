@@ -235,7 +235,19 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
         {
             if (IndexConfig != null && IndexConfig.Fields.ContainsKey(fieldName))
             {
-                var config = IndexConfig.Items == null ? IndexConfig.Fields[fieldName] : IndexConfig.Items;
+                //var config = IndexConfig.Items == null ? IndexConfig.Fields[fieldName] : IndexConfig.Items;
+                FieldConfig config;
+                if (IndexConfig.Items == null)
+                {
+                    config = IndexConfig.Fields[fieldName];
+                    if (config.Items != null)
+                    {
+                        //this seems to be an array
+                        config = config.Items;
+                    }
+                }
+                else
+                    config = IndexConfig.Items;
                 if (config.IndexType == "datetime" || config.IndexType == "date" || config.IndexType == "time")
                 {
                     sortfieldtype = SortField.LONG;

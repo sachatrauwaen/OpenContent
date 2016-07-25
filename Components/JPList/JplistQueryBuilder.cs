@@ -134,7 +134,20 @@ namespace Satrabel.OpenContent.Components.JPList
             if (string.IsNullOrEmpty(fieldName)) throw new Exception("Sort field is empty");
             if (indexConfig != null && indexConfig.Fields != null && indexConfig.Fields.ContainsKey(fieldName))
             {
-                var config = indexConfig.Items == null ? indexConfig.Fields[fieldName] : indexConfig.Items;
+                //var config = indexConfig.Items == null ? indexConfig.Fields[fieldName] : indexConfig.Items;
+                FieldConfig config;
+                if (indexConfig.Items == null)
+                {
+                    config = indexConfig.Fields[fieldName];
+                    if (config.Items != null)
+                    {
+                        //this seems to be an array
+                        config = config.Items;
+                    }
+                }
+                else
+                    config = indexConfig.Items;
+
                 switch (config.IndexType)
                 {
                     case "datetime":
