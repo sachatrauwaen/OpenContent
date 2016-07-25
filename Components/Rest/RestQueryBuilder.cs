@@ -7,7 +7,7 @@ using System.Web;
 
 namespace Satrabel.OpenContent.Components.Rest
 {
-    public class RestQueryBuilder
+    public static class RestQueryBuilder
     {
         public static Select MergeQuery(FieldConfig config, Select select, RestSelect restSelect)
         {
