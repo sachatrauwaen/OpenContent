@@ -161,6 +161,7 @@ namespace Satrabel.OpenContent.Components.Rest
                 if (!string.IsNullOrEmpty(filter))
                 {
                     restSelect.Query = JsonConvert.DeserializeObject<RestGroup>(filter);
+                    restSelect.Query.FilterRules.RemoveAll(i => i.Value == null); //some basic cleanup
                 }
                 if (!string.IsNullOrEmpty(sort))
                 {
@@ -202,7 +203,7 @@ namespace Satrabel.OpenContent.Components.Rest
                     {
                         queryBuilder.BuildFilter(PortalSettings.UserMode != PortalSettings.Mode.Edit);
                     }
-                    if (restSelect != null)
+                    if (restSelect.Query.FilterRules.Count(i => i.Value != null) > 0)
                     {
                         RestQueryBuilder.MergeQuery(indexConfig, queryBuilder.Select, restSelect);
                     }
