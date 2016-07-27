@@ -89,7 +89,7 @@
             
             callback();
 
-            $(this.control).parent().find('.select2').after('<img src="/images/Flags/' + this.culture + '.gif" class="flag" />');
+            $(this.control).parent().find('.select2').after('<img src="' + dnn.getVar("sf_siteRoot", "/") + 'images/Flags/' + this.culture + '.gif" class="flag" />');
             
         },
     });
