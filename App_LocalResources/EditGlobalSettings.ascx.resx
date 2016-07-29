@@ -123,6 +123,9 @@
   <data name="cmdCancel.Text" xml:space="preserve">
     <value>Cancel</value>
   </data>
+  <data name="lMaxVersions.Text" xml:space="preserve">
+    <value>Max. versions</value>
+  </data>
   <data name="lRoles.Text" xml:space="preserve">
     <value>Auto Module Edit Role</value>
   </data>
