@@ -247,6 +247,7 @@
     <Compile Include="Components\Manifest\TemplateManifest.cs" />
     <Compile Include="Components\TemplateHelpers\RazorExtensions.cs" />
     <Compile Include="Components\TemplateHelpers\UrlHelpers.cs" />
+    <Compile Include="Components\Uri\UriFactory.cs" />
     <Compile Include="Components\Uri\PortalFolderUri.cs" />
     <Compile Include="Components\Uri\PortalFileUri.cs" />
     <Compile Include="Components\Uri\FolderUri.cs" />
