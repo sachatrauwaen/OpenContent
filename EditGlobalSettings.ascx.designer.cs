@@ -58,6 +58,24 @@ namespace Satrabel.OpenContent {
         protected global::System.Web.UI.WebControls.CheckBox cbMLContent;
         
         /// <summary>
+        /// lMaxVersions control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.UserControl lMaxVersions;
+        
+        /// <summary>
+        /// ddlMaxVersions control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlMaxVersions;
+        
+        /// <summary>
         /// lLogging control.
         /// </summary>
         /// <remarks>

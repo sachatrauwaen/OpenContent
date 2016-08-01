@@ -177,8 +177,8 @@ namespace Satrabel.OpenContent.Components.Alpaca
                         CKDNNporid.Value = ModuleContext.PortalId.ToString();
                     }
                     else
-                    {
-                        Log.Logger.Warn("Failed to load CKEeditor. Can not find ~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js");
+                    {                        
+                        Log.Logger.Warn("Failed to load CKEeditor. Please install a DNN CKEditor Provider.");
                     }
                 }
             }
