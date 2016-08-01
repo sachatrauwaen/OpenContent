@@ -11,6 +11,10 @@
         <asp:CheckBox ID="cbMLContent" runat="server" />
     </div>
     <div class="dnnFormItem">
+        <dnn:Label ID="lMaxVersions" ControlName="ddlMaxVersions" runat="server" />
+        <asp:DropDownList ID="ddlMaxVersions" runat="server"></asp:DropDownList>
+    </div>
+    <div class="dnnFormItem">
         <dnn:Label ID="lLogging" ControlName="ddlLogging" runat="server" />
         <asp:DropDownList ID="ddlLogging" runat="server">
             <asp:ListItem Value="none" Text="None"></asp:ListItem>
