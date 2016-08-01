@@ -4428,7 +4428,7 @@
             
             callback();
 
-            $(this.control).parent().find('.select2').after('<img src="/images/Flags/' + this.culture + '.gif" class="flag" />');
+            $(this.control).parent().find('.select2').after('<img src="' + dnn.getVar("sf_siteRoot", "/") + 'images/Flags/' + this.culture + '.gif" class="flag" />');
             
         },
     });
@@ -5096,7 +5096,7 @@
             
             callback();
 
-            $(this.control).parent().find('.select2').after('<img src="/images/Flags/' + this.culture + '.gif" class="flag" />');
+            $(this.control).parent().find('.select2').after('<img src="' + dnn.getVar("sf_siteRoot", "/") + 'images/Flags/' + this.culture + '.gif" class="flag" />');
             
         },
     });
@@ -5763,7 +5763,7 @@
             
             callback();
 
-            $(this.control).parent().find('.select2').after('<img src="/images/Flags/' + this.culture + '.gif" class="flag" />');
+            $(this.control).parent().find('.select2').after('<img src="' + dnn.getVar("sf_siteRoot", "/") + 'images/Flags/' + this.culture + '.gif" class="flag" />');
             
         },
     });
@@ -6405,7 +6405,7 @@
             
             callback();
 
-            $(this.control).parent().find('.select2').after('<img src="/images/Flags/' + this.culture + '.gif" class="flag" />');
+            $(this.control).parent().find('.select2').after('<img src="' + dnn.getVar("sf_siteRoot", "/") + 'images/Flags/' + this.culture + '.gif" class="flag" />');
             
         },
     });
@@ -6809,7 +6809,7 @@
         handlePostRender: function (callback) {
             var self = this;
             var el = this.getControlEl();
-            $(this.control.get(0)).after('<img src="/images/Flags/' + this.culture + '.gif" class="flag" />');
+            $(this.control.get(0)).after('<img src="' + dnn.getVar("sf_siteRoot", "/") + 'images/Flags/' + this.culture + '.gif" class="flag" />');
             callback();
         },
         
@@ -6958,7 +6958,7 @@
         handlePostRender: function (callback) {
             var self = this;
             var el = this.getControlEl();
-            $(this.control.get(0)).after('<img src="/images/Flags/' + this.culture + '.gif" class="flag" />');
+            $(this.control.get(0)).after('<img src="' + dnn.getVar("sf_siteRoot", "/") + 'images/Flags/' + this.culture + '.gif" class="flag" />');
             callback();
         },
         
@@ -7107,7 +7107,7 @@
         handlePostRender2: function (callback) {
             var self = this;
             var el = this.getControlEl();
-            $(this.control.get(0)).after('<img src="/images/Flags/' + this.culture + '.gif" class="flag" />');
+            $(this.control.get(0)).after('<img src="' + dnn.getVar("sf_siteRoot", "/") + 'images/Flags/' + this.culture + '.gif" class="flag" />');
             callback();
         },
         
@@ -7278,7 +7278,7 @@
         handlePostRender: function (callback) {
             var self = this;
             var el = this.getControlEl();
-            $(this.control.get(0)).after('<img src="/images/Flags/' + this.culture + '.gif" class="flag" />');
+            $(this.control.get(0)).after('<img src="' + dnn.getVar("sf_siteRoot", "/") + 'images/Flags/' + this.culture + '.gif" class="flag" />');
             //$(this.control.get(0)).after('<div style="background:#eee;margin-bottom: 18px;display:inline-block;padding-bottom:8px;"><span>' + this.culture + '</span></div>');
             callback();
         },
@@ -7450,7 +7450,7 @@
         handlePostRender: function (callback) {
             var self = this;
             var el = this.getControlEl();
-            $(this.control.get(0)).after('<img src="/images/Flags/' + this.culture + '.gif" class="flag" />');
+            $(this.control.get(0)).after('<img src="' + dnn.getVar("sf_siteRoot", "/") + 'images/Flags/' + this.culture + '.gif" class="flag" />');
             //$(this.control.get(0)).after('<div style="background:#eee;margin-bottom: 18px;display:inline-block;padding-bottom:8px;"><span>' + this.culture + '</span></div>');
             callback();
         },
@@ -7599,7 +7599,7 @@
         handlePostRender: function (callback) {
             var self = this;
             var el = this.getControlEl();
-            $(this.control.get(0)).after('<img src="/images/Flags/' + this.culture + '.gif" class="flag" />');
+            $(this.control.get(0)).after('<img src="' + dnn.getVar("sf_siteRoot", "/") + 'images/Flags/' + this.culture + '.gif" class="flag" />');
             callback();
         },
         
@@ -7741,7 +7741,7 @@
         handlePostRender2: function (callback) {
             var self = this;
             var el = this.getControlEl();
-            $(this.control.get(0)).after('<img src="/images/Flags/' + this.culture + '.gif" class="flag" />');
+            $(this.control.get(0)).after('<img src="' + dnn.getVar("sf_siteRoot", "/") + 'images/Flags/' + this.culture + '.gif" class="flag" />');
             callback();
         },
 
