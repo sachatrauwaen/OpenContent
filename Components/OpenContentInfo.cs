@@ -49,7 +49,8 @@ namespace Satrabel.OpenContent.Components
                 {
                     _JsonAsJToken = JToken.Parse(this.Json);
                 }
-                return _JsonAsJToken;
+                // JsonAsJToken is modified (to remove other cultures)
+                return _JsonAsJToken != null ? _JsonAsJToken.DeepClone() : null; 
             }
             set
             {
