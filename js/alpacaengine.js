@@ -19,6 +19,7 @@ alpacaEngine.engine = function(config) {
     self.updateAction = "Update";
     self.deleteAction = "Delete";
     self.data = {};
+    self.rootUrl = config.appPath;
 
     
     if (config.editAction) {
@@ -136,6 +137,7 @@ alpacaEngine.engine = function(config) {
         connector.culture = self.currentCulture;
         connector.defaultCulture = self.defaultCulture;
         connector.numberDecimalSeparator = self.numberDecimalSeparator;
+        connector.rootUrl = self.rootUrl;
         if (config.versions) {
             $.each(config.versions, function (i, item) {
                 $("#"+self.ddlVersions).append($('<option>', {

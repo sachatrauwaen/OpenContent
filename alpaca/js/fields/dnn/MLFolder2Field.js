@@ -12,6 +12,7 @@
             this.base(container, data, options, schema, view, connector);
             this.culture = connector.culture;
             this.defaultCulture = connector.defaultCulture;
+            this.rootUrl = connector.rootUrl;
         },
         /**
          * @see Alpaca.Fields.Folder2Field#setup
@@ -89,7 +90,7 @@
             
             callback();
 
-            $(this.control).parent().find('.select2').after('<img src="' + dnn.getVar("sf_siteRoot", "/") + 'images/Flags/' + this.culture + '.gif" class="flag" />');
+            $(this.control).parent().find('.select2').after('<img src="' + self.rootUrl + 'images/Flags/' + this.culture + '.gif" class="flag" />');
             
         },
     });

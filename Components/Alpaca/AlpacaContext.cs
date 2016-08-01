@@ -67,5 +67,13 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 return AlpacaEngine.AlpacaCulture(cultureCode);
             }
         }
+        [JsonProperty(PropertyName = "appPath")]
+        public string AppPath
+        {
+            get
+            {
+                return System.Web.VirtualPathUtility.ToAbsolute(System.Web.HttpRuntime.AppDomainAppVirtualPath);
+            }
+        }
     }
 }
