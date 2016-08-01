@@ -22,9 +22,7 @@ using Satrabel.OpenContent.Components.Datasource.search;
 
 namespace Satrabel.OpenContent.Components.Rest
 {
-
-
-    [AllowAnonymous]
+    
     public class RestController : DnnApiController
     {
 
@@ -148,7 +146,9 @@ namespace Satrabel.OpenContent.Components.Rest
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
+
         [SupportedModules("OpenContent")]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         public HttpResponseMessage Get(string entity, int pageIndex, int pageSize, string filter, string sort)
         {
             try
@@ -267,6 +267,8 @@ namespace Satrabel.OpenContent.Components.Rest
             }
         }
 
+        [SupportedModules("OpenContent")]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         public HttpResponseMessage Get(string entity)
         {
             try
@@ -315,6 +317,8 @@ namespace Satrabel.OpenContent.Components.Rest
             }
         }
 
+        [SupportedModules("OpenContent")]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         public HttpResponseMessage Put(string entity, string id, [FromBody]JObject value)
         {
             // update
@@ -353,7 +357,6 @@ namespace Satrabel.OpenContent.Components.Rest
                     {
                         itemId = id;
                         dsItem = ds.Get(dsContext, itemId);
-                        //content = ctrl.GetContent(itemId);
                         if (dsItem != null)
                             createdByUserid = dsItem.CreatedByUserId;
                     }
@@ -368,7 +371,7 @@ namespace Satrabel.OpenContent.Components.Rest
                 }
                 if (!OpenContentUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, createdByUserid))
                 {
-                    //return Request.CreateResponse(HttpStatusCode.Unauthorized);
+                    return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
                 //var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
                 if (dsItem == null)
@@ -400,6 +403,9 @@ namespace Satrabel.OpenContent.Components.Rest
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
+
+        [SupportedModules("OpenContent")]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         public HttpResponseMessage Put(string entity, string id, string memberAction, [FromBody]JObject value)
         {
             // action
@@ -453,7 +459,7 @@ namespace Satrabel.OpenContent.Components.Rest
                 }
                 if (!OpenContentUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, createdByUserid))
                 {
-                    //return Request.CreateResponse(HttpStatusCode.Unauthorized);
+                    return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
                 //var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
                 JToken res = null;
@@ -471,6 +477,8 @@ namespace Satrabel.OpenContent.Components.Rest
             }
         }
 
+        [SupportedModules("OpenContent")]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         public HttpResponseMessage Post(string entity, [FromBody]JObject value)
         {
             // Add
@@ -504,7 +512,7 @@ namespace Satrabel.OpenContent.Components.Rest
 
                 if (!OpenContentUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, createdByUserid))
                 {
-                    //return Request.CreateResponse(HttpStatusCode.Unauthorized);
+                    return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
                 //var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
                 ds.Add(dsContext, value.Properties().First().Value as JObject);
@@ -529,6 +537,9 @@ namespace Satrabel.OpenContent.Components.Rest
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
+
+        [SupportedModules("OpenContent")]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         public HttpResponseMessage Delete(string entity, string id)
         {
 
@@ -567,7 +578,6 @@ namespace Satrabel.OpenContent.Components.Rest
                     {
                         itemId = id;
                         dsItem = ds.Get(dsContext, itemId);
-                        //content = ctrl.GetContent(itemId);
                         if (dsItem != null)
                             createdByUserid = dsItem.CreatedByUserId;
                     }
@@ -576,36 +586,18 @@ namespace Satrabel.OpenContent.Components.Rest
                 {
                     dsContext.Single = true;
                     dsItem = ds.Get(dsContext, null);
-                    //dsItem = ctrl.GetFirstContent(module.ModuleID);
                     if (dsItem != null)
                         createdByUserid = dsItem.CreatedByUserId;
                 }
                 if (!OpenContentUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, createdByUserid))
                 {
-                    //return Request.CreateResponse(HttpStatusCode.Unauthorized);
+                    return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
                 //var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
-                if (dsItem == null)
-                {
-
-                }
-                else
+                if (dsItem != null)
                 {
                     ds.Delete(dsContext, dsItem);
                 }
-                //if (json["form"]["ModuleTitle"] != null && json["form"]["ModuleTitle"].Type == JTokenType.String)
-                //{
-                //    string moduleTitle = json["form"]["ModuleTitle"].ToString();
-                //    OpenContentUtils.UpdateModuleTitle(ActiveModule, moduleTitle);
-                //}
-                //else if (json["form"]["ModuleTitle"] != null && json["form"]["ModuleTitle"].Type == JTokenType.Object)
-                //{
-                //    if (json["form"]["ModuleTitle"][DnnUtils.GetCurrentCultureCode()] != null)
-                //    {
-                //        string moduleTitle = json["form"]["ModuleTitle"][DnnUtils.GetCurrentCultureCode()].ToString();
-                //        OpenContentUtils.UpdateModuleTitle(ActiveModule, moduleTitle);
-                //    }
-                //}
                 return Request.CreateResponse(HttpStatusCode.OK, "");
             }
             catch (Exception exc)
@@ -615,6 +607,8 @@ namespace Satrabel.OpenContent.Components.Rest
             }
         }
 
+        // CORS
+        [AllowAnonymous]
         public HttpResponseMessage Options()
         {
             return Request.CreateResponse(HttpStatusCode.OK);

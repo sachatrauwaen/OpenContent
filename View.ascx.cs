@@ -429,7 +429,26 @@ namespace Satrabel.OpenContent
                         SecurityAccessLevel.Host,
                         true,
                         false);
+                /*
+                if (templateDefined && listMode)
+                {
 
+                    //if (settings.Manifest.Index)
+                    {
+                        actions.Add(ModuleContext.GetNextActionID(),
+                            Localization.GetString("Swagger.Action", LocalResourceFile),
+                            ModuleActionType.ContentOptions,
+                            "",
+                            "~/DesktopModules/OpenContent/images/editfilter.png",
+                            //ModuleContext.EditUrl("Swagger"),
+                            Globals.NavigateURL("Swagger", "mid=" + ModuleContext.ModuleId)+"?popUp=true",
+                            false,
+                            SecurityAccessLevel.Admin,
+                            true,
+                            true);
+                    }
+                }
+                */
                 actions.Add(ModuleContext.GetNextActionID(),
                     Localization.GetString("ShareTemplate.Action", LocalResourceFile),
                     ModuleActionType.ContentOptions,

@@ -12,10 +12,8 @@ namespace Satrabel.OpenContent.Components.Rest
     {
         [JsonProperty(PropertyName = "field")]
         public string Field { get; set; }
-        [JsonProperty(PropertyName = "type")]
-        [JsonConverter(typeof(StringEnumConverter))]
-        public FieldTypeEnum FieldType { get; set; }
-        [JsonProperty(PropertyName = "descending")]
+       
+        [JsonProperty(PropertyName = "desc")]
         public bool Descending { get; set; }
     }
 }

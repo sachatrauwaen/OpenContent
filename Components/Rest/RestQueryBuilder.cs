@@ -22,7 +22,7 @@ namespace Satrabel.OpenContent.Components.Rest
                     {
                         Field = rule.Field,
                         FieldOperator = rule.FieldOperator,
-                        FieldType = rule.FieldType,
+                        FieldType = Sortfieldtype(config, rule.Field),
                         MultiValue = rule.MultiValue.Select(v => new StringRuleValue(v.ToString())),
                     });
                 }
@@ -36,7 +36,7 @@ namespace Satrabel.OpenContent.Components.Rest
                                         {
                                             Field = rule.Field,
                                             FieldOperator = rule.FieldOperator,
-                                            FieldType = rule.FieldType,
+                                            FieldType = Sortfieldtype(config, rule.Field),
                                             Value = new StringRuleValue(rule.Value.ToString()),
                                         });
                 }
