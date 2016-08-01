@@ -159,7 +159,7 @@ namespace Satrabel.OpenContent.Components.Json
             }
         }
 
-        public static void ImagesJson(JObject o, JObject requestOptions, JObject options)
+        public static void ImagesJson(JObject o, JObject requestOptions, JObject options, bool isEditable)
         {
             foreach (var child in o.Children<JProperty>().ToList())
             {
@@ -199,7 +199,7 @@ namespace Satrabel.OpenContent.Components.Json
                             {
                                 try
                                 {
-                                    newArray.Add(GenerateImage(reqOpt, val.ToString()));
+                                    newArray.Add(GenerateImage(reqOpt, val.ToString(), isEditable));
                                 }
                                 catch (System.Exception)
                                 {
@@ -215,7 +215,7 @@ namespace Satrabel.OpenContent.Components.Json
                 else if (childProperty.Value is JObject)
                 {
                     var obj = childProperty.Value as JObject;
-                    LookupJson(obj, reqOpt, opt);
+
                 }
                 else if (childProperty.Value is JValue)
                 {
@@ -225,7 +225,7 @@ namespace Satrabel.OpenContent.Components.Json
                         try
                         {
                             //o[childProperty.Name] = GenerateObject(additionalData, dataKey, val, dataMember, valueField);
-                            o[childProperty.Name] = GenerateImage(reqOpt, val);
+                            o[childProperty.Name] = GenerateImage(reqOpt, val, isEditable);
                         }
                         catch (System.Exception)
                         {
@@ -235,7 +235,7 @@ namespace Satrabel.OpenContent.Components.Json
             }
         }
 
-        private static JToken GenerateImage(JObject reqOpt, string p)
+        private static JToken GenerateImage(JObject reqOpt, string p, bool isEditable)
         {
             var ratio = new Ratio(100, 100);
             if (reqOpt != null && reqOpt["ratio"] != null)
@@ -243,14 +243,28 @@ namespace Satrabel.OpenContent.Components.Json
                 ratio = new Ratio(reqOpt["ratio"].ToString());
             }
             int fileId = int.Parse(p);
-            var file = FileManager.Instance.GetFile(fileId);
+            IFileInfo file = FileManager.Instance.GetFile(fileId);
             var imageUrl = ImageHelper.GetImageUrl(file, ratio);
-            return new JValue(imageUrl);
+            var editUrl = isEditable ? GetFileEditUrl(file) : "";
+
+            var obj = new JObject();
+            obj["ImageId"] = fileId;
+            obj["ImageUrl"] = imageUrl;
+            if (isEditable)
+                obj["EditUrl"] = editUrl;
+            return obj;
+            //return new JValue(imageUrl);
+        }
+        private static string GetFileEditUrl(IFileInfo f)
+        {
+            if (f == null) return "";
+            var portalFileUri = new PortalFileUri(f);
+            return portalFileUri.EditUrl();
         }
 
         private static JObject GenerateObject(JObject additionalData, string key, string id, string dataMember, string valueField)
         {
-            var json = additionalData[key];
+            var json = additionalData[key.ToLowerInvariant()];
             if (!string.IsNullOrEmpty(dataMember))
             {
                 json = json[dataMember];
@@ -331,7 +345,7 @@ namespace Satrabel.OpenContent.Components.Json
                     var obj = value as JObject;
                     if (obj != null)
                     {
-                        
+
                         if (obj["id"] == null)
                         {
                             obj["id"] = Guid.NewGuid().ToString();
@@ -353,9 +367,9 @@ namespace Satrabel.OpenContent.Components.Json
                     {
 
                         IdJson(child.Value);
-                    
+
                     }
-                    
+
                 }
             }
         }

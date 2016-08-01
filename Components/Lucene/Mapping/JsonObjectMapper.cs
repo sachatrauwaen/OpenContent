@@ -86,7 +86,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
                     sort = field.Sort;
                 }
 
-                switch (value.Type)
+                switch (value.Type) //todo: simple date gets detected as string 
                 {
                     case JTokenType.Boolean:
                         if (index || sort)

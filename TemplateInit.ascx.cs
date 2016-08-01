@@ -61,7 +61,7 @@ namespace Satrabel.OpenContent
                 BindOtherModules(-1, -1);
                 var dsModule = (new ModuleController()).GetTabModule(int.Parse(ddlDataSource.SelectedValue));
                 var dsSettings = dsModule.OpenContentSettings();
-                BindTemplates(dsSettings.Template, dsSettings.Template.Uri());
+                BindTemplates(dsSettings.Template, dsSettings.Template.MainTemplateUri());
             }
             else // this module
             {
@@ -156,7 +156,7 @@ namespace Satrabel.OpenContent
         {
             var dsModule = (new ModuleController()).GetTabModule(int.Parse(ddlDataSource.SelectedValue));
             var dsSettings = dsModule.OpenContentSettings();
-            BindTemplates(dsSettings.Template, dsSettings.Template.Uri());
+            BindTemplates(dsSettings.Template, dsSettings.Template.MainTemplateUri());
         }
 
         private void BindTemplates(TemplateManifest template, FileUri otherModuleTemplate)
@@ -251,7 +251,7 @@ namespace Satrabel.OpenContent
             {
                 rblDataSource.SelectedIndex = (Settings.TabId > 0 && Settings.ModuleId > 0 ? 1 : 0);
                 BindOtherModules(Settings.TabId, Settings.ModuleId);
-                BindTemplates(Settings.Template, (Renderinfo.IsOtherModule ? Renderinfo.Template.Uri() : null));
+                BindTemplates(Settings.Template, (Renderinfo.IsOtherModule ? Renderinfo.Template.MainTemplateUri() : null));
                 BindDetailPage(Settings.DetailTabId, Settings.TabId);
             }
             if (rblDataSource.SelectedIndex == 1) // other module

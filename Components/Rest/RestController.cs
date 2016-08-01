@@ -280,9 +280,8 @@ namespace Satrabel.OpenContent.Components.Rest
                 }
                 var manifest = settings.Manifest;
                 TemplateManifest templateManifest = settings.Template;
-                if (manifest.AdditionalData.ContainsKey(entity))
+                if (manifest.AdditionalDataExists(entity))
                 {
-
                     var dataManifest = manifest.AdditionalData[entity];
                     string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings.PortalId, PortalSettings.ActiveTab.TabID, module.ModuleID, ActiveModule.TabModuleID);
 

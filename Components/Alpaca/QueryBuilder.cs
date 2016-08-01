@@ -130,6 +130,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                                     arrGroup.AddRule(new FilterRule()
                                     {
                                         Field = item.Name,
+                                        FieldType = FieldTypeEnum.KEY,
                                         Value = new StringRuleValue(val.ToString())
                                     });
                                 }
@@ -171,6 +172,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                             workFlowFilter.AddRule(new FilterRule()
                             {
                                 Field = item.Name,
+                                FieldType = FieldTypeEnum.DATETIME,
                                 LowerValue = new DateTimeRuleValue(startDate),
                                 UpperValue = new DateTimeRuleValue(endDate),
                                 FieldOperator = OperatorEnum.BETWEEN

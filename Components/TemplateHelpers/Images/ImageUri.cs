@@ -37,6 +37,13 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             return ImageHelper.GetImageUrl(FileInfo, ratio);
         }
 
+        /// <summary>
+        /// Gets the image URL.
+        /// </summary>
+        /// <param name="columnWidth">Size of the image. In Bootstrap 12th</param>
+        /// <param name="ratioString">The ratio string.</param>
+        /// <param name="isMobile">if set to <c>true</c> [is mobile].</param>
+        /// <returns></returns>
         public string GetImageUrl(float columnWidth, string ratioString, bool isMobile)
         {
             if (columnWidth < 0) columnWidth = 12;

@@ -70,7 +70,7 @@ namespace Satrabel.OpenContent.Components.Logging
             string referrer = "-unknown-";
             if (context != null)
             {
-                url = context.Request.UrlReferrer == null ? "???" : context.Request.UrlReferrer.AbsoluteUri;
+                url = context.Request.Url.AbsoluteUri;
                 referrer = context.Request.UrlReferrer == null ? "???" : context.Request.UrlReferrer.AbsoluteUri;
             }
             string retval = string.Format("Called from {0}. Referrer: {1}.", url, referrer);

@@ -40,20 +40,20 @@ namespace Satrabel.OpenContent
             //ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/bootstrap/js/bootstrap.min.js", FileOrder.Js.DefaultPriority);
             //ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/bootstrap/css/bootstrap.min.css", FileOrder.Css.DefaultPriority);
 
-            if (OpenContentUtils.BuilderExist(settings.Template.ManifestDir))
+            if (OpenContentUtils.BuilderExist(settings.Template.ManifestFolderUri))
             {
                 string title = string.IsNullOrEmpty(settings.Template.Manifest.Title) ? "Data" : settings.Template.Manifest.Title + " ";
                 ddlForms.Items.Add(new ListItem(title, ""));
             }
-            if (OpenContentUtils.BuilderExist(settings.Template.ManifestDir, settings.Template.Key.ShortKey))
+            if (OpenContentUtils.BuilderExist(settings.Template.ManifestFolderUri, settings.Template.Key.ShortKey))
             {
                 ddlForms.Items.Add(new ListItem("Settings", settings.Template.Key.ShortKey));
             }
-            if (settings.Template.Manifest.AdditionalData != null)
+            if (settings.Template.Manifest.AdditionalDataExists())
             {
                 foreach (var addData in settings.Template.Manifest.AdditionalData)
                 {
-                    if (OpenContentUtils.BuilderExist(settings.Template.ManifestDir, addData.Key))
+                    if (OpenContentUtils.BuilderExist(settings.Template.ManifestFolderUri, addData.Key))
                     {
                         string title = string.IsNullOrEmpty(addData.Value.Title) ? addData.Key : addData.Value.Title;
                         ddlForms.Items.Add(new ListItem(title, addData.Key));

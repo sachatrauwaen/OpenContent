@@ -79,6 +79,10 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                         int ival = rule.Value.AsBoolean ? 1 : 0;
                         q.Add(NumericRangeQuery.NewIntRange(fieldName, ival, ival, true, true), cond);
                     }
+                    else if (rule.FieldType == FieldTypeEnum.STRING || rule.FieldType == FieldTypeEnum.TEXT || rule.FieldType == FieldTypeEnum.HTML)
+                    {
+                        q.Add(LuceneController.ParseQuery(rule.Value.AsString + "*", fieldName), cond);
+                    }
                     else
                     {
                         q.Add(new TermQuery(new Term(fieldName, rule.Value.AsString)), cond);
@@ -89,8 +93,15 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                     q.Add(new TermQuery(new Term(fieldName, rule.Value.AsString)), Occur.MUST_NOT);
                 }
                 else if (rule.FieldOperator == OperatorEnum.START_WITH)
-                {
-                    q.Add(new WildcardQuery(new Term(fieldName, rule.Value.AsString + "*")), cond);
+                {                    
+                    if (rule.FieldType == FieldTypeEnum.STRING || rule.FieldType == FieldTypeEnum.TEXT || rule.FieldType == FieldTypeEnum.HTML)
+                    {
+                        q.Add(LuceneController.ParseQuery(rule.Value.AsString + "*", fieldName), cond);
+                    }
+                    else
+                    {
+                        q.Add(new WildcardQuery(new Term(fieldName, rule.Value.AsString + "*")), cond);
+                    }
                 }
                 else if (rule.FieldOperator == OperatorEnum.IN)
                 {
