@@ -72,7 +72,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
         {
             get
             {
-                return System.Web.VirtualPathUtility.ToAbsolute(System.Web.HttpRuntime.AppDomainAppVirtualPath);
+                return System.Web.VirtualPathUtility.ToAbsolute(string.Concat(System.Web.HttpRuntime.AppDomainAppVirtualPath, "/"));
             }
         }
     }
