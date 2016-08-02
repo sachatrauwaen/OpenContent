@@ -27,7 +27,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
         {
             BuildPage(query);
             BuildFilter(query, addWorkflowFilter, userId, cultureCode, queryString);
-            BuildSort(query);
+            BuildSort(query, cultureCode);
             return this;
         }
 
@@ -102,7 +102,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                             {
                                 workFlowFilter.AddRule(new FilterRule()
                                 {
-                                    Field = item.Name + cultureSuffix,
+                                    Field = item.Name,
                                     FieldType = FieldTypeEnum.BOOLEAN,
                                     Value = new BooleanRuleValue(bval)
                                 });
@@ -186,7 +186,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     }
                 }
             }
-            BuildQueryStringFilter(queryString, workFlowFilter);
+            BuildQueryStringFilter(queryString, workFlowFilter, cultureCode);
             if (addWorkflowFilter)
             {
                 AddWorkflowFilter(workFlowFilter);
@@ -195,7 +195,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
             return this;
         }
 
-        private void BuildQueryStringFilter(NameValueCollection queryString, FilterGroup workFlowFilter)
+        private void BuildQueryStringFilter(NameValueCollection queryString, FilterGroup workFlowFilter, string cultureCode)
         {
             if (queryString != null)
             {
@@ -204,10 +204,11 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.Any(f => f.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase)))
                     {
                         var indexConfig = IndexConfig.Fields.Single(f => f.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase));
+                        var cultureSuffix = indexConfig.Value.MultiLanguage ? "." + cultureCode : string.Empty;
                         string val = queryString[key];
                         workFlowFilter.AddRule(new FilterRule()
                         {
-                            Field = indexConfig.Key,
+                            Field = indexConfig.Key+cultureSuffix,
                             Value = new StringRuleValue(val),
                             FieldOperator = OperatorEnum.EQUAL,
                             FieldType = Sortfieldtype(indexConfig.Key)
@@ -217,9 +218,9 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
         }
 
-        public QueryBuilder BuildFilter(bool addWorkflowFilter, NameValueCollection queryString = null)
+        public QueryBuilder BuildFilter(bool addWorkflowFilter, string cultureCode, NameValueCollection queryString = null)
         {
-            BuildQueryStringFilter(queryString, Select.Filter);
+            BuildQueryStringFilter(queryString, Select.Filter, cultureCode);
             if (addWorkflowFilter)
             {
                 AddWorkflowFilter(Select.Filter);
@@ -265,7 +266,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
         }
 
-        public QueryBuilder BuildSort(JObject query)
+        public QueryBuilder BuildSort(JObject query, string cultureCode)
         {
             var Sort = Select.Sort;
             var sortArray = query["Sort"] as JArray;
@@ -273,9 +274,11 @@ namespace Satrabel.OpenContent.Components.Alpaca
             {
                 foreach (JObject item in sortArray)
                 {
+
                     bool reverse = false;
                     string fieldName = item["Field"].ToString();
                     string fieldOrder = item["Order"].ToString();
+                    var cultureSuffix = SortfieldMultiLanguage(fieldName) ? "." + cultureCode : string.Empty;
                     if (fieldOrder == "desc")
                     {
                         reverse = true;
@@ -363,6 +366,17 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 }
             }
             return this;
+        }
+
+        private bool SortfieldMultiLanguage(string fieldName)
+        {
+            
+            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey(fieldName))
+            {
+                var config = IndexConfig.Fields[fieldName].Items == null ? IndexConfig.Fields[fieldName] : IndexConfig.Fields[fieldName].Items;
+                return config.MultiLanguage;
+            }
+            return false;
         }
     }
 }

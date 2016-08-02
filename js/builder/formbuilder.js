@@ -410,6 +410,8 @@ function showForm(value) {
     connector.culture = "en-US";
     connector.defaultCulture = "en-US";
     connector.numberDecimalSeparator = ".";
+    connector.numberDecimalSeparator = ".";
+    connector.rootUrl = "/";
 
     var schema = getSchema(value);
     var options = getOptions(value);

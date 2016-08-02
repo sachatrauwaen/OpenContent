@@ -9,20 +9,22 @@ namespace Satrabel.OpenContent.Components.Rest
 {
     public static class RestQueryBuilder
     {
-        public static Select MergeQuery(FieldConfig config, Select select, RestSelect restSelect)
+        public static Select MergeQuery(FieldConfig config, Select select, RestSelect restSelect, string cultureCode)
         {
             var query = select.Query;
             select.PageSize = restSelect.PageSize;
             select.PageIndex = restSelect.PageIndex;
             foreach (var rule in restSelect.Query.FilterRules)
             {
+                var cultureSuffix = SortfieldMultiLanguage(config, rule.Field) ? "." + cultureCode : string.Empty;
+
                 if (rule.FieldOperator == OperatorEnum.IN)
                 {
                     if (rule.MultiValue != null)
                     {
                         query.AddRule(new FilterRule()
                         {
-                            Field = rule.Field,
+                            Field = rule.Field+cultureSuffix,
                             FieldOperator = rule.FieldOperator,
                             FieldType = Sortfieldtype(config, rule.Field),
                             MultiValue = rule.MultiValue.Select(v => new StringRuleValue(v.ToString())),
@@ -39,7 +41,7 @@ namespace Satrabel.OpenContent.Components.Rest
                     {
                         query.AddRule(new FilterRule()
                         {
-                            Field = rule.Field,
+                            Field = rule.Field+cultureSuffix,
                             FieldOperator = rule.FieldOperator,
                             FieldType = Sortfieldtype(config, rule.Field),
                             Value = new StringRuleValue(rule.Value.ToString()),
@@ -108,5 +110,16 @@ namespace Satrabel.OpenContent.Components.Rest
             }
             return FieldTypeEnum.STRING;
         }
+        private static bool SortfieldMultiLanguage(FieldConfig indexConfig, string fieldName)
+        {
+
+            if (indexConfig != null && indexConfig.Fields != null && indexConfig.Fields.ContainsKey(fieldName))
+            {
+                var config = indexConfig.Fields[fieldName].Items == null ? indexConfig.Fields[fieldName] : indexConfig.Fields[fieldName].Items;
+                return config.MultiLanguage;
+            }
+            return false;
+        }
     }
+    
 }

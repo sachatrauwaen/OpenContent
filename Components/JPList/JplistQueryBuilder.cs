@@ -8,7 +8,7 @@ namespace Satrabel.OpenContent.Components.JPList
 {
     public static class JplistQueryBuilder
     {
-        public static Select MergeJpListQuery(FieldConfig config, Select select, List<StatusDTO> statuses)
+        public static Select MergeJpListQuery(FieldConfig config, Select select, List<StatusDTO> statuses, string cultureCode)
         {
             var query = select.Query;
             foreach (StatusDTO status in statuses)
@@ -26,14 +26,17 @@ namespace Satrabel.OpenContent.Components.JPList
                         }
                     case "filter":
                         {
+                            
+
                             if (status.type == "textbox" && status.data != null && !string.IsNullOrEmpty(status.name) && !string.IsNullOrEmpty(status.data.value))
                             {
                                 var names = status.name.Split(',');
                                 if (names.Length == 1)
                                 {
+                                    var cultureSuffix = SortfieldMultiLanguage(config, status.name) ? "." + cultureCode : string.Empty;
                                     query.AddRule(new FilterRule()
                                     {
-                                        Field = status.name,
+                                        Field = status.name+cultureSuffix,
                                         FieldOperator = OperatorEnum.START_WITH,
                                         Value = new StringRuleValue(status.data.value),
                                         FieldType = Sortfieldtype(config, status.name)
@@ -44,9 +47,10 @@ namespace Satrabel.OpenContent.Components.JPList
                                     var group = new FilterGroup() { Condition = ConditionEnum.OR };
                                     foreach (var n in names)
                                     {
+                                        var cultureSuffix = SortfieldMultiLanguage(config, n) ? "." + cultureCode : string.Empty;
                                         group.AddRule(new FilterRule()
                                         {
-                                            Field = n,
+                                            Field = n+cultureSuffix,
                                             FieldOperator = OperatorEnum.START_WITH,
                                             Value = new StringRuleValue(status.data.value),
                                             FieldType = Sortfieldtype(config, n)
@@ -86,9 +90,10 @@ namespace Satrabel.OpenContent.Components.JPList
                                 var names = status.data.path.Split(',');
                                 if (names.Length == 1)
                                 {
+                                    var cultureSuffix = SortfieldMultiLanguage(config, status.data.path) ? "." + cultureCode : string.Empty;
                                     query.AddRule(new FilterRule()
                                     {
-                                        Field = status.data.path,
+                                        Field = status.data.path+cultureSuffix,
                                         FieldOperator = OperatorEnum.START_WITH,
                                         Value = new StringRuleValue(status.data.value),
                                         FieldType = Sortfieldtype(config, status.data.path)
@@ -99,9 +104,10 @@ namespace Satrabel.OpenContent.Components.JPList
                                     var group = new FilterGroup() { Condition = ConditionEnum.OR };
                                     foreach (var n in names)
                                     {
+                                        var cultureSuffix = SortfieldMultiLanguage(config, n) ? "." + cultureCode : string.Empty;
                                         group.AddRule(new FilterRule()
                                         {
-                                            Field = n,
+                                            Field = n+cultureSuffix,
                                             FieldOperator = OperatorEnum.START_WITH,
                                             Value = new StringRuleValue(status.data.value),
                                             FieldType = Sortfieldtype(config, n)
@@ -115,10 +121,11 @@ namespace Satrabel.OpenContent.Components.JPList
 
                     case "sort":
                         {
+                            var cultureSuffix = SortfieldMultiLanguage(config, status.data.path) ? "." + cultureCode : string.Empty;
                             select.Sort.Clear();
                             select.Sort.Add(new SortRule()
                             {
-                                Field = status.data.path,
+                                Field = status.data.path + cultureSuffix,
                                 Descending = status.data.order == "desc",
                                 FieldType = Sortfieldtype(config, status.data.path)
                             });
@@ -175,6 +182,15 @@ namespace Satrabel.OpenContent.Components.JPList
             }
             return FieldTypeEnum.STRING;
         }
+        private static bool SortfieldMultiLanguage(FieldConfig indexConfig, string fieldName)
+        {
 
+            if (indexConfig != null && indexConfig.Fields != null && indexConfig.Fields.ContainsKey(fieldName))
+            {
+                var config = indexConfig.Fields[fieldName].Items == null ? indexConfig.Fields[fieldName] : indexConfig.Fields[fieldName].Items;
+                return config.MultiLanguage;
+            }
+            return false;
+        }
     }
 }

@@ -704,11 +704,11 @@ namespace Satrabel.OpenContent
                     if (!string.IsNullOrEmpty(settings.Query))
                     {
                         var query = JObject.Parse(settings.Query);
-                        queryBuilder.Build(query, addWorkFlow, ModuleContext.PortalSettings.UserId, ModuleContext.PortalSettings.CultureCode, Request.QueryString);
+                        queryBuilder.Build(query, addWorkFlow, ModuleContext.PortalSettings.UserId, DnnUtils.GetCurrentCultureCode(), Request.QueryString);
                     }
                     else
                     {
-                        queryBuilder.BuildFilter(addWorkFlow, Request.QueryString);
+                        queryBuilder.BuildFilter(addWorkFlow, DnnUtils.GetCurrentCultureCode(), Request.QueryString);
                     }
                     dataList = ds.GetAll(dsContext, queryBuilder.Select).Items;
                     if (LogContext.IsLogActive)

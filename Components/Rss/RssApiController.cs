@@ -58,11 +58,11 @@ namespace Satrabel.OpenContent.Components.Rss
                 if (!string.IsNullOrEmpty(settings.Query))
                 {
                     var query = JObject.Parse(settings.Query);
-                    queryBuilder.Build(query, PortalSettings.UserMode != PortalSettings.Mode.Edit, UserInfo.UserID, PortalSettings.CultureCode);
+                    queryBuilder.Build(query, PortalSettings.UserMode != PortalSettings.Mode.Edit, UserInfo.UserID, DnnUtils.GetCurrentCultureCode());
                 }
                 else
                 {
-                    queryBuilder.BuildFilter(PortalSettings.UserMode != PortalSettings.Mode.Edit);
+                    queryBuilder.BuildFilter(PortalSettings.UserMode != PortalSettings.Mode.Edit, DnnUtils.GetCurrentCultureCode());
                 }
                 var ds = DataSourceManager.GetDataSource(manifest.DataSource);
                 var dsContext = new DataSourceContext()
