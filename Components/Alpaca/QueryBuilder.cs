@@ -23,10 +23,10 @@ namespace Satrabel.OpenContent.Components.Alpaca
             Select.PageSize = 100;
         }
 
-        public QueryBuilder Build(JObject query, bool addWorkflowFilter, int userId, NameValueCollection queryString = null)
+        public QueryBuilder Build(JObject query, bool addWorkflowFilter, int userId, string cultureCode, NameValueCollection queryString = null)
         {
             BuildPage(query);
-            BuildFilter(query, addWorkflowFilter, userId, queryString);
+            BuildFilter(query, addWorkflowFilter, userId, cultureCode, queryString);
             BuildSort(query);
             return this;
         }
@@ -46,7 +46,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
             return this;
         }
-        public QueryBuilder BuildFilter(JObject query, bool addWorkflowFilter, int userId, NameValueCollection queryString = null)
+        public QueryBuilder BuildFilter(JObject query, bool addWorkflowFilter, int userId, string cultureCode, NameValueCollection queryString = null)
         {
             var workFlowFilter = Select.Filter;
             var vExcludeCurrentItem = query["ExcludeCurrentItem"] as JValue;
@@ -89,6 +89,9 @@ namespace Satrabel.OpenContent.Components.Alpaca
                         ? IndexConfig.Fields[item.Name]
                         : null;
 
+                    var cultureSuffix = indexConfig != null && indexConfig.MultiLanguage
+                        ? "." + cultureCode : string.Empty;
+
                     if (item.Value is JValue) // text
                     {
                         var val = item.Value.ToString();
@@ -99,7 +102,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                             {
                                 workFlowFilter.AddRule(new FilterRule()
                                 {
-                                    Field = item.Name,
+                                    Field = item.Name + cultureSuffix,
                                     FieldType = FieldTypeEnum.BOOLEAN,
                                     Value = new BooleanRuleValue(bval)
                                 });
@@ -109,7 +112,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                         {
                             workFlowFilter.AddRule(new FilterRule()
                             {
-                                Field = item.Name,
+                                Field = item.Name + cultureSuffix,
                                 Value = new StringRuleValue(val),
                                 FieldOperator = OperatorEnum.START_WITH,
                                 FieldType = Sortfieldtype(item.Name)
@@ -130,7 +133,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                                     var val = (JValue)arrItem;
                                     arrGroup.AddRule(new FilterRule()
                                     {
-                                        Field = item.Name,                                        
+                                        Field = item.Name + cultureSuffix,                                        
                                         FieldType = Sortfieldtype(item.Name),
                                         Value = new StringRuleValue(val.ToString())
                                     });
@@ -142,7 +145,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                         {
                             workFlowFilter.AddRule(new FilterRule()
                             {
-                                Field = item.Name,
+                                Field = item.Name + cultureSuffix,
                                 FieldType = Sortfieldtype(item.Name),
                                 Value = new StringRuleValue(queryString[item.Name])
                             });
@@ -173,7 +176,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                             }
                             workFlowFilter.AddRule(new FilterRule()
                             {
-                                Field = item.Name,
+                                Field = item.Name + cultureSuffix,
                                 FieldType = FieldTypeEnum.DATETIME,
                                 LowerValue = new DateTimeRuleValue(startDate),
                                 UpperValue = new DateTimeRuleValue(endDate),
