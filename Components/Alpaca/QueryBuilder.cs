@@ -84,18 +84,11 @@ namespace Satrabel.OpenContent.Components.Alpaca
             {
                 foreach (var item in filter.Properties())
                 {
-                    var indexConfig = IndexConfig != null && IndexConfig.Fields != null &&
-                                      IndexConfig.Fields.ContainsKey(item.Name)
-                        ? IndexConfig.Fields[item.Name]
-                        : null;
-
-                    var cultureSuffix = indexConfig != null && indexConfig.MultiLanguage
-                        ? "." + cultureCode : string.Empty;
-
+                    var fieldConfig = FieldConfigUtils.GetField(IndexConfig , item.Name);
                     if (item.Value is JValue) // text
                     {
                         var val = item.Value.ToString();
-                        if (indexConfig != null && indexConfig.IndexType == "boolean")
+                        if (fieldConfig != null && fieldConfig.IndexType == "boolean")
                         {
                             bool bval;
                             if (bool.TryParse(val, out bval))
@@ -110,13 +103,11 @@ namespace Satrabel.OpenContent.Components.Alpaca
                         }
                         else if (!string.IsNullOrEmpty(val))
                         {
-                            workFlowFilter.AddRule(new FilterRule()
-                            {
-                                Field = item.Name + cultureSuffix,
-                                Value = new StringRuleValue(val),
-                                FieldOperator = OperatorEnum.START_WITH,
-                                FieldType = Sortfieldtype(item.Name)
-                            });
+                            workFlowFilter.AddRule(FieldConfigUtils.CreateFilterRule(IndexConfig, cultureCode,                            
+                                item.Name,
+                                OperatorEnum.START_WITH,
+                                new StringRuleValue(val)
+                            ));
                         }
                     }
                     else if (item.Value is JArray) // enum
@@ -131,24 +122,23 @@ namespace Satrabel.OpenContent.Components.Alpaca
                                 if (arrItem is JValue)
                                 {
                                     var val = (JValue)arrItem;
-                                    arrGroup.AddRule(new FilterRule()
-                                    {
-                                        Field = item.Name + cultureSuffix,                                        
-                                        FieldType = Sortfieldtype(item.Name),
-                                        Value = new StringRuleValue(val.ToString())
-                                    });
+                                    arrGroup.AddRule(FieldConfigUtils.CreateFilterRule(IndexConfig, cultureCode,
+                                        item.Name,                                        
+                                        OperatorEnum.EQUAL,
+                                        new StringRuleValue(val.ToString())
+                                    ));
                                 }
                             }
                             workFlowFilter.FilterGroups.Add(arrGroup);
                         }
                         else if (queryString != null && queryString[item.Name] != null)
                         {
-                            workFlowFilter.AddRule(new FilterRule()
-                            {
-                                Field = item.Name + cultureSuffix,
-                                FieldType = Sortfieldtype(item.Name),
-                                Value = new StringRuleValue(queryString[item.Name])
-                            });
+                            workFlowFilter.AddRule(FieldConfigUtils.CreateFilterRule(IndexConfig, cultureCode,
+                            
+                                item.Name,
+                                OperatorEnum.EQUAL,
+                                new StringRuleValue(queryString[item.Name])
+                            ));
                         }
                     }
                     else if (item.Value is JObject) // range
@@ -176,7 +166,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                             }
                             workFlowFilter.AddRule(new FilterRule()
                             {
-                                Field = item.Name + cultureSuffix,
+                                Field = item.Name,
                                 FieldType = FieldTypeEnum.DATETIME,
                                 LowerValue = new DateTimeRuleValue(startDate),
                                 UpperValue = new DateTimeRuleValue(endDate),
@@ -186,7 +176,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     }
                 }
             }
-            BuildQueryStringFilter(queryString, workFlowFilter, cultureCode);
+            BuildQueryStringFilter(queryString, workFlowFilter);
             if (addWorkflowFilter)
             {
                 AddWorkflowFilter(workFlowFilter);
@@ -195,7 +185,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
             return this;
         }
 
-        private void BuildQueryStringFilter(NameValueCollection queryString, FilterGroup workFlowFilter, string cultureCode)
+        private void BuildQueryStringFilter(NameValueCollection queryString, FilterGroup workFlowFilter)
         {
             if (queryString != null)
             {
@@ -204,14 +194,13 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.Any(f => f.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase)))
                     {
                         var indexConfig = IndexConfig.Fields.Single(f => f.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase));
-                        var cultureSuffix = indexConfig.Value.MultiLanguage ? "." + cultureCode : string.Empty;
                         string val = queryString[key];
                         workFlowFilter.AddRule(new FilterRule()
                         {
-                            Field = indexConfig.Key+cultureSuffix,
+                            Field = indexConfig.Key,
                             Value = new StringRuleValue(val),
                             FieldOperator = OperatorEnum.EQUAL,
-                            FieldType = Sortfieldtype(indexConfig.Key)
+                            FieldType = FieldConfigUtils.GetFieldType(indexConfig.Value != null ? indexConfig.Value.IndexType : string.Empty)
                         });
                     }
                 }
@@ -220,7 +209,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
 
         public QueryBuilder BuildFilter(bool addWorkflowFilter, string cultureCode, NameValueCollection queryString = null)
         {
-            BuildQueryStringFilter(queryString, Select.Filter, cultureCode);
+            BuildQueryStringFilter(queryString, Select.Filter);
             if (addWorkflowFilter)
             {
                 AddWorkflowFilter(Select.Filter);
@@ -274,74 +263,17 @@ namespace Satrabel.OpenContent.Components.Alpaca
             {
                 foreach (JObject item in sortArray)
                 {
-
-                    bool reverse = false;
                     string fieldName = item["Field"].ToString();
                     string fieldOrder = item["Order"].ToString();
-                    var cultureSuffix = SortfieldMultiLanguage(fieldName) ? "." + cultureCode : string.Empty;
-                    if (fieldOrder == "desc")
-                    {
-                        reverse = true;
-                    }
-                    Sort.Add(new SortRule()
-                    {
-                        Field = fieldName,
-                        FieldType = Sortfieldtype(fieldName),
-                        Descending = reverse
-                    });
+                    Sort.Add(FieldConfigUtils.CreateSortRule(IndexConfig, cultureCode,
+                        fieldName,
+                        fieldOrder == "desc"
+                    ));
                 }
             }
             return this;
         }
-
-        private FieldTypeEnum Sortfieldtype(string fieldName)
-        {
-            var sortfieldtype = FieldTypeEnum.STRING;
-            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey(fieldName))
-            {
-                var config = IndexConfig.Fields[fieldName].Items == null ? IndexConfig.Fields[fieldName] : IndexConfig.Fields[fieldName].Items;
-                if (config.IndexType == "datetime" || config.IndexType == "date" || config.IndexType == "time")
-                {
-                    sortfieldtype = FieldTypeEnum.DATETIME;
-                }
-                else if (config.IndexType == "boolean")
-                {
-                    sortfieldtype = FieldTypeEnum.BOOLEAN;
-                }
-                else if (config.IndexType == "int")
-                {
-                    sortfieldtype = FieldTypeEnum.LONG;
-                }
-                else if (config.IndexType == "long")
-                {
-                    sortfieldtype = FieldTypeEnum.LONG;
-                }
-                else if (config.IndexType == "float" || config.IndexType == "double")
-                {
-                    sortfieldtype = FieldTypeEnum.FLOAT;
-                }
-                else if (config.IndexType == "double")
-                {
-                    sortfieldtype = FieldTypeEnum.INTEGER; // ????
-                }
-                else if (config.IndexType == "key")
-                {
-                    sortfieldtype = FieldTypeEnum.KEY;
-                }
-                else if (config.IndexType == "text")
-                {
-                    sortfieldtype = FieldTypeEnum.TEXT;
-                }
-                else if (config.IndexType == "html")
-                {
-                    sortfieldtype = FieldTypeEnum.HTML;
-                }
-
-            }
-            return sortfieldtype;
-        }
-
-        public QueryBuilder BuildSort(string Sorts)
+        public QueryBuilder BuildSort(string Sorts, string cultureCode)
         {
             var Sort = Select.Sort;
             if (!string.IsNullOrEmpty(Sorts))
@@ -357,12 +289,10 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     {
                         reverse = true;
                     }
-                    Sort.Add(new SortRule()
-                    {
-                        Field = fieldName,
-                        FieldType = Sortfieldtype(fieldName),
-                        Descending = reverse
-                    });
+                    Sort.Add(FieldConfigUtils.CreateSortRule(IndexConfig, cultureCode,
+                        fieldName,
+                        reverse
+                    ));
                 }
             }
             return this;

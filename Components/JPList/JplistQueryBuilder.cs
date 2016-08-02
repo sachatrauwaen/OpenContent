@@ -26,35 +26,27 @@ namespace Satrabel.OpenContent.Components.JPList
                         }
                     case "filter":
                         {
-                            
-
                             if (status.type == "textbox" && status.data != null && !string.IsNullOrEmpty(status.name) && !string.IsNullOrEmpty(status.data.value))
                             {
                                 var names = status.name.Split(',');
                                 if (names.Length == 1)
                                 {
-                                    var cultureSuffix = SortfieldMultiLanguage(config, status.name) ? "." + cultureCode : string.Empty;
-                                    query.AddRule(new FilterRule()
-                                    {
-                                        Field = status.name+cultureSuffix,
-                                        FieldOperator = OperatorEnum.START_WITH,
-                                        Value = new StringRuleValue(status.data.value),
-                                        FieldType = Sortfieldtype(config, status.name)
-                                    });
+                                    query.AddRule(FieldConfigUtils.CreateFilterRule(config, cultureCode,
+                                        status.name,
+                                        OperatorEnum.START_WITH,
+                                        new StringRuleValue(status.data.value)
+                                    ));
                                 }
                                 else
                                 {
                                     var group = new FilterGroup() { Condition = ConditionEnum.OR };
                                     foreach (var n in names)
                                     {
-                                        var cultureSuffix = SortfieldMultiLanguage(config, n) ? "." + cultureCode : string.Empty;
-                                        group.AddRule(new FilterRule()
-                                        {
-                                            Field = n+cultureSuffix,
-                                            FieldOperator = OperatorEnum.START_WITH,
-                                            Value = new StringRuleValue(status.data.value),
-                                            FieldType = Sortfieldtype(config, n)
-                                        });
+                                        group.AddRule(FieldConfigUtils.CreateFilterRule(config, cultureCode,
+                                            n,
+                                            OperatorEnum.START_WITH,
+                                            new StringRuleValue(status.data.value)
+                                        ));
                                     }
                                     query.FilterGroups.Add(group);
                                 }
@@ -64,25 +56,22 @@ namespace Satrabel.OpenContent.Components.JPList
                             {
                                 if (status.data.filterType == "pathGroup" && status.data.pathGroup != null && status.data.pathGroup.Count > 0)
                                 {
-                                    query.AddRule(new FilterRule()
-                                    {
-                                        Field = status.name,
-                                        FieldOperator = OperatorEnum.IN,
-                                        MultiValue = status.data.pathGroup.Select(s => new StringRuleValue(s)),
-                                        FieldType = Sortfieldtype(config, status.name)
-                                    });
+                                    query.AddRule(FieldConfigUtils.CreateFilterRule(config, cultureCode,
+                                        status.name,
+                                        OperatorEnum.IN,
+                                        status.data.pathGroup.Select(s => new StringRuleValue(s))
+                                    ));
                                 }
                             }
                             else if (status.type == "filter-select" && status.data != null && !string.IsNullOrEmpty(status.name))
                             {
                                 if (status.data.filterType == "path" && !string.IsNullOrEmpty(status.data.path))
                                 {
-                                    query.AddRule(new FilterRule()
-                                    {
-                                        Field = status.name,
-                                        Value = new StringRuleValue(status.data.path),
-                                        FieldType = Sortfieldtype(config, status.name)
-                                    });
+                                    query.AddRule(FieldConfigUtils.CreateFilterRule(config, cultureCode,
+                                        status.name,
+                                        OperatorEnum.EQUAL,
+                                        new StringRuleValue(status.data.path)
+                                    ));
                                 }
                             }
                             else if (status.type == "autocomplete" && status.data != null && !string.IsNullOrEmpty(status.data.path) && !string.IsNullOrEmpty(status.data.value))
@@ -90,28 +79,22 @@ namespace Satrabel.OpenContent.Components.JPList
                                 var names = status.data.path.Split(',');
                                 if (names.Length == 1)
                                 {
-                                    var cultureSuffix = SortfieldMultiLanguage(config, status.data.path) ? "." + cultureCode : string.Empty;
-                                    query.AddRule(new FilterRule()
-                                    {
-                                        Field = status.data.path+cultureSuffix,
-                                        FieldOperator = OperatorEnum.START_WITH,
-                                        Value = new StringRuleValue(status.data.value),
-                                        FieldType = Sortfieldtype(config, status.data.path)
-                                    });
+                                    query.AddRule(FieldConfigUtils.CreateFilterRule(config, cultureCode,
+                                        status.data.path,
+                                        OperatorEnum.START_WITH,
+                                        new StringRuleValue(status.data.value)
+                                    ));
                                 }
                                 else
                                 {
                                     var group = new FilterGroup() { Condition = ConditionEnum.OR };
                                     foreach (var n in names)
                                     {
-                                        var cultureSuffix = SortfieldMultiLanguage(config, n) ? "." + cultureCode : string.Empty;
-                                        group.AddRule(new FilterRule()
-                                        {
-                                            Field = n+cultureSuffix,
-                                            FieldOperator = OperatorEnum.START_WITH,
-                                            Value = new StringRuleValue(status.data.value),
-                                            FieldType = Sortfieldtype(config, n)
-                                        });
+                                        group.AddRule(FieldConfigUtils.CreateFilterRule(config, cultureCode,
+                                            n,
+                                            OperatorEnum.START_WITH,
+                                            new StringRuleValue(status.data.value)
+                                        ));
                                     }
                                     query.FilterGroups.Add(group);
                                 }
@@ -121,76 +104,16 @@ namespace Satrabel.OpenContent.Components.JPList
 
                     case "sort":
                         {
-                            var cultureSuffix = SortfieldMultiLanguage(config, status.data.path) ? "." + cultureCode : string.Empty;
                             select.Sort.Clear();
-                            select.Sort.Add(new SortRule()
-                            {
-                                Field = status.data.path + cultureSuffix,
-                                Descending = status.data.order == "desc",
-                                FieldType = Sortfieldtype(config, status.data.path)
-                            });
+                            select.Sort.Add(FieldConfigUtils.CreateSortRule(config, cultureCode,
+                                status.data.path,
+                                status.data.order == "desc"
+                            ));
                             break;
                         }
                 }
             }
             return select;
-        }
-
-        private static FieldTypeEnum Sortfieldtype(FieldConfig indexConfig, string fieldName)
-        {
-            if (string.IsNullOrEmpty(fieldName)) throw new Exception("Sort field is empty");
-            if (indexConfig != null && indexConfig.Fields != null && indexConfig.Fields.ContainsKey(fieldName))
-            {
-                //var config = indexConfig.Items == null ? indexConfig.Fields[fieldName] : indexConfig.Items;
-                FieldConfig config;
-                if (indexConfig.Items == null)
-                {
-                    config = indexConfig.Fields[fieldName];
-                    if (config.Items != null)
-                    {
-                        //this seems to be an array
-                        config = config.Items;
-                    }
-                }
-                else
-                    config = indexConfig.Items;
-
-                switch (config.IndexType)
-                {
-                    case "datetime":
-                    case "date":
-                    case "time":
-                        return FieldTypeEnum.DATETIME;
-                    case "boolean":
-                        return FieldTypeEnum.BOOLEAN;
-                    case "int":
-                        return FieldTypeEnum.INTEGER;
-                    case "long":
-                        return FieldTypeEnum.LONG;
-                    case "float":
-                    case "double":
-                        return FieldTypeEnum.FLOAT;
-                    case "key":
-                        return FieldTypeEnum.KEY;
-                    case "text":
-                        return FieldTypeEnum.TEXT;
-                    case "html":
-                        return FieldTypeEnum.HTML;
-                    default:
-                        return FieldTypeEnum.STRING;
-                }
-            }
-            return FieldTypeEnum.STRING;
-        }
-        private static bool SortfieldMultiLanguage(FieldConfig indexConfig, string fieldName)
-        {
-
-            if (indexConfig != null && indexConfig.Fields != null && indexConfig.Fields.ContainsKey(fieldName))
-            {
-                var config = indexConfig.Fields[fieldName].Items == null ? indexConfig.Fields[fieldName] : indexConfig.Fields[fieldName].Items;
-                return config.MultiLanguage;
-            }
-            return false;
         }
     }
 }

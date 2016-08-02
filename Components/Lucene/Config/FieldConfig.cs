@@ -37,6 +37,5 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
 
         [JsonProperty(PropertyName = "items", NullValueHandling = NullValueHandling.Ignore)]
         public FieldConfig Items { get; set; }
-
     }
 }
