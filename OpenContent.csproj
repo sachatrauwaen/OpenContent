@@ -295,6 +295,13 @@
     <Compile Include="Components\Common\Utils.cs" />
     <Compile Include="Components\UrlRewriter\OpenContentUrlRule.cs" />
     <Compile Include="Components\UrlRewriter\OpenContentUrlProvider.cs" />
+    <Compile Include="Swagger.ascx.cs">
+      <DependentUpon>Swagger.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Swagger.ascx.designer.cs">
+      <DependentUpon>Swagger.ascx</DependentUpon>
+    </Compile>
     <Compile Include="EditAddData.ascx.cs">
       <DependentUpon>EditAddData.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -454,6 +461,52 @@
     <Content Include="css\font-awesome\css\font-awesome.css" />
     <Content Include="css\font-awesome\css\font-awesome.min.css" />
     <Content Include="css\font-awesome\fonts\fontawesome-webfont.svg" />
+    <Content Include="js\swagger\css\print.css" />
+    <Content Include="js\swagger\css\reset.css" />
+    <Content Include="js\swagger\css\screen.css" />
+    <Content Include="js\swagger\css\style.css" />
+    <Content Include="js\swagger\css\typography.css" />
+    <Content Include="js\swagger\images\collapse.gif" />
+    <Content Include="js\swagger\images\expand.gif" />
+    <Content Include="js\swagger\images\explorer_icons.png" />
+    <Content Include="js\swagger\images\favicon-16x16.png" />
+    <Content Include="js\swagger\images\favicon-32x32.png" />
+    <Content Include="js\swagger\images\favicon.ico" />
+    <Content Include="js\swagger\images\logo_small.png" />
+    <Content Include="js\swagger\images\pet_store_api.png" />
+    <Content Include="js\swagger\images\throbber.gif" />
+    <Content Include="js\swagger\images\wordnik_api.png" />
+    <Content Include="js\swagger\index.html" />
+    <Content Include="js\swagger\lang\en.js" />
+    <Content Include="js\swagger\lang\es.js" />
+    <Content Include="js\swagger\lang\fr.js" />
+    <Content Include="js\swagger\lang\geo.js" />
+    <Content Include="js\swagger\lang\it.js" />
+    <Content Include="js\swagger\lang\ja.js" />
+    <Content Include="js\swagger\lang\ko-kr.js" />
+    <Content Include="js\swagger\lang\pl.js" />
+    <Content Include="js\swagger\lang\pt.js" />
+    <Content Include="js\swagger\lang\ru.js" />
+    <Content Include="js\swagger\lang\tr.js" />
+    <Content Include="js\swagger\lang\translator.js" />
+    <Content Include="js\swagger\lang\zh-cn.js" />
+    <Content Include="js\swagger\lib\backbone-min.js" />
+    <Content Include="js\swagger\lib\handlebars-2.0.0.js" />
+    <Content Include="js\swagger\lib\highlight.9.1.0.pack.js" />
+    <Content Include="js\swagger\lib\highlight.9.1.0.pack_extended.js" />
+    <Content Include="js\swagger\lib\jquery.ba-bbq.min.js" />
+    <Content Include="js\swagger\lib\jquery.slideto.min.js" />
+    <Content Include="js\swagger\lib\jquery.wiggle.min.js" />
+    <Content Include="js\swagger\lib\js-yaml.min.js" />
+    <Content Include="js\swagger\lib\jsoneditor.min.js" />
+    <Content Include="js\swagger\lib\lodash.min.js" />
+    <Content Include="js\swagger\lib\marked.js" />
+    <Content Include="js\swagger\lib\object-assign-pollyfill.js" />
+    <Content Include="js\swagger\lib\swagger-oauth.js" />
+    <Content Include="js\swagger\o2c.html" />
+    <Content Include="js\swagger\swagger-ui.js" />
+    <Content Include="js\swagger\swagger-ui.min.js" />
+    <Content Include="Swagger.ascx" />
     <Content Include="EditAddData.ascx" />
     <Content Include="EditInit.ascx" />
     <Content Include="EditQuery.ascx" />
@@ -823,6 +876,11 @@
     <Content Include="js\lib\typeahead.js\README.md" />
     <Content Include="js\lib\typeahead.js\test\ci" />
     <Content Include="js\lib\typeahead.js\typeahead.js.jquery.json" />
+    <Content Include="js\swagger\fonts\DroidSans-Bold.ttf" />
+    <Content Include="js\swagger\fonts\DroidSans.ttf" />
+    <Content Include="js\swagger\swagger-ui.min.js.map">
+      <DependentUpon>swagger-ui.min.js</DependentUpon>
+    </Content>
     <None Include="Scripts\_references.js" />
     <Content Include="js\select2\i18n\az.js" />
     <Content Include="js\select2\i18n\bg.js" />
@@ -963,6 +1021,30 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Components\Images\" />
+    <Folder Include="js\alpaca-1.5.17\alpaca\bootstrap\images\" />
+    <Folder Include="js\alpaca-1.5.17\alpaca\web\images\" />
+    <Folder Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\build\css\" />
+    <Folder Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\build\js\" />
+    <Folder Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\docs\" />
+    <Folder Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\src\js\" />
+    <Folder Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\src\less\" />
+    <Folder Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\src\nuget\" />
+    <Folder Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\src\sass\" />
+    <Folder Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\tasks\" />
+    <Folder Include="js\alpaca-1.5.17\lib\handlebars\lib\handlebars\" />
+    <Folder Include="js\alpaca-1.5.17\lib\moment\benchmarks\" />
+    <Folder Include="js\alpaca-1.5.17\lib\moment\locale\" />
+    <Folder Include="js\alpaca-1.5.17\lib\moment\meteor\" />
+    <Folder Include="js\alpaca-1.5.17\lib\moment\min\" />
+    <Folder Include="js\alpaca-1.5.17\lib\moment\scripts\" />
+    <Folder Include="js\alpaca-1.5.17\lib\typeahead.js\dist\" />
+    <Folder Include="js\alpaca-1.5.17\lib\typeahead.js\doc\migration\" />
+    <Folder Include="js\alpaca-1.5.17\lib\typeahead.js\src\bloodhound\" />
+    <Folder Include="js\alpaca-1.5.17\lib\typeahead.js\src\common\" />
+    <Folder Include="js\alpaca-1.5.17\lib\typeahead.js\src\typeahead\" />
+    <Folder Include="js\alpaca-1.5.17\lib\typeahead.js\test\fixtures\" />
+    <Folder Include="js\alpaca-1.5.17\lib\typeahead.js\test\helpers\" />
+    <Folder Include="js\alpaca-1.5.17\lib\typeahead.js\test\integration\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_LocalResources\EditSettings.ascx.de-DE.resx" />

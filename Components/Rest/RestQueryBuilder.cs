@@ -16,13 +16,30 @@ namespace Satrabel.OpenContent.Components.Rest
             select.PageIndex = restSelect.PageIndex;
             foreach (var rule in restSelect.Query.FilterRules)
             {
-                query.AddRule(new FilterRule()
-                                    {
-                                        Field = rule.Field,
-                                        FieldOperator = rule.FieldOperator,
-                                        FieldType = rule.FieldType,
-                                        Value = new StringRuleValue(rule.Value.ToString()),
-                                    });
+                if (rule.FieldOperator == OperatorEnum.IN)
+                {
+                    query.AddRule(new FilterRule()
+                    {
+                        Field = rule.Field,
+                        FieldOperator = rule.FieldOperator,
+                        FieldType = Sortfieldtype(config, rule.Field),
+                        MultiValue = rule.MultiValue.Select(v => new StringRuleValue(v.ToString())),
+                    });
+                }
+                else if (rule.FieldOperator == OperatorEnum.BETWEEN)
+                {
+
+                }
+                else
+                {
+                    query.AddRule(new FilterRule()
+                                        {
+                                            Field = rule.Field,
+                                            FieldOperator = rule.FieldOperator,
+                                            FieldType = Sortfieldtype(config, rule.Field),
+                                            Value = new StringRuleValue(rule.Value.ToString()),
+                                        });
+                }
             }
             if (restSelect.Sort.Any())
             {

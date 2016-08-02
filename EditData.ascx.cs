@@ -46,6 +46,7 @@ namespace Satrabel.OpenContent
             cmdSave.Click += cmdSave_Click;
             cmdCancel.Click += cmdCancel_Click;
             cmdImport.Click += cmdImport_Click;
+            cmdRestApi.NavigateUrl = Globals.NavigateURL("Swagger", "mid=" + ModuleContext.ModuleId) + "?popUp=true";
             //ServicesFramework.Instance.RequestAjaxScriptSupport();
             //ServicesFramework.Instance.RequestAjaxAntiForgerySupport();
             sourceList.SelectedIndexChanged += sourceList_SelectedIndexChanged;
@@ -126,6 +127,7 @@ namespace Satrabel.OpenContent
                         };
                         if (template != null && template.IsListTemplate)
                         {
+                            ddlVersions.Visible = false;
                             string itemId = Request.QueryString["id"];
                             if (!string.IsNullOrEmpty(itemId))
                             {
@@ -164,6 +166,7 @@ namespace Satrabel.OpenContent
                         }
                         else
                         {
+                            ddlVersions.Visible = true;
                             dsContext.Single = true;
                             var dsItem = ds.Get(dsContext, null);
                             if (dsItem != null)
