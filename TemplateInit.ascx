@@ -34,6 +34,12 @@
                 </asp:RadioButtonList>
             </div>
         </asp:PlaceHolder>
+        <asp:PlaceHolder ID="phCurrentTemplate" runat="server">
+            <div class="dnnFormItem">
+                <asp:Label runat="server" ControlName="txtCurrentTemplate" ResourceKey="lCurrentTemplate" CssClass="dnnLabel" Text="Current Template" />
+                <asp:TextBox runat="server" ID="txtCurrentTemplate" CssClass="dnnLabel" ReadOnly="True" />
+            </div>
+        </asp:PlaceHolder>
         <asp:PlaceHolder ID="phTemplate" runat="server">
             <div class="dnnFormItem">
                 <asp:Label runat="server" ControlName="ddlTemplate" ResourceKey="lTemplate" CssClass="dnnLabel" />

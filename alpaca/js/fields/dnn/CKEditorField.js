@@ -56,7 +56,7 @@
                         removeDialogTabs: 'image:advanced;link:advanced',
 
                         // Remove one plugin.
-                        removePlugins: 'elementspath,resize',
+                        removePlugins: 'elementspath',
 
                         extraPlugins: 'dnnpages',
 
@@ -84,7 +84,7 @@
                             // Simplify the dialog windows.
                             removeDialogTabs: 'image:advanced;link:advanced',
                             // Remove one plugin.
-                            removePlugins: 'elementspath,resize',
+                            removePlugins: 'elementspath',
                             extraPlugins: 'dnnpages',
                             //autoGrow_onStartup : true,
                             //autoGrow_minHeight : 100,
@@ -119,7 +119,7 @@
                             // Simplify the dialog windows.
                             removeDialogTabs: 'image:advanced;link:advanced',
                             // Remove one plugin.
-                            removePlugins: 'elementspath,resize',
+                            removePlugins: 'elementspath',
                             extraPlugins: 'dnnpages',
                             //autoGrow_onStartup : true,
                             //autoGrow_minHeight : 100,
@@ -156,7 +156,7 @@
                             // Simplify the dialog windows.
                             removeDialogTabs: 'image:advanced;link:advanced',
                             // Remove one plugin.
-                            removePlugins: 'elementspath,resize',
+                            removePlugins: 'elementspath',
                             extraPlugins: 'dnnpages',
                             //autoGrow_onStartup : true,
                             //autoGrow_minHeight : 100,

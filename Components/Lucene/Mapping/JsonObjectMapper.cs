@@ -41,11 +41,11 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
         /// The Document to add the object to.
         /// </param>
         /// <param name="config"></param>
-        public void AddJsonToDocument(string source, Document doc, FieldConfig config)
+        public void AddJsonToDocument(JToken json, Document doc, FieldConfig config)
         {
-            if (string.IsNullOrEmpty(source)) return;
-            JToken token = JToken.Parse(source);
-            Add(doc, null, token, config);
+            if (json == null) return;
+            
+            Add(doc, null, json, config);
         }
 
         #endregion
@@ -86,7 +86,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
                     sort = field.Sort;
                 }
 
-                switch (value.Type)
+                switch (value.Type) //todo: simple date gets detected as string 
                 {
                     case JTokenType.Boolean:
                         if (index || sort)

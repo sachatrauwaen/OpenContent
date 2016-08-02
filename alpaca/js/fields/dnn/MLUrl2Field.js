@@ -14,6 +14,7 @@
             //this.dataSource = {};
             this.culture = connector.culture;
             this.defaultCulture = connector.defaultCulture;
+            this.rootUrl = connector.rootUrl;
         },
         /**
          * @see Alpaca.Fields.Url2Field#setup
@@ -96,7 +97,7 @@
             
             callback();
 
-            $(this.control).parent().find('.select2').after('<img src="/images/Flags/' + this.culture + '.gif" class="flag" />');
+            $(this.control).parent().find('.select2').after('<img src="' + self.rootUrl + 'images/Flags/' + this.culture + '.gif" class="flag" />');
             
         },
     });

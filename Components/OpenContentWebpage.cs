@@ -29,7 +29,7 @@ namespace Satrabel.OpenContent.Components
 
         public void RegisterStyleSheet(string filePath)
         {
-            if (!filePath.StartsWith("http") && !filePath.Contains("/"))
+            if (!filePath.StartsWith("http") && !filePath.StartsWith("/"))
             {
                 filePath = VirtualPath + filePath;
             }
@@ -43,19 +43,9 @@ namespace Satrabel.OpenContent.Components
             CSSOrder++;
         }
 
-        public void RegisterScript(string filePath)
+        public void RegisterScript(string jsfilename)
         {
-            if (!filePath.StartsWith("http") && !filePath.StartsWith("/"))
-            {
-                filePath = VirtualPath + filePath;
-            }
-            else if (!filePath.StartsWith("http"))
-            {
-                var file = new FileUri(filePath);
-                filePath = file.UrlFilePath;
-            }
-
-            ClientResourceManager.RegisterScript((Page)HttpContext.Current.CurrentHandler, filePath, JSOrder);
+            DnnUtils.RegisterScript((Page)HttpContext.Current.CurrentHandler, VirtualPath, jsfilename, JSOrder);
             JSOrder++;
         }
 
@@ -63,6 +53,10 @@ namespace Satrabel.OpenContent.Components
 
         #region BaseClass Overrides
 
+        /// <summary>
+        /// When RenderPage() is called inside a Razor template, this method is called.
+        /// </summary>
+        /// <param name="parentPage">The parent page from which to read configuration information.</param>
         protected override void ConfigurePage(WebPageBase parentPage)
         {
             base.ConfigurePage(parentPage);

@@ -54,6 +54,7 @@ namespace Satrabel.OpenContent.Components
                             ModuleId = module.ModuleID,
                             Title = ActiveModule.ModuleTitle,
                             Json = req.json.ToString(),
+                            JsonAsJToken = req.json,
                             CreatedByUserId = UserInfo.UserID,
                             CreatedOnDate = DateTime.Now,
                             LastModifiedByUserId = UserInfo.UserID,

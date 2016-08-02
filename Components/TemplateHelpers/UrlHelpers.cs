@@ -22,6 +22,16 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             return newUrl.Length <= 230 ? newUrl : newUrl.Substring(0, 230); //actual url has ?default.aspx 
         }
 
+        public static string NavigateFileUrl(dynamic fileId)
+        {
+            var portalFileUri = UriFactory.CreatePortalFileUri(fileId);
+            if (portalFileUri == null)
+            {
+                return string.Empty;
+            }
+            return portalFileUri.UrlFilePath;
+        }
+
         public static string CleanupUrl(this string url)
         {
             const string replaceWith = "-";

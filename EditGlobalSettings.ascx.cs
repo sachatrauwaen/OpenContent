@@ -65,6 +65,13 @@ namespace Satrabel.OpenContent
                 string OpenContent_AutoAttach = PortalController.GetPortalSetting("OpenContent_AutoAttach", ModuleContext.PortalId, "False");
                 cbMLContent.Checked = bool.Parse(OpenContent_AutoAttach);
 
+                foreach (var item in new [] {5, 10, 25, 50, 100})
+                {
+                    ddlMaxVersions.Items.Add(new ListItem(item.ToString(), item.ToString()));
+                }
+                var maxVersionItem = ddlMaxVersions.Items.FindByValue(OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetMaxVersions().ToString());
+                if (maxVersionItem != null) maxVersionItem.Selected = true;
+
                 string OpenContent_Logging = PortalController.GetPortalSetting("OpenContent_Logging", ModuleContext.PortalId, "none");
                 ddlLogging.SelectedValue = OpenContent_Logging;
             }
@@ -77,6 +84,11 @@ namespace Satrabel.OpenContent
                 PortalController.DeletePortalSetting(ModuleContext.PortalId, "OpenContent_EditorsRoleId");
 
             PortalController.UpdatePortalSetting(ModuleContext.PortalId, "OpenContent_AutoAttach", cbMLContent.Checked.ToString(), true);
+
+            int maxVersions;
+            if (int.TryParse(ddlMaxVersions.SelectedValue, out maxVersions)) {
+                OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.SetMaxVersions(maxVersions);
+            }
 
             PortalController.UpdatePortalSetting(ModuleContext.PortalId, "OpenContent_Logging", ddlLogging.SelectedValue, true);
 

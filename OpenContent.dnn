@@ -1,6 +1,6 @@
 <dotnetnuke type="Package" version="5.0">
   <packages>
-    <package name="OpenContent" type="Module" version="03.00.00">
+    <package name="OpenContent" type="Module" version="03.00.02">
       <friendlyName>OpenContent</friendlyName>
       <description>OpenContent module by Satrabel.be</description>
       <iconFile>~/DesktopModules/OpenContent/Images/icon_extensions.png</iconFile>
@@ -14,7 +14,7 @@
       <releaseNotes src="ReleaseNotes.txt"></releaseNotes>
       <azureCompatible>true</azureCompatible>
       <dependencies>
-        <dependency type="CoreVersion">07.02.00</dependency>
+        <dependency type="CoreVersion">07.03.02</dependency>
       </dependencies>      
       <components>
         <component type="Script">
@@ -186,6 +186,17 @@
                     <controlSrc>DesktopModules/OpenContent/AlpacaFormBuilder.ascx</controlSrc>
                     <supportsPartialRendering>False</supportsPartialRendering>
                     <controlTitle>Form Builder</controlTitle>
+                    <controlType>Admin</controlType>
+                    <iconFile />
+                    <helpUrl />
+                    <viewOrder>0</viewOrder>
+                    <supportsPopUps>True</supportsPopUps>
+                  </moduleControl>
+                  <moduleControl>
+                    <controlKey>Swagger</controlKey>
+                    <controlSrc>DesktopModules/OpenContent/Swagger.ascx</controlSrc>
+                    <supportsPartialRendering>False</supportsPartialRendering>
+                    <controlTitle>Rest Api</controlTitle>
                     <controlType>Admin</controlType>
                     <iconFile />
                     <helpUrl />

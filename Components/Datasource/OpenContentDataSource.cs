@@ -17,7 +17,7 @@ namespace Satrabel.OpenContent.Components.Datasource
 {
     public class OpenContentDataSource : IDataSource
     {
-        public string Name
+        public virtual string Name
         {
             get
             {
@@ -77,7 +77,7 @@ namespace Satrabel.OpenContent.Components.Datasource
 
             if (!string.IsNullOrEmpty(id) && id != "-1")
             {
-                LogContext.Log(context.ModuleId, "Get DataItem", "Request", string.Format("{0}.Get() with id {1}", Name, id));
+                LogContext.Log(context.ActiveModuleId, "Get DataItem", "Request", string.Format("{0}.Get() with id {1}", Name, id));
                 int idint;
                 if (int.TryParse(id, out idint))
                 {
@@ -86,29 +86,29 @@ namespace Satrabel.OpenContent.Components.Datasource
             }
             else
             {
-                LogContext.Log(context.ModuleId, "Get DataItem", "Request", string.Format("{0}.Get() with id {1}. Returning first item of module.", Name, id));
+                LogContext.Log(context.ActiveModuleId, "Get DataItem", "Request", string.Format("{0}.Get() with id {1}. Returning first item of module.", Name, id));
                 content = ctrl.GetFirstContent(context.ModuleId); // single item
             }
             if (content == null)
             {
                 Log.Logger.WarnFormat("Item not shown because no content item found. Id [{0}]. Context ModuleId [{1}]", id, context.ModuleId);
-                LogContext.Log(context.ModuleId, "Get DataItem", "Result", "not item found with id " + id);
+                LogContext.Log(context.ActiveModuleId, "Get DataItem", "Result", "not item found with id " + id);
             }
             else if (content.ModuleId == context.ModuleId)
             {
                 var dataItem = new DefaultDataItem
                 {
                     Id = content.ContentId.ToString(),
-                    Data = content.Json.ToJObject("GetContent " + id),
+                    Data = content.JsonAsJToken,
                     CreatedByUserId = content.CreatedByUserId,
                     Item = content
                 };
-                LogContext.Log(context.ModuleId, "Get DataItem", "Result", dataItem);
+                LogContext.Log(context.ActiveModuleId, "Get DataItem", "Result", dataItem);
                 return dataItem;
             }
             else
             {
-                LogContext.Log(context.ModuleId, "Get DataItem", "Result", string.Format("no item returned as incompatible module ids {0}-{1}", content.ModuleId, context.ModuleId));
+                LogContext.Log(context.ActiveModuleId, "Get DataItem", "Result", string.Format("no item returned as incompatible module ids {0}-{1}", content.ModuleId, context.ModuleId));
             }
             return null;
         }
@@ -121,7 +121,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             {
                 Id = c.ContentId.ToString(),
                 Title = c.Title,
-                Data = c.Json.ToJObject("GetContent " + c.ContentId),
+                Data = c.JsonAsJToken,
                 CreatedByUserId = c.CreatedByUserId,
                 Item = c
             });
@@ -140,7 +140,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 {
                     Id = c.ContentId.ToString(),
                     Title = c.Title,
-                    Data = c.Json.ToJObject("GetContent " + c.ContentId),
+                    Data = c.JsonAsJToken,
                     CreatedByUserId = c.CreatedByUserId,
                     Item = c
                 });
@@ -157,11 +157,11 @@ namespace Satrabel.OpenContent.Components.Datasource
                 if (LogContext.IsLogActive)
                 {
                     var logKey = "Lucene query";
-                    LogContext.Log(context.ModuleId, logKey, "Filter", def.Filter.ToString());
-                    LogContext.Log(context.ModuleId, logKey, "Query", def.Query.ToString());
-                    LogContext.Log(context.ModuleId, logKey, "Sort", def.Sort.ToString());
-                    LogContext.Log(context.ModuleId, logKey, "PageIndex", def.PageIndex);
-                    LogContext.Log(context.ModuleId, logKey, "PageSize", def.PageSize);
+                    LogContext.Log(context.ActiveModuleId, logKey, "Filter", def.Filter.ToString());
+                    LogContext.Log(context.ActiveModuleId, logKey, "Query", def.Query.ToString());
+                    LogContext.Log(context.ActiveModuleId, logKey, "Sort", def.Sort.ToString());
+                    LogContext.Log(context.ActiveModuleId, logKey, "PageIndex", def.PageIndex);
+                    LogContext.Log(context.ActiveModuleId, logKey, "PageSize", def.PageSize);
                 }
 
                 SearchResults docs = LuceneController.Instance.Search(context.ModuleId.ToString(), def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
@@ -177,7 +177,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                         dataList.Add(new DefaultDataItem
                         {
                             Id = content.ContentId.ToString(),
-                            Data = content.Json.ToJObject("GetContent " + item),
+                            Data = content.JsonAsJToken,
                             CreatedByUserId = content.CreatedByUserId,
                             Item = content
                         });
@@ -264,6 +264,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 ModuleId = context.ModuleId,
                 Title = data["Title"] == null ? "" : data["Title"].ToString(),
                 Json = data.ToString(),
+                JsonAsJToken = data,
                 CreatedByUserId = context.UserId,
                 CreatedOnDate = DateTime.Now,
                 LastModifiedByUserId = context.UserId,
@@ -279,6 +280,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             var content = (OpenContentInfo)item.Item;
             content.Title = data["Title"] == null ? "" : data["Title"].ToString();
             content.Json = data.ToString();
+            content.JsonAsJToken = data;
             content.LastModifiedByUserId = context.UserId;
             content.LastModifiedOnDate = DateTime.Now;
             ctrl.UpdateContent(content, context.Index, indexConfig);
@@ -290,7 +292,11 @@ namespace Satrabel.OpenContent.Components.Datasource
             ctrl.DeleteContent(content, context.Index);
         }
 
+        public virtual JToken Action(DataSourceContext context, string action, IDataItem item, JToken data)
+        {
+            throw new NotImplementedException();
+        }
+ 
         #endregion
-
     }
 }

@@ -70,7 +70,17 @@ namespace Satrabel.OpenContent.Components
         {
             get
             {
-                return new FolderUri(FolderPath.Substring(0, FolderPath.LastIndexOf('/') + 1));
+                try
+                {
+                    var pos = FolderPath.LastIndexOf('/');
+                    if (pos == -1) return null;
+                    return new FolderUri(FolderPath.Substring(0, pos + 1));
+                }
+                catch (Exception ex)
+                {
+                    Log.Logger.ErrorFormat("Can't get ParentFolder from {0}", FolderPath);
+                }
+                return null;
             }
         }
 

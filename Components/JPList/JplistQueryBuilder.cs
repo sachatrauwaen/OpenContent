@@ -36,6 +36,7 @@ namespace Satrabel.OpenContent.Components.JPList
                                         Field = status.name,
                                         FieldOperator = OperatorEnum.START_WITH,
                                         Value = new StringRuleValue(status.data.value),
+                                        FieldType = Sortfieldtype(config, status.name)
                                     });
                                 }
                                 else
@@ -48,6 +49,7 @@ namespace Satrabel.OpenContent.Components.JPList
                                             Field = n,
                                             FieldOperator = OperatorEnum.START_WITH,
                                             Value = new StringRuleValue(status.data.value),
+                                            FieldType = Sortfieldtype(config, n)
                                         });
                                     }
                                     query.FilterGroups.Add(group);
@@ -63,6 +65,7 @@ namespace Satrabel.OpenContent.Components.JPList
                                         Field = status.name,
                                         FieldOperator = OperatorEnum.IN,
                                         MultiValue = status.data.pathGroup.Select(s => new StringRuleValue(s)),
+                                        FieldType = Sortfieldtype(config, status.name)
                                     });
                                 }
                             }
@@ -74,6 +77,7 @@ namespace Satrabel.OpenContent.Components.JPList
                                     {
                                         Field = status.name,
                                         Value = new StringRuleValue(status.data.path),
+                                        FieldType = Sortfieldtype(config, status.name)
                                     });
                                 }
                             }
@@ -87,6 +91,7 @@ namespace Satrabel.OpenContent.Components.JPList
                                         Field = status.data.path,
                                         FieldOperator = OperatorEnum.START_WITH,
                                         Value = new StringRuleValue(status.data.value),
+                                        FieldType = Sortfieldtype(config, status.data.path)
                                     });
                                 }
                                 else
@@ -99,6 +104,7 @@ namespace Satrabel.OpenContent.Components.JPList
                                             Field = n,
                                             FieldOperator = OperatorEnum.START_WITH,
                                             Value = new StringRuleValue(status.data.value),
+                                            FieldType = Sortfieldtype(config, n)
                                         });
                                     }
                                     query.FilterGroups.Add(group);
@@ -128,7 +134,20 @@ namespace Satrabel.OpenContent.Components.JPList
             if (string.IsNullOrEmpty(fieldName)) throw new Exception("Sort field is empty");
             if (indexConfig != null && indexConfig.Fields != null && indexConfig.Fields.ContainsKey(fieldName))
             {
-                var config = indexConfig.Items == null ? indexConfig.Fields[fieldName] : indexConfig.Items;
+                //var config = indexConfig.Items == null ? indexConfig.Fields[fieldName] : indexConfig.Items;
+                FieldConfig config;
+                if (indexConfig.Items == null)
+                {
+                    config = indexConfig.Fields[fieldName];
+                    if (config.Items != null)
+                    {
+                        //this seems to be an array
+                        config = config.Items;
+                    }
+                }
+                else
+                    config = indexConfig.Items;
+
                 switch (config.IndexType)
                 {
                     case "datetime":

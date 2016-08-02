@@ -3,6 +3,7 @@ using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.Search;
+using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using System;
 
@@ -25,21 +26,23 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
         /// </summary>
         public static readonly string FieldTimestamp = "$timestamp";
         public static readonly string FieldId = "$id";
+        public static readonly string FieldUserId = "$userid";
         #endregion
 
-        public static Document JsonToDocument(string type, string id, string source, FieldConfig config, bool storeSource = false)
+        public static Document JsonToDocument(string type, string id, string userId, JToken json, string source, FieldConfig config, bool storeSource = false)
         {
             var objectMapper = new JsonObjectMapper();
             Document doc = new Document();
-            string json = source;  //JsonConvert.SerializeObject(source, typeof(TSource), settings);
+            
             doc.Add(new Field(FieldType, type, Field.Store.YES, Field.Index.NOT_ANALYZED));
             doc.Add(new Field(FieldId, id, Field.Store.YES, Field.Index.NOT_ANALYZED));
+            doc.Add(new Field(FieldUserId, userId, Field.Store.YES, Field.Index.NOT_ANALYZED));
             if (storeSource)
             {
-                doc.Add(new Field(FieldSource, json, Field.Store.YES, Field.Index.NO));
+                doc.Add(new Field(FieldSource, source, Field.Store.YES, Field.Index.NO));
             }
             doc.Add(new NumericField(FieldTimestamp, Field.Store.YES, true).SetLongValue(DateTime.UtcNow.Ticks));
-            objectMapper.AddJsonToDocument(source, doc, config);
+            objectMapper.AddJsonToDocument(json, doc, config);
             return doc;
         }
 

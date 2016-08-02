@@ -46,6 +46,7 @@ namespace Satrabel.OpenContent
             cmdSave.Click += cmdSave_Click;
             cmdCancel.Click += cmdCancel_Click;
             cmdImport.Click += cmdImport_Click;
+            cmdRestApi.NavigateUrl = Globals.NavigateURL("Swagger", "mid=" + ModuleContext.ModuleId) + "?popUp=true";
             //ServicesFramework.Instance.RequestAjaxScriptSupport();
             //ServicesFramework.Instance.RequestAjaxAntiForgerySupport();
             sourceList.SelectedIndexChanged += sourceList_SelectedIndexChanged;
@@ -73,7 +74,8 @@ namespace Satrabel.OpenContent
             var ds = DataSourceManager.GetDataSource("OpenContent");
             var dsContext = new DataSourceContext()
             {
-                ModuleId = ModId,
+                ModuleId = ModId,                
+                ActiveModuleId = ModuleContext.ModuleId,
                 TemplateFolder = settings.TemplateDir.FolderPath,
                 Single = true
             };
@@ -119,11 +121,13 @@ namespace Satrabel.OpenContent
                         var dsContext = new DataSourceContext()
                         {
                             ModuleId = ModId,
+                            ActiveModuleId = ModuleContext.ModuleId,
                             TemplateFolder = settings.TemplateDir.FolderPath,
                             Config = settings.Manifest.DataSourceConfig
                         };
                         if (template != null && template.IsListTemplate)
                         {
+                            ddlVersions.Visible = false;
                             string itemId = Request.QueryString["id"];
                             if (!string.IsNullOrEmpty(itemId))
                             {
@@ -162,6 +166,7 @@ namespace Satrabel.OpenContent
                         }
                         else
                         {
+                            ddlVersions.Visible = true;
                             dsContext.Single = true;
                             var dsItem = ds.Get(dsContext, null);
                             if (dsItem != null)
@@ -197,7 +202,7 @@ namespace Satrabel.OpenContent
                         int ModId = settings.IsOtherModule ? settings.ModuleId : ModuleId;
                         var manifest = settings.Manifest;
                         string key = selectedDataType;
-                        var dataManifest = manifest.AdditionalData[key];
+                        var dataManifest = manifest.GetAdditionalData(key);
                         string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings.PortalId, PortalSettings.ActiveTab.TabID, ModId, this.TabModuleId);
                         var dc = new AdditionalDataController();
                         var data = dc.GetData(scope, dataManifest.StorageKey ?? key);
@@ -217,7 +222,7 @@ namespace Satrabel.OpenContent
             sourceList.Items.Add(new ListItem(cData, cData));
             sourceList.Items.Add(new ListItem(cSettings, cSettings));
             sourceList.Items.Add(new ListItem(cFilter, cFilter));
-            if (template.Manifest.AdditionalData != null)
+            if (template != null && template.Manifest != null && template.Manifest.AdditionalDataExists())
             {
                 foreach (var addData in template.Manifest.AdditionalData)
                 {
@@ -253,7 +258,7 @@ namespace Satrabel.OpenContent
             OpenContentSettings settings = this.OpenContentSettings();
             int ModId = settings.IsOtherModule ? settings.ModuleId : ModuleId;
             var manifest = settings.Manifest;
-            var dataManifest = manifest.AdditionalData[key];
+            var dataManifest = manifest.GetAdditionalData(key);
             string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings.PortalId, PortalSettings.ActiveTab.TabID, ModId, this.TabModuleId);
             var dc = new AdditionalDataController();
             var data = dc.GetData(scope, dataManifest.StorageKey ?? key);
@@ -310,6 +315,7 @@ namespace Satrabel.OpenContent
             var dsContext = new DataSourceContext()
             {
                 ModuleId = ModId,
+                ActiveModuleId = ModuleContext.ModuleId,
                 TemplateFolder = settings.TemplateDir.FolderPath,
                 Index = index,
                 UserId = UserInfo.UserID,

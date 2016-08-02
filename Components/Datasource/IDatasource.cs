@@ -63,6 +63,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         void Add(DataSourceContext context, JToken data);
         void Update(DataSourceContext context, IDataItem item, JToken data);
         void Delete(DataSourceContext context, IDataItem item);
+        JToken Action(DataSourceContext context, string action, IDataItem item, JToken data);
         #endregion
 
     }

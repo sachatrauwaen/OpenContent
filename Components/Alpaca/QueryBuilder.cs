@@ -23,10 +23,10 @@ namespace Satrabel.OpenContent.Components.Alpaca
             Select.PageSize = 100;
         }
 
-        public QueryBuilder Build(JObject query, bool addWorkflowFilter, NameValueCollection queryString = null)
+        public QueryBuilder Build(JObject query, bool addWorkflowFilter, int userId, NameValueCollection queryString = null)
         {
             BuildPage(query);
-            BuildFilter(query, addWorkflowFilter, queryString);
+            BuildFilter(query, addWorkflowFilter, userId, queryString);
             BuildSort(query);
             return this;
         }
@@ -46,7 +46,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
             return this;
         }
-        public QueryBuilder BuildFilter(JObject query, bool addWorkflowFilter, NameValueCollection queryString = null)
+        public QueryBuilder BuildFilter(JObject query, bool addWorkflowFilter, int userId, NameValueCollection queryString = null)
         {
             var workFlowFilter = Select.Filter;
             var vExcludeCurrentItem = query["ExcludeCurrentItem"] as JValue;
@@ -62,6 +62,21 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     Field = "id",
                     Value = new StringRuleValue(queryString["id"]),
                     FieldOperator = OperatorEnum.NOT_EQUAL
+                });
+            }
+            var vCurrentUserItems = query["CurrentUserItems"] as JValue;
+            bool currentUserItems = false;
+            if (vCurrentUserItems != null && vCurrentUserItems.Type == JTokenType.Boolean)
+            {
+                currentUserItems = (bool)vCurrentUserItems.Value;
+            }
+            if (currentUserItems)
+            {
+                workFlowFilter.AddRule(new FilterRule()
+                {
+                    Field = "userid",
+                    Value = new StringRuleValue(userId.ToString()),
+                    FieldOperator = OperatorEnum.EQUAL
                 });
             }
             var filter = query["Filter"] as JObject;
@@ -96,7 +111,8 @@ namespace Satrabel.OpenContent.Components.Alpaca
                             {
                                 Field = item.Name,
                                 Value = new StringRuleValue(val),
-                                FieldOperator = OperatorEnum.START_WITH
+                                FieldOperator = OperatorEnum.START_WITH,
+                                FieldType = Sortfieldtype(item.Name)
                             });
                         }
                     }
@@ -114,7 +130,8 @@ namespace Satrabel.OpenContent.Components.Alpaca
                                     var val = (JValue)arrItem;
                                     arrGroup.AddRule(new FilterRule()
                                     {
-                                        Field = item.Name,
+                                        Field = item.Name,                                        
+                                        FieldType = Sortfieldtype(item.Name),
                                         Value = new StringRuleValue(val.ToString())
                                     });
                                 }
@@ -126,6 +143,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                             workFlowFilter.AddRule(new FilterRule()
                             {
                                 Field = item.Name,
+                                FieldType = Sortfieldtype(item.Name),
                                 Value = new StringRuleValue(queryString[item.Name])
                             });
                         }
@@ -156,6 +174,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                             workFlowFilter.AddRule(new FilterRule()
                             {
                                 Field = item.Name,
+                                FieldType = FieldTypeEnum.DATETIME,
                                 LowerValue = new DateTimeRuleValue(startDate),
                                 UpperValue = new DateTimeRuleValue(endDate),
                                 FieldOperator = OperatorEnum.BETWEEN
@@ -187,12 +206,14 @@ namespace Satrabel.OpenContent.Components.Alpaca
                         {
                             Field = indexConfig.Key,
                             Value = new StringRuleValue(val),
-                            FieldOperator = OperatorEnum.EQUAL
+                            FieldOperator = OperatorEnum.EQUAL,
+                            FieldType = Sortfieldtype(indexConfig.Key)
                         });
                     }
                 }
             }
         }
+
         public QueryBuilder BuildFilter(bool addWorkflowFilter, NameValueCollection queryString = null)
         {
             BuildQueryStringFilter(queryString, Select.Filter);
@@ -200,7 +221,6 @@ namespace Satrabel.OpenContent.Components.Alpaca
             {
                 AddWorkflowFilter(Select.Filter);
             }
-            //Filter = q.Clauses.Count > 0 ? q : null;
             return this;
         }
 
@@ -212,29 +232,32 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 filter.AddRule(new FilterRule()
                 {
                     Field = "publishstatus",
-                    Value = new StringRuleValue("published")
+                    Value = new StringRuleValue("published"),
+                    FieldType = FieldTypeEnum.KEY
                 });
             }
             if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey("publishstartdate"))
             {
-                DateTime startDate = DateTime.MinValue;
-                DateTime endDate = DateTime.Today;
+                //DateTime startDate = DateTime.MinValue;
+                //DateTime endDate = DateTime.Today;
                 filter.AddRule(new FilterRule()
                 {
                     Field = "publishstartdate",
                     Value = new DateTimeRuleValue(DateTime.Today),
-                    FieldOperator = OperatorEnum.LESS_THEN_OR_EQUALS
+                    FieldOperator = OperatorEnum.LESS_THEN_OR_EQUALS,
+                    FieldType = FieldTypeEnum.DATETIME
                 });
             }
             if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey("publishenddate"))
             {
-                DateTime startDate = DateTime.Today;
-                DateTime endDate = DateTime.MaxValue;
+                //DateTime startDate = DateTime.Today;
+                //DateTime endDate = DateTime.MaxValue;
                 filter.AddRule(new FilterRule()
                 {
                     Field = "publishenddate",
                     Value = new DateTimeRuleValue(DateTime.Today),
-                    FieldOperator = OperatorEnum.GREATER_THEN_OR_EQUALS
+                    FieldOperator = OperatorEnum.GREATER_THEN_OR_EQUALS,
+                    FieldType = FieldTypeEnum.DATETIME
                 });
             }
         }
@@ -268,9 +291,9 @@ namespace Satrabel.OpenContent.Components.Alpaca
         private FieldTypeEnum Sortfieldtype(string fieldName)
         {
             var sortfieldtype = FieldTypeEnum.STRING;
-            if (IndexConfig != null && IndexConfig.Fields.ContainsKey(fieldName))
+            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey(fieldName))
             {
-                var config = IndexConfig.Items == null ? IndexConfig.Fields[fieldName] : IndexConfig.Items;
+                var config = IndexConfig.Fields[fieldName].Items == null ? IndexConfig.Fields[fieldName] : IndexConfig.Fields[fieldName].Items;
                 if (config.IndexType == "datetime" || config.IndexType == "date" || config.IndexType == "time")
                 {
                     sortfieldtype = FieldTypeEnum.DATETIME;

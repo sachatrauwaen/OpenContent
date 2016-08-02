@@ -41,7 +41,9 @@
                 <asp:DropDownList ID="ddlVersions" runat="server" AutoPostBack="true" />
             </li>
         </asp:PlaceHolder>
-
+        <li>
+            <asp:HyperLink ID="cmdRestApi" resourcekey="cmdRestApi" runat="server" CssClass="dnnSecondaryAction" CausesValidation="False" Target="_blank" />
+        </li>
     </ul>
 </div>
 <script type="text/javascript">

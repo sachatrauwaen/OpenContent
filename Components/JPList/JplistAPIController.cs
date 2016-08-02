@@ -16,13 +16,6 @@ using System.Net.Http;
 using System.Web.Http;
 using DotNetNuke.Common.Utilities;
 using DotNetNuke.Entities.Portals;
-using DotNetNuke.Security.Permissions;
-using Satrabel.OpenContent.Components.Manifest;
-using Lucene.Net.Search;
-using Lucene.Net.Index;
-using Lucene.Net.QueryParsers;
-using Satrabel.OpenContent.Components.Lucene.Config;
-using Lucene.Net.Documents;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Datasource.search;
 using Satrabel.OpenContent.Components.Alpaca;
@@ -49,17 +42,22 @@ namespace Satrabel.OpenContent.Components.JPList
                 }
                 var manifest = settings.Template.Manifest;
                 var templateManifest = settings.Template;
-
+                JObject reqOptions = null;
+                if (!string.IsNullOrEmpty(req.options))
+                {
+                    reqOptions = JObject.Parse(req.options);
+                }
                 //string editRole = manifest == null ? "" : manifest.EditRole;
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 if (listMode)
                 {
+
                     var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
                     if (!string.IsNullOrEmpty(settings.Query))
                     {
                         var query = JObject.Parse(settings.Query);
-                        queryBuilder.Build(query, PortalSettings.UserMode != PortalSettings.Mode.Edit);
+                        queryBuilder.Build(query, PortalSettings.UserMode != PortalSettings.Mode.Edit, UserInfo.UserID);
                     }
                     else
                     {
@@ -82,17 +80,17 @@ namespace Satrabel.OpenContent.Components.JPList
                         var dsContext = new DataSourceContext()
                         {
                             ModuleId = module.ModuleID,
+                            ActiveModuleId = ActiveModule.ModuleID,
+                            UserId = UserInfo.UserID,
                             TemplateFolder = settings.TemplateDir.FolderPath,
-                            Config = manifest.DataSourceConfig
+                            Config = manifest.DataSourceConfig,
+                            Options = reqOptions
                         };
                         dsItems = ds.GetAll(dsContext, queryBuilder.Select);
                     }
                     int mainTabId = settings.DetailTabId > 0 ? settings.DetailTabId : settings.TabId;
                     ModelFactory mf = new ModelFactory(dsItems.Items, ActiveModule, PortalSettings, mainTabId);
-                    if (!string.IsNullOrEmpty(req.options))
-                    {
-                        mf.Options = JObject.Parse(req.options);
-                    }
+                    mf.Options = reqOptions;
                     var model = mf.GetModelAsJson(false);
 
                     //model["luceneQuery"] = dsItems.DebugInfo;
