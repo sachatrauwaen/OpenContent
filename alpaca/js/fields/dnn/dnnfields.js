@@ -4346,6 +4346,7 @@
             //this.dataSource = {};
             this.culture = connector.culture;
             this.defaultCulture = connector.defaultCulture;
+            this.rootUrl = connector.rootUrl;
         },
         /**
          * @see Alpaca.Fields.Image2Field#setup
@@ -4428,7 +4429,7 @@
             
             callback();
 
-            $(this.control).parent().find('.select2').after('<img src="/images/Flags/' + this.culture + '.gif" class="flag" />');
+            $(this.control).parent().find('.select2').after('<img src="' + self.rootUrl + 'images/Flags/' + this.culture + '.gif" class="flag" />');
             
         },
     });
@@ -5686,6 +5687,7 @@
             this.base(container, data, options, schema, view, connector);
             this.culture = connector.culture;
             this.defaultCulture = connector.defaultCulture;
+            this.rootUrl = connector.rootUrl;
         },
         /**
          * @see Alpaca.Fields.Folder2Field#setup
@@ -5763,7 +5765,7 @@
             
             callback();
 
-            $(this.control).parent().find('.select2').after('<img src="/images/Flags/' + this.culture + '.gif" class="flag" />');
+            $(this.control).parent().find('.select2').after('<img src="' + self.rootUrl + 'images/Flags/' + this.culture + '.gif" class="flag" />');
             
         },
     });
@@ -6323,6 +6325,7 @@
             //this.dataSource = {};
             this.culture = connector.culture;
             this.defaultCulture = connector.defaultCulture;
+            this.rootUrl = connector.rootUrl;
         },
         /**
          * @see Alpaca.Fields.Url2Field#setup
@@ -6405,7 +6408,7 @@
             
             callback();
 
-            $(this.control).parent().find('.select2').after('<img src="/images/Flags/' + this.culture + '.gif" class="flag" />');
+            $(this.control).parent().find('.select2').after('<img src="' + self.rootUrl + 'images/Flags/' + this.culture + '.gif" class="flag" />');
             
         },
     });
@@ -7177,6 +7180,7 @@
             this.base(container, data, options, schema, view, connector);
             this.culture = connector.culture;
             this.defaultCulture = connector.defaultCulture;
+            this.rootUrl = connector.rootUrl;
         },
         /**
          * @see Alpaca.Fields.TextField#getFieldType
@@ -7278,7 +7282,7 @@
         handlePostRender: function (callback) {
             var self = this;
             var el = this.getControlEl();
-            $(this.control.get(0)).after('<img src="/images/Flags/' + this.culture + '.gif" class="flag" />');
+            $(this.control.get(0)).after('<img src="' + self.rootUrl + 'images/Flags/' + this.culture + '.gif" class="flag" />');
             //$(this.control.get(0)).after('<div style="background:#eee;margin-bottom: 18px;display:inline-block;padding-bottom:8px;"><span>' + this.culture + '</span></div>');
             callback();
         },
@@ -7349,6 +7353,7 @@
             this.base(container, data, options, schema, view, connector);
             this.culture = connector.culture;
             this.defaultCulture = connector.defaultCulture;
+            this.rootUrl = connector.rootUrl;
         },
         /**
          * @see Alpaca.Fields.TextField#getFieldType
@@ -7450,7 +7455,7 @@
         handlePostRender: function (callback) {
             var self = this;
             var el = this.getControlEl();
-            $(this.control.get(0)).after('<img src="/images/Flags/' + this.culture + '.gif" class="flag" />');
+            $(this.control.get(0)).after('<img src="' + self.rootUrl + 'images/Flags/' + this.culture + '.gif" class="flag" />');
             //$(this.control.get(0)).after('<div style="background:#eee;margin-bottom: 18px;display:inline-block;padding-bottom:8px;"><span>' + this.culture + '</span></div>');
             callback();
         },
@@ -7521,6 +7526,7 @@
             this.base(container, data, options, schema, view, connector);
             this.culture = connector.culture;
             this.defaultCulture = connector.defaultCulture;
+            this.rootUrl = connector.rootUrl;
         },
 
         /**
@@ -7599,7 +7605,7 @@
         handlePostRender: function (callback) {
             var self = this;
             var el = this.getControlEl();
-            $(this.control.get(0)).after('<img src="/images/Flags/' + this.culture + '.gif" class="flag" />');
+            $(this.control.get(0)).after('<img src="' + self.rootUrl + 'images/Flags/' + this.culture + '.gif" class="flag" />');
             callback();
         },
         
@@ -7669,6 +7675,7 @@
             this.base(container, data, options, schema, view, connector);
             this.culture = connector.culture;
             this.defaultCulture = connector.defaultCulture;
+            this.rootUrl = connector.rootUrl;
         },
         /**
          * @see Alpaca.Fields.MLwysihtmlField#setup
@@ -7741,7 +7748,7 @@
         handlePostRender2: function (callback) {
             var self = this;
             var el = this.getControlEl();
-            $(this.control.get(0)).after('<img src="/images/Flags/' + this.culture + '.gif" class="flag" />');
+            $(this.control.get(0)).after('<img src="' + self.rootUrl + 'images/Flags/' + this.culture + '.gif" class="flag" />');
             callback();
         },
 
