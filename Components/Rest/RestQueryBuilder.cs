@@ -18,27 +18,33 @@ namespace Satrabel.OpenContent.Components.Rest
             {
                 if (rule.FieldOperator == OperatorEnum.IN)
                 {
-                    query.AddRule(new FilterRule()
+                    if (rule.MultiValue != null)
                     {
-                        Field = rule.Field,
-                        FieldOperator = rule.FieldOperator,
-                        FieldType = Sortfieldtype(config, rule.Field),
-                        MultiValue = rule.MultiValue.Select(v => new StringRuleValue(v.ToString())),
-                    });
+                        query.AddRule(new FilterRule()
+                        {
+                            Field = rule.Field,
+                            FieldOperator = rule.FieldOperator,
+                            FieldType = Sortfieldtype(config, rule.Field),
+                            MultiValue = rule.MultiValue.Select(v => new StringRuleValue(v.ToString())),
+                        });
+                    }
                 }
                 else if (rule.FieldOperator == OperatorEnum.BETWEEN)
                 {
-
+                    // not yet implemented
                 }
                 else
                 {
-                    query.AddRule(new FilterRule()
-                                        {
-                                            Field = rule.Field,
-                                            FieldOperator = rule.FieldOperator,
-                                            FieldType = Sortfieldtype(config, rule.Field),
-                                            Value = new StringRuleValue(rule.Value.ToString()),
-                                        });
+                    if (rule.Value != null)
+                    {
+                        query.AddRule(new FilterRule()
+                        {
+                            Field = rule.Field,
+                            FieldOperator = rule.FieldOperator,
+                            FieldType = Sortfieldtype(config, rule.Field),
+                            Value = new StringRuleValue(rule.Value.ToString()),
+                        });
+                    }
                 }
             }
             if (restSelect.Sort.Any())
@@ -52,10 +58,8 @@ namespace Satrabel.OpenContent.Components.Rest
                         Descending = sort.Descending,
                         FieldType = Sortfieldtype(config, sort.Field)
                     });
-
                 }
             }
-
             return select;
         }
 

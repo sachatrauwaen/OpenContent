@@ -27,21 +27,15 @@ namespace Satrabel.OpenContent.Components.Rest
     {
 
         //[ValidateAntiForgeryToken]
-        //[DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Anonymous)]
-        //[HttpGet]
-        //[HttpOptions]
         [SupportedModules("OpenContent")]
         public HttpResponseMessage Get(string entity, string id)
         {
             try
             {
-
-
                 //int ModuleId = int.Parse(Request.Headers.GetValues("ModuleId").First());
                 //int TabId = int.Parse(Request.Headers.GetValues("TabId").First());
                 ModuleController mc = new ModuleController();
                 ModuleInfo activeModule = ActiveModule; //mc.GetModule(ModuleId, TabId, false);
-
                 OpenContentSettings settings = activeModule.OpenContentSettings();
                 ModuleInfo module = activeModule;
                 if (settings.ModuleId > 0)
@@ -60,7 +54,6 @@ namespace Satrabel.OpenContent.Components.Rest
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 if (listMode)
                 {
-
                     var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
                     if (!string.IsNullOrEmpty(settings.Query))
@@ -122,17 +115,9 @@ namespace Satrabel.OpenContent.Components.Rest
                     foreach (var item in model["Items"] as JArray)
                     {
                         item["id"] = item["Context"]["Id"];
-                        JsonUtils.IdJson(item);
-                        //if (item["Gallery"] is JArray)
-                        //{
-                        //    foreach (var i in item["Gallery"] as JArray)
-                        //    {
-                        //        i["id"] = Guid.NewGuid().ToString();
-                        //    }
-                        //}
+                        JsonUtils.IdJson(item);                        
                     }
                     res[entity] = model["Items"];
-                    //res["meta"]["id"] = id;
                     return Request.CreateResponse(HttpStatusCode.OK, res);
                 }
                 else
@@ -149,7 +134,7 @@ namespace Satrabel.OpenContent.Components.Rest
 
         [SupportedModules("OpenContent")]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
-        public HttpResponseMessage Get(string entity, int pageIndex, int pageSize, string filter, string sort)
+        public HttpResponseMessage Get(string entity, int pageIndex, int pageSize, string filter = null, string sort = null)
         {
             try
             {
@@ -203,10 +188,7 @@ namespace Satrabel.OpenContent.Components.Rest
                     {
                         queryBuilder.BuildFilter(PortalSettings.UserMode != PortalSettings.Mode.Edit);
                     }
-                    if (restSelect.Query.FilterRules.Count(i => i.Value != null) > 0)
-                    {
-                        RestQueryBuilder.MergeQuery(indexConfig, queryBuilder.Select, restSelect);
-                    }
+                    RestQueryBuilder.MergeQuery(indexConfig, queryBuilder.Select, restSelect);
                     IDataItems dsItems;
                     if (queryBuilder.DefaultNoResults && queryBuilder.Select.IsQueryEmpty)
                     {

@@ -336,7 +336,6 @@ namespace Satrabel.OpenContent.Components.Json
 
         internal static void IdJson(JToken o)
         {
-
             var array = o as JArray;
             if (array != null)
             {
@@ -345,7 +344,6 @@ namespace Satrabel.OpenContent.Components.Json
                     var obj = value as JObject;
                     if (obj != null)
                     {
-
                         if (obj["id"] == null)
                         {
                             obj["id"] = Guid.NewGuid().ToString();
@@ -365,11 +363,8 @@ namespace Satrabel.OpenContent.Components.Json
                     }
                     foreach (var child in o.Children<JProperty>().ToList())
                     {
-
                         IdJson(child.Value);
-
                     }
-
                 }
             }
         }

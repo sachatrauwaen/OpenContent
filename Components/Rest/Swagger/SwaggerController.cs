@@ -116,16 +116,18 @@ namespace Satrabel.OpenContent.Components.Rest.Swagger
                         Name = "pageIndex",
                         Description = "Page Index (start at 0)",
                         In = Location.Query,
-                        Required = false,
-                        Type = SchemaType.Number
+                        Required = true,
+                        Type = SchemaType.Number,
+                        Default = 0
                     });
                     getParams.Add(new Parameter()
                     {
                         Name = "pageSize",
                         Description = "Page Size",
                         In = Location.Query,
-                        Required = false,
-                        Type = SchemaType.Number
+                        Required = true,
+                        Type = SchemaType.Number,
+                        Default = 10
                     });
                     getParams.Add(new Parameter()
                     {

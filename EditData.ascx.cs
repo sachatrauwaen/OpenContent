@@ -128,6 +128,7 @@ namespace Satrabel.OpenContent
                         if (template != null && template.IsListTemplate)
                         {
                             ddlVersions.Visible = false;
+                            cmdRestApi.Visible = true;
                             string itemId = Request.QueryString["id"];
                             if (!string.IsNullOrEmpty(itemId))
                             {
@@ -167,6 +168,7 @@ namespace Satrabel.OpenContent
                         else
                         {
                             ddlVersions.Visible = true;
+                            cmdRestApi.Visible = false;
                             dsContext.Single = true;
                             var dsItem = ds.Get(dsContext, null);
                             if (dsItem != null)
