@@ -146,7 +146,6 @@ namespace Satrabel.OpenContent.Components.Rest
                 if (!string.IsNullOrEmpty(filter))
                 {
                     restSelect.Query = JsonConvert.DeserializeObject<RestGroup>(filter);
-                    restSelect.Query.FilterRules.RemoveAll(i => i.Value == null); //some basic cleanup
                 }
                 if (!string.IsNullOrEmpty(sort))
                 {
@@ -224,6 +223,11 @@ namespace Satrabel.OpenContent.Components.Rest
                         LogContext.Log(activeModule.ModuleID, logKey, "result", dsItems);
                         LogContext.Log(activeModule.ModuleID, logKey, "model", model);
                         res["meta"]["logs"] = JToken.FromObject(LogContext.Current.ModuleLogs(activeModule.ModuleID));
+
+                        if (restSelect != null)
+                        {
+                            //res["meta"]["select"] = JObject.FromObject(restSelect);
+                        }
                     }
                     foreach (var item in model["Items"] as JArray)
                     {
@@ -232,10 +236,7 @@ namespace Satrabel.OpenContent.Components.Rest
                     }
                     res[entity] = model["Items"];
                     res["meta"]["total"] = dsItems.Total;
-                    if (restSelect != null)
-                    {
-                        res["meta"]["select"] = JObject.FromObject(restSelect);
-                    }
+                    
                     return Request.CreateResponse(HttpStatusCode.OK, res);
                 }
                 else
