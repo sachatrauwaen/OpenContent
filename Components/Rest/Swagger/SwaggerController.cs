@@ -26,7 +26,7 @@ namespace Satrabel.OpenContent.Components.Rest.Swagger
             json.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Serialize;
             json.SerializerSettings.Formatting = Formatting.Indented;
 
-            GlobalConfiguration.Configuration.Formatters.XmlFormatter.SupportedMediaTypes.Clear();
+            //GlobalConfiguration.Configuration.Formatters.XmlFormatter.SupportedMediaTypes.Clear();
         }
 
         [HttpGet]
@@ -338,7 +338,7 @@ namespace Satrabel.OpenContent.Components.Rest.Swagger
                     }
                 }
 
-                return Request.CreateResponse(HttpStatusCode.OK, swagger);
+                return Request.CreateResponse(HttpStatusCode.OK, swagger, Configuration.Formatters.JsonFormatter);
 
             }
             catch (Exception exc)

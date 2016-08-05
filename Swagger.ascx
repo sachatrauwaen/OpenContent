@@ -80,10 +80,11 @@
 
 
 <div class="swagger-section">
-<div id="message-bar" class="swagger-ui-wrap" data-sw-translate>&nbsp;</div>
-<div id="swagger-ui-container" class="swagger-ui-wrap"></div>
-<a href="/Desktopmodules/OpenContent/api/Swagger/Json?moduleid=<%=ModuleId%>&tabid=<%=TabId%>" target="_blank">Swagger Json</a>
-
+    <div id="message-bar" class="swagger-ui-wrap" data-sw-translate>&nbsp;</div>
+    <div id="swagger-ui-container" class="swagger-ui-wrap"></div>
+    <div class="swagger-ui-wrap">
+        <a href="/Desktopmodules/OpenContent/api/Swagger/Json?moduleid=<%=ModuleId%>&tabid=<%=TabId%>" target="_blank">Api definition in Swagger Json</a>
+    </div>
 </div>
 
 
