@@ -16,29 +16,31 @@ namespace Satrabel.OpenContent.Components.Rest.Swagger
     [AllowAnonymous]
     public class SwaggerController : DnnApiController
     {
-
         public SwaggerController()
         {
             var json = GlobalConfiguration.Configuration.Formatters.JsonFormatter;
             //json.SerializerSettings.DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Local;
             json.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
             json.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter() { CamelCaseText = true });
-
             json.SerializerSettings.ContractResolver = new CamelCaseExceptDictionaryResolver();
             json.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Serialize;
             json.SerializerSettings.Formatting = Formatting.Indented;
+
+            GlobalConfiguration.Configuration.Formatters.XmlFormatter.SupportedMediaTypes.Clear();
         }
 
         [HttpGet]
-        public HttpResponseMessage Json()
+        public HttpResponseMessage Json(int moduleId, int tabId)
         {
             try
             {
+                ModuleController mc = new ModuleController();
+                var ActiveModule = mc.GetModule(moduleId, tabId, false);
                 OpenContentSettings settings = ActiveModule.OpenContentSettings();
                 ModuleInfo module = ActiveModule;
                 if (settings.ModuleId > 0)
                 {
-                    ModuleController mc = new ModuleController();
+                    //ModuleController mc = new ModuleController();
                     module = mc.GetModule(settings.ModuleId, settings.TabId, false);
                 }
                 var manifest = settings.Manifest;
@@ -173,14 +175,14 @@ namespace Satrabel.OpenContent.Components.Rest.Swagger
                     var postParams = new List<Parameter>();
                     postParams.Add(new Parameter()
                     {
-                        Name = "body",
+                        Name = "value",
                         In = Location.Body,
                         Required = true,
                         Schema = new SchemaObject()
                         {
                             Type = SchemaType.Object,
-                            Properties = postProps
-                            //Ref = "#/definitions/items"
+                            //Properties = postProps
+                            Ref = "#/definitions/items"
                         }
                     });
 
@@ -191,16 +193,7 @@ namespace Satrabel.OpenContent.Components.Rest.Swagger
                     };
                     pi.Post.Responses.Add("200", new Response()
                     {
-                        Description = "succes",
-                        Schema = new SchemaObject()
-                        {
-                            Type = SchemaType.Array,
-                            Items = new SchemaObject()
-                            {
-                                Ref = "#/definitions/items"
-                            }
-                        }
-
+                        Description = "succes"
                     });
                     pi.Post.Tags.Add("Items");
                     swagger.Paths.Add("/items", pi);
@@ -249,14 +242,14 @@ namespace Satrabel.OpenContent.Components.Rest.Swagger
                     });
                     putParams.Add(new Parameter()
                     {
-                        Name = "body",
+                        Name = "value",
                         In = Location.Body,
                         Required = true,
                         Schema = new SchemaObject()
                         {
                             Type = SchemaType.Object,
-                            Properties = putProps
-                            //Ref = "#/definitions/items"
+                            //Properties = putProps
+                            Ref = "#/definitions/items"
                         }
                     });
                     pi.Put = new Operation()
@@ -266,15 +259,7 @@ namespace Satrabel.OpenContent.Components.Rest.Swagger
                     };
                     pi.Put.Responses.Add("200", new Response()
                     {
-                        Description = "succes",
-                        Schema = new SchemaObject()
-                        {
-                            Type = SchemaType.Array,
-                            Items = new SchemaObject()
-                            {
-                                Ref = "#/definitions/items"
-                            }
-                        }
+                        Description = "succes"
                     });
                     pi.Put.Tags.Add("Items");
                     // Delete(id)

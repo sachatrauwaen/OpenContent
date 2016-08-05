@@ -25,12 +25,7 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        var url = window.location.search.match(/url=([^&]+)/);
-        if (url && url.length > 1) {
-            url = decodeURIComponent(url[1]);
-        } else {
-            url = "/Desktopmodules/OpenContent/api/Swagger/Json";
-        }
+        var url = "/Desktopmodules/OpenContent/api/Swagger/Json?moduleid=<%=ModuleId%>&tabid=<%=TabId%>";
 
         hljs.configure({
             highlightSizeThreshold: 5000
@@ -87,6 +82,8 @@
 <div class="swagger-section">
 <div id="message-bar" class="swagger-ui-wrap" data-sw-translate>&nbsp;</div>
 <div id="swagger-ui-container" class="swagger-ui-wrap"></div>
+<a href="/Desktopmodules/OpenContent/api/Swagger/Json?moduleid=<%=ModuleId%>&tabid=<%=TabId%>" target="_blank">Swagger Json</a>
+
 </div>
 
 
