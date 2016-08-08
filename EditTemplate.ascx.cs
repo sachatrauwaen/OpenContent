@@ -431,7 +431,10 @@ namespace Satrabel.OpenContent
                 try
                 {
                     JObject.Parse(txtSource.Text);
-                    System.Web.Helpers.Json.Decode(txtSource.Text);
+                    if (scriptList.SelectedValue != "manifest.json")
+                    {
+                        System.Web.Helpers.Json.Decode(txtSource.Text);
+                    }
                 }
                 catch (Exception ex)
                 {
