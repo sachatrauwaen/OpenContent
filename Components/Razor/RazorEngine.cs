@@ -67,22 +67,14 @@ namespace Satrabel.OpenContent.Components.Razor
 
         public void Render(TextWriter writer, dynamic model)
         {
-            try
+
+            if (Webpage is OpenContentWebPage)
             {
-                if (Webpage is OpenContentWebPage)
-                {
-                    var mv = (OpenContentWebPage)Webpage;
-                    mv.Model = model;
-                }
-                if (Webpage != null)
-                    Webpage.ExecutePageHierarchy(new WebPageContext(HttpContextBase, Webpage, null), writer, Webpage);
+                var mv = (OpenContentWebPage)Webpage;
+                mv.Model = model;
             }
-            catch (Exception exc)
-            {
-                Exceptions.LogException(exc);
-                //todo: throw only if Host/Admin user. Otherwise return less intrusive message?
-                throw exc;
-            }
+            if (Webpage != null)
+                Webpage.ExecutePageHierarchy(new WebPageContext(HttpContextBase, Webpage, null), writer, Webpage);
         }
 
         public void Render(TextWriter writer)
