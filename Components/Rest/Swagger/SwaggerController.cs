@@ -66,13 +66,16 @@ namespace Satrabel.OpenContent.Components.Rest.Swagger
                     Name = "Items",
                     Description = manifest.Title
                 });
-                foreach (var entity in manifest.AdditionalData)
+                if (manifest.AdditionalData != null)
                 {
-                    swagger.Tags.Add(new Tag()
+                    foreach (var entity in manifest.AdditionalData)
                     {
-                        Name = entity.Key,
-                        Description = entity.Value.Title
-                    });
+                        swagger.Tags.Add(new Tag()
+                        {
+                            Name = entity.Key,
+                            Description = entity.Value.Title
+                        });
+                    }
                 }
                 //swagger.Consumes.Add("text/html");
                 //swagger.Produces.Add("text/html");
@@ -110,7 +113,7 @@ namespace Satrabel.OpenContent.Components.Rest.Swagger
                     // Get()
                     // Get(pageIndex, pageSize, filter, sort)
                     var pi = new PathItem();
-                    
+
                     pi.Parameters = headers;
                     var getParams = new List<Parameter>();
                     getParams.Add(new Parameter()
@@ -175,14 +178,14 @@ namespace Satrabel.OpenContent.Components.Rest.Swagger
                     var postParams = new List<Parameter>();
                     postParams.Add(new Parameter()
                     {
-                        Name = "value",
+                        Name = "body",
                         In = Location.Body,
                         Required = true,
                         Schema = new SchemaObject()
                         {
                             Type = SchemaType.Object,
-                            //Properties = postProps
-                            Ref = "#/definitions/items"
+                            Properties = postProps
+                            //Ref = "#/definitions/items"
                         }
                     });
 
@@ -242,14 +245,14 @@ namespace Satrabel.OpenContent.Components.Rest.Swagger
                     });
                     putParams.Add(new Parameter()
                     {
-                        Name = "value",
+                        Name = "body",
                         In = Location.Body,
                         Required = true,
                         Schema = new SchemaObject()
                         {
                             Type = SchemaType.Object,
-                            //Properties = putProps
-                            Ref = "#/definitions/items"
+                            Properties = putProps
+                            //Ref = "#/definitions/items"
                         }
                     });
                     pi.Put = new Operation()
@@ -300,44 +303,45 @@ namespace Satrabel.OpenContent.Components.Rest.Swagger
                     swagger.Definitions.Add("items", schemaJson);
                 }
 
-
-                foreach (var entity in manifest.AdditionalData.Keys)
+                if (manifest.AdditionalData != null)
                 {
-                    var schemaJson = JsonUtils.LoadJsonFromFile(TemplateFolder + entity + "-schema.json");
-                    if (schemaJson["items"] != null)
+                    foreach (var entity in manifest.AdditionalData.Keys)
                     {
-                        var entityName = entity.ToLower();
-                        var resItems = new List<SchemaObject>();
-                        resItems.Add(new SchemaObject()
+                        var schemaJson = JsonUtils.LoadJsonFromFile(TemplateFolder + entity + "-schema.json");
+                        if (schemaJson["items"] != null)
                         {
-                            Ref = "#/definitions/" + entityName
-                        });
-                        var pi = new PathItem();
-                        pi.Get = new Operation()
-                        {
-                            Summary = "Get all " + entity,
-                            //Parameters = headers
-                            OperationId="get"+entity
-                        };
-                        pi.Get.Responses.Add("200", new Response()
-                        {
-                            Description = "succes",
-                            Schema = new SchemaObject()
+                            var entityName = entity.ToLower();
+                            var resItems = new List<SchemaObject>();
+                            resItems.Add(new SchemaObject()
                             {
-                                Type = SchemaType.Array,
-                                Items = new SchemaObject()
+                                Ref = "#/definitions/" + entityName
+                            });
+                            var pi = new PathItem();
+                            pi.Get = new Operation()
+                            {
+                                Summary = "Get all " + entity,
+                                //Parameters = headers
+                                OperationId = "get" + entity
+                            };
+                            pi.Get.Responses.Add("200", new Response()
+                            {
+                                Description = "succes",
+                                Schema = new SchemaObject()
                                 {
-                                    Ref = "#/definitions/" + entityName
+                                    Type = SchemaType.Array,
+                                    Items = new SchemaObject()
+                                    {
+                                        Ref = "#/definitions/" + entityName
+                                    }
                                 }
-                            }
-                        });
-                        pi.Parameters = headers;
-                        pi.Get.Tags.Add(entity);
-                        swagger.Paths.Add("/" + entity, pi);
-                        swagger.Definitions.Add(entityName, schemaJson["items"]);
+                            });
+                            pi.Parameters = headers;
+                            pi.Get.Tags.Add(entity);
+                            swagger.Paths.Add("/" + entity, pi);
+                            swagger.Definitions.Add(entityName, schemaJson["items"]);
+                        }
                     }
                 }
-
                 return Request.CreateResponse(HttpStatusCode.OK, swagger, Configuration.Formatters.JsonFormatter);
 
             }

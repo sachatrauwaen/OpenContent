@@ -14,36 +14,40 @@ namespace Satrabel.OpenContent.Components.Rest
             var query = select.Query;
             select.PageSize = restSelect.PageSize;
             select.PageIndex = restSelect.PageIndex;
-            foreach (var rule in restSelect.Query.FilterRules)
+            if (restSelect.Query != null && restSelect.Query.FilterRules != null)
             {
-                if (rule.FieldOperator == OperatorEnum.IN)
+                foreach (var rule in restSelect.Query.FilterRules)
                 {
-                    if (rule.MultiValue != null)
+                    if (rule.FieldOperator == OperatorEnum.IN)
                     {
-                        query.AddRule(FieldConfigUtils.CreateFilterRule(config, cultureCode,
-                            rule.Field,
-                            rule.FieldOperator,
-                            rule.MultiValue.Select(v => new StringRuleValue(v.ToString()))
-                        ));
+                        if (rule.MultiValue != null)
+                        {
+                            query.AddRule(FieldConfigUtils.CreateFilterRule(config, cultureCode,
+                                rule.Field,
+                                rule.FieldOperator,
+                                rule.MultiValue.Select(v => new StringRuleValue(v.ToString()))
+                            ));
+                        }
                     }
-                }
-                else if (rule.FieldOperator == OperatorEnum.BETWEEN)
-                {
-                    // not yet implemented
-                }
-                else
-                {
-                    if (rule.Value != null)
+                    else if (rule.FieldOperator == OperatorEnum.BETWEEN)
                     {
-                        query.AddRule(FieldConfigUtils.CreateFilterRule(config, cultureCode,
-                            rule.Field,
-                            rule.FieldOperator,
-                            new StringRuleValue(rule.Value.ToString())
-                        ));
+                        // not yet implemented
+                    }
+                    else
+                    {
+                        if (rule.Value != null)
+                        {
+                            query.AddRule(FieldConfigUtils.CreateFilterRule(config, cultureCode,
+                                rule.Field,
+                                rule.FieldOperator,
+                                new StringRuleValue(rule.Value.ToString())
+                            ));
+                        }
                     }
                 }
             }
-            if (restSelect.Sort.Any())
+
+            if (restSelect.Sort != null && restSelect.Sort.Any())
             {
                 select.Sort.Clear();
                 foreach (var sort in restSelect.Sort)
