@@ -57,7 +57,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                             //dynamic model = mf.GetModelAsDynamic(true);
                             //dynamic items = model.Items;
                             IEnumerable<dynamic> items = mf.GetModelAsDynamicList();
-                            Log.Logger.Error("OCUR/" + module.TabID + "/" + MainTabId + "/" + module.ModuleID + "/" + MainModuleId + "/" + CultureCode + "/" + dataList.Count() + "/" + module.ModuleTitle);
+                            //Log.Logger.Debug("OCUR/" + PortalId + "/" + module.TabID + "/" + MainTabId + "/" + module.ModuleID + "/" + MainModuleId + "/" + CultureCode + "/" + dataList.Count() + "/" + module.ModuleTitle);
                             //foreach (IDataItem content in dataList)
                             foreach (dynamic content in items)
                             {
