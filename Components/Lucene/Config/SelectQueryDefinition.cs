@@ -105,10 +105,16 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                 }
                 else if (rule.FieldOperator == OperatorEnum.IN)
                 {
+                    
                     BooleanQuery arrQ = new BooleanQuery();
                     foreach (var arrItem in rule.MultiValue)
                     {
-                        arrQ.Add(new TermQuery(new Term(fieldName, arrItem.AsString)), Occur.SHOULD); // OR
+                        arrQ.Add(new TermQuery(new Term(fieldName, arrItem.AsString)), Occur.SHOULD); // OR                        
+                        /*
+                        var phraseQ = new PhraseQuery();
+                        phraseQ.Add(new Term(fieldName, arrItem.AsString));
+                        arrQ.Add(phraseQ, Occur.SHOULD); // OR                        
+                         */
                     }
                     q.Add(arrQ, cond);
                 }

@@ -305,3 +305,4 @@
 /// <reference path="../js/swagger/lib/marked.js" />
 /// <reference path="../js/swagger/lib/object-assign-pollyfill.js" />
 /// <reference path="../js/swagger/lib/swagger-oauth.js" />
+/// <reference path="../alpaca/js/fields/dnn/role2field.js" />

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using DotNetNuke.Entities.Users;
+using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Datasource.search;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using System;
@@ -23,10 +24,10 @@ namespace Satrabel.OpenContent.Components.Alpaca
             Select.PageSize = 100;
         }
 
-        public QueryBuilder Build(JObject query, bool addWorkflowFilter, int userId, string cultureCode, NameValueCollection queryString = null)
+        public QueryBuilder Build(JObject query, bool addWorkflowFilter, int userId, string cultureCode, IList<UserRoleInfo> roles, NameValueCollection queryString = null)
         {
             BuildPage(query);
-            BuildFilter(query, addWorkflowFilter, userId, cultureCode, queryString);
+            BuildFilter(query, addWorkflowFilter, userId, cultureCode, roles, queryString);
             BuildSort(query, cultureCode);
             return this;
         }
@@ -46,7 +47,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
             return this;
         }
-        public QueryBuilder BuildFilter(JObject query, bool addWorkflowFilter, int userId, string cultureCode, NameValueCollection queryString = null)
+        public QueryBuilder BuildFilter(JObject query, bool addWorkflowFilter, int userId, string cultureCode, IList<UserRoleInfo> roles, NameValueCollection queryString = null)
         {
             var workFlowFilter = Select.Filter;
             var vExcludeCurrentItem = query["ExcludeCurrentItem"] as JValue;
@@ -84,7 +85,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
             {
                 foreach (var item in filter.Properties())
                 {
-                    var fieldConfig = FieldConfigUtils.GetField(IndexConfig , item.Name);
+                    var fieldConfig = FieldConfigUtils.GetField(IndexConfig, item.Name);
                     if (item.Value is JValue) // text
                     {
                         var val = item.Value.ToString();
@@ -103,7 +104,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                         }
                         else if (!string.IsNullOrEmpty(val))
                         {
-                            workFlowFilter.AddRule(FieldConfigUtils.CreateFilterRule(IndexConfig, cultureCode,                            
+                            workFlowFilter.AddRule(FieldConfigUtils.CreateFilterRule(IndexConfig, cultureCode,
                                 item.Name,
                                 OperatorEnum.START_WITH,
                                 new StringRuleValue(val)
@@ -123,7 +124,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                                 {
                                     var val = (JValue)arrItem;
                                     arrGroup.AddRule(FieldConfigUtils.CreateFilterRule(IndexConfig, cultureCode,
-                                        item.Name,                                        
+                                        item.Name,
                                         OperatorEnum.EQUAL,
                                         new StringRuleValue(val.ToString())
                                     ));
@@ -134,7 +135,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                         else if (queryString != null && queryString[item.Name] != null)
                         {
                             workFlowFilter.AddRule(FieldConfigUtils.CreateFilterRule(IndexConfig, cultureCode,
-                            
+
                                 item.Name,
                                 OperatorEnum.EQUAL,
                                 new StringRuleValue(queryString[item.Name])
@@ -180,6 +181,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
             if (addWorkflowFilter)
             {
                 AddWorkflowFilter(workFlowFilter);
+                AddRolesFilter(workFlowFilter, roles);
             }
             //Filter = Filter.FilterRules.Any() || Filter.FilterGroups.Any() > 0 ? q : null;
             return this;
@@ -207,12 +209,13 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
         }
 
-        public QueryBuilder BuildFilter(bool addWorkflowFilter, string cultureCode, NameValueCollection queryString = null)
+        public QueryBuilder BuildFilter(bool addWorkflowFilter, string cultureCode, IList<UserRoleInfo> roles, NameValueCollection queryString = null)
         {
             BuildQueryStringFilter(queryString, Select.Filter);
             if (addWorkflowFilter)
             {
                 AddWorkflowFilter(Select.Filter);
+                AddRolesFilter(Select.Filter, roles);
             }
             return this;
         }
@@ -255,6 +258,41 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
         }
 
+        private void AddRolesFilter(FilterGroup filter, IList<UserRoleInfo> roles)
+        {
+            string fieldName = "";
+            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey("userrole"))
+            {
+                fieldName = "userrole";
+            }
+            else if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey("userroles"))
+            {
+                fieldName = "userroles";
+            }
+            if (!string.IsNullOrEmpty(fieldName))
+            {
+                if (roles.Any())
+                {
+                    filter.AddRule(new FilterRule()
+                    {
+                        Field = fieldName,
+                        FieldOperator = OperatorEnum.IN,
+                        MultiValue = roles.Select(r => new StringRuleValue(r.RoleID.ToString())),
+                        FieldType = FieldTypeEnum.KEY
+                    });
+                }
+                else
+                {
+                    filter.AddRule(new FilterRule()
+                    {
+                        Field = fieldName,
+                        FieldOperator = OperatorEnum.EQUAL,
+                        Value = new StringRuleValue("Unauthenticated"),
+                        FieldType = FieldTypeEnum.KEY
+                    });
+                }
+            }
+        }
         public QueryBuilder BuildSort(JObject query, string cultureCode)
         {
             var Sort = Select.Sort;
@@ -300,7 +338,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
 
         private bool SortfieldMultiLanguage(string fieldName)
         {
-            
+
             if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey(fieldName))
             {
                 var config = IndexConfig.Fields[fieldName].Items == null ? IndexConfig.Fields[fieldName] : IndexConfig.Fields[fieldName].Items;

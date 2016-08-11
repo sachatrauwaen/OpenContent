@@ -41,5 +41,6 @@
     <file>mlwysihtmlField.js</file>
     <file>GuidField.js</file>
     <file>IconField.js</file>
+    <file>Role2Field.js</file>
   </files>
 </bundle>

@@ -275,7 +275,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     opts = optionsConfig.Fields.ContainsKey(prop.Key) ? optionsConfig.Fields[prop.Key] : null;
                 }
                 string optType = opts == null ? "text" : opts.Type;
-                if (prop.Value.Type == "array" && (prop.Value.Enum != null || optType == "select" || optType == "select2"))
+                if (prop.Value.Type == "array" && (prop.Value.Enum != null || optType == "select" || optType == "select2" || optType == "role2"))
                 {
                     var newField = new FieldConfig()
                     {
@@ -288,7 +288,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     };
                     newConfig.Fields.Add(prop.Key, newField);
                 }
-                else if (prop.Value.Enum != null || optType == "select" || optType == "select2")
+                else if (prop.Value.Enum != null || optType == "select" || optType == "select2" || optType == "role2")
                 {
                     var newField = new FieldConfig()
                     {

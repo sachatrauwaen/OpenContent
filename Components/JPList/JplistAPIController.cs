@@ -57,11 +57,12 @@ namespace Satrabel.OpenContent.Components.JPList
                     if (!string.IsNullOrEmpty(settings.Query))
                     {
                         var query = JObject.Parse(settings.Query);
-                        queryBuilder.Build(query, PortalSettings.UserMode != PortalSettings.Mode.Edit, UserInfo.UserID, DnnUtils.GetCurrentCultureCode());
+                        queryBuilder.Build(query, PortalSettings.UserMode != PortalSettings.Mode.Edit, UserInfo.UserID, DnnUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
                     }
                     else
                     {
-                        queryBuilder.BuildFilter(PortalSettings.UserMode != PortalSettings.Mode.Edit, DnnUtils.GetCurrentCultureCode());
+                        
+                        queryBuilder.BuildFilter(PortalSettings.UserMode != PortalSettings.Mode.Edit, DnnUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
                     }
 
                     JplistQueryBuilder.MergeJpListQuery(indexConfig, queryBuilder.Select, req.StatusLst, DnnUtils.GetCurrentCultureCode());

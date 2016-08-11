@@ -59,11 +59,11 @@ namespace Satrabel.OpenContent.Components.Rest
                     if (!string.IsNullOrEmpty(settings.Query))
                     {
                         var query = JObject.Parse(settings.Query);
-                        queryBuilder.Build(query, PortalSettings.UserMode != PortalSettings.Mode.Edit, UserInfo.UserID, DnnUtils.GetCurrentCultureCode());
+                        queryBuilder.Build(query, PortalSettings.UserMode != PortalSettings.Mode.Edit, UserInfo.UserID, DnnUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
                     }
                     else
                     {
-                        queryBuilder.BuildFilter(PortalSettings.UserMode != PortalSettings.Mode.Edit, DnnUtils.GetCurrentCultureCode());
+                        queryBuilder.BuildFilter(PortalSettings.UserMode != PortalSettings.Mode.Edit, DnnUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
                     }
                     //if (restSelect != null)
                     //{
@@ -181,11 +181,11 @@ namespace Satrabel.OpenContent.Components.Rest
                     if (!string.IsNullOrEmpty(settings.Query))
                     {
                         var query = JObject.Parse(settings.Query);
-                        queryBuilder.Build(query, PortalSettings.UserMode != PortalSettings.Mode.Edit, UserInfo.UserID, PortalSettings.CultureCode);
+                        queryBuilder.Build(query, PortalSettings.UserMode != PortalSettings.Mode.Edit, UserInfo.UserID, PortalSettings.CultureCode, UserInfo.Social.Roles);
                     }
                     else
                     {
-                        queryBuilder.BuildFilter(PortalSettings.UserMode != PortalSettings.Mode.Edit, DnnUtils.GetCurrentCultureCode());
+                        queryBuilder.BuildFilter(PortalSettings.UserMode != PortalSettings.Mode.Edit, DnnUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
                     }
                     RestQueryBuilder.MergeQuery(indexConfig, queryBuilder.Select, restSelect, DnnUtils.GetCurrentCultureCode());
                     IDataItems dsItems;

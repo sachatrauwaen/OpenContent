@@ -252,6 +252,30 @@ namespace Satrabel.OpenContent.Components
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
         [HttpGet]
+        public HttpResponseMessage RoleLookup(string q)
+        {
+            try
+            {
+                var roles = DotNetNuke.Security.Roles.RoleController.Instance.GetRoles(PortalSettings.PortalId).AsQueryable();
+                if (q != "*" && !string.IsNullOrEmpty(q))
+                {
+                    roles = roles.Where(t => t.RoleName.ToLower().Contains(q.ToLower()));
+                }
+                var rolesDtos = roles.Select(t => new { value = t.RoleID.ToString(), text = t.RoleName }).ToList();
+                rolesDtos.Add(new { value = "Unauthenticated", text = "Unauthenticated" });
+
+                return Request.CreateResponse(HttpStatusCode.OK, rolesDtos);
+            }
+            catch (Exception exc)
+            {
+                Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
+
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [HttpGet]
         public HttpResponseMessage FileUrl(int fileid)
         {
             try

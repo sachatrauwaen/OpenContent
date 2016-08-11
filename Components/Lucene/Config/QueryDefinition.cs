@@ -7,6 +7,7 @@ using System.Web;
 using Lucene.Net.Search;
 using Newtonsoft.Json.Linq;
 using Lucene.Net.Index;
+using DotNetNuke.Entities.Users;
 
 namespace Satrabel.OpenContent.Components.Lucene.Config
 {
@@ -46,10 +47,10 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
         }
         public int PageSize { get; set; }
         public int PageIndex { get; set; }
-        public QueryDefinition Build(JObject query, bool addWorkflowFilter, NameValueCollection QueryString = null)
+        public QueryDefinition Build(JObject query, bool addWorkflowFilter, IList<UserRoleInfo> roles, NameValueCollection QueryString = null)
         {
             BuildPage(query);
-            BuildFilter(query, addWorkflowFilter, QueryString);
+            BuildFilter(query, addWorkflowFilter, roles,  QueryString);
             BuildSort(query);
             return this;
         }
@@ -71,7 +72,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
 
             return this;
         }
-        public QueryDefinition BuildFilter(JObject query, bool addWorkflowFilter, NameValueCollection QueryString = null)
+        public QueryDefinition BuildFilter(JObject query, bool addWorkflowFilter, IList<UserRoleInfo> roles, NameValueCollection QueryString = null)
         {
             BooleanQuery q = new BooleanQuery();
 
@@ -167,17 +168,19 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
             if (addWorkflowFilter)
             {
                 AddWorkflowFilter(q);
+                AddRoleFilter(q, roles);
             }
             Filter = q.Clauses.Count > 0 ? q : null;
             return this;
         }
 
-        public QueryDefinition BuildFilter(bool addWorkflowFilter, NameValueCollection QueryString = null)
+        public QueryDefinition BuildFilter(bool addWorkflowFilter, IList<UserRoleInfo> roles, NameValueCollection QueryString = null)
         {
             BooleanQuery q = new BooleanQuery();
             if (addWorkflowFilter)
             {
                 AddWorkflowFilter(q);
+                AddRoleFilter(q, roles);
             }
             Filter = q.Clauses.Count > 0 ? q : null;
             return this;
@@ -201,6 +204,27 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                 DateTime startDate = DateTime.Today;
                 DateTime endDate = DateTime.MaxValue;
                 q.Add(NumericRangeQuery.NewLongRange("publishenddate", startDate.Ticks, endDate.Ticks, true, true), Occur.MUST);
+            }
+        }
+
+        private void AddRoleFilter(BooleanQuery q, IList<UserRoleInfo> roles)
+        {
+
+            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey("userRole"))
+            {
+                if (roles.Any())
+                {
+                    BooleanQuery arrQ = new BooleanQuery();
+                    foreach (var role in roles)
+                    {
+                        arrQ.Add(new TermQuery(new Term("userRole", role.RoleID.ToString())), Occur.SHOULD); // or
+                    }
+                    q.Add(arrQ, Occur.MUST);
+                }
+                else
+                {
+                    q.Add(new TermQuery(new Term("userRole", "Unauthenticated")), Occur.MUST); // and
+                }
             }
         }
 
