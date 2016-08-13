@@ -26,7 +26,7 @@ namespace Satrabel.OpenContent.Components.JPList
     [SupportedModules("OpenContent")]
     public class JplistAPIController : DnnApiController
     {
-        [ValidateAntiForgeryToken]
+        //[ValidateAntiForgeryToken] to work with output caching
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         [HttpPost]
         public HttpResponseMessage List(RequestDTO req)
