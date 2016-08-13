@@ -263,6 +263,7 @@ namespace Satrabel.OpenContent.Components
                 }
                 var rolesDtos = roles.Select(t => new { value = t.RoleID.ToString(), text = t.RoleName }).ToList();
                 rolesDtos.Add(new { value = "Unauthenticated", text = "Unauthenticated" });
+                rolesDtos.Add(new { value = "AllUsers", text = "All Users" });
 
                 return Request.CreateResponse(HttpStatusCode.OK, rolesDtos);
             }

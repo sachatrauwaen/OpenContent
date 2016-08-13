@@ -271,26 +271,24 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
             if (!string.IsNullOrEmpty(fieldName))
             {
+                List<string> roleLst;
                 if (roles.Any())
                 {
-                    filter.AddRule(new FilterRule()
-                    {
-                        Field = fieldName,
-                        FieldOperator = OperatorEnum.IN,
-                        MultiValue = roles.Select(r => new StringRuleValue(r.RoleID.ToString())),
-                        FieldType = FieldTypeEnum.KEY
-                    });
+                    roleLst = roles.Select(r => r.RoleID.ToString()).ToList();
                 }
                 else
                 {
-                    filter.AddRule(new FilterRule()
-                    {
-                        Field = fieldName,
-                        FieldOperator = OperatorEnum.EQUAL,
-                        Value = new StringRuleValue("Unauthenticated"),
-                        FieldType = FieldTypeEnum.KEY
-                    });
+                    roleLst = new List<string>();
+                    roleLst.Add("Unauthenticated");
                 }
+                roleLst.Add("AllUsers");
+                filter.AddRule(new FilterRule()
+                {
+                    Field = fieldName,
+                    FieldOperator = OperatorEnum.IN,
+                    MultiValue = roleLst.OrderBy(r=> r).Select(r => new StringRuleValue(r)),
+                    FieldType = FieldTypeEnum.KEY
+                });
             }
         }
         public QueryBuilder BuildSort(JObject query, string cultureCode)
