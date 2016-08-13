@@ -123,16 +123,7 @@
   <data name="cmdCancel.Text" xml:space="preserve">
     <value>Abbrechen</value>
   </data>
-  <data name="scriptListLabel.Text" xml:space="preserve">
-    <value>Vorlage</value>
-  </data>
-  <data name="lList.Text" xml:space="preserve">
-    <value>Verwalten</value>
-  </data>
-  <data name="lFilter.Help" xml:space="preserve">
-    <value>Lucene-Abfrage</value>
-  </data>
-  <data name="lFilter.Text" xml:space="preserve">
-    <value>Filter</value>
+  <data name="cmdDelete.Text" xml:space="preserve">
+    <value>Löschen</value>
   </data>
 </root>

@@ -123,16 +123,17 @@
   <data name="cmdCancel.Text" xml:space="preserve">
     <value>Abbrechen</value>
   </data>
-  <data name="scriptListLabel.Text" xml:space="preserve">
-    <value>Vorlage</value>
+  <data name="lRoles.Text" xml:space="preserve">
+    <value>Automatische Bearbeiterrolle für Module</value>
   </data>
-  <data name="lList.Text" xml:space="preserve">
-    <value>Verwalten</value>
+  <data name="lMLContent.Text" xml:space="preserve">
+    <value>Module automatisch verknüpfen (bei Mehrsprachigkeit)</value>
   </data>
-  <data name="lFilter.Help" xml:space="preserve">
-    <value>Lucene-Abfrage</value>
+  <data name="lLogging.Text" xml:space="preserve">
+    <value>Protokollieren (Browser-Konsole)</value>
   </data>
-  <data name="lFilter.Text" xml:space="preserve">
-    <value>Filter</value>
-  </data>
+    <data name="lMaxVersions.Text" xml:space="preserve">
+    <value>Maximale Anzahl Versionen</value>
+  </data>  
+
 </root>
