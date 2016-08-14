@@ -7,13 +7,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Satrabel.OpenContent
-{
-
-
-    public partial class Edit
-    {
-
+namespace Satrabel.OpenContent {
+    
+    
+    public partial class Edit {
+        
         /// <summary>
         /// ScopeWrapper control.
         /// </summary>
@@ -22,7 +20,7 @@ namespace Satrabel.OpenContent
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Panel ScopeWrapper;
-
+        
         /// <summary>
         /// cmdSave control.
         /// </summary>
@@ -31,7 +29,7 @@ namespace Satrabel.OpenContent
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.HyperLink cmdSave;
-
+        
         /// <summary>
         /// hlCancel control.
         /// </summary>
@@ -40,7 +38,7 @@ namespace Satrabel.OpenContent
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.HyperLink hlCancel;
-
+        
         /// <summary>
         /// hlDelete control.
         /// </summary>
@@ -49,7 +47,7 @@ namespace Satrabel.OpenContent
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.HyperLink hlDelete;
-
+        
         /// <summary>
         /// ddlVersions control.
         /// </summary>

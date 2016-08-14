@@ -1,4 +1,5 @@
 ﻿using DotNetNuke.Entities.Portals;
+using Satrabel.OpenContent.Components.Alpaca;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -8,6 +9,10 @@ namespace Satrabel.OpenContent.Components
 
         private const string SettingsKeyMaxVersions = "OpenContent_MaxVersions";
         private const int SettingsDefaultMaxVersions = 5;
+        private const string SettingsEditLayout = "OpenContent_EditLayout";
+        private const AlpacaLayoutEnum SettingsDefaultEditLayout = AlpacaLayoutEnum.DNN;
+        private const string SettingsLoadBootstrap = "OpenContent_LoadBootstrap";
+        private const bool SettingsDefaultLoadBootstrap = true;
 
         public OpenContentGlobalSettingsController(int portalId)
         {
@@ -28,5 +33,33 @@ namespace Satrabel.OpenContent.Components
             PortalController.UpdatePortalSetting(_portalId, "OpenContent_MaxVersions", maxVersions.ToString(), true);
         }
 
+        public AlpacaLayoutEnum GetEditLayout()
+        {
+            var editLayoutSetting = PortalController.GetPortalSetting(SettingsEditLayout, _portalId, string.Empty);
+            int editLayout;
+            if (!string.IsNullOrWhiteSpace(editLayoutSetting) && int.TryParse(editLayoutSetting, out editLayout))
+                return (AlpacaLayoutEnum)editLayout;
+            return SettingsDefaultEditLayout;
+        }
+
+        public void SetEditLayout(AlpacaLayoutEnum layout)
+        {
+            PortalController.UpdatePortalSetting(_portalId, "OpenContent_EditLayout", ((int)layout).ToString(), true);
+        }
+        public bool GetLoadBootstrap()
+        {
+            var loadBootstrapSetting = PortalController.GetPortalSetting(SettingsLoadBootstrap, _portalId, string.Empty);
+            bool loadBootstrap;
+            if (!string.IsNullOrWhiteSpace(loadBootstrapSetting) && bool.TryParse(loadBootstrapSetting, out loadBootstrap))
+                return loadBootstrap;
+            return SettingsDefaultLoadBootstrap;
+        }
+
+        public void SetLoadBootstrap(bool loadBootstrap)
+        {
+            PortalController.UpdatePortalSetting(_portalId, SettingsLoadBootstrap, loadBootstrap.ToString(), true);
+        }
     }
+
+    
 }

@@ -306,3 +306,4 @@
 /// <reference path="../js/swagger/lib/object-assign-pollyfill.js" />
 /// <reference path="../js/swagger/lib/swagger-oauth.js" />
 /// <reference path="../alpaca/js/fields/dnn/role2field.js" />
+/// <reference path="../js/bootstrap/js/bootstrap.js" />

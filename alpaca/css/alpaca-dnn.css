@@ -490,6 +490,11 @@ select.oc-ddl-versions {
     color: #333;
     font-size: 12px;
 }
+@media screen and (max-width: 767px) {
+    select.oc-ddl-versions {
+        display: none;
+    }
+}
 
 .bootstrap-datetimepicker-widget {
     left: 35% !important;

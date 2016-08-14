@@ -26,6 +26,7 @@ using Satrabel.OpenContent.Components.Lucene.Index;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.Lucene.Config;
+using Satrabel.OpenContent.Components.Alpaca;
 
 #endregion
 
@@ -74,6 +75,12 @@ namespace Satrabel.OpenContent
 
                 string OpenContent_Logging = PortalController.GetPortalSetting("OpenContent_Logging", ModuleContext.PortalId, "none");
                 ddlLogging.SelectedValue = OpenContent_Logging;
+
+                var editLayoutItem = ddlEditLayout.Items.FindByValue(((int)OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetEditLayout()).ToString());
+                if (editLayoutItem != null) editLayoutItem.Selected = true;
+
+                cbLoadBootstrap.Checked = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetLoadBootstrap();
+                cbLoadBootstrap.Visible = lLoadBootstrap.Visible = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetEditLayout() != AlpacaLayoutEnum.DNN;
             }
         }
         protected void cmdSave_Click(object sender, EventArgs e)
@@ -84,20 +91,28 @@ namespace Satrabel.OpenContent
                 PortalController.DeletePortalSetting(ModuleContext.PortalId, "OpenContent_EditorsRoleId");
 
             PortalController.UpdatePortalSetting(ModuleContext.PortalId, "OpenContent_AutoAttach", cbMLContent.Checked.ToString(), true);
-
             int maxVersions;
             if (int.TryParse(ddlMaxVersions.SelectedValue, out maxVersions)) {
                 OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.SetMaxVersions(maxVersions);
             }
-
             PortalController.UpdatePortalSetting(ModuleContext.PortalId, "OpenContent_Logging", ddlLogging.SelectedValue, true);
-
+            int editLayout;
+            if (int.TryParse(ddlEditLayout.SelectedValue, out editLayout))
+            {
+                OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.SetEditLayout((AlpacaLayoutEnum)editLayout);
+            }
+            OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.SetLoadBootstrap(cbLoadBootstrap.Checked);
             Response.Redirect(Globals.NavigateURL(), true);
         }
         protected void cmdCancel_Click(object sender, EventArgs e)
         {
         }
         #endregion
+
+        protected void ddlEditLayout_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            cbLoadBootstrap.Visible = lLoadBootstrap.Visible = ddlEditLayout.SelectedValue != "1"; // DNN
+        }
 
 
     }

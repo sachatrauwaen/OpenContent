@@ -50,14 +50,14 @@
         getDescription: function () {
             return "Image Cropper Field.";
         },
-        getControlEl: function () {
+        getTextControlEl: function () {
             return $(this.control.get(0)).find('input[type=text]#' + this.id);
         },
         setValue: function (value) {
 
             //var el = $( this.control).filter('#'+this.id);
             //var el = $(this.control.get(0)).find('input[type=text]');
-            var el = this.getControlEl();
+            var el = this.getTextControlEl();
 
             if (el && el.length > 0) {
                 if (Alpaca.isEmpty(value)) {
@@ -80,7 +80,7 @@
 
         getValue: function () {
             var value = null;
-            var el = this.getControlEl();
+            var el = this.getTextControlEl();
             if (el && el.length > 0) {
                 //value = el.val();
                 value = {
@@ -91,7 +91,7 @@
             return value;
         },
         getCroppedData: function () {
-            var el = this.getControlEl();
+            var el = this.getTextControlEl();
             var cropdata = {};
             for (var i in this.options.croppers) {
                 var cropper = this.options.croppers[i];
@@ -139,7 +139,7 @@
         },
         setCroppedData: function (value) {
 
-            var el = this.getControlEl();
+            var el = this.getTextControlEl();
             var parentel = this.getFieldEl();
             if (el && el.length > 0) {
                 if (Alpaca.isEmpty(value)) {
@@ -173,7 +173,7 @@
             }
 
             /*
-            var el = this.getControlEl();
+            var el = this.getTextControlEl();
             var $image = el.parent().find('.image');
             if (el && el.length > 0) {
                 if (Alpaca.isEmpty(value)) {
@@ -187,7 +187,7 @@
         },
 
         setCroppedDataForId: function (id, value) {
-            var el = this.getControlEl();
+            var el = this.getTextControlEl();
             if (value) {
                 var $cropbutton = $('#' + id);
                 $cropbutton.data('cropdata', value);
@@ -195,18 +195,18 @@
         },
         getCurrentCropData: function () {
             /*
-            var el = this.getControlEl();
+            var el = this.getTextControlEl();
             var curtab = $(el).parent().parent().find(".alpaca-form-tab.active");
             var cropdata = $(this).data('cropdata');
             */
 
-            var el = this.getFieldEl(); //this.getControlEl();
+            var el = this.getFieldEl(); //this.getTextControlEl();
             var curtab = $(el).parent().find(".alpaca-form-tab.active");
             var cropdata = $(curtab).data('cropdata');
             return cropdata;
         },
         setCurrentCropData: function (value) {
-            var el = this.getFieldEl(); //this.getControlEl();
+            var el = this.getFieldEl(); //this.getTextControlEl();
             var curtab = $(el).parent().find(".alpaca-form-tab.active");
             $(curtab).data('cropdata', value);
 
@@ -253,7 +253,7 @@
         },
         handlePostRender: function (callback) {
             var self = this;
-            var el = this.getControlEl();
+            var el = this.getTextControlEl();
             var parentel = this.getFieldEl();
 
             var cropButton = $('<a href="#" class="alpaca-form-button">Crop</a>');//.appendTo($(el).parent());
@@ -496,7 +496,7 @@
                 }
 
                 //var el = $(this.control.get(0)).find('input[type=text]');
-                var el = this.getControlEl();
+                var el = this.getTextControlEl();
                 // process typeahead
                 $(el).typeahead(tConfig, tDatasets);
 
