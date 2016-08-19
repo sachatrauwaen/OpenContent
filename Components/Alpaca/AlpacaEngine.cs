@@ -112,6 +112,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
             JavaScript.RequestRegistration(CommonJs.jQueryFileUpload); // image file upload
             DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "oc_websiteRoot", FileUri.NormalizedApplicationPath, true);
+            JavaScript.RequestRegistration(CommonJs.DnnPlugins); // avoid js error TypeError: $(...).jScrollPane is not a function
         }
 
         private void RegisterFields(bool bootstrap)
