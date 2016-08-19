@@ -216,7 +216,7 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         #region Private
 
-        internal static Query ParseQuery(string searchQuery, string defaultFieldName)
+        public static Query ParseQuery(string searchQuery, string defaultFieldName)
         {
             var parser = new QueryParser(Version.LUCENE_30, defaultFieldName, JsonMappingUtils.GetAnalyser());
             Query query;
