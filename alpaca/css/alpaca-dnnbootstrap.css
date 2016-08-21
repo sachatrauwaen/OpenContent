@@ -174,5 +174,10 @@ select.oc-ddl-versions {
     position:absolute;
     right:0;
     top:0;
+    width:auto !important;
+}
+
+.alpaca-array-actionbar button i.glyphicon{
+    color: #157ab5;
 }
 
