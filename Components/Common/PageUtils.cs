@@ -11,6 +11,7 @@ namespace Satrabel.OpenContent.Components
 {
     public static class PageUtils
     {
+
         /// <summary>
         /// Sets the page title. (use from a module)
         /// </summary>
@@ -171,10 +172,6 @@ namespace Satrabel.OpenContent.Components
             for (intTab = intRootLevel; intTab <= PortalSettings.Current.ActiveTab.BreadCrumbs.Count - 1; intTab++)
             {
                 var objTab = (TabInfo)PortalSettings.Current.ActiveTab.BreadCrumbs[intTab];
-                if (objTab.TabID > 0)
-                {
-                    continue;
-                }
                 if (intTab != intRootLevel)
                 {
                     strBreadCrumbs += HttpUtility.HtmlDecode(separator);
