@@ -2,7 +2,7 @@
 	<h3>License</h3>
 	<p class="Owner">		
 		Copyright (c) 2016 by Satrabel.be</br>
-		<a href=http://www.satrabel.be>www.satrabel.be</a></br>
+		<a href=http://www.satrabel.be>www.satrabel.be</a>
 	</p>
     <p>
         Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated 
