@@ -317,15 +317,7 @@ namespace Satrabel.OpenContent
                     }
 
                     var tabpath = tab.TabPath.Replace("//", "/").TrimEnd(tab.TabName).Trim('/');
-                    ListItem li;
-                    if (string.IsNullOrEmpty(tabpath))
-                    {
-                        li = new ListItem(string.Format("{0} - {1}", tab.TabName, item.ModuleTitle), item.TabModuleID.ToString());
-                    }
-                    else
-                    {
-                        li = new ListItem(string.Format("[{2}]{0} - {1}", tab.TabName, item.ModuleTitle, tabpath), item.TabModuleID.ToString());
-                    }
+                    var li = new ListItem(string.Format("{2}/{0} - {1}", tab.TabName, item.ModuleTitle, tabpath), item.TabModuleID.ToString());
 
                     listItems.Add(li);
                     if (item.TabID == tabId && item.ModuleID == moduleId)
