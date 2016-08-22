@@ -75,5 +75,9 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 return System.Web.VirtualPathUtility.ToAbsolute(string.Concat(System.Web.HttpRuntime.AppDomainAppVirtualPath, "/"));
             }
         }
+        [JsonProperty(PropertyName = "bootstrap")]
+        public bool Bootstrap { get; set; }
+        [JsonProperty(PropertyName = "horizontal")]
+        public bool Horizontal { get; set; }
     }
 }

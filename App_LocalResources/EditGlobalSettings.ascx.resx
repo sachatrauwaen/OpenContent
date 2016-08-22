@@ -135,4 +135,10 @@
   <data name="lLogging.Text" xml:space="preserve">
     <value>Logging (Browser console)</value>
   </data>
+  <data name="lEditLayout.Text" xml:space="preserve">
+    <value>Edit Form Layout</value>
+  </data>
+  <data name="lLoadBootstrap.Text" xml:space="preserve">
+    <value>Load Bootstrap on Edit Form</value>
+  </data>
 </root>

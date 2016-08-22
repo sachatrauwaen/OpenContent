@@ -20,8 +20,14 @@ alpacaEngine.engine = function(config) {
     self.deleteAction = "Delete";
     self.data = {};
     self.rootUrl = config.appPath;
-
-    
+    self.bootstrap = config.bootstrap;
+    self.view = "dnn-edit";
+    if (config.bootstrap) {
+        self.view = config.horizontal ? "dnnbootstrap-edit-horizontal" : "dnnbootstrap-edit";
+    }
+    if (config.bootstrap && $.fn.select2) {
+        $.fn.select2.defaults.set("theme", "bootstrap");
+    }
     if (config.editAction) {
         self.editAction = config.editAction;
     }
@@ -54,6 +60,7 @@ alpacaEngine.engine = function(config) {
                 //'position': 'top',
                 height: newHeight,
                 width: newWidth,
+                minWidth: 300,
                 //position: 'center'
                 resizable: false,
             });
@@ -161,7 +168,7 @@ alpacaEngine.engine = function(config) {
             "schema": config.schema,
             "options": config.options,
             "data": data,
-            "view": config.view ? config.view : "dnn-edit",
+            "view": config.view ? config.view : self.view,
             "connector": connector,
             "postRender": function (control) {
                 var selfControl = control;

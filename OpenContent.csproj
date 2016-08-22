@@ -142,6 +142,7 @@
     <Compile Include="AddEdit.ascx.designer.cs">
       <DependentUpon>AddEdit.ascx</DependentUpon>
     </Compile>
+    <Compile Include="Components\Alpaca\AlpacaLayoutEnum.cs" />
     <Compile Include="Components\Json\InvalidJsonFileException.cs" />
     <Compile Include="Components\Logging\LoggingUtils.cs" />
     <Compile Include="Components\Logging\LogContext.cs" />
@@ -397,7 +398,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="AddEdit.ascx" />
-    <Content Include="alpaca\css\alpaca-bootstrap.css" />
+    <Content Include="alpaca\css\alpaca-dnnbootstrap.css" />
     <Content Include="alpaca\css\alpaca-dnn.css" />
     <Content Include="alpaca\css\img\Add_16x16_Gray.png" />
     <Content Include="alpaca\css\img\Delete_16X16_Gray.png" />
@@ -463,6 +464,13 @@
     <Content Include="css\font-awesome\css\font-awesome.css" />
     <Content Include="css\font-awesome\css\font-awesome.min.css" />
     <Content Include="css\font-awesome\fonts\fontawesome-webfont.svg" />
+    <Content Include="js\bootstrap\css\bootstrap-theme.css" />
+    <Content Include="js\bootstrap\css\bootstrap-theme.min.css" />
+    <Content Include="js\bootstrap\css\bootstrap.css" />
+    <Content Include="js\bootstrap\css\bootstrap.min.css" />
+    <Content Include="js\bootstrap\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="js\bootstrap\js\bootstrap.js" />
+    <Content Include="js\bootstrap\js\bootstrap.min.js" />
     <Content Include="js\swagger\css\print.css" />
     <Content Include="js\swagger\css\reset.css" />
     <Content Include="js\swagger\css\screen.css" />
@@ -883,6 +891,10 @@
     <Content Include="js\swagger\swagger-ui.min.js.map">
       <DependentUpon>swagger-ui.min.js</DependentUpon>
     </Content>
+    <Content Include="js\bootstrap\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="js\bootstrap\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="js\bootstrap\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="js\bootstrap\fonts\glyphicons-halflings-regular.woff2" />
     <None Include="Scripts\_references.js" />
     <Content Include="js\select2\i18n\az.js" />
     <Content Include="js\select2\i18n\bg.js" />
@@ -1065,6 +1077,34 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_LocalResources\AlpacaFormBuilder.ascx.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_LocalResources\AlpacaFormBuilder.ascx.de-AT.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_LocalResources\Edit.ascx.de-AT.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_LocalResources\EditAddData.ascx.de-AT.resx" />
+    <Content Include="App_LocalResources\EditAddData.ascx.de-DE.resx" />
+    <Content Include="App_LocalResources\EditAddData.ascx.resx" />
+    <Content Include="App_LocalResources\EditData.ascx.de-AT.resx" />
+    <Content Include="App_LocalResources\EditData.ascx.de-DE.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_LocalResources\EditGlobalSettings.ascx.de-AT.resx" />
+    <Content Include="App_LocalResources\EditGlobalSettings.ascx.de-DE.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_LocalResources\EditInit.ascx.de-AT.resx" />
+    <Content Include="App_LocalResources\EditInit.ascx.de-DE.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_LocalResources\EditQuery.ascx.de-AT.resx" />
+    <Content Include="App_LocalResources\EditQuery.ascx.de-DE.resx" />
+    <Content Include="App_LocalResources\EditSettings.ascx.de-AT.resx" />
+    <Content Include="App_LocalResources\EditTemplate.ascx.de-AT.resx" />
+    <Content Include="App_LocalResources\ShareTemplate.ascx.de-AT.resx" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

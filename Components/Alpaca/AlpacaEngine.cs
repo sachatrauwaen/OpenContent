@@ -48,16 +48,21 @@ namespace Satrabel.OpenContent.Components.Alpaca
             Prefix = filePrefix;
         }
 
-        public void RegisterAll(bool bootstrap = false)
+        public void RegisterAll(bool bootstrap = false, bool loadBootstrap = false)
         {
-            RegisterAlpaca(bootstrap);
+            RegisterAlpaca(bootstrap, loadBootstrap);
             RegisterTemplates();
             RegisterScripts(bootstrap);
-            RegisterFields();
+            RegisterFields(bootstrap);
         }
 
-        private void RegisterAlpaca(bool bootstrap)
+        private void RegisterAlpaca(bool bootstrap, bool loadBootstrap)
         {
+            if (loadBootstrap)
+            {
+                ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/bootstrap/js/bootstrap.min.js", FileOrder.Js.DefaultPriority);
+                ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/bootstrap/css/bootstrap.min.css", FileOrder.Css.DefaultPriority);
+            }
             ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/lib/handlebars/handlebars.js", FileOrder.Js.DefaultPriority);
             ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/lib/typeahead.js/dist/typeahead.bundle.min.js", FileOrder.Js.DefaultPriority);
 
@@ -66,6 +71,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
             if (bootstrap)
             {
                 ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/alpaca/bootstrap/alpaca.css", FileOrder.Css.DefaultPriority);
+                ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/alpaca/css/alpaca-dnnbootstrap.css", FileOrder.Css.DefaultPriority);
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/alpaca/bootstrap/alpaca.js", FileOrder.Js.DefaultPriority + 1);
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/alpaca/js/views/dnnbootstrap.js", FileOrder.Js.DefaultPriority + 2);
             }
@@ -106,9 +112,10 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
             JavaScript.RequestRegistration(CommonJs.jQueryFileUpload); // image file upload
             DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "oc_websiteRoot", FileUri.NormalizedApplicationPath, true);
+            JavaScript.RequestRegistration(CommonJs.DnnPlugins); // avoid js error TypeError: $(...).jScrollPane is not a function
         }
 
-        private void RegisterFields()
+        private void RegisterFields(bool bootstrap)
         {
             bool allFields = string.IsNullOrEmpty(VirtualDirectory);
             List<string> fieldTypes = new List<string>();
@@ -136,6 +143,10 @@ namespace Satrabel.OpenContent.Components.Alpaca
             {
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/select2/select2.js", FileOrder.Js.DefaultPriority);
                 ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/select2/select2.css", FileOrder.Css.DefaultPriority);
+                if (bootstrap)
+                {
+                    ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/select2/select2-bootstrap.min.css", FileOrder.Css.DefaultPriority+1);
+                }
             }
 
             //<!-- bootstrap datetimepicker for date, time and datetime controls -->

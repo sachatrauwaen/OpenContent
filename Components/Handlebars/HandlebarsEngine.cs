@@ -31,6 +31,8 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 var hbs = HandlebarsDotNet.Handlebars.Create();
                 RegisterDivideHelper(hbs);
                 RegisterMultiplyHelper(hbs);
+                RegisterAdditionHelper(hbs);
+                RegisterSubstractionHelper(hbs);
                 RegisterEqualHelper(hbs);
                 RegisterFormatNumberHelper(hbs);
                 RegisterFormatDateTimeHelper(hbs);
@@ -69,6 +71,8 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 var hbs = HandlebarsDotNet.Handlebars.Create();
                 RegisterDivideHelper(hbs);
                 RegisterMultiplyHelper(hbs);
+                RegisterAdditionHelper(hbs);
+                RegisterSubstractionHelper(hbs);                
                 RegisterEqualHelper(hbs);
                 RegisterFormatNumberHelper(hbs);
                 RegisterFormatDateTimeHelper(hbs);
@@ -96,6 +100,8 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 var hbs = HandlebarsDotNet.Handlebars.Create();
                 RegisterDivideHelper(hbs);
                 RegisterMultiplyHelper(hbs);
+                RegisterAdditionHelper(hbs);
+                RegisterSubstractionHelper(hbs);                
                 RegisterEqualHelper(hbs);
                 RegisterFormatNumberHelper(hbs);
                 RegisterFormatDateTimeHelper(hbs);
@@ -135,6 +141,8 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 }
                 RegisterDivideHelper(hbs);
                 RegisterMultiplyHelper(hbs);
+                RegisterAdditionHelper(hbs);
+                RegisterSubstractionHelper(hbs);
                 RegisterEqualHelper(hbs);
                 RegisterFormatNumberHelper(hbs);
                 RegisterFormatDateTimeHelper(hbs);
@@ -203,6 +211,40 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     int a = int.Parse(parameters[0].ToString());
                     int b = int.Parse(parameters[1].ToString());
                     int c = a / b;
+                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, c.ToString());
+                }
+                catch (Exception)
+                {
+                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "0");
+                }
+            });
+        }
+        private void RegisterAdditionHelper(HandlebarsDotNet.IHandlebars hbs)
+        {
+            hbs.RegisterHelper("add", (writer, context, parameters) =>
+            {
+                try
+                {
+                    int a = int.Parse(parameters[0].ToString());
+                    int b = int.Parse(parameters[1].ToString());
+                    int c = a + b;
+                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, c.ToString());
+                }
+                catch (Exception)
+                {
+                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "0");
+                }
+            });
+        }
+        private void RegisterSubstractionHelper(HandlebarsDotNet.IHandlebars hbs)
+        {
+            hbs.RegisterHelper("substract", (writer, context, parameters) =>
+            {
+                try
+                {
+                    int a = int.Parse(parameters[0].ToString());
+                    int b = int.Parse(parameters[1].ToString());
+                    int c = a - b;
                     HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, c.ToString());
                 }
                 catch (Exception)

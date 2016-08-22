@@ -22,6 +22,18 @@
             <asp:ListItem Value="allways" Text="Always"></asp:ListItem>
         </asp:DropDownList>
     </div>
+    <div class="dnnFormItem">
+        <dnn:Label ID="lEditLayout" ControlName="ddlEditLayout" runat="server" />
+        <asp:DropDownList ID="ddlEditLayout" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlEditLayout_SelectedIndexChanged">
+            <asp:ListItem Value="1" Text="DNN"></asp:ListItem>
+            <asp:ListItem Value="2" Text="Bootstrap"></asp:ListItem>
+            <asp:ListItem Value="3" Text="Bootstrap Horizontal"></asp:ListItem>
+        </asp:DropDownList>
+    </div>
+    <div class="dnnFormItem">
+        <dnn:Label ID="lLoadBootstrap" ControlName="cbLoadBootstrap" runat="server" />
+        <asp:CheckBox ID="cbLoadBootstrap" runat="server" />
+    </div>
     <ul class="dnnActions dnnClear" style="display: block; padding-left: 35%">
         <li>
             <asp:LinkButton ID="cmdSave" runat="server" class="dnnPrimaryAction" resourcekey="cmdSave" />
