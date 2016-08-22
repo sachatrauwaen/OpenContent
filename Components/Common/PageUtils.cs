@@ -135,6 +135,19 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
+        public static void RemoveBreadCrumb(int tabid)
+        {
+            for (int i = 0; i < PortalSettings.Current.ActiveTab.BreadCrumbs.Count; i++)
+            {
+                TabInfo item = (TabInfo)PortalSettings.Current.ActiveTab.BreadCrumbs[i];
+                if (item.TabID == tabid)
+                {
+                    PortalSettings.Current.ActiveTab.BreadCrumbs.RemoveAt(i);
+                    break;
+                }
+            }
+        }
+
         /// <summary>
         /// Clears the breadcrumbs on a Tab. You'll probably use AddBreadCrumb() after this call to fill Breadcrumbs list again.
         /// </summary>
