@@ -22,12 +22,13 @@ using Satrabel.OpenContent.Components.Datasource.search;
 
 namespace Satrabel.OpenContent.Components.Rest
 {
-    
+
     public class RestController : DnnApiController
     {
 
         //[ValidateAntiForgeryToken]
         [SupportedModules("OpenContent")]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         public HttpResponseMessage Get(string entity, string id)
         {
             try
@@ -115,7 +116,7 @@ namespace Satrabel.OpenContent.Components.Rest
                     foreach (var item in model["Items"] as JArray)
                     {
                         item["id"] = item["Context"]["Id"];
-                        JsonUtils.IdJson(item);                        
+                        JsonUtils.IdJson(item);
                     }
                     res[entity] = model["Items"];
                     return Request.CreateResponse(HttpStatusCode.OK, res);
@@ -236,7 +237,7 @@ namespace Satrabel.OpenContent.Components.Rest
                     }
                     res[entity] = model["Items"];
                     res["meta"]["total"] = dsItems.Total;
-                    
+
                     return Request.CreateResponse(HttpStatusCode.OK, res);
                 }
                 else
