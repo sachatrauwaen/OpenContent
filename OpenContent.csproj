@@ -164,7 +164,7 @@
     <Compile Include="Components\Alpaca\OptionsConfig.cs" />
     <Compile Include="Components\Alpaca\QueryBuilder.cs" />
     <Compile Include="Components\Common\DateTimeExtensions.cs" />
-    <Compile Include="Components\Common\DnnUtils.cs" />
+    <Compile Include="Components\Dnn\DnnUtils.cs" />
     <Compile Include="Components\Common\PageUtils.cs" />
     <Compile Include="Components\Datasource\DataSourceContext.cs" />
     <Compile Include="Components\Datasource\DataSourceManager.cs" />

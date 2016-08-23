@@ -20,7 +20,7 @@ namespace Satrabel.OpenContent.Components.Json
         }
         public static bool IsEmpty(this JToken jtoken)
         {
-            //tried using HasValues, but string value is not detected that way.
+            //tried using HasValues, but string value are not detected that way.
             if (jtoken == null) return true;
             string json = jtoken.ToString();
             if (json == "[]") return true;
