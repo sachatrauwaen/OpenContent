@@ -12,7 +12,6 @@
 
 using System.Collections.Generic;
 using DotNetNuke.Entities.Modules;
-using DotNetNuke.Services.Search;
 using DotNetNuke.Common.Utilities;
 using System.Xml;
 using System.Linq;

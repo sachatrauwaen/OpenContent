@@ -5,18 +5,15 @@ using DotNetNuke.Entities.Portals;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Datasource;
-using Satrabel.OpenContent.Components.JPList;
 using Satrabel.OpenContent.Components.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Web;
 using System.Web.Http;
 using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Manifest;
-using System.Web.Http.ModelBinding;
 using Newtonsoft.Json;
 using Satrabel.OpenContent.Components.Datasource.search;
 

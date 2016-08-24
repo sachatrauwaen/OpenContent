@@ -1,23 +1,14 @@
 ﻿using DotNetNuke.Entities.Modules;
-using DotNetNuke.Instrumentation;
 using DotNetNuke.Security;
 using DotNetNuke.Web.Api;
 using Newtonsoft.Json.Linq;
-using Satrabel.OpenContent.Components.Lucene;
 using System;
 using System.Collections.Generic;
-
-using System.Diagnostics;
-using System.IO;
-
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using DotNetNuke.Common.Utilities;
 using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components.Datasource;
-using Satrabel.OpenContent.Components.Datasource.search;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Logging;
 
@@ -61,7 +52,7 @@ namespace Satrabel.OpenContent.Components.JPList
                     }
                     else
                     {
-                        
+
                         queryBuilder.BuildFilter(PortalSettings.UserMode != PortalSettings.Mode.Edit, DnnUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
                     }
 

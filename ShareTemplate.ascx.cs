@@ -12,22 +12,16 @@
 using System;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Common;
-using DotNetNuke.Framework.JavaScriptLibraries;
-using DotNetNuke.Framework;
 using System.Web.UI.WebControls;
 using DotNetNuke.Services.Localization;
 using System.IO;
 using Satrabel.OpenContent.Components;
-using Newtonsoft.Json.Linq;
 using DotNetNuke.Services.FileSystem;
 using DotNetNuke.Entities.Host;
 using DotNetNuke.Common.Utilities;
-using System.Collections.Generic;
 using ICSharpCode.SharpZipLib.Zip;
 using System.Web;
-using System.Xml;
 using Satrabel.OpenContent.Components.Rss;
-using System.Net;
 using Satrabel.OpenContent.Components.Manifest;
 
 #endregion

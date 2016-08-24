@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Web;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Lucene.Config;
@@ -114,7 +111,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
             return json;
         }
 
-        private static void GetFields(SchemaConfig newSchemaFilter, OptionsConfig newOptionsFilter, SchemaConfig schemaConfig, OptionsConfig optionsConfig, List<string> fieldLst, FieldConfig indexConfig,string prefix = "")
+        private static void GetFields(SchemaConfig newSchemaFilter, OptionsConfig newOptionsFilter, SchemaConfig schemaConfig, OptionsConfig optionsConfig, List<string> fieldLst, FieldConfig indexConfig, string prefix = "")
         {
             foreach (var prop in schemaConfig.Properties)
             {
@@ -129,7 +126,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 }
                 if (prop.Value.Type == "object" && idxs != null)
                 {
-                    GetFields(newSchemaFilter, newOptionsFilter, prop.Value, opts, fieldLst, idxs, propKey+".");
+                    GetFields(newSchemaFilter, newOptionsFilter, prop.Value, opts, fieldLst, idxs, propKey + ".");
                     continue;
                 }
                 string optType = opts == null ? "text" : opts.Type;

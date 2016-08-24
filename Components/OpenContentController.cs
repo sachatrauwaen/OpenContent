@@ -15,10 +15,7 @@ using System.Linq;
 using System.Collections.Generic;
 using DotNetNuke.Common.Utilities;
 using DotNetNuke.Data;
-using Newtonsoft.Json.Linq;
-using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Lucene;
-using Satrabel.OpenContent.Components.Lucene.Index;
 using Satrabel.OpenContent.Components.Lucene.Config;
 
 namespace Satrabel.OpenContent.Components
@@ -50,7 +47,7 @@ namespace Satrabel.OpenContent.Components
             }
             if (index)
             {
-                
+
                 LuceneController.Instance.Add(content, indexConfig);
                 LuceneController.Instance.Store.Commit();
             }
@@ -134,7 +131,7 @@ namespace Satrabel.OpenContent.Components
         public IEnumerable<OpenContentInfo> GetContents(int moduleId)
         {
             var cacheArgs = new CacheItemArgs(GetModuleIdCacheKey(moduleId, "GetContents"), CacheTime);
-            return DataCache.GetCachedData<IEnumerable<OpenContentInfo>>(cacheArgs, args => 
+            return DataCache.GetCachedData<IEnumerable<OpenContentInfo>>(cacheArgs, args =>
                 {
                     IEnumerable<OpenContentInfo> content;
 
@@ -150,7 +147,7 @@ namespace Satrabel.OpenContent.Components
         public OpenContentInfo GetContent(int contentId)
         {
             var cacheArgs = new CacheItemArgs(GetContentIdCacheKey(contentId), CacheTime);
-            return DataCache.GetCachedData<OpenContentInfo>(cacheArgs, args => 
+            return DataCache.GetCachedData<OpenContentInfo>(cacheArgs, args =>
                 {
                     OpenContentInfo content;
 

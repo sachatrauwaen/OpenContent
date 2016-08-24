@@ -10,15 +10,10 @@
 ' 
 */
 
-using System;
 using System.Linq;
 using System.Collections.Generic;
 using DotNetNuke.Data;
-using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Json;
-using Satrabel.OpenContent.Components.Lucene;
-using Satrabel.OpenContent.Components.Lucene.Index;
-using Satrabel.OpenContent.Components.Lucene.Config;
 
 namespace Satrabel.OpenContent.Components
 {

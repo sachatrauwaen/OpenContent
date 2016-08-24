@@ -11,10 +11,7 @@
 */
 
 using System;
-using System.Web.Caching;
-using DotNetNuke.Common.Utilities;
 using DotNetNuke.ComponentModel.DataAnnotations;
-using DotNetNuke.Entities.Content;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
@@ -50,7 +47,7 @@ namespace Satrabel.OpenContent.Components
                     _JsonAsJToken = JToken.Parse(this.Json);
                 }
                 // JsonAsJToken is modified (to remove other cultures)
-                return _JsonAsJToken != null ? _JsonAsJToken.DeepClone() : null; 
+                return _JsonAsJToken != null ? _JsonAsJToken.DeepClone() : null;
             }
             set
             {

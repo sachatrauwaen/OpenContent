@@ -12,15 +12,8 @@
 using System;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Common;
-using Lucene.Net.Index;
-using Lucene.Net.Search;
-using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components;
 using Satrabel.OpenContent.Components.Alpaca;
-using Satrabel.OpenContent.Components.Lucene;
-using Satrabel.OpenContent.Components.Lucene.Config;
-using Satrabel.OpenContent.Components.Lucene.Index;
-using Satrabel.OpenContent.Components.Manifest;
 
 #endregion
 

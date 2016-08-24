@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
-using System.Web;
 
 namespace Satrabel.OpenContent.Components.Alpaca
 {
@@ -286,7 +285,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 {
                     Field = fieldName,
                     FieldOperator = OperatorEnum.IN,
-                    MultiValue = roleLst.OrderBy(r=> r).Select(r => new StringRuleValue(r)),
+                    MultiValue = roleLst.OrderBy(r => r).Select(r => new StringRuleValue(r)),
                     FieldType = FieldTypeEnum.KEY
                 });
             }

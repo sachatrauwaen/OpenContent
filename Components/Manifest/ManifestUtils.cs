@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using DotNetNuke.Services.Installer.Log;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Schema;
-using Satrabel.OpenContent.Components.Json;
 
 namespace Satrabel.OpenContent.Components.Manifest
 {

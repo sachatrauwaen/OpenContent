@@ -12,15 +12,9 @@
 using System;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Common;
-using DotNetNuke.Framework.JavaScriptLibraries;
-using DotNetNuke.Framework;
 using Satrabel.OpenContent.Components;
-using System.Web.Hosting;
-using System.Web;
 using Satrabel.OpenContent.Components.Alpaca;
-using System.IO;
 using DotNetNuke.Services.Localization;
-using Satrabel.OpenContent.Components.Manifest;
 
 #endregion
 

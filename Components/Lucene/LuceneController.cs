@@ -10,7 +10,6 @@ using Satrabel.OpenContent.Components.Lucene.Mapping;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Entities.Modules;
-using Satrabel.OpenContent.Components.Dnn;
 using Version = Lucene.Net.Util.Version;
 
 #endregion

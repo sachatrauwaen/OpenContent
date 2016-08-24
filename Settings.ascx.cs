@@ -13,7 +13,6 @@ using System;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Framework;
 using Satrabel.OpenContent.Components;
-using Satrabel.OpenContent.Components.Manifest;
 
 #endregion
 

@@ -1,12 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Web;
-using Newtonsoft.Json;
+﻿using System.Collections;
 using Satrabel.OpenContent.Components.Manifest;
 
 

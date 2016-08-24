@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using DotNetNuke.Common;
 using DotNetNuke.Entities.Content.Common;
 using DotNetNuke.Entities.Modules;

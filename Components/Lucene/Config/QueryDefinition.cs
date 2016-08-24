@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Web;
 using Lucene.Net.Search;
 using Newtonsoft.Json.Linq;
 using Lucene.Net.Index;
@@ -50,7 +48,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
         public QueryDefinition Build(JObject query, bool addWorkflowFilter, IList<UserRoleInfo> roles, NameValueCollection QueryString = null)
         {
             BuildPage(query);
-            BuildFilter(query, addWorkflowFilter, roles,  QueryString);
+            BuildFilter(query, addWorkflowFilter, roles, QueryString);
             BuildSort(query);
             return this;
         }

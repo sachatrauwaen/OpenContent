@@ -12,20 +12,10 @@
 using System;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Common;
-using DotNetNuke.Framework.JavaScriptLibraries;
-using DotNetNuke.Framework;
 using Satrabel.OpenContent.Components;
-using DotNetNuke.Entities.Controllers;
 using DotNetNuke.Entities.Portals;
 using System.Web.UI.WebControls;
 using DotNetNuke.Security.Roles;
-using Lucene.Net.Index;
-using Lucene.Net.Search;
-using Satrabel.OpenContent.Components.Lucene;
-using Satrabel.OpenContent.Components.Lucene.Index;
-using Newtonsoft.Json.Linq;
-using Satrabel.OpenContent.Components.Manifest;
-using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.Alpaca;
 
 #endregion
@@ -66,7 +56,7 @@ namespace Satrabel.OpenContent
                 string OpenContent_AutoAttach = PortalController.GetPortalSetting("OpenContent_AutoAttach", ModuleContext.PortalId, "False");
                 cbMLContent.Checked = bool.Parse(OpenContent_AutoAttach);
 
-                foreach (var item in new [] {5, 10, 25, 50, 100})
+                foreach (var item in new[] { 5, 10, 25, 50, 100 })
                 {
                     ddlMaxVersions.Items.Add(new ListItem(item.ToString(), item.ToString()));
                 }
@@ -92,7 +82,8 @@ namespace Satrabel.OpenContent
 
             PortalController.UpdatePortalSetting(ModuleContext.PortalId, "OpenContent_AutoAttach", cbMLContent.Checked.ToString(), true);
             int maxVersions;
-            if (int.TryParse(ddlMaxVersions.SelectedValue, out maxVersions)) {
+            if (int.TryParse(ddlMaxVersions.SelectedValue, out maxVersions))
+            {
                 OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.SetMaxVersions(maxVersions);
             }
             PortalController.UpdatePortalSetting(ModuleContext.PortalId, "OpenContent_Logging", ddlLogging.SelectedValue, true);

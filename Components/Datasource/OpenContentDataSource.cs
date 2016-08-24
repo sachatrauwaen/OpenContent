@@ -1,16 +1,11 @@
-﻿using DotNetNuke.Entities.Modules;
-using DotNetNuke.Common.Utilities;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Datasource.search;
-using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Lucene;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using Satrabel.OpenContent.Components.Lucene.Config;
-using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components.Logging;
 
 namespace Satrabel.OpenContent.Components.Datasource
@@ -296,7 +291,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         {
             throw new NotImplementedException();
         }
- 
+
         #endregion
     }
 }
