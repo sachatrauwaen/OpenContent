@@ -157,6 +157,9 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                     int sortfieldtype = SortField.STRING;
                     string sortFieldPrefix = "";
                     Sortfieldtype(rule.FieldType, ref sortfieldtype, ref sortFieldPrefix);
+
+                    if (rule.Field == "createdondate") rule.Field = "$createdondate";
+
                     sortFields.Add(new SortField(sortFieldPrefix + rule.Field, sortfieldtype, rule.Descending));
                 }
                 sort = new Sort(sortFields.ToArray());

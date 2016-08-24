@@ -110,6 +110,17 @@ namespace Satrabel.OpenContent.Components
             if (qIndex != -1) text = text.Substring(0, qIndex);
             return text;
         }
+
+        public static DateTime TicksToDateTime(this string ticks)
+        {
+            if (string.IsNullOrEmpty(ticks)) return DateTime.MinValue;
+            return new DateTime(long.Parse(ticks));
+        }
+        public static DateTime TicksToDateTime(this long ticks)
+        {
+            return new DateTime(ticks);
+        }
+
         #endregion
 
         public static string HtmlDecodeIfNeeded(string text)

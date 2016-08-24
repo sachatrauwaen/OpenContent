@@ -682,6 +682,7 @@ namespace Satrabel.OpenContent
             }
             else
             {
+                //server side
                 bool useLucene = info.Template.Manifest.Index;
                 if (useLucene)
                 {
@@ -721,8 +722,7 @@ namespace Satrabel.OpenContent
                 }
                 else
                 {
-                    //dataList = ctrl.GetContents(info.ModuleId).ToList();
-                    dataList = ds.GetAll(dsContext, null).Items;
+                    dataList = ds.GetAll(dsContext, null).Items.OrderBy(i => i.CreatedOnDate);
                     if (LogContext.IsLogActive)
                     {
                         var logKey = "Get all data of module";

@@ -300,11 +300,14 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 {
                     string fieldName = item["Field"].ToString();
                     string fieldOrder = item["Order"].ToString();
-                    Sort.Add(FieldConfigUtils.CreateSortRule(IndexConfig, cultureCode,
-                        fieldName,
-                        fieldOrder == "desc"
-                    ));
+                    Sort.Add(FieldConfigUtils.CreateSortRule(IndexConfig, cultureCode, fieldName, fieldOrder == "desc"));
                 }
+            }
+            else
+            {
+                string fieldName = "createdondate";
+                string fieldOrder = "desc";
+                Sort.Add(FieldConfigUtils.CreateSortRule(IndexConfig, cultureCode, fieldName, fieldOrder == "desc"));
             }
             return this;
         }

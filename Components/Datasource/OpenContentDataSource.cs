@@ -131,7 +131,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             OpenContentController ctrl = new OpenContentController();
             if (select == null)
             {
-                var dataList = ctrl.GetContents(context.ModuleId).Select(c => new DefaultDataItem()
+                var dataList = ctrl.GetContents(context.ModuleId).OrderBy(i => i.CreatedOnDate).Select(c => new DefaultDataItem()
                 {
                     Id = c.ContentId.ToString(),
                     Title = c.Title,
