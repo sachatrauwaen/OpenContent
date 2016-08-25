@@ -38,7 +38,7 @@ namespace Satrabel.OpenContent.Components.JPList
                 {
                     reqOptions = JObject.Parse(req.options);
                 }
-                //string editRole = manifest == null ? "" : manifest.EditRole;
+                //string editRole = manifest.GetEditRole();
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 if (listMode)
                 {

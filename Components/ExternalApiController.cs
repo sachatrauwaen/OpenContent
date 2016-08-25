@@ -33,7 +33,7 @@ namespace Satrabel.OpenContent.Components
                 var manifest = settings.Template.Manifest;
                 TemplateManifest templateManifest = settings.Template;
                 index = settings.Template.Manifest.Index;
-                string editRole = manifest == null ? "" : manifest.EditRole;
+                string editRole = manifest.GetEditRole();
 
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 int createdByUserid = -1;

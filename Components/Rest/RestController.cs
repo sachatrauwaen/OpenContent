@@ -48,7 +48,7 @@ namespace Satrabel.OpenContent.Components.Rest
                 //{
                 //    reqOptions = JObject.Parse(req.options);
                 //}
-                //string editRole = manifest == null ? "" : manifest.EditRole;
+                //string editRole = manifest.GetEditRole();
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 if (listMode)
                 {
@@ -161,7 +161,7 @@ namespace Satrabel.OpenContent.Components.Rest
                 //{
                 //    reqOptions = JObject.Parse(req.options);
                 //}
-                //string editRole = manifest == null ? "" : manifest.EditRole;
+                //string editRole = manifest.GetEditRole();
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 if (listMode)
                 {
@@ -302,7 +302,7 @@ namespace Satrabel.OpenContent.Components.Rest
                 var manifest = settings.Template.Manifest;
                 TemplateManifest templateManifest = settings.Template;
                 index = settings.Template.Manifest.Index;
-                string editRole = manifest == null ? "" : manifest.EditRole;
+                string editRole = manifest.GetEditRole();
 
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 int createdByUserid = -1;
@@ -389,7 +389,7 @@ namespace Satrabel.OpenContent.Components.Rest
                 var manifest = settings.Template.Manifest;
                 TemplateManifest templateManifest = settings.Template;
                 index = settings.Template.Manifest.Index;
-                string editRole = manifest == null ? "" : manifest.EditRole;
+                string editRole = manifest.GetEditRole();
 
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 int createdByUserid = -1;
@@ -462,7 +462,7 @@ namespace Satrabel.OpenContent.Components.Rest
                 var manifest = settings.Template.Manifest;
                 TemplateManifest templateManifest = settings.Template;
                 index = settings.Template.Manifest.Index;
-                string editRole = manifest == null ? "" : manifest.EditRole;
+                string editRole = manifest.GetEditRole();
 
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 int createdByUserid = -1;
@@ -523,7 +523,7 @@ namespace Satrabel.OpenContent.Components.Rest
                 var manifest = settings.Template.Manifest;
                 TemplateManifest templateManifest = settings.Template;
                 index = settings.Template.Manifest.Index;
-                string editRole = manifest == null ? "" : manifest.EditRole;
+                string editRole = manifest.GetEditRole();
 
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 int createdByUserid = -1;

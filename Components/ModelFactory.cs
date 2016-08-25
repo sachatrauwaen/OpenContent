@@ -206,7 +206,7 @@ namespace Satrabel.OpenContent.Components
             }
             JArray items = new JArray(); ;
             model["Items"] = items;
-            string editRole = Manifest == null ? "" : Manifest.EditRole;
+            string editRole = Manifest.GetEditRole();
             if (DataList != null && DataList.Any())
             {
                 foreach (var item in DataList)
@@ -387,7 +387,7 @@ namespace Satrabel.OpenContent.Components
                 }
             }
 
-            string editRole = Manifest == null ? "" : Manifest.EditRole;
+            string editRole = Manifest.GetEditRole();
             if (!onlyData)
             {
                 // context

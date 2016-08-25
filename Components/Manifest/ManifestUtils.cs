@@ -127,5 +127,10 @@ namespace Satrabel.OpenContent.Components.Manifest
 
             return false;
         }
+
+        internal static string GetEditRole(this Manifest manifest)
+        {
+            return manifest == null ? "" : manifest.EditRole;
+        }
     }
 }
