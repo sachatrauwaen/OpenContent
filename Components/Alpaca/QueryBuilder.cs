@@ -231,34 +231,34 @@ namespace Satrabel.OpenContent.Components.Alpaca
         private void AddWorkflowFilter(FilterGroup filter)
         {
 
-            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey("publishstatus"))
+            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishStatus))
             {
                 filter.AddRule(new FilterRule()
                 {
-                    Field = "publishstatus",
+                    Field = AppConfig.FieldNamePublishStatus,
                     Value = new StringRuleValue("published"),
                     FieldType = FieldTypeEnum.KEY
                 });
             }
-            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey("publishstartdate"))
+            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishStartDate))
             {
                 //DateTime startDate = DateTime.MinValue;
                 //DateTime endDate = DateTime.Today;
                 filter.AddRule(new FilterRule()
                 {
-                    Field = "publishstartdate",
+                    Field = AppConfig.FieldNamePublishStartDate,
                     Value = new DateTimeRuleValue(DateTime.Today),
                     FieldOperator = OperatorEnum.LESS_THEN_OR_EQUALS,
                     FieldType = FieldTypeEnum.DATETIME
                 });
             }
-            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey("publishenddate"))
+            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishEndDate))
             {
                 //DateTime startDate = DateTime.Today;
                 //DateTime endDate = DateTime.MaxValue;
                 filter.AddRule(new FilterRule()
                 {
-                    Field = "publishenddate",
+                    Field = AppConfig.FieldNamePublishEndDate,
                     Value = new DateTimeRuleValue(DateTime.Today),
                     FieldOperator = OperatorEnum.GREATER_THEN_OR_EQUALS,
                     FieldType = FieldTypeEnum.DATETIME
@@ -299,6 +299,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 });
             }
         }
+
         public QueryBuilder BuildSort(JObject query, string cultureCode)
         {
             var Sort = Select.Sort;

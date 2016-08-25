@@ -41,7 +41,7 @@ namespace Satrabel.OpenContent.Components.Lucene
         #region constructor
         private LuceneController()
         {
-            _serviceInstance = new LuceneService(@"App_Data\OpenContent\lucene_index", JsonMappingUtils.GetAnalyser());
+            _serviceInstance = new LuceneService(AppConfig.Instance.LuceneIndexFolder, JsonMappingUtils.GetAnalyser());
         }
 
         public static void ClearInstance()
