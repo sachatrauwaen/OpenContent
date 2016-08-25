@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Manifest;
 
 
@@ -6,6 +7,8 @@ namespace Satrabel.OpenContent.Components
 {
     public class OpenContentSettings
     {
+        private readonly string _query;
+
         public OpenContentSettings(IDictionary moduleSettings)
         {
             var template = moduleSettings["template"] as string;    //templatepath+file  or  //manifestpath+key
@@ -30,7 +33,7 @@ namespace Satrabel.OpenContent.Components
             }
 
             Data = moduleSettings["data"] as string;
-            Query = moduleSettings["query"] as string;
+            _query = moduleSettings["query"] as string;
             var sDetailTabId = moduleSettings["detailtabid"] as string;
             DetailTabId = -1;
             if (!string.IsNullOrEmpty(sDetailTabId))
@@ -53,7 +56,15 @@ namespace Satrabel.OpenContent.Components
         //internal FileUri Template { get; private set; }
 
         public string Data { get; private set; }
-        public string Query { get; private set; }
+
+        public JObject Query
+        {
+            get
+            {
+                return !string.IsNullOrEmpty(_query) ? JObject.Parse(_query) : new JObject();
+            }
+        }
+
         public bool IsOtherModule
         {
             get

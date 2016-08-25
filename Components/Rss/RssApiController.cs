@@ -49,15 +49,8 @@ namespace Satrabel.OpenContent.Components.Rss
                 var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
 
                 QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
-                if (!string.IsNullOrEmpty(settings.Query))
-                {
-                    var query = JObject.Parse(settings.Query);
-                    queryBuilder.Build(query, PortalSettings.UserMode != PortalSettings.Mode.Edit, UserInfo.UserID, DnnUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
-                }
-                else
-                {
-                    queryBuilder.BuildFilter(PortalSettings.UserMode != PortalSettings.Mode.Edit, DnnUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
-                }
+                queryBuilder.Build(settings.Query, PortalSettings.UserMode != PortalSettings.Mode.Edit, UserInfo.UserID, DnnUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
+
                 var ds = DataSourceManager.GetDataSource(manifest.DataSource);
                 var dsContext = new DataSourceContext()
                 {

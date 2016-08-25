@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using Satrabel.OpenContent.Components.Json;
 
 namespace Satrabel.OpenContent.Components.Alpaca
 {
@@ -25,9 +26,16 @@ namespace Satrabel.OpenContent.Components.Alpaca
 
         public QueryBuilder Build(JObject query, bool addWorkflowFilter, int userId, string cultureCode, IList<UserRoleInfo> roles, NameValueCollection queryString = null)
         {
-            BuildPage(query);
-            BuildFilter(query, addWorkflowFilter, userId, cultureCode, roles, queryString);
-            BuildSort(query, cultureCode);
+            if (query.IsEmpty())
+            {
+                BuildFilter(addWorkflowFilter, cultureCode, roles, queryString);
+            }
+            else
+            {
+                BuildPage(query);
+                BuildFilter(query, addWorkflowFilter, userId, cultureCode, roles, queryString);
+                BuildSort(query, cultureCode);
+            }
             return this;
         }
 
@@ -46,7 +54,8 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
             return this;
         }
-        public QueryBuilder BuildFilter(JObject query, bool addWorkflowFilter, int userId, string cultureCode, IList<UserRoleInfo> roles, NameValueCollection queryString = null)
+
+        private QueryBuilder BuildFilter(JObject query, bool addWorkflowFilter, int userId, string cultureCode, IList<UserRoleInfo> roles, NameValueCollection queryString = null)
         {
             var workFlowFilter = Select.Filter;
             var vExcludeCurrentItem = query["ExcludeCurrentItem"] as JValue;
@@ -208,7 +217,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
         }
 
-        public QueryBuilder BuildFilter(bool addWorkflowFilter, string cultureCode, IList<UserRoleInfo> roles, NameValueCollection queryString = null)
+        private QueryBuilder BuildFilter(bool addWorkflowFilter, string cultureCode, IList<UserRoleInfo> roles, NameValueCollection queryString = null)
         {
             BuildQueryStringFilter(queryString, Select.Filter);
             if (addWorkflowFilter)

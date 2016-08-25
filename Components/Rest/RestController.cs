@@ -54,15 +54,7 @@ namespace Satrabel.OpenContent.Components.Rest
                 {
                     var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
-                    if (!string.IsNullOrEmpty(settings.Query))
-                    {
-                        var query = JObject.Parse(settings.Query);
-                        queryBuilder.Build(query, PortalSettings.UserMode != PortalSettings.Mode.Edit, UserInfo.UserID, DnnUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
-                    }
-                    else
-                    {
-                        queryBuilder.BuildFilter(PortalSettings.UserMode != PortalSettings.Mode.Edit, DnnUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
-                    }
+                    queryBuilder.Build(settings.Query, PortalSettings.UserMode != PortalSettings.Mode.Edit, UserInfo.UserID, DnnUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
                     //if (restSelect != null)
                     //{
                     //    RestQueryBuilder.MergeJpListQuery(indexConfig, queryBuilder.Select, restSelect);
@@ -176,15 +168,8 @@ namespace Satrabel.OpenContent.Components.Rest
 
                     var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
-                    if (!string.IsNullOrEmpty(settings.Query))
-                    {
-                        var query = JObject.Parse(settings.Query);
-                        queryBuilder.Build(query, PortalSettings.UserMode != PortalSettings.Mode.Edit, UserInfo.UserID, PortalSettings.CultureCode, UserInfo.Social.Roles);
-                    }
-                    else
-                    {
-                        queryBuilder.BuildFilter(PortalSettings.UserMode != PortalSettings.Mode.Edit, DnnUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
-                    }
+                    queryBuilder.Build(settings.Query, PortalSettings.UserMode != PortalSettings.Mode.Edit, UserInfo.UserID, DnnUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
+
                     RestQueryBuilder.MergeQuery(indexConfig, queryBuilder.Select, restSelect, DnnUtils.GetCurrentCultureCode());
                     IDataItems dsItems;
                     if (queryBuilder.DefaultNoResults && queryBuilder.Select.IsQueryEmpty)
