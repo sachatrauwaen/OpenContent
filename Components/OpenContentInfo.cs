@@ -24,7 +24,7 @@ namespace Satrabel.OpenContent.Components
     [Scope("ModuleId")]
     public class OpenContentInfo
     {
-        private JToken _JsonAsJToken = null;
+        private JToken _jsonAsJToken = null;
         public OpenContentInfo()
         {
 
@@ -37,21 +37,22 @@ namespace Satrabel.OpenContent.Components
         public string Title { get; set; }
         public string Html { get; set; }
         public string Json { get; set; }
+
         [IgnoreColumn]
         public JToken JsonAsJToken
         {
             get
             {
-                if (_JsonAsJToken == null && !string.IsNullOrEmpty(this.Json))
+                if (_jsonAsJToken == null && !string.IsNullOrEmpty(this.Json))
                 {
-                    _JsonAsJToken = JToken.Parse(this.Json);
+                    _jsonAsJToken = JToken.Parse(this.Json);
                 }
                 // JsonAsJToken is modified (to remove other cultures)
-                return _JsonAsJToken != null ? _JsonAsJToken.DeepClone() : null;
+                return _jsonAsJToken != null ? _jsonAsJToken.DeepClone() : null;
             }
             set
             {
-                _JsonAsJToken = value;
+                _jsonAsJToken = value;
             }
         }
         public int ModuleId { get; set; }

@@ -198,18 +198,5 @@ namespace Satrabel.OpenContent.Components
 
         #endregion
 
-        /* slow !!!
-        public OpenContentInfo GetContent(int ContentId, int moduleId)
-        {
-            OpenContentInfo Content;
-
-            using (IDataContext ctx = DataContext.Instance())
-            {
-                var rep = ctx.GetRepository<OpenContentInfo>();
-                Content = rep.GetById(ContentId, moduleId);                
-            }
-            return Content;
-        }
-         */
     }
 }

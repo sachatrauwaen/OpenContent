@@ -281,7 +281,7 @@
     <Compile Include="Components\Json\JsonMergeOptions.cs" />
     <Compile Include="Components\Json\JsonUtils.cs" />
     <Compile Include="Components\DnnEntitiesAPIController.cs" />
-    <Compile Include="Components\Logger.cs" />
+    <Compile Include="Components\Utils\Logger.cs" />
     <Compile Include="Components\OpenContentController.cs" />
     <Compile Include="Components\OpenContentInfo.cs" />
     <Compile Include="Components\OpenContentAPIController.cs" />
