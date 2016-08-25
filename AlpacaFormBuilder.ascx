@@ -1,4 +1,5 @@
 <%@ Control Language="C#" AutoEventWireup="false" Inherits="Satrabel.OpenContent.AlpacaFormBuilder" CodeBehind="AlpacaFormBuilder.ascx.cs" %>
+<%@ Import Namespace="Newtonsoft.Json" %>
 
 <asp:Panel ID="ScopeWrapper" runat="server" CssClass="dnnForm form-builder">
     <div class="">
