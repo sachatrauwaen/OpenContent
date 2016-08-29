@@ -12,6 +12,5 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             }
             return string.IsNullOrEmpty(defaultValue) ? string.Empty : defaultValue;
         }
-
     }
 }
