@@ -35,7 +35,9 @@ namespace Satrabel.OpenContent.Components
             {
                 Json = content.JsonAsJToken,
                 CreatedByUserId = content.LastModifiedByUserId,
-                CreatedOnDate = content.LastModifiedOnDate
+                CreatedOnDate = content.LastModifiedOnDate,
+                LastModifiedByUserId = content.LastModifiedByUserId,
+                LastModifiedOnDate = content.LastModifiedOnDate
             };
             var versions = new List<OpenContentVersion>();
             versions.Add(ver);
@@ -47,7 +49,6 @@ namespace Satrabel.OpenContent.Components
             }
             if (index)
             {
-
                 LuceneController.Instance.Add(content, indexConfig);
                 LuceneController.Instance.Store.Commit();
             }
@@ -83,7 +84,9 @@ namespace Satrabel.OpenContent.Components
             {
                 Json = content.JsonAsJToken,
                 CreatedByUserId = content.LastModifiedByUserId,
-                CreatedOnDate = content.LastModifiedOnDate
+                CreatedOnDate = content.LastModifiedOnDate,
+                LastModifiedByUserId = content.LastModifiedByUserId,
+                LastModifiedOnDate = content.LastModifiedOnDate
             };
             var versions = content.Versions;
             if (versions.Count == 0 || versions[0].Json.ToString() != content.Json)

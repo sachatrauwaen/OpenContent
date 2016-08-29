@@ -63,7 +63,7 @@ namespace Satrabel.OpenContent.Components
                 }
                 else
                 {
-                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Its not a list mode module");
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "It's not a list mode module");
                 }
             }
             catch (Exception exc)
