@@ -24,14 +24,14 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                 try
                 {
                     OpenContentSettings settings = new OpenContentSettings(module.ModuleSettings);
-                    int MainTabId = settings.DetailTabId > 0 ? settings.DetailTabId : (settings.TabId > 0 ? settings.TabId : module.TabID);
-                    int MainModuleId = settings.IsOtherModule ? settings.ModuleId : module.ModuleID;
-                    if (settings.Template != null && settings.Template.IsListTemplate && (!settings.IsOtherModule || settings.DetailTabId > 0))
+                    int mainTabId = settings.GetMainTabId(module.TabID);
+                    int mainModuleId = settings.GetModuleId(module.ModuleID);
+                    if (settings.IsListTemplate() && (!settings.IsOtherModule || settings.DetailTabId > 0))
                     {
                         var ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
                         var dsContext = new DataSourceContext()
                         {
-                            ModuleId = MainModuleId,
+                            ModuleId = mainModuleId,
                             TemplateFolder = settings.TemplateDir.FolderPath,
                             Config = settings.Manifest.DataSourceConfig
                         };
@@ -51,7 +51,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                         {
                             string CultureCode = key.Value.Code;
                             string RuleCultureCode = (dicLocales.Count > 1 ? CultureCode : null);
-                            ModelFactory mf = new ModelFactory(dataList, settings.Data, physicalTemplateFolder, settings.Template.Manifest, settings.Template, settings.Template.Main, module, PortalId, CultureCode, MainTabId, MainModuleId);
+                            ModelFactory mf = new ModelFactory(dataList, settings.Data, physicalTemplateFolder, settings.Template.Manifest, settings.Template, settings.Template.Main, module, PortalId, CultureCode, mainTabId, mainModuleId);
                             //dynamic model = mf.GetModelAsDynamic(true);
                             //dynamic items = model.Items;
                             IEnumerable<dynamic> items = mf.GetModelAsDynamicList();
@@ -81,7 +81,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                                     var rule = new OpenContentUrlRule
                                     {
                                         CultureCode = RuleCultureCode,
-                                        TabId = MainTabId,
+                                        TabId = mainTabId,
                                         Parameters = "id=" + id,
                                         Url = url
                                     };

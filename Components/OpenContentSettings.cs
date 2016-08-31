@@ -5,6 +5,23 @@ using Satrabel.OpenContent.Components.Manifest;
 
 namespace Satrabel.OpenContent.Components
 {
+    public static class OpenContentSettingsExtentions
+    {
+        public static int GetMainTabId(this OpenContentSettings settings, int moduleTabId)
+        {
+            return settings.DetailTabId > 0 ? settings.DetailTabId : (settings.TabId > 0 ? settings.TabId : moduleTabId);
+        }
+        public static int GetModuleId(this OpenContentSettings settings, int moduleId)
+        {
+            return settings.IsOtherModule ? settings.ModuleId : moduleId;
+        }
+
+        public static bool IsListTemplate(this OpenContentSettings settings)
+        {
+            return settings.Template != null && settings.Template.IsListTemplate;
+        }
+    }
+
     public class OpenContentSettings
     {
         private readonly string _query;

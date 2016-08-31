@@ -19,6 +19,7 @@ using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Dnn;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.Lucene.Config;
+using Satrabel.OpenContent.Components.Lucene.Index;
 using Satrabel.OpenContent.Components.TemplateHelpers;
 
 
@@ -28,12 +29,12 @@ namespace Satrabel.OpenContent.Components
     {
         public static void HydrateDefaultFields(this OpenContentInfo content, FieldConfig indexConfig)
         {
-            if (indexConfig != null && indexConfig.Fields != null && indexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishStartDate)
+            if (indexConfig.HasField(AppConfig.FieldNamePublishStartDate)
                    && content.JsonAsJToken != null && content.JsonAsJToken[AppConfig.FieldNamePublishStartDate] == null)
             {
                 content.JsonAsJToken[AppConfig.FieldNamePublishStartDate] = DateTime.MinValue;
             }
-            if (indexConfig != null && indexConfig.Fields != null && indexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishEndDate)
+            if (indexConfig.HasField(AppConfig.FieldNamePublishEndDate)
                 && content.JsonAsJToken != null && content.JsonAsJToken[AppConfig.FieldNamePublishEndDate] == null)
             {
                 content.JsonAsJToken[AppConfig.FieldNamePublishEndDate] = DateTime.MaxValue;

@@ -29,6 +29,13 @@ namespace Satrabel.OpenContent.Components.Json
         {
             return !json.IsEmpty();
         }
+
+        public static bool HasField(this JToken json, string fieldname)
+        {
+
+            return !json.IsEmpty() && json[fieldname] != null;
+        }
+
         public static JToken ToJObject(this FileUri file)
         {
             try

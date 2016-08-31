@@ -139,7 +139,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             OpenContentSettings settings = new OpenContentSettings(module.ModuleSettings);
             OpenContentUtils.CheckOpenContentSettings(module, settings);
 
-            if (settings.Template != null && settings.Template.IsListTemplate && !settings.IsOtherModule)
+            if (settings.IsListTemplate() && !settings.IsOtherModule)
             {
                 IndexModuleData(lc, module.ModuleID, settings);
             }
