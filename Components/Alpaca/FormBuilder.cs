@@ -120,8 +120,8 @@ namespace Satrabel.OpenContent.Components.Alpaca
             {
                 string propKey = prefix + prop.Key;
                 string propTitle = prefix + prop.Value.Title;
-                var opts = optionsConfig.Fields.ContainsKey(prop.Key) ? optionsConfig.Fields[prop.Key] : null;
-                var idxs = indexConfig.Fields.ContainsKey(prop.Key) ? indexConfig.Fields[prop.Key] : null;
+                var opts = optionsConfig != null && optionsConfig.Fields != null && optionsConfig.Fields.ContainsKey(prop.Key) ? optionsConfig.Fields[prop.Key] : null;
+                var idxs = optionsConfig != null && optionsConfig.Fields != null && indexConfig.Fields.ContainsKey(prop.Key) ? indexConfig.Fields[prop.Key] : null;
                 if (prop.Key == "publishstatus" || prop.Key == "publishstartdate" || prop.Key == "publishenddate")
                 {
                     fieldLst.Add(propKey);
