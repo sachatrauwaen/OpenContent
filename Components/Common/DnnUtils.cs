@@ -81,7 +81,9 @@ namespace Satrabel.OpenContent.Components
         {
             //strange issues with getting the correct culture.
             if (PortalSettings.Current.ActiveTab != null && PortalSettings.Current.ActiveTab.IsNeutralCulture)
-                return PortalSettings.Current.CultureCode;
+                return PortalSettings.Current.PortalAlias.CultureCode;
+                //return PortalSettings.Current.CultureCode; // not correct in webapi
+
             if (PortalSettings.Current.ActiveTab != null)
                 return PortalSettings.Current.ActiveTab.CultureCode;
 
