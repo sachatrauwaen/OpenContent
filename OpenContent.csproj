@@ -143,6 +143,7 @@
       <DependentUpon>AddEdit.ascx</DependentUpon>
     </Compile>
     <Compile Include="Components\Alpaca\AlpacaLayoutEnum.cs" />
+    <Compile Include="Components\AppConfig.cs" />
     <Compile Include="Components\Json\InvalidJsonFileException.cs" />
     <Compile Include="Components\Logging\LoggingUtils.cs" />
     <Compile Include="Components\Logging\LogContext.cs" />
@@ -164,7 +165,7 @@
     <Compile Include="Components\Alpaca\OptionsConfig.cs" />
     <Compile Include="Components\Alpaca\QueryBuilder.cs" />
     <Compile Include="Components\Common\DateTimeExtensions.cs" />
-    <Compile Include="Components\Common\DnnUtils.cs" />
+    <Compile Include="Components\Dnn\DnnUtils.cs" />
     <Compile Include="Components\Common\PageUtils.cs" />
     <Compile Include="Components\Datasource\DataSourceContext.cs" />
     <Compile Include="Components\Datasource\DataSourceManager.cs" />
@@ -250,6 +251,7 @@
     <Compile Include="Components\TemplateHelpers\OtherExtentions.cs" />
     <Compile Include="Components\Manifest\TemplateManifest.cs" />
     <Compile Include="Components\TemplateHelpers\RazorExtensions.cs" />
+    <Compile Include="Components\TemplateHelpers\StringHtmlExtensions.cs" />
     <Compile Include="Components\TemplateHelpers\UrlHelpers.cs" />
     <Compile Include="Components\Uri\UriFactory.cs" />
     <Compile Include="Components\Uri\PortalFolderUri.cs" />
@@ -280,13 +282,13 @@
     <Compile Include="Components\Json\JsonMergeOptions.cs" />
     <Compile Include="Components\Json\JsonUtils.cs" />
     <Compile Include="Components\DnnEntitiesAPIController.cs" />
-    <Compile Include="Components\Logger.cs" />
+    <Compile Include="Components\Utils\Logger.cs" />
     <Compile Include="Components\OpenContentController.cs" />
     <Compile Include="Components\OpenContentInfo.cs" />
     <Compile Include="Components\OpenContentAPIController.cs" />
     <Compile Include="Components\OpenContentRouteMapper.cs" />
     <Compile Include="Components\OpenContentSettings.cs" />
-    <Compile Include="Components\OpenContentUtils.cs" />
+    <Compile Include="Components\Utils\OpenContentUtils.cs" />
     <Compile Include="Components\OpenContentVersion.cs" />
     <Compile Include="Components\OpenContentWebPage.cs" />
     <Compile Include="Components\TemplateHelpers\Normalizers.cs" />

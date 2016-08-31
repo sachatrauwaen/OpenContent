@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -12,14 +11,19 @@ namespace Satrabel.OpenContent.Components.Manifest
 
         [JsonProperty(PropertyName = "title")]
         public string Title { get; set; }
+
         [JsonProperty(PropertyName = "developmentPath")]
         public bool DevelopmentPath { get; set; }
+
         [JsonProperty(PropertyName = "editWitoutPostback")]
         public bool EditWitoutPostback { get; set; }
+
         [JsonProperty(PropertyName = "templates")]
         public Dictionary<string, TemplateManifest> Templates { get; set; }
+
         [JsonProperty(PropertyName = "additionalEditControl")]
         public string AdditionalEditControl { get; set; }
+
         [JsonProperty(PropertyName = "editRole")]
         public string EditRole { get; set; }
 

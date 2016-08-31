@@ -12,11 +12,8 @@
 
 using System;
 using System.Web.Caching;
-using DotNetNuke.Common.Utilities;
 using DotNetNuke.ComponentModel.DataAnnotations;
-using DotNetNuke.Entities.Content;
 using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 
 namespace Satrabel.OpenContent.Components

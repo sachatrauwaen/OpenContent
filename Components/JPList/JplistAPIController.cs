@@ -1,23 +1,14 @@
 ﻿using DotNetNuke.Entities.Modules;
-using DotNetNuke.Instrumentation;
 using DotNetNuke.Security;
 using DotNetNuke.Web.Api;
 using Newtonsoft.Json.Linq;
-using Satrabel.OpenContent.Components.Lucene;
 using System;
 using System.Collections.Generic;
-
-using System.Diagnostics;
-using System.IO;
-
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using DotNetNuke.Common.Utilities;
 using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components.Datasource;
-using Satrabel.OpenContent.Components.Datasource.search;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Logging;
 
@@ -47,23 +38,14 @@ namespace Satrabel.OpenContent.Components.JPList
                 {
                     reqOptions = JObject.Parse(req.options);
                 }
-                //string editRole = manifest == null ? "" : manifest.EditRole;
+                //string editRole = manifest.GetEditRole();
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 if (listMode)
                 {
 
                     var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
-                    if (!string.IsNullOrEmpty(settings.Query))
-                    {
-                        var query = JObject.Parse(settings.Query);
-                        queryBuilder.Build(query, PortalSettings.UserMode != PortalSettings.Mode.Edit, UserInfo.UserID, DnnUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
-                    }
-                    else
-                    {
-                        
-                        queryBuilder.BuildFilter(PortalSettings.UserMode != PortalSettings.Mode.Edit, DnnUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
-                    }
+                    queryBuilder.Build(settings.Query, PortalSettings.UserMode != PortalSettings.Mode.Edit, UserInfo.UserID, DnnUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
 
                     JplistQueryBuilder.MergeJpListQuery(indexConfig, queryBuilder.Select, req.StatusLst, DnnUtils.GetCurrentCultureCode());
                     IDataItems dsItems;

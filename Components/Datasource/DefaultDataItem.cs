@@ -1,8 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System;
+using Newtonsoft.Json.Linq;
 
 namespace Satrabel.OpenContent.Components.Datasource
 {
@@ -20,6 +17,8 @@ namespace Satrabel.OpenContent.Components.Datasource
         public string Title { get; set; }
         public JToken Data { get; set; }
         public int CreatedByUserId { get; set; }
+        public DateTime CreatedOnDate { get; set; }
+
         public object Item { get; set; }
     }
 }

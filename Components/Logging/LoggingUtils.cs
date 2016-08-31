@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Web;
-using System.Web.UI;
-using DotNetNuke.Common.Utilities;
 using DotNetNuke.Web.Api;
-using DotNetNuke.Web.Razor.Helpers;
 using Satrabel.OpenContent.Components.Dnn;
 
 namespace Satrabel.OpenContent.Components.Logging

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Web;
 using System.Web.Http;
 using DotNetNuke.Web.Api;
 using System.Net.Http.Headers;
@@ -12,8 +8,6 @@ using Satrabel.OpenContent.Components.Handlebars;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Portals;
 using Newtonsoft.Json.Linq;
-using Satrabel.OpenContent.Components.Lucene;
-using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Alpaca;
 
@@ -55,15 +49,8 @@ namespace Satrabel.OpenContent.Components.Rss
                 var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
 
                 QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
-                if (!string.IsNullOrEmpty(settings.Query))
-                {
-                    var query = JObject.Parse(settings.Query);
-                    queryBuilder.Build(query, PortalSettings.UserMode != PortalSettings.Mode.Edit, UserInfo.UserID, DnnUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
-                }
-                else
-                {
-                    queryBuilder.BuildFilter(PortalSettings.UserMode != PortalSettings.Mode.Edit, DnnUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
-                }
+                queryBuilder.Build(settings.Query, PortalSettings.UserMode != PortalSettings.Mode.Edit, UserInfo.UserID, DnnUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
+
                 var ds = DataSourceManager.GetDataSource(manifest.DataSource);
                 var dsContext = new DataSourceContext()
                 {

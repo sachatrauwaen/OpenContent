@@ -10,21 +10,14 @@
 #region Using Statements
 
 using System;
-using System.Linq;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Common;
-using DotNetNuke.Framework.JavaScriptLibraries;
-using DotNetNuke.Framework;
 using System.Web.UI.WebControls;
-using DotNetNuke.Services.Localization;
 using System.IO;
 using Satrabel.OpenContent.Components;
 using Newtonsoft.Json.Linq;
-using System.Globalization;
-using DotNetNuke.Common.Utilities;
 using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Manifest;
-using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.Datasource;
 
 #endregion
@@ -74,7 +67,7 @@ namespace Satrabel.OpenContent
             var ds = DataSourceManager.GetDataSource("OpenContent");
             var dsContext = new DataSourceContext()
             {
-                ModuleId = ModId,                
+                ModuleId = ModId,
                 ActiveModuleId = ModuleContext.ModuleId,
                 TemplateFolder = settings.TemplateDir.FolderPath,
                 Single = true

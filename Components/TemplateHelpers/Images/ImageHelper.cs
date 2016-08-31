@@ -4,14 +4,11 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Linq;
-using System.Net.Http;
 using System.Web;
-using DotNetNuke.Common;
 using DotNetNuke.Entities.Content.Common;
 using DotNetNuke.Entities.Modules.Definitions;
 using DotNetNuke.Services.FileSystem;
 using Newtonsoft.Json.Linq;
-using Satrabel.OpenContent.Components;
 
 namespace Satrabel.OpenContent.Components.TemplateHelpers
 {

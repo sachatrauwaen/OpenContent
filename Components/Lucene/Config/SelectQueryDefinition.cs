@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Web;
 using Lucene.Net.Search;
-using Newtonsoft.Json.Linq;
 using Lucene.Net.Index;
 using Satrabel.OpenContent.Components.Datasource.search;
 
@@ -93,7 +89,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                     q.Add(new TermQuery(new Term(fieldName, rule.Value.AsString)), Occur.MUST_NOT);
                 }
                 else if (rule.FieldOperator == OperatorEnum.START_WITH)
-                {                    
+                {
                     if (rule.FieldType == FieldTypeEnum.STRING || rule.FieldType == FieldTypeEnum.TEXT || rule.FieldType == FieldTypeEnum.HTML)
                     {
                         q.Add(LuceneController.ParseQuery(rule.Value.AsString + "*", fieldName), cond);
@@ -105,7 +101,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                 }
                 else if (rule.FieldOperator == OperatorEnum.IN)
                 {
-                    
+
                     BooleanQuery arrQ = new BooleanQuery();
                     foreach (var arrItem in rule.MultiValue)
                     {
@@ -161,6 +157,9 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                     int sortfieldtype = SortField.STRING;
                     string sortFieldPrefix = "";
                     Sortfieldtype(rule.FieldType, ref sortfieldtype, ref sortFieldPrefix);
+
+                    if (rule.Field == "createdondate") rule.Field = "$createdondate";
+
                     sortFields.Add(new SortField(sortFieldPrefix + rule.Field, sortfieldtype, rule.Descending));
                 }
                 sort = new Sort(sortFields.ToArray());

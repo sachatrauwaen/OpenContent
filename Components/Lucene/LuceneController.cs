@@ -10,7 +10,6 @@ using Satrabel.OpenContent.Components.Lucene.Mapping;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Entities.Modules;
-using Satrabel.OpenContent.Components.Dnn;
 using Version = Lucene.Net.Util.Version;
 
 #endregion
@@ -42,7 +41,7 @@ namespace Satrabel.OpenContent.Components.Lucene
         #region constructor
         private LuceneController()
         {
-            _serviceInstance = new LuceneService(@"App_Data\OpenContent\lucene_index", JsonMappingUtils.GetAnalyser());
+            _serviceInstance = new LuceneService(AppConfig.Instance.LuceneIndexFolder, JsonMappingUtils.GetAnalyser());
         }
 
         public static void ClearInstance()
@@ -182,7 +181,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             {
                 throw new ArgumentNullException("data");
             }
-            Store.Add(JsonMappingUtils.JsonToDocument(data.ModuleId.ToString(), data.ContentId.ToString(), data.CreatedByUserId.ToString(), data.JsonAsJToken, data.Json, config));
+            Store.Add(JsonMappingUtils.JsonToDocument(data.ModuleId.ToString(), data.ContentId.ToString(), data.CreatedByUserId.ToString(), data.CreatedOnDate, data.JsonAsJToken, data.Json, config));
         }
 
         public void Update(OpenContentInfo data, FieldConfig config)

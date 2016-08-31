@@ -22,8 +22,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -101,7 +99,7 @@ namespace Satrabel.OpenContent.Components
                 if (IsAllowedExtension(fileName))
                 {
                     string uploadfolder = "OpenContent/Files/" + ActiveModule.ModuleID;
-                    
+
                     if (!string.IsNullOrEmpty(context.Request.Form["uploadfolder"]))
                     {
                         uploadfolder = context.Request.Form["uploadfolder"];
@@ -114,11 +112,11 @@ namespace Satrabel.OpenContent.Components
                     int suffix = 0;
                     string baseFileName = Path.GetFileNameWithoutExtension(fileName);
                     string extension = Path.GetExtension(fileName);
-                    var fileInfo = _fileManager.GetFile(userFolder, fileName);                    
+                    var fileInfo = _fileManager.GetFile(userFolder, fileName);
                     while (fileInfo != null)
                     {
                         suffix++;
-                        fileName = baseFileName + "-" + suffix+extension;
+                        fileName = baseFileName + "-" + suffix + extension;
                         fileInfo = _fileManager.GetFile(userFolder, fileName);
                     }
                     fileInfo = _fileManager.AddFile(userFolder, fileName, file.InputStream, true);

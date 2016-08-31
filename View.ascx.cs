@@ -27,21 +27,12 @@ using DotNetNuke.Web.Client.ClientResourceManagement;
 using DotNetNuke.Web.Client;
 using Satrabel.OpenContent.Components;
 using Satrabel.OpenContent.Components.Json;
-using System.Web.WebPages;
-using System.Web;
-using System.Web.Helpers;
 using Satrabel.OpenContent.Components.Handlebars;
 using DotNetNuke.Framework;
 using DotNetNuke.Common.Utilities;
-using DotNetNuke.Common;
-using Satrabel.OpenContent.Components.Rss;
-using System.Web.UI.WebControls;
 using DotNetNuke.Entities.Portals;
-using DotNetNuke.Entities.Tabs;
 using Satrabel.OpenContent.Components.Dynamic;
 using DotNetNuke.Security.Permissions;
-using DotNetNuke.Instrumentation;
-using DotNetNuke.Services.Installer.Log;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Alpaca;
@@ -192,7 +183,7 @@ namespace Satrabel.OpenContent
             }
             //start rendering
             InitTemplateInfo();
-            bool otherModuleWithFilterSettings = _settings.IsOtherModule && !string.IsNullOrEmpty(_settings.Query);
+            bool otherModuleWithFilterSettings = _settings.IsOtherModule && _settings.Query.Exists();
             if (_renderinfo.ShowInitControl && !otherModuleWithFilterSettings)
             {
                 /* thows error because _renderinfo.Module is null
@@ -674,12 +665,12 @@ namespace Satrabel.OpenContent
                 TemplateFolder = settings.TemplateDir.FolderPath,
                 Config = settings.Manifest.DataSourceConfig
             };
-            IEnumerable<IDataItem> dataList = new List<IDataItem>();
+            IEnumerable<IDataItem> luceneResultList = new List<IDataItem>();
             if (clientSide || !info.Files.DataInTemplate)
             {
                 if (ds.Any(dsContext))
                 {
-                    info.SetData(dataList, settings.Data);
+                    info.SetData(luceneResultList, settings.Data);
                     info.DataExist = true;
                 }
 
@@ -691,6 +682,7 @@ namespace Satrabel.OpenContent
             }
             else
             {
+                //server side
                 bool useLucene = info.Template.Manifest.Index;
                 if (useLucene)
                 {
@@ -701,46 +693,44 @@ namespace Satrabel.OpenContent
                     }
                     bool addWorkFlow = ModuleContext.PortalSettings.UserMode != PortalSettings.Mode.Edit;
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
-                    if (!string.IsNullOrEmpty(settings.Query))
-                    {
-                        var query = JObject.Parse(settings.Query);
-                        queryBuilder.Build(query, addWorkFlow, ModuleContext.PortalSettings.UserId, DnnUtils.GetCurrentCultureCode(), ModuleContext.PortalSettings.UserInfo.Social.Roles, Request.QueryString);
-                    }
-                    else
-                    {
-                        queryBuilder.BuildFilter(addWorkFlow, DnnUtils.GetCurrentCultureCode(), ModuleContext.PortalSettings.UserInfo.Social.Roles, Request.QueryString);
-                    }
-                    dataList = ds.GetAll(dsContext, queryBuilder.Select).Items;
+                    queryBuilder.Build(settings.Query, addWorkFlow, ModuleContext.PortalSettings.UserId, DnnUtils.GetCurrentCultureCode(), ModuleContext.PortalSettings.UserInfo.Social.Roles, Request.QueryString);
+
+                    luceneResultList = ds.GetAll(dsContext, queryBuilder.Select).Items;
                     if (LogContext.IsLogActive)
                     {
                         var logKey = "Query";
                         LogContext.Log(ModuleContext.ModuleId, logKey, "select", queryBuilder.Select);
-                        LogContext.Log(ModuleContext.ModuleId, logKey, "result", dataList);
+                        LogContext.Log(ModuleContext.ModuleId, logKey, "result", luceneResultList);
                     }
                     //Log.Logger.DebugFormat("Query returned [{0}] results.", total);
-                    if (!dataList.Any())
+                    if (!luceneResultList.Any())
                     {
+                        if (ds.Any(dsContext) && settings.Query.IsEmpty())
+                        {
+                            //there seems to be data in de database, but we did not find it in Lucene, so probably the data isn't indexed anymore/yet
+                            Components.Lucene.LuceneController.Instance.ReIndexModuleData(ModuleContext.ModuleId, settings);
+                        }
+
                         //Log.Logger.DebugFormat("Query did not return any results. API request: [{0}], Lucene Filter: [{1}], Lucene Query:[{2}]", settings.Query, queryDef.Filter == null ? "" : queryDef.Filter.ToString(), queryDef.Query == null ? "" : queryDef.Query.ToString());
                         if (ds.Any(dsContext))
                         {
-                            info.SetData(dataList, settings.Data);
+                            info.SetData(luceneResultList, settings.Data);
                             info.DataExist = true;
                         }
                     }
                 }
                 else
                 {
-                    //dataList = ctrl.GetContents(info.ModuleId).ToList();
-                    dataList = ds.GetAll(dsContext, null).Items;
+                    luceneResultList = ds.GetAll(dsContext, null).Items.OrderBy(i => i.CreatedOnDate);
                     if (LogContext.IsLogActive)
                     {
                         var logKey = "Get all data of module";
-                        LogContext.Log(ModuleContext.ModuleId, logKey, "result", dataList);
+                        LogContext.Log(ModuleContext.ModuleId, logKey, "result", luceneResultList);
                     }
                 }
-                if (dataList.Any())
+                if (luceneResultList.Any())
                 {
-                    info.SetData(dataList, settings.Data);
+                    info.SetData(luceneResultList, settings.Data);
                 }
             }
             return templateKey;

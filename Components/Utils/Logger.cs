@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Net.Http;
-using ClientDependency.Core;
 using DotNetNuke.Instrumentation;
 
 namespace Satrabel.OpenContent.Components

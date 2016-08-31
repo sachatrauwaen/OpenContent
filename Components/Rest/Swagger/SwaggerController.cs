@@ -5,10 +5,8 @@ using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Manifest;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Web;
 using System.Web.Http;
 
 namespace Satrabel.OpenContent.Components.Rest.Swagger

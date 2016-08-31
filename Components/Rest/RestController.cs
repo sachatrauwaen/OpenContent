@@ -5,18 +5,15 @@ using DotNetNuke.Entities.Portals;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Datasource;
-using Satrabel.OpenContent.Components.JPList;
 using Satrabel.OpenContent.Components.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Web;
 using System.Web.Http;
 using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Manifest;
-using System.Web.Http.ModelBinding;
 using Newtonsoft.Json;
 using Satrabel.OpenContent.Components.Datasource.search;
 
@@ -51,21 +48,13 @@ namespace Satrabel.OpenContent.Components.Rest
                 //{
                 //    reqOptions = JObject.Parse(req.options);
                 //}
-                //string editRole = manifest == null ? "" : manifest.EditRole;
+                //string editRole = manifest.GetEditRole();
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 if (listMode)
                 {
                     var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
-                    if (!string.IsNullOrEmpty(settings.Query))
-                    {
-                        var query = JObject.Parse(settings.Query);
-                        queryBuilder.Build(query, PortalSettings.UserMode != PortalSettings.Mode.Edit, UserInfo.UserID, DnnUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
-                    }
-                    else
-                    {
-                        queryBuilder.BuildFilter(PortalSettings.UserMode != PortalSettings.Mode.Edit, DnnUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
-                    }
+                    queryBuilder.Build(settings.Query, PortalSettings.UserMode != PortalSettings.Mode.Edit, UserInfo.UserID, DnnUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
                     //if (restSelect != null)
                     //{
                     //    RestQueryBuilder.MergeJpListQuery(indexConfig, queryBuilder.Select, restSelect);
@@ -172,22 +161,15 @@ namespace Satrabel.OpenContent.Components.Rest
                 //{
                 //    reqOptions = JObject.Parse(req.options);
                 //}
-                //string editRole = manifest == null ? "" : manifest.EditRole;
+                //string editRole = manifest.GetEditRole();
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 if (listMode)
                 {
 
                     var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
-                    if (!string.IsNullOrEmpty(settings.Query))
-                    {
-                        var query = JObject.Parse(settings.Query);
-                        queryBuilder.Build(query, PortalSettings.UserMode != PortalSettings.Mode.Edit, UserInfo.UserID, PortalSettings.CultureCode, UserInfo.Social.Roles);
-                    }
-                    else
-                    {
-                        queryBuilder.BuildFilter(PortalSettings.UserMode != PortalSettings.Mode.Edit, DnnUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
-                    }
+                    queryBuilder.Build(settings.Query, PortalSettings.UserMode != PortalSettings.Mode.Edit, UserInfo.UserID, DnnUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
+
                     RestQueryBuilder.MergeQuery(indexConfig, queryBuilder.Select, restSelect, DnnUtils.GetCurrentCultureCode());
                     IDataItems dsItems;
                     if (queryBuilder.DefaultNoResults && queryBuilder.Select.IsQueryEmpty)
@@ -320,7 +302,7 @@ namespace Satrabel.OpenContent.Components.Rest
                 var manifest = settings.Template.Manifest;
                 TemplateManifest templateManifest = settings.Template;
                 index = settings.Template.Manifest.Index;
-                string editRole = manifest == null ? "" : manifest.EditRole;
+                string editRole = manifest.GetEditRole();
 
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 int createdByUserid = -1;
@@ -407,7 +389,7 @@ namespace Satrabel.OpenContent.Components.Rest
                 var manifest = settings.Template.Manifest;
                 TemplateManifest templateManifest = settings.Template;
                 index = settings.Template.Manifest.Index;
-                string editRole = manifest == null ? "" : manifest.EditRole;
+                string editRole = manifest.GetEditRole();
 
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 int createdByUserid = -1;
@@ -480,7 +462,7 @@ namespace Satrabel.OpenContent.Components.Rest
                 var manifest = settings.Template.Manifest;
                 TemplateManifest templateManifest = settings.Template;
                 index = settings.Template.Manifest.Index;
-                string editRole = manifest == null ? "" : manifest.EditRole;
+                string editRole = manifest.GetEditRole();
 
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 int createdByUserid = -1;
@@ -541,7 +523,7 @@ namespace Satrabel.OpenContent.Components.Rest
                 var manifest = settings.Template.Manifest;
                 TemplateManifest templateManifest = settings.Template;
                 index = settings.Template.Manifest.Index;
-                string editRole = manifest == null ? "" : manifest.EditRole;
+                string editRole = manifest.GetEditRole();
 
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 int createdByUserid = -1;

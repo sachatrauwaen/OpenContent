@@ -32,7 +32,7 @@
         <li>
             <asp:LinkButton ID="cmdCancel" resourcekey="cmdCancel" runat="server" CssClass="dnnSecondaryAction" CausesValidation="False" />
         </li>
-          <li>
+        <li>
             <asp:LinkButton ID="cmdImport" resourcekey="cmdImport" runat="server" CssClass="dnnSecondaryAction" CausesValidation="False" Visible="false" />
         </li>
 

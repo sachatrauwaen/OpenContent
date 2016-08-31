@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Web;
 using Lucene.Net.Search;
 using Newtonsoft.Json.Linq;
 using Lucene.Net.Index;
@@ -50,7 +48,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
         public QueryDefinition Build(JObject query, bool addWorkflowFilter, IList<UserRoleInfo> roles, NameValueCollection QueryString = null)
         {
             BuildPage(query);
-            BuildFilter(query, addWorkflowFilter, roles,  QueryString);
+            BuildFilter(query, addWorkflowFilter, roles, QueryString);
             BuildSort(query);
             return this;
         }
@@ -189,21 +187,21 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
         private void AddWorkflowFilter(BooleanQuery q)
         {
 
-            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey("publishstatus"))
+            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey( AppConfig.FieldNamePublishStatus))
             {
-                q.Add(new TermQuery(new Term("publishstatus", "published")), Occur.MUST); // and
+                q.Add(new TermQuery(new Term( AppConfig.FieldNamePublishStatus, "published")), Occur.MUST); // and
             }
-            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey("publishstartdate"))
+            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey( AppConfig.FieldNamePublishStartDate))
             {
                 DateTime startDate = DateTime.MinValue;
                 DateTime endDate = DateTime.Today;
-                q.Add(NumericRangeQuery.NewLongRange("publishstartdate", startDate.Ticks, endDate.Ticks, true, true), Occur.MUST);
+                q.Add(NumericRangeQuery.NewLongRange( AppConfig.FieldNamePublishStartDate, startDate.Ticks, endDate.Ticks, true, true), Occur.MUST);
             }
-            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey("publishenddate"))
+            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey( AppConfig.FieldNamePublishEndDate))
             {
                 DateTime startDate = DateTime.Today;
                 DateTime endDate = DateTime.MaxValue;
-                q.Add(NumericRangeQuery.NewLongRange("publishenddate", startDate.Ticks, endDate.Ticks, true, true), Occur.MUST);
+                q.Add(NumericRangeQuery.NewLongRange( AppConfig.FieldNamePublishEndDate, startDate.Ticks, endDate.Ticks, true, true), Occur.MUST);
             }
         }
 

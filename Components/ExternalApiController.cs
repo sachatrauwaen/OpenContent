@@ -5,11 +5,8 @@ using DotNetNuke.Web.Api;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Manifest;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Web;
 using System.Web.Http;
 
 namespace Satrabel.OpenContent.Components
@@ -36,7 +33,7 @@ namespace Satrabel.OpenContent.Components
                 var manifest = settings.Template.Manifest;
                 TemplateManifest templateManifest = settings.Template;
                 index = settings.Template.Manifest.Index;
-                string editRole = manifest == null ? "" : manifest.EditRole;
+                string editRole = manifest.GetEditRole();
 
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 int createdByUserid = -1;
@@ -66,7 +63,7 @@ namespace Satrabel.OpenContent.Components
                 }
                 else
                 {
-                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Its not a list mode module");
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "It's not a list mode module");
                 }
             }
             catch (Exception exc)

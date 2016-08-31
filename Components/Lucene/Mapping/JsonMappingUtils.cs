@@ -27,21 +27,23 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
         public static readonly string FieldTimestamp = "$timestamp";
         public static readonly string FieldId = "$id";
         public static readonly string FieldUserId = "$userid";
+        public static readonly string FieldCreatedOnDate = "$createdondate";
         #endregion
 
-        public static Document JsonToDocument(string type, string id, string userId, JToken json, string source, FieldConfig config, bool storeSource = false)
+        public static Document JsonToDocument(string type, string id, string userId, DateTime createdOnDate, JToken json, string source, FieldConfig config, bool storeSource = false)
         {
             var objectMapper = new JsonObjectMapper();
             Document doc = new Document();
-            
+
             doc.Add(new Field(FieldType, type, Field.Store.YES, Field.Index.NOT_ANALYZED));
             doc.Add(new Field(FieldId, id, Field.Store.YES, Field.Index.NOT_ANALYZED));
-            doc.Add(new Field(FieldUserId, userId, Field.Store.YES, Field.Index.NOT_ANALYZED));
+            doc.Add(new Field(FieldUserId, userId, Field.Store.NO, Field.Index.NOT_ANALYZED));
             if (storeSource)
             {
                 doc.Add(new Field(FieldSource, source, Field.Store.YES, Field.Index.NO));
             }
             doc.Add(new NumericField(FieldTimestamp, Field.Store.YES, true).SetLongValue(DateTime.UtcNow.Ticks));
+            doc.Add(new NumericField(FieldCreatedOnDate, Field.Store.NO, true).SetLongValue(createdOnDate.Ticks));
             objectMapper.AddJsonToDocument(json, doc, config);
             return doc;
         }

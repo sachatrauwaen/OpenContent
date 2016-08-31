@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace Satrabel.OpenContent.Components.Logging
 {
     public class TemplateException : OpenContentException
     {
-        
+
         public TemplateException(string message, Exception innerException, dynamic templateModel, string templateSource)
             : base(message, innerException)
         {
@@ -17,6 +14,6 @@ namespace Satrabel.OpenContent.Components.Logging
         public dynamic TemplateModel { get; private set; }
         public string TemplateSource { get; private set; }
 
-        
+
     }
 }

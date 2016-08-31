@@ -1,5 +1,4 @@
 ﻿using System;
-using Satrabel.OpenContent.Components.TemplateHelpers;
 
 namespace Satrabel.OpenContent.Components
 {

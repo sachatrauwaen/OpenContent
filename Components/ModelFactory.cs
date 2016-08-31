@@ -16,7 +16,6 @@ using Satrabel.OpenContent.Components.Dnn;
 using Satrabel.OpenContent.Components.Handlebars;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.Datasource;
-using Satrabel.OpenContent.Components.Logging;
 using Satrabel.OpenContent.Components.TemplateHelpers;
 
 namespace Satrabel.OpenContent.Components
@@ -207,7 +206,7 @@ namespace Satrabel.OpenContent.Components
             }
             JArray items = new JArray(); ;
             model["Items"] = items;
-            string editRole = Manifest == null ? "" : Manifest.EditRole;
+            string editRole = Manifest.GetEditRole();
             if (DataList != null && DataList.Any())
             {
                 foreach (var item in DataList)
@@ -388,7 +387,7 @@ namespace Satrabel.OpenContent.Components
                 }
             }
 
-            string editRole = Manifest == null ? "" : Manifest.EditRole;
+            string editRole = Manifest.GetEditRole();
             if (!onlyData)
             {
                 // context

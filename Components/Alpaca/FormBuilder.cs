@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Web;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Lucene.Config;
@@ -114,22 +111,22 @@ namespace Satrabel.OpenContent.Components.Alpaca
             return json;
         }
 
-        private static void GetFields(SchemaConfig newSchemaFilter, OptionsConfig newOptionsFilter, SchemaConfig schemaConfig, OptionsConfig optionsConfig, List<string> fieldLst, FieldConfig indexConfig,string prefix = "")
+        private static void GetFields(SchemaConfig newSchemaFilter, OptionsConfig newOptionsFilter, SchemaConfig schemaConfig, OptionsConfig optionsConfig, List<string> fieldLst, FieldConfig indexConfig, string prefix = "")
         {
             foreach (var prop in schemaConfig.Properties)
             {
                 string propKey = prefix + prop.Key;
                 string propTitle = prefix + prop.Value.Title;
-                var opts = optionsConfig != null && optionsConfig.Fields != null && optionsConfig.Fields.ContainsKey(prop.Key) ? optionsConfig.Fields[prop.Key] : null;
-                var idxs = optionsConfig != null && optionsConfig.Fields != null && indexConfig.Fields.ContainsKey(prop.Key) ? indexConfig.Fields[prop.Key] : null;
-                if (prop.Key == "publishstatus" || prop.Key == "publishstartdate" || prop.Key == "publishenddate")
+                var opts = optionsConfig.Fields.ContainsKey(prop.Key) ? optionsConfig.Fields[prop.Key] : null;
+                var idxs = indexConfig.Fields.ContainsKey(prop.Key) ? indexConfig.Fields[prop.Key] : null;
+                if (prop.Key == AppConfig.FieldNamePublishStatus || prop.Key == AppConfig.FieldNamePublishStartDate || prop.Key == AppConfig.FieldNamePublishEndDate)
                 {
                     fieldLst.Add(propKey);
                     continue;
                 }
                 if (prop.Value.Type == "object" && idxs != null)
                 {
-                    GetFields(newSchemaFilter, newOptionsFilter, prop.Value, opts, fieldLst, idxs, propKey+".");
+                    GetFields(newSchemaFilter, newOptionsFilter, prop.Value, opts, fieldLst, idxs, propKey + ".");
                     continue;
                 }
                 string optType = opts == null ? "text" : opts.Type;

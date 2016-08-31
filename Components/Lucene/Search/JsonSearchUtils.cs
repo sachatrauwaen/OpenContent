@@ -1,8 +1,5 @@
-﻿using Lucene.Net.Documents;
-using Satrabel.OpenContent.Components.Lucene.Mapping;
+﻿using Satrabel.OpenContent.Components.Lucene.Mapping;
 using System;
-using System.Diagnostics;
-using System.Linq;
 using Satrabel.OpenContent.Components;
 
 namespace Lucene.Net.Search

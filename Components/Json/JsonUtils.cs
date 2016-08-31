@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json.Linq;
-using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.TemplateHelpers;
 using DotNetNuke.Services.FileSystem;
 
@@ -77,6 +76,31 @@ namespace Satrabel.OpenContent.Components.Json
                 }
             }
         }
+
+        public static void SimplifyJson(JToken o, string culture)
+        {
+            var array = o as JArray;
+            if (array != null)
+            {
+                foreach (var value in array)
+                {
+                    var obj = value as JObject;
+                    if (obj != null)
+                    {
+                        SimplifyJson(obj, culture);
+                    }
+                }
+            }
+            else
+            {
+                var obj = o as JObject;
+                if (obj != null)
+                {
+                    SimplifyJson(obj, culture);
+                }
+            }
+        }
+
         public static void LookupJson(JObject o, JObject additionalData, JObject options)
         {
             foreach (var child in o.Children<JProperty>().ToList())
@@ -285,31 +309,6 @@ namespace Satrabel.OpenContent.Components.Json
             res["Id"] = id;
             res["Title"] = "unknow";
             return res;
-        }
-
-        public static void SimplifyJson(JToken o, string culture)
-        {
-
-            var array = o as JArray;
-            if (array != null)
-            {
-                foreach (var value in array)
-                {
-                    var obj = value as JObject;
-                    if (obj != null)
-                    {
-                        SimplifyJson(obj, culture);
-                    }
-                }
-            }
-            else
-            {
-                var obj = o as JObject;
-                if (obj != null)
-                {
-                    SimplifyJson(obj, culture);
-                }
-            }
         }
 
         public static void Merge(JObject model, JObject completeModel)

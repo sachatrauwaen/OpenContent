@@ -10,25 +10,17 @@
 #region Using Statements
 
 using System;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using DotNetNuke.Web.Api;
 using Newtonsoft.Json.Linq;
-using System.Web.Hosting;
 using System.IO;
-using DotNetNuke.Instrumentation;
-using Satrabel.OpenContent.Components;
 using DotNetNuke.Security;
 using Satrabel.OpenContent.Components.Json;
 using DotNetNuke.Entities.Modules;
-using DotNetNuke.Entities.Tabs;
-using DotNetNuke.Common;
-using DotNetNuke.Services.FileSystem;
 using System.Collections.Generic;
 using Satrabel.OpenContent.Components.Alpaca;
-using Satrabel.OpenContent.Components.Lucene;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.Datasource;
 
@@ -72,7 +64,7 @@ namespace Satrabel.OpenContent.Components
                 }
                 var manifest = settings.Manifest;
                 TemplateManifest templateManifest = settings.Template;
-                string editRole = manifest == null ? "" : manifest.EditRole;
+                string editRole = manifest.GetEditRole();
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
 
 
@@ -269,7 +261,7 @@ namespace Satrabel.OpenContent.Components
             }
             var manifest = settings.Template.Manifest;
             var templateManifest = settings.Template;
-            string editRole = manifest == null ? "" : manifest.EditRole;
+            string editRole = manifest.GetEditRole();
             bool listMode = templateManifest != null && templateManifest.IsListTemplate;
             JToken json = new JObject();
             try
@@ -350,7 +342,7 @@ namespace Satrabel.OpenContent.Components
                 var manifest = settings.Template.Manifest;
                 TemplateManifest templateManifest = settings.Template;
                 index = settings.Template.Manifest.Index;
-                string editRole = manifest == null ? "" : manifest.EditRole;
+                string editRole = manifest.GetEditRole();
 
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 int createdByUserid = -1;
@@ -439,7 +431,7 @@ namespace Satrabel.OpenContent.Components
                 var manifest = settings.Template.Manifest;
                 TemplateManifest templateManifest = settings.Template;
                 index = manifest.Index;
-                string editRole = manifest == null ? "" : manifest.EditRole;
+                string editRole = manifest.GetEditRole();
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 int CreatedByUserid = -1;
                 var ds = DataSourceManager.GetDataSource(manifest.DataSource);
@@ -727,7 +719,7 @@ namespace Satrabel.OpenContent.Components
             }
             var manifest = settings.Template.Manifest;
             TemplateManifest templateManifest = settings.Template;
-            string editRole = manifest == null ? "" : manifest.EditRole;
+            string editRole = manifest.GetEditRole();
             bool listMode = templateManifest != null && templateManifest.IsListTemplate;
             JArray json = new JArray();
             try

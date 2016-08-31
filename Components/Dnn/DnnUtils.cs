@@ -79,6 +79,9 @@ namespace Satrabel.OpenContent.Components
 
         public static string GetCurrentCultureCode()
         {
+            if (PortalSettings.Current == null)
+                throw new Exception("No Portalsettings available in this context. Are you in the context of a Dnn Scheduler? It does not have Portalsettings");
+
             //strange issues with getting the correct culture.
             if (PortalSettings.Current.ActiveTab != null && PortalSettings.Current.ActiveTab.IsNeutralCulture)
                 return PortalSettings.Current.PortalAlias.CultureCode;
@@ -112,6 +115,21 @@ namespace Satrabel.OpenContent.Components
 
             return cultureCode;
         }
+
+        public static string GetCurrentCultureCode(ModuleInfo modInfo)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static bool IsMultiLingualPortal(int portalId)
+        {
+            return LocaleController.Instance.GetLocales(portalId).Count > 1;
+        }
+        public static Dictionary<string, Locale> GetPortalLocales(int portalId)
+        {
+            return LocaleController.Instance.GetLocales(portalId);
+        }
+
         public static int GetTabByCurrentCulture(int portalId, int tabId, string cultureCode)
         {
             var tc = new TabController();

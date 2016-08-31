@@ -15,10 +15,7 @@ using System.Linq;
 using System.Collections.Generic;
 using DotNetNuke.Common.Utilities;
 using DotNetNuke.Data;
-using Newtonsoft.Json.Linq;
-using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Lucene;
-using Satrabel.OpenContent.Components.Lucene.Index;
 using Satrabel.OpenContent.Components.Lucene.Config;
 
 namespace Satrabel.OpenContent.Components
@@ -38,7 +35,9 @@ namespace Satrabel.OpenContent.Components
             {
                 Json = content.JsonAsJToken,
                 CreatedByUserId = content.LastModifiedByUserId,
-                CreatedOnDate = content.LastModifiedOnDate
+                CreatedOnDate = content.LastModifiedOnDate,
+                LastModifiedByUserId = content.LastModifiedByUserId,
+                LastModifiedOnDate = content.LastModifiedOnDate
             };
             var versions = new List<OpenContentVersion>();
             versions.Add(ver);
@@ -50,7 +49,6 @@ namespace Satrabel.OpenContent.Components
             }
             if (index)
             {
-                
                 LuceneController.Instance.Add(content, indexConfig);
                 LuceneController.Instance.Store.Commit();
             }
@@ -86,7 +84,9 @@ namespace Satrabel.OpenContent.Components
             {
                 Json = content.JsonAsJToken,
                 CreatedByUserId = content.LastModifiedByUserId,
-                CreatedOnDate = content.LastModifiedOnDate
+                CreatedOnDate = content.LastModifiedOnDate,
+                LastModifiedByUserId = content.LastModifiedByUserId,
+                LastModifiedOnDate = content.LastModifiedOnDate
             };
             var versions = content.Versions;
             if (versions.Count == 0 || versions[0].Json.ToString() != content.Json)
@@ -105,16 +105,9 @@ namespace Satrabel.OpenContent.Components
             }
             if (index)
             {
-                if (indexConfig != null && indexConfig.Fields != null && !indexConfig.Fields.ContainsKey("publishstartdate")
-                    && content.JsonAsJToken != null && content.JsonAsJToken["publishstartdate"] == null)
-                {
-                    content.JsonAsJToken["publishstartdate"] = DateTime.MinValue;
-                }
-                if (indexConfig != null && indexConfig.Fields != null && !indexConfig.Fields.ContainsKey("publishenddate")
-                    && content.JsonAsJToken != null && content.JsonAsJToken["publishenddate"] == null)
-                {
-                    content.JsonAsJToken["publishenddate"] = DateTime.MaxValue;
-                }
+
+                content.HydrateDefaultFields(indexConfig);
+
                 LuceneController.Instance.Update(content, indexConfig);
                 LuceneController.Instance.Store.Commit();
             }
@@ -134,7 +127,7 @@ namespace Satrabel.OpenContent.Components
         public IEnumerable<OpenContentInfo> GetContents(int moduleId)
         {
             var cacheArgs = new CacheItemArgs(GetModuleIdCacheKey(moduleId, "GetContents"), CacheTime);
-            return DataCache.GetCachedData<IEnumerable<OpenContentInfo>>(cacheArgs, args => 
+            return DataCache.GetCachedData<IEnumerable<OpenContentInfo>>(cacheArgs, args =>
                 {
                     IEnumerable<OpenContentInfo> content;
 
@@ -150,7 +143,7 @@ namespace Satrabel.OpenContent.Components
         public OpenContentInfo GetContent(int contentId)
         {
             var cacheArgs = new CacheItemArgs(GetContentIdCacheKey(contentId), CacheTime);
-            return DataCache.GetCachedData<OpenContentInfo>(cacheArgs, args => 
+            return DataCache.GetCachedData<OpenContentInfo>(cacheArgs, args =>
                 {
                     OpenContentInfo content;
 
@@ -201,18 +194,5 @@ namespace Satrabel.OpenContent.Components
 
         #endregion
 
-        /* slow !!!
-        public OpenContentInfo GetContent(int ContentId, int moduleId)
-        {
-            OpenContentInfo Content;
-
-            using (IDataContext ctx = DataContext.Instance())
-            {
-                var rep = ctx.GetRepository<OpenContentInfo>();
-                Content = rep.GetById(ContentId, moduleId);                
-            }
-            return Content;
-        }
-         */
     }
 }

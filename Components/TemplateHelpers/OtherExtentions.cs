@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Linq;
-using System.Text;
-using System.Web;
 
 namespace Satrabel.OpenContent.Components.TemplateHelpers
 {
@@ -15,6 +12,5 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             }
             return string.IsNullOrEmpty(defaultValue) ? string.Empty : defaultValue;
         }
-
     }
 }
