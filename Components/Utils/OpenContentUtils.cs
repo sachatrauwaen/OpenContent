@@ -39,6 +39,11 @@ namespace Satrabel.OpenContent.Components
             {
                 content.JsonAsJToken[AppConfig.FieldNamePublishEndDate] = DateTime.MaxValue;
             }
+            if (indexConfig.HasField(AppConfig.FieldNamePublishStatus)
+                && content.JsonAsJToken != null && content.JsonAsJToken[AppConfig.FieldNamePublishStatus] == null)
+            {
+                content.JsonAsJToken[AppConfig.FieldNamePublishStatus] = "published";
+            }
         }
 
         public static void UpdateModuleTitle(ModuleInfo module, string moduleTitle)
