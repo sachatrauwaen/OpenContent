@@ -129,7 +129,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     GetFields(newSchemaFilter, newOptionsFilter, prop.Value, opts, fieldLst, idxs, propKey + ".");
                     continue;
                 }
-                string optType = opts == null ? "text" : opts.Type;
+                string optType = opts == null ? "text" : opts.Type ?? "text";
 
                 if (prop.Value.Type == "boolean")
                 {
@@ -177,7 +177,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     }
                     fieldLst.Add(propKey);
                 }
-                else if (optType == "date")
+                else if (optType == "date" || optType == "datetime" || optType == "time")
                 {
                     var newProp = new SchemaConfig(true);
                     newSchemaFilter.Properties.Add(propKey, newProp);
@@ -271,7 +271,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 {
                     opts = optionsConfig.Fields.ContainsKey(prop.Key) ? optionsConfig.Fields[prop.Key] : null;
                 }
-                string optType = opts == null ? "text" : opts.Type;
+                string optType = (opts == null) ? "text" : opts.Type ?? "text";
                 if (prop.Value.Type == "array" && (prop.Value.Enum != null || optType == "select" || optType == "select2" || optType == "role2"))
                 {
                     var newField = new FieldConfig()
@@ -378,7 +378,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     };
                     newConfig.Fields.Add(prop.Key, newField);
                 }
-                else if (optType == "date")
+                else if (optType == "date" || optType == "datetime" || optType == "time")
                 {
                     var newField = new FieldConfig()
                     {
