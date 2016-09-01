@@ -24,6 +24,7 @@ using DotNetNuke.Entities.Portals;
 using System.IO;
 using System.Web.Hosting;
 using Satrabel.OpenContent.Components.Json;
+using Satrabel.OpenContent.Components.TemplateHelpers;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -64,6 +65,25 @@ namespace Satrabel.OpenContent.Components
         public override IList<SearchDocument> GetModifiedSearchDocuments(ModuleInfo modInfo, DateTime beginDateUtc)
         {
             var searchDocuments = new List<SearchDocument>();
+
+            //If module is marked as "don't index" then return no results
+            if (modInfo.ModuleSettings.GetValue("AllowIndex", "False") == "False")
+                return searchDocuments;
+
+            //If tab of the module is marked as "don't index" then return no results
+            if (modInfo.ParentTab.TabSettings.GetValue("AllowIndex", "True") == "False")
+                return searchDocuments;
+
+            //If tab is marked as "inactive" then return no results
+            if (modInfo.ParentTab.DisableLink)
+                return searchDocuments;
+
+            OpenContentSettings settings = new OpenContentSettings(modInfo.ModuleSettings);
+            if (!settings.Template.Main.DnnSearch)
+            {
+                return searchDocuments;
+            }
+
             OpenContentController ctrl = new OpenContentController();
             OpenContentInfo content = ctrl.GetFirstContent(modInfo.ModuleID);
             if (content != null &&
@@ -100,15 +120,15 @@ namespace Satrabel.OpenContent.Components
             return searchDocuments;
         }
 
-        protected static SearchDocument CreateSearchDocument(ModuleInfo modInfo, string culture, string title, string body, DateTime time)
+        private static SearchDocument CreateSearchDocument(ModuleInfo modInfo, string culture, string title, string body, DateTime time)
         {
             return new SearchDocument
               {
-                  UniqueKey = modInfo.ModuleID.ToString(),
+                  UniqueKey = modInfo.ModuleID + "-" + culture,
                   PortalId = modInfo.PortalID,
-                  Title = modInfo.ModuleTitle,
-                  Description = title,
-                  Body = body,
+                  Title = modInfo.ModuleTitle.StripHtml(),
+                  Description = title.StripHtml(),
+                  Body = body.StripHtml(),
                   ModifiedTimeUtc = time,
                   CultureCode = culture
               };
@@ -146,7 +166,8 @@ namespace Satrabel.OpenContent.Components
 
                 if (item.Value.Type == JTokenType.String)
                 {
-                    result += Regex.Replace(item.Value.ToString(), tagPattern, string.Empty) + " ... ";
+                    //result += Regex.Replace(item.Value.ToString(), tagPattern, string.Empty) + " ... ";
+                    result += data.ToString().StripHtml() + " ... ";
                 }
                 else
                 {
@@ -155,7 +176,8 @@ namespace Satrabel.OpenContent.Components
             }
             else
             {
-                result += Regex.Replace(data.ToString(), tagPattern, string.Empty) + " ... ";
+                //result += Regex.Replace(data.ToString(), tagPattern, string.Empty) + " ... ";
+                result += data.ToString().StripHtml() + " ... ";
             }
 
             return result;

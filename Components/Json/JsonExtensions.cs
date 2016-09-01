@@ -17,8 +17,14 @@ namespace Satrabel.OpenContent.Components.Json
         {
             //tried using HasValues, but string value are not detected that way.
             if (jtoken == null) return true;
+            if (jtoken.Type == JTokenType.Object)
+                return (jtoken as JObject).IsEmpty();
+
+            if (jtoken.Type == JTokenType.Array)
+                return (jtoken as JArray).HasValues;
+
             string json = jtoken.ToString();
-            if (json == "[]") return true;
+            if (json == "{}") return true;
             return string.IsNullOrEmpty(json);
         }
         public static bool Exists(this JObject json)
@@ -32,10 +38,27 @@ namespace Satrabel.OpenContent.Components.Json
 
         public static bool HasField(this JToken json, string fieldname)
         {
-
             return !json.IsEmpty() && json[fieldname] != null;
         }
+        public static void MakeSureFieldExists(this JToken jToken, string fieldname, JTokenType jTokenType)
+        {
+            JToken defaultvalue;
+            switch (jTokenType)
+            {
+                case JTokenType.Object:
+                    defaultvalue = new JObject();
+                    break;
+                default:
+                    throw new NotImplementedException("unknown json type in JsonExtentions");
+            }
+            if (!jToken.HasField(fieldname))
+            {
+                jToken[fieldname] = defaultvalue;
+            }
 
+            if (jToken[fieldname].Type != jTokenType)
+                jToken[fieldname] = defaultvalue;
+        }
         public static JToken ToJObject(this FileUri file)
         {
             try
