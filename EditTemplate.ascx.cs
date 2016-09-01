@@ -178,12 +178,19 @@ namespace Satrabel.OpenContent
                         field["file2options"] = new JObject();
                         if (opt["folder"] != null)
                         {
-                            field["file2options"]["folder"] = opt["folder"];
+                            field["file2options"]["folder"] = opt["folder"];    
                         }
                         if (opt["filter"] != null)
                         {
                             field["file2options"]["filter"] = opt["filter"];
                         }
+                    }
+                    else if (fieldtype == "icon")
+                    {
+                        field["iconoptions"] = new JObject();
+                        field["iconoptions"]["glyphicons"] = opt["glyphicons"] == null ? false : opt["glyphicons"];
+                        field["iconoptions"]["bootstrap"] = opt["bootstrap"] == null ? false : opt["bootstrap"];
+                        field["iconoptions"]["fontawesome"] = opt["fontawesome"] == null ? true : opt["fontawesome"];
                     }
                     field["fieldtype"] = fieldtype;
                     if (sch["title"] != null)
