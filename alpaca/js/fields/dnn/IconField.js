@@ -8,13 +8,13 @@
      */
     {
         setup: function () {
-            if (!this.options.glyphicons) {
+            if (this.options.glyphicons === undefined) {
                 this.options.glyphicons = false;
             }
-            if (!this.options.dnngo) {
+            if (this.options.dnngo === undefined) {
                 this.options.dnngo = false;
             }
-            if (!this.options.fontawesome) {
+            if (this.options.fontawesome === undefined) {
                 this.options.fontawesome = true;
             }
             this.base();

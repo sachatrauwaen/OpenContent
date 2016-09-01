@@ -196,3 +196,13 @@ select.oc-ddl-versions {
     padding-bottom: 0 !important;
     display:block !important;
 }
+
+/* for dnngo icons in editor */
+.glyphicons {
+    
+    font-family: 'Glyphicons Regular' !important;
+    font-style: normal !important;
+    font-weight: normal !important;
+    
+    
+}
