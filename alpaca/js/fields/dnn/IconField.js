@@ -11,8 +11,8 @@
             if (this.options.glyphicons === undefined) {
                 this.options.glyphicons = false;
             }
-            if (this.options.dnngo === undefined) {
-                this.options.dnngo = false;
+            if (this.options.bootstrap === undefined) {
+                this.options.bootstrap = false;
             }
             if (this.options.fontawesome === undefined) {
                 this.options.fontawesome = true;
@@ -61,8 +61,8 @@
         loadIcons: function () {
             var self = this;
             var icons = [];
-            if (this.options.glyphicons) {
-                $.each(glyphicon_icons, function (i, v) {
+            if (this.options.bootstrap) {
+                $.each(bootstrap_icons, function (i, v) {
                     icons.push('glyphicon ' + v);
                 });
             }
@@ -71,8 +71,8 @@
                     icons.push('fa ' + i);
                 }
             }
-            if (this.options.dnngo) {
-                $.each(dnngo_icons, function (i, v) {
+            if (this.options.glyphicons) {
+                $.each(glyphicons_icons, function (i, v) {
                     icons.push('glyphicons ' + v);
                 });
                 $.each(dnngo_social, function (i, v) {
@@ -85,7 +85,7 @@
 
     Alpaca.registerFieldClass("icon", Alpaca.Fields.IconField);
 
-    var glyphicon_icons = [
+    var bootstrap_icons = [
           "glyphicon-glass",
           "glyphicon-music",
           "glyphicon-search",
@@ -836,7 +836,7 @@
         "fa-youtube-square": "Youtube square"
     };
 
-    var dnngo_icons = [
+    var glyphicons_icons = [
         "glyph-glass",
         "glyph-leaf",
         "glyph-dog",
