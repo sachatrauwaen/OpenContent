@@ -90,6 +90,8 @@ namespace Satrabel.OpenContent.Components
                 (content.LastModifiedOnDate.ToUniversalTime() > beginDateUtc &&
                  content.LastModifiedOnDate.ToUniversalTime() < DateTime.UtcNow))
             {
+                Log.Logger.DebugFormat("Indexing content {0}-{1} ({2}) {3} versus {4}", modInfo.ModuleID, modInfo.ModuleTitle, modInfo.TabID, beginDateUtc, content.LastModifiedOnDate.ToUniversalTime());
+
                 SearchDocument searchDoc;
                 if (DnnUtils.IsMultiLingualPortal(modInfo.PortalID))
                 {
