@@ -274,6 +274,10 @@ var baseFields = function (index, value, oldOptions) {
     } else if (value.fieldtype == "imagecrop" && value.imagecropoptions) {
         field.cropper = {};
         field.cropper.aspectRatio = value.imagecropoptions.ratio;
+    } else if (value.fieldtype == "icon" && value.iconoptions) {
+        field.glyphicons = value.iconoptions.glyphicons;
+        field.bootstrap = value.iconoptions.bootstrap;
+        field.fontawesome = value.iconoptions.fontawesome;
     } else if (value.fieldtype == "publishstartdate") {
         field.type = "date";
         field.picker = {
@@ -614,6 +618,26 @@ var fieldSchema =
                 }
             }
         },
+        "iconoptions": {
+            "type": "object",
+            "title": "Icon Options",
+            "dependencies": "fieldtype",
+            "properties": {
+                "glyphicons": {
+                    "type": "boolean",
+                    "title": "Glyphicons"
+                },
+                "bootstrap": {
+                    "type": "boolean",
+                    "title": "Bootstrap"
+                },
+                "fontawesome": {
+                    "type": "boolean",
+                    "title": "Fontawesome",
+                    "default": true
+                }
+            }
+        },
         "many": {
             "type": "boolean",
             "title": "Many",
@@ -801,6 +825,12 @@ var fieldOptions =
         "collapsible": true,
         "dependencies": {
             "fieldtype": ["imagecrop"]
+        }
+    },
+    "iconoptions": {
+        "collapsible": true,
+        "dependencies": {
+            "fieldtype": ["icon"]
         }
     },
     "dependencies": {

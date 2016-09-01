@@ -467,6 +467,9 @@
     <Content Include="css\font-awesome\css\font-awesome.css" />
     <Content Include="css\font-awesome\css\font-awesome.min.css" />
     <Content Include="css\font-awesome\fonts\fontawesome-webfont.svg" />
+    <Content Include="css\glyphicons\fonts\glyphicons-regular.svg" />
+    <Content Include="css\glyphicons\fonts\glyphicons-social-regular.svg" />
+    <Content Include="css\glyphicons\glyphicons.css" />
     <Content Include="js\bootstrap\css\bootstrap-theme.css" />
     <Content Include="js\bootstrap\css\bootstrap-theme.min.css" />
     <Content Include="js\bootstrap\css\bootstrap.css" />
@@ -898,6 +901,12 @@
     <Content Include="js\bootstrap\fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="js\bootstrap\fonts\glyphicons-halflings-regular.woff" />
     <Content Include="js\bootstrap\fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="css\glyphicons\fonts\glyphicons-regular.eot" />
+    <Content Include="css\glyphicons\fonts\glyphicons-regular.ttf" />
+    <Content Include="css\glyphicons\fonts\glyphicons-regular.woff" />
+    <Content Include="css\glyphicons\fonts\glyphicons-social-regular.eot" />
+    <Content Include="css\glyphicons\fonts\glyphicons-social-regular.ttf" />
+    <Content Include="css\glyphicons\fonts\glyphicons-social-regular.woff" />
     <None Include="Scripts\_references.js" />
     <Content Include="js\select2\i18n\az.js" />
     <Content Include="js\select2\i18n\bg.js" />

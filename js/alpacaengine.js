@@ -60,7 +60,8 @@ alpacaEngine.engine = function(config) {
                 //'position': 'top',
                 height: newHeight,
                 width: newWidth,
-                minWidth: 300,
+                minWidth: newWidth,
+                minHeight: newHeight - 100,
                 //position: 'center'
                 resizable: false,
             });
