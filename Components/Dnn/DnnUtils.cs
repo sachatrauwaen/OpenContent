@@ -83,13 +83,15 @@ namespace Satrabel.OpenContent.Components
                 throw new Exception("No Portalsettings available in this context. Are you in the context of a Dnn Scheduler? It does not have Portalsettings");
 
             //strange issues with getting the correct culture.
-            if (PortalSettings.Current.ActiveTab != null && PortalSettings.Current.ActiveTab.IsNeutralCulture)
-                return PortalSettings.Current.PortalAlias.CultureCode;
-                //return PortalSettings.Current.CultureCode; // not correct in webapi
-
-            if (PortalSettings.Current.ActiveTab != null)
+            if (PortalSettings.Current.ActiveTab != null && PortalSettings.Current.ActiveTab.IsNeutralCulture) {
+                if (!string.IsNullOrEmpty(PortalSettings.Current.PortalAlias.CultureCode))
+                    return PortalSettings.Current.PortalAlias.CultureCode;
+                else
+                    return PortalSettings.Current.CultureCode;
+            }
+            if (PortalSettings.Current.ActiveTab != null) { 
                 return PortalSettings.Current.ActiveTab.CultureCode;
-
+            }
             return LocaleController.Instance.GetCurrentLocale(PortalSettings.Current.PortalId).Code;
         }
         public static CultureInfo GetCurrentCulture()
