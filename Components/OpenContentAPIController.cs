@@ -50,11 +50,8 @@ namespace Satrabel.OpenContent.Components
         [HttpGet]
         public HttpResponseMessage Edit(string id)
         {
-
             try
             {
-
-
                 OpenContentSettings settings = ActiveModule.OpenContentSettings();
                 ModuleInfo module = ActiveModule;
                 if (settings.ModuleId > 0)
@@ -66,10 +63,6 @@ namespace Satrabel.OpenContent.Components
                 TemplateManifest templateManifest = settings.Template;
                 string editRole = manifest.GetEditRole();
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
-
-
-
-
                 var ds = DataSourceManager.GetDataSource(manifest.DataSource);
                 var dsContext = new DataSourceContext()
                 {
@@ -143,7 +136,6 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
-
                 OpenContentSettings settings = ActiveModule.OpenContentSettings();
                 ModuleInfo module = ActiveModule;
                 if (settings.ModuleId > 0)
@@ -153,21 +145,32 @@ namespace Satrabel.OpenContent.Components
                 }
                 var manifest = settings.Manifest;
                 TemplateManifest templateManifest = settings.Template;
-                var dataManifest = manifest.GetAdditionalData(key);
-                string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings.PortalId, PortalSettings.ActiveTab.TabID, module.ModuleID, ActiveModule.TabModuleID);
-
-
+                var dataManifest = manifest.GetAdditionalData(key);                
                 var templateFolder = string.IsNullOrEmpty(dataManifest.TemplateFolder) ? settings.TemplateDir : settings.TemplateDir.ParentFolder.Append(dataManifest.TemplateFolder);
-                var fb = new FormBuilder(templateFolder);
-                JObject json = fb.BuildForm(key);
                 int createdByUserid = -1;
-                var dc = new AdditionalDataController();
-                var data = dc.GetData(scope, dataManifest.StorageKey ?? key);
-                if (data != null)
+                var ds = DataSourceManager.GetDataSource(manifest.DataSource);
+                var dsContext = new DataSourceContext()
                 {
-                    json["data"] = data.Json.ToJObject("GetContent " + scope + "/" + key);
-                    AddVersions(json, data);
-                    createdByUserid = data.CreatedByUserId;
+                    PortalId = PortalSettings.PortalId,
+                    TabId = ActiveModule.TabID,
+                    ModuleId = module.ModuleID,
+                    TabModuleId = ActiveModule.TabModuleID,
+                    UserId = UserInfo.UserID,
+                    TemplateFolder = settings.TemplateDir.FolderPath,
+                    Config = manifest.DataSourceConfig,
+                    //Options = reqOptions
+                };
+                var dsItem = ds.GetData(dsContext, dataManifest.ScopeType, dataManifest.StorageKey ?? key);
+                var json = ds.GetDataAlpaca(dsContext, true, true, true, key);
+                if (dsItem != null)
+                {
+                    json["data"] = dsItem.Data;
+                    var versions = ds.GetDataVersions(dsContext, dsItem);
+                    if (versions != null)
+                    {
+                        json["versions"] = versions;
+                    }
+                    createdByUserid = dsItem.CreatedByUserId;
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, json);
             }
@@ -194,29 +197,26 @@ namespace Satrabel.OpenContent.Components
                 var manifest = settings.Template.Manifest;
                 string key = json["key"].ToString();
                 var dataManifest = manifest.GetAdditionalData(key);
-                string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings.PortalId, PortalSettings.ActiveTab.TabID, module.ModuleID, ActiveModule.TabModuleID);
-                AdditionalDataController ctrl = new AdditionalDataController();
-                AdditionalDataInfo data = ctrl.GetData(scope, dataManifest.StorageKey ?? key);
-                if (data == null)
+                var ds = DataSourceManager.GetDataSource(manifest.DataSource);
+                var dsContext = new DataSourceContext()
                 {
-                    data = new AdditionalDataInfo()
-                    {
-                        Scope = scope,
-                        DataKey = dataManifest.StorageKey ?? key,
-                        Json = json["form"].ToString(),
-                        CreatedByUserId = UserInfo.UserID,
-                        CreatedOnDate = DateTime.Now,
-                        LastModifiedByUserId = UserInfo.UserID,
-                        LastModifiedOnDate = DateTime.Now,
-                    };
-                    ctrl.AddData(data);
+                    PortalId = PortalSettings.PortalId,
+                    TabId = ActiveModule.TabID,
+                    ModuleId = module.ModuleID,
+                    TabModuleId = ActiveModule.TabModuleID,
+                    UserId = UserInfo.UserID,
+                    TemplateFolder = settings.TemplateDir.FolderPath,
+                    Config = manifest.DataSourceConfig,
+                    //Options = reqOptions
+                };
+                var dsItem = ds.GetData(dsContext, dataManifest.ScopeType, dataManifest.StorageKey ?? key);
+                if (dsItem == null)
+                {
+                    ds.AddData(dsContext, dataManifest.ScopeType, dataManifest.StorageKey ?? key, json["form"]);
                 }
                 else
                 {
-                    data.Json = json["form"].ToString();
-                    data.LastModifiedByUserId = UserInfo.UserID;
-                    data.LastModifiedOnDate = DateTime.Now;
-                    ctrl.UpdateData(data);
+                    ds.UpdateData(dsContext, dsItem, json["form"]);
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, "");
             }
@@ -573,16 +573,25 @@ namespace Satrabel.OpenContent.Components
             TemplateManifest templateManifest = settings.Template;
             string key = req.dataKey;
             var dataManifest = manifest.GetAdditionalData(key);
-            string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings.PortalId, PortalSettings.ActiveTab.TabID, module.ModuleID, ActiveModule.TabModuleID);
             List<LookupResultDTO> res = new List<LookupResultDTO>();
             try
             {
-                AdditionalDataController ctrl = new AdditionalDataController();
-                AdditionalDataInfo data = ctrl.GetData(scope, dataManifest.StorageKey ?? key);
-                if (data != null)
+                var ds = DataSourceManager.GetDataSource(manifest.DataSource);
+                var dsContext = new DataSourceContext()
                 {
-
-                    JToken json = data.Json.ToJObject("Get data of  " + req.dataKey);
+                    PortalId = PortalSettings.PortalId,
+                    TabId = ActiveModule.TabID,
+                    ModuleId = module.ModuleID,
+                    TabModuleId = ActiveModule.TabModuleID,
+                    UserId = UserInfo.UserID,
+                    TemplateFolder = settings.TemplateDir.FolderPath,
+                    Config = manifest.DataSourceConfig,
+                    //Options = reqOptions
+                };
+                var dsItem = ds.GetData(dsContext, dataManifest.ScopeType, dataManifest.StorageKey ?? key);
+                if (dsItem != null)
+                {
+                    JToken json = dsItem.Data;
                     if (!string.IsNullOrEmpty(req.dataMember))
                     {
                         json = json[req.dataMember];

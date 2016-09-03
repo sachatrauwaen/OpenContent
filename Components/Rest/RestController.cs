@@ -252,20 +252,31 @@ namespace Satrabel.OpenContent.Components.Rest
                 if (manifest.AdditionalDataExists(entity))
                 {
                     var dataManifest = manifest.AdditionalData[entity];
-                    string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings.PortalId, PortalSettings.ActiveTab.TabID, module.ModuleID, ActiveModule.TabModuleID);
+                    //string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings.PortalId, ActiveModule.TabID, module.ModuleID, ActiveModule.TabModuleID);
 
-                    var templateFolder = string.IsNullOrEmpty(dataManifest.TemplateFolder) ? settings.TemplateDir : settings.TemplateDir.ParentFolder.Append(dataManifest.TemplateFolder);
+                    //var templateFolder = string.IsNullOrEmpty(dataManifest.TemplateFolder) ? settings.TemplateDir : settings.TemplateDir.ParentFolder.Append(dataManifest.TemplateFolder);
                     //var fb = new FormBuilder(templateFolder);
                     //JObject json = fb.BuildForm(entity);
                     var res = new JObject();
 
                     int createdByUserid = -1;
-                    var dc = new AdditionalDataController();
-                    var data = dc.GetData(scope, dataManifest.StorageKey ?? entity);
-                    if (data != null)
+                    var ds = DataSourceManager.GetDataSource(manifest.DataSource);
+                    var dsContext = new DataSourceContext()
                     {
-                        var json = data.Json.ToJObject("GetContent " + scope + "/" + entity);
-                        createdByUserid = data.CreatedByUserId;
+                        PortalId = PortalSettings.PortalId,
+                        TabId = ActiveModule.TabID,
+                        ModuleId = module.ModuleID,
+                        TabModuleId = ActiveModule.TabModuleID,
+                        UserId = UserInfo.UserID,
+                        TemplateFolder = settings.TemplateDir.FolderPath,
+                        Config = manifest.DataSourceConfig,
+                        //Options = reqOptions
+                    };
+                    var dsItem = ds.GetData(dsContext, dataManifest.ScopeType, dataManifest.StorageKey ?? entity);
+                    if (dsItem != null)
+                    {
+                        var json = dsItem.Data;
+                        createdByUserid = dsItem.CreatedByUserId;
                         JsonUtils.IdJson(json);
                         res[entity] = json;
                     }

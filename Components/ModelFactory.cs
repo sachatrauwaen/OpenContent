@@ -333,20 +333,30 @@ namespace Satrabel.OpenContent.Components
                 var additionalData = model["AdditionalData"] = new JObject();
                 foreach (var item in Manifest.AdditionalData)
                 {
-                    //AdditionalDataManifest dataManifest = Manifest.GetAdditionalData(item.Key);
                     var dataManifest = item.Value;
                     int tabId = this.PortalSettings == null ? MainTabId : PortalSettings.ActiveTab.TabID;
-                    string scope = AdditionalDataUtils.GetScope(dataManifest, PortalId, tabId, MainModuleId, Module.TabModuleID);
-                    var dc = new AdditionalDataController();
-                    var data = dc.GetData(scope, dataManifest.StorageKey ?? item.Key);
-                    JToken dataJson = new JObject();
-                    if (data != null && !string.IsNullOrEmpty(data.Json))
+                    int userId = this.PortalSettings == null ? -1 : PortalSettings.UserId;
+                    var ds = DataSourceManager.GetDataSource(Manifest.DataSource);
+                    var dsContext = new DataSourceContext()
                     {
-                        dataJson = JToken.Parse(data.Json);
+                        PortalId = PortalSettings.PortalId,
+                        TabId = tabId,
+                        ModuleId = MainModuleId,
+                        TabModuleId = Module.TabModuleID,
+                        UserId = userId,
+                        //TemplateFolder = settings.TemplateDir.FolderPath,
+                        Config = Manifest.DataSourceConfig,
+                        //Options = reqOptions
+                    };
+                    var dsItem = ds.GetData(dsContext, dataManifest.ScopeType, dataManifest.StorageKey ?? item.Key);
+                    JToken dataJson = new JObject();
+                    if (dsItem != null && dsItem.Data != null)
+                    {
                         if (LocaleController.Instance.GetLocales(PortalId).Count > 1)
                         {
                             JsonUtils.SimplifyJson(dataJson, GetCurrentCultureCode());
                         }
+                        dataJson = dsItem.Data;
                     }
                     additionalData[(item.Value.ModelKey ?? item.Key).ToLowerInvariant()] = dataJson;
                 }
