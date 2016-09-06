@@ -148,26 +148,13 @@ namespace Satrabel.OpenContent.Components.Datasource
             return null;
         }
 
-        public IDataItems GetAll(DataSourceContext context)
-        {
-            OpenContentController ctrl = new OpenContentController();
-
-            var dataList = ctrl.GetContents(GetModuleId(context)).Select(c => new DefaultDataItem()
-            {
-                Id = c.ContentId.ToString(),
-                Title = c.Title,
-                Data = c.JsonAsJToken,
-                CreatedByUserId = c.CreatedByUserId,
-                Item = c
-            });
-            return new DefaultDataItems()
-            {
-                Items = dataList,
-                Total = dataList.Count()
-            };
-        }
-
-        // Additional Data
+        /// <summary>
+        /// Gets additional/related data of a datasource.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="scope">The Scope. (portal, tab, module, tabmodule)</param>
+        /// <param name="key">The unique key in the scope</param>
+        /// <returns></returns>
         public IDataItem GetData(DataSourceContext context, string scope, string key)
         {
             string scopeStorage = AdditionalDataUtils.GetScope(scope, context.PortalId, context.TabId, GetModuleId(context), context.TabModuleId);
@@ -187,27 +174,34 @@ namespace Satrabel.OpenContent.Components.Datasource
             return null;
         }
 
-        public IDataItems GetAll(DataSourceContext context, Select select)
+        public IDataItems GetAll(DataSourceContext context)
         {
             OpenContentController ctrl = new OpenContentController();
+
+            var dataList = ctrl.GetContents(GetModuleId(context)).OrderBy(i => i.CreatedOnDate).Select(content => new DefaultDataItem()
+            {
+                Id = content.ContentId.ToString(),
+                Title = content.Title,
+                Data = content.JsonAsJToken,
+                CreatedByUserId = content.CreatedByUserId,
+                Item = content
+            });
+            return new DefaultDataItems()
+            {
+                Items = dataList,
+                Total = dataList.Count()
+            };
+        }
+
+        public IDataItems GetAll(DataSourceContext context, Select select)
+        {
             if (select == null)
             {
-                var dataList = ctrl.GetContents(GetModuleId(context)).OrderBy(i => i.CreatedOnDate).Select(c => new DefaultDataItem()
-                {
-                    Id = c.ContentId.ToString(),
-                    Title = c.Title,
-                    Data = c.JsonAsJToken,
-                    CreatedByUserId = c.CreatedByUserId,
-                    Item = c
-                });
-                return new DefaultDataItems()
-                {
-                    Items = dataList,
-                    Total = dataList.Count()
-                };
+                return GetAll(context);
             }
             else
             {
+                OpenContentController ctrl = new OpenContentController();
                 SelectQueryDefinition def = new SelectQueryDefinition();
                 def.Build(@select);
                 if (LogContext.IsLogActive)
@@ -222,10 +216,8 @@ namespace Satrabel.OpenContent.Components.Datasource
 
                 SearchResults docs = LuceneController.Instance.Search(GetModuleId(context).ToString(), def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
                 int total = docs.TotalResults;
-                //Log.Logger.DebugFormat("OpenContent.JplistApiController.List() Searched for [{0}], found [{1}] items", select.ToJson(), total);
-                //System.Diagnostics.Debug.WriteLine(select.ToJson());
                 var dataList = new List<IDataItem>();
-                foreach (var item in docs.ids)
+                foreach (string item in docs.ids)
                 {
                     var content = ctrl.GetContent(int.Parse(item));
                     if (content != null)
@@ -240,7 +232,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                     }
                     else
                     {
-                        Log.Logger.DebugFormat("OpenContent.JplistApiController.List() ContentItem not found [{0}]", item);
+                        Log.Logger.DebugFormat("OpenContentDataSource.GetAll() ContentItem not found [{0}]", item);
                     }
                 }
                 return new DefaultDataItems()
@@ -252,7 +244,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             }
         }
 
-        #region Edit
+        #region Query Alpaca info for Edit
 
         public JObject GetAlpaca(DataSourceContext context, bool schema, bool options, bool view)
         {
@@ -310,16 +302,33 @@ namespace Satrabel.OpenContent.Components.Datasource
             ctrl.DeleteContent(content, context.Index);
         }
 
+        /// <summary>
+        /// Perform a particular action.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="action">The action.</param>
+        /// <param name="item">The item to perform the action on.</param>
+        /// <param name="data">The additional data/parameters needed to perform the Action.</param>
+        /// <returns>Optionally return a JToken with a result value</returns>
+        /// <exception cref="System.NotImplementedException"></exception>
         public virtual JToken Action(DataSourceContext context, string action, IDataItem item, JToken data)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Adds Related data (a.k.a Additional Data).
+        /// Related data is data that is supportive to the Core data of datasource. Eg Categories, Enums, etc
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="scope">The scope.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="data">The data.</param>
         public void AddData(DataSourceContext context, string scope, string key, JToken data)
         {
             string scopeStorage = AdditionalDataUtils.GetScope(scope, context.PortalId, context.TabId, GetModuleId(context), context.TabModuleId);
             AdditionalDataController ctrl = new AdditionalDataController();
-            var addData = new AdditionalDataInfo()
+            var additionalData = new AdditionalDataInfo()
             {
                 Scope = scopeStorage,
                 DataKey = key,
@@ -329,24 +338,34 @@ namespace Satrabel.OpenContent.Components.Datasource
                 LastModifiedByUserId = context.UserId,
                 LastModifiedOnDate = DateTime.Now,
             };
-            ctrl.AddData(addData);
+            ctrl.AddData(additionalData);
         }
 
+        /// <summary>
+        /// Updates the Related data (a.k.a Additional Data).
+        /// Related data is data that is supportive to the Core data of datasource. Eg Categories, Enums, etc
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="item">The item.</param>
+        /// <param name="data">The data.</param>
         public void UpdateData(DataSourceContext context, IDataItem item, JToken data)
         {
             AdditionalDataController ctrl = new AdditionalDataController();
-            var addData = (AdditionalDataInfo)item.Item;
-            addData.Json = data.ToString();
-            addData.LastModifiedByUserId = context.UserId;
-            addData.LastModifiedOnDate = DateTime.Now;
-            ctrl.UpdateData(addData);
+            var additionalData = (AdditionalDataInfo)item.Item;
+            additionalData.Json = data.ToString();
+            additionalData.LastModifiedByUserId = context.UserId;
+            additionalData.LastModifiedOnDate = DateTime.Now;
+            ctrl.UpdateData(additionalData);
         }
 
         #endregion
 
-        private int GetModuleId(DataSourceContext context)
+        #region Private Methods
+
+        private static int GetModuleId(DataSourceContext context)
         {
             return context.Config != null && context.Config["ModuleId"] != null ? context.Config["ModuleId"].Value<int>() : context.ModuleId;
         }
+        #endregion
     }
 }
