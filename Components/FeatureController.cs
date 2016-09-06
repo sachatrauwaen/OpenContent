@@ -93,7 +93,7 @@ namespace Satrabel.OpenContent.Components
                 Log.Logger.DebugFormat("Indexing content {0}-{1} ({2}) {3} versus {4}", modInfo.ModuleID, modInfo.ModuleTitle, modInfo.TabID, beginDateUtc, content.LastModifiedOnDate.ToUniversalTime());
 
                 SearchDocument searchDoc;
-                if (DnnUtils.IsMultiLingualPortal(modInfo.PortalID))
+                if (DnnLanguageUtils.IsMultiLingualPortal(modInfo.PortalID))
                 {
                     string culture = modInfo.CultureCode;
                     JToken title;

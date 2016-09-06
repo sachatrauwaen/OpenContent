@@ -695,7 +695,7 @@ namespace Satrabel.OpenContent
                     }
                     bool addWorkFlow = ModuleContext.PortalSettings.UserMode != PortalSettings.Mode.Edit;
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
-                    queryBuilder.Build(settings.Query, addWorkFlow, ModuleContext.PortalSettings.UserId, DnnUtils.GetCurrentCultureCode(), ModuleContext.PortalSettings.UserInfo.Social.Roles, Request.QueryString);
+                    queryBuilder.Build(settings.Query, addWorkFlow, ModuleContext.PortalSettings.UserId, DnnLanguageUtils.GetCurrentCultureCode(), ModuleContext.PortalSettings.UserInfo.Social.Roles, Request.QueryString);
 
                     luceneResultList = ds.GetAll(dsContext, queryBuilder.Select).Items;
                     if (LogContext.IsLogActive)

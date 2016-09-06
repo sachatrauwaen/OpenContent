@@ -9,6 +9,7 @@ using DotNetNuke.Entities.Content.Common;
 using DotNetNuke.Entities.Modules.Definitions;
 using DotNetNuke.Services.FileSystem;
 using Newtonsoft.Json.Linq;
+using Satrabel.OpenContent.Components.Dnn;
 
 namespace Satrabel.OpenContent.Components.TemplateHelpers
 {

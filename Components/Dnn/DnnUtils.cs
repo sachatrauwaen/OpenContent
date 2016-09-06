@@ -57,81 +57,6 @@ namespace Satrabel.OpenContent.Components
             throw new NotImplementedException();
         }
 
-        internal static string ToUrl(this IFileInfo fileInfo)
-        {
-            if (fileInfo == null) return "";
-            var url = FileManager.Instance.GetUrl(fileInfo);
-            return url;
-        }
-
-        internal static string ToUrlWithoutLinkClick(this IFileInfo fileInfo)
-        {
-            if (fileInfo == null) return "";
-
-            var url = FileManager.Instance.GetUrl(fileInfo);
-            if (url.ToLower().Contains("linkclick"))
-            {
-                //this method works also for linkclick
-                url = "/" + fileInfo.PhysicalPath.Replace(new FolderUri("/").PhysicalFullDirectory, "").Replace("\\", "/");
-            }
-            return url;
-        }
-
-        public static string GetCurrentCultureCode()
-        {
-            if (PortalSettings.Current == null)
-                throw new Exception("No Portalsettings available in this context. Are you in the context of a Dnn Scheduler? It does not have Portalsettings");
-
-            //strange issues with getting the correct culture.
-            if (PortalSettings.Current.ActiveTab != null && PortalSettings.Current.ActiveTab.IsNeutralCulture) {
-                if (!string.IsNullOrEmpty(PortalSettings.Current.PortalAlias.CultureCode))
-                    return PortalSettings.Current.PortalAlias.CultureCode;
-                else
-                    return PortalSettings.Current.CultureCode;
-            }
-            if (PortalSettings.Current.ActiveTab != null) { 
-                return PortalSettings.Current.ActiveTab.CultureCode;
-            }
-            return LocaleController.Instance.GetCurrentLocale(PortalSettings.Current.PortalId).Code;
-        }
-        public static CultureInfo GetCurrentCulture()
-        {
-            return new CultureInfo(GetCurrentCultureCode());
-        }
-        internal static string GetCultureCode(int tabId, bool isSuperTab, PortalSettings settings)
-        {
-            string cultureCode = Null.NullString;
-            if (settings != null)
-            {
-                TabController tc = new TabController();
-                TabInfo linkTab = tc.GetTab(tabId, isSuperTab ? Null.NullInteger : settings.PortalId, false);
-                if (linkTab != null)
-                {
-                    cultureCode = linkTab.CultureCode;
-                }
-                if (string.IsNullOrEmpty(cultureCode))
-                {
-                    cultureCode = Thread.CurrentThread.CurrentCulture.Name;
-                }
-            }
-
-            return cultureCode;
-        }
-
-        public static string GetCurrentCultureCode(ModuleInfo modInfo)
-        {
-            throw new NotImplementedException();
-        }
-
-        public static bool IsMultiLingualPortal(int portalId)
-        {
-            return LocaleController.Instance.GetLocales(portalId).Count > 1;
-        }
-        public static Dictionary<string, Locale> GetPortalLocales(int portalId)
-        {
-            return LocaleController.Instance.GetLocales(portalId);
-        }
-
         public static int GetTabByCurrentCulture(int portalId, int tabId, string cultureCode)
         {
             var tc = new TabController();
@@ -146,6 +71,7 @@ namespace Satrabel.OpenContent.Components
                 return tabId;
             }
         }
+
         public static OpenContentSettings OpenContentSettings(this ModuleInfo module)
         {
             return new OpenContentSettings(module.ModuleSettings);

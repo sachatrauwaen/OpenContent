@@ -431,7 +431,7 @@ namespace Satrabel.OpenContent.Components
         {
             if (string.IsNullOrEmpty(CultureCode))
             {
-                return DnnUtils.GetCurrentCultureCode();
+                return DnnLanguageUtils.GetCurrentCultureCode();
             }
             else
             {

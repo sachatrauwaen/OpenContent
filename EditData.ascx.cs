@@ -351,7 +351,7 @@ namespace Satrabel.OpenContent
                         }
                         else if (json["ModuleTitle"] != null && json["ModuleTitle"].Type == JTokenType.Object)
                         {
-                            string ModuleTitle = json["ModuleTitle"][DnnUtils.GetCurrentCultureCode()].ToString();
+                            string ModuleTitle = json["ModuleTitle"][DnnLanguageUtils.GetCurrentCultureCode()].ToString();
                             OpenContentUtils.UpdateModuleTitle(ModuleContext.Configuration, ModuleTitle);
                         }
                     }
@@ -406,7 +406,7 @@ namespace Satrabel.OpenContent
                     }
                     else if (json["ModuleTitle"] != null && json["ModuleTitle"].Type == JTokenType.Object)
                     {
-                        string ModuleTitle = json["ModuleTitle"][DnnUtils.GetCurrentCultureCode()].ToString();
+                        string ModuleTitle = json["ModuleTitle"][DnnLanguageUtils.GetCurrentCultureCode()].ToString();
                         OpenContentUtils.UpdateModuleTitle(ModuleContext.Configuration, ModuleTitle);
                     }
                 }

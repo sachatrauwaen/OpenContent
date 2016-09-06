@@ -19,7 +19,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
 
                     placeholder.Controls.Add(AddPropertyToMeta(new HtmlMeta
                     {
-                        Content = DnnUtils.GetCurrentCultureCode().Replace('-', '_')
+                        Content = DnnLanguageUtils.GetCurrentCultureCode().Replace('-', '_')
                     }, "og:locale"));
 
                     placeholder.Controls.Add(AddPropertyToMeta(new HtmlMeta

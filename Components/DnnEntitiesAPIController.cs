@@ -27,6 +27,7 @@ using System.Drawing.Imaging;
 using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components.TemplateHelpers;
 using System.Text.RegularExpressions;
+using Satrabel.OpenContent.Components.Dnn;
 
 #endregion
 

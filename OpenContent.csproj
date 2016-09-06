@@ -144,6 +144,8 @@
     </Compile>
     <Compile Include="Components\Alpaca\AlpacaLayoutEnum.cs" />
     <Compile Include="Components\AppConfig.cs" />
+    <Compile Include="Components\Dnn\DnnFileUtils.cs" />
+    <Compile Include="Components\Dnn\DnnLanguageUtils.cs" />
     <Compile Include="Components\Json\InvalidJsonFileException.cs" />
     <Compile Include="Components\Logging\LoggingUtils.cs" />
     <Compile Include="Components\Logging\LogContext.cs" />

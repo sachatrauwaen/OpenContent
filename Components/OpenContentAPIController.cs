@@ -102,7 +102,7 @@ namespace Satrabel.OpenContent.Components
                         }
                         else if (json["data"]["ModuleTitle"] != null && json["data"]["ModuleTitle"].Type == JTokenType.Object)
                         {
-                            json["data"]["ModuleTitle"][DnnUtils.GetCurrentCultureCode()] = ActiveModule.ModuleTitle;
+                            json["data"]["ModuleTitle"][DnnLanguageUtils.GetCurrentCultureCode()] = ActiveModule.ModuleTitle;
                         }
                     }
                     var versions = ds.GetVersions(dsContext, dsItem);
@@ -145,7 +145,7 @@ namespace Satrabel.OpenContent.Components
                 }
                 var manifest = settings.Manifest;
                 TemplateManifest templateManifest = settings.Template;
-                var dataManifest = manifest.GetAdditionalData(key);                
+                var dataManifest = manifest.GetAdditionalData(key);
                 var templateFolder = string.IsNullOrEmpty(dataManifest.TemplateFolder) ? settings.TemplateDir : settings.TemplateDir.ParentFolder.Append(dataManifest.TemplateFolder);
                 int createdByUserid = -1;
                 var ds = DataSourceManager.GetDataSource(manifest.DataSource);
@@ -398,9 +398,9 @@ namespace Satrabel.OpenContent.Components
                 }
                 else if (json["form"]["ModuleTitle"] != null && json["form"]["ModuleTitle"].Type == JTokenType.Object)
                 {
-                    if (json["form"]["ModuleTitle"][DnnUtils.GetCurrentCultureCode()] != null)
+                    if (json["form"]["ModuleTitle"][DnnLanguageUtils.GetCurrentCultureCode()] != null)
                     {
-                        string moduleTitle = json["form"]["ModuleTitle"][DnnUtils.GetCurrentCultureCode()].ToString();
+                        string moduleTitle = json["form"]["ModuleTitle"][DnnLanguageUtils.GetCurrentCultureCode()].ToString();
                         OpenContentUtils.UpdateModuleTitle(ActiveModule, moduleTitle);
                     }
                 }
