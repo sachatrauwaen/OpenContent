@@ -131,13 +131,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             }
             else if (content.ModuleId == GetModuleId(context))
             {
-                var dataItem = new DefaultDataItem
-                {
-                    Id = content.ContentId.ToString(),
-                    Data = content.JsonAsJToken,
-                    CreatedByUserId = content.CreatedByUserId,
-                    Item = content
-                };
+                var dataItem = CreateDefaultDataItem(content);
                 LogContext.Log(context.ActiveModuleId, "Get DataItem", "Result", dataItem);
                 return dataItem;
             }
@@ -178,14 +172,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         {
             OpenContentController ctrl = new OpenContentController();
 
-            var dataList = ctrl.GetContents(GetModuleId(context)).OrderBy(i => i.CreatedOnDate).Select(content => new DefaultDataItem()
-            {
-                Id = content.ContentId.ToString(),
-                Title = content.Title,
-                Data = content.JsonAsJToken,
-                CreatedByUserId = content.CreatedByUserId,
-                Item = content
-            });
+            var dataList = ctrl.GetContents(GetModuleId(context)).OrderBy(i => i.CreatedOnDate).Select(content => CreateDefaultDataItem(content));
             return new DefaultDataItems()
             {
                 Items = dataList,
@@ -222,13 +209,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                     var content = ctrl.GetContent(int.Parse(item));
                     if (content != null)
                     {
-                        dataList.Add(new DefaultDataItem
-                        {
-                            Id = content.ContentId.ToString(),
-                            Data = content.JsonAsJToken,
-                            CreatedByUserId = content.CreatedByUserId,
-                            Item = content
-                        });
+                        dataList.Add(CreateDefaultDataItem(content));
                     }
                     else
                     {
@@ -365,6 +346,17 @@ namespace Satrabel.OpenContent.Components.Datasource
         private static int GetModuleId(DataSourceContext context)
         {
             return context.Config != null && context.Config["ModuleId"] != null ? context.Config["ModuleId"].Value<int>() : context.ModuleId;
+        }
+        private static DefaultDataItem CreateDefaultDataItem(OpenContentInfo content)
+        {
+            return new DefaultDataItem
+            {
+                Id = content.ContentId.ToString(),
+                Title = content.Title,
+                Data = content.JsonAsJToken,
+                CreatedByUserId = content.CreatedByUserId,
+                Item = content
+            };
         }
         #endregion
     }
