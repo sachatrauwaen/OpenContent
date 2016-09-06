@@ -449,36 +449,8 @@ namespace Satrabel.OpenContent.Components
                 //role lookup on every property access (instead caching the result)
                 if (!_isEditable.HasValue)
                 {
-                    //first check some weird Dnn issue
-                    if (HttpContext.Current != null && HttpContext.Current.Request.IsAuthenticated)
-                    {
-                        var personalization = (PersonalizationInfo)HttpContext.Current.Items["Personalization"];
-                        if (personalization != null && personalization.UserId == -1)
-                        {
-                            //this should never happen. 
-                            //Let us make sure that the wrong value is no longer cached 
-                            HttpContext.Current.Items.Remove("Personalization");
-                        }
-                    }
+                    _isEditable = Module.CheckIfEditable(PortalSettings.Current);
 
-                    bool blnPreview = (PortalSettings.UserMode == PortalSettings.Mode.View);
-                    if (Globals.IsHostTab(PortalSettings.ActiveTab.TabID))
-                    {
-                        blnPreview = false;
-                    }
-                    bool blnHasModuleEditPermissions = false;
-                    if (Module != null)
-                    {
-                        blnHasModuleEditPermissions = ModulePermissionController.HasModuleAccess(SecurityAccessLevel.Edit, "CONTENT", Module);
-                    }
-                    if (blnPreview == false && blnHasModuleEditPermissions)
-                    {
-                        _isEditable = true;
-                    }
-                    else
-                    {
-                        _isEditable = false;
-                    }
                 }
                 return _isEditable.Value;
             }
