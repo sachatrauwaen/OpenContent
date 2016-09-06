@@ -187,21 +187,21 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
         private void AddWorkflowFilter(BooleanQuery q)
         {
 
-            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey( AppConfig.FieldNamePublishStatus))
+            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishStatus))
             {
-                q.Add(new TermQuery(new Term( AppConfig.FieldNamePublishStatus, "published")), Occur.MUST); // and
+                q.Add(new TermQuery(new Term(AppConfig.FieldNamePublishStatus, "published")), Occur.MUST); // and
             }
-            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey( AppConfig.FieldNamePublishStartDate))
+            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishStartDate))
             {
                 DateTime startDate = DateTime.MinValue;
                 DateTime endDate = DateTime.Today;
-                q.Add(NumericRangeQuery.NewLongRange( AppConfig.FieldNamePublishStartDate, startDate.Ticks, endDate.Ticks, true, true), Occur.MUST);
+                q.Add(NumericRangeQuery.NewLongRange(AppConfig.FieldNamePublishStartDate, startDate.Ticks, endDate.Ticks, true, true), Occur.MUST);
             }
-            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey( AppConfig.FieldNamePublishEndDate))
+            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishEndDate))
             {
                 DateTime startDate = DateTime.Today;
                 DateTime endDate = DateTime.MaxValue;
-                q.Add(NumericRangeQuery.NewLongRange( AppConfig.FieldNamePublishEndDate, startDate.Ticks, endDate.Ticks, true, true), Occur.MUST);
+                q.Add(NumericRangeQuery.NewLongRange(AppConfig.FieldNamePublishEndDate, startDate.Ticks, endDate.Ticks, true, true), Occur.MUST);
             }
         }
 
@@ -270,7 +270,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                 }
                 else
                     config = IndexConfig.Items;
-                if (config.IndexType == "datetime" || config.IndexType == "date" || config.IndexType == "time")
+                if (config.IndexType == "date" || config.IndexType == "datetime" || config.IndexType == "time")
                 {
                     sortfieldtype = SortField.LONG;
                 }
