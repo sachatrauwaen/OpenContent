@@ -284,12 +284,11 @@ namespace Satrabel.OpenContent
                 bool templateDefined = template != null;
                 bool listMode = template != null && template.IsListTemplate;
 
-
                 if (Page.Request.QueryString["id"] != null)
                 {
                     _itemId = Page.Request.QueryString["id"];
                 }
-                if (templateDefined)
+                if (templateDefined && !settings.Manifest.DisableEdit)
                 {
                     string title = Localization.GetString((listMode && string.IsNullOrEmpty(_itemId) ? ModuleActionType.AddContent : ModuleActionType.EditContent), LocalResourceFile);
                     if (!string.IsNullOrEmpty(settings.Manifest.Title))
@@ -307,7 +306,7 @@ namespace Satrabel.OpenContent
                         true,
                         false);
                 }
-                if (templateDefined && template.Manifest.AdditionalDataExists())
+                if (templateDefined && template.Manifest.AdditionalDataExists() && !settings.Manifest.DisableEdit)
                 {
                     foreach (var addData in template.Manifest.AdditionalData)
                     {
@@ -693,7 +692,7 @@ namespace Satrabel.OpenContent
                     }
                     bool addWorkFlow = ModuleContext.PortalSettings.UserMode != PortalSettings.Mode.Edit;
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
-                    queryBuilder.Build(settings.Query, addWorkFlow, ModuleContext.PortalSettings.UserId, DnnUtils.GetCurrentCultureCode(), ModuleContext.PortalSettings.UserInfo.Social.Roles, Request.QueryString);
+                    queryBuilder.Build(settings.Query, addWorkFlow, ModuleContext.PortalSettings.UserId, DnnLanguageUtils.GetCurrentCultureCode(), ModuleContext.PortalSettings.UserInfo.Social.Roles, Request.QueryString);
 
                     luceneResultList = ds.GetAll(dsContext, queryBuilder.Select).Items;
                     if (LogContext.IsLogActive)

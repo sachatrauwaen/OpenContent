@@ -36,6 +36,7 @@ using Newtonsoft.Json;
 using DotNetNuke.Entities.Icons;
 using System.Text;
 using System.Globalization;
+using Satrabel.OpenContent.Components.Dnn;
 
 namespace Satrabel.OpenContent.Components
 {

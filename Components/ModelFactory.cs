@@ -256,10 +256,9 @@ namespace Satrabel.OpenContent.Components
                             url = hbEngine.Execute(Manifest.DetailUrl, dynForHBS);
                         }
 
-                        context["EditUrl"] = DnnUrlUtils.EditUrl("id", item.Id, Module.ModuleID, PortalSettings);
-                        context["IsEditable"] = IsEditable ||
-                            (!string.IsNullOrEmpty(editRole) &&
-                            OpenContentUtils.HasEditPermissions(PortalSettings, Module, editRole, item.CreatedByUserId));
+                        var editStatus = GetEditStatus(item.CreatedByUserId);
+                        context["IsEditable"] = editStatus;
+                        context["EditUrl"] = editStatus ? DnnUrlUtils.EditUrl("id", item.Id, Module.ModuleID, PortalSettings) : "";
                         context["DetailUrl"] = Globals.NavigateURL(MainTabId, false, PortalSettings, "", GetCurrentCultureCode(), url.CleanupUrl(), "id=" + item.Id);
                         context["MainUrl"] = Globals.NavigateURL(MainTabId, false, PortalSettings, "", GetCurrentCultureCode(), "");
                     }
@@ -333,20 +332,30 @@ namespace Satrabel.OpenContent.Components
                 var additionalData = model["AdditionalData"] = new JObject();
                 foreach (var item in Manifest.AdditionalData)
                 {
-                    //AdditionalDataManifest dataManifest = Manifest.GetAdditionalData(item.Key);
                     var dataManifest = item.Value;
                     int tabId = this.PortalSettings == null ? MainTabId : PortalSettings.ActiveTab.TabID;
-                    string scope = AdditionalDataUtils.GetScope(dataManifest, PortalId, tabId, MainModuleId, Module.TabModuleID);
-                    var dc = new AdditionalDataController();
-                    var data = dc.GetData(scope, dataManifest.StorageKey ?? item.Key);
-                    JToken dataJson = new JObject();
-                    if (data != null && !string.IsNullOrEmpty(data.Json))
+                    int userId = this.PortalSettings == null ? -1 : PortalSettings.UserId;
+                    var ds = DataSourceManager.GetDataSource(Manifest.DataSource);
+                    var dsContext = new DataSourceContext()
                     {
-                        dataJson = JToken.Parse(data.Json);
+                        PortalId = PortalSettings.PortalId,
+                        TabId = tabId,
+                        ModuleId = MainModuleId,
+                        TabModuleId = Module.TabModuleID,
+                        UserId = userId,
+                        //TemplateFolder = settings.TemplateDir.FolderPath,
+                        Config = Manifest.DataSourceConfig,
+                        //Options = reqOptions
+                    };
+                    var dsItem = ds.GetData(dsContext, dataManifest.ScopeType, dataManifest.StorageKey ?? item.Key);
+                    JToken dataJson = new JObject();
+                    if (dsItem != null && dsItem.Data != null)
+                    {
                         if (LocaleController.Instance.GetLocales(PortalId).Count > 1)
                         {
                             JsonUtils.SimplifyJson(dataJson, GetCurrentCultureCode());
                         }
+                        dataJson = dsItem.Data;
                     }
                     additionalData[(item.Value.ModelKey ?? item.Key).ToLowerInvariant()] = dataJson;
                 }
@@ -387,7 +396,6 @@ namespace Satrabel.OpenContent.Components
                 }
             }
 
-            string editRole = Manifest.GetEditRole();
             if (!onlyData)
             {
                 // context
@@ -396,9 +404,8 @@ namespace Satrabel.OpenContent.Components
                 context["ModuleId"] = Module.ModuleID;
                 context["ModuleTitle"] = Module.ModuleTitle;
                 context["AddUrl"] = DnnUrlUtils.EditUrl(Module.ModuleID, PortalSettings);
-                context["IsEditable"] = IsEditable ||
-                                          (!string.IsNullOrEmpty(editRole) &&
-                                            OpenContentUtils.HasEditPermissions(PortalSettings, Module, editRole, -1));
+                var editStatus = GetEditStatus(-1);
+                context["IsEditable"] = editStatus;
                 context["PortalId"] = PortalId;
                 context["MainUrl"] = Globals.NavigateURL(MainTabId, false, PortalSettings, "", GetCurrentCultureCode());
                 if (Data != null)
@@ -412,16 +419,23 @@ namespace Satrabel.OpenContent.Components
                     }
                     context["DetailUrl"] = Globals.NavigateURL(MainTabId, false, PortalSettings, "", GetCurrentCultureCode(), url.CleanupUrl(), "id=" + Data.Id);
                     context["Id"] = Data.Id;
-                    context["EditUrl"] = DnnUrlUtils.EditUrl("id", Data.Id, Module.ModuleID, PortalSettings);
+                    context["EditUrl"] = editStatus ? DnnUrlUtils.EditUrl("id", Data.Id, Module.ModuleID, PortalSettings) : "";
                 }
             }
+        }
+
+        private bool GetEditStatus(int createdByUser)
+        {
+            string editRole = Manifest.GetEditRole();
+            return IsEditable ||
+                (!string.IsNullOrEmpty(editRole) && OpenContentUtils.HasEditPermissions(PortalSettings, Module, editRole, createdByUser));
         }
 
         private string GetCurrentCultureCode()
         {
             if (string.IsNullOrEmpty(CultureCode))
             {
-                return DnnUtils.GetCurrentCultureCode();
+                return DnnLanguageUtils.GetCurrentCultureCode();
             }
             else
             {
@@ -439,36 +453,8 @@ namespace Satrabel.OpenContent.Components
                 //role lookup on every property access (instead caching the result)
                 if (!_isEditable.HasValue)
                 {
-                    //first check some weird Dnn issue
-                    if (HttpContext.Current != null && HttpContext.Current.Request.IsAuthenticated)
-                    {
-                        var personalization = (PersonalizationInfo)HttpContext.Current.Items["Personalization"];
-                        if (personalization != null && personalization.UserId == -1)
-                        {
-                            //this should never happen. 
-                            //Let us make sure that the wrong value is no longer cached 
-                            HttpContext.Current.Items.Remove("Personalization");
-                        }
-                    }
+                    _isEditable = Module.CheckIfEditable(PortalSettings.Current);
 
-                    bool blnPreview = (PortalSettings.UserMode == PortalSettings.Mode.View);
-                    if (Globals.IsHostTab(PortalSettings.ActiveTab.TabID))
-                    {
-                        blnPreview = false;
-                    }
-                    bool blnHasModuleEditPermissions = false;
-                    if (Module != null)
-                    {
-                        blnHasModuleEditPermissions = ModulePermissionController.HasModuleAccess(SecurityAccessLevel.Edit, "CONTENT", Module);
-                    }
-                    if (blnPreview == false && blnHasModuleEditPermissions)
-                    {
-                        _isEditable = true;
-                    }
-                    else
-                    {
-                        _isEditable = false;
-                    }
                 }
                 return _isEditable.Value;
             }

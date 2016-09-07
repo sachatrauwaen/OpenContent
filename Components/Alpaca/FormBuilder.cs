@@ -227,7 +227,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 json["options"] = optionsJson;
 
             // language options
-            optionsJson = JsonUtils.LoadJsonFromFile(templateUri.UrlFolder + prefix + "options." + DnnUtils.GetCurrentCultureCode() + ".json");
+            optionsJson = JsonUtils.LoadJsonFromFile(templateUri.UrlFolder + prefix + "options." + DnnLanguageUtils.GetCurrentCultureCode() + ".json");
             if (optionsJson != null)
                 json["options"] = json["options"].JsonMerge(optionsJson);
 

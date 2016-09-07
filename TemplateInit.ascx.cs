@@ -308,7 +308,7 @@ namespace Satrabel.OpenContent
                 {
                     var tc = new TabController();
                     var tab = tc.GetTab(item.TabID, ModuleContext.PortalId, false);
-                    if (!tab.IsNeutralCulture && tab.CultureCode != DnnUtils.GetCurrentCultureCode())
+                    if (!tab.IsNeutralCulture && tab.CultureCode != DnnLanguageUtils.GetCurrentCultureCode())
                     {
                         // skip other cultures
                         continue;
@@ -344,7 +344,7 @@ namespace Satrabel.OpenContent
             //todo: wegfilteren van redirected tabs
 
             var listItems = new List<ListItem>();
-            Dictionary<string, int> tabs = TabController.GetTabPathDictionary(ModuleContext.PortalId, DnnUtils.GetCurrentCultureCode());
+            Dictionary<string, int> tabs = TabController.GetTabPathDictionary(ModuleContext.PortalId, DnnLanguageUtils.GetCurrentCultureCode());
 
             foreach (var tab in tabs)
             {

@@ -54,7 +54,7 @@ namespace Satrabel.OpenContent.Components.Rest
                 {
                     var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
-                    queryBuilder.Build(settings.Query, PortalSettings.UserMode != PortalSettings.Mode.Edit, UserInfo.UserID, DnnUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
+                    queryBuilder.Build(settings.Query, PortalSettings.UserMode != PortalSettings.Mode.Edit, UserInfo.UserID, DnnLanguageUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
                     //if (restSelect != null)
                     //{
                     //    RestQueryBuilder.MergeJpListQuery(indexConfig, queryBuilder.Select, restSelect);
@@ -168,9 +168,9 @@ namespace Satrabel.OpenContent.Components.Rest
 
                     var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
-                    queryBuilder.Build(settings.Query, PortalSettings.UserMode != PortalSettings.Mode.Edit, UserInfo.UserID, DnnUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
+                    queryBuilder.Build(settings.Query, PortalSettings.UserMode != PortalSettings.Mode.Edit, UserInfo.UserID, DnnLanguageUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
 
-                    RestQueryBuilder.MergeQuery(indexConfig, queryBuilder.Select, restSelect, DnnUtils.GetCurrentCultureCode());
+                    RestQueryBuilder.MergeQuery(indexConfig, queryBuilder.Select, restSelect, DnnLanguageUtils.GetCurrentCultureCode());
                     IDataItems dsItems;
                     if (queryBuilder.DefaultNoResults && queryBuilder.Select.IsQueryEmpty)
                     {
@@ -252,20 +252,31 @@ namespace Satrabel.OpenContent.Components.Rest
                 if (manifest.AdditionalDataExists(entity))
                 {
                     var dataManifest = manifest.AdditionalData[entity];
-                    string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings.PortalId, PortalSettings.ActiveTab.TabID, module.ModuleID, ActiveModule.TabModuleID);
+                    //string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings.PortalId, ActiveModule.TabID, module.ModuleID, ActiveModule.TabModuleID);
 
-                    var templateFolder = string.IsNullOrEmpty(dataManifest.TemplateFolder) ? settings.TemplateDir : settings.TemplateDir.ParentFolder.Append(dataManifest.TemplateFolder);
+                    //var templateFolder = string.IsNullOrEmpty(dataManifest.TemplateFolder) ? settings.TemplateDir : settings.TemplateDir.ParentFolder.Append(dataManifest.TemplateFolder);
                     //var fb = new FormBuilder(templateFolder);
                     //JObject json = fb.BuildForm(entity);
                     var res = new JObject();
 
                     int createdByUserid = -1;
-                    var dc = new AdditionalDataController();
-                    var data = dc.GetData(scope, dataManifest.StorageKey ?? entity);
-                    if (data != null)
+                    var ds = DataSourceManager.GetDataSource(manifest.DataSource);
+                    var dsContext = new DataSourceContext()
                     {
-                        var json = data.Json.ToJObject("GetContent " + scope + "/" + entity);
-                        createdByUserid = data.CreatedByUserId;
+                        PortalId = PortalSettings.PortalId,
+                        TabId = ActiveModule.TabID,
+                        ModuleId = module.ModuleID,
+                        TabModuleId = ActiveModule.TabModuleID,
+                        UserId = UserInfo.UserID,
+                        TemplateFolder = settings.TemplateDir.FolderPath,
+                        Config = manifest.DataSourceConfig,
+                        //Options = reqOptions
+                    };
+                    var dsItem = ds.GetData(dsContext, dataManifest.ScopeType, dataManifest.StorageKey ?? entity);
+                    if (dsItem != null)
+                    {
+                        var json = dsItem.Data;
+                        createdByUserid = dsItem.CreatedByUserId;
                         JsonUtils.IdJson(json);
                         res[entity] = json;
                     }

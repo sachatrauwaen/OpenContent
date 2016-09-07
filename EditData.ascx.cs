@@ -198,15 +198,23 @@ namespace Satrabel.OpenContent
                         var manifest = settings.Manifest;
                         string key = selectedDataType;
                         var dataManifest = manifest.GetAdditionalData(key);
-                        string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings.PortalId, PortalSettings.ActiveTab.TabID, ModId, this.TabModuleId);
-                        var dc = new AdditionalDataController();
-                        var data = dc.GetData(scope, dataManifest.StorageKey ?? key);
-
-                        json = data == null ? "" : data.Json;
+                        var ds = DataSourceManager.GetDataSource(manifest.DataSource);
+                        var dsContext = new DataSourceContext()
+                        {
+                            PortalId = PortalSettings.PortalId,
+                            TabId = TabId,
+                            ModuleId = ModId,
+                            TabModuleId = this.TabModuleId,
+                            UserId = UserInfo.UserID,
+                            TemplateFolder = settings.TemplateDir.FolderPath,
+                            Config = manifest.DataSourceConfig,
+                            //Options = reqOptions
+                        };
+                        var dsItem = ds.GetData(dsContext, dataManifest.ScopeType, dataManifest.StorageKey ?? key);
+                        json = dsItem == null ? "" : dsItem.Data.ToString();
                         break;
                     }
             }
-
             txtSource.Text = json;
         }
 
@@ -254,30 +262,26 @@ namespace Satrabel.OpenContent
             int ModId = settings.IsOtherModule ? settings.ModuleId : ModuleId;
             var manifest = settings.Manifest;
             var dataManifest = manifest.GetAdditionalData(key);
-            string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings.PortalId, PortalSettings.ActiveTab.TabID, ModId, this.TabModuleId);
-            var dc = new AdditionalDataController();
-            var data = dc.GetData(scope, dataManifest.StorageKey ?? key);
-            if (data == null)
+            var ds = DataSourceManager.GetDataSource(manifest.DataSource);
+            var dsContext = new DataSourceContext()
             {
-
-                data = new AdditionalDataInfo()
-                {
-                    CreatedByUserId = UserId,
-                    CreatedOnDate = DateTime.Now,
-                    DataKey = key,
-                    Json = txtSource.Text,
-                    LastModifiedByUserId = UserId,
-                    LastModifiedOnDate = DateTime.Now,
-                    Scope = scope
-                };
-                dc.AddData(data);
+                PortalId = PortalSettings.PortalId,
+                TabId = TabId,
+                ModuleId = ModId,
+                TabModuleId = this.TabModuleId,
+                UserId = UserInfo.UserID,
+                TemplateFolder = settings.TemplateDir.FolderPath,
+                Config = manifest.DataSourceConfig,
+                //Options = reqOptions
+            };
+            var dsItem = ds.GetData(dsContext, dataManifest.ScopeType, dataManifest.StorageKey ?? key);
+            if (dsItem == null)
+            {
+                ds.AddData(dsContext, dataManifest.ScopeType, dataManifest.StorageKey ?? key, JToken.Parse(txtSource.Text));
             }
             else
             {
-                data.Json = txtSource.Text;
-                data.LastModifiedByUserId = UserId;
-                data.LastModifiedOnDate = DateTime.Now;
-                dc.UpdateData(data);
+                ds.UpdateData(dsContext, dsItem, JToken.Parse(txtSource.Text));
             }
         }
 
@@ -347,7 +351,7 @@ namespace Satrabel.OpenContent
                         }
                         else if (json["ModuleTitle"] != null && json["ModuleTitle"].Type == JTokenType.Object)
                         {
-                            string ModuleTitle = json["ModuleTitle"][DnnUtils.GetCurrentCultureCode()].ToString();
+                            string ModuleTitle = json["ModuleTitle"][DnnLanguageUtils.GetCurrentCultureCode()].ToString();
                             OpenContentUtils.UpdateModuleTitle(ModuleContext.Configuration, ModuleTitle);
                         }
                     }
@@ -402,7 +406,7 @@ namespace Satrabel.OpenContent
                     }
                     else if (json["ModuleTitle"] != null && json["ModuleTitle"].Type == JTokenType.Object)
                     {
-                        string ModuleTitle = json["ModuleTitle"][DnnUtils.GetCurrentCultureCode()].ToString();
+                        string ModuleTitle = json["ModuleTitle"][DnnLanguageUtils.GetCurrentCultureCode()].ToString();
                         OpenContentUtils.UpdateModuleTitle(ModuleContext.Configuration, ModuleTitle);
                     }
                 }

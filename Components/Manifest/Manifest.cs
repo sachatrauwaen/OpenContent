@@ -1,4 +1,4 @@
-using System;
+ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -55,7 +55,8 @@ namespace Satrabel.OpenContent.Components.Manifest
         [JsonProperty(PropertyName = "dataSourceConfig")]
         public JObject DataSourceConfig { get; set; }
 
-        //
+        [JsonProperty(PropertyName = "disableEdit")]
+        public bool DisableEdit { get; set; }
 
         public bool HasTemplates { get { return (Templates != null); } }
         public FolderUri ManifestDir { get; set; }
