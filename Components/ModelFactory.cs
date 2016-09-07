@@ -427,8 +427,7 @@ namespace Satrabel.OpenContent.Components
         private bool GetEditStatus(int createdByUser)
         {
             string editRole = Manifest.GetEditRole();
-            return IsEditable ||
-                (!string.IsNullOrEmpty(editRole) && OpenContentUtils.HasEditPermissions(PortalSettings, Module, editRole, createdByUser));
+            return IsEditable || OpenContentUtils.HasEditPermissions(PortalSettings, Module, editRole, createdByUser);
         }
 
         private string GetCurrentCultureCode()

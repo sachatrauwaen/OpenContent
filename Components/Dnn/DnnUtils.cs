@@ -123,17 +123,15 @@ namespace Satrabel.OpenContent.Components
                     HttpContext.Current.Items.Remove("Personalization");
                 }
             }
-
             bool blnPreview = (portalSettings.UserMode == PortalSettings.Mode.View);
             if (Globals.IsHostTab(portalSettings.ActiveTab.TabID))
             {
                 blnPreview = false;
             }
-            bool blnHasModuleEditPermissions = false;
-            if (activeModule != null)
-            {
-                blnHasModuleEditPermissions = ModulePermissionController.HasModuleAccess(SecurityAccessLevel.Edit, "CONTENT", activeModule);
-            }
+
+            bool blnHasModuleEditPermissions = HasEditRights(activeModule);
+
+
             if (blnPreview == false && blnHasModuleEditPermissions)
             {
                 isEditable = true;
@@ -145,5 +143,15 @@ namespace Satrabel.OpenContent.Components
             return isEditable;
         }
 
+        public static bool HasEditRights(this ModuleInfo activeModule)
+        {
+            bool blnHasModuleEditPermissions = false;
+            if (activeModule != null)
+            {
+                //DNN already checks SuperUser and Administrator
+                blnHasModuleEditPermissions = ModulePermissionController.HasModuleAccess(SecurityAccessLevel.Edit, "CONTENT", activeModule);
+            }
+            return blnHasModuleEditPermissions;
+        }
     }
 }
