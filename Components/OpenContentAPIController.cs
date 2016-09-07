@@ -260,13 +260,11 @@ namespace Satrabel.OpenContent.Components
                 module = mc.GetModule(settings.ModuleId, settings.TabId, false);
             }
             var manifest = settings.Template.Manifest;
-            var templateManifest = settings.Template;
             string editRole = manifest.GetEditRole();
-            bool listMode = templateManifest != null && templateManifest.IsListTemplate;
             JToken json = new JObject();
             try
             {
-                int CreatedByUserid = -1;
+                int createdByUserid = -1;
                 var ds = DataSourceManager.GetDataSource(manifest.DataSource);
                 var dsContext = new DataSourceContext()
                 {
@@ -282,10 +280,10 @@ namespace Satrabel.OpenContent.Components
                     if (version != null)
                     {
                         json = version;
-                        CreatedByUserid = dsItem.CreatedByUserId;
+                        createdByUserid = dsItem.CreatedByUserId;
                     }
                 }
-                if (!OpenContentUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, CreatedByUserid))
+                if (!OpenContentUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, createdByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
@@ -304,10 +302,10 @@ namespace Satrabel.OpenContent.Components
         public HttpResponseMessage Settings()
         {
             string data = (string)ActiveModule.ModuleSettings["data"];
-            string Template = (string)ActiveModule.ModuleSettings["template"];
+            string template = (string)ActiveModule.ModuleSettings["template"];
             try
             {
-                var templateUri = new FileUri(Template);
+                var templateUri = new FileUri(template);
                 string key = templateUri.FileNameWithoutExtension;
                 var fb = new FormBuilder(templateUri);
                 JObject json = fb.BuildForm(key);
@@ -357,13 +355,12 @@ namespace Satrabel.OpenContent.Components
                     PortalId = module.PortalID,
                     Config = manifest.DataSourceConfig
                 };
-                string itemId = null;
                 IDataItem dsItem = null;
                 if (listMode)
                 {
                     if (json["id"] != null)
                     {
-                        itemId = json["id"].ToString();
+                        var itemId = json["id"].ToString();
                         dsItem = ds.Get(dsContext, itemId);
                         //content = ctrl.GetContent(itemId);
                         if (dsItem != null)
@@ -433,7 +430,7 @@ namespace Satrabel.OpenContent.Components
                 index = manifest.Index;
                 string editRole = manifest.GetEditRole();
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
-                int CreatedByUserid = -1;
+                int createdByUserid = -1;
                 var ds = DataSourceManager.GetDataSource(manifest.DataSource);
                 var dsContext = new DataSourceContext()
                 {
@@ -451,7 +448,7 @@ namespace Satrabel.OpenContent.Components
                     content = ds.Get(dsContext, json["id"].ToString());
                     if (content != null)
                     {
-                        CreatedByUserid = content.CreatedByUserId;
+                        createdByUserid = content.CreatedByUserId;
                     }
                 }
                 else
@@ -460,10 +457,10 @@ namespace Satrabel.OpenContent.Components
                     content = ds.Get(dsContext, null);
                     if (content != null)
                     {
-                        CreatedByUserid = content.CreatedByUserId;
+                        createdByUserid = content.CreatedByUserId;
                     }
                 }
-                if (!OpenContentUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, CreatedByUserid))
+                if (!OpenContentUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, createdByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }

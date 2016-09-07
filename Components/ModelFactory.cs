@@ -257,9 +257,8 @@ namespace Satrabel.OpenContent.Components
                         }
 
                         context["EditUrl"] = DnnUrlUtils.EditUrl("id", item.Id, Module.ModuleID, PortalSettings);
-                        context["IsEditable"] = IsEditable ||
-                            (!string.IsNullOrEmpty(editRole) &&
-                            OpenContentUtils.HasEditPermissions(PortalSettings, Module, editRole, item.CreatedByUserId));
+                        var editStatus = GetEditStatus(item.CreatedByUserId);
+                        context["IsEditable"] = editStatus;
                         context["DetailUrl"] = Globals.NavigateURL(MainTabId, false, PortalSettings, "", GetCurrentCultureCode(), url.CleanupUrl(), "id=" + item.Id);
                         context["MainUrl"] = Globals.NavigateURL(MainTabId, false, PortalSettings, "", GetCurrentCultureCode(), "");
                     }
@@ -397,7 +396,6 @@ namespace Satrabel.OpenContent.Components
                 }
             }
 
-            string editRole = Manifest.GetEditRole();
             if (!onlyData)
             {
                 // context
@@ -406,9 +404,8 @@ namespace Satrabel.OpenContent.Components
                 context["ModuleId"] = Module.ModuleID;
                 context["ModuleTitle"] = Module.ModuleTitle;
                 context["AddUrl"] = DnnUrlUtils.EditUrl(Module.ModuleID, PortalSettings);
-                context["IsEditable"] = IsEditable ||
-                                          (!string.IsNullOrEmpty(editRole) &&
-                                            OpenContentUtils.HasEditPermissions(PortalSettings, Module, editRole, -1));
+                var editStatus = GetEditStatus(-1);
+                context["IsEditable"] = editStatus;
                 context["PortalId"] = PortalId;
                 context["MainUrl"] = Globals.NavigateURL(MainTabId, false, PortalSettings, "", GetCurrentCultureCode());
                 if (Data != null)
@@ -425,6 +422,13 @@ namespace Satrabel.OpenContent.Components
                     context["EditUrl"] = DnnUrlUtils.EditUrl("id", Data.Id, Module.ModuleID, PortalSettings);
                 }
             }
+        }
+
+        private bool GetEditStatus(int createdByUser)
+        {
+            string editRole = Manifest.GetEditRole();
+            return IsEditable ||
+                (!string.IsNullOrEmpty(editRole) && OpenContentUtils.HasEditPermissions(PortalSettings, Module, editRole, createdByUser));
         }
 
         private string GetCurrentCultureCode()
