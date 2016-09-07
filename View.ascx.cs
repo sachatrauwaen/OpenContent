@@ -280,18 +280,15 @@ namespace Satrabel.OpenContent
                 var actions = new ModuleActionCollection();
 
                 var settings = ModuleContext.OpenContentSettings();
-                Manifest manifest = settings.Manifest;
-                bool disableEdit = manifest.DisableEdit;
                 TemplateManifest template = settings.Template;
                 bool templateDefined = template != null;
                 bool listMode = template != null && template.IsListTemplate;
-
 
                 if (Page.Request.QueryString["id"] != null)
                 {
                     _itemId = Page.Request.QueryString["id"];
                 }
-                if (templateDefined && !disableEdit)
+                if (templateDefined && !settings.Manifest.DisableEdit)
                 {
                     string title = Localization.GetString((listMode && string.IsNullOrEmpty(_itemId) ? ModuleActionType.AddContent : ModuleActionType.EditContent), LocalResourceFile);
                     if (!string.IsNullOrEmpty(settings.Manifest.Title))
@@ -309,7 +306,7 @@ namespace Satrabel.OpenContent
                         true,
                         false);
                 }
-                if (templateDefined && template.Manifest.AdditionalDataExists() && !disableEdit)
+                if (templateDefined && template.Manifest.AdditionalDataExists() && !settings.Manifest.DisableEdit)
                 {
                     foreach (var addData in template.Manifest.AdditionalData)
                     {
