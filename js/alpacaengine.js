@@ -73,40 +73,40 @@ alpacaEngine.engine = function(config) {
                 dnnModal.closePopUp(false, "");
                 return false;
             });
-
-            if (!self.itemId) {
-                $("#"+self.deleteButton).hide();
-            }
-
-            $("#"+self.deleteButton).click(function () {
-
-                var postData = JSON.stringify({ id: self.itemId });
-                //var action = "Delete";
-                $.ajax({
-                    type: "POST",
-                    url: self.sf.getServiceRoot('OpenContent') + "OpenContentAPI/" + self.deleteAction,
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    data: postData,
-                    beforeSend: self.sf.setModuleHeaders
-                }).done(function (data) {
-                    dnnModal.closePopUp(false, "");
-                    var href = $("#"+self.saveButton).attr('href');
-                    var windowTop = parent; //needs to be assign to a varaible for Opera compatibility issues.
-                    var popup = windowTop.jQuery("#iPopUp");
-                    if (popup.length > 0) {
-                        windowTop.__doPostBack('dnn_ctr'+self.moduleId+'_View__UP', '');
-                        dnnModal.closePopUp(false, href);
-                    }
-                    else {
-                        window.location.href = href;
-                    }
-                }).fail(function (xhr, result, status) {
-                    alert("Uh-oh, something broke: " + status);
-                });
-                return false;
-            });
         }
+        if (!self.itemId) {
+            $("#"+self.deleteButton).hide();
+        }
+
+        $("#"+self.deleteButton).click(function () {
+
+            var postData = JSON.stringify({ id: self.itemId });
+            //var action = "Delete";
+            $.ajax({
+                type: "POST",
+                url: self.sf.getServiceRoot('OpenContent') + "OpenContentAPI/" + self.deleteAction,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: postData,
+                beforeSend: self.sf.setModuleHeaders
+            }).done(function (data) {
+                dnnModal.closePopUp(false, "");
+                var href = $("#"+self.saveButton).attr('href');
+                var windowTop = parent; //needs to be assign to a varaible for Opera compatibility issues.
+                var popup = windowTop.jQuery("#iPopUp");
+                if (popup.length > 0) {
+                    windowTop.__doPostBack('dnn_ctr'+self.moduleId+'_View__UP', '');
+                    dnnModal.closePopUp(false, href);
+                }
+                else {
+                    window.location.href = href;
+                }
+            }).fail(function (xhr, result, status) {
+                alert("Uh-oh, something broke: " + status);
+            });
+            return false;
+        });
+        
 
         //var moduleScope = $('#'+self.scopeWrapper),
             //self = moduleScope,
