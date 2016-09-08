@@ -353,7 +353,7 @@ namespace Satrabel.OpenContent.Components
                     {
                         if (LocaleController.Instance.GetLocales(PortalId).Count > 1)
                         {
-                            JsonUtils.SimplifyJson(dataJson, GetCurrentCultureCode());
+                            JsonUtils.SimplifyJson(dsItem.Data, GetCurrentCultureCode());
                         }
                         dataJson = dsItem.Data;
                     }
