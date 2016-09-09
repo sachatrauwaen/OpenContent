@@ -80,7 +80,7 @@ namespace Satrabel.OpenContent.Components.Manifest
 
         internal static FileUri MainTemplateUri(this TemplateManifest templateUri)
         {
-            return templateUri == null ? null : new FileUri(templateUri.ManifestFolderUri, templateUri.Main.Template);
+            return templateUri == null || templateUri.Main == null ? null : new FileUri(templateUri.ManifestFolderUri, templateUri.Main.Template);
         }
 
         private static Manifest GetVirtualManifest(TemplateKey templeteKey)

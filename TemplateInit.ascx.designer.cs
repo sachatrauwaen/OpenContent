@@ -112,13 +112,13 @@ namespace Satrabel.OpenContent {
         protected global::System.Web.UI.WebControls.PlaceHolder phCurrentTemplate;
         
         /// <summary>
-        /// txtCurrentTemplate control.
+        /// lCurrentTemplate control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtCurrentTemplate;
+        protected global::System.Web.UI.WebControls.Label lCurrentTemplate;
         
         /// <summary>
         /// phTemplate control.

@@ -35,17 +35,20 @@
             </div>
         </asp:PlaceHolder>
         <asp:PlaceHolder ID="phCurrentTemplate" runat="server">
-            <div class="dnnFormItem">
-                <asp:Label runat="server" ControlName="txtCurrentTemplate" ResourceKey="lCurrentTemplate" CssClass="dnnLabel" Text="Current Template" />
-                <asp:TextBox runat="server" ID="txtCurrentTemplate" CssClass="dnnLabel" ReadOnly="True" />
+
+            <div class="dnnFormItem" style="padding-left:32%;margin-left:38px;width:auto;">
+                <asp:Label ID="lCurrentTemplate" runat="server"   />
             </div>
         </asp:PlaceHolder>
         <asp:PlaceHolder ID="phTemplate" runat="server">
+            
             <div class="dnnFormItem">
                 <asp:Label runat="server" ControlName="ddlTemplate" ResourceKey="lTemplate" CssClass="dnnLabel" />
                 <asp:DropDownList runat="server" ID="ddlTemplate" AutoPostBack="true" OnSelectedIndexChanged="ddlTemplate_SelectedIndexChanged">
                 </asp:DropDownList>
+                
             </div>
+            
         </asp:PlaceHolder>
         <asp:PlaceHolder ID="phTemplateName" runat="server" Visible="false">
             <div class="dnnFormItem">

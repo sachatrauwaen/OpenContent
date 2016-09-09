@@ -11,6 +11,7 @@ using DotNetNuke.UI.Modules;
 using Satrabel.OpenContent.Components;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.Rss;
+using Satrabel.OpenContent.Components.Logging;
 
 namespace Satrabel.OpenContent
 {
@@ -198,12 +199,12 @@ namespace Satrabel.OpenContent
                 templateDefined = false;
             }
 
-            if (!templateDefined && !settings.FirstTimeInitialisation)
+            if (!templateDefined && !settings.FirstTimeInitialisation && ddlTemplate.Items.FindByValue(settings.TemplateKey.ToString()) == null)
             {
-                txtCurrentTemplate.Text = settings.TemplateKey.ToString();
+                lCurrentTemplate.Text = settings.TemplateKey.ToString();            
                 phCurrentTemplate.Visible = true;
             }
-
+            
             bSave.CssClass = "dnnPrimaryAction";
             bSave.Enabled = true;
             hlEditSettings.CssClass = "dnnSecondaryAction";
@@ -335,7 +336,7 @@ namespace Satrabel.OpenContent
             ActivateDetailPage();
 
             ddlDetailPage.Items.Clear();
-            ddlDetailPage.Items.Add(new ListItem(string.Format("Main Module Page [{0}]", otherModuleTabId), "-1"));
+            ddlDetailPage.Items.Add(new ListItem("Main Module Page", "-1"));
             if (otherModuleTabId > 0)
             {
                 //todo: add li with "CurrentPage"
@@ -348,7 +349,8 @@ namespace Satrabel.OpenContent
 
             foreach (var tab in tabs)
             {
-                var li = new ListItem(string.Format("{1} [{0}]", tab.Value, tab.Key.Replace("//", " / ").TrimStart(" / ")), tab.Value.ToString());
+                string format = LogContext.IsLogActive ? "{1} [{0}]" : "{1}";
+                var li = new ListItem(string.Format(format, tab.Value, tab.Key.Replace("//", " / ").TrimStart(" / ")), tab.Value.ToString());
                 if (!tab.Key.StartsWith("//Admin//"))
                 {
                     listItems.Add(li);
