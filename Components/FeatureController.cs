@@ -67,7 +67,7 @@ namespace Satrabel.OpenContent.Components
             var searchDocuments = new List<SearchDocument>();
 
             //If module is marked as "don't index" then return no results
-            if (modInfo.ModuleSettings.GetValue("AllowIndex", "False") == "False")
+            if (modInfo.ModuleSettings.GetValue("AllowIndex", "True") == "False")
                 return searchDocuments;
 
             //If tab of the module is marked as "don't index" then return no results
