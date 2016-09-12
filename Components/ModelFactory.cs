@@ -70,22 +70,22 @@ namespace Satrabel.OpenContent.Components
             this.MainTabId = DnnUtils.GetTabByCurrentCulture(this.PortalId, this.MainTabId, GetCurrentCultureCode());
             this.MainModuleId = mainModuleId > 0 ? mainModuleId : module.ModuleID;
         }
-        public ModelFactory(IDataItem data, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, ModuleInfo module, int portalId, string cultureCode, int mainTabId, int mainModuleId)
-        {
-            this.dataJson = data.Data;
-            this.Data = data;
-            this.settingsJson = settingsJson;
-            this.PhysicalTemplateFolder = physicalTemplateFolder;
-            this.Manifest = manifest;
-            this.TemplateFiles = templateFiles;
-            this.Module = module;
-            this.PortalId = portalId;
-            this.CultureCode = cultureCode;
-            this.TemplateManifest = templateManifest;
-            this.MainTabId = mainTabId > 0 ? mainTabId : module.TabID;
-            this.MainTabId = DnnUtils.GetTabByCurrentCulture(this.PortalId, this.MainTabId, GetCurrentCultureCode());
-            this.MainModuleId = mainModuleId > 0 ? mainModuleId : module.ModuleID;
-        }
+        //public ModelFactory(IDataItem data, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, ModuleInfo module, int portalId, string cultureCode, int mainTabId, int mainModuleId)
+        //{
+        //    this.dataJson = data.Data;
+        //    this.Data = data;
+        //    this.settingsJson = settingsJson;
+        //    this.PhysicalTemplateFolder = physicalTemplateFolder;
+        //    this.Manifest = manifest;
+        //    this.TemplateFiles = templateFiles;
+        //    this.Module = module;
+        //    this.PortalId = portalId;
+        //    this.CultureCode = cultureCode;
+        //    this.TemplateManifest = templateManifest;
+        //    this.MainTabId = mainTabId > 0 ? mainTabId : module.TabID;
+        //    this.MainTabId = DnnUtils.GetTabByCurrentCulture(this.PortalId, this.MainTabId, GetCurrentCultureCode());
+        //    this.MainModuleId = mainModuleId > 0 ? mainModuleId : module.ModuleID;
+        //}
 
         public ModelFactory(IEnumerable<IDataItem> dataList, ModuleInfo module, PortalSettings portalSettings, int mainTabId)
         {
@@ -338,7 +338,7 @@ namespace Satrabel.OpenContent.Components
                     var ds = DataSourceManager.GetDataSource(Manifest.DataSource);
                     var dsContext = new DataSourceContext()
                     {
-                        PortalId = PortalSettings.PortalId,
+                        PortalId = this.PortalId,
                         TabId = tabId,
                         ModuleId = MainModuleId,
                         TabModuleId = Module.TabModuleID,
