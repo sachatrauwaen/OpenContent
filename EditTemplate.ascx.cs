@@ -274,10 +274,12 @@ namespace Satrabel.OpenContent
             LoadFiles(template);
             var scriptFile = new FileUri(template.ManifestFolderUri.UrlFolder, scriptList.SelectedValue);
             DisplayFile(scriptFile);
+            /*
             if (template.MainTemplateUri().FilePath.StartsWith(ModuleTemplateDirectory))
             {
                 cmdCustom.Visible = false;
             }
+             */
         }
 
         private void DisplayFile(FileUri template)

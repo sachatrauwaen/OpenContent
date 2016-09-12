@@ -69,20 +69,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             try
             {
                 var hbs = HandlebarsDotNet.Handlebars.Create();
-                RegisterDivideHelper(hbs);
-                RegisterMultiplyHelper(hbs);
-                RegisterAdditionHelper(hbs);
-                RegisterSubstractionHelper(hbs);                
-                RegisterEqualHelper(hbs);
-                RegisterFormatNumberHelper(hbs);
-                RegisterFormatDateTimeHelper(hbs);
-                RegisterImageUrlHelper(hbs);
-                RegisterArrayIndexHelper(hbs);
-                RegisterArrayTranslateHelper(hbs);
-                RegisterArrayLookupHelper(hbs);
-                RegisterIfAndHelper(hbs);
-                RegisterEachPublishedHelper(hbs);
-                RegisterConvertHtmlToTextHelper(hbs);
+                RegisterHelpers(hbs);
                 return CompileTemplate(hbs, source, model);
             }
             catch (Exception ex)
@@ -91,6 +78,25 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 throw new TemplateException("Failed to render Handlebar template ", ex, model, source);
             }
         }
+
+        private void RegisterHelpers(IHandlebars hbs)
+        {
+            RegisterDivideHelper(hbs);
+            RegisterMultiplyHelper(hbs);
+            RegisterAdditionHelper(hbs);
+            RegisterSubstractionHelper(hbs);
+            RegisterEqualHelper(hbs);
+            RegisterFormatNumberHelper(hbs);
+            RegisterFormatDateTimeHelper(hbs);
+            RegisterImageUrlHelper(hbs);
+            RegisterArrayIndexHelper(hbs);
+            RegisterArrayTranslateHelper(hbs);
+            RegisterArrayLookupHelper(hbs);
+            RegisterIfAndHelper(hbs);
+            RegisterIfInHelper(hbs);
+            RegisterEachPublishedHelper(hbs);
+            RegisterConvertHtmlToTextHelper(hbs);
+        }
         public string Execute(Page page, FileUri sourceFileUri, dynamic model)
         {
             try
@@ -98,24 +104,11 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 string source = File.ReadAllText(sourceFileUri.PhysicalFilePath);
                 string sourceFolder = sourceFileUri.UrlFolder; //.Replace("\\", "/") + "/";
                 var hbs = HandlebarsDotNet.Handlebars.Create();
-                RegisterDivideHelper(hbs);
-                RegisterMultiplyHelper(hbs);
-                RegisterAdditionHelper(hbs);
-                RegisterSubstractionHelper(hbs);                
-                RegisterEqualHelper(hbs);
-                RegisterFormatNumberHelper(hbs);
-                RegisterFormatDateTimeHelper(hbs);
-                RegisterImageUrlHelper(hbs);
+                RegisterHelpers(hbs);
                 RegisterScriptHelper(hbs);
                 RegisterHandlebarsHelper(hbs);
                 RegisterRegisterStylesheetHelper(hbs, page, sourceFolder);
-                RegisterRegisterScriptHelper(hbs, page, sourceFolder);
-                RegisterArrayIndexHelper(hbs);
-                RegisterArrayTranslateHelper(hbs);
-                RegisterArrayLookupHelper(hbs);
-                RegisterIfAndHelper(hbs);
-                RegisterEachPublishedHelper(hbs);
-                RegisterConvertHtmlToTextHelper(hbs);
+                RegisterRegisterScriptHelper(hbs, page, sourceFolder);                                
                 return CompileTemplate(hbs, source, model);
             }
             catch (Exception ex)
@@ -139,25 +132,11 @@ namespace Satrabel.OpenContent.Components.Handlebars
                         RegisterTemplate(hbs, part.Key, templateVirtualFolder + "/" + part.Value.Template);
                     }
                 }
-                RegisterDivideHelper(hbs);
-                RegisterMultiplyHelper(hbs);
-                RegisterAdditionHelper(hbs);
-                RegisterSubstractionHelper(hbs);
-                RegisterEqualHelper(hbs);
-                RegisterFormatNumberHelper(hbs);
-                RegisterFormatDateTimeHelper(hbs);
-                RegisterImageUrlHelper(hbs);
+                RegisterHelpers(hbs);
                 RegisterScriptHelper(hbs);
                 RegisterHandlebarsHelper(hbs);
                 RegisterRegisterStylesheetHelper(hbs, page, sourceFolder);
-                RegisterRegisterScriptHelper(hbs, page, sourceFolder);
-                //RegisterEditUrlHelper(hbs, module);
-                RegisterArrayIndexHelper(hbs);
-                RegisterArrayTranslateHelper(hbs);
-                RegisterArrayLookupHelper(hbs);
-                RegisterIfAndHelper(hbs);
-                RegisterEachPublishedHelper(hbs);
-                RegisterConvertHtmlToTextHelper(hbs);
+                RegisterRegisterScriptHelper(hbs, page, sourceFolder);                                
                 return CompileTemplate(hbs, source, model);
             }
             catch (Exception ex)
@@ -630,6 +609,28 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 foreach (var arg in arguments)
                 {
                     res = res && HandlebarsUtils.IsTruthyOrNonEmpty(arg);
+                }
+                if (res)
+                {
+                    options.Template(writer, (object)context);
+                }
+                else
+                {
+                    options.Inverse(writer, (object)context);
+                }
+            });
+        }
+        private void RegisterIfInHelper(IHandlebars hbs)
+        {
+            hbs.RegisterHelper("ifin", (writer, options, context, arguments) =>
+            {
+                bool res = false;
+                if (arguments.Length > 1)
+                {
+                    for (int i = 1; i < arguments.Length; i++)
+                    {
+                        res = res || arguments[0].Equals(arguments[i]);
+                    }
                 }
                 if (res)
                 {

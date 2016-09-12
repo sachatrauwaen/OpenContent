@@ -827,6 +827,12 @@ namespace Satrabel.OpenContent
             // detail template
             try
             {
+                if (dataJson != null)
+                {
+                    //todo check view permissions
+                }
+
+
                 var templateVirtualFolder = templateManifest.ManifestFolderUri.UrlFolder;
                 if (!string.IsNullOrEmpty(files.Template))
                 {

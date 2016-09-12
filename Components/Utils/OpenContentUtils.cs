@@ -163,7 +163,7 @@ namespace Satrabel.OpenContent.Components
                                 {
                                     templateName = templateName + " - " + template.Value.Title;
                                 }
-                                var item = new ListItem(templateCat + " : " + templateName, templateUri.FilePath);
+                                var item = new ListItem( (templateCat == "Site" ? "" : templateCat + " : ") + templateName, templateUri.FilePath);
                                 if (selectedTemplate != null && templateUri.FilePath.ToLowerInvariant() == selectedTemplate.Key.ToString().ToLowerInvariant())
                                 {
                                     item.Selected = true;
@@ -193,7 +193,7 @@ namespace Satrabel.OpenContent.Components
                         else
                             scriptName = scriptName.Replace("\\", " - ");
 
-                        var item = new ListItem(templateCat + " : " + scriptName, templateUri.FilePath);
+                        var item = new ListItem((templateCat == "Site" ? "" : templateCat + " : ") + scriptName, templateUri.FilePath);
                         if (selectedTemplate != null && templateUri.FilePath.ToLowerInvariant() == selectedTemplate.Key.ToString().ToLowerInvariant())
                         {
                             item.Selected = true;
