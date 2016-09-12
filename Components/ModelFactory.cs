@@ -24,6 +24,7 @@ namespace Satrabel.OpenContent.Components
     {
         JToken dataJson;
         readonly IDataItem Data;
+        readonly IEnumerable<IDataItem> DataList = null;
         readonly string settingsJson;
         readonly string PhysicalTemplateFolder;
         readonly Manifest.Manifest Manifest;
@@ -32,7 +33,6 @@ namespace Satrabel.OpenContent.Components
         readonly ModuleInfo Module;
         readonly PortalSettings PortalSettings;
         readonly int PortalId;
-        readonly IEnumerable<IDataItem> DataList = null;
         readonly int MainTabId;
         readonly int MainModuleId;
         readonly string CultureCode;
@@ -333,19 +333,14 @@ namespace Satrabel.OpenContent.Components
                 foreach (var item in Manifest.AdditionalData)
                 {
                     var dataManifest = item.Value;
-                    int tabId = this.PortalSettings == null ? MainTabId : PortalSettings.ActiveTab.TabID;
-                    int userId = this.PortalSettings == null ? -1 : PortalSettings.UserId;
                     var ds = DataSourceManager.GetDataSource(Manifest.DataSource);
                     var dsContext = new DataSourceContext()
                     {
-                        PortalId = PortalSettings.PortalId,
-                        TabId = tabId,
+                        PortalId = PortalId,
+                        TabId = Module.TabID,
                         ModuleId = MainModuleId,
                         TabModuleId = Module.TabModuleID,
-                        UserId = userId,
-                        //TemplateFolder = settings.TemplateDir.FolderPath,
                         Config = Manifest.DataSourceConfig,
-                        //Options = reqOptions
                     };
                     var dsItem = ds.GetData(dsContext, dataManifest.ScopeType, dataManifest.StorageKey ?? item.Key);
                     JToken dataJson = new JObject();
