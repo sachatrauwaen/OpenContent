@@ -24,6 +24,7 @@ namespace Satrabel.OpenContent.Components
     {
         JToken dataJson;
         readonly IDataItem Data;
+        readonly IEnumerable<IDataItem> DataList = null;
         readonly string settingsJson;
         readonly string PhysicalTemplateFolder;
         readonly Manifest.Manifest Manifest;
@@ -32,7 +33,6 @@ namespace Satrabel.OpenContent.Components
         readonly ModuleInfo Module;
         readonly PortalSettings PortalSettings;
         readonly int PortalId;
-        readonly IEnumerable<IDataItem> DataList = null;
         readonly int MainTabId;
         readonly int MainModuleId;
         readonly string CultureCode;
@@ -70,22 +70,22 @@ namespace Satrabel.OpenContent.Components
             this.MainTabId = DnnUtils.GetTabByCurrentCulture(this.PortalId, this.MainTabId, GetCurrentCultureCode());
             this.MainModuleId = mainModuleId > 0 ? mainModuleId : module.ModuleID;
         }
-        //public ModelFactory(IDataItem data, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, ModuleInfo module, int portalId, string cultureCode, int mainTabId, int mainModuleId)
-        //{
-        //    this.dataJson = data.Data;
-        //    this.Data = data;
-        //    this.settingsJson = settingsJson;
-        //    this.PhysicalTemplateFolder = physicalTemplateFolder;
-        //    this.Manifest = manifest;
-        //    this.TemplateFiles = templateFiles;
-        //    this.Module = module;
-        //    this.PortalId = portalId;
-        //    this.CultureCode = cultureCode;
-        //    this.TemplateManifest = templateManifest;
-        //    this.MainTabId = mainTabId > 0 ? mainTabId : module.TabID;
-        //    this.MainTabId = DnnUtils.GetTabByCurrentCulture(this.PortalId, this.MainTabId, GetCurrentCultureCode());
-        //    this.MainModuleId = mainModuleId > 0 ? mainModuleId : module.ModuleID;
-        //}
+        public ModelFactory(IDataItem data, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, ModuleInfo module, int portalId, string cultureCode, int mainTabId, int mainModuleId)
+        {
+            this.dataJson = data.Data;
+            this.Data = data;
+            this.settingsJson = settingsJson;
+            this.PhysicalTemplateFolder = physicalTemplateFolder;
+            this.Manifest = manifest;
+            this.TemplateFiles = templateFiles;
+            this.Module = module;
+            this.PortalId = portalId;
+            this.CultureCode = cultureCode;
+            this.TemplateManifest = templateManifest;
+            this.MainTabId = mainTabId > 0 ? mainTabId : module.TabID;
+            this.MainTabId = DnnUtils.GetTabByCurrentCulture(this.PortalId, this.MainTabId, GetCurrentCultureCode());
+            this.MainModuleId = mainModuleId > 0 ? mainModuleId : module.ModuleID;
+        }
 
         public ModelFactory(IEnumerable<IDataItem> dataList, ModuleInfo module, PortalSettings portalSettings, int mainTabId)
         {
@@ -333,19 +333,14 @@ namespace Satrabel.OpenContent.Components
                 foreach (var item in Manifest.AdditionalData)
                 {
                     var dataManifest = item.Value;
-                    int tabId = this.PortalSettings == null ? MainTabId : PortalSettings.ActiveTab.TabID;
-                    int userId = this.PortalSettings == null ? -1 : PortalSettings.UserId;
                     var ds = DataSourceManager.GetDataSource(Manifest.DataSource);
                     var dsContext = new DataSourceContext()
                     {
-                        PortalId = this.PortalId,
-                        TabId = tabId,
+                        PortalId = PortalId,
+                        TabId = Module.TabID,
                         ModuleId = MainModuleId,
                         TabModuleId = Module.TabModuleID,
-                        UserId = userId,
-                        //TemplateFolder = settings.TemplateDir.FolderPath,
                         Config = Manifest.DataSourceConfig,
-                        //Options = reqOptions
                     };
                     var dsItem = ds.GetData(dsContext, dataManifest.ScopeType, dataManifest.StorageKey ?? item.Key);
                     JToken dataJson = new JObject();
