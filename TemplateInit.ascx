@@ -41,14 +41,11 @@
             </div>
         </asp:PlaceHolder>
         <asp:PlaceHolder ID="phTemplate" runat="server">
-            
             <div class="dnnFormItem">
                 <asp:Label runat="server" ControlName="ddlTemplate" ResourceKey="lTemplate" CssClass="dnnLabel" />
                 <asp:DropDownList runat="server" ID="ddlTemplate" AutoPostBack="true" OnSelectedIndexChanged="ddlTemplate_SelectedIndexChanged">
                 </asp:DropDownList>
-                
             </div>
-            
         </asp:PlaceHolder>
         <asp:PlaceHolder ID="phTemplateName" runat="server" Visible="false">
             <div class="dnnFormItem">
