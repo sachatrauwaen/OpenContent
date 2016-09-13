@@ -163,7 +163,7 @@ namespace Satrabel.OpenContent.Components
                                 {
                                     templateName = templateName + " - " + template.Value.Title;
                                 }
-                                var item = new ListItem( (templateCat == "Site" ? "" : templateCat + " : ") + templateName, templateUri.FilePath);
+                                var item = new ListItem((templateCat == "Site" ? "" : templateCat + " : ") + templateName, templateUri.FilePath);
                                 if (selectedTemplate != null && templateUri.FilePath.ToLowerInvariant() == selectedTemplate.Key.ToString().ToLowerInvariant())
                                 {
                                     item.Selected = true;
@@ -440,6 +440,7 @@ namespace Satrabel.OpenContent.Components
             catch (Exception ex)
             {
                 //we should log this
+                Log.Logger.ErrorFormat("Error while parsing json", ex);
                 if (Debugger.IsAttached) Debugger.Break();
                 return null;
             }
