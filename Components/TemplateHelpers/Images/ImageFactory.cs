@@ -20,7 +20,15 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
 
         public static ImageUri CreateImage(string imageId)
         {
-            return CreateImage(Convert.ToInt32(imageId));
+            int imgId;
+            int.TryParse(imageId, out imgId);
+
+            if (int.TryParse(imageId, out imgId) && imgId > 0)
+                return CreateImage(imgId);
+            else
+            {
+                return new ImageUri(imageId);
+            }
         }
 
         public static ImageUri CreateImage(int imageId)
