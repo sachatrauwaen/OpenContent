@@ -413,7 +413,6 @@ namespace Satrabel.OpenContent.Components.Handlebars
                         a = (object[])parameters[0];
                     }
 
-
                     int b = int.Parse(parameters[1].ToString());
                     object c = a[b];
                     HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, c.ToString());

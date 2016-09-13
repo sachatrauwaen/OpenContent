@@ -268,6 +268,7 @@ namespace Satrabel.OpenContent
                 Page.ClientScript.RegisterClientScriptBlock(this.GetType(), "logScript" + ModuleContext.ModuleId, logScript.ToString());
             }
         }
+
         private void RenderInitForm()
         {
             OpenContent.TemplateInit ti = (TemplateInit)TemplateInitControl;
@@ -482,6 +483,7 @@ namespace Satrabel.OpenContent
         }
 
         #endregion
+
         private void InitTemplateInfo()
         {
             if (_settings.Template != null)
