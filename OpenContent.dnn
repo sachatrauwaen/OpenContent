@@ -217,6 +217,13 @@
             </attributes>
           </eventMessage>
         </component>
+        <component type="SkinObject">
+          <moduleControl>
+            <controlKey>OpenContentModule</controlKey>
+            <controlSrc>DesktopModules/OpenContent/RenderModule.ascx</controlSrc>
+            <supportsPartialRendering>False</supportsPartialRendering>
+          </moduleControl>
+        </component>
         <component type="Assembly">
           <assemblies>
             <assembly>

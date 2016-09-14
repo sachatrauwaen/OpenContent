@@ -117,7 +117,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 throw new TemplateException("Failed to render Handlebar template " + sourceFileUri.FilePath, ex, model, sourceFileUri.FilePath);
             }
         }
-        public string Execute(Page page, IModuleControl module, TemplateFiles files, string templateVirtualFolder, dynamic model)
+        public string Execute(Page page, TemplateFiles files, string templateVirtualFolder, dynamic model)
         {
             var sourceFileUri = new FileUri(templateVirtualFolder + "/" + files.Template);
             try
@@ -355,6 +355,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 }
             });
         }
+        /*
         private void RegisterEditUrlHelper(HandlebarsDotNet.IHandlebars hbs, IModuleControl module)
         {
             hbs.RegisterHelper("editurl", (writer, context, parameters) =>
@@ -366,7 +367,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 }
             });
         }
-
+        */
         /// <summary>
         /// Retrieves image URL.
         /// Param1 is imageId, Param2 is Size of the image. In Bootstrap 12th, Param3 is ratio string (eg '1x1'), 

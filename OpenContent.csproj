@@ -217,6 +217,7 @@
     <Compile Include="Components\OpenContentGlobalSettingsController.cs" />
     <Compile Include="Components\OpenDataController.cs" />
     <Compile Include="Components\Razor\RazorEngine.cs" />
+    <Compile Include="Components\Render\RenderEngine.cs" />
     <Compile Include="Components\Rest\RestController.cs" />
     <Compile Include="Components\Rest\RestGroup.cs" />
     <Compile Include="Components\Rest\RestPaging.cs" />
@@ -302,6 +303,13 @@
     <Compile Include="Components\Common\Utils.cs" />
     <Compile Include="Components\UrlRewriter\OpenContentUrlRule.cs" />
     <Compile Include="Components\UrlRewriter\OpenContentUrlProvider.cs" />
+    <Compile Include="RenderModule.ascx.cs">
+      <DependentUpon>RenderModule.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="RenderModule.ascx.designer.cs">
+      <DependentUpon>RenderModule.ascx</DependentUpon>
+    </Compile>
     <Compile Include="Swagger.ascx.cs">
       <DependentUpon>Swagger.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -524,6 +532,7 @@
     <Content Include="js\swagger\o2c.html" />
     <Content Include="js\swagger\swagger-ui.js" />
     <Content Include="js\swagger\swagger-ui.min.js" />
+    <Content Include="RenderModule.ascx" />
     <Content Include="Swagger.ascx" />
     <Content Include="EditAddData.ascx" />
     <Content Include="EditInit.ascx" />
