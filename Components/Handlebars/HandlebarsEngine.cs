@@ -108,7 +108,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 RegisterScriptHelper(hbs);
                 RegisterHandlebarsHelper(hbs);
                 RegisterRegisterStylesheetHelper(hbs, page, sourceFolder);
-                RegisterRegisterScriptHelper(hbs, page, sourceFolder);                                
+                RegisterRegisterScriptHelper(hbs, page, sourceFolder);
                 return CompileTemplate(hbs, source, model);
             }
             catch (Exception ex)
@@ -136,7 +136,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 RegisterScriptHelper(hbs);
                 RegisterHandlebarsHelper(hbs);
                 RegisterRegisterStylesheetHelper(hbs, page, sourceFolder);
-                RegisterRegisterScriptHelper(hbs, page, sourceFolder);                                
+                RegisterRegisterScriptHelper(hbs, page, sourceFolder);
                 return CompileTemplate(hbs, source, model);
             }
             catch (Exception ex)
@@ -384,7 +384,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     string ratiostring = parameters[2] as string;
                     bool isMobile = HttpContext.Current.Request.Browser.IsMobileDevice;
 
-                    var imageObject = Convert.ToInt32(imageId) == 0 ? null : new ImageUri(Convert.ToInt32(imageId));
+                    ImageUri imageObject = ImageFactory.CreateImage(imageId);
                     var imageUrl = imageObject == null ? string.Empty : imageObject.GetImageUrl(width, ratiostring, isMobile);
 
                     writer.WriteSafeString(imageUrl);
@@ -413,7 +413,6 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     {
                         a = (object[])parameters[0];
                     }
-
 
                     int b = int.Parse(parameters[1].ToString());
                     object c = a[b];

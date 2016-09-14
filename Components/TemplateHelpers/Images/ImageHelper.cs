@@ -24,7 +24,11 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         /// <returns></returns>
         public static int CalculateMaxPixels(float columnWidth, bool isMobile, bool retina = true)
         {
-            if (columnWidth < 0 || columnWidth > 12) columnWidth = 1;
+            if (columnWidth < 0 || columnWidth > 12)
+                columnWidth = 1;
+            else if (columnWidth > 1)
+                columnWidth = columnWidth / 12;
+
             if (isMobile && retina)
             {
                 return Convert.ToInt32(2 * 768 * columnWidth);

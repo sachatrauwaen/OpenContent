@@ -326,6 +326,7 @@ namespace Satrabel.OpenContent.Components
                     model["Options"] = optionsJson;
                 }
             }
+
             // additional data
             if (TemplateFiles != null && TemplateFiles.AdditionalDataInTemplate && Manifest.AdditionalDataExists())
             {
@@ -343,18 +344,19 @@ namespace Satrabel.OpenContent.Components
                         Config = Manifest.DataSourceConfig,
                     };
                     var dsItem = ds.GetData(dsContext, dataManifest.ScopeType, dataManifest.StorageKey ?? item.Key);
-                    JToken dataJson = new JObject();
+                    JToken additionalDataJson = new JObject();
                     if (dsItem != null && dsItem.Data != null)
                     {
                         if (LocaleController.Instance.GetLocales(PortalId).Count > 1)
                         {
                             JsonUtils.SimplifyJson(dsItem.Data, GetCurrentCultureCode());
                         }
-                        dataJson = dsItem.Data;
+                        additionalDataJson = dsItem.Data;
                     }
-                    additionalData[(item.Value.ModelKey ?? item.Key).ToLowerInvariant()] = dataJson;
+                    additionalData[(item.Value.ModelKey ?? item.Key).ToLowerInvariant()] = additionalDataJson;
                 }
             }
+
             // settings
             if (!onlyData && TemplateManifest.SettingsNeeded() && !string.IsNullOrEmpty(settingsJson))
             {
@@ -372,6 +374,7 @@ namespace Satrabel.OpenContent.Components
                     throw new Exception("Error parsing Json of Settings", ex);
                 }
             }
+
             // static localization
             if (!onlyData)
             {
@@ -435,7 +438,6 @@ namespace Satrabel.OpenContent.Components
             {
                 return CultureCode;
             }
-
         }
 
         private bool? _isEditable;
