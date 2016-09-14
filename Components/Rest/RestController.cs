@@ -102,10 +102,13 @@ namespace Satrabel.OpenContent.Components.Rest
                         LogContext.Log(activeModule.ModuleID, logKey, "model", model);
                         res["meta"]["logs"] = JToken.FromObject(LogContext.Current.ModuleLogs(activeModule.ModuleID));
                     }
-                    foreach (var item in model["Items"] as JArray)
+                    if (model["Items"] is JArray)
                     {
-                        item["id"] = item["Context"]["Id"];
-                        JsonUtils.IdJson(item);
+                        foreach (var item in (JArray)model["Items"])
+                        {
+                            item["id"] = item["Context"]["Id"];
+                            JsonUtils.IdJson(item);
+                        }
                     }
                     res[entity] = model["Items"];
                     return Request.CreateResponse(HttpStatusCode.OK, res);
