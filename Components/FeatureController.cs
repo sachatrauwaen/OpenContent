@@ -24,6 +24,7 @@ using DotNetNuke.Entities.Portals;
 using System.IO;
 using System.Web.Hosting;
 using Satrabel.OpenContent.Components.Datasource;
+using Satrabel.OpenContent.Components.Datasource.search;
 using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.TemplateHelpers;
 
@@ -97,44 +98,42 @@ namespace Satrabel.OpenContent.Components
                 TemplateFolder = settings.TemplateDir.FolderPath,
                 Config = settings.Manifest.DataSourceConfig
             };
-            IDataItem content = ds.Get(dsContext, null);
 
-
-
-            //OpenContentController ctrl = new OpenContentController();
-            //OpenContentInfo content = ctrl.GetFirstContent(modInfo.ModuleID);
-            var contentList = ctrl.GetContents(modInfo.ModuleID);
-            if (content != null &&
-                (content.LastModifiedOnDate.ToUniversalTime() > beginDateUtc &&
-                 content.LastModifiedOnDate.ToUniversalTime() < DateTime.UtcNow))
+            IDataItems contentList = ds.GetAll(dsContext, null);
+            foreach (IDataItem content in contentList.Items)
             {
-                Log.Logger.DebugFormat("Indexing content {0}-{1} ({2}) {3} versus {4}", modInfo.ModuleID, modInfo.ModuleTitle, modInfo.TabID, beginDateUtc, content.LastModifiedOnDate.ToUniversalTime());
-
-                SearchDocument searchDoc;
-                if (DnnLanguageUtils.IsMultiLingualPortal(modInfo.PortalID))
+                if (content != null &&
+                    (content.LastModifiedOnDate.ToUniversalTime() > beginDateUtc &&
+                     content.LastModifiedOnDate.ToUniversalTime() < DateTime.UtcNow))
                 {
-                    string culture = modInfo.CultureCode;
-                    JToken title;
-                    JToken description;
-                    if (content.Title.IsJson())
+                    Log.Logger.DebugFormat("Indexing content {0}-{1} ({2}) {3} versus {4}", modInfo.ModuleID, modInfo.ModuleTitle, modInfo.TabID, beginDateUtc, content.LastModifiedOnDate.ToUniversalTime());
+
+                    SearchDocument searchDoc;
+                    if (DnnLanguageUtils.IsMultiLingualPortal(modInfo.PortalID))
                     {
-                        JToken singleLanguage = content.Data;
-                        JsonUtils.SimplifyJson(singleLanguage, culture);
-                        title = singleLanguage["Title"] ?? modInfo.ModuleTitle;
-                        description = singleLanguage["Description"] ?? JsonToSearchableString(content.Data);
+                        string culture = modInfo.CultureCode;
+                        JToken title;
+                        JToken description;
+                        if (content.Title.IsJson())
+                        {
+                            JToken singleLanguage = content.Data;
+                            JsonUtils.SimplifyJson(singleLanguage, culture);
+                            title = singleLanguage["Title"] ?? modInfo.ModuleTitle;
+                            description = singleLanguage["Description"] ?? JsonToSearchableString(content.Data);
+                        }
+                        else
+                        {
+                            title = content.Title;
+                            description = JsonToSearchableString(content.Data);
+                        }
+                        searchDoc = CreateSearchDocument(modInfo, culture, title.ToString(), description.ToString(), content.LastModifiedOnDate.ToUniversalTime());
+                        searchDocuments.Add(searchDoc);
                     }
                     else
                     {
-                        title = content.Title;
-                        description = JsonToSearchableString(content.Data);
+                        searchDoc = CreateSearchDocument(modInfo, "", content.Title, JsonToSearchableString(content.Data), content.LastModifiedOnDate.ToUniversalTime());
+                        searchDocuments.Add(searchDoc);
                     }
-                    searchDoc = CreateSearchDocument(modInfo, culture, title.ToString(), description.ToString(), content.LastModifiedOnDate.ToUniversalTime());
-                    searchDocuments.Add(searchDoc);
-                }
-                else
-                {
-                    searchDoc = CreateSearchDocument(modInfo, "", content.Title, JsonToSearchableString(content.Data), content.LastModifiedOnDate.ToUniversalTime());
-                    searchDocuments.Add(searchDoc);
                 }
             }
             return searchDocuments;
