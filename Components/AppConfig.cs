@@ -46,7 +46,7 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
+        public const string OPENCONTENT = "OpenContent";
         #endregion
-
     }
 }

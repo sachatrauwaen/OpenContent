@@ -118,7 +118,7 @@ namespace Satrabel.OpenContent.Components.Lucene
                     ModuleController mc = new ModuleController();
                     foreach (PortalInfo portal in PortalController.Instance.GetPortals())
                     {
-                        ArrayList modules = mc.GetModulesByDefinition(portal.PortalID, "OpenContent");
+                        ArrayList modules = mc.GetModulesByDefinition(portal.PortalID, AppConfig.OPENCONTENT);
                         foreach (ModuleInfo module in modules.OfType<ModuleInfo>())
                         {
                             IndexModule(lc, module);

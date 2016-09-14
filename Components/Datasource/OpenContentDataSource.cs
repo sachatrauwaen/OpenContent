@@ -17,7 +17,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         {
             get
             {
-                return "OpenContent";
+                return AppConfig.OPENCONTENT;
             }
         }
 

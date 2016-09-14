@@ -17,7 +17,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
             List<OpenContentUrlRule> Rules = new List<OpenContentUrlRule>();
             OpenContentController occ = new OpenContentController();
             ModuleController mc = new ModuleController();
-            ArrayList modules = mc.GetModulesByDefinition(PortalId, "OpenContent");
+            ArrayList modules = mc.GetModulesByDefinition(portalId, AppConfig.OPENCONTENT);
             //foreach (ModuleInfo module in modules.OfType<ModuleInfo>().GroupBy(m => m.ModuleID).Select(g => g.First())){                
             foreach (ModuleInfo module in modules.OfType<ModuleInfo>())
             {
