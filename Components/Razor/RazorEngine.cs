@@ -102,9 +102,12 @@ namespace Satrabel.OpenContent.Components.Razor
 
         private void InitHelpers(OpenContentWebPage webPage)
         {
-            webPage.Dnn = new DnnHelper(ModuleContext);
-            webPage.Html = new HtmlHelper(ModuleContext, LocalResourceFile);
-            webPage.Url = new UrlHelper(ModuleContext);
+            if (ModuleContext != null)
+            {
+                webPage.Dnn = new DnnHelper(ModuleContext);
+                webPage.Html = new HtmlHelper(ModuleContext, LocalResourceFile);
+                webPage.Url = new UrlHelper(ModuleContext);
+            }
         }
 
         private void InitWebpage()

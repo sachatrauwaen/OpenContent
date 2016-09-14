@@ -532,8 +532,8 @@ namespace Satrabel.OpenContent.Components.Render
                     if (LogContext.IsLogActive)
                     {
                         var logKey = "Render single item template";
-                        LogContext.Log(ModuleContext.ModuleId, logKey, "template", template.FilePath);
-                        LogContext.Log(ModuleContext.ModuleId, logKey, "model", model);
+                        LogContext.Log(_module.ModuleID, logKey, "template", template.FilePath);
+                        LogContext.Log(_module.ModuleID, logKey, "model", model);
                     }
 
                     if (template.Extension != ".hbs")
