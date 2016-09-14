@@ -28,8 +28,9 @@ namespace Satrabel.OpenContent.Components.Render
     public class RenderEngine
     {
         private readonly RenderInfo _renderinfo = new RenderInfo();
-        private OpenContentSettings _settings;
+        private readonly OpenContentSettings _settings;
         private readonly ModuleInfo _module; // active module (not datasource module)
+
         public RenderEngine(ModuleInfo module)
         {
             _module = module;
@@ -600,8 +601,6 @@ namespace Satrabel.OpenContent.Components.Render
             return templateUri;
         }
         #endregion
-
-        
 
     }
 }
