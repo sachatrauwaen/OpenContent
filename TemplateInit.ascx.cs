@@ -337,10 +337,7 @@ namespace Satrabel.OpenContent
 
             ddlDetailPage.Items.Clear();
             ddlDetailPage.Items.Add(new ListItem("Main Module Page", "-1"));
-            if (otherModuleTabId > 0)
-            {
-                //todo: add li with "CurrentPage"
-            }
+
 
             //todo: wegfilteren van redirected tabs
 

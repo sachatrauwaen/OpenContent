@@ -11,9 +11,9 @@ namespace Satrabel.OpenContent.Components
         {
             return settings.DetailTabId > 0 ? settings.DetailTabId : (settings.TabId > 0 ? settings.TabId : moduleTabId);
         }
-        public static int GetModuleId(this OpenContentSettings settings, int moduleId)
+        public static int GetModuleId(this OpenContentSettings settings, int defaultModuleId)
         {
-            return settings.IsOtherModule ? settings.ModuleId : moduleId;
+            return settings.IsOtherModule ? settings.ModuleId : defaultModuleId;
         }
 
         public static bool IsListTemplate(this OpenContentSettings settings)
@@ -62,6 +62,9 @@ namespace Satrabel.OpenContent.Components
         internal TemplateKey TemplateKey { get; private set; }
 
         public int TabId { get; private set; }
+        /// <summary>
+        /// Gets the module identifier which is the main moduleId.  0 if no other module
+        /// </summary>
         public int ModuleId { get; private set; }
 
         public TemplateManifest Template { get; private set; }

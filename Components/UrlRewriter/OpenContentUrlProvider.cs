@@ -11,9 +11,9 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
 {
     public class OpenContentUrlProvider
     {
-        public static List<OpenContentUrlRule> GetRules(int PortalId)
+        public static List<OpenContentUrlRule> GetRules(int portalId)
         {
-            Dictionary<string, Locale> dicLocales = LocaleController.Instance.GetLocales(PortalId);
+            Dictionary<string, Locale> dicLocales = LocaleController.Instance.GetLocales(portalId);
             List<OpenContentUrlRule> Rules = new List<OpenContentUrlRule>();
             OpenContentController occ = new OpenContentController();
             ModuleController mc = new ModuleController();
@@ -49,9 +49,9 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                         }
                         foreach (KeyValuePair<string, Locale> key in dicLocales)
                         {
-                            string CultureCode = key.Value.Code;
-                            string RuleCultureCode = (dicLocales.Count > 1 ? CultureCode : null);
-                            ModelFactory mf = new ModelFactory(dataList, settings.Data, physicalTemplateFolder, settings.Template.Manifest, settings.Template, settings.Template.Main, module, PortalId, CultureCode, mainTabId, mainModuleId);
+                            string cultureCode = key.Value.Code;
+                            string ruleCultureCode = (dicLocales.Count > 1 ? cultureCode : null);
+                            ModelFactory mf = new ModelFactory(dataList, settings.Data, physicalTemplateFolder, settings.Template.Manifest, settings.Template, settings.Template.Main, module, portalId, cultureCode, mainTabId, mainModuleId);
                             //dynamic model = mf.GetModelAsDynamic(true);
                             //dynamic items = model.Items;
                             IEnumerable<dynamic> items = mf.GetModelAsDynamicList();
@@ -80,14 +80,14 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                                 {
                                     var rule = new OpenContentUrlRule
                                     {
-                                        CultureCode = RuleCultureCode,
+                                        CultureCode = ruleCultureCode,
                                         TabId = mainTabId,
                                         Parameters = "id=" + id,
                                         Url = url
                                     };
                                     var reducedRules = Rules.Where(r => r.CultureCode == rule.CultureCode && r.TabId == rule.TabId);
-                                    bool RuleExist = reducedRules.Any(r => r.Parameters == rule.Parameters);
-                                    if (!RuleExist)
+                                    bool ruleExist = reducedRules.Any(r => r.Parameters == rule.Parameters);
+                                    if (!ruleExist)
                                     {
                                         if (reducedRules.Any(r => r.Url == rule.Url))
                                         {
