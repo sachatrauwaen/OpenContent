@@ -23,6 +23,7 @@ using System.Text.RegularExpressions;
 using DotNetNuke.Entities.Portals;
 using System.IO;
 using System.Web.Hosting;
+using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.TemplateHelpers;
 
@@ -83,9 +84,26 @@ namespace Satrabel.OpenContent.Components
             {
                 return searchDocuments;
             }
+            if (settings.IsOtherModule)
+            {
+                return searchDocuments;
+            }
 
-            OpenContentController ctrl = new OpenContentController();
-            OpenContentInfo content = ctrl.GetFirstContent(modInfo.ModuleID);
+            var ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
+            var dsContext = new DataSourceContext()
+            {
+                ModuleId = modInfo.ModuleID,
+                ActiveModuleId = modInfo.ModuleID,
+                TemplateFolder = settings.TemplateDir.FolderPath,
+                Config = settings.Manifest.DataSourceConfig
+            };
+            IDataItem content = ds.Get(dsContext, null);
+
+
+
+            //OpenContentController ctrl = new OpenContentController();
+            //OpenContentInfo content = ctrl.GetFirstContent(modInfo.ModuleID);
+            var contentList = ctrl.GetContents(modInfo.ModuleID);
             if (content != null &&
                 (content.LastModifiedOnDate.ToUniversalTime() > beginDateUtc &&
                  content.LastModifiedOnDate.ToUniversalTime() < DateTime.UtcNow))
@@ -100,22 +118,22 @@ namespace Satrabel.OpenContent.Components
                     JToken description;
                     if (content.Title.IsJson())
                     {
-                        JToken singleLanguage = content.JsonAsJToken;
+                        JToken singleLanguage = content.Data;
                         JsonUtils.SimplifyJson(singleLanguage, culture);
                         title = singleLanguage["Title"] ?? modInfo.ModuleTitle;
-                        description = singleLanguage["Description"] ?? JsonToSearchableString(content.Json);
+                        description = singleLanguage["Description"] ?? JsonToSearchableString(content.Data);
                     }
                     else
                     {
                         title = content.Title;
-                        description = JsonToSearchableString(content.Json);
+                        description = JsonToSearchableString(content.Data);
                     }
                     searchDoc = CreateSearchDocument(modInfo, culture, title.ToString(), description.ToString(), content.LastModifiedOnDate.ToUniversalTime());
                     searchDocuments.Add(searchDoc);
                 }
                 else
                 {
-                    searchDoc = CreateSearchDocument(modInfo, "", content.Title, JsonToSearchableString(content.Json), content.LastModifiedOnDate.ToUniversalTime());
+                    searchDoc = CreateSearchDocument(modInfo, "", content.Title, JsonToSearchableString(content.Data), content.LastModifiedOnDate.ToUniversalTime());
                     searchDocuments.Add(searchDoc);
                 }
             }

@@ -359,6 +359,9 @@ namespace Satrabel.OpenContent.Components.Datasource
                 Title = content.Title,
                 Data = content.JsonAsJToken,
                 CreatedByUserId = content.CreatedByUserId,
+                LastModifiedByUserId = content.LastModifiedByUserId,
+                LastModifiedOnDate = content.LastModifiedOnDate,
+                CreatedOnDate = content.CreatedOnDate,
                 Item = content
             };
         }
