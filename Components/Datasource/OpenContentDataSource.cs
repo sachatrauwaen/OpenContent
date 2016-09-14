@@ -126,7 +126,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             }
             if (content == null)
             {
-                Log.Logger.WarnFormat("Item not shown because no content item found. Id [{0}]. Context ModuleId [{1}]", id, GetModuleId(context));
+                Log.Logger.WarnFormat("Item not shown because no content item found. Id [{0}]. Context TabId: [{1}], ModuleId: [{2}]", id, GetTabId(context), GetModuleId(context));
                 LogContext.Log(context.ActiveModuleId, "Get DataItem", "Result", "not item found with id " + id);
             }
             else if (content.ModuleId == GetModuleId(context))
@@ -346,6 +346,10 @@ namespace Satrabel.OpenContent.Components.Datasource
         private static int GetModuleId(DataSourceContext context)
         {
             return context.Config != null && context.Config["ModuleId"] != null ? context.Config["ModuleId"].Value<int>() : context.ModuleId;
+        }
+        private static int GetTabId(DataSourceContext context)
+        {
+            return context.Config != null && context.Config["TabId"] != null ? context.Config["TabId"].Value<int>() : context.TabId;
         }
         private static DefaultDataItem CreateDefaultDataItem(OpenContentInfo content)
         {
