@@ -240,12 +240,12 @@ namespace Satrabel.OpenContent.Components.Render
                 TemplateFolder = settings.TemplateDir.FolderPath,
                 Config = settings.Manifest.DataSourceConfig
             };
-            IEnumerable<IDataItem> luceneResultList = new List<IDataItem>();
+            IEnumerable<IDataItem> resultList = new List<IDataItem>();
             if (clientSide || !info.Files.DataInTemplate)
             {
                 if (ds.Any(dsContext))
                 {
-                    info.SetData(luceneResultList, settings.Data);
+                    info.SetData(resultList, settings.Data);
                     info.DataExist = true;
                 }
 
@@ -261,25 +261,25 @@ namespace Satrabel.OpenContent.Components.Render
                 bool useLucene = info.Template.Manifest.Index;
                 if (useLucene)
                 {
-                    PortalSettings PortalSettings = PortalSettings.Current;
+                    PortalSettings portalSettings = PortalSettings.Current;
                     var indexConfig = OpenContentUtils.GetIndexConfig(info.Template.Key.TemplateDir);
                     if (info.Template.Views != null)
                     {
                         templateKey = GetTemplateKey(indexConfig);
                     }
-                    bool addWorkFlow = PortalSettings.UserMode != PortalSettings.Mode.Edit;
+                    bool addWorkFlow = portalSettings.UserMode != PortalSettings.Mode.Edit;
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
-                    queryBuilder.Build(settings.Query, addWorkFlow, PortalSettings.UserId, DnnLanguageUtils.GetCurrentCultureCode(), PortalSettings.UserInfo.Social.Roles, QueryString);
+                    queryBuilder.Build(settings.Query, addWorkFlow, portalSettings.UserId, DnnLanguageUtils.GetCurrentCultureCode(), portalSettings.UserInfo.Social.Roles, QueryString);
 
-                    luceneResultList = ds.GetAll(dsContext, queryBuilder.Select).Items;
+                    resultList = ds.GetAll(dsContext, queryBuilder.Select).Items;
                     if (LogContext.IsLogActive)
                     {
                         var logKey = "Query";
                         LogContext.Log(_module.ModuleID, logKey, "select", queryBuilder.Select);
-                        LogContext.Log(_module.ModuleID, logKey, "result", luceneResultList);
+                        LogContext.Log(_module.ModuleID, logKey, "result", resultList);
                     }
                     //Log.Logger.DebugFormat("Query returned [{0}] results.", total);
-                    if (!luceneResultList.Any())
+                    if (!resultList.Any())
                     {
                         if (ds.Any(dsContext) && settings.Query.IsEmpty())
                         {
@@ -289,23 +289,23 @@ namespace Satrabel.OpenContent.Components.Render
                         //Log.Logger.DebugFormat("Query did not return any results. API request: [{0}], Lucene Filter: [{1}], Lucene Query:[{2}]", settings.Query, queryDef.Filter == null ? "" : queryDef.Filter.ToString(), queryDef.Query == null ? "" : queryDef.Query.ToString());
                         if (ds.Any(dsContext))
                         {
-                            info.SetData(luceneResultList, settings.Data);
+                            info.SetData(resultList, settings.Data);
                             info.DataExist = true;
                         }
                     }
                 }
                 else
                 {
-                    luceneResultList = ds.GetAll(dsContext, null).Items.OrderBy(i => i.CreatedOnDate);
+                    resultList = ds.GetAll(dsContext, null).Items;
                     if (LogContext.IsLogActive)
                     {
                         var logKey = "Get all data of module";
-                        LogContext.Log(_module.ModuleID, logKey, "result", luceneResultList);
+                        LogContext.Log(_module.ModuleID, logKey, "result", resultList);
                     }
                 }
-                if (luceneResultList.Any())
+                if (resultList.Any())
                 {
-                    info.SetData(luceneResultList, settings.Data);
+                    info.SetData(resultList, settings.Data);
                 }
             }
             return templateKey;

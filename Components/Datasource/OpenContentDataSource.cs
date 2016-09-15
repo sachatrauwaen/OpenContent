@@ -172,7 +172,10 @@ namespace Satrabel.OpenContent.Components.Datasource
         {
             OpenContentController ctrl = new OpenContentController();
 
-            var dataList = ctrl.GetContents(GetModuleId(context)).OrderBy(i => i.CreatedOnDate).Select(content => CreateDefaultDataItem(content));
+            var dataList = ctrl.GetContents(GetModuleId(context))
+                .OrderBy(i => i.CreatedOnDate)
+                .Select(content => CreateDefaultDataItem(content));
+
             return new DefaultDataItems()
             {
                 Items = dataList,
