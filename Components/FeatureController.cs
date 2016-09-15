@@ -114,17 +114,18 @@ namespace Satrabel.OpenContent.Components
                         string culture = modInfo.CultureCode;
                         JToken title;
                         JToken description;
+                        JToken singleLanguage = content.Data;
+                        JsonUtils.SimplifyJson(singleLanguage, culture);
+
                         if (content.Title.IsJson())
                         {
-                            JToken singleLanguage = content.Data;
-                            JsonUtils.SimplifyJson(singleLanguage, culture);
                             title = singleLanguage["Title"] ?? modInfo.ModuleTitle;
                             description = singleLanguage["Description"] ?? JsonToSearchableString(content.Data);
                         }
                         else
                         {
                             title = content.Title;
-                            description = JsonToSearchableString(content.Data);
+                            description = JsonToSearchableString(singleLanguage);
                         }
                         searchDoc = CreateSearchDocument(modInfo, culture, title.ToString(), description.ToString(), content.LastModifiedOnDate.ToUniversalTime());
                         searchDocuments.Add(searchDoc);
