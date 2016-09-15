@@ -396,12 +396,11 @@ namespace Satrabel.OpenContent
 
         private bool IsTabWithModuleWithSameMainModule(int tabId, int mainmoduleId)
         {
-            return true; //always return true for now because this code seems to have an effect on the cache (deleted module don't disappear right away)
-
             //only tabs with oc-module with main-moduleId= CurrentMainModuleId
             var tabinfo = TabController.Instance.GetTab(tabId, ModuleContext.PortalId);
-            foreach (ModuleInfo moduleInfo in tabinfo.Modules)
+            foreach (var item in tabinfo.ChildModules)
             {
+                ModuleInfo moduleInfo = item.Value;
                 if (moduleInfo.ModuleDefinition.FriendlyName == AppConfig.OPENCONTENT)
                 {
                     if (moduleInfo.OpenContentSettings().GetModuleId(moduleInfo.ModuleID) == mainmoduleId)
