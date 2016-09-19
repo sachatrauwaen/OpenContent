@@ -78,10 +78,9 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
-        public static bool IsVisibleTab(this TabInfo tab)
+        public static bool IsPublishedTab(this TabInfo tab)
         {
             return !tab.IsDeleted &&
-                   tab.IsVisible &&
                    (tab.StartDate == Null.NullDate || tab.StartDate < DateTime.Now) &&
                    (tab.EndDate == Null.NullDate || tab.EndDate > DateTime.Now);
         }

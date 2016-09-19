@@ -35,8 +35,6 @@ namespace Satrabel.OpenContent
             {
                 var scriptFileSetting = ModuleContext.OpenContentSettings().Template;
                 ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplates(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, AppConfig.OPENCONTENT).ToArray());
-
-                //ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplatesFiles(ModuleContext.PortalSettings, ModuleContext.moduleId, scriptFileSetting, AppConfig.FriendlyName()).ToArray());
             }
             else if (rblFrom.SelectedIndex == 1) // web
             {
@@ -331,7 +329,7 @@ namespace Satrabel.OpenContent
                 ddlDataSource.Items.Add(li);
             }
         }
-        private void BindDetailPage(int currentDetailTabId, int othermoduleTabId, int othermoduleModuleId)
+        private void BindDetailPage(int currentDetailTabId, int othermoduleTabId, int dataModuleId)
         {
             string format;
             ListItem li;
@@ -339,10 +337,9 @@ namespace Satrabel.OpenContent
             ActivateDetailPage();
             ddlDetailPage.Items.Clear();
 
-            var mainModuleSettings = GetMainModuleSettings(othermoduleTabId, othermoduleModuleId);
-            if (mainModuleSettings != null)
+            int othermoduleDetailTabId = GetOtherModuleDetailTabId(othermoduleTabId, dataModuleId);
+            if (othermoduleDetailTabId > 0)
             {
-                int othermoduleDetailTabId = mainModuleSettings.DetailTabId;
                 //add extra li with "Default Detail Page" directly to dropdown
                 format = LogContext.IsLogActive ? "Main Module Detail Page - [{0}]" : "Main Module Detail Page";
                 li = new ListItem(string.Format(format, othermoduleDetailTabId), othermoduleDetailTabId.ToString());
@@ -352,7 +349,7 @@ namespace Satrabel.OpenContent
             var listItems = new List<ListItem>();
             Dictionary<string, int> tabs = TabController.GetTabPathDictionary(ModuleContext.PortalId, DnnLanguageUtils.GetCurrentCultureCode());
 
-            foreach (var tabId in tabs.Where(i => IsTabWithModuleWithSameMainModule(i.Value, othermoduleModuleId) && IsAccessibleTab(i.Value)))
+            foreach (var tabId in tabs.Where(i => IsTabWithModuleWithSameMainModule(i.Value, dataModuleId) && IsAccessibleTab(i.Value)))
             {
                 string tabname = tabId.Key.Replace("//", " / ").TrimStart(" / ");
 
@@ -387,11 +384,32 @@ namespace Satrabel.OpenContent
             }
         }
 
+        private int GetOtherModuleDetailTabId(int othermoduleTabId, int dataModuleId)
+        {
+            //If tab<0 then the data does not come from an other module
+            if (othermoduleTabId < 0) return 0;
+
+            ModuleInfo moduleInfo = ModuleController.Instance.GetModule(dataModuleId, othermoduleTabId, false);
+            if (moduleInfo == null)
+            {
+                //This should never happen
+                Log.Logger.ErrorFormat("Module {0} not found while in GetOtherModuleDetailTabId()", dataModuleId);
+                return 0;
+            }
+
+            var mainModuleSettings = moduleInfo.OpenContentSettings();
+
+            if (mainModuleSettings == null) return 0;
+            if (mainModuleSettings.TabId > -1) return 0; //the other module gets his data also from another module?! Let's not support that.
+
+            return mainModuleSettings.DetailTabId == -1 ? moduleInfo.TabID : mainModuleSettings.DetailTabId;
+        }
+
         private bool IsAccessibleTab(int tabId)
         {
             //ignore redirected tabs
             var tabinfo = TabController.Instance.GetTab(tabId, ModuleContext.PortalId);
-            return tabinfo.IsVisibleTab();
+            return tabinfo.IsPublishedTab();
         }
 
         private bool IsTabWithModuleWithSameMainModule(int tabId, int mainmoduleId)
@@ -411,21 +429,7 @@ namespace Satrabel.OpenContent
             }
             return false;
         }
-        private OpenContentSettings GetMainModuleSettings(int tabId, int mainmoduleId)
-        {
-            //only tabs with oc-module with main-moduleId= CurrentMainModuleId
-            if (tabId < 0) return null;
-            var tabinfo = TabController.Instance.GetTab(tabId, ModuleContext.PortalId);
-            if (tabinfo == null) return null;
-            foreach (ModuleInfo moduleInfo in tabinfo.Modules)
-            {
-                if (moduleInfo.ModuleID == mainmoduleId)
-                {
-                    return moduleInfo.OpenContentSettings();
-                }
-            }
-            return null;
-        }
+
         private void ActivateDetailPage()
         {
             phDetailPage.Visible = false;
