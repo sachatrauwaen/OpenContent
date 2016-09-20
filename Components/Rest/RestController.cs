@@ -15,7 +15,7 @@ using System.Web.Http;
 using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Manifest;
 using Newtonsoft.Json;
-using Satrabel.OpenContent.Components.Datasource.search;
+using Satrabel.OpenContent.Components.Datasource.Search;
 
 namespace Satrabel.OpenContent.Components.Rest
 {

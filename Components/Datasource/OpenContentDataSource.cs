@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Alpaca;
-using Satrabel.OpenContent.Components.Datasource.search;
+using Satrabel.OpenContent.Components.Datasource.Search;
 using Satrabel.OpenContent.Components.Lucene;
 using Satrabel.OpenContent.Components.Json;
 using System;
