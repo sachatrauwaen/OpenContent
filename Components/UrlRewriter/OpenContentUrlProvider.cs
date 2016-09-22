@@ -33,7 +33,8 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                         {
                             ModuleId = mainModuleId,
                             TemplateFolder = settings.TemplateDir.FolderPath,
-                            Config = settings.Manifest.DataSourceConfig
+                            Config = settings.Manifest.DataSourceConfig,
+                            Agent = "OpenContentUrlProvider.GetRules()"
                         };
                         IEnumerable<IDataItem> dataList = new List<IDataItem>();
                         dataList = ds.GetAll(dsContext, null).Items;
