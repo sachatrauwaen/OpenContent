@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using DotNetNuke.Common;
 using DotNetNuke.Entities.Content.Common;
 using DotNetNuke.Entities.Modules;
@@ -8,6 +7,7 @@ using DotNetNuke.Entities.Portals;
 using DotNetNuke.Services.FileSystem;
 using DotNetNuke.UI.Modules;
 using Newtonsoft.Json.Linq;
+using Satrabel.OpenContent.Components.Dnn;
 using Satrabel.OpenContent.Components.Json;
 
 namespace Satrabel.OpenContent.Components

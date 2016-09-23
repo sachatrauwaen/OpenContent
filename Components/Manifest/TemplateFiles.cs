@@ -24,5 +24,14 @@ namespace Satrabel.OpenContent.Components.Manifest
         public bool AdditionalDataInTemplate { get; set; }
         [JsonProperty(PropertyName = "dataInTemplate")]
         public bool DataInTemplate { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether [DNN search].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [DNN search]; otherwise, <c>false</c>.
+        /// </value>
+        [JsonProperty(PropertyName = "dnnsearch")]
+        public bool DnnSearch { get; set; }
     }
 }

@@ -1,8 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -11,5 +8,7 @@ namespace Satrabel.OpenContent.Components
         public JToken Json { get; set; }
         public int CreatedByUserId { get; set; }
         public DateTime CreatedOnDate { get; set; }
+        public DateTime LastModifiedOnDate { get; set; }
+        public int LastModifiedByUserId { get; set; }
     }
 }

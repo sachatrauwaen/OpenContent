@@ -27,6 +27,7 @@
       <InstallInclude Include="**\images\**" Exclude="packages\**" />
       <InstallInclude Include="**\web.config" Exclude="packages\**" />
       <InstallInclude Include="**\css\**" Exclude="packages\**" />
+      <InstallInclude Include="**\fonts\**" Exclude="packages\**" />
     </ItemGroup>
 
     <ItemGroup>

@@ -46,6 +46,8 @@
         "displayReadonly": false,
         "templates": {
             "control-image": "#dnn-edit-control-image",
+            "control-imagecrop": "#dnn-edit-control-imagecrop",
+            "control-imagecrop2": "#dnn-edit-control-imagecrop2",
             "control-imagecropper": "#dnn-edit-control-imagecropper",
             "control-file": "#dnn-edit-control-file",
             "control-wysihtml": "#dnn-edit-control-wysihtml"

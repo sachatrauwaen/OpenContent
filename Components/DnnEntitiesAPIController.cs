@@ -16,24 +16,18 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using DotNetNuke.Web.Api;
-using Newtonsoft.Json.Linq;
-using System.Web.Hosting;
 using System.IO;
 using DotNetNuke.Instrumentation;
-using Satrabel.OpenContent.Components;
 using DotNetNuke.Security;
-using Satrabel.OpenContent.Components.Json;
-using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Tabs;
 using DotNetNuke.Common;
 using DotNetNuke.Services.FileSystem;
 using System.Drawing;
 using System.Drawing.Imaging;
-using DotNetNuke.Entities.Content.Common;
-using DotNetNuke.Entities.Modules.Definitions;
 using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components.TemplateHelpers;
 using System.Text.RegularExpressions;
+using Satrabel.OpenContent.Components.Dnn;
 
 #endregion
 
@@ -103,14 +97,13 @@ namespace Satrabel.OpenContent.Components
         public HttpResponseMessage ImagesLookup(string q, string d)
         {
             try
-            {
+            {                
                 if (string.IsNullOrEmpty(d))
                 {
                     var exc = new ArgumentException("Folder path not specified. Missing ['folder': 'FolderPath'] in optionfile? ");
                     Logger.Error(exc);
                     return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
-                }
-
+                }                
                 var folderManager = FolderManager.Instance;
                 var portalFolder = folderManager.GetFolder(PortalSettings.PortalId, d ?? "");
                 if (portalFolder == null)
@@ -125,15 +118,66 @@ namespace Satrabel.OpenContent.Components
                 {
                     files = files.Where(f => f.FileName.ToLower().Contains(q.ToLower()));
                 }
-                int folderLength = d.Length;
+                int folderLength = d== null ? 0 : d.Length;
 
                 var res = files.Select(f => new
                 {
                     value = f.FileId.ToString(),
                     url = ImageHelper.GetImageUrl(f, new Ratio(40, 40)),  //todo for install in application folder is dat niet voldoende ???
                     text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName
-                })
-                               .Take(1000);
+                }).Take(1000);
+
+                return Request.CreateResponse(HttpStatusCode.OK, res);
+            }
+            catch (Exception exc)
+            {
+                Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
+
+        /// <summary>
+        /// Imageses the lookup.
+        /// </summary>
+        /// <param name="q">The string that should be Contained in the name of the file (case insensitive). Use * to get all the files.</param>
+        /// <param name="d">The Folder path to retrieve</param>
+        /// <returns></returns>
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [HttpGet]
+        public HttpResponseMessage ImagesLookupExt(string q, string folder)
+        {
+            try
+            {
+               
+                var folderManager = FolderManager.Instance;
+                string imageFolder = "OpenContent/Files/" + ActiveModule.ModuleID;
+
+                if (!string.IsNullOrEmpty(folder))
+                {
+                    imageFolder = folder;
+                }
+                var dnnFolder = folderManager.GetFolder(PortalSettings.PortalId, imageFolder);
+                if (dnnFolder == null)
+                {
+                    dnnFolder = folderManager.AddFolder(PortalSettings.PortalId, imageFolder);
+                }
+
+                var files = folderManager.GetFiles(dnnFolder, true);
+                files = files.Where(f => IsImageFile(f));
+                if (q != "*" && !string.IsNullOrEmpty(q))
+                {
+                    files = files.Where(f => f.FileName.ToLower().Contains(q.ToLower()));
+                }
+                int folderLength = imageFolder.Length;
+
+                var res = files.Select(f => new
+                {
+                    id = f.FileId.ToString(),
+                    thumbUrl = ImageHelper.GetImageUrl(f, new Ratio(40, 40)),  //todo for install in application folder is dat niet voldoende ???
+                    url = FileManager.Instance.GetUrl(f),  
+                    text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName
+                }).Take(1000);
 
                 return Request.CreateResponse(HttpStatusCode.OK, res);
             }
@@ -252,6 +296,31 @@ namespace Satrabel.OpenContent.Components
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
         [HttpGet]
+        public HttpResponseMessage RoleLookup(string q)
+        {
+            try
+            {
+                var roles = DotNetNuke.Security.Roles.RoleController.Instance.GetRoles(PortalSettings.PortalId).AsQueryable();
+                if (q != "*" && !string.IsNullOrEmpty(q))
+                {
+                    roles = roles.Where(t => t.RoleName.ToLower().Contains(q.ToLower()));
+                }
+                var rolesDtos = roles.Select(t => new { value = t.RoleID.ToString(), text = t.RoleName }).ToList();
+                rolesDtos.Add(new { value = "Unauthenticated", text = "Unauthenticated" });
+                rolesDtos.Add(new { value = "AllUsers", text = "All Users" });
+
+                return Request.CreateResponse(HttpStatusCode.OK, rolesDtos);
+            }
+            catch (Exception exc)
+            {
+                Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
+
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [HttpGet]
         public HttpResponseMessage FileUrl(int fileid)
         {
             try
@@ -319,8 +388,6 @@ namespace Satrabel.OpenContent.Components
                 };
                 var folderManager = FolderManager.Instance;
                 var fileManager = FileManager.Instance;
-
-
                 string RawImageUrl = cropData.url;
                 if (RawImageUrl.IndexOf('?') > 0)
                 {
@@ -328,9 +395,7 @@ namespace Satrabel.OpenContent.Components
                 }
                 RawImageUrl = RawImageUrl.Replace(PortalSettings.HomeDirectory, "");
                 var file = fileManager.GetFile(ActiveModule.PortalID, RawImageUrl);
-
                 string cropfolder = "OpenContent/Files/" + ActiveModule.ModuleID;
-
                 if (!string.IsNullOrEmpty(cropData.cropfolder))
                 {
                     cropfolder = cropData.cropfolder;
@@ -341,7 +406,6 @@ namespace Satrabel.OpenContent.Components
                     userFolder = folderManager.AddFolder(PortalSettings.PortalId, cropfolder);
                 }
                 string newFilename = Path.GetFileNameWithoutExtension(file.FileName) + "-" + cropData.id + Path.GetExtension(file.FileName);
-
                 if (file != null)
                 {
                     var folder = folderManager.GetFolder(file.FolderId);
@@ -369,7 +433,6 @@ namespace Satrabel.OpenContent.Components
                             imageCropped = ImageHelper.Resize(imageCropped, cropData.resize.width, cropData.resize.height);
                         }
                     }
-
                     Stream content = new MemoryStream();
                     ImageFormat imgFormat = ImageFormat.Bmp;
                     if (file.Extension.ToLowerInvariant() == "png")
@@ -399,8 +462,8 @@ namespace Satrabel.OpenContent.Components
                         message = "success",
                         id = newFile.FileId,
                     };
+                    res.url = fs.url;
                 }
-                res.url = fs.url;
                 return Request.CreateResponse(HttpStatusCode.OK, res);
             }
             catch (Exception exc)

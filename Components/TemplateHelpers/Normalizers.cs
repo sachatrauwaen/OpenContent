@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace Satrabel.OpenContent.Components.TemplateHelpers
 {
@@ -78,6 +79,49 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
                 format = "yyyy-MM-dd hh:mm:ss";
 
             return retval.ToStringOrDefault(format);
+        }
+
+
+        /// <summary>
+        /// Normalise an string Array
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="defaultValue">The default value.</param>
+        /// <example>model.values = Normalize.DynamicValue(model.values, new string[]{});</example>
+        /// <returns></returns>
+        public static string[] DynamicValue(dynamic value, string[] defaultValue)
+        {
+            if (value == null) return defaultValue;
+            if (value.GetType() == defaultValue.GetType()) return value ?? defaultValue; //Resharper says value is never Null. 
+
+            object[] source = ((System.Web.Helpers.DynamicJsonArray)value).ToArray();
+            string[] retval = Array.ConvertAll(source, i => i.ToString());
+
+            return retval;
+        }
+        /// <summary>
+        /// Normalise an int Array
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="defaultValue">The default value.</param>
+        /// <example>model.values = Normalize.DynamicValue(model.values, new int[]{});</example>
+        /// <returns></returns>
+        public static int[] DynamicValue(dynamic value, int[] defaultValue)
+        {
+            if (value == null) return defaultValue;
+            if (value.GetType() == defaultValue.GetType()) return value ?? defaultValue; //Resharper says value is never Null. 
+
+            object[] source = ((System.Web.Helpers.DynamicJsonArray)value).ToArray();
+            int[] retval = Array.ConvertAll(source, x =>
+                {
+                    int r;
+                    if (int.TryParse(x.ToString(), out r))
+                        return r;
+                    else
+                        return -1;
+                }
+            );
+            return retval;
         }
         #endregion
 

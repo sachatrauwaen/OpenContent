@@ -1,9 +1,6 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 
 namespace Satrabel.OpenContent.Components.Lucene.Config
 {
@@ -37,6 +34,5 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
 
         [JsonProperty(PropertyName = "items", NullValueHandling = NullValueHandling.Ignore)]
         public FieldConfig Items { get; set; }
-
     }
 }

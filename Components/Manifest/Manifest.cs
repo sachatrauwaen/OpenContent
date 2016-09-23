@@ -1,3 +1,4 @@
+ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -6,16 +7,23 @@ namespace Satrabel.OpenContent.Components.Manifest
 {
     public class Manifest
     {
+        private Dictionary<string, AdditionalDataManifest> _additionalData;
+
         [JsonProperty(PropertyName = "title")]
         public string Title { get; set; }
+
         [JsonProperty(PropertyName = "developmentPath")]
         public bool DevelopmentPath { get; set; }
+
         [JsonProperty(PropertyName = "editWitoutPostback")]
         public bool EditWitoutPostback { get; set; }
+
         [JsonProperty(PropertyName = "templates")]
         public Dictionary<string, TemplateManifest> Templates { get; set; }
+
         [JsonProperty(PropertyName = "additionalEditControl")]
         public string AdditionalEditControl { get; set; }
+
         [JsonProperty(PropertyName = "editRole")]
         public string EditRole { get; set; }
 
@@ -35,7 +43,11 @@ namespace Satrabel.OpenContent.Components.Manifest
         public string DetailUrl { get; set; }
 
         [JsonProperty(PropertyName = "additionalData")]
-        public Dictionary<string, AdditionalDataManifest> AdditionalData { get; set; }
+        public Dictionary<string, AdditionalDataManifest> AdditionalData
+        {
+            get { return _additionalData; }
+            set { _additionalData = new Dictionary<string, AdditionalDataManifest>(value, StringComparer.OrdinalIgnoreCase); }
+        }
 
         [JsonProperty(PropertyName = "dataSource")]
         public string DataSource { get; set; }
@@ -43,10 +55,12 @@ namespace Satrabel.OpenContent.Components.Manifest
         [JsonProperty(PropertyName = "dataSourceConfig")]
         public JObject DataSourceConfig { get; set; }
 
-        //
+        [JsonProperty(PropertyName = "disableEdit")]
+        public bool DisableEdit { get; set; }
 
         public bool HasTemplates { get { return (Templates != null); } }
         public FolderUri ManifestDir { get; set; }
+
         public TemplateManifest GetTemplateManifest(FileUri template)
         {
             if (Templates != null && Templates.ContainsKey(template.FileNameWithoutExtension))
@@ -70,6 +84,18 @@ namespace Satrabel.OpenContent.Components.Manifest
                 return Templates[templateKey];
             }
             return null;
+        }
+        public AdditionalDataManifest GetAdditionalData(string key)
+        {
+            return AdditionalData[key.ToLowerInvariant()];
+        }
+
+        public bool AdditionalDataExists(string key = "")
+        {
+            if (key == "")
+                return AdditionalData != null;
+            else
+                return AdditionalData.ContainsKey(key.ToLowerInvariant());
         }
     }
 }

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.HtmlControls;
+using DotNetNuke.Common.Utilities;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Entities.Tabs;
 using DotNetNuke.Services.Mail;
@@ -11,6 +13,7 @@ namespace Satrabel.OpenContent.Components
 {
     public static class PageUtils
     {
+
         /// <summary>
         /// Sets the page title. (use from a module)
         /// </summary>
@@ -135,6 +138,19 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
+        public static void RemoveBreadCrumb(int tabid)
+        {
+            for (int i = 0; i < PortalSettings.Current.ActiveTab.BreadCrumbs.Count; i++)
+            {
+                TabInfo item = (TabInfo)PortalSettings.Current.ActiveTab.BreadCrumbs[i];
+                if (item.TabID == tabid)
+                {
+                    PortalSettings.Current.ActiveTab.BreadCrumbs.RemoveAt(i);
+                    break;
+                }
+            }
+        }
+
         /// <summary>
         /// Clears the breadcrumbs on a Tab. You'll probably use AddBreadCrumb() after this call to fill Breadcrumbs list again.
         /// </summary>
@@ -151,17 +167,14 @@ namespace Satrabel.OpenContent.Components
         /// <param name="strCssClass">The string CSS class.</param>
         /// <param name="useTitle">if set to <c>true</c> [use title].</param>
         /// <returns></returns>
-        public static string GetBreadCrumb(string separator = " > ", int intRootLevel = 0, string strCssClass = "breadcrumbLink", bool useTitle = false)
+        public static string GetBreadCrumbOld(string separator = " > ", int intRootLevel = 0, string strCssClass = "breadcrumbLink", bool useTitle = false)
         {
+
             string strBreadCrumbs = "";
             int intTab;
             for (intTab = intRootLevel; intTab <= PortalSettings.Current.ActiveTab.BreadCrumbs.Count - 1; intTab++)
             {
                 var objTab = (TabInfo)PortalSettings.Current.ActiveTab.BreadCrumbs[intTab];
-                if (objTab.TabID > 0)
-                {
-                    continue;
-                }
                 if (intTab != intRootLevel)
                 {
                     strBreadCrumbs += HttpUtility.HtmlDecode(separator);
@@ -183,7 +196,142 @@ namespace Satrabel.OpenContent.Components
             }
             return strBreadCrumbs;
         }
+
+        /// <summary>
+        /// Gets the breadcrumb. (a copy of the DNN version)
+        /// </summary>
+        /// <param name="separator">The string separator.</param>
+        /// <param name="rootLevel">The int root level.</param>
+        /// <param name="cssClass">The string CSS class.</param>
+        /// <param name="useTitle">if set to <c>true</c> [use title].</param>
+        /// <returns></returns>
+        public static string GetBreadCrumb(string separator = " > ", int rootLevel = 0, string cssClass = "breadcrumbLink", bool useTitle = false)
+        {
+
+            bool showRoot = false;
+            string homeUrl = "";
+            string homeTabName = "Root";
+            var portalSettings = PortalSettings.Current;
+            var position = 1;
+
+            if (rootLevel < 0)
+            {
+                showRoot = true;
+                rootLevel = 0;
+            }
+
+            StringBuilder breadcrumb = new StringBuilder("<span itemscope itemtype=\"http://schema.org/BreadcrumbList\">");
+
+            // Without checking if the current tab is the home tab, we would duplicate the root tab
+            if (showRoot && portalSettings.ActiveTab.TabID != portalSettings.HomeTabId)
+            {
+                // Add the current protocal to the current URL
+                homeUrl = DotNetNuke.Common.Globals.AddHTTP(portalSettings.PortalAlias.HTTPAlias);
+
+                // Make sure we have a home tab ID set
+                if (portalSettings.HomeTabId != -1)
+                {
+                    homeUrl = DotNetNuke.Common.Globals.NavigateURL(portalSettings.HomeTabId);
+
+                    var tc = new TabController();
+                    var homeTab = tc.GetTab(portalSettings.HomeTabId, portalSettings.PortalId, false);
+                    homeTabName = homeTab.LocalizedTabName;
+
+                    // Check if we should use the tab's title instead
+                    if (useTitle && !string.IsNullOrEmpty(homeTab.Title))
+                    {
+                        homeTabName = homeTab.Title;
+                    }
+                }
+
+                // Append all of the HTML for the root breadcrumb
+                breadcrumb.Append("<span itemprop=\"itemListElement\" itemscope itemtype=\"http://schema.org/ListItem\">");
+                breadcrumb.Append("<a href=\"" + homeUrl + "\" class=\"" + cssClass + "\" itemprop=\"item\" ><span itemprop=\"name\">" + homeTabName + "</span></a>");
+                breadcrumb.Append("<meta itemprop=\"position\" content=\"" + position++ + "\" />"); // Notice we post-increment the position variable
+                breadcrumb.Append("</span>");
+
+                // Add a separator
+                breadcrumb.Append(separator);
+            }
+
+            //process bread crumbs
+            for (var i = rootLevel; i < portalSettings.ActiveTab.BreadCrumbs.Count; ++i)
+            {
+                // Only add separators if we're past the root level
+                if (i > rootLevel)
+                {
+                    breadcrumb.Append(separator);
+                }
+
+                // Grab the current tab
+                var tab = (TabInfo)portalSettings.ActiveTab.BreadCrumbs[i];
+
+                var tabName = tab.LocalizedTabName;
+
+                // Determine if we should use the tab's title instead of tab name
+                if (useTitle && !string.IsNullOrEmpty(tab.Title))
+                {
+                    tabName = tab.Title;
+                }
+
+                // Get the absolute URL of the tab
+                var tabUrl = tab.FullUrl;
+
+                // 
+                if (ProfileUserId > -1)
+                {
+                    tabUrl = DotNetNuke.Common.Globals.NavigateURL(tab.TabID, "", "UserId=" + ProfileUserId);
+                }
+
+                // 
+                if (GroupId > -1)
+                {
+                    tabUrl = DotNetNuke.Common.Globals.NavigateURL(tab.TabID, "", "GroupId=" + GroupId);
+                }
+
+                // Begin breadcrumb
+                breadcrumb.Append("<span itemprop=\"itemListElement\" itemscope itemtype=\"http://schema.org/ListItem\">");
+
+                // Is this tab disabled? If so, only render the text
+                if (tab.DisableLink)
+                {
+                    breadcrumb.Append("<span class=\"" + cssClass + "\" itemprop=\"name\">" + tabName + "</span>");
+                }
+                else
+                {
+                    breadcrumb.Append("<a href=\"" + tabUrl + "\" class=\"" + cssClass + "\" itemprop=\"item\"><span itemprop=\"name\">" + tabName + "</span></a>");
+                }
+
+                breadcrumb.Append("<meta itemprop=\"position\" content=\"" + position++ + "\" />"); // Notice we post-increment the position variable
+                breadcrumb.Append("</span>");
+            }
+
+            breadcrumb.Append("</span>"); //End of BreadcrumbList
+
+            return breadcrumb.ToString();
+
+        }
+
+        private static int ProfileUserId
+        {
+            get
+            {
+                return string.IsNullOrEmpty(HttpContext.Current.Request.Params["UserId"])
+                    ? Null.NullInteger
+                    : int.Parse(HttpContext.Current.Request.Params["UserId"]);
+            }
+        }
+        private static int GroupId
+        {
+            get
+            {
+                return string.IsNullOrEmpty(HttpContext.Current.Request.Params["GroupId"])
+                    ? Null.NullInteger
+                    : int.Parse(HttpContext.Current.Request.Params["GroupId"]);
+            }
+        }
     }
+
 
     public struct BreadCrumb
     {

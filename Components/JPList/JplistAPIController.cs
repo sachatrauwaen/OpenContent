@@ -1,30 +1,14 @@
 ﻿using DotNetNuke.Entities.Modules;
-using DotNetNuke.Instrumentation;
 using DotNetNuke.Security;
 using DotNetNuke.Web.Api;
 using Newtonsoft.Json.Linq;
-using Satrabel.OpenContent.Components.Lucene;
 using System;
 using System.Collections.Generic;
-
-using System.Diagnostics;
-using System.IO;
-
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using DotNetNuke.Common.Utilities;
 using DotNetNuke.Entities.Portals;
-using DotNetNuke.Security.Permissions;
-using Satrabel.OpenContent.Components.Manifest;
-using Lucene.Net.Search;
-using Lucene.Net.Index;
-using Lucene.Net.QueryParsers;
-using Satrabel.OpenContent.Components.Lucene.Config;
-using Lucene.Net.Documents;
 using Satrabel.OpenContent.Components.Datasource;
-using Satrabel.OpenContent.Components.Datasource.search;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Logging;
 
@@ -33,7 +17,7 @@ namespace Satrabel.OpenContent.Components.JPList
     [SupportedModules("OpenContent")]
     public class JplistAPIController : DnnApiController
     {
-        [ValidateAntiForgeryToken]
+        //[ValidateAntiForgeryToken] to work with output caching
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         [HttpPost]
         public HttpResponseMessage List(RequestDTO req)
@@ -49,24 +33,21 @@ namespace Satrabel.OpenContent.Components.JPList
                 }
                 var manifest = settings.Template.Manifest;
                 var templateManifest = settings.Template;
-
-                //string editRole = manifest == null ? "" : manifest.EditRole;
+                JObject reqOptions = null;
+                if (!string.IsNullOrEmpty(req.options))
+                {
+                    reqOptions = JObject.Parse(req.options);
+                }
+                //string editRole = manifest.GetEditRole();
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 if (listMode)
                 {
+
                     var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
-                    if (!string.IsNullOrEmpty(settings.Query))
-                    {
-                        var query = JObject.Parse(settings.Query);
-                        queryBuilder.Build(query, PortalSettings.UserMode != PortalSettings.Mode.Edit);
-                    }
-                    else
-                    {
-                        queryBuilder.BuildFilter(PortalSettings.UserMode != PortalSettings.Mode.Edit);
-                    }
+                    queryBuilder.Build(settings.Query, PortalSettings.UserMode != PortalSettings.Mode.Edit, UserInfo.UserID, DnnLanguageUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
 
-                    JplistQueryBuilder.MergeJpListQuery(indexConfig, queryBuilder.Select, req.StatusLst);
+                    JplistQueryBuilder.MergeJpListQuery(indexConfig, queryBuilder.Select, req.StatusLst, DnnLanguageUtils.GetCurrentCultureCode());
                     IDataItems dsItems;
                     if (queryBuilder.DefaultNoResults && queryBuilder.Select.IsQueryEmpty)
                     {
@@ -82,17 +63,17 @@ namespace Satrabel.OpenContent.Components.JPList
                         var dsContext = new DataSourceContext()
                         {
                             ModuleId = module.ModuleID,
+                            ActiveModuleId = ActiveModule.ModuleID,
+                            UserId = UserInfo.UserID,
                             TemplateFolder = settings.TemplateDir.FolderPath,
-                            Config = manifest.DataSourceConfig
+                            Config = manifest.DataSourceConfig,
+                            Options = reqOptions
                         };
                         dsItems = ds.GetAll(dsContext, queryBuilder.Select);
                     }
                     int mainTabId = settings.DetailTabId > 0 ? settings.DetailTabId : settings.TabId;
                     ModelFactory mf = new ModelFactory(dsItems.Items, ActiveModule, PortalSettings, mainTabId);
-                    if (!string.IsNullOrEmpty(req.options))
-                    {
-                        mf.Options = JObject.Parse(req.options);
-                    }
+                    mf.Options = reqOptions;
                     var model = mf.GetModelAsJson(false);
 
                     //model["luceneQuery"] = dsItems.DebugInfo;

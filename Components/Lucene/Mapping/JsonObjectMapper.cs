@@ -5,6 +5,7 @@ using DotNetNuke.Common.Utilities;
 using Lucene.Net.Documents;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Lucene.Config;
 
 namespace Satrabel.OpenContent.Components.Lucene.Mapping
@@ -41,11 +42,11 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
         /// The Document to add the object to.
         /// </param>
         /// <param name="config"></param>
-        public void AddJsonToDocument(string source, Document doc, FieldConfig config)
+        public void AddJsonToDocument(JToken json, Document doc, FieldConfig config)
         {
-            if (string.IsNullOrEmpty(source)) return;
-            JToken token = JToken.Parse(source);
-            Add(doc, null, token, config);
+            if (json == null || json.IsEmpty()) return;
+
+            Add(doc, null, json, config);
         }
 
         #endregion
@@ -64,15 +65,16 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
         /// <param name="token">
         /// The JToken to add.
         /// </param>
-        private static void Add(Document doc, string prefix, JToken token, FieldConfig field)
+        /// <param name="fieldconfig"></param>
+        private static void Add(Document doc, string prefix, JToken token, FieldConfig fieldconfig)
         {
             if (token is JObject)
             {
-                AddProperties(doc, prefix, token as JObject, field);
+                AddProperties(doc, prefix, token as JObject, fieldconfig);
             }
             else if (token is JArray)
             {
-                AddArray(doc, prefix, token as JArray, field == null ? null : field.Items);
+                AddArray(doc, prefix, token as JArray, fieldconfig == null ? null : fieldconfig.Items);
             }
             else if (token is JValue)
             {
@@ -80,13 +82,13 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
                 IConvertible convertible = value as IConvertible;
                 bool index = false;
                 bool sort = false;
-                if (field != null)
+                if (fieldconfig != null)
                 {
-                    index = field.Index;
-                    sort = field.Sort;
+                    index = fieldconfig.Index;
+                    sort = fieldconfig.Sort;
                 }
 
-                switch (value.Type)
+                switch (value.Type) //todo: simple date gets detected as string 
                 {
                     case JTokenType.Boolean:
                         if (index || sort)
@@ -160,11 +162,11 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
 
                     case JTokenType.String:
 
-                        if (field != null && field.IndexType == "key")
+                        if (fieldconfig != null && fieldconfig.IndexType == "key")
                         {
                             doc.Add(new Field(prefix, value.Value.ToString(), Field.Store.NO, Field.Index.NOT_ANALYZED));
                         }
-                        else if (field != null && field.IndexType == "html")
+                        else if (fieldconfig != null && fieldconfig.IndexType == "html")
                         {
                             if (index)
                             {

@@ -1,12 +1,7 @@
-﻿using DotNetNuke.Instrumentation;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Web;
 using System.Web.Script.Serialization;
-using DotNetNuke.Common.Utilities;
 
 
 namespace Satrabel.OpenContent.Components.Json
@@ -20,10 +15,16 @@ namespace Satrabel.OpenContent.Components.Json
         }
         public static bool IsEmpty(this JToken jtoken)
         {
-            //tried using HasValues, but string value is not detected that way.
+            //tried using HasValues, but string value are not detected that way.
             if (jtoken == null) return true;
+            if (jtoken.Type == JTokenType.Object)
+                return (jtoken as JObject).IsEmpty();
+
+            if (jtoken.Type == JTokenType.Array)
+                return (jtoken as JArray).HasValues;
+
             string json = jtoken.ToString();
-            if (json == "[]") return true;
+            if (json == "{}") return true;
             return string.IsNullOrEmpty(json);
         }
         public static bool Exists(this JObject json)
@@ -33,6 +34,30 @@ namespace Satrabel.OpenContent.Components.Json
         public static bool Exists(this JToken json)
         {
             return !json.IsEmpty();
+        }
+
+        public static bool HasField(this JToken json, string fieldname)
+        {
+            return !json.IsEmpty() && json[fieldname] != null;
+        }
+        public static void MakeSureFieldExists(this JToken jToken, string fieldname, JTokenType jTokenType)
+        {
+            JToken defaultvalue;
+            switch (jTokenType)
+            {
+                case JTokenType.Object:
+                    defaultvalue = new JObject();
+                    break;
+                default:
+                    throw new NotImplementedException("unknown json type in JsonExtentions");
+            }
+            if (!jToken.HasField(fieldname))
+            {
+                jToken[fieldname] = defaultvalue;
+            }
+
+            if (jToken[fieldname].Type != jTokenType)
+                jToken[fieldname] = defaultvalue;
         }
         public static JToken ToJObject(this FileUri file)
         {

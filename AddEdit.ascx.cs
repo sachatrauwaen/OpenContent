@@ -11,14 +11,7 @@
 
 using System;
 using DotNetNuke.Entities.Modules;
-using DotNetNuke.Common;
-using DotNetNuke.Framework.JavaScriptLibraries;
-using DotNetNuke.Framework;
 using DotNetNuke.Services.Localization;
-using System.IO;
-using DotNetNuke.Web.Client.ClientResourceManagement;
-using DotNetNuke.Web.Client;
-using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components;
 using Satrabel.OpenContent.Components.Manifest;
 

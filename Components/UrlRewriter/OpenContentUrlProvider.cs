@@ -6,36 +6,36 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Web;
 
 namespace Satrabel.OpenContent.Components.UrlRewriter
 {
     public class OpenContentUrlProvider
     {
-        public static List<OpenContentUrlRule> GetRules(int PortalId)
+        public static List<OpenContentUrlRule> GetRules(int portalId)
         {
-            Dictionary<string, Locale> dicLocales = LocaleController.Instance.GetLocales(PortalId);
+            Dictionary<string, Locale> dicLocales = LocaleController.Instance.GetLocales(portalId);
             List<OpenContentUrlRule> Rules = new List<OpenContentUrlRule>();
             OpenContentController occ = new OpenContentController();
             ModuleController mc = new ModuleController();
-            ArrayList modules = mc.GetModulesByDefinition(PortalId, "OpenContent");
+            ArrayList modules = mc.GetModulesByDefinition(portalId, AppConfig.OPENCONTENT);
             //foreach (ModuleInfo module in modules.OfType<ModuleInfo>().GroupBy(m => m.ModuleID).Select(g => g.First())){                
             foreach (ModuleInfo module in modules.OfType<ModuleInfo>())
             {
                 try
                 {
                     OpenContentSettings settings = new OpenContentSettings(module.ModuleSettings);
-                    int MainTabId = settings.DetailTabId > 0 ? settings.DetailTabId : (settings.TabId > 0 ? settings.TabId : module.TabID);
-                    int MainModuleId = settings.IsOtherModule ? settings.ModuleId : module.ModuleID;
-                    if (settings.Template != null && settings.Template.IsListTemplate && (!settings.IsOtherModule || settings.DetailTabId > 0))
+                    int mainTabId = settings.GetMainTabId(module.TabID);
+                    int mainModuleId = settings.GetModuleId(module.ModuleID);
+                    if (settings.IsListTemplate() && (!settings.IsOtherModule || settings.DetailTabId > 0))
                     {
                         var ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
                         var dsContext = new DataSourceContext()
                         {
-                            ModuleId = MainModuleId,
+                            ModuleId = mainModuleId,
                             TemplateFolder = settings.TemplateDir.FolderPath,
-                            Config = settings.Manifest.DataSourceConfig
+                            Config = settings.Manifest.DataSourceConfig,
+                            Agent = "OpenContentUrlProvider.GetRules()"
                         };
                         IEnumerable<IDataItem> dataList = new List<IDataItem>();
                         dataList = ds.GetAll(dsContext, null).Items;
@@ -51,13 +51,13 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                         }
                         foreach (KeyValuePair<string, Locale> key in dicLocales)
                         {
-                            string CultureCode = key.Value.Code;
-                            string RuleCultureCode = (dicLocales.Count > 1 ? CultureCode : null);
-                            ModelFactory mf = new ModelFactory(dataList, settings.Data, physicalTemplateFolder, settings.Template.Manifest, settings.Template, settings.Template.Main, module, PortalId, CultureCode, MainTabId, MainModuleId);
+                            string cultureCode = key.Value.Code;
+                            string ruleCultureCode = (dicLocales.Count > 1 ? cultureCode : null);
+                            ModelFactory mf = new ModelFactory(dataList, settings.Data, physicalTemplateFolder, settings.Template.Manifest, settings.Template, settings.Template.Main, module, portalId, cultureCode, mainTabId, mainModuleId);
                             //dynamic model = mf.GetModelAsDynamic(true);
                             //dynamic items = model.Items;
                             IEnumerable<dynamic> items = mf.GetModelAsDynamicList();
-                            Log.Logger.Error("OCUR/" + module.TabID + "/" + MainTabId + "/" + module.ModuleID + "/" + MainModuleId + "/" + CultureCode + "/" + dataList.Count() + "/" + module.ModuleTitle);
+                            //Log.Logger.Debug("OCUR/" + PortalId + "/" + module.TabID + "/" + MainTabId + "/" + module.ModuleID + "/" + MainModuleId + "/" + CultureCode + "/" + dataList.Count() + "/" + module.ModuleTitle);
                             //foreach (IDataItem content in dataList)
                             foreach (dynamic content in items)
                             {
@@ -70,6 +70,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                                         //ModelFactory mf = new ModelFactory(content, settings.Data, physicalTemplateFolder, settings.Template.Manifest, settings.Template, settings.Template.Main, module, PortalId, CultureCode, MainTabId, MainModuleId);
                                         //dynamic model = mf.GetModelAsDynamic(true);
                                         url = hbEngine.Execute(content);
+                                        url = HttpUtility.HtmlDecode(url);
                                         //title = OpenContentUtils.CleanupUrl(dyn.Title);
                                     }
                                     catch (Exception ex)
@@ -82,14 +83,14 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                                 {
                                     var rule = new OpenContentUrlRule
                                     {
-                                        CultureCode = RuleCultureCode,
-                                        TabId = MainTabId,
+                                        CultureCode = ruleCultureCode,
+                                        TabId = mainTabId,
                                         Parameters = "id=" + id,
                                         Url = url
                                     };
                                     var reducedRules = Rules.Where(r => r.CultureCode == rule.CultureCode && r.TabId == rule.TabId);
-                                    bool RuleExist = reducedRules.Any(r => r.Parameters == rule.Parameters);
-                                    if (!RuleExist)
+                                    bool ruleExist = reducedRules.Any(r => r.Parameters == rule.Parameters);
+                                    if (!ruleExist)
                                     {
                                         if (reducedRules.Any(r => r.Url == rule.Url))
                                         {

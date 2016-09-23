@@ -52,14 +52,14 @@
         getDescription: function () {
             return "Image Crop Field.";
         },
-        getControlEl: function () {
+        getTextControlEl: function () {
             return $(this.control.get(0)).find('input[type=text]#' + this.id);
         },
         setValue: function (value) {
             var self = this;
             //var el = $( this.control).filter('#'+this.id);
             //var el = $(this.control.get(0)).find('input[type=text]');
-            var el = this.getControlEl();
+            var el = this.getTextControlEl();
             //$image = $(self.control).parent().find('.alpaca-image-display > img');
             if (el && el.length > 0) {
                 if (Alpaca.isEmpty(value)) {
@@ -89,7 +89,7 @@
 
             //var el = $(this.control).filter('#' + this.id);
             //var el = $(this.control.get(0)).find('input[type=text]');
-            var el = this.getControlEl();
+            var el = this.getTextControlEl();
             $image = self.getImage();
             if (el && el.length > 0) {
                 if (self.cropperExist())
@@ -112,7 +112,7 @@
         },
         handlePostRender: function (callback) {
             var self = this;
-            var el = this.getControlEl();
+            var el = this.getTextControlEl();
             $image = $(self.control).parent().find('.alpaca-image-display img');
             if (self.sf){
                 //var el = this.control;
@@ -318,7 +318,7 @@
                 }
 
                 //var el = $(this.control.get(0)).find('input[type=text]');
-                var el = this.getControlEl();
+                var el = this.getTextControlEl();
                 // process typeahead
                 $(el).typeahead(tConfig, tDatasets);
 

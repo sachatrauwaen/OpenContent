@@ -129,4 +129,7 @@
   <data name="cmdImport.Text" xml:space="preserve">
     <value>Import Demo Data</value>
   </data>
+  <data name="cmdRestApi.Text" xml:space="preserve">
+    <value>Rest Api Doc</value>
+  </data>
 </root>

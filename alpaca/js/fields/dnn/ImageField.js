@@ -44,14 +44,14 @@
         getDescription: function () {
             return "Image Field.";
         },
-        getControlEl: function () {
+        getTextControlEl: function () {
             return $(this.control.get(0)).find('input[type=text]#' + this.id);
         },
         setValue: function (value) {
             var self = this;
             //var el = $( this.control).filter('#'+this.id);
             //var el = $(this.control.get(0)).find('input[type=text]');
-            var el = this.getControlEl();
+            var el = this.getTextControlEl();
 
             if (el && el.length > 0) {
                 if (Alpaca.isEmpty(value)) {
@@ -75,7 +75,7 @@
 
             //var el = $(this.control).filter('#' + this.id);
             //var el = $(this.control.get(0)).find('input[type=text]');
-            var el = this.getControlEl();
+            var el = this.getTextControlEl();
             if (el && el.length > 0) {
                     value = el.val();
             }
@@ -95,7 +95,7 @@
             
 
             //var el = this.control;
-            var el = this.getControlEl();
+            var el = this.getTextControlEl();
 
             if (self.options.uploadhidden) {
                 $(this.control.get(0)).find('input[type=file]').hide();
@@ -233,7 +233,7 @@
                 }
 
                 //var el = $(this.control.get(0)).find('input[type=text]');
-                var el = this.getControlEl();
+                var el = this.getTextControlEl();
                 // process typeahead
                 $(el).typeahead(tConfig, tDatasets);
 

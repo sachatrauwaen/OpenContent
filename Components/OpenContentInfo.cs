@@ -11,10 +11,7 @@
 */
 
 using System;
-using System.Web.Caching;
-using DotNetNuke.Common.Utilities;
 using DotNetNuke.ComponentModel.DataAnnotations;
-using DotNetNuke.Entities.Content;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
@@ -27,6 +24,7 @@ namespace Satrabel.OpenContent.Components
     [Scope("ModuleId")]
     public class OpenContentInfo
     {
+        private JToken _jsonAsJToken = null;
         public OpenContentInfo()
         {
 
@@ -39,6 +37,24 @@ namespace Satrabel.OpenContent.Components
         public string Title { get; set; }
         public string Html { get; set; }
         public string Json { get; set; }
+
+        [IgnoreColumn]
+        public JToken JsonAsJToken
+        {
+            get
+            {
+                if (_jsonAsJToken == null && !string.IsNullOrEmpty(this.Json))
+                {
+                    _jsonAsJToken = JToken.Parse(this.Json);
+                }
+                // JsonAsJToken is modified (to remove other cultures)
+                return _jsonAsJToken != null ? _jsonAsJToken.DeepClone() : null;
+            }
+            set
+            {
+                _jsonAsJToken = value;
+            }
+        }
         public int ModuleId { get; set; }
         public int CreatedByUserId { get; set; }
         public int LastModifiedByUserId { get; set; }

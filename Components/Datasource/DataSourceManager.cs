@@ -4,7 +4,6 @@ using DotNetNuke.Instrumentation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 
 namespace Satrabel.OpenContent.Components.Datasource
 {
@@ -38,8 +37,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 }
                 catch (Exception e)
                 {
-                    Logger.ErrorFormat("Unable to create {0} while GetDatasources.  {1}", filterType.FullName,
-                                 e.Message);
+                    Logger.ErrorFormat("Unable to create {0} while GetDatasources.  {1}", filterType.FullName, e.Message);
                     filter = null;
                 }
 
@@ -58,12 +56,12 @@ namespace Satrabel.OpenContent.Components.Datasource
         public static IDataSource GetDataSource(string name)
         {
             if (string.IsNullOrEmpty(name))
-                name = "OpenContent";
+                name = AppConfig.OPENCONTENT;
 
             var dataSource = _dataSources.SingleOrDefault(ds => ds.Name == name);
             if (dataSource == null)
             {
-                throw new ArgumentException(string.Format("DataSource provider {0} dont exist", name));
+                throw new ArgumentException(string.Format("DataSource provider {0} doesn't exist", name));
             }
             return dataSource;
         }

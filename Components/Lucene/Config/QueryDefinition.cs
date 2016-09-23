@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Web;
 using Lucene.Net.Search;
 using Newtonsoft.Json.Linq;
 using Lucene.Net.Index;
+using DotNetNuke.Entities.Users;
 
 namespace Satrabel.OpenContent.Components.Lucene.Config
 {
@@ -46,10 +45,10 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
         }
         public int PageSize { get; set; }
         public int PageIndex { get; set; }
-        public QueryDefinition Build(JObject query, bool addWorkflowFilter, NameValueCollection QueryString = null)
+        public QueryDefinition Build(JObject query, bool addWorkflowFilter, IList<UserRoleInfo> roles, NameValueCollection QueryString = null)
         {
             BuildPage(query);
-            BuildFilter(query, addWorkflowFilter, QueryString);
+            BuildFilter(query, addWorkflowFilter, roles, QueryString);
             BuildSort(query);
             return this;
         }
@@ -71,7 +70,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
 
             return this;
         }
-        public QueryDefinition BuildFilter(JObject query, bool addWorkflowFilter, NameValueCollection QueryString = null)
+        public QueryDefinition BuildFilter(JObject query, bool addWorkflowFilter, IList<UserRoleInfo> roles, NameValueCollection QueryString = null)
         {
             BooleanQuery q = new BooleanQuery();
 
@@ -167,17 +166,19 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
             if (addWorkflowFilter)
             {
                 AddWorkflowFilter(q);
+                AddRoleFilter(q, roles);
             }
             Filter = q.Clauses.Count > 0 ? q : null;
             return this;
         }
 
-        public QueryDefinition BuildFilter(bool addWorkflowFilter, NameValueCollection QueryString = null)
+        public QueryDefinition BuildFilter(bool addWorkflowFilter, IList<UserRoleInfo> roles, NameValueCollection QueryString = null)
         {
             BooleanQuery q = new BooleanQuery();
             if (addWorkflowFilter)
             {
                 AddWorkflowFilter(q);
+                AddRoleFilter(q, roles);
             }
             Filter = q.Clauses.Count > 0 ? q : null;
             return this;
@@ -186,21 +187,42 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
         private void AddWorkflowFilter(BooleanQuery q)
         {
 
-            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey("publishstatus"))
+            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishStatus))
             {
-                q.Add(new TermQuery(new Term("publishstatus", "published")), Occur.MUST); // and
+                q.Add(new TermQuery(new Term(AppConfig.FieldNamePublishStatus, "published")), Occur.MUST); // and
             }
-            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey("publishstartdate"))
+            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishStartDate))
             {
                 DateTime startDate = DateTime.MinValue;
                 DateTime endDate = DateTime.Today;
-                q.Add(NumericRangeQuery.NewLongRange("publishstartdate", startDate.Ticks, endDate.Ticks, true, true), Occur.MUST);
+                q.Add(NumericRangeQuery.NewLongRange(AppConfig.FieldNamePublishStartDate, startDate.Ticks, endDate.Ticks, true, true), Occur.MUST);
             }
-            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey("publishenddate"))
+            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishEndDate))
             {
                 DateTime startDate = DateTime.Today;
                 DateTime endDate = DateTime.MaxValue;
-                q.Add(NumericRangeQuery.NewLongRange("publishenddate", startDate.Ticks, endDate.Ticks, true, true), Occur.MUST);
+                q.Add(NumericRangeQuery.NewLongRange(AppConfig.FieldNamePublishEndDate, startDate.Ticks, endDate.Ticks, true, true), Occur.MUST);
+            }
+        }
+
+        private void AddRoleFilter(BooleanQuery q, IList<UserRoleInfo> roles)
+        {
+
+            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey("userRole"))
+            {
+                if (roles.Any())
+                {
+                    BooleanQuery arrQ = new BooleanQuery();
+                    foreach (var role in roles)
+                    {
+                        arrQ.Add(new TermQuery(new Term("userRole", role.RoleID.ToString())), Occur.SHOULD); // or
+                    }
+                    q.Add(arrQ, Occur.MUST);
+                }
+                else
+                {
+                    q.Add(new TermQuery(new Term("userRole", "Unauthenticated")), Occur.MUST); // and
+                }
             }
         }
 
@@ -235,8 +257,20 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
         {
             if (IndexConfig != null && IndexConfig.Fields.ContainsKey(fieldName))
             {
-                var config = IndexConfig.Items == null ? IndexConfig.Fields[fieldName] : IndexConfig.Items;
-                if (config.IndexType == "datetime" || config.IndexType == "date" || config.IndexType == "time")
+                //var config = IndexConfig.Items == null ? IndexConfig.Fields[fieldName] : IndexConfig.Items;
+                FieldConfig config;
+                if (IndexConfig.Items == null)
+                {
+                    config = IndexConfig.Fields[fieldName];
+                    if (config.Items != null)
+                    {
+                        //this seems to be an array
+                        config = config.Items;
+                    }
+                }
+                else
+                    config = IndexConfig.Items;
+                if (config.IndexType == "date" || config.IndexType == "datetime" || config.IndexType == "time")
                 {
                     sortfieldtype = SortField.LONG;
                 }

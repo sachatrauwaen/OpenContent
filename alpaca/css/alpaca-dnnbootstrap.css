@@ -1,0 +1,220 @@
+﻿.dnnFormPopup .ui-dialog-titlebar {
+    position: relative;
+    padding: 0;
+    border-bottom: none;
+    cursor: move;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.popup div.alpaca {
+    padding-bottom: 65px;
+    width: 99%;
+}
+
+.popup .dnnActions {
+    display: block;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #fff;
+    z-index: 2;
+}
+
+.alpaca-image-display img {
+    max-height: 200px;
+    min-height: 100px;
+    max-width: 400px;
+}
+
+.alpaca-field-wysihtml .editor {
+    margin-bottom: 18px;
+    padding: 8px;
+    background: #ffffff;
+    border: 1px solid #c9c9c9;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    -webkit-box-shadow: 0px 1px 0px 0px rgba(255, 255, 255, 0.8), inset 0px 1px 2px 0px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 1px 0px 0px rgba(255, 255, 255, 0.8), inset 0px 1px 2px 0px rgba(0, 0, 0, 0.1);
+    color: #333;
+    font-size: 12px;
+    /*width: 100%;*/
+}
+
+.alpaca-field-wysihtml .toolbar {
+    /*height:25px;*/
+}
+
+.alpaca-field-wysihtml .dialog {
+    padding: 2px;
+}
+
+
+
+.alpaca-field-wysihtml .toolbar .block {
+    display: inline-block;
+}
+
+.alpaca-field-wysihtml .toolbar a {
+    display: inline-block;
+    border-radius: 3px;
+    text-decoration: none;
+    background: #fff;
+    border: 1px solid #ddd;
+    padding: 0 0.2em;
+    margin: 1px 0;
+    color: #000;
+    cursor: pointer;
+}
+
+    .alpaca-field-wysihtml .toolbar a.wysihtml5-command-active,
+    .alpaca-field-wysihtml .toolbar .wysihtml5-action-active {
+        background: #222;
+        color: white;
+    }
+
+.select2-container--default .select2-search--inline .select2-search__field {
+    margin-bottom: 0;
+    padding: 0;
+    border: 0 none;
+    border-radius: 0;
+}
+
+.select2-container--default input[type="search"]:active,
+.select2-container--default input[type="search"]:focus {
+    border: 0 none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    color: #666;
+}
+
+select.oc-ddl-versions {
+    margin-bottom: 18px;
+    padding: 8px;
+    background: #ffffff;
+    border: 1px solid #c9c9c9;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    -webkit-box-shadow: 0px 1px 0px 0px rgba(255, 255, 255, 0.8), inset 0px 1px 2px 0px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 1px 0px 0px rgba(255, 255, 255, 0.8), inset 0px 1px 2px 0px rgba(0, 0, 0, 0.1);
+    color: #333;
+    font-size: 12px;
+}
+@media screen and (max-width: 767px) {
+    select.oc-ddl-versions {
+        display: none;
+    }
+}
+
+.alpaca-container.collapse {
+    overflow: visible;
+}
+
+.form-group.alpaca-field {
+    position: relative;
+}
+
+
+.form-group.alpaca-field img.flag {
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.alpaca-horizontal .form-group.alpaca-field img.flag {
+    top: 10px;
+}
+
+
+.alpaca-horizontal .form-group.alpaca-field .col-sm-9 {
+    padding-right:40px;
+}
+
+.alpaca-horizontal .form-group.alpaca-field .help-block {
+    margin-left: 25%;
+}
+
+
+
+.alpaca-field-object,
+.alpaca-field-array,
+.alpaca-field-table {
+    border: 1px solid #eee;
+    border-radius: 4px;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+
+
+.alpaca-field-object > div > div > .alpaca-field-object,
+.alpaca-field-object > fieldset > div > div > .alpaca-field-array,
+.alpaca-field-object > div > div > .alpaca-field-array,
+.alpaca-field-object > div > div > .alpaca-field-table,
+.alpaca-field-object > div > div > .alpaca-field-object > fieldset > div > div > .alpaca-field-object > fieldset > div > div > .alpaca-field-object,
+.alpaca-field-object > div > div > .alpaca-field-array > fieldset > div > div > div > .alpaca-field-object > fieldset > div > div > .alpaca-field-object,
+.alpaca-field-object > div > div > .alpaca-field-object > fieldset > div > div > .alpaca-field-object > fieldset > div > div > .alpaca-field-array,
+.alpaca-field-object > div > div > .alpaca-field-array > div > div > div > .alpaca-field-object > fieldset > div > div > .alpaca-field-object,
+.alpaca-field-object > div > div > .alpaca-field-array > fieldset > div > div > .alpaca-field-object > fieldset > div > div > .alpaca-field-array {
+    background-color: #f7f7f9;
+}
+
+.alpaca-field-object > div > div > .alpaca-field-object > fieldset > div > div > .alpaca-field-object,
+.alpaca-field-object > div > div > .alpaca-field-array > fieldset > div > div > div > .alpaca-field-object,
+.alpaca-field-object > div > div > .alpaca-field-array > div > div > div > .alpaca-field-object,
+.alpaca-field-object > fieldset > div > div > .alpaca-field-array > fieldset > div > div > div > .alpaca-field-object {
+    background-color: #fff;
+}
+
+/*
+.alpaca-container-item > div {
+    position:relative;
+}
+
+.alpaca-array-actionbar.alpaca-array-actionbar-top{
+    position:absolute;
+    width:auto !important;
+    z-index:9;
+    right: 10px;
+    top: -15px;
+}
+
+.alpaca-horizontal .alpaca-array-actionbar.alpaca-array-actionbar-top{
+    right:unset;
+    left:0;
+}
+
+
+.alpaca-array-actionbar button i.glyphicon{
+    color: #157ab5;
+}
+
+    */
+
+.alpaca-array-actionbar.alpaca-array-actionbar-top {
+    padding-bottom: 0 !important;
+    display:block !important;
+}
+
+/* for dnngo icons in editor 
+.glyphicons {
+    
+    font-family: 'Glyphicons Regular' !important;
+    font-style: normal !important;
+    font-weight: normal !important;
+    
+    
+}
+*/
+
+
+.alpaca-horizontal  .alpaca-control-buttons-container {
+    margin-left: 25%;
+    padding-left: 15px;
+}
+
+.cropper-container {
+ margin-top:5px;
+ margin-bottom:5px;
+}

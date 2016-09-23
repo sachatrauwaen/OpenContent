@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using DotNetNuke.Entities.Modules;
 using Satrabel.OpenContent.Components.Datasource;

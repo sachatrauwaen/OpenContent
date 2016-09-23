@@ -19,8 +19,15 @@ alpacaEngine.engine = function(config) {
     self.updateAction = "Update";
     self.deleteAction = "Delete";
     self.data = {};
-
-    
+    self.rootUrl = config.appPath;
+    self.bootstrap = config.bootstrap;
+    self.view = "dnn-edit";
+    if (config.bootstrap) {
+        self.view = config.horizontal ? "dnnbootstrap-edit-horizontal" : "dnnbootstrap-edit";
+    }
+    if (config.bootstrap && $.fn.select2) {
+        $.fn.select2.defaults.set("theme", "bootstrap");
+    }
     if (config.editAction) {
         self.editAction = config.editAction;
     }
@@ -53,6 +60,8 @@ alpacaEngine.engine = function(config) {
                 //'position': 'top',
                 height: newHeight,
                 width: newWidth,
+                minWidth: newWidth,
+                minHeight: newHeight - 100,
                 //position: 'center'
                 resizable: false,
             });
@@ -64,40 +73,40 @@ alpacaEngine.engine = function(config) {
                 dnnModal.closePopUp(false, "");
                 return false;
             });
-
-            if (!self.itemId) {
-                $("#"+self.deleteButton).hide();
-            }
-
-            $("#"+self.deleteButton).click(function () {
-
-                var postData = JSON.stringify({ id: self.itemId });
-                //var action = "Delete";
-                $.ajax({
-                    type: "POST",
-                    url: self.sf.getServiceRoot('OpenContent') + "OpenContentAPI/" + self.deleteAction,
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    data: postData,
-                    beforeSend: self.sf.setModuleHeaders
-                }).done(function (data) {
-                    dnnModal.closePopUp(false, "");
-                    var href = $("#"+self.saveButton).attr('href');
-                    var windowTop = parent; //needs to be assign to a varaible for Opera compatibility issues.
-                    var popup = windowTop.jQuery("#iPopUp");
-                    if (popup.length > 0) {
-                        windowTop.__doPostBack('dnn_ctr'+self.moduleId+'_View__UP', '');
-                        dnnModal.closePopUp(false, href);
-                    }
-                    else {
-                        window.location.href = href;
-                    }
-                }).fail(function (xhr, result, status) {
-                    alert("Uh-oh, something broke: " + status);
-                });
-                return false;
-            });
         }
+        if (!self.itemId) {
+            $("#"+self.deleteButton).hide();
+        }
+
+        $("#"+self.deleteButton).click(function () {
+
+            var postData = JSON.stringify({ id: self.itemId });
+            //var action = "Delete";
+            $.ajax({
+                type: "POST",
+                url: self.sf.getServiceRoot('OpenContent') + "OpenContentAPI/" + self.deleteAction,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: postData,
+                beforeSend: self.sf.setModuleHeaders
+            }).done(function (data) {
+                dnnModal.closePopUp(false, "");
+                var href = $("#"+self.saveButton).attr('href');
+                var windowTop = parent; //needs to be assign to a varaible for Opera compatibility issues.
+                var popup = windowTop.jQuery("#iPopUp");
+                if (popup.length > 0) {
+                    windowTop.__doPostBack('dnn_ctr'+self.moduleId+'_View__UP', '');
+                    dnnModal.closePopUp(false, href);
+                }
+                else {
+                    window.location.href = href;
+                }
+            }).fail(function (xhr, result, status) {
+                alert("Uh-oh, something broke: " + status);
+            });
+            return false;
+        });
+        
 
         //var moduleScope = $('#'+self.scopeWrapper),
             //self = moduleScope,
@@ -136,6 +145,7 @@ alpacaEngine.engine = function(config) {
         connector.culture = self.currentCulture;
         connector.defaultCulture = self.defaultCulture;
         connector.numberDecimalSeparator = self.numberDecimalSeparator;
+        connector.rootUrl = self.rootUrl;
         if (config.versions) {
             $.each(config.versions, function (i, item) {
                 $("#"+self.ddlVersions).append($('<option>', {
@@ -159,7 +169,7 @@ alpacaEngine.engine = function(config) {
             "schema": config.schema,
             "options": config.options,
             "data": data,
-            "view": config.view ? config.view : "dnn-edit",
+            "view": config.view ? config.view : self.view,
             "connector": connector,
             "postRender": function (control) {
                 var selfControl = control;

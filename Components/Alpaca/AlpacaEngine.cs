@@ -1,11 +1,8 @@
 ﻿using DotNetNuke.Web.Client;
 using DotNetNuke.Web.Client.ClientResourceManagement;
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Web;
 using System.Web.Hosting;
 using System.Web.UI;
 using DotNetNuke.UI.Modules;
@@ -48,16 +45,21 @@ namespace Satrabel.OpenContent.Components.Alpaca
             Prefix = filePrefix;
         }
 
-        public void RegisterAll(bool bootstrap = false)
+        public void RegisterAll(bool bootstrap = false, bool loadBootstrap = false)
         {
-            RegisterAlpaca(bootstrap);
+            RegisterAlpaca(bootstrap, loadBootstrap);
             RegisterTemplates();
             RegisterScripts(bootstrap);
-            RegisterFields();
+            RegisterFields(bootstrap);
         }
 
-        private void RegisterAlpaca(bool bootstrap)
+        private void RegisterAlpaca(bool bootstrap, bool loadBootstrap)
         {
+            if (loadBootstrap)
+            {
+                ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/bootstrap/js/bootstrap.min.js", FileOrder.Js.DefaultPriority);
+                ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/bootstrap/css/bootstrap.min.css", FileOrder.Css.DefaultPriority);
+            }
             ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/lib/handlebars/handlebars.js", FileOrder.Js.DefaultPriority);
             ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/lib/typeahead.js/dist/typeahead.bundle.min.js", FileOrder.Js.DefaultPriority);
 
@@ -66,6 +68,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
             if (bootstrap)
             {
                 ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/alpaca/bootstrap/alpaca.css", FileOrder.Css.DefaultPriority);
+                ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/alpaca/css/alpaca-dnnbootstrap.css", FileOrder.Css.DefaultPriority);
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/alpaca/bootstrap/alpaca.js", FileOrder.Js.DefaultPriority + 1);
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/alpaca/js/views/dnnbootstrap.js", FileOrder.Js.DefaultPriority + 2);
             }
@@ -106,9 +109,10 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
             JavaScript.RequestRegistration(CommonJs.jQueryFileUpload); // image file upload
             DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "oc_websiteRoot", FileUri.NormalizedApplicationPath, true);
+            JavaScript.RequestRegistration(CommonJs.DnnPlugins); // avoid js error TypeError: $(...).jScrollPane is not a function
         }
 
-        private void RegisterFields()
+        private void RegisterFields(bool bootstrap)
         {
             bool allFields = string.IsNullOrEmpty(VirtualDirectory);
             List<string> fieldTypes = new List<string>();
@@ -124,18 +128,23 @@ namespace Satrabel.OpenContent.Components.Alpaca
             {
                 ClientResourceManager.RegisterScript(Page, "//maps.googleapis.com/maps/api/js?v=3.exp&libraries=places", FileOrder.Js.DefaultPriority);
             }
-            if (allFields || fieldTypes.Contains("imagecropper") || fieldTypes.Contains("imagecrop"))
+            if (allFields || fieldTypes.Contains("imagecropper") || fieldTypes.Contains("imagecrop") || fieldTypes.Contains("imagecrop2"))
             {
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/cropper/cropper.js", FileOrder.Js.DefaultPriority);
                 ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/cropper/cropper.css", FileOrder.Css.DefaultPriority);
             }
             if (allFields ||
                     fieldTypes.Contains("select2") || fieldTypes.Contains("image2") || fieldTypes.Contains("file2") || fieldTypes.Contains("url2") ||
-                    fieldTypes.Contains("mlimage2") || fieldTypes.Contains("mlfile2") || fieldTypes.Contains("mlurl2")
+                    fieldTypes.Contains("mlimage2") || fieldTypes.Contains("mlfile2") || fieldTypes.Contains("mlurl2") || fieldTypes.Contains("mlfolder2") ||
+                    fieldTypes.Contains("imagecrop2") 
                 )
             {
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/select2/select2.js", FileOrder.Js.DefaultPriority);
                 ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/select2/select2.css", FileOrder.Css.DefaultPriority);
+                if (bootstrap)
+                {
+                    ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/select2/select2-bootstrap.min.css", FileOrder.Css.DefaultPriority + 1);
+                }
             }
 
             //<!-- bootstrap datetimepicker for date, time and datetime controls -->
@@ -165,9 +174,20 @@ namespace Satrabel.OpenContent.Components.Alpaca
                         form.Controls.Add(CKDNNporid);
                         CKDNNporid.Value = ModuleContext.PortalId.ToString();
                     }
+                    else if (File.Exists(HostingEnvironment.MapPath("~/Providers/HtmlEditorProviders/DNNConnect.CKE/js/ckeditor/4.5.3/ckeditor.js")))
+                    {
+                        ClientResourceManager.RegisterScript(Page, "~/Providers/HtmlEditorProviders/DNNConnect.CKE/js/ckeditor/4.5.3/ckeditor.js", FileOrder.Js.DefaultPriority);
+                        DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "PortalId", ModuleContext.PortalId.ToString(), true);
+                        var CKDNNporid = new HiddenField();
+                        CKDNNporid.ID = "CKDNNporid";
+                        CKDNNporid.ClientIDMode = ClientIDMode.Static;
+
+                        form.Controls.Add(CKDNNporid);
+                        CKDNNporid.Value = ModuleContext.PortalId.ToString();
+                    }
                     else
                     {
-                        Log.Logger.Warn("Failed to load CKEeditor. Can not find ~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js");
+                        Log.Logger.Warn("Failed to load CKEeditor. Please install a DNN CKEditor Provider.");
                     }
                 }
             }
@@ -176,7 +196,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/fontIconPicker/jquery.fonticonpicker.min.js", FileOrder.Js.DefaultPriority, "DnnPageHeaderProvider");
                 ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/fontIconPicker/css/jquery.fonticonpicker.min.css", FileOrder.Css.DefaultPriority);
                 ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/fontIconPicker/themes/grey-theme/jquery.fonticonpicker.grey.min.css", FileOrder.Css.DefaultPriority);
-
+                ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/css/glyphicons/glyphicons.css", FileOrder.Css.DefaultPriority + 1);
             }
         }
         private JToken GetOptions()
@@ -194,7 +214,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 }
             }
             // language options
-            optionsFilename = physicalDirectory + "\\" + (string.IsNullOrEmpty(Prefix) ? "" : Prefix + "-") + "options." + DnnUtils.GetCurrentCultureCode() + ".json";
+            optionsFilename = physicalDirectory + "\\" + (string.IsNullOrEmpty(Prefix) ? "" : Prefix + "-") + "options." + DnnLanguageUtils.GetCurrentCultureCode() + ".json";
             if (File.Exists(optionsFilename))
             {
                 string fileContent = File.ReadAllText(optionsFilename);

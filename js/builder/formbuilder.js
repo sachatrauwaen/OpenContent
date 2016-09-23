@@ -107,7 +107,8 @@ function getSchema(formdef) {
         "object": "object",
         "folder2": "string",
         "file2": "string", 
-        "url2": "string", 
+        "url2": "string",
+        "role2": "string",
         "image2": "string",
         "imagecrop": "string"
     };
@@ -131,6 +132,9 @@ function getSchema(formdef) {
             prop.title = value.title;
         }
         if (value.fieldtype == "relation" && value.relationoptions && value.relationoptions.many) {
+            prop.type = "array";
+        }
+        if (value.fieldtype == "role2" && value.many) {
             prop.type = "array";
         }
         if (value.fieldoptions) {
@@ -270,6 +274,10 @@ var baseFields = function (index, value, oldOptions) {
     } else if (value.fieldtype == "imagecrop" && value.imagecropoptions) {
         field.cropper = {};
         field.cropper.aspectRatio = value.imagecropoptions.ratio;
+    } else if (value.fieldtype == "icon" && value.iconoptions) {
+        field.glyphicons = value.iconoptions.glyphicons;
+        field.bootstrap = value.iconoptions.bootstrap;
+        field.fontawesome = value.iconoptions.fontawesome;
     } else if (value.fieldtype == "publishstartdate") {
         field.type = "date";
         field.picker = {
@@ -410,6 +418,8 @@ function showForm(value) {
     connector.culture = "en-US";
     connector.defaultCulture = "en-US";
     connector.numberDecimalSeparator = ".";
+    connector.numberDecimalSeparator = ".";
+    connector.rootUrl = "/";
 
     var schema = getSchema(value);
     var options = getOptions(value);
@@ -460,7 +470,7 @@ var fieldSchema =
             "enum": ["text", "checkbox", "multicheckbox", "select", "radio", "textarea", "email", "date", "number",
                         "image", "file", "url", "icon", "guid", "address",
                         "array", "table", "relation",
-                        "folder2", "file2", "url2", "image2",
+                        "folder2", "file2", "url2","role2", "image2",
                         "imagecrop",
                         "wysihtml", "ckeditor", "gallery", "documents", "object" /*,
                         "publishstatus", "publishstartdate", "publishenddate"*/]
@@ -608,6 +618,31 @@ var fieldSchema =
                 }
             }
         },
+        "iconoptions": {
+            "type": "object",
+            "title": "Icon Options",
+            "dependencies": "fieldtype",
+            "properties": {
+                "glyphicons": {
+                    "type": "boolean",
+                    "title": "Glyphicons"
+                },
+                "bootstrap": {
+                    "type": "boolean",
+                    "title": "Bootstrap"
+                },
+                "fontawesome": {
+                    "type": "boolean",
+                    "title": "Fontawesome",
+                    "default": true
+                }
+            }
+        },
+        "many": {
+            "type": "boolean",
+            "title": "Many",
+            "dependencies": "fieldtype"
+        },
         "advanced": {
             "type": "boolean",
             "title": "Advanced"
@@ -668,7 +703,7 @@ var fieldOptions =
         "label": "Multi language",
         "dependencies": {
             "advanced": [true],
-            "fieldtype": ["text", "textarea", "ckeditor", "file", "image", "url", "wysihtml", "file2", "url2",  "image2"]
+            "fieldtype": ["text", "textarea", "ckeditor", "file", "image", "url", "wysihtml", "file2", "url2", "role2", "image2"]
         }
     },
     "placeholder": {
@@ -685,7 +720,7 @@ var fieldOptions =
         "optionLabels": ["Text", "Checkbox", "Multi checkbox", "Dropdown list (select)", "Radio buttons", "Text area", "Email address", "Date", "Number",
                             "Image (upload & autocomplete)", "File (upload & autocomplete)", "Url (autocomplete for pages)", "Font Awesome Icons", "Guid (auto id)", "Address (autocomplete & geocode)",
                             "List (array)", "Table (array)", "Relation (Additional Data)",
-                            "Folder2 (folderID)", "File2 (fileID)", "Url2 (tabID)", "Image2 (fileID)",
+                            "Folder2 (folderID)", "File2 (fileID)", "Url2 (tabID)", "Role2 (roleID)", "Image2 (fileID)",
                             "Image (with croppper)",
                             "Wysihtml", "CK Editor", "Image Gallery", "Documents", "Group (object)" /*,
                             "Publish status", "Publish start date", "Publish end date"*/]
@@ -694,6 +729,11 @@ var fieldOptions =
         "type": "table",
         "dependencies": {
             "fieldtype": ["select", "radio", "multicheckbox"]
+        }
+    },
+    "many": {
+        "dependencies": {            
+            "fieldtype": ["role2"]
         }
     },
     "required": {
@@ -785,6 +825,12 @@ var fieldOptions =
         "collapsible": true,
         "dependencies": {
             "fieldtype": ["imagecrop"]
+        }
+    },
+    "iconoptions": {
+        "collapsible": true,
+        "dependencies": {
+            "fieldtype": ["icon"]
         }
     },
     "dependencies": {

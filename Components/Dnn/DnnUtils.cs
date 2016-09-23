@@ -2,14 +2,22 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Reflection;
 using System.Threading;
+using System.Web;
+using System.Web.UI;
+using DotNetNuke.Common;
 using DotNetNuke.Common.Utilities;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Entities.Tabs;
+using DotNetNuke.Security;
+using DotNetNuke.Security.Permissions;
 using DotNetNuke.Services.FileSystem;
 using DotNetNuke.Services.Localization;
+using DotNetNuke.Services.Personalization;
 using DotNetNuke.UI.Modules;
+using DotNetNuke.Web.Client.ClientResourceManagement;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -55,59 +63,6 @@ namespace Satrabel.OpenContent.Components
             throw new NotImplementedException();
         }
 
-        internal static string ToUrl(this IFileInfo fileInfo)
-        {
-            if (fileInfo == null) return "";
-            var url = FileManager.Instance.GetUrl(fileInfo);
-            return url;
-        }
-
-        internal static string ToUrlWithoutLinkClick(this IFileInfo fileInfo)
-        {
-            if (fileInfo == null) return "";
-
-            var url = FileManager.Instance.GetUrl(fileInfo);
-            if (url.ToLower().Contains("linkclick"))
-            {
-                //this method works also for linkclick
-                url = "/" + fileInfo.PhysicalPath.Replace(new FolderUri("/").PhysicalFullDirectory, "").Replace("\\", "/");
-            }
-            return url;
-        }
-
-        public static string GetCurrentCultureCode()
-        {
-            //strange issues with getting the correct culture.
-            if (PortalSettings.Current.ActiveTab != null && PortalSettings.Current.ActiveTab.IsNeutralCulture)
-                return PortalSettings.Current.CultureCode;
-            if (PortalSettings.Current.ActiveTab != null)
-                return PortalSettings.Current.ActiveTab.CultureCode;
-
-            return LocaleController.Instance.GetCurrentLocale(PortalSettings.Current.PortalId).Code;
-        }
-        public static CultureInfo GetCurrentCulture()
-        {
-            return new CultureInfo(GetCurrentCultureCode());
-        }
-        internal static string GetCultureCode(int tabId, bool isSuperTab, PortalSettings settings)
-        {
-            string cultureCode = Null.NullString;
-            if (settings != null)
-            {
-                TabController tc = new TabController();
-                TabInfo linkTab = tc.GetTab(tabId, isSuperTab ? Null.NullInteger : settings.PortalId, false);
-                if (linkTab != null)
-                {
-                    cultureCode = linkTab.CultureCode;
-                }
-                if (string.IsNullOrEmpty(cultureCode))
-                {
-                    cultureCode = Thread.CurrentThread.CurrentCulture.Name;
-                }
-            }
-
-            return cultureCode;
-        }
         public static int GetTabByCurrentCulture(int portalId, int tabId, string cultureCode)
         {
             var tc = new TabController();
@@ -122,6 +77,14 @@ namespace Satrabel.OpenContent.Components
                 return tabId;
             }
         }
+
+        public static bool IsPublishedTab(this TabInfo tab)
+        {
+            return !tab.IsDeleted &&
+                   (tab.StartDate == Null.NullDate || tab.StartDate < DateTime.Now) &&
+                   (tab.EndDate == Null.NullDate || tab.EndDate > DateTime.Now);
+        }
+
         public static OpenContentSettings OpenContentSettings(this ModuleInfo module)
         {
             return new OpenContentSettings(module.ModuleSettings);
@@ -134,5 +97,75 @@ namespace Satrabel.OpenContent.Components
         {
             return new OpenContentSettings(module.Settings);
         }
+
+        internal static void RegisterScript(Page page, string sourceFolder, string jsfilename, int jsOrder)
+        {
+            if (page == null) return;
+            if (string.IsNullOrEmpty(jsfilename)) return;
+
+            if (!jsfilename.StartsWith("/") && !jsfilename.Contains("//"))
+            {
+                jsfilename = sourceFolder + jsfilename;
+            }
+            else if (!jsfilename.Contains("//"))
+            {
+                var file = new FileUri(jsfilename);
+                jsfilename = file.UrlFilePath;
+            }
+            ClientResourceManager.RegisterScript(page, jsfilename, jsOrder);
+            //ClientResourceManager.RegisterScript(page, page.ResolveUrl(jsfilename), jsOrder);
+        }
+
+        public static bool CheckIfEditable(this ModuleInfo activeModule, PortalSettings portalSettings)
+        {
+            bool isEditable;
+            //first check some weird Dnn issue
+            if (HttpContext.Current != null && HttpContext.Current.Request.IsAuthenticated)
+            {
+                var personalization = (PersonalizationInfo)HttpContext.Current.Items["Personalization"];
+                if (personalization != null && personalization.UserId == -1)
+                {
+                    //this should never happen. 
+                    //Let us make sure that the wrong value is no longer cached 
+                    HttpContext.Current.Items.Remove("Personalization");
+                }
+            }
+            bool blnPreview = (portalSettings.UserMode == PortalSettings.Mode.View);
+            if (Globals.IsHostTab(portalSettings.ActiveTab.TabID))
+            {
+                blnPreview = false;
+            }
+
+            bool blnHasModuleEditPermissions = HasEditRights(activeModule);
+
+
+            if (blnPreview == false && blnHasModuleEditPermissions)
+            {
+                isEditable = true;
+            }
+            else
+            {
+                isEditable = false;
+            }
+            return isEditable;
+        }
+
+        public static bool HasEditRights(this ModuleInfo activeModule)
+        {
+            bool blnHasModuleEditPermissions = false;
+            if (activeModule != null)
+            {
+                //DNN already checks SuperUser and Administrator
+                blnHasModuleEditPermissions = ModulePermissionController.HasModuleAccess(SecurityAccessLevel.Edit, "CONTENT", activeModule);
+            }
+            return blnHasModuleEditPermissions;
+        }
+
+        // for openform compatibility
+        public static string GetCurrentCultureCode()
+        {
+            return DnnLanguageUtils.GetCurrentCultureCode();
+        }
+
     }
 }

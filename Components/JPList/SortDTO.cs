@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Satrabel.OpenContent.Components.JPList
+﻿namespace Satrabel.OpenContent.Components.JPList
 {
     public class SortDTO
     {

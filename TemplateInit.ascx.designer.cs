@@ -103,6 +103,24 @@ namespace Satrabel.OpenContent {
         protected global::System.Web.UI.WebControls.RadioButtonList rblFrom;
         
         /// <summary>
+        /// phCurrentTemplate control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.PlaceHolder phCurrentTemplate;
+        
+        /// <summary>
+        /// lCurrentTemplate control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lCurrentTemplate;
+        
+        /// <summary>
         /// phTemplate control.
         /// </summary>
         /// <remarks>

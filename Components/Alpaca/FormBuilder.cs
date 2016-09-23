@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Web;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Lucene.Config;
@@ -19,6 +16,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
         }
         public JObject BuildQuerySettings()
         {
+            var indexConfig = OpenContentUtils.GetIndexConfig(templateUri);
             var jsonEdit = Build();
             SchemaConfig newSchema = new SchemaConfig(true);
             // max results
@@ -37,6 +35,12 @@ namespace Satrabel.OpenContent.Components.Alpaca
             newSchema.Properties.Add("ExcludeCurrentItem", new SchemaConfig()
             {
                 Title = "Exclude Current Item",
+                Type = "boolean"
+            });
+            // Show only Current User Items
+            newSchema.Properties.Add("CurrentUserItems", new SchemaConfig()
+            {
+                Title = "Only Current User Items",
                 Type = "boolean"
             });
             // Filter
@@ -62,88 +66,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 optionsConfig = optionsJson.ToObject<OptionsConfig>();
             }
             List<string> fieldLst = new List<string>();
-            foreach (var prop in schemaConfig.Properties)
-            {
-                var opts = optionsConfig.Fields.ContainsKey(prop.Key) ? optionsConfig.Fields[prop.Key] : null;
-                if (prop.Key == "publishstatus" || prop.Key == "publishstartdate" || prop.Key == "publishenddate")
-                {
-                    fieldLst.Add(prop.Key);
-                    continue;
-                }
-                if (prop.Value.Type == "object")
-                {
-                    continue;
-                }
-                string optType = opts == null ? "text" : opts.Type;
-
-                if (prop.Value.Type == "boolean")
-                {
-                    var newProp = new SchemaConfig()
-                    {
-                        //Type = prop.Value.Type,
-                        Title = prop.Value.Title,
-                        Enum = new List<string>(new[] { "true", "false" })
-                    };
-                    newSchemaFilter.Properties.Add(prop.Key, newProp);
-
-                    var newField = new OptionsConfig();
-                    newOptionsFilter.Fields.Add(prop.Key, newField);
-                    newField.Type = "select";
-
-                    fieldLst.Add(prop.Key);
-                }
-                else if (prop.Value.Type == "number")
-                {
-
-                    fieldLst.Add(prop.Key);
-                }
-                else if (optType == "text" || optType == "mltext" || optType == "checkbox" || optType == "select" || optType == "select2")
-                {
-                    var newProp = new SchemaConfig()
-                    {
-                        Type = prop.Value.Type,
-                        Title = prop.Value.Title,
-                        Enum = prop.Value.Enum
-                    };
-                    newSchemaFilter.Properties.Add(prop.Key, newProp);
-
-                    var newField = new OptionsConfig();
-                    newOptionsFilter.Fields.Add(prop.Key, newField);
-                    if (prop.Value.Enum != null)
-                    {
-                        newProp.Type = "array";
-                        newField.Type = "checkbox";
-                    }
-                    if (optType == "select2")
-                    {
-                        newProp.Type = "array";
-                        newField.Type = "select2";
-                        newField.DataService = opts == null ? null : opts.DataService;
-                    }
-                    fieldLst.Add(prop.Key);
-                }
-                else if (optType == "date")
-                {
-                    var newProp = new SchemaConfig(true);
-                    newSchemaFilter.Properties.Add(prop.Key, newProp);
-                    newProp.Properties.Add("StartDays", new SchemaConfig()
-                    {
-                        Type = "number",
-                        Title = prop.Value.Title + " : from x days in the past"
-                    });
-                    newProp.Properties.Add("EndDays", new SchemaConfig()
-                    {
-                        Type = "number",
-                        Title = prop.Value.Title + " : until x days in the future"
-                    });
-                    fieldLst.Add(prop.Key);
-                    /*
-                    var newField = new OptionsConfig();
-                    newOptionsFilter.Fields.Add(prop.Key, newField);
-                    newField.Helper = "Use 0 for today";
-                    */
-                }
-            }
+            GetFields(newSchemaFilter, newOptionsFilter, schemaConfig, optionsConfig, fieldLst, indexConfig);
             // Sort
             SchemaConfig newSchemaSort = new SchemaConfig()
             {
@@ -188,6 +111,96 @@ namespace Satrabel.OpenContent.Components.Alpaca
             return json;
         }
 
+        private static void GetFields(SchemaConfig newSchemaFilter, OptionsConfig newOptionsFilter, SchemaConfig schemaConfig, OptionsConfig optionsConfig, List<string> fieldLst, FieldConfig indexConfig, string prefix = "")
+        {
+            foreach (var prop in schemaConfig.Properties)
+            {
+                string propKey = prefix + prop.Key;
+                string propTitle = prefix + prop.Value.Title;
+                var opts = optionsConfig != null && optionsConfig.Fields != null && optionsConfig.Fields.ContainsKey(prop.Key) ? optionsConfig.Fields[prop.Key] : null;
+                var idxs = indexConfig != null && indexConfig.Fields != null && indexConfig.Fields.ContainsKey(prop.Key) ? indexConfig.Fields[prop.Key] : null;
+                if (prop.Key == AppConfig.FieldNamePublishStatus || prop.Key == AppConfig.FieldNamePublishStartDate || prop.Key == AppConfig.FieldNamePublishEndDate)
+                {
+                    fieldLst.Add(propKey);
+                    continue;
+                }
+                if (prop.Value.Type == "object" && idxs != null)
+                {
+                    GetFields(newSchemaFilter, newOptionsFilter, prop.Value, opts, fieldLst, idxs, propKey + ".");
+                    continue;
+                }
+                string optType = opts == null ? "text" : opts.Type ?? "text";
+
+                if (prop.Value.Type == "boolean")
+                {
+                    var newProp = new SchemaConfig()
+                    {
+                        //Type = prop.Value.Type,
+                        Title = prop.Value.Title,
+                        Enum = new List<string>(new[] { "true", "false" })
+                    };
+                    newSchemaFilter.Properties.Add(propKey, newProp);
+
+                    var newField = new OptionsConfig();
+                    newOptionsFilter.Fields.Add(propKey, newField);
+                    newField.Type = "select";
+
+                    fieldLst.Add(propKey);
+                }
+                else if (prop.Value.Type == "number")
+                {
+
+                    fieldLst.Add(propKey);
+                }
+                else if (optType == "text" || optType == "mltext" || optType == "checkbox" || optType == "select" || optType == "select2")
+                {
+                    var newProp = new SchemaConfig()
+                    {
+                        Type = prop.Value.Type,
+                        Title = propTitle,
+                        Enum = prop.Value.Enum
+                    };
+                    newSchemaFilter.Properties.Add(propKey, newProp);
+
+                    var newField = new OptionsConfig();
+                    newOptionsFilter.Fields.Add(propKey, newField);
+                    if (prop.Value.Enum != null)
+                    {
+                        newProp.Type = "array";
+                        newField.Type = "checkbox";
+                    }
+                    if (optType == "select2")
+                    {
+                        newProp.Type = "array";
+                        newField.Type = "select2";
+                        newField.DataService = opts == null ? null : opts.DataService;
+                    }
+                    fieldLst.Add(propKey);
+                }
+                else if (optType == "date" || optType == "datetime" || optType == "time")
+                {
+                    var newProp = new SchemaConfig(true);
+                    newSchemaFilter.Properties.Add(propKey, newProp);
+                    newProp.Properties.Add("StartDays", new SchemaConfig()
+                    {
+                        Type = "number",
+                        Title = propTitle + " : from x days in the past"
+                    });
+                    newProp.Properties.Add("EndDays", new SchemaConfig()
+                    {
+                        Type = "number",
+                        Title = propTitle + " : until x days in the future"
+                    });
+                    fieldLst.Add(propKey);
+                    /*
+                    var newField = new OptionsConfig();
+                    newOptionsFilter.Fields.Add(propKey, newField);
+                    newField.Helper = "Use 0 for today";
+                    */
+                }
+            }
+        }
+
         public JObject BuildForm(string key = "")
         {
             if (key == "query")
@@ -214,7 +227,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 json["options"] = optionsJson;
 
             // language options
-            optionsJson = JsonUtils.LoadJsonFromFile(templateUri.UrlFolder + prefix + "options." + DnnUtils.GetCurrentCultureCode() + ".json");
+            optionsJson = JsonUtils.LoadJsonFromFile(templateUri.UrlFolder + prefix + "options." + DnnLanguageUtils.GetCurrentCultureCode() + ".json");
             if (optionsJson != null)
                 json["options"] = json["options"].JsonMerge(optionsJson);
 
@@ -258,8 +271,8 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 {
                     opts = optionsConfig.Fields.ContainsKey(prop.Key) ? optionsConfig.Fields[prop.Key] : null;
                 }
-                string optType = opts == null ? "text" : opts.Type;
-                if (prop.Value.Type == "array" && (prop.Value.Enum != null || optType == "select" || optType == "select2"))
+                string optType = (opts == null) ? "text" : opts.Type ?? "text";
+                if (prop.Value.Type == "array" && (prop.Value.Enum != null || optType == "select" || optType == "select2" || optType == "role2"))
                 {
                     var newField = new FieldConfig()
                     {
@@ -272,7 +285,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     };
                     newConfig.Fields.Add(prop.Key, newField);
                 }
-                else if (prop.Value.Enum != null || optType == "select" || optType == "select2")
+                else if (prop.Value.Enum != null || optType == "select" || optType == "select2" || optType == "role2")
                 {
                     var newField = new FieldConfig()
                     {
@@ -287,6 +300,16 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     var newField = new FieldConfig()
                     {
                         IndexType = "boolean",
+                        Index = true,
+                        Sort = true
+                    };
+                    newConfig.Fields.Add(prop.Key, newField);
+                }
+                else if (prop.Value.Type == "number")
+                {
+                    var newField = new FieldConfig()
+                    {
+                        IndexType = "float",
                         Index = true,
                         Sort = true
                     };
@@ -355,7 +378,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     };
                     newConfig.Fields.Add(prop.Key, newField);
                 }
-                else if (optType == "date")
+                else if (optType == "date" || optType == "datetime" || optType == "time")
                 {
                     var newField = new FieldConfig()
                     {
@@ -365,16 +388,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     };
                     newConfig.Fields.Add(prop.Key, newField);
                 }
-                else if (prop.Value.Type == "number")
-                {
-                    var newField = new FieldConfig()
-                    {
-                        IndexType = "float",
-                        Index = true,
-                        Sort = true
-                    };
-                    newConfig.Fields.Add(prop.Key, newField);
-                }
+
             }
             //var json = JObject.FromObject(newConfig);
             //File.WriteAllText(templateUri.PhysicalFullDirectory + "\\test.json", json.ToString());

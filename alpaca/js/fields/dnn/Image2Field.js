@@ -1,8 +1,5 @@
 ﻿(function($) {
-
     var Alpaca = $.alpaca;
-
-    
     Alpaca.Fields.Image2Field = Alpaca.Fields.ListField.extend(
     /**
      * @lends Alpaca.Fields.Image2Field.prototype

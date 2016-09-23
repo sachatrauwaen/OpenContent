@@ -19,7 +19,7 @@
 <dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/mode/handlebars/handlebars.js" Priority="103" />
 
 <div class="dnnForm dnnRazorHostEditScript dnnClear" id="dnnEditScript">
-    <fieldset >
+    <fieldset>
         <div class="dnnFormItem">
             <dnn:Label id="scriptsLabel" runat="Server" controlname="scriptList" />
             <asp:DropDownList ID="scriptList" runat="server" AutoPostBack="true" />
@@ -35,7 +35,7 @@
             <asp:TextBox ID="txtSource" runat="server" TextMode="MultiLine" Rows="30" Columns="140" />
         </div>
     </fieldset>
-    <asp:Label ID="lError" runat="server" Visible="false" CssClass="dnnFormMessage dnnFormValidationSummary" ></asp:Label>
+    <asp:Label ID="lError" runat="server" Visible="false" CssClass="dnnFormMessage dnnFormValidationSummary"></asp:Label>
     <ul class="dnnActions dnnClear">
         <li>
             <asp:LinkButton ID="cmdSave" resourcekey="cmdSave" runat="server" CssClass="dnnPrimaryAction" /></li>
@@ -50,7 +50,7 @@
         <li>
             <asp:LinkButton ID="cmdBuilder" resourcekey="cmdBuilder" runat="server" CssClass="dnnSecondaryAction" />
         </li>
-       
+
     </ul>
 </div>
 <script type="text/javascript">
@@ -90,7 +90,7 @@
                 //$('window.frameElement, body, html').css('overflow', 'hidden');
 
 
-                var containerHeight = $(window).height() - 18 - 52 - 52 - 30 -30;
+                var containerHeight = $(window).height() - 18 - 52 - 52 - 30 - 30;
 
                 //$('.editorContainer').height(containerHeight - $('.editorContainer').offset().top - 110);
                 //$('.editorContainer').height(containerHeight - 250);

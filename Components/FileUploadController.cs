@@ -22,8 +22,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -38,6 +36,7 @@ using Newtonsoft.Json;
 using DotNetNuke.Entities.Icons;
 using System.Text;
 using System.Globalization;
+using Satrabel.OpenContent.Components.Dnn;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -106,14 +105,22 @@ namespace Satrabel.OpenContent.Components
                     {
                         uploadfolder = context.Request.Form["uploadfolder"];
                     }
-
                     var userFolder = _folderManager.GetFolder(PortalSettings.PortalId, uploadfolder);
                     if (userFolder == null)
                     {
                         userFolder = _folderManager.AddFolder(PortalSettings.PortalId, uploadfolder);
                     }
-                    //todo: deal with the case where the exact file name already exists.
-                    var fileInfo = _fileManager.AddFile(userFolder, fileName, file.InputStream, true);
+                    int suffix = 0;
+                    string baseFileName = Path.GetFileNameWithoutExtension(fileName);
+                    string extension = Path.GetExtension(fileName);
+                    var fileInfo = _fileManager.GetFile(userFolder, fileName);
+                    while (fileInfo != null)
+                    {
+                        suffix++;
+                        fileName = baseFileName + "-" + suffix + extension;
+                        fileInfo = _fileManager.GetFile(userFolder, fileName);
+                    }
+                    fileInfo = _fileManager.AddFile(userFolder, fileName, file.InputStream, true);
                     var fileIcon = IconController.IconURL("Ext" + fileInfo.Extension, "32x32");
                     if (!File.Exists(context.Server.MapPath(fileIcon)))
                     {

@@ -13,26 +13,31 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using DotNetNuke.Common.Utilities;
 using DotNetNuke.Data;
-using Newtonsoft.Json.Linq;
-using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Lucene;
-using Satrabel.OpenContent.Components.Lucene.Index;
 using Satrabel.OpenContent.Components.Lucene.Config;
 
 namespace Satrabel.OpenContent.Components
 {
     public class OpenContentController
     {
+        private const string CachePrefix = "Satrabel.OpenContent.Components.OpenContentController-";
+        private const int CacheTime = 60;
+
         #region Commands
 
         public void AddContent(OpenContentInfo content, bool index, FieldConfig indexConfig)
         {
+            ClearCache(content);
+
             OpenContentVersion ver = new OpenContentVersion()
             {
-                Json = content.Json.ToJObject("Adding Content"),
+                Json = content.JsonAsJToken,
                 CreatedByUserId = content.LastModifiedByUserId,
-                CreatedOnDate = content.LastModifiedOnDate
+                CreatedOnDate = content.LastModifiedOnDate,
+                LastModifiedByUserId = content.LastModifiedByUserId,
+                LastModifiedOnDate = content.LastModifiedOnDate
             };
             var versions = new List<OpenContentVersion>();
             versions.Add(ver);
@@ -57,6 +62,8 @@ namespace Satrabel.OpenContent.Components
 
         public void DeleteContent(OpenContentInfo content, bool index)
         {
+            ClearCache(content);
+
             using (IDataContext ctx = DataContext.Instance())
             {
                 var rep = ctx.GetRepository<OpenContentInfo>();
@@ -71,17 +78,21 @@ namespace Satrabel.OpenContent.Components
 
         public void UpdateContent(OpenContentInfo content, bool index, FieldConfig indexConfig)
         {
+            ClearCache(content);
+
             OpenContentVersion ver = new OpenContentVersion()
             {
-                Json = content.Json.ToJObject("UpdateContent"),
+                Json = content.JsonAsJToken,
                 CreatedByUserId = content.LastModifiedByUserId,
-                CreatedOnDate = content.LastModifiedOnDate
+                CreatedOnDate = content.LastModifiedOnDate,
+                LastModifiedByUserId = content.LastModifiedByUserId,
+                LastModifiedOnDate = content.LastModifiedOnDate
             };
             var versions = content.Versions;
             if (versions.Count == 0 || versions[0].Json.ToString() != content.Json)
             {
                 versions.Insert(0, ver);
-                if (versions.Count > 5)
+                if (versions.Count > OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetMaxVersions())
                 {
                     versions.RemoveAt(versions.Count - 1);
                 }
@@ -94,6 +105,9 @@ namespace Satrabel.OpenContent.Components
             }
             if (index)
             {
+
+                content.HydrateDefaultFields(indexConfig);
+
                 LuceneController.Instance.Update(content, indexConfig);
                 LuceneController.Instance.Store.Commit();
             }
@@ -112,54 +126,73 @@ namespace Satrabel.OpenContent.Components
 
         public IEnumerable<OpenContentInfo> GetContents(int moduleId)
         {
-            IEnumerable<OpenContentInfo> content;
+            var cacheArgs = new CacheItemArgs(GetModuleIdCacheKey(moduleId, "GetContents"), CacheTime);
+            return DataCache.GetCachedData<IEnumerable<OpenContentInfo>>(cacheArgs, args =>
+                {
+                    IEnumerable<OpenContentInfo> content;
 
-            using (IDataContext ctx = DataContext.Instance())
-            {
-                var rep = ctx.GetRepository<OpenContentInfo>();
-                content = rep.Get(moduleId);
-            }
-            return content;
+                    using (IDataContext ctx = DataContext.Instance())
+                    {
+                        var rep = ctx.GetRepository<OpenContentInfo>();
+                        content = rep.Get(moduleId);
+                    }
+                    return content;
+                });
         }
 
         public OpenContentInfo GetContent(int contentId)
         {
-            OpenContentInfo content;
+            var cacheArgs = new CacheItemArgs(GetContentIdCacheKey(contentId), CacheTime);
+            return DataCache.GetCachedData<OpenContentInfo>(cacheArgs, args =>
+                {
+                    OpenContentInfo content;
 
-            using (IDataContext ctx = DataContext.Instance())
-            {
-                var rep = ctx.GetRepository<OpenContentInfo>();
-                content = rep.GetById(contentId);
-            }
-            return content;
+                    using (IDataContext ctx = DataContext.Instance())
+                    {
+                        var rep = ctx.GetRepository<OpenContentInfo>();
+                        content = rep.GetById(contentId);
+                    }
+                    return content;
+                });
         }
 
         public OpenContentInfo GetFirstContent(int moduleId)
         {
-            OpenContentInfo content;
+            var cacheArgs = new CacheItemArgs(GetModuleIdCacheKey(moduleId) + "GetFirstContent", CacheTime);
+            return DataCache.GetCachedData<OpenContentInfo>(cacheArgs, args =>
+                {
+                    OpenContentInfo content;
 
-            using (IDataContext ctx = DataContext.Instance())
-            {
-                var rep = ctx.GetRepository<OpenContentInfo>();
-                content = rep.Get(moduleId).FirstOrDefault();
-            }
-            return content;
+                    using (IDataContext ctx = DataContext.Instance())
+                    {
+                        var rep = ctx.GetRepository<OpenContentInfo>();
+                        content = rep.Get(moduleId).FirstOrDefault();
+                    }
+                    return content;
+                });
         }
 
         #endregion
 
-        /* slow !!!
-        public OpenContentInfo GetContent(int ContentId, int moduleId)
-        {
-            OpenContentInfo Content;
+        #region Private helper
 
-            using (IDataContext ctx = DataContext.Instance())
-            {
-                var rep = ctx.GetRepository<OpenContentInfo>();
-                Content = rep.GetById(ContentId, moduleId);                
-            }
-            return Content;
+        private static string GetContentIdCacheKey(int contentId)
+        {
+            return string.Concat(CachePrefix, "C-", contentId);
         }
-         */
+
+        private static string GetModuleIdCacheKey(int moduleId, string suffix = null)
+        {
+            return string.Concat(CachePrefix, "M-", moduleId, string.IsNullOrEmpty(suffix) ? string.Empty : string.Concat("-", suffix));
+        }
+
+        private static void ClearCache(OpenContentInfo content)
+        {
+            if (content.ContentId > 0) DataCache.ClearCache(GetContentIdCacheKey(content.ContentId));
+            if (content.ModuleId > 0) DataCache.ClearCache(GetModuleIdCacheKey(content.ModuleId));
+        }
+
+        #endregion
+
     }
 }

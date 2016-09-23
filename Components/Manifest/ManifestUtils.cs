@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using DotNetNuke.Services.Installer.Log;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Schema;
-using Satrabel.OpenContent.Components.Json;
 
 namespace Satrabel.OpenContent.Components.Manifest
 {
@@ -82,9 +78,9 @@ namespace Satrabel.OpenContent.Components.Manifest
         }
 
 
-        internal static FileUri Uri(this TemplateManifest templateUri)
+        internal static FileUri MainTemplateUri(this TemplateManifest templateUri)
         {
-            return templateUri == null ? null : new FileUri(templateUri.ManifestDir, templateUri.Main.Template);
+            return templateUri == null || templateUri.Main == null ? null : new FileUri(templateUri.ManifestFolderUri, templateUri.Main.Template);
         }
 
         private static Manifest GetVirtualManifest(TemplateKey templeteKey)
@@ -117,7 +113,7 @@ namespace Satrabel.OpenContent.Components.Manifest
 
         internal static bool SettingsNeeded(this TemplateManifest template)
         {
-            var schemaFileUri = new FileUri(template.Uri().UrlFolder, template.Key.ShortKey + "-schema.json");
+            var schemaFileUri = new FileUri(template.ManifestFolderUri.UrlFolder, template.Key.ShortKey + "-schema.json");
             if (schemaFileUri.FileExists)
                 return true;
 
@@ -125,11 +121,16 @@ namespace Satrabel.OpenContent.Components.Manifest
         }
         internal static bool QueryAvailable(this TemplateManifest template)
         {
-            var schemaFileUri = new FileUri(template.Uri().UrlFolder, "query-schema.json");
+            var schemaFileUri = new FileUri(template.ManifestFolderUri.UrlFolder, "query-schema.json");
             if (schemaFileUri.FileExists)
                 return true;
 
             return false;
+        }
+
+        internal static string GetEditRole(this Manifest manifest)
+        {
+            return manifest == null ? "" : manifest.EditRole;
         }
     }
 }

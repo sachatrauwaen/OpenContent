@@ -38,7 +38,7 @@ GO
 
 ALTER TABLE {databaseOwner}{objectQualifier}OpenContent_Items
 ADD CONSTRAINT
-FK_OpenContent_Items_Modules FOREIGN KEY
+FK_{objectQualifier}OpenContent_Items_Modules FOREIGN KEY
 (
 ModuleId
 ) REFERENCES {databaseOwner}{objectQualifier}Modules

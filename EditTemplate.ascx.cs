@@ -12,17 +12,13 @@
 using System;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Common;
-using DotNetNuke.Framework.JavaScriptLibraries;
-using DotNetNuke.Framework;
 using System.Web.UI.WebControls;
 using DotNetNuke.Services.Localization;
 using System.IO;
 using Satrabel.OpenContent.Components;
 using Satrabel.OpenContent.Components.Manifest;
-using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Json;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
 
 #endregion
 
@@ -58,7 +54,7 @@ namespace Satrabel.OpenContent
             if (scriptList.SelectedValue.EndsWith("schema.json"))
             {
                 var settings = ModuleContext.OpenContentSettings();
-                FileUri template = settings.Template.Uri();
+                FileUri template = settings.Template.MainTemplateUri();
                 string templateFolder = Path.GetDirectoryName(template.FilePath);
                 string scriptFile = templateFolder + "/" + scriptList.SelectedValue.Replace("schema.json", "builder.json");
                 string srcFile = Server.MapPath(scriptFile);
@@ -68,7 +64,7 @@ namespace Satrabel.OpenContent
 
                 JObject builder = new JObject();
 
-                if (schema["items"] != null)
+                if (schema != null && schema["items"] != null)
                 {
                     builder["formtype"] = "array";
                     builder["formfields"] = GetBuilder(schema["items"] as JObject, options != null && options["items"] != null ? options["items"] as JObject : null);
@@ -90,7 +86,7 @@ namespace Satrabel.OpenContent
         {
             var formfields = new JArray();
 
-            if (schema["properties"] != null)
+            if (schema != null && schema["properties"] != null)
             {
                 var schemaProperties = schema["properties"] as JObject;
                 foreach (var schProp in schemaProperties.Properties())
@@ -182,12 +178,19 @@ namespace Satrabel.OpenContent
                         field["file2options"] = new JObject();
                         if (opt["folder"] != null)
                         {
-                            field["file2options"]["folder"] = opt["folder"];
+                            field["file2options"]["folder"] = opt["folder"];    
                         }
                         if (opt["filter"] != null)
                         {
                             field["file2options"]["filter"] = opt["filter"];
                         }
+                    }
+                    else if (fieldtype == "icon")
+                    {
+                        field["iconoptions"] = new JObject();
+                        field["iconoptions"]["glyphicons"] = opt["glyphicons"] == null ? false : opt["glyphicons"];
+                        field["iconoptions"]["bootstrap"] = opt["bootstrap"] == null ? false : opt["bootstrap"];
+                        field["iconoptions"]["fontawesome"] = opt["fontawesome"] == null ? true : opt["fontawesome"];
                     }
                     field["fieldtype"] = fieldtype;
                     if (sch["title"] != null)
@@ -232,7 +235,7 @@ namespace Satrabel.OpenContent
         {
             var settings = ModuleContext.OpenContentSettings();
             TemplateManifest template = settings.Template;
-            string templateFolder = template.Uri().UrlFolder;
+            string templateFolder = template.ManifestFolderUri.UrlFolder;
             string templateDir = Server.MapPath(templateFolder);
             string moduleDir = Server.MapPath(ModuleTemplateDirectory);
             if (!Directory.Exists(moduleDir))
@@ -269,12 +272,14 @@ namespace Satrabel.OpenContent
         private void InitEditor(TemplateManifest template)
         {
             LoadFiles(template);
-            var scriptFile = new FileUri(template.Uri().UrlFolder, scriptList.SelectedValue);
+            var scriptFile = new FileUri(template.ManifestFolderUri.UrlFolder, scriptList.SelectedValue);
             DisplayFile(scriptFile);
-            if (template.Uri().FilePath.StartsWith(ModuleTemplateDirectory))
+            /*
+            if (template.MainTemplateUri().FilePath.StartsWith(ModuleTemplateDirectory))
             {
                 cmdCustom.Visible = false;
             }
+             */
         }
 
         private void DisplayFile(FileUri template)
@@ -367,7 +372,7 @@ namespace Satrabel.OpenContent
                 scriptList.Items.Add(new ListItem("Stylesheet", template.Key.ShortKey + ".css"));
                 scriptList.Items.Add(new ListItem("Javascript", template.Key.ShortKey + ".js"));
                 scriptList.Items.Add(new ListItem("Manifest", "manifest.json"));
-                if (!OpenContentUtils.BuilderExist(settings.Template.ManifestDir))
+                if (!OpenContentUtils.BuilderExist(settings.Template.ManifestFolderUri))
                 {
                     string title = string.IsNullOrEmpty(template.Manifest.Title) ? "Data " : template.Manifest.Title + " ";
                     scriptList.Items.Add(new ListItem(title + "Schema", "schema.json"));
@@ -378,7 +383,7 @@ namespace Satrabel.OpenContent
                         scriptList.Items.Add(new ListItem(title + "Options - " + item.Code, "options." + item.Code + ".json"));
                     }
                 }
-                if (!OpenContentUtils.BuilderExist(settings.Template.ManifestDir, template.Key.ShortKey))
+                if (!OpenContentUtils.BuilderExist(settings.Template.ManifestFolderUri, template.Key.ShortKey))
                 {
                     scriptList.Items.Add(new ListItem("Settings Schema", template.Key.ShortKey + "-schema.json"));
                     scriptList.Items.Add(new ListItem("Settings Options", template.Key.ShortKey + "-options.json"));
@@ -387,11 +392,11 @@ namespace Satrabel.OpenContent
                         scriptList.Items.Add(new ListItem("Settings Options - " + item.Code, template.Key.ShortKey + "-options." + item.Code + ".json"));
                     }
                 }
-                if (template.Manifest.AdditionalData != null)
+                if (template.Manifest.AdditionalDataExists())
                 {
                     foreach (var addData in template.Manifest.AdditionalData)
                     {
-                        if (!OpenContentUtils.BuilderExist(settings.Template.ManifestDir, addData.Key))
+                        if (!OpenContentUtils.BuilderExist(settings.Template.ManifestFolderUri, addData.Key))
                         {
                             string title = string.IsNullOrEmpty(addData.Value.Title) ? addData.Key : addData.Value.Title;
                             scriptList.Items.Add(new ListItem(title + " Schema", addData.Key + "-schema.json"));
@@ -431,7 +436,10 @@ namespace Satrabel.OpenContent
                 try
                 {
                     JObject.Parse(txtSource.Text);
-                    System.Web.Helpers.Json.Decode(txtSource.Text);
+                    if (scriptList.SelectedValue != "manifest.json")
+                    {
+                        System.Web.Helpers.Json.Decode(txtSource.Text);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -442,7 +450,7 @@ namespace Satrabel.OpenContent
             }
 
 
-            FileUri template = ModuleContext.OpenContentSettings().Template.Uri();
+            FileUri template = ModuleContext.OpenContentSettings().Template.MainTemplateUri();
             string templateFolder = Path.GetDirectoryName(template.FilePath);
             string scriptFile = templateFolder + "/" + scriptList.SelectedValue;
             string srcFile = Server.MapPath(scriptFile);
@@ -469,7 +477,7 @@ namespace Satrabel.OpenContent
 
         private void scriptList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            FileUri template = ModuleContext.OpenContentSettings().Template.Uri();
+            FileUri template = ModuleContext.OpenContentSettings().Template.MainTemplateUri();
             var scriptFile = new FileUri(template.UrlFolder, scriptList.SelectedValue);
             DisplayFile(scriptFile);
         }

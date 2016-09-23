@@ -72,7 +72,7 @@ namespace Satrabel.OpenContent.Components.Dnn
         {
             var isSuperTab = Globals.IsHostTab(tabId);
             var settings = ps;
-            var language = DnnUtils.GetCultureCode(tabId, isSuperTab, settings);
+            var language = DnnLanguageUtils.GetCultureCode(tabId, isSuperTab, settings);
             var url = Globals.NavigateURL(tabId, isSuperTab, settings, controlKey, language, pageName, additionalParameters);
 
             // Making URLs call popups

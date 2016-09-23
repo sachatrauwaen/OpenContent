@@ -1,8 +1,6 @@
-﻿using Lucene.Net.Documents;
-using Satrabel.OpenContent.Components.Lucene.Mapping;
+﻿using Satrabel.OpenContent.Components.Lucene.Mapping;
 using System;
-using System.Diagnostics;
-using System.Linq;
+using Satrabel.OpenContent.Components;
 
 namespace Lucene.Net.Search
 {
@@ -31,7 +29,15 @@ namespace Lucene.Net.Search
         }
         public static TopDocs Search(this Searcher searcher, string type, Query query, Query filter, int numResults, Sort sort)
         {
-            return searcher.Search(query, JsonMappingUtils.GetTypeFilter(type, filter), numResults, sort);
+            try
+            {
+                return searcher.Search(query, JsonMappingUtils.GetTypeFilter(type, filter), numResults, sort);
+            }
+            catch (Exception ex)
+            {
+                Log.Logger.ErrorFormat("Error while searching {0}, {1}", type, query.ToString());
+                throw ex;
+            }
         }
         #endregion
 

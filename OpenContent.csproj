@@ -117,6 +117,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\bin\System.Web.Http.dll</HintPath>
     </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web.WebPages, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\bin\System.Web.WebPages.dll</HintPath>
@@ -138,6 +142,10 @@
     <Compile Include="AddEdit.ascx.designer.cs">
       <DependentUpon>AddEdit.ascx</DependentUpon>
     </Compile>
+    <Compile Include="Components\Alpaca\AlpacaLayoutEnum.cs" />
+    <Compile Include="Components\AppConfig.cs" />
+    <Compile Include="Components\Dnn\DnnFileUtils.cs" />
+    <Compile Include="Components\Dnn\DnnLanguageUtils.cs" />
     <Compile Include="Components\Json\InvalidJsonFileException.cs" />
     <Compile Include="Components\Logging\LoggingUtils.cs" />
     <Compile Include="Components\Logging\LogContext.cs" />
@@ -159,7 +167,7 @@
     <Compile Include="Components\Alpaca\OptionsConfig.cs" />
     <Compile Include="Components\Alpaca\QueryBuilder.cs" />
     <Compile Include="Components\Common\DateTimeExtensions.cs" />
-    <Compile Include="Components\Common\DnnUtils.cs" />
+    <Compile Include="Components\Dnn\DnnUtils.cs" />
     <Compile Include="Components\Common\PageUtils.cs" />
     <Compile Include="Components\Datasource\DataSourceContext.cs" />
     <Compile Include="Components\Datasource\DataSourceManager.cs" />
@@ -170,20 +178,20 @@
     <Compile Include="Components\Datasource\IDataItem.cs" />
     <Compile Include="Components\Datasource\IDatasource.cs" />
     <Compile Include="Components\Datasource\OpenContentDataSource.cs" />
-    <Compile Include="Components\Datasource\search\ConditionEnum.cs" />
-    <Compile Include="Components\Datasource\search\FilterGroup.cs" />
-    <Compile Include="Components\Datasource\search\BooleanRuleValue.cs" />
-    <Compile Include="Components\Datasource\search\LongRuleValue.cs" />
-    <Compile Include="Components\Datasource\search\RuleValue.cs" />
-    <Compile Include="Components\Datasource\search\SortRule.cs" />
-    <Compile Include="Components\Datasource\search\OperatorEnum.cs" />
-    <Compile Include="Components\Datasource\search\FilterRule.cs" />
-    <Compile Include="Components\Datasource\search\Select.cs" />
-    <Compile Include="Components\Datasource\search\IntegerRuleValue.cs" />
-    <Compile Include="Components\Datasource\search\FloatRuleValue.cs" />
-    <Compile Include="Components\Datasource\search\DateTimeRuleValue.cs" />
-    <Compile Include="Components\Datasource\search\StringRuleValue.cs" />
-    <Compile Include="Components\Datasource\search\FieldTypeEnum.cs" />
+    <Compile Include="Components\Datasource\Search\ConditionEnum.cs" />
+    <Compile Include="Components\Datasource\Search\FilterGroup.cs" />
+    <Compile Include="Components\Datasource\Search\BooleanRuleValue.cs" />
+    <Compile Include="Components\Datasource\Search\LongRuleValue.cs" />
+    <Compile Include="Components\Datasource\Search\RuleValue.cs" />
+    <Compile Include="Components\Datasource\Search\SortRule.cs" />
+    <Compile Include="Components\Datasource\Search\OperatorEnum.cs" />
+    <Compile Include="Components\Datasource\Search\FilterRule.cs" />
+    <Compile Include="Components\Datasource\Search\Select.cs" />
+    <Compile Include="Components\Datasource\Search\IntegerRuleValue.cs" />
+    <Compile Include="Components\Datasource\Search\FloatRuleValue.cs" />
+    <Compile Include="Components\Datasource\Search\DateTimeRuleValue.cs" />
+    <Compile Include="Components\Datasource\Search\StringRuleValue.cs" />
+    <Compile Include="Components\Datasource\Search\FieldTypeEnum.cs" />
     <Compile Include="Components\Dnn\DnnUrlUtils.cs" />
     <Compile Include="Components\Dynamic\DynamicHelper.cs" />
     <Compile Include="Components\ExternalApiController.cs" />
@@ -192,6 +200,7 @@
     <Compile Include="Components\FileUploadController.cs" />
     <Compile Include="Components\JPList\JplistQueryBuilder.cs" />
     <Compile Include="Components\Lucene\Config\FieldConfig.cs" />
+    <Compile Include="Components\Lucene\Config\FieldConfigUtils.cs" />
     <Compile Include="Components\Lucene\Config\SelectQueryDefinition.cs" />
     <Compile Include="Components\Lucene\Config\QueryDefinition.cs" />
     <Compile Include="Components\Alpaca\SchemaConfig.cs" />
@@ -204,14 +213,50 @@
     <Compile Include="Components\ModelFactory.cs" />
     <Compile Include="Components\Manifest\TemplateFiles.cs" />
     <Compile Include="Components\Manifest\PartialTemplate.cs" />
+    <Compile Include="Components\OpenContentControllerFactory.cs" />
+    <Compile Include="Components\OpenContentGlobalSettingsController.cs" />
     <Compile Include="Components\OpenDataController.cs" />
     <Compile Include="Components\Razor\RazorEngine.cs" />
+    <Compile Include="Components\Render\RenderEngine.cs" />
+    <Compile Include="Components\Rest\RestController.cs" />
+    <Compile Include="Components\Rest\RestGroup.cs" />
+    <Compile Include="Components\Rest\RestPaging.cs" />
+    <Compile Include="Components\Rest\RestQueryBuilder.cs" />
+    <Compile Include="Components\Rest\RestRule.cs" />
+    <Compile Include="Components\Rest\RestSelect.cs" />
+    <Compile Include="Components\Rest\RestSort.cs" />
+    <Compile Include="Components\Rest\Swagger\CamelCaseExceptDictionaryResolver.cs" />
+    <Compile Include="Components\Rest\Swagger\CollectionFormat.cs" />
+    <Compile Include="Components\Rest\Swagger\Contact.cs" />
+    <Compile Include="Components\Rest\Swagger\ExternalDoc.cs" />
+    <Compile Include="Components\Rest\Swagger\Info.cs" />
+    <Compile Include="Components\Rest\Swagger\ItemsObject.cs" />
+    <Compile Include="Components\Rest\Swagger\License.cs" />
+    <Compile Include="Components\Rest\Swagger\Location.cs" />
+    <Compile Include="Components\Rest\Swagger\OAuth2Flow.cs" />
+    <Compile Include="Components\Rest\Swagger\Operation.cs" />
+    <Compile Include="Components\Rest\Swagger\Parameter.cs" />
+    <Compile Include="Components\Rest\Swagger\PathItem.cs" />
+    <Compile Include="Components\Rest\Swagger\Protocol.cs" />
+    <Compile Include="Components\Rest\Swagger\Response.cs" />
+    <Compile Include="Components\Rest\Swagger\SchemaObject.cs" />
+    <Compile Include="Components\Rest\Swagger\SchemaType.cs" />
+    <Compile Include="Components\Rest\Swagger\SecurityDefinition.cs" />
+    <Compile Include="Components\Rest\Swagger\SecurityRequirement.cs" />
+    <Compile Include="Components\Rest\Swagger\SecuritySchemeType.cs" />
+    <Compile Include="Components\Rest\Swagger\SwaggerController.cs" />
+    <Compile Include="Components\Rest\Swagger\SwaggerRoot.cs" />
+    <Compile Include="Components\Rest\Swagger\SwaggerSecurityScheme.cs" />
+    <Compile Include="Components\Rest\Swagger\Tag.cs" />
     <Compile Include="Components\Rss\RssApiController.cs" />
     <Compile Include="Components\TemplateHelpers\Images\ImageFactory.cs" />
     <Compile Include="Components\TemplateHelpers\OpenGraph.cs" />
     <Compile Include="Components\TemplateHelpers\OtherExtentions.cs" />
     <Compile Include="Components\Manifest\TemplateManifest.cs" />
+    <Compile Include="Components\TemplateHelpers\RazorExtensions.cs" />
+    <Compile Include="Components\TemplateHelpers\StringHtmlExtensions.cs" />
     <Compile Include="Components\TemplateHelpers\UrlHelpers.cs" />
+    <Compile Include="Components\Uri\UriFactory.cs" />
     <Compile Include="Components\Uri\PortalFolderUri.cs" />
     <Compile Include="Components\Uri\PortalFileUri.cs" />
     <Compile Include="Components\Uri\FolderUri.cs" />
@@ -240,13 +285,14 @@
     <Compile Include="Components\Json\JsonMergeOptions.cs" />
     <Compile Include="Components\Json\JsonUtils.cs" />
     <Compile Include="Components\DnnEntitiesAPIController.cs" />
-    <Compile Include="Components\Logger.cs" />
+    <Compile Include="Components\Lucene\Index\IndexExtentions.cs" />
+    <Compile Include="Components\Utils\Logger.cs" />
     <Compile Include="Components\OpenContentController.cs" />
     <Compile Include="Components\OpenContentInfo.cs" />
     <Compile Include="Components\OpenContentAPIController.cs" />
     <Compile Include="Components\OpenContentRouteMapper.cs" />
     <Compile Include="Components\OpenContentSettings.cs" />
-    <Compile Include="Components\OpenContentUtils.cs" />
+    <Compile Include="Components\Utils\OpenContentUtils.cs" />
     <Compile Include="Components\OpenContentVersion.cs" />
     <Compile Include="Components\OpenContentWebPage.cs" />
     <Compile Include="Components\TemplateHelpers\Normalizers.cs" />
@@ -257,6 +303,20 @@
     <Compile Include="Components\Common\Utils.cs" />
     <Compile Include="Components\UrlRewriter\OpenContentUrlRule.cs" />
     <Compile Include="Components\UrlRewriter\OpenContentUrlProvider.cs" />
+    <Compile Include="RenderModule.ascx.cs">
+      <DependentUpon>RenderModule.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="RenderModule.ascx.designer.cs">
+      <DependentUpon>RenderModule.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Swagger.ascx.cs">
+      <DependentUpon>Swagger.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Swagger.ascx.designer.cs">
+      <DependentUpon>Swagger.ascx</DependentUpon>
+    </Compile>
     <Compile Include="EditAddData.ascx.cs">
       <DependentUpon>EditAddData.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -351,7 +411,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="AddEdit.ascx" />
-    <Content Include="alpaca\css\alpaca-bootstrap.css" />
+    <Content Include="alpaca\css\alpaca-dnnbootstrap.css" />
     <Content Include="alpaca\css\alpaca-dnn.css" />
     <Content Include="alpaca\css\img\Add_16x16_Gray.png" />
     <Content Include="alpaca\css\img\Delete_16X16_Gray.png" />
@@ -359,6 +419,8 @@
     <Content Include="alpaca\css\img\Up_16X16_Standard.png" />
     <Content Include="alpaca\js\fields\dnn\Folder2Field.js" />
     <Content Include="alpaca\js\fields\dnn\GalleryField.js" />
+    <Content Include="alpaca\js\fields\dnn\ImageCrop2Field.js" />
+    <Content Include="alpaca\js\fields\dnn\MLFolder2Field.js" />
     <Content Include="alpaca\js\fields\dnn\MLFile2Field.js" />
     <Content Include="alpaca\js\fields\dnn\MLTextAreaField.js" />
     <Content Include="alpaca\js\fields\dnn\MLUrl2Field.js" />
@@ -376,6 +438,7 @@
     <Content Include="alpaca\js\fields\dnn\IconField.js" />
     <Content Include="alpaca\js\fields\dnn\ImageField.js" />
     <Content Include="alpaca\js\fields\dnn\MLImage2Field.js" />
+    <Content Include="alpaca\js\fields\dnn\Role2Field.js" />
     <Content Include="alpaca\js\fields\dnn\Url2Field.js" />
     <Content Include="alpaca\js\fields\dnn\File2Field.js" />
     <Content Include="alpaca\js\fields\dnn\ImageCropperField.js" />
@@ -399,6 +462,7 @@
     <Content Include="alpaca\templates\dnn-edit\control-checkbox.html" />
     <Content Include="alpaca\templates\dnn-edit\control-file.html" />
     <Content Include="alpaca\templates\dnn-edit\control-imagecrop.html" />
+    <Content Include="alpaca\templates\dnn-edit\control-imagecrop2.html" />
     <Content Include="alpaca\templates\dnn-edit\control-imagecropper.html" />
     <Content Include="alpaca\templates\dnn-edit\control-image.html" />
     <Content Include="alpaca\templates\dnn-edit\control-ckeditor.html" />
@@ -415,6 +479,63 @@
     <Content Include="css\font-awesome\css\font-awesome.css" />
     <Content Include="css\font-awesome\css\font-awesome.min.css" />
     <Content Include="css\font-awesome\fonts\fontawesome-webfont.svg" />
+    <Content Include="css\glyphicons\fonts\glyphicons-regular.svg" />
+    <Content Include="css\glyphicons\fonts\glyphicons-social-regular.svg" />
+    <Content Include="css\glyphicons\glyphicons.css" />
+    <Content Include="js\bootstrap\css\bootstrap-theme.css" />
+    <Content Include="js\bootstrap\css\bootstrap-theme.min.css" />
+    <Content Include="js\bootstrap\css\bootstrap.css" />
+    <Content Include="js\bootstrap\css\bootstrap.min.css" />
+    <Content Include="js\bootstrap\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="js\bootstrap\js\bootstrap.js" />
+    <Content Include="js\bootstrap\js\bootstrap.min.js" />
+    <Content Include="js\swagger\css\print.css" />
+    <Content Include="js\swagger\css\reset.css" />
+    <Content Include="js\swagger\css\screen.css" />
+    <Content Include="js\swagger\css\style.css" />
+    <Content Include="js\swagger\css\typography.css" />
+    <Content Include="js\swagger\images\collapse.gif" />
+    <Content Include="js\swagger\images\expand.gif" />
+    <Content Include="js\swagger\images\explorer_icons.png" />
+    <Content Include="js\swagger\images\favicon-16x16.png" />
+    <Content Include="js\swagger\images\favicon-32x32.png" />
+    <Content Include="js\swagger\images\favicon.ico" />
+    <Content Include="js\swagger\images\logo_small.png" />
+    <Content Include="js\swagger\images\pet_store_api.png" />
+    <Content Include="js\swagger\images\throbber.gif" />
+    <Content Include="js\swagger\images\wordnik_api.png" />
+    <Content Include="js\swagger\index.html" />
+    <Content Include="js\swagger\lang\en.js" />
+    <Content Include="js\swagger\lang\es.js" />
+    <Content Include="js\swagger\lang\fr.js" />
+    <Content Include="js\swagger\lang\geo.js" />
+    <Content Include="js\swagger\lang\it.js" />
+    <Content Include="js\swagger\lang\ja.js" />
+    <Content Include="js\swagger\lang\ko-kr.js" />
+    <Content Include="js\swagger\lang\pl.js" />
+    <Content Include="js\swagger\lang\pt.js" />
+    <Content Include="js\swagger\lang\ru.js" />
+    <Content Include="js\swagger\lang\tr.js" />
+    <Content Include="js\swagger\lang\translator.js" />
+    <Content Include="js\swagger\lang\zh-cn.js" />
+    <Content Include="js\swagger\lib\backbone-min.js" />
+    <Content Include="js\swagger\lib\handlebars-2.0.0.js" />
+    <Content Include="js\swagger\lib\highlight.9.1.0.pack.js" />
+    <Content Include="js\swagger\lib\highlight.9.1.0.pack_extended.js" />
+    <Content Include="js\swagger\lib\jquery.ba-bbq.min.js" />
+    <Content Include="js\swagger\lib\jquery.slideto.min.js" />
+    <Content Include="js\swagger\lib\jquery.wiggle.min.js" />
+    <Content Include="js\swagger\lib\js-yaml.min.js" />
+    <Content Include="js\swagger\lib\jsoneditor.min.js" />
+    <Content Include="js\swagger\lib\lodash.min.js" />
+    <Content Include="js\swagger\lib\marked.js" />
+    <Content Include="js\swagger\lib\object-assign-pollyfill.js" />
+    <Content Include="js\swagger\lib\swagger-oauth.js" />
+    <Content Include="js\swagger\o2c.html" />
+    <Content Include="js\swagger\swagger-ui.js" />
+    <Content Include="js\swagger\swagger-ui.min.js" />
+    <Content Include="RenderModule.ascx" />
+    <Content Include="Swagger.ascx" />
     <Content Include="EditAddData.ascx" />
     <Content Include="EditInit.ascx" />
     <Content Include="EditQuery.ascx" />
@@ -784,6 +905,21 @@
     <Content Include="js\lib\typeahead.js\README.md" />
     <Content Include="js\lib\typeahead.js\test\ci" />
     <Content Include="js\lib\typeahead.js\typeahead.js.jquery.json" />
+    <Content Include="js\swagger\fonts\DroidSans-Bold.ttf" />
+    <Content Include="js\swagger\fonts\DroidSans.ttf" />
+    <Content Include="js\swagger\swagger-ui.min.js.map">
+      <DependentUpon>swagger-ui.min.js</DependentUpon>
+    </Content>
+    <Content Include="js\bootstrap\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="js\bootstrap\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="js\bootstrap\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="js\bootstrap\fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="css\glyphicons\fonts\glyphicons-regular.eot" />
+    <Content Include="css\glyphicons\fonts\glyphicons-regular.ttf" />
+    <Content Include="css\glyphicons\fonts\glyphicons-regular.woff" />
+    <Content Include="css\glyphicons\fonts\glyphicons-social-regular.eot" />
+    <Content Include="css\glyphicons\fonts\glyphicons-social-regular.ttf" />
+    <Content Include="css\glyphicons\fonts\glyphicons-social-regular.woff" />
     <None Include="Scripts\_references.js" />
     <Content Include="js\select2\i18n\az.js" />
     <Content Include="js\select2\i18n\bg.js" />
@@ -912,7 +1048,9 @@
     <Content Include="App_LocalResources\EditSettings.ascx.resx" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_LocalResources\EditGlobalSettings.ascx.resx" />
+    <Content Include="App_LocalResources\EditGlobalSettings.ascx.resx">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_LocalResources\EditQuery.ascx.resx" />
@@ -922,6 +1060,30 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Components\Images\" />
+    <Folder Include="js\alpaca-1.5.17\alpaca\bootstrap\images\" />
+    <Folder Include="js\alpaca-1.5.17\alpaca\web\images\" />
+    <Folder Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\build\css\" />
+    <Folder Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\build\js\" />
+    <Folder Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\docs\" />
+    <Folder Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\src\js\" />
+    <Folder Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\src\less\" />
+    <Folder Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\src\nuget\" />
+    <Folder Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\src\sass\" />
+    <Folder Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\tasks\" />
+    <Folder Include="js\alpaca-1.5.17\lib\handlebars\lib\handlebars\" />
+    <Folder Include="js\alpaca-1.5.17\lib\moment\benchmarks\" />
+    <Folder Include="js\alpaca-1.5.17\lib\moment\locale\" />
+    <Folder Include="js\alpaca-1.5.17\lib\moment\meteor\" />
+    <Folder Include="js\alpaca-1.5.17\lib\moment\min\" />
+    <Folder Include="js\alpaca-1.5.17\lib\moment\scripts\" />
+    <Folder Include="js\alpaca-1.5.17\lib\typeahead.js\dist\" />
+    <Folder Include="js\alpaca-1.5.17\lib\typeahead.js\doc\migration\" />
+    <Folder Include="js\alpaca-1.5.17\lib\typeahead.js\src\bloodhound\" />
+    <Folder Include="js\alpaca-1.5.17\lib\typeahead.js\src\common\" />
+    <Folder Include="js\alpaca-1.5.17\lib\typeahead.js\src\typeahead\" />
+    <Folder Include="js\alpaca-1.5.17\lib\typeahead.js\test\fixtures\" />
+    <Folder Include="js\alpaca-1.5.17\lib\typeahead.js\test\helpers\" />
+    <Folder Include="js\alpaca-1.5.17\lib\typeahead.js\test\integration\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_LocalResources\EditSettings.ascx.de-DE.resx" />
@@ -940,6 +1102,34 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_LocalResources\AlpacaFormBuilder.ascx.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_LocalResources\AlpacaFormBuilder.ascx.de-AT.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_LocalResources\Edit.ascx.de-AT.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_LocalResources\EditAddData.ascx.de-AT.resx" />
+    <Content Include="App_LocalResources\EditAddData.ascx.de-DE.resx" />
+    <Content Include="App_LocalResources\EditAddData.ascx.resx" />
+    <Content Include="App_LocalResources\EditData.ascx.de-AT.resx" />
+    <Content Include="App_LocalResources\EditData.ascx.de-DE.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_LocalResources\EditGlobalSettings.ascx.de-AT.resx" />
+    <Content Include="App_LocalResources\EditGlobalSettings.ascx.de-DE.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_LocalResources\EditInit.ascx.de-AT.resx" />
+    <Content Include="App_LocalResources\EditInit.ascx.de-DE.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_LocalResources\EditQuery.ascx.de-AT.resx" />
+    <Content Include="App_LocalResources\EditQuery.ascx.de-DE.resx" />
+    <Content Include="App_LocalResources\EditSettings.ascx.de-AT.resx" />
+    <Content Include="App_LocalResources\EditTemplate.ascx.de-AT.resx" />
+    <Content Include="App_LocalResources\ShareTemplate.ascx.de-AT.resx" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

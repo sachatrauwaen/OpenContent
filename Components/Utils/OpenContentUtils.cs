@@ -5,26 +5,21 @@ using DotNetNuke.Entities.Portals;
 using DotNetNuke.Services.FileSystem;
 using DotNetNuke.Services.Localization;
 using ICSharpCode.SharpZipLib.Zip;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Web;
 using System.Web.Hosting;
 using System.Web.UI.WebControls;
-using DotNetNuke.UI.Modules;
 using DotNetNuke.Security.Permissions;
 using DotNetNuke.Security;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Dnn;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.Lucene.Config;
+using Satrabel.OpenContent.Components.Lucene.Index;
 using Satrabel.OpenContent.Components.TemplateHelpers;
 
 
@@ -32,6 +27,25 @@ namespace Satrabel.OpenContent.Components
 {
     public static class OpenContentUtils
     {
+        public static void HydrateDefaultFields(this OpenContentInfo content, FieldConfig indexConfig)
+        {
+            if (indexConfig.HasField(AppConfig.FieldNamePublishStartDate)
+                   && content.JsonAsJToken != null && content.JsonAsJToken[AppConfig.FieldNamePublishStartDate] == null)
+            {
+                content.JsonAsJToken[AppConfig.FieldNamePublishStartDate] = DateTime.MinValue;
+            }
+            if (indexConfig.HasField(AppConfig.FieldNamePublishEndDate)
+                && content.JsonAsJToken != null && content.JsonAsJToken[AppConfig.FieldNamePublishEndDate] == null)
+            {
+                content.JsonAsJToken[AppConfig.FieldNamePublishEndDate] = DateTime.MaxValue;
+            }
+            if (indexConfig.HasField(AppConfig.FieldNamePublishStatus)
+                && content.JsonAsJToken != null && content.JsonAsJToken[AppConfig.FieldNamePublishStatus] == null)
+            {
+                content.JsonAsJToken[AppConfig.FieldNamePublishStatus] = "published";
+            }
+        }
+
         public static void UpdateModuleTitle(ModuleInfo module, string moduleTitle)
         {
             if (module.ModuleTitle != moduleTitle)
@@ -149,7 +163,7 @@ namespace Satrabel.OpenContent.Components
                                 {
                                     templateName = templateName + " - " + template.Value.Title;
                                 }
-                                var item = new ListItem(templateCat + " : " + templateName, templateUri.FilePath);
+                                var item = new ListItem((templateCat == "Site" ? "" : templateCat + " : ") + templateName, templateUri.FilePath);
                                 if (selectedTemplate != null && templateUri.FilePath.ToLowerInvariant() == selectedTemplate.Key.ToString().ToLowerInvariant())
                                 {
                                     item.Selected = true;
@@ -179,7 +193,7 @@ namespace Satrabel.OpenContent.Components
                         else
                             scriptName = scriptName.Replace("\\", " - ");
 
-                        var item = new ListItem(templateCat + " : " + scriptName, templateUri.FilePath);
+                        var item = new ListItem((templateCat == "Site" ? "" : templateCat + " : ") + scriptName, templateUri.FilePath);
                         if (selectedTemplate != null && templateUri.FilePath.ToLowerInvariant() == selectedTemplate.Key.ToString().ToLowerInvariant())
                         {
                             item.Selected = true;
@@ -397,7 +411,7 @@ namespace Satrabel.OpenContent.Components
             if (module != null && settings != null && settings.TemplateKey != null && settings.TemplateKey.TemplateDir != null && !settings.TemplateKey.TemplateDir.FolderExists)
             {
                 var url = DnnUrlUtils.NavigateUrl(module.TabID);
-                Log.Logger.ErrorFormat("Error loading OpenContent Template on page [{1}] module [{2}-{3}]. Reason: Template not found [{0}]", settings.TemplateKey.ToString(), url, module.ModuleID, module.ModuleTitle);
+                Log.Logger.ErrorFormat("Error loading OpenContent Template on page [{5}-{4}-{1}] module [{2}-{3}]. Reason: Template not found [{0}]", settings.TemplateKey.ToString(), url, module.ModuleID, module.ModuleTitle, module.TabID, module.PortalID);
                 result = false;
             }
             return result;
@@ -408,12 +422,10 @@ namespace Satrabel.OpenContent.Components
             return FolderUri.ReverseMapPath(path);
         }
 
-        public static bool HasEditPermissions(PortalSettings portalSettings, ModuleInfo module, string editrole, int CreatedByUserId)
+        public static bool HasEditPermissions(PortalSettings portalSettings, ModuleInfo module, string editrole, int createdByUserId)
         {
-            return portalSettings.UserInfo.IsSuperUser ||
-                    portalSettings.UserInfo.IsInRole(portalSettings.AdministratorRoleName) ||
-                    ModulePermissionController.HasModuleAccess(SecurityAccessLevel.Edit, "CONTENT", module) ||
-                    (!string.IsNullOrEmpty(editrole) && portalSettings.UserInfo.IsInRole(editrole) && (CreatedByUserId == -1 || portalSettings.UserId == CreatedByUserId)) ||
+            return module.HasEditRights() ||
+                    (!string.IsNullOrEmpty(editrole) && portalSettings.UserInfo.IsInRole(editrole) && (createdByUserId == -1 || portalSettings.UserId == createdByUserId)) ||
                     (!string.IsNullOrEmpty(editrole) && editrole.ToLower() == "all");
         }
 
@@ -428,6 +440,7 @@ namespace Satrabel.OpenContent.Components
             catch (Exception ex)
             {
                 //we should log this
+                Log.Logger.ErrorFormat("Error while parsing json", ex);
                 if (Debugger.IsAttached) Debugger.Break();
                 return null;
             }

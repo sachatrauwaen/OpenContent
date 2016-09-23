@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Text;
-using System.Web;
 using DotNetNuke.Common.Internal;
 using DotNetNuke.Entities.Portals;
 
@@ -20,6 +17,16 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             param = param.Concat(additionalParameters).ToArray();
             var newUrl = TestableGlobals.Instance.NavigateURL(targetTabId, false, PortalSettings.Current, string.Empty, string.Empty, detailItemTitle, param);
             return newUrl.Length <= 230 ? newUrl : newUrl.Substring(0, 230); //actual url has ?default.aspx 
+        }
+
+        public static string NavigateFileUrl(dynamic fileId)
+        {
+            var portalFileUri = UriFactory.CreatePortalFileUri(fileId);
+            if (portalFileUri == null)
+            {
+                return string.Empty;
+            }
+            return portalFileUri.UrlFilePath;
         }
 
         public static string CleanupUrl(this string url)

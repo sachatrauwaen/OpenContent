@@ -14,6 +14,9 @@
             <asp:LinkButton ID="bIndex" runat="server" class="dnnSecondaryAction" Text="Reindex module" OnClick="bIndex_Click" />
         </li>
         <li>
+            <asp:LinkButton ID="bIndexAll" runat="server" class="dnnSecondaryAction" Text="Reindex All Portals" OnClick="bIndexAll_Click" Visible="False" />
+        </li>
+        <li>
             <asp:LinkButton ID="bGenerate" runat="server" class="dnnSecondaryAction" Text="Generate 10k" OnClick="bGenerate_Click" Visible="False" />
         </li>
 

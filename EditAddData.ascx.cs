@@ -12,15 +12,8 @@
 using System;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Common;
-using Lucene.Net.Index;
-using Lucene.Net.Search;
-using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components;
 using Satrabel.OpenContent.Components.Alpaca;
-using Satrabel.OpenContent.Components.Lucene;
-using Satrabel.OpenContent.Components.Lucene.Config;
-using Satrabel.OpenContent.Components.Lucene.Index;
-using Satrabel.OpenContent.Components.Manifest;
 
 #endregion
 
@@ -35,7 +28,7 @@ namespace Satrabel.OpenContent
             hlCancel.NavigateUrl = Globals.NavigateURL();
             cmdSave.NavigateUrl = Globals.NavigateURL();
             OpenContentSettings settings = this.OpenContentSettings();
-            AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, settings.Template.Uri().FolderPath, Key);
+            AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, settings.Template.ManifestFolderUri.FolderPath, Key);
             alpaca.RegisterAll();
             string ItemId = null;//Request.QueryString["id"] == null ? -1 : int.Parse(Request.QueryString["id"]);
             AlpacaContext = new AlpacaContext(PortalId, ModuleId, ItemId, ScopeWrapper.ClientID, hlCancel.ClientID, cmdSave.ClientID, null, null);
