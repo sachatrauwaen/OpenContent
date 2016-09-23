@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web.UI.WebControls;
 using DotNetNuke.Common;
 using DotNetNuke.Entities.Modules;
+using DotNetNuke.Entities.Portals;
 using DotNetNuke.Entities.Tabs;
 using DotNetNuke.Services.Exceptions;
 using DotNetNuke.UI.Modules;
@@ -33,9 +34,7 @@ namespace Satrabel.OpenContent
             if (rblFrom.SelectedIndex == 0) // site
             {
                 var scriptFileSetting = ModuleContext.OpenContentSettings().Template;
-                ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplates(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, "OpenContent").ToArray());
-
-                //ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplatesFiles(ModuleContext.PortalSettings, ModuleContext.moduleId, scriptFileSetting, "OpenContent").ToArray());
+                ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplates(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, AppConfig.OPENCONTENT).ToArray());
             }
             else if (rblFrom.SelectedIndex == 1) // web
             {
@@ -78,12 +77,12 @@ namespace Satrabel.OpenContent
             ddlTemplate.Items.Clear();
             if (rblUseTemplate.SelectedIndex == 0) // existing
             {
-                ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplatesFiles(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, "OpenContent").ToArray());
+                ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplatesFiles(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, AppConfig.OPENCONTENT).ToArray());
             }
             else if (rblUseTemplate.SelectedIndex == 1) // new
             {
 
-                ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplates(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, "OpenContent").ToArray());
+                ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplates(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, AppConfig.OPENCONTENT).ToArray());
             }
             ActivateDetailPage();
         }
@@ -165,7 +164,7 @@ namespace Satrabel.OpenContent
             //var templateUri = template == null ? null : template.Uri;
             //var otherModuleTemplateUri = otherModuleTemplate == null ? null : otherModuleTemplate.Uri;
 
-            ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplatesFiles(ModuleContext.PortalSettings, ModuleContext.ModuleId, template, "OpenContent", otherModuleTemplate).ToArray());
+            ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplatesFiles(ModuleContext.PortalSettings, ModuleContext.ModuleId, template, AppConfig.OPENCONTENT, otherModuleTemplate).ToArray());
             if (ddlTemplate.Items.Count == 0)
             {
                 rblUseTemplate.Items[0].Enabled = false;
@@ -201,10 +200,10 @@ namespace Satrabel.OpenContent
 
             if (!templateDefined && !settings.FirstTimeInitialisation && ddlTemplate.Items.FindByValue(settings.TemplateKey.ToString()) == null)
             {
-                lCurrentTemplate.Text = settings.TemplateKey.ToString();            
+                lCurrentTemplate.Text = settings.TemplateKey.ToString();
                 phCurrentTemplate.Visible = true;
             }
-            
+
             bSave.CssClass = "dnnPrimaryAction";
             bSave.Enabled = true;
             hlEditSettings.CssClass = "dnnSecondaryAction";
@@ -251,7 +250,7 @@ namespace Satrabel.OpenContent
                 rblDataSource.SelectedIndex = (Settings.TabId > 0 && Settings.ModuleId > 0 ? 1 : 0);
                 BindOtherModules(Settings.TabId, Settings.ModuleId);
                 BindTemplates(Settings.Template, (Renderinfo.IsOtherModule ? Renderinfo.Template.MainTemplateUri() : null));
-                BindDetailPage(Settings.DetailTabId, Settings.TabId);
+                BindDetailPage(Settings.DetailTabId, Settings.TabId, Settings.GetModuleId(ModuleContext.ModuleId));
             }
             if (rblDataSource.SelectedIndex == 1) // other module
             {
@@ -291,7 +290,7 @@ namespace Satrabel.OpenContent
         private void BindOtherModules(int tabId, int moduleId)
         {
             IEnumerable<ModuleInfo> modules = (new ModuleController()).GetModules(ModuleContext.PortalId).Cast<ModuleInfo>();
-            modules = modules.Where(m => m.ModuleDefinition.DefinitionName == "OpenContent" && m.IsDeleted == false && !m.OpenContentSettings().IsOtherModule);
+            modules = modules.Where(m => m.ModuleDefinition.DefinitionName == AppConfig.OPENCONTENT && m.IsDeleted == false && !m.OpenContentSettings().IsOtherModule);
             rblDataSource.Items[1].Enabled = modules.Any();
             phDataSource.Visible = rblDataSource.SelectedIndex == 1; // other module
             if (rblDataSource.SelectedIndex == 1) // other module
@@ -330,40 +329,105 @@ namespace Satrabel.OpenContent
                 ddlDataSource.Items.Add(li);
             }
         }
-        private void BindDetailPage(int currentDetailTabId, int otherModuleTabId)
+        private void BindDetailPage(int currentDetailTabId, int othermoduleTabId, int dataModuleId)
         {
+            string format;
+            ListItem li;
 
             ActivateDetailPage();
-
             ddlDetailPage.Items.Clear();
-            ddlDetailPage.Items.Add(new ListItem("Main Module Page", "-1"));
-            if (otherModuleTabId > 0)
-            {
-                //todo: add li with "CurrentPage"
-            }
 
-            //todo: wegfilteren van redirected tabs
+            int othermoduleDetailTabId = GetOtherModuleDetailTabId(othermoduleTabId, dataModuleId);
+            if (othermoduleDetailTabId > 0)
+            {
+                //add extra li with "Default Detail Page" directly to dropdown
+                format = LogContext.IsLogActive ? "Main Module Detail Page - [{0}]" : "Main Module Detail Page";
+                li = new ListItem(string.Format(format, othermoduleDetailTabId), othermoduleDetailTabId.ToString());
+                ddlDetailPage.Items.Add(li);
+            }
 
             var listItems = new List<ListItem>();
             Dictionary<string, int> tabs = TabController.GetTabPathDictionary(ModuleContext.PortalId, DnnLanguageUtils.GetCurrentCultureCode());
 
-            foreach (var tab in tabs)
+            foreach (var tabId in tabs.Where(i => IsTabWithModuleWithSameMainModule(i.Value, dataModuleId) && IsAccessibleTab(i.Value)))
             {
-                string format = LogContext.IsLogActive ? "{1} [{0}]" : "{1}";
-                var li = new ListItem(string.Format(format, tab.Value, tab.Key.Replace("//", " / ").TrimStart(" / ")), tab.Value.ToString());
-                if (!tab.Key.StartsWith("//Admin//"))
+                string tabname = tabId.Key.Replace("//", " / ").TrimStart(" / ");
+
+                if ((othermoduleTabId > 0 && tabId.Value == othermoduleTabId) || (othermoduleTabId == -1 && tabId.Value == ModuleContext.TabId))
                 {
-                    listItems.Add(li);
-                    if (tab.Value == currentDetailTabId)
+                    //add extra li with "Main Module Page" directly to dropdown
+                    format = LogContext.IsLogActive ? "Main Module Page - {0} [{1}]" : "Main Module Page";
+                    li = new ListItem(string.Format(format, tabname, tabId.Value), "-1");
+                    ddlDetailPage.Items.Add(li);
+                }
+                if (othermoduleTabId > 0 && tabId.Value == ModuleContext.TabId)
+                {
+                    //add extra li with "CurrentPage" directly to dropdown
+                    format = LogContext.IsLogActive ? "Current Page - {0} [{1}]" : "Current Page";
+                    li = new ListItem(string.Format(format, tabname, tabId.Value), tabId.Value.ToString());
+                    ddlDetailPage.Items.Add(li);
+                }
+
+                format = LogContext.IsLogActive ? "{0} [{1}]" : "{0}";
+                li = new ListItem(string.Format(format, tabname, tabId.Value), tabId.Value.ToString());
+
+                listItems.Add(li);
+                if (tabId.Value == currentDetailTabId)
+                {
+                    li.Selected = true;
+                }
+
+            }
+            foreach (ListItem listItem in listItems.OrderBy(x => x.Text))
+            {
+                ddlDetailPage.Items.Add(listItem);
+            }
+        }
+
+        private int GetOtherModuleDetailTabId(int othermoduleTabId, int dataModuleId)
+        {
+            //If tab<0 then the data does not come from an other module
+            if (othermoduleTabId < 0) return 0;
+
+            ModuleInfo moduleInfo = ModuleController.Instance.GetModule(dataModuleId, othermoduleTabId, false);
+            if (moduleInfo == null)
+            {
+                //This should never happen
+                Log.Logger.ErrorFormat("Module {0} not found while in GetOtherModuleDetailTabId()", dataModuleId);
+                return 0;
+            }
+
+            var mainModuleSettings = moduleInfo.OpenContentSettings();
+
+            if (mainModuleSettings == null) return 0;
+            if (mainModuleSettings.TabId > -1) return 0; //the other module gets his data also from another module?! Let's not support that.
+
+            return mainModuleSettings.DetailTabId == -1 ? moduleInfo.TabID : mainModuleSettings.DetailTabId;
+        }
+
+        private bool IsAccessibleTab(int tabId)
+        {
+            //ignore redirected tabs
+            var tabinfo = TabController.Instance.GetTab(tabId, ModuleContext.PortalId);
+            return tabinfo.IsPublishedTab();
+        }
+
+        private bool IsTabWithModuleWithSameMainModule(int tabId, int mainmoduleId)
+        {
+            //only tabs with oc-module with main-moduleId= CurrentMainModuleId
+            var tabinfo = TabController.Instance.GetTab(tabId, ModuleContext.PortalId);
+            foreach (var item in tabinfo.ChildModules)
+            {
+                ModuleInfo moduleInfo = item.Value;
+                if (moduleInfo.ModuleDefinition.FriendlyName == AppConfig.OPENCONTENT)
+                {
+                    if (moduleInfo.OpenContentSettings().GetModuleId(moduleInfo.ModuleID) == mainmoduleId)
                     {
-                        li.Selected = true;
+                        return true;
                     }
                 }
             }
-            foreach (ListItem li in listItems.OrderBy(x => x.Text))
-            {
-                ddlDetailPage.Items.Add(li);
-            }
+            return false;
         }
 
         private void ActivateDetailPage()

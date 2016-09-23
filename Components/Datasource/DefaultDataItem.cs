@@ -18,6 +18,8 @@ namespace Satrabel.OpenContent.Components.Datasource
         public JToken Data { get; set; }
         public int CreatedByUserId { get; set; }
         public DateTime CreatedOnDate { get; set; }
+        public int LastModifiedByUserId { get; set; }
+        public DateTime LastModifiedOnDate { get; set; }
 
         public object Item { get; set; }
     }

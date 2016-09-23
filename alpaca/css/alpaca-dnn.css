@@ -16,7 +16,7 @@
     position: fixed;
     bottom: 0;
     left: 0;
-    width: 70%;
+    /*width: 70%;*/
     background-color: #fff;
     z-index: 2;
 }
@@ -136,7 +136,7 @@
 
 .alpaca-control-container {
     width: 45%;
-    max-width: 445px;
+    max-width: 470px;
     float: left;
 }
 
@@ -441,7 +441,7 @@ h2.dnnFormSectionHead a {
         background-color: #0097cf;
     }
 
-.alpaca-field-table .select2-container {
+.alpaca-field-table .select2-container, .alpaca-control-container.alpaca-control .select2-container{
     width: 100% !important;
     max-width: 461px;
     margin-bottom: 0 !important;
@@ -674,4 +674,14 @@ div.progress {
 
 .dnnFormItem.alpaca-field-select select {
     width: 45%;
+}
+
+.cropper-container {
+ margin-top:5px;
+ 
+}
+
+.alpaca-control-buttons-container {
+     padding-left: 32%;
+    margin-left: 18px;
 }

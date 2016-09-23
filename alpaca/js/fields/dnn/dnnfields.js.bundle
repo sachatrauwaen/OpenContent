@@ -19,6 +19,7 @@
     <file>FileField.js</file>
     <file>ImageCropField.js</file>
     <file>ImageCropperField.js</file>
+    <file>ImageCrop2Field.js</file>
     <file>ImageField.js</file>
     <file>NumberField.js</file>
     <file>Select2Field.js</file>

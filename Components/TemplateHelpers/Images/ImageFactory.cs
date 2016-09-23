@@ -22,8 +22,6 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         {
             ImageUri retval = null;
             int imgId;
-            int.TryParse(imageId, out imgId);
-
             if (int.TryParse(imageId, out imgId) && imgId > 0)
                 retval = CreateImage(imgId);
             else if (!string.IsNullOrWhiteSpace(imageId))

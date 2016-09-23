@@ -18,8 +18,7 @@
          */
         getFieldType: function () {
             return "imagecropper";
-        }
-        ,
+        },
         setup: function () {
             if (!this.options.uploadfolder) {
                 this.options.uploadfolder = "";

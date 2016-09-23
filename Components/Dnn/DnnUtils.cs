@@ -78,6 +78,13 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
+        public static bool IsPublishedTab(this TabInfo tab)
+        {
+            return !tab.IsDeleted &&
+                   (tab.StartDate == Null.NullDate || tab.StartDate < DateTime.Now) &&
+                   (tab.EndDate == Null.NullDate || tab.EndDate > DateTime.Now);
+        }
+
         public static OpenContentSettings OpenContentSettings(this ModuleInfo module)
         {
             return new OpenContentSettings(module.ModuleSettings);
