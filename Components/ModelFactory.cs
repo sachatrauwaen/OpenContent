@@ -13,6 +13,7 @@ using Satrabel.OpenContent.Components.Handlebars;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.TemplateHelpers;
+using System.Web;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -250,6 +251,7 @@ namespace Satrabel.OpenContent.Components
                             HandlebarsEngine hbEngine = new HandlebarsEngine();
                             dynamic dynForHBS = JsonUtils.JsonToDynamic(dyn.ToString());
                             url = hbEngine.Execute(Manifest.DetailUrl, dynForHBS);
+                            url = HttpUtility.HtmlDecode(url);
                         }
 
                         var editStatus = GetEditStatus(item.CreatedByUserId);
@@ -410,6 +412,7 @@ namespace Satrabel.OpenContent.Components
                         HandlebarsEngine hbEngine = new HandlebarsEngine();
                         dynamic dynForHBS = JsonUtils.JsonToDynamic(model.ToString());
                         url = hbEngine.Execute(Manifest.DetailUrl, dynForHBS);
+                        url = HttpUtility.HtmlDecode(url);
                     }
                     context["DetailUrl"] = Globals.NavigateURL(MainTabId, false, PortalSettings, "", GetCurrentCultureCode(), url.CleanupUrl(), "id=" + Data.Id);
                     context["Id"] = Data.Id;

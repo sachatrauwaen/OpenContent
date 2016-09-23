@@ -6,6 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 
 namespace Satrabel.OpenContent.Components.UrlRewriter
 {
@@ -69,6 +70,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                                         //ModelFactory mf = new ModelFactory(content, settings.Data, physicalTemplateFolder, settings.Template.Manifest, settings.Template, settings.Template.Main, module, PortalId, CultureCode, MainTabId, MainModuleId);
                                         //dynamic model = mf.GetModelAsDynamic(true);
                                         url = hbEngine.Execute(content);
+                                        url = HttpUtility.HtmlDecode(url);
                                         //title = OpenContentUtils.CleanupUrl(dyn.Title);
                                     }
                                     catch (Exception ex)
