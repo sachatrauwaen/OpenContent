@@ -160,5 +160,12 @@ namespace Satrabel.OpenContent.Components
             }
             return blnHasModuleEditPermissions;
         }
+
+        // for openform compatibility
+        public static string GetCurrentCultureCode()
+        {
+            return DnnLanguageUtils.GetCurrentCultureCode();
+        }
+
     }
 }
