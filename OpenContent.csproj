@@ -419,7 +419,7 @@
     <Content Include="alpaca\css\img\Up_16X16_Standard.png" />
     <Content Include="alpaca\js\fields\dnn\Folder2Field.js" />
     <Content Include="alpaca\js\fields\dnn\GalleryField.js" />
-    <Content Include="alpaca\js\fields\dnn\ImageCropper2Field.js" />
+    <Content Include="alpaca\js\fields\dnn\ImageCrop2Field.js" />
     <Content Include="alpaca\js\fields\dnn\MLFolder2Field.js" />
     <Content Include="alpaca\js\fields\dnn\MLFile2Field.js" />
     <Content Include="alpaca\js\fields\dnn\MLTextAreaField.js" />
@@ -462,7 +462,7 @@
     <Content Include="alpaca\templates\dnn-edit\control-checkbox.html" />
     <Content Include="alpaca\templates\dnn-edit\control-file.html" />
     <Content Include="alpaca\templates\dnn-edit\control-imagecrop.html" />
-    <Content Include="alpaca\templates\dnn-edit\control-imagecropper2.html" />
+    <Content Include="alpaca\templates\dnn-edit\control-imagecrop2.html" />
     <Content Include="alpaca\templates\dnn-edit\control-imagecropper.html" />
     <Content Include="alpaca\templates\dnn-edit\control-image.html" />
     <Content Include="alpaca\templates\dnn-edit\control-ckeditor.html" />

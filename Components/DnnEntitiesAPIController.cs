@@ -145,52 +145,37 @@ namespace Satrabel.OpenContent.Components
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
         [HttpGet]
-        public HttpResponseMessage ImagesLookupExt(string q, string d)
+        public HttpResponseMessage ImagesLookupExt(string q, string folder)
         {
             try
             {
-                /*
-                if (string.IsNullOrEmpty(d))
-                {
-                    var exc = new ArgumentException("Folder path not specified. Missing ['folder': 'FolderPath'] in optionfile? ");
-                    Logger.Error(exc);
-                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
-                }
-                */
+               
                 var folderManager = FolderManager.Instance;
-                string folder = "OpenContent/Files/" + ActiveModule.ModuleID;
+                string imageFolder = "OpenContent/Files/" + ActiveModule.ModuleID;
 
-                if (!string.IsNullOrEmpty(d))
+                if (!string.IsNullOrEmpty(folder))
                 {
-                    folder = d;
+                    imageFolder = folder;
                 }
-                var userFolder = folderManager.GetFolder(PortalSettings.PortalId, cropfolder);
-                if (userFolder == null)
+                var dnnFolder = folderManager.GetFolder(PortalSettings.PortalId, imageFolder);
+                if (dnnFolder == null)
                 {
-                    userFolder = folderManager.AddFolder(PortalSettings.PortalId, cropfolder);
+                    dnnFolder = folderManager.AddFolder(PortalSettings.PortalId, imageFolder);
                 }
 
-
-                
-                var portalFolder = folderManager.GetFolder(PortalSettings.PortalId, d ?? "");
-                if (portalFolder == null)
-                {
-                    var exc = new ArgumentException("Folder path not found. Adjust ['folder': " + d + "] in optionfile. ");
-                    Logger.Error(exc);
-                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
-                }
-                var files = folderManager.GetFiles(portalFolder, true);
+                var files = folderManager.GetFiles(dnnFolder, true);
                 files = files.Where(f => IsImageFile(f));
                 if (q != "*" && !string.IsNullOrEmpty(q))
                 {
                     files = files.Where(f => f.FileName.ToLower().Contains(q.ToLower()));
                 }
-                int folderLength = d == null ? 0 : d.Length;
+                int folderLength = imageFolder.Length;
 
                 var res = files.Select(f => new
                 {
-                    value = f.FileId.ToString(),
-                    url = ImageHelper.GetImageUrl(f, new Ratio(40, 40)),  //todo for install in application folder is dat niet voldoende ???
+                    id = f.FileId.ToString(),
+                    thumbUrl = ImageHelper.GetImageUrl(f, new Ratio(40, 40)),  //todo for install in application folder is dat niet voldoende ???
+                    url = FileManager.Instance.GetUrl(f),  
                     text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName
                 }).Take(1000);
 
@@ -403,8 +388,6 @@ namespace Satrabel.OpenContent.Components
                 };
                 var folderManager = FolderManager.Instance;
                 var fileManager = FileManager.Instance;
-
-
                 string RawImageUrl = cropData.url;
                 if (RawImageUrl.IndexOf('?') > 0)
                 {
@@ -412,9 +395,7 @@ namespace Satrabel.OpenContent.Components
                 }
                 RawImageUrl = RawImageUrl.Replace(PortalSettings.HomeDirectory, "");
                 var file = fileManager.GetFile(ActiveModule.PortalID, RawImageUrl);
-
                 string cropfolder = "OpenContent/Files/" + ActiveModule.ModuleID;
-
                 if (!string.IsNullOrEmpty(cropData.cropfolder))
                 {
                     cropfolder = cropData.cropfolder;
@@ -425,7 +406,6 @@ namespace Satrabel.OpenContent.Components
                     userFolder = folderManager.AddFolder(PortalSettings.PortalId, cropfolder);
                 }
                 string newFilename = Path.GetFileNameWithoutExtension(file.FileName) + "-" + cropData.id + Path.GetExtension(file.FileName);
-
                 if (file != null)
                 {
                     var folder = folderManager.GetFolder(file.FolderId);
@@ -453,7 +433,6 @@ namespace Satrabel.OpenContent.Components
                             imageCropped = ImageHelper.Resize(imageCropped, cropData.resize.width, cropData.resize.height);
                         }
                     }
-
                     Stream content = new MemoryStream();
                     ImageFormat imgFormat = ImageFormat.Bmp;
                     if (file.Extension.ToLowerInvariant() == "png")
@@ -483,8 +462,8 @@ namespace Satrabel.OpenContent.Components
                         message = "success",
                         id = newFile.FileId,
                     };
+                    res.url = fs.url;
                 }
-                res.url = fs.url;
                 return Request.CreateResponse(HttpStatusCode.OK, res);
             }
             catch (Exception exc)

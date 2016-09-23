@@ -1,8 +1,8 @@
 ﻿(function ($) {
     var Alpaca = $.alpaca;
-    Alpaca.Fields.ImageCropper2Field = Alpaca.Fields.ListField.extend(
+    Alpaca.Fields.ImageCrop2Field = Alpaca.Fields.ListField.extend(
     /**
-     * @lends Alpaca.Fields.ImageCropper2Field.prototype
+     * @lends Alpaca.Fields.ImageCrop2Field.prototype
      */
     {
         constructor: function (container, data, options, schema, view, connector) {
@@ -15,10 +15,10 @@
          * @see Alpaca.Field#getFieldType
          */
         getFieldType: function () {
-            return "imagecropper2";
+            return "imagecrop2";
         },
         /**
-         * @see Alpaca.Fields.ImageCropper2Field#setup
+         * @see Alpaca.Fields.ImageCrop2Field#setup
          */
         setup: function () {
             var self = this;
@@ -27,6 +27,9 @@
             }
             if (!this.options.uploadfolder) {
                 this.options.uploadfolder = "";
+            }
+            if (!this.options.cropfolder) {
+                this.options.cropfolder = this.options.uploadfolder;
             }
             if (!this.options.uploadhidden) {
                 this.options.uploadhidden = false;
@@ -37,6 +40,19 @@
             this.options.cropper.responsive = false;
             if (!this.options.cropper.autoCropArea) {
                 this.options.cropper.autoCropArea = 1;
+            }
+            if (!this.options.cropButtonHidden) {
+                this.options.cropButtonHidden = false;
+            }
+            if (!this.options.cropButtonHidden) {
+                this.options.buttons = {
+                    "check": {
+                        "value": "Crop",
+                        "click": function () {
+                            this.cropImage();
+                        }
+                    }
+                };
             }
             this.base();
         },
@@ -58,6 +74,7 @@
                     value = {};
 
                 value.url = $(this.control).find('select').val();
+                value.cropUrl = $(self.getControlEl()).attr('data-cropurl');
                 return value;
             }
         },
@@ -74,23 +91,28 @@
                 }
                 */
                 if (this.control && typeof (val) != "undefined" && val != null) {
-                    this.control.val(val);
-                }
-                this.base(val);
-                if (Alpaca.isEmpty(val)) {
-                    self.cropper("");
-                }
-                else if (Alpaca.isObject(val)) {
-                    self.cropper(val.url, val);
-                }
-                else {
-                    self.cropper(val);
+                    //this.base(val); ???
+                    if (Alpaca.isEmpty(val)) {
+                        self.cropper("");
+                        $(this.control).find('select').val("");
+                        $(self.getControlEl()).attr('data-cropurl', '');
+                    }
+                    else if (Alpaca.isObject(val)) {
+                        self.cropper(val.url, val);
+                        $(this.control).find('select').val(val.url);
+                        $(self.getControlEl()).attr('data-cropurl', val.cropUrl);
+                    }
+                    else {
+                        self.cropper(val);
+                        $(this.control).find('select').val(val);
+                        $(self.getControlEl()).attr('data-cropurl', '');
+                    }
                 }
             }
         },
 
         /**
-         * @see Alpaca.ImageCropper2Field#getEnum
+         * @see Alpaca.ImageCrop2Field#getEnum
          */
         getEnum: function () {
             if (this.schema) {
@@ -143,9 +165,9 @@
                         model.selectOptions = self.selectOptions;
                         callback();
                     };
-                    var postData = { q: "*", d: self.options.folder };
+                    var postData = { q: "*", folder: self.options.folder };
                     $.ajax({
-                        url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "ImagesLookup",
+                        url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "ImagesLookupExt",
                         beforeSend: self.sf.setModuleHeaders,
                         type: "get",
                         dataType: "json",
@@ -157,25 +179,15 @@
                                 ds = self.options.dsTransformer(ds);
                             }
                             if (ds) {
-                                if (Alpaca.isObject(ds)) {
-                                    // for objects, we walk through one key at a time
-                                    // the insertion order is the order of the keys from the map
-                                    // to preserve order, consider using an array as below
-                                    $.each(ds, function (key, value) {
-                                        self.selectOptions.push({
-                                            "value": key,
-                                            "text": value
-                                        });
-                                    });
-                                    completionFunction();
-                                }
-                                else if (Alpaca.isArray(ds)) {
+                                if (Alpaca.isArray(ds)) {
                                     // for arrays, we walk through one index at a time
                                     // the insertion order is dictated by the order of the indices into the array
                                     // this preserves order
                                     $.each(ds, function (index, value) {
                                         self.selectOptions.push({
                                             "value": value.url,
+                                            "thumbUrl": value.thumbUrl,
+                                            "id": value.id,
                                             "text": value.text
                                         });
                                         self.dataSource[value.url] = value;
@@ -224,8 +236,6 @@
                     self.setValue(self.data);
                 }
 
-                // if we are in multiple mode and the bootstrap multiselect plugin is available, bind it in
-                //if (self.options.multiple && $.fn.multiselect)
                 if ($.fn.select2) {
                     var settings = null;
                     if (self.options.select2) {
@@ -253,7 +263,7 @@
                         if (!state.id) { return state.text; }
 
                         var $state = $(
-                          '<span><img src="' + self.dataSource[state.id].url + '" style="height: 45px;width: 54px;"  /> ' + state.text + '</span>'
+                          '<span><img src="' + self.dataSource[state.id].thumbUrl + '" style="height: 45px;width: 54px;"  /> ' + state.text + '</span>'
                         );
                         return $state;
                     };
@@ -262,7 +272,7 @@
                         if (!state.id) { return state.text; }
 
                         var $state = $(
-                          '<span><img src="' + self.dataSource[state.id].url + '" style="height: 15px;width: 18px;"  /> ' + state.text + '</span>'
+                          '<span><img src="' + self.dataSource[state.id].thumbUrl + '" style="height: 15px;width: 18px;"  /> ' + state.text + '</span>'
                         );
                         return $state;
                     };
@@ -271,11 +281,79 @@
 
                 }
 
-                callback();
 
+                if (self.options.uploadhidden) {
+                    $(self.getControlEl()).find('input[type=file]').hide();
+                } else {
+                    if (self.sf) {
+                        $(self.getControlEl()).find('input[type=file]').fileupload({
+                            dataType: 'json',
+                            url: self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
+                            maxFileSize: 25000000,
+                            formData: { uploadfolder: self.options.uploadfolder },
+                            beforeSend: self.sf.setModuleHeaders,
+                            add: function (e, data) {
+                                //data.context = $(opts.progressContextSelector);
+                                //data.context.find($(opts.progressFileNameSelector)).html(data.files[0].name);
+                                //data.context.show('fade');
+                                data.submit();
+                            },
+                            progress: function (e, data) {
+                                if (data.context) {
+                                    var progress = parseInt(data.loaded / data.total * 100, 10);
+                                    data.context.find(opts.progressBarSelector).css('width', progress + '%').find('span').html(progress + '%');
+                                }
+                            },
+                            done: function (e, data) {
+                                if (data.result) {
+                                    $.each(data.result, function (index, file) {
+                                        self.refresh(function () {
+                                            self.setValue(file.url);
+                                        });
+
+                                        //$(el).change();
+
+                                        //$(el).change();
+                                        //$(e.target).parent().find('input[type=text]').val(file.url);
+                                        //el.val(file.url);
+                                        //$(e.target).parent().find('.alpaca-image-display img').attr('src', file.url);
+                                    });
+                                }
+                            }
+                        }).data('loaded', true);
+                    }
+                }
+
+
+                callback();
+            });
+        },
+        cropImage: function () {
+            var self = this;
+            var data = self.getValue();
+            var postData = JSON.stringify({ url: data.url, cropfolder: self.options.cropfolder, crop: data, id: "crop" });
+            $(self.getControlEl()).css('cursor', 'wait');
+            $.ajax({
+                type: "POST",
+                url: self.sf.getServiceRoot('OpenContent') + "DnnEntitiesAPI/CropImage",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: postData,
+                beforeSend: self.sf.setModuleHeaders
+            }).done(function (res) {
+
+                $(self.getControlEl()).attr('data-cropurl', res.url);
+
+                setTimeout(function () {
+                    $(self.getControlEl()).css('cursor', 'initial');
+                }, 500);
+            }).fail(function (xhr, result, status) {
+                alert("Uh-oh, something broke: " + status);
+                $(self.getControlEl()).css('cursor', 'initial');
             });
         },
         getFileUrl: function (fileid) {
+            var self = this;
             if (self.sf) {
                 var postData = { fileid: fileid };
                 $.ajax({
@@ -316,7 +394,7 @@
                     }
                     $image.cropper(config);
                 } else {
-                    if (url != cropperExist.originalUrl) {
+                    if (url != cropperExist.originalUrl || (cropperExist.url && url != cropperExist.url)) {
                         $image.cropper('replace', url);
                     }
                     //$image.cropper('reset');
@@ -396,9 +474,7 @@
          */
         onChange: function (e) {
             this.base(e);
-
             var _this = this;
-
             Alpaca.later(25, this, function () {
                 var v = _this.getValue();
                 _this.setValue(v);
@@ -492,7 +568,7 @@
 
         /**
          * @private
-         * @see Alpaca.Fields.ImageCropper2Field#getSchemaOfOptions
+         * @see Alpaca.Fields.ImageCrop2Field#getSchemaOfOptions
          */
         getSchemaOfOptions: function () {
             return Alpaca.merge(this.base(), {
@@ -525,7 +601,7 @@
 
         /**
          * @private
-         * @see Alpaca.Fields.ImageCropper2Field#getOptionsForOptions
+         * @see Alpaca.Fields.ImageCrop2Field#getOptionsForOptions
          */
         getOptionsForOptions: function () {
             return Alpaca.merge(this.base(), {
@@ -554,6 +630,6 @@
 
     });
 
-    Alpaca.registerFieldClass("imagecropper2", Alpaca.Fields.ImageCropper2Field);
+    Alpaca.registerFieldClass("imagecrop2", Alpaca.Fields.ImageCrop2Field);
 
 })(jQuery);

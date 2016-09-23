@@ -207,3 +207,14 @@ select.oc-ddl-versions {
     
 }
 */
+
+
+.alpaca-horizontal  .alpaca-control-buttons-container {
+    margin-left: 25%;
+    padding-left: 15px;
+}
+
+.cropper-container {
+ margin-top:5px;
+ margin-bottom:5px;
+}
