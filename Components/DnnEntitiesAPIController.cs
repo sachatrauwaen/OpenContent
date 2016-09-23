@@ -97,14 +97,13 @@ namespace Satrabel.OpenContent.Components
         public HttpResponseMessage ImagesLookup(string q, string d)
         {
             try
-            {
+            {                
                 if (string.IsNullOrEmpty(d))
                 {
                     var exc = new ArgumentException("Folder path not specified. Missing ['folder': 'FolderPath'] in optionfile? ");
                     Logger.Error(exc);
                     return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
-                }
-
+                }                
                 var folderManager = FolderManager.Instance;
                 var portalFolder = folderManager.GetFolder(PortalSettings.PortalId, d ?? "");
                 if (portalFolder == null)
@@ -119,15 +118,81 @@ namespace Satrabel.OpenContent.Components
                 {
                     files = files.Where(f => f.FileName.ToLower().Contains(q.ToLower()));
                 }
-                int folderLength = d.Length;
+                int folderLength = d== null ? 0 : d.Length;
 
                 var res = files.Select(f => new
                 {
                     value = f.FileId.ToString(),
                     url = ImageHelper.GetImageUrl(f, new Ratio(40, 40)),  //todo for install in application folder is dat niet voldoende ???
                     text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName
-                })
-                               .Take(1000);
+                }).Take(1000);
+
+                return Request.CreateResponse(HttpStatusCode.OK, res);
+            }
+            catch (Exception exc)
+            {
+                Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
+
+        /// <summary>
+        /// Imageses the lookup.
+        /// </summary>
+        /// <param name="q">The string that should be Contained in the name of the file (case insensitive). Use * to get all the files.</param>
+        /// <param name="d">The Folder path to retrieve</param>
+        /// <returns></returns>
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [HttpGet]
+        public HttpResponseMessage ImagesLookupExt(string q, string d)
+        {
+            try
+            {
+                /*
+                if (string.IsNullOrEmpty(d))
+                {
+                    var exc = new ArgumentException("Folder path not specified. Missing ['folder': 'FolderPath'] in optionfile? ");
+                    Logger.Error(exc);
+                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+                }
+                */
+                var folderManager = FolderManager.Instance;
+                string folder = "OpenContent/Files/" + ActiveModule.ModuleID;
+
+                if (!string.IsNullOrEmpty(d))
+                {
+                    folder = d;
+                }
+                var userFolder = folderManager.GetFolder(PortalSettings.PortalId, cropfolder);
+                if (userFolder == null)
+                {
+                    userFolder = folderManager.AddFolder(PortalSettings.PortalId, cropfolder);
+                }
+
+
+                
+                var portalFolder = folderManager.GetFolder(PortalSettings.PortalId, d ?? "");
+                if (portalFolder == null)
+                {
+                    var exc = new ArgumentException("Folder path not found. Adjust ['folder': " + d + "] in optionfile. ");
+                    Logger.Error(exc);
+                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+                }
+                var files = folderManager.GetFiles(portalFolder, true);
+                files = files.Where(f => IsImageFile(f));
+                if (q != "*" && !string.IsNullOrEmpty(q))
+                {
+                    files = files.Where(f => f.FileName.ToLower().Contains(q.ToLower()));
+                }
+                int folderLength = d == null ? 0 : d.Length;
+
+                var res = files.Select(f => new
+                {
+                    value = f.FileId.ToString(),
+                    url = ImageHelper.GetImageUrl(f, new Ratio(40, 40)),  //todo for install in application folder is dat niet voldoende ???
+                    text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName
+                }).Take(1000);
 
                 return Request.CreateResponse(HttpStatusCode.OK, res);
             }

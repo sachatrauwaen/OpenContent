@@ -307,3 +307,4 @@
 /// <reference path="../js/swagger/lib/swagger-oauth.js" />
 /// <reference path="../alpaca/js/fields/dnn/role2field.js" />
 /// <reference path="../js/bootstrap/js/bootstrap.js" />
+/// <reference path="../alpaca/js/fields/dnn/imagecropper2field.js" />

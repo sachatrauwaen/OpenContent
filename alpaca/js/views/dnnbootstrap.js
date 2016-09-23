@@ -48,6 +48,7 @@
             "control-image": "#dnn-edit-control-image",
             "control-imagecrop": "#dnn-edit-control-imagecrop",
             "control-imagecropper": "#dnn-edit-control-imagecropper",
+            "control-imagecropper2": "#dnn-edit-control-imagecropper2",
             "control-file": "#dnn-edit-control-file",
             "control-wysihtml": "#dnn-edit-control-wysihtml"
         }
