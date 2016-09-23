@@ -14,7 +14,7 @@ namespace Satrabel.OpenContent.Components
         {
             get
             {
-                return LoggerSource.Instance.GetLogger("OpenContent");
+                return LoggerSource.Instance.GetLogger(AppConfig.OPENCONTENT);
             }
         }
 

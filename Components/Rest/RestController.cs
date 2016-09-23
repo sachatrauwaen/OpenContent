@@ -15,7 +15,7 @@ using System.Web.Http;
 using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Manifest;
 using Newtonsoft.Json;
-using Satrabel.OpenContent.Components.Datasource.search;
+using Satrabel.OpenContent.Components.Datasource.Search;
 
 namespace Satrabel.OpenContent.Components.Rest
 {
@@ -102,10 +102,13 @@ namespace Satrabel.OpenContent.Components.Rest
                         LogContext.Log(activeModule.ModuleID, logKey, "model", model);
                         res["meta"]["logs"] = JToken.FromObject(LogContext.Current.ModuleLogs(activeModule.ModuleID));
                     }
-                    foreach (var item in model["Items"] as JArray)
+                    if (model["Items"] is JArray)
                     {
-                        item["id"] = item["Context"]["Id"];
-                        JsonUtils.IdJson(item);
+                        foreach (var item in (JArray)model["Items"])
+                        {
+                            item["id"] = item["Context"]["Id"];
+                            JsonUtils.IdJson(item);
+                        }
                     }
                     res[entity] = model["Items"];
                     return Request.CreateResponse(HttpStatusCode.OK, res);
@@ -592,6 +595,5 @@ namespace Satrabel.OpenContent.Components.Rest
             return Request.CreateResponse(HttpStatusCode.OK);
         }
     }
-
 
 }

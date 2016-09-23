@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
-using Satrabel.OpenContent.Components.Datasource.search;
+using Satrabel.OpenContent.Components.Datasource.Search;
 using System;
 
 namespace Satrabel.OpenContent.Components.Datasource

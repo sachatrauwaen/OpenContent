@@ -1,4 +1,4 @@
-﻿using Satrabel.OpenContent.Components.Datasource.search;
+﻿using Satrabel.OpenContent.Components.Datasource.Search;
 using System.Collections.Generic;
 
 namespace Satrabel.OpenContent.Components.Lucene.Config

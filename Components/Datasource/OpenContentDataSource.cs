@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Alpaca;
-using Satrabel.OpenContent.Components.Datasource.search;
+using Satrabel.OpenContent.Components.Datasource.Search;
 using Satrabel.OpenContent.Components.Lucene;
 using Satrabel.OpenContent.Components.Json;
 using System;
@@ -17,7 +17,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         {
             get
             {
-                return "OpenContent";
+                return AppConfig.OPENCONTENT;
             }
         }
 
@@ -126,7 +126,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             }
             if (content == null)
             {
-                Log.Logger.WarnFormat("Item not shown because no content item found. Id [{0}]. Context ModuleId [{1}]", id, GetModuleId(context));
+                Log.Logger.WarnFormat("Item not shown because no content item found. Id [{0}]. Context TabId: [{1}], ModuleId: [{2}]", id, GetTabId(context), GetModuleId(context));
                 LogContext.Log(context.ActiveModuleId, "Get DataItem", "Result", "not item found with id " + id);
             }
             else if (content.ModuleId == GetModuleId(context))
@@ -172,7 +172,10 @@ namespace Satrabel.OpenContent.Components.Datasource
         {
             OpenContentController ctrl = new OpenContentController();
 
-            var dataList = ctrl.GetContents(GetModuleId(context)).OrderBy(i => i.CreatedOnDate).Select(content => CreateDefaultDataItem(content));
+            var dataList = ctrl.GetContents(GetModuleId(context))
+                .OrderBy(i => i.CreatedOnDate)
+                .Select(content => CreateDefaultDataItem(content));
+
             return new DefaultDataItems()
             {
                 Items = dataList,
@@ -347,6 +350,10 @@ namespace Satrabel.OpenContent.Components.Datasource
         {
             return context.Config != null && context.Config["ModuleId"] != null ? context.Config["ModuleId"].Value<int>() : context.ModuleId;
         }
+        private static int GetTabId(DataSourceContext context)
+        {
+            return context.Config != null && context.Config["TabId"] != null ? context.Config["TabId"].Value<int>() : context.TabId;
+        }
         private static DefaultDataItem CreateDefaultDataItem(OpenContentInfo content)
         {
             return new DefaultDataItem
@@ -355,6 +362,9 @@ namespace Satrabel.OpenContent.Components.Datasource
                 Title = content.Title,
                 Data = content.JsonAsJToken,
                 CreatedByUserId = content.CreatedByUserId,
+                LastModifiedByUserId = content.LastModifiedByUserId,
+                LastModifiedOnDate = content.LastModifiedOnDate,
+                CreatedOnDate = content.CreatedOnDate,
                 Item = content
             };
         }

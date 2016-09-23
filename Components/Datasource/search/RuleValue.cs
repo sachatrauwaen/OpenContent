@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 
-namespace Satrabel.OpenContent.Components.Datasource.search
+namespace Satrabel.OpenContent.Components.Datasource.Search
 {
     public class RuleValue
     {

@@ -56,7 +56,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         public static IDataSource GetDataSource(string name)
         {
             if (string.IsNullOrEmpty(name))
-                name = "OpenContent";
+                name = AppConfig.OPENCONTENT;
 
             var dataSource = _dataSources.SingleOrDefault(ds => ds.Name == name);
             if (dataSource == null)

@@ -35,7 +35,7 @@ namespace Satrabel.OpenContent.Components.Rss
             var rssTemplate = new FileUri(settings.TemplateDir, template + ".hbs");
             string source = File.ReadAllText(rssTemplate.PhysicalFilePath);
 
-            //var ds = DataSourceManager.GetDataSource("OpenContent");
+            //var ds = DataSourceManager.GetDataSource(AppConfig.FriendlyName());
             //var dsContext = new DataSourceContext()
             //{
             //    ModuleId = moduleId,

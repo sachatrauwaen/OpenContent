@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Lucene.Net.Search;
 using Lucene.Net.Index;
-using Satrabel.OpenContent.Components.Datasource.search;
+using Satrabel.OpenContent.Components.Datasource.Search;
 
 namespace Satrabel.OpenContent.Components.Lucene.Config
 {

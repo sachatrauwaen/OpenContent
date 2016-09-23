@@ -19,16 +19,18 @@ using DotNetNuke.Common;
 using System;
 using DotNetNuke.Services.Search.Entities;
 using Newtonsoft.Json.Linq;
-using System.Text.RegularExpressions;
 using DotNetNuke.Entities.Portals;
 using System.IO;
 using System.Web.Hosting;
+using DotNetNuke.Services.Search.Controllers;
+using Satrabel.OpenContent.Components.Datasource;
+using Satrabel.OpenContent.Components.Dnn;
 using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.TemplateHelpers;
 
 namespace Satrabel.OpenContent.Components
 {
-    public class FeatureController : ModuleSearchBase, IPortable, IUpgradeable
+    public class FeatureController : ModuleSearchBase, IPortable, IUpgradeable, IModuleSearchResultController
     {
         #region Optional Interfaces
         public string ExportModule(int ModuleID)
@@ -83,56 +85,76 @@ namespace Satrabel.OpenContent.Components
             {
                 return searchDocuments;
             }
-
-            OpenContentController ctrl = new OpenContentController();
-            OpenContentInfo content = ctrl.GetFirstContent(modInfo.ModuleID);
-            if (content != null &&
-                (content.LastModifiedOnDate.ToUniversalTime() > beginDateUtc &&
-                 content.LastModifiedOnDate.ToUniversalTime() < DateTime.UtcNow))
+            if (settings.IsOtherModule)
             {
-                Log.Logger.DebugFormat("Indexing content {0}-{1} ({2}) {3} versus {4}", modInfo.ModuleID, modInfo.ModuleTitle, modInfo.TabID, beginDateUtc, content.LastModifiedOnDate.ToUniversalTime());
+                return searchDocuments;
+            }
 
-                SearchDocument searchDoc;
-                if (DnnLanguageUtils.IsMultiLingualPortal(modInfo.PortalID))
+            var ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
+            var dsContext = new DataSourceContext()
+            {
+                ModuleId = modInfo.ModuleID,
+                ActiveModuleId = modInfo.ModuleID,
+                TemplateFolder = settings.TemplateDir.FolderPath,
+                Config = settings.Manifest.DataSourceConfig
+            };
+
+            IDataItems contentList = ds.GetAll(dsContext, null);
+            foreach (IDataItem content in contentList.Items)
+            {
+                if (content != null &&
+                    (content.LastModifiedOnDate.ToUniversalTime() > beginDateUtc &&
+                     content.LastModifiedOnDate.ToUniversalTime() < DateTime.UtcNow))
                 {
-                    string culture = modInfo.CultureCode;
-                    JToken title;
-                    JToken description;
-                    if (content.Title.IsJson())
+                    Log.Logger.DebugFormat("Indexing content {0}-{1} ({2}) {3} versus {4}", modInfo.ModuleID, modInfo.ModuleTitle, modInfo.TabID, beginDateUtc, content.LastModifiedOnDate.ToUniversalTime());
+
+                    SearchDocument searchDoc;
+                    string url;
+                    if (DnnLanguageUtils.IsMultiLingualPortal(modInfo.PortalID))
                     {
-                        JToken singleLanguage = content.JsonAsJToken;
+                        string culture = modInfo.CultureCode;
+                        JToken title;
+                        JToken description;
+                        JToken singleLanguage = content.Data;
                         JsonUtils.SimplifyJson(singleLanguage, culture);
-                        title = singleLanguage["Title"] ?? modInfo.ModuleTitle;
-                        description = singleLanguage["Description"] ?? JsonToSearchableString(content.Json);
+
+                        if (content.Title.IsJson())
+                        {
+                            title = singleLanguage["Title"] ?? modInfo.ModuleTitle;
+                            description = singleLanguage["Description"] ?? JsonToSearchableString(content.Data);
+                        }
+                        else
+                        {
+                            title = content.Title;
+                            description = JsonToSearchableString(singleLanguage);
+                        }
+                        searchDoc = CreateSearchDocument(modInfo, content.Id, culture, title.ToString(), description.ToString(), content.LastModifiedOnDate.ToUniversalTime());
+                        searchDocuments.Add(searchDoc);
                     }
                     else
                     {
-                        title = content.Title;
-                        description = JsonToSearchableString(content.Json);
+                        searchDoc = CreateSearchDocument(modInfo, content.Id, "", content.Title, JsonToSearchableString(content.Data), content.LastModifiedOnDate.ToUniversalTime());
+                        searchDocuments.Add(searchDoc);
                     }
-                    searchDoc = CreateSearchDocument(modInfo, culture, title.ToString(), description.ToString(), content.LastModifiedOnDate.ToUniversalTime());
-                    searchDocuments.Add(searchDoc);
-                }
-                else
-                {
-                    searchDoc = CreateSearchDocument(modInfo, "", content.Title, JsonToSearchableString(content.Json), content.LastModifiedOnDate.ToUniversalTime());
-                    searchDocuments.Add(searchDoc);
                 }
             }
             return searchDocuments;
         }
 
-        private static SearchDocument CreateSearchDocument(ModuleInfo modInfo, string culture, string title, string body, DateTime time)
+
+        private static SearchDocument CreateSearchDocument(ModuleInfo modInfo, string itemId, string culture, string title, string body, DateTime time)
         {
             return new SearchDocument
               {
-                  UniqueKey = modInfo.ModuleID + "-" + culture,
+                  UniqueKey = modInfo.ModuleID + "-" + itemId + "-" + culture,
                   PortalId = modInfo.PortalID,
                   Title = modInfo.ModuleTitle.StripHtml(),
                   Description = title.StripHtml(),
                   Body = body.StripHtml(),
                   ModifiedTimeUtc = time,
-                  CultureCode = culture
+                  CultureCode = culture,
+                  TabId = modInfo.TabID,
+                  Url = "", //we don't set url here because we don't have httpcontext and getting portalsettings is expensive. See GetDocUrl() for alternative
               };
         }
 
@@ -219,6 +241,34 @@ namespace Satrabel.OpenContent.Components
                 }
             }
             return Version + res;
+        }
+
+        #region IModuleSearchResultController
+
+        /// <summary>
+        /// Does the user in the Context have View Permission on the Document
+        /// </summary>
+        /// <param name="searchResult">Search Result</param>
+        /// <returns>True or False</returns>
+        public bool HasViewPermission(SearchResult searchResult)
+        {
+            return true; //todo: should do some checking here.
+        }
+
+        public string GetDocUrl(SearchResult searchResult)
+        {
+            return GetTabUrl(searchResult.PortalId, searchResult.TabId, searchResult.QueryString);
+        }
+        #endregion
+
+        private string GetTabUrl(int portalId, int moduleTabId, string queryString)
+        {
+            var url = DnnUrlUtils.NavigateUrl(moduleTabId);
+            return url;
+            //var portalSettings = new PortalSettings(portalId);
+            //portalSettings.PortalAlias = PortalAliasController.Instance.GetPortalAlias(portalSettings.DefaultPortalAlias);
+            //var url = TestableGlobals.Instance.NavigateURL(moduleTabId, portalSettings, string.Empty, queryString);
+            //return url;
         }
     }
 }

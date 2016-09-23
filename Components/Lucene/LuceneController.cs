@@ -23,10 +23,7 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         public static LuceneController Instance
         {
-            get
-            {
-                return _instance;
-            }
+            get { return _instance; }
         }
 
         public LuceneService Store
@@ -38,7 +35,9 @@ namespace Satrabel.OpenContent.Components.Lucene
                 return _serviceInstance;
             }
         }
+
         #region constructor
+
         private LuceneController()
         {
             _serviceInstance = new LuceneService(AppConfig.Instance.LuceneIndexFolder, JsonMappingUtils.GetAnalyser());
@@ -53,6 +52,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             }
             _instance = new LuceneController();
         }
+
         #endregion
 
         #region Search
@@ -75,12 +75,15 @@ namespace Satrabel.OpenContent.Components.Lucene
 
             var searcher = Store.GetSearcher();
             TopDocs topDocs;
+            var numOfItemsToReturn = (pageIndex + 1) * pageSize;
             if (filter == null)
-                topDocs = searcher.Search(type, query, (pageIndex + 1) * pageSize, sort);
+                topDocs = searcher.Search(type, query, numOfItemsToReturn, sort);
             else
-                topDocs = searcher.Search(type, filter, query, (pageIndex + 1) * pageSize, sort);
+                topDocs = searcher.Search(type, filter, query, numOfItemsToReturn, sort);
             luceneResults.TotalResults = topDocs.TotalHits;
-            luceneResults.ids = topDocs.ScoreDocs.Skip(pageIndex * pageSize).Select(d => searcher.Doc(d.Doc).GetField(JsonMappingUtils.FieldId).StringValue).ToArray();
+            luceneResults.ids = topDocs.ScoreDocs.Skip(pageIndex * pageSize)
+                    .Select(d => searcher.Doc(d.Doc).GetField(JsonMappingUtils.FieldId).StringValue)
+                    .ToArray();
             return luceneResults;
         }
 
@@ -110,6 +113,7 @@ namespace Satrabel.OpenContent.Components.Lucene
         /// </summary>
         internal void IndexAll()
         {
+            Log.Logger.Info("Reindexing all OpenContent data, from all portals");
             LuceneController.ClearInstance();
             try
             {
@@ -118,7 +122,7 @@ namespace Satrabel.OpenContent.Components.Lucene
                     ModuleController mc = new ModuleController();
                     foreach (PortalInfo portal in PortalController.Instance.GetPortals())
                     {
-                        ArrayList modules = mc.GetModulesByDefinition(portal.PortalID, "OpenContent");
+                        ArrayList modules = mc.GetModulesByDefinition(portal.PortalID, AppConfig.OPENCONTENT);
                         foreach (ModuleInfo module in modules.OfType<ModuleInfo>())
                         {
                             IndexModule(lc, module);
@@ -128,10 +132,15 @@ namespace Satrabel.OpenContent.Components.Lucene
                     lc.Store.OptimizeSearchIndex(true);
                 }
             }
+            catch (Exception ex)
+            {
+                Log.Logger.Error("Error while Reindexing all OpenContent data, from all portals", ex);
+            }
             finally
             {
                 LuceneController.ClearInstance();
             }
+            Log.Logger.Info("Finished Reindexing all OpenContent data, from all portals");
         }
 
         private void IndexModule(LuceneController lc, ModuleInfo module)
