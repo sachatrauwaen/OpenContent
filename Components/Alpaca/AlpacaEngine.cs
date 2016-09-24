@@ -54,10 +54,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
         }
         public void RegisterAll(bool bootstrap) // for openform
         {
-            RegisterAlpaca(bootstrap, false);
-            RegisterTemplates();
-            RegisterScripts(bootstrap);
-            RegisterFields(bootstrap);
+            RegisterAll(bootstrap, false);
         }
 
         private void RegisterAlpaca(bool bootstrap, bool loadBootstrap)
