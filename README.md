@@ -33,4 +33,10 @@ Templates download : [url:http://www.openextensions.net/templates/open-content]
 [![Build by AppVeyor](https://ci.appveyor.com/api/projects/status/github/sachatrauwaen/OpenContent?branch=master&svg=true)](https://ci.appveyor.com/project/sachatrauwaen/opencontent/)
 https://ci.appveyor.com/project/sachatrauwaen/opencontent
 
+### Contributions
 
+Create a topic branch from where you want to base your work.
+This is usually the 'development' branch.
+
+To quickly create a topic branch based on development; git checkout -b my_contribution development
+Make commits of logical units.
