@@ -221,6 +221,16 @@ namespace Satrabel.OpenContent.Components.Alpaca
             if (schemaJson != null)
                 json["schema"] = schemaJson;
 
+            var defaultSchemaJson = JsonUtils.LoadJsonFromFile(templateUri.UrlFolder + "settings-" + "schema.json");
+            if (defaultSchemaJson != null)
+            {
+                if (schemaJson == null)
+                    json["schema"] = defaultSchemaJson;
+                else
+                    json["schema"] = json["schema"].JsonMerge(defaultSchemaJson);
+
+            }
+
             // default options
             var optionsJson = JsonUtils.LoadJsonFromFile(templateUri.UrlFolder + prefix + "options.json");
             if (optionsJson != null)
