@@ -107,6 +107,7 @@
                         $(this.control).find('select').val(val);
                         $(self.getControlEl()).attr('data-cropurl', '');
                     }
+                    $(this.control).find('select').trigger('change.select2');
                 }
             }
         },
@@ -278,10 +279,7 @@
                     };
 
                     $(self.getControlEl().find('select')).select2(settings);
-
                 }
-
-
                 if (self.options.uploadhidden) {
                     $(self.getControlEl()).find('input[type=file]').hide();
                 } else {
@@ -309,14 +307,7 @@
                                     $.each(data.result, function (index, file) {
                                         self.refresh(function () {
                                             self.setValue(file.url);
-                                        });
-
-                                        //$(el).change();
-
-                                        //$(el).change();
-                                        //$(e.target).parent().find('input[type=text]').val(file.url);
-                                        //el.val(file.url);
-                                        //$(e.target).parent().find('.alpaca-image-display img').attr('src', file.url);
+                                        });                                       
                                     });
                                 }
                             }
@@ -483,63 +474,12 @@
         },
 
         /**
-         * Validates if number of items has been less than minItems.
-         * @returns {Boolean} true if number of items has been less than minItems
-         */
-        _validateMinItems: function () {
-            if (this.schema.items && this.schema.items.minItems) {
-                if ($(":selected", this.control).length < this.schema.items.minItems) {
-                    return false;
-                }
-            }
-
-            return true;
-        },
-
-        /**
-         * Validates if number of items has been over maxItems.
-         * @returns {Boolean} true if number of items has been over maxItems
-         */
-        _validateMaxItems: function () {
-            if (this.schema.items && this.schema.items.maxItems) {
-                if ($(":selected", this.control).length > this.schema.items.maxItems) {
-                    return false;
-                }
-            }
-
-            return true;
-        },
-
-        /**
-         * @see Alpaca.ContainerField#handleValidate
-         */
-        handleValidate: function () {
-            var baseStatus = this.base();
-
-            var valInfo = this.validation;
-
-            var status = this._validateMaxItems();
-            valInfo["tooManyItems"] = {
-                "message": status ? "" : Alpaca.substituteTokens(this.getMessage("tooManyItems"), [this.schema.items.maxItems]),
-                "status": status
-            };
-
-            status = this._validateMinItems();
-            valInfo["notEnoughItems"] = {
-                "message": status ? "" : Alpaca.substituteTokens(this.getMessage("notEnoughItems"), [this.schema.items.minItems]),
-                "status": status
-            };
-
-            return baseStatus && valInfo["tooManyItems"]["status"] && valInfo["notEnoughItems"]["status"];
-        },
-
-        /**
          * @see Alpaca.Field#focus
          */
         focus: function (onFocusCallback) {
             if (this.control && this.control.length > 0) {
                 // set focus onto the select
-                var el = $(this.control).get(0);
+                var el = $(this.control).find('select');
 
                 el.focus();
 
@@ -556,77 +496,15 @@
          * @see Alpaca.Field#getTitle
          */
         getTitle: function () {
-            return "Select Field";
+            return "Image Crop 2 Field";
         },
 
         /**
          * @see Alpaca.Field#getDescription
          */
         getDescription: function () {
-            return "Select Field";
+            return "Image Crop 2 Field";
         },
-
-        /**
-         * @private
-         * @see Alpaca.Fields.ImageCrop2Field#getSchemaOfOptions
-         */
-        getSchemaOfOptions: function () {
-            return Alpaca.merge(this.base(), {
-                "properties": {
-                    "multiple": {
-                        "title": "Mulitple Selection",
-                        "description": "Allow multiple selection if true.",
-                        "type": "boolean",
-                        "default": false
-                    },
-                    "size": {
-                        "title": "Displayed Options",
-                        "description": "Number of options to be shown.",
-                        "type": "number"
-                    },
-                    "emptySelectFirst": {
-                        "title": "Empty Select First",
-                        "description": "If the data is empty, then automatically select the first item in the list.",
-                        "type": "boolean",
-                        "default": false
-                    },
-                    "multiselect": {
-                        "title": "Multiselect Plugin Settings",
-                        "description": "Multiselect plugin properties - http://davidstutz.github.io/bootstrap-multiselect",
-                        "type": "any"
-                    }
-                }
-            });
-        },
-
-        /**
-         * @private
-         * @see Alpaca.Fields.ImageCrop2Field#getOptionsForOptions
-         */
-        getOptionsForOptions: function () {
-            return Alpaca.merge(this.base(), {
-                "fields": {
-                    "multiple": {
-                        "rightLabel": "Allow multiple selection ?",
-                        "helper": "Allow multiple selection if checked",
-                        "type": "checkbox"
-                    },
-                    "size": {
-                        "type": "integer"
-                    },
-                    "emptySelectFirst": {
-                        "type": "checkbox",
-                        "rightLabel": "Empty Select First"
-                    },
-                    "multiselect": {
-                        "type": "object",
-                        "rightLabel": "Multiselect plugin properties - http://davidstutz.github.io/bootstrap-multiselect"
-                    }
-                }
-            });
-        }
-
-        /* end_builder_helpers */
 
     });
 
