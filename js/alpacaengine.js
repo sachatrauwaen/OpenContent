@@ -90,13 +90,14 @@ alpacaEngine.engine = function(config) {
                 data: postData,
                 beforeSend: self.sf.setModuleHeaders
             }).done(function (data) {
-                dnnModal.closePopUp(false, "");
+                
                 var href = $("#"+self.saveButton).attr('href');
                 var windowTop = parent; //needs to be assign to a varaible for Opera compatibility issues.
                 var popup = windowTop.jQuery("#iPopUp");
                 if (popup.length > 0) {
                     windowTop.__doPostBack('dnn_ctr'+self.moduleId+'_View__UP', '');
-                    dnnModal.closePopUp(false, href);
+                    //dnnModal.closePopUp(false, href);
+                    dnnModal.closePopUp(false, "");
                 }
                 else {
                     window.location.href = href;
