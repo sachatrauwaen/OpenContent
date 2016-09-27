@@ -2611,9 +2611,6 @@
          */
         setup: function () {
             var self = this;
-            if (!this.options.folder) {
-                this.options.folder = "";
-            }
             if (!this.options.uploadfolder) {
                 this.options.uploadfolder = "";
             }
@@ -2687,9 +2684,16 @@
                         $(self.getControlEl()).attr('data-cropurl', '');
                     }
                     else if (Alpaca.isObject(val)) {
-                        self.cropper(val.url, val);
-                        $(this.control).find('select').val(val.url);
-                        $(self.getControlEl()).attr('data-cropurl', val.cropUrl);
+                        if (val.cropdata && Object.keys(val.cropdata).length > 0) { // compatibility with imagecropper
+                            var firstcropdata = val.cropdata[Object.keys(val.cropdata)[0]];
+                            self.cropper(val.url, firstcropdata.cropper);
+                            $(this.control).find('select').val(val.url);
+                            $(self.getControlEl()).attr('data-cropurl', firstcropdata.url);
+                        } else {
+                            self.cropper(val.url, val);
+                            $(this.control).find('select').val(val.url);
+                            $(self.getControlEl()).attr('data-cropurl', val.cropUrl);
+                        }
                     }
                     else {
                         self.cropper(val);
@@ -2755,7 +2759,7 @@
                         model.selectOptions = self.selectOptions;
                         callback();
                     };
-                    var postData = { q: "*", folder: self.options.folder };
+                    var postData = { q: "*", folder: self.options.uploadfolder };
                     $.ajax({
                         url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "ImagesLookupExt",
                         beforeSend: self.sf.setModuleHeaders,
