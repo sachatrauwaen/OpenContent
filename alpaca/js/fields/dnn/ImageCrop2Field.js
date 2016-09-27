@@ -34,6 +34,9 @@
             if (!this.options.cropper) {
                 this.options.cropper = {};
             }
+            if (this.options.width && this.options.height) {
+                this.options.cropper.aspectRatio = this.options.width / this.options.height;
+            }
             this.options.cropper.responsive = false;
             if (!this.options.cropper.autoCropArea) {
                 this.options.cropper.autoCropArea = 1;
@@ -326,14 +329,17 @@
         cropImage: function () {
             var self = this;
             var data = self.getValue();
-            var postData = JSON.stringify({ url: data.url, cropfolder: self.options.cropfolder, crop: data, id: "crop" });
+            var postData = { url: data.url, cropfolder: self.options.cropfolder, crop: data, id: "crop" };
+            if (self.options.width && self.options.height) {
+                postData.resize = { width: self.options.width, height: self.options.height };
+            }
             $(self.getControlEl()).css('cursor', 'wait');
             $.ajax({
                 type: "POST",
                 url: self.sf.getServiceRoot('OpenContent') + "DnnEntitiesAPI/CropImage",
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
-                data: postData,
+                data: JSON.stringify(postData),
                 beforeSend: self.sf.setModuleHeaders
             }).done(function (res) {
 
