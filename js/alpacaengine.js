@@ -61,7 +61,7 @@ alpacaEngine.engine = function(config) {
                 height: newHeight,
                 width: newWidth,
                 minWidth: newWidth,
-                minHeight: newHeight - 100,
+                minHeight: newHeight,
                 //position: 'center'
                 resizable: false,
             });
