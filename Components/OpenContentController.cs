@@ -34,8 +34,8 @@ namespace Satrabel.OpenContent.Components
             OpenContentVersion ver = new OpenContentVersion()
             {
                 Json = content.JsonAsJToken,
-                CreatedByUserId = content.LastModifiedByUserId,
-                CreatedOnDate = content.LastModifiedOnDate,
+                CreatedByUserId = content.CreatedByUserId,
+                CreatedOnDate = content.CreatedOnDate,
                 LastModifiedByUserId = content.LastModifiedByUserId,
                 LastModifiedOnDate = content.LastModifiedOnDate
             };
@@ -83,8 +83,8 @@ namespace Satrabel.OpenContent.Components
             OpenContentVersion ver = new OpenContentVersion()
             {
                 Json = content.JsonAsJToken,
-                CreatedByUserId = content.LastModifiedByUserId,
-                CreatedOnDate = content.LastModifiedOnDate,
+                CreatedByUserId = content.CreatedByUserId,
+                CreatedOnDate = content.CreatedOnDate,
                 LastModifiedByUserId = content.LastModifiedByUserId,
                 LastModifiedOnDate = content.LastModifiedOnDate
             };

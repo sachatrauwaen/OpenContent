@@ -26,8 +26,8 @@ namespace Satrabel.OpenContent.Components
             OpenContentVersion ver = new OpenContentVersion()
             {
                 Json = data.Json.ToJObject("Adding AdditionalData"),
-                CreatedByUserId = data.LastModifiedByUserId,
-                CreatedOnDate = data.LastModifiedOnDate,
+                CreatedByUserId = data.CreatedByUserId,
+                CreatedOnDate = data.CreatedOnDate,
                 LastModifiedByUserId = data.LastModifiedByUserId,
                 LastModifiedOnDate = data.LastModifiedOnDate
             };
@@ -54,8 +54,8 @@ namespace Satrabel.OpenContent.Components
             OpenContentVersion ver = new OpenContentVersion()
             {
                 Json = data.Json.ToJObject("UpdateContent"),
-                CreatedByUserId = data.LastModifiedByUserId,
-                CreatedOnDate = data.LastModifiedOnDate,
+                CreatedByUserId = data.CreatedByUserId,
+                CreatedOnDate = data.CreatedOnDate,
                 LastModifiedByUserId = data.LastModifiedByUserId,
                 LastModifiedOnDate = data.LastModifiedOnDate
             };
