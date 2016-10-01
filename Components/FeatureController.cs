@@ -66,27 +66,27 @@ namespace Satrabel.OpenContent.Components
         #region ModuleSearchBase
         public override IList<SearchDocument> GetModifiedSearchDocuments(ModuleInfo modInfo, DateTime beginDateUtc)
         {
-            Log.Logger.DebugFormat("Indexing content Module {0} - Tab {1} - indexing from {3}", modInfo.ModuleID, modInfo.TabID, modInfo.CultureCode, beginDateUtc);
+            Log.Logger.TraceFormat("Indexing content Module {0} - Tab {1} - indexing from {3}", modInfo.ModuleID, modInfo.TabID, modInfo.CultureCode, beginDateUtc);
             var searchDocuments = new List<SearchDocument>();
 
             //If module is marked as "don't index" then return no results
             if (modInfo.ModuleSettings.GetValue("AllowIndex", "True") == "False")
             {
-                Log.Logger.DebugFormat("Indexing content {0}|{1} - NOT - MODULE Indexing disabled", modInfo.ModuleID, modInfo.CultureCode);
+                Log.Logger.TraceFormat("Indexing content {0}|{1} - NOT - MODULE Indexing disabled", modInfo.ModuleID, modInfo.CultureCode);
                 return searchDocuments;
             }
 
             //If tab of the module is marked as "don't index" then return no results
             if (modInfo.ParentTab.TabSettings.GetValue("AllowIndex", "True") == "False")
             {
-                Log.Logger.DebugFormat("Indexing content {0}|{1} - NOT - TAB Indexing disabled", modInfo.ModuleID, modInfo.CultureCode);
+                Log.Logger.TraceFormat("Indexing content {0}|{1} - NOT - TAB Indexing disabled", modInfo.ModuleID, modInfo.CultureCode);
                 return searchDocuments;
             }
 
             //If tab is marked as "inactive" then return no results
             if (modInfo.ParentTab.DisableLink)
             {
-                Log.Logger.DebugFormat("Indexing content {0}|{1} - NOT - TAB is inactive", modInfo.ModuleID, modInfo.CultureCode);
+                Log.Logger.TraceFormat("Indexing content {0}|{1} - NOT - TAB is inactive", modInfo.ModuleID, modInfo.CultureCode);
                 return searchDocuments;
             }
 
@@ -112,13 +112,13 @@ namespace Satrabel.OpenContent.Components
             IDataItems contentList = ds.GetAll(dsContext, null);
             if (!contentList.Items.Any())
             {
-                Log.Logger.DebugFormat("Indexing content {0}|{1} - NOT - No content found", modInfo.ModuleID, modInfo.CultureCode);
+                Log.Logger.TraceFormat("Indexing content {0}|{1} - NOT - No content found", modInfo.ModuleID, modInfo.CultureCode);
             }
             foreach (IDataItem content in contentList.Items)
             {
                 if (content == null)
                 {
-                    Log.Logger.DebugFormat("Indexing content {0}|{1} - NOT - Content is Null", modInfo.ModuleID, modInfo.CultureCode);
+                    Log.Logger.TraceFormat("Indexing content {0}|{1} - NOT - Content is Null", modInfo.ModuleID, modInfo.CultureCode);
                 }
                 else if ((content.LastModifiedOnDate.ToUniversalTime() > beginDateUtc && content.LastModifiedOnDate.ToUniversalTime() < DateTime.UtcNow))
                 {
@@ -138,12 +138,12 @@ namespace Satrabel.OpenContent.Components
                     {
                         searchDoc = CreateSearchDocument(modInfo, content.Id, "", content.Title, JsonToSearchableString(content.Data), content.LastModifiedOnDate.ToUniversalTime());
                         searchDocuments.Add(searchDoc);
-                        Log.Logger.DebugFormat("Indexing content {0}|{5} -  OK!  {1} ({2}) of {3}", modInfo.ModuleID, searchDoc.Title, modInfo.TabID,  content.LastModifiedOnDate.ToUniversalTime(), modInfo.CultureCode);
+                        Log.Logger.TraceFormat("Indexing content {0}|{5} -  OK!  {1} ({2}) of {3}", modInfo.ModuleID, searchDoc.Title, modInfo.TabID,  content.LastModifiedOnDate.ToUniversalTime(), modInfo.CultureCode);
                     }
                 }
                 else
                 {
-                    Log.Logger.DebugFormat("Indexing content {0}|{1} - NOT - No need to index: lastmod {2} ", modInfo.ModuleID, modInfo.CultureCode, content.LastModifiedOnDate.ToUniversalTime());
+                    Log.Logger.TraceFormat("Indexing content {0}|{1} - NOT - No need to index: lastmod {2} ", modInfo.ModuleID, modInfo.CultureCode, content.LastModifiedOnDate.ToUniversalTime());
                 }
             }
             return searchDocuments;
