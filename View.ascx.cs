@@ -281,7 +281,7 @@ namespace Satrabel.OpenContent
                 {
                     _itemId = Page.Request.QueryString["id"];
                 }
-                if (templateDefined && !settings.Manifest.DisableEdit)
+                if (templateDefined && template.DataNeeded() && !settings.Manifest.DisableEdit)
                 {
                     string title = Localization.GetString((listMode && string.IsNullOrEmpty(_itemId) ? ModuleActionType.AddContent : ModuleActionType.EditContent), LocalResourceFile);
                     if (!string.IsNullOrEmpty(settings.Manifest.Title))
@@ -400,7 +400,10 @@ namespace Satrabel.OpenContent
 
 
                 //Edit Raw Data
-                if (templateDefined || settings.Manifest != null)
+                if ( (templateDefined || settings.Manifest != null) &&
+                    (template.DataNeeded() || settings.Template.SettingsNeeded() || template.Manifest.AdditionalDataExists()) && 
+                    !settings.Manifest.DisableEdit)
+                {
                     actions.Add(ModuleContext.GetNextActionID(),
                         Localization.GetString("EditData.Action", LocalResourceFile),
                         ModuleActionType.EditContent,
@@ -412,7 +415,7 @@ namespace Satrabel.OpenContent
                         SecurityAccessLevel.Host,
                         true,
                         false);
-
+                }
                 actions.Add(ModuleContext.GetNextActionID(),
                     Localization.GetString("ShareTemplate.Action", LocalResourceFile),
                     ModuleActionType.ContentOptions,

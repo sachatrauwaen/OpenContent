@@ -81,7 +81,12 @@ namespace Satrabel.OpenContent.Components.Render
             //start rendering           
             if (_settings.Template != null)
             {
-                if (_renderinfo.Template.IsListTemplate)
+                if (!_settings.Template.DataNeeded())
+                {
+                    _renderinfo.SetData(null, new JObject(), _settings.Data);
+                    _renderinfo.OutputString = GenerateOutput(page, _renderinfo.Template.MainTemplateUri(),  _renderinfo.DataJson, _renderinfo.SettingsJson, _renderinfo.Template.Main);
+                }
+                else if (_renderinfo.Template.IsListTemplate)
                 {
                     LogContext.Log(_module.ModuleID, "RequestContext", "QueryParam Id", ItemId);
                     // Multi items template
@@ -176,7 +181,7 @@ namespace Satrabel.OpenContent.Components.Render
                 bool demoExist = GetDemoData(_renderinfo, _settings);
                 bool settingsNeeded = _renderinfo.Template.SettingsNeeded();
 
-                if (demoExist && (!settingsNeeded || !string.IsNullOrEmpty(_renderinfo.SettingsJson)))
+                if (demoExist && _renderinfo.DataExist && (!settingsNeeded || !string.IsNullOrEmpty(_renderinfo.SettingsJson)))
                 {
                     _renderinfo.OutputString = GenerateOutput(page, _renderinfo.Template.MainTemplateUri(), _renderinfo.DataJson, _renderinfo.SettingsJson, _renderinfo.Template.Main);
                 }

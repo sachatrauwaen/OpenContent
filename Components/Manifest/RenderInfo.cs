@@ -57,7 +57,7 @@ namespace Satrabel.OpenContent.Components.Manifest
         {
             get
             {
-                return !DataExist || (string.IsNullOrEmpty(SettingsJson) && Template.SettingsNeeded());
+                return Template == null  || (!DataExist && Template.DataNeeded()) || (string.IsNullOrEmpty(SettingsJson) && Template.SettingsNeeded()) ;
             }
         }
 
