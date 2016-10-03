@@ -10,9 +10,15 @@ namespace Satrabel.OpenContent.Components.Alpaca
     public class FormBuilder
     {
         private readonly FolderUri templateUri;
+        private readonly FolderUri layoutUri;
         public FormBuilder(FolderUri templateUri)
         {
             this.templateUri = templateUri;
+        }
+        public FormBuilder(FolderUri templateUri, FolderUri layoutUri)
+        {
+            this.templateUri = templateUri;
+            this.layoutUri = layoutUri;
         }
         public JObject BuildQuerySettings()
         {
@@ -221,16 +227,6 @@ namespace Satrabel.OpenContent.Components.Alpaca
             if (schemaJson != null)
                 json["schema"] = schemaJson;
 
-            var defaultSchemaJson = JsonUtils.LoadJsonFromFile(templateUri.UrlFolder + "settings-" + "schema.json");
-            if (defaultSchemaJson != null)
-            {
-                if (schemaJson == null)
-                    json["schema"] = defaultSchemaJson;
-                else
-                    json["schema"] = json["schema"].JsonMerge(defaultSchemaJson);
-
-            }
-
             // default options
             var optionsJson = JsonUtils.LoadJsonFromFile(templateUri.UrlFolder + prefix + "options.json");
             if (optionsJson != null)
@@ -246,6 +242,27 @@ namespace Satrabel.OpenContent.Components.Alpaca
             if (optionsJson != null)
                 json["view"] = optionsJson;
 
+            if (!string.IsNullOrEmpty(key) && layoutUri != null && layoutUri.FolderExists)
+            {
+                var layoutSchemaJson = JsonUtils.LoadJsonFromFile(layoutUri.UrlFolder + "settings-" + "schema.json");
+                if (layoutSchemaJson != null)
+                {
+                    if (optionsJson == null)
+                        json["schema"] = layoutSchemaJson;
+                    else
+                        json["schema"] = json["schema"].JsonMerge(layoutSchemaJson);
+
+                }
+                var layoutOptionsJson = JsonUtils.LoadJsonFromFile(layoutUri.UrlFolder + "settings-" + "schema.json");
+                if (layoutOptionsJson != null)
+                {
+                    if (schemaJson == null)
+                        json["options"] = layoutOptionsJson;
+                    else
+                        json["options"] = json["options"].JsonMerge(layoutOptionsJson);
+
+                }
+            }
             return json;
         }
         public FieldConfig BuildIndex()

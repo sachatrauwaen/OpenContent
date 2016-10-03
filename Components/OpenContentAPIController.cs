@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.Datasource;
+using Satrabel.OpenContent.Components.Layout;
 
 #endregion
 
@@ -306,8 +307,9 @@ namespace Satrabel.OpenContent.Components
             try
             {
                 var templateUri = new FileUri(template);
+                var layoutFolder = LayoutUtils.GetDefaultFolder();
                 string key = templateUri.FileNameWithoutExtension;
-                var fb = new FormBuilder(templateUri);
+                var fb = new FormBuilder(templateUri, layoutFolder);
                 JObject json = fb.BuildForm(key);
 
                 var dataJson = data.ToJObject("Raw settings json");
@@ -766,7 +768,8 @@ namespace Satrabel.OpenContent.Components
             try
             {
                 OpenContentSettings settings = ActiveModule.OpenContentSettings();
-                var fb = new FormBuilder(settings.TemplateDir);
+                var layoutFolder = LayoutUtils.GetDefaultFolder();
+                var fb = new FormBuilder(settings.TemplateDir, layoutFolder);
                 JObject json = fb.BuildForm(key);
                 var dataJson = data.ToJObject("Raw settings json");
                 if (dataJson != null)

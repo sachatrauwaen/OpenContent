@@ -56,7 +56,6 @@ namespace Satrabel.OpenContent.Components
         protected override void ConfigurePage(WebPageBase parentPage)
         {
             base.ConfigurePage(parentPage);
-
             //Child pages need to get their context from the Parent
             Context = parentPage.Context;
         }

@@ -147,6 +147,7 @@
     <Compile Include="Components\Dnn\DnnFileUtils.cs" />
     <Compile Include="Components\Dnn\DnnLanguageUtils.cs" />
     <Compile Include="Components\Json\InvalidJsonFileException.cs" />
+    <Compile Include="Components\Layout\LayoutUtils.cs" />
     <Compile Include="Components\Logging\LoggingUtils.cs" />
     <Compile Include="Components\Logging\LogContext.cs" />
     <Compile Include="Components\Logging\OpenContentException.cs" />

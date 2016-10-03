@@ -18,15 +18,20 @@ namespace Satrabel.OpenContent.Components.Razor
 {
     public class RazorEngine
     {
-        public RazorEngine(string razorScriptFile, ModuleInstanceContext moduleContext, string localResourceFile)
+        public RazorEngine(string razorScriptFile, ModuleInstanceContext moduleContext, string localResourceFile, string layoutFile)
         {
-            RazorScriptFile = razorScriptFile;
+            //RazorScriptFile = razorScriptFile;
+            RazorScriptFile = layoutFile;
             ModuleContext = moduleContext;
             LocalResourceFile = localResourceFile ?? Path.Combine(Path.GetDirectoryName(razorScriptFile), Localization.LocalResourceDirectory, Path.GetFileName(razorScriptFile) + ".resx");
 
             try
             {
                 InitWebpage();
+                if (!string.IsNullOrEmpty(layoutFile))
+                {
+                    //Webpage.Layout = layoutFile;                    
+                }
             }
             catch (HttpParseException)
             {
@@ -74,7 +79,9 @@ namespace Satrabel.OpenContent.Components.Razor
                 mv.Model = model;
             }
             if (Webpage != null)
+            {
                 Webpage.ExecutePageHierarchy(new WebPageContext(HttpContextBase, Webpage, null), writer, Webpage);
+            }
         }
 
         public void Render(TextWriter writer)

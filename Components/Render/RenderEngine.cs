@@ -22,6 +22,7 @@ using System.Web.Hosting;
 using DotNetNuke.Services.Exceptions;
 using DotNetNuke.UI.Modules;
 using Newtonsoft.Json.Linq;
+using Satrabel.OpenContent.Components.Layout;
 
 namespace Satrabel.OpenContent.Components.Render
 {
@@ -433,7 +434,11 @@ namespace Satrabel.OpenContent.Components.Render
             var writer = new StringWriter();
             try
             {
-                var razorEngine = new RazorEngine("~/" + template.FilePath, ModuleContext, LocalResourceFile);
+
+                var layoutFolder = LayoutUtils.GetDefaultFolder();
+                var layoutFileUri = new FileUri(layoutFolder, "layout.cshtml");
+                string layoutFile = layoutFileUri.FileExists ? "~/" + layoutFileUri.FilePath : ""; 
+                var razorEngine = new RazorEngine("~/" + template.FilePath, ModuleContext, LocalResourceFile, layoutFile);
                 razorEngine.Render(writer, model);
             }
             catch (Exception ex)
@@ -544,12 +549,14 @@ namespace Satrabel.OpenContent.Components.Render
 
                     if (template.Extension != ".hbs")
                     {
+                        var layoutFile = new FileUri(LayoutUtils.GetDefaultFolder(), "layout.cshtml");
                         return ExecuteRazor(template, model);
                     }
                     else
                     {
                         HandlebarsEngine hbEngine = new HandlebarsEngine();
-                        return hbEngine.Execute(page, template, model);
+                        var layoutFile = new FileUri(LayoutUtils.GetDefaultFolder(), "layout.hbs");
+                        return hbEngine.Execute(page, template, layoutFile, model);
                     }
                 }
                 else

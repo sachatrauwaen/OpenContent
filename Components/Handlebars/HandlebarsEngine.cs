@@ -97,13 +97,22 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterEachPublishedHelper(hbs);
             RegisterConvertHtmlToTextHelper(hbs);
         }
-        public string Execute(Page page, FileUri sourceFileUri, dynamic model)
+        public string Execute(Page page, FileUri sourceFileUri, FileUri layoutFileUri, dynamic model)
         {
             try
             {
-                string source = File.ReadAllText(sourceFileUri.PhysicalFilePath);
-                string sourceFolder = sourceFileUri.UrlFolder; //.Replace("\\", "/") + "/";
                 var hbs = HandlebarsDotNet.Handlebars.Create();
+                string source;
+                if (layoutFileUri != null && layoutFileUri.FileExists)
+                {
+                    RegisterTemplate(hbs, "body", "~/" + sourceFileUri.FilePath);
+                    source = File.ReadAllText(layoutFileUri.PhysicalFilePath);
+                }
+                else
+                {
+                    source = File.ReadAllText(sourceFileUri.PhysicalFilePath);
+                }
+                string sourceFolder = sourceFileUri.UrlFolder; //.Replace("\\", "/") + "/";
                 RegisterHelpers(hbs);
                 RegisterScriptHelper(hbs);
                 RegisterHandlebarsHelper(hbs);
