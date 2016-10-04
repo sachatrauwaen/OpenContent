@@ -927,6 +927,7 @@
     <Content Include="css\glyphicons\fonts\glyphicons-social-regular.eot" />
     <Content Include="css\glyphicons\fonts\glyphicons-social-regular.ttf" />
     <Content Include="css\glyphicons\fonts\glyphicons-social-regular.woff" />
+    <Content Include="packages.config" />
     <None Include="Scripts\_references.js" />
     <Content Include="js\select2\i18n\az.js" />
     <Content Include="js\select2\i18n\bg.js" />
