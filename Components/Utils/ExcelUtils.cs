@@ -32,7 +32,7 @@ namespace Satrabel.OpenContent.Components
                 response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
                 response.AddHeader("content-disposition", HttpUtils.CreateContentDisposition(filename, ctx.Request));
                 response.BinaryWrite(excelBytes);
-                response.Flush();
+                response.End();
             }
         }
     }
