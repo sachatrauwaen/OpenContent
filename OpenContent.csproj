@@ -144,6 +144,7 @@
     </Compile>
     <Compile Include="Components\Alpaca\AlpacaLayoutEnum.cs" />
     <Compile Include="Components\AppConfig.cs" />
+    <Compile Include="Components\Utils\ExcelUtils.cs" />
     <Compile Include="Components\Dnn\DnnFileUtils.cs" />
     <Compile Include="Components\Dnn\DnnLanguageUtils.cs" />
     <Compile Include="Components\Json\InvalidJsonFileException.cs" />
@@ -286,6 +287,7 @@
     <Compile Include="Components\Json\JsonUtils.cs" />
     <Compile Include="Components\DnnEntitiesAPIController.cs" />
     <Compile Include="Components\Lucene\Index\IndexExtentions.cs" />
+    <Compile Include="Components\Utils\HttpUtils.cs" />
     <Compile Include="Components\Utils\Logger.cs" />
     <Compile Include="Components\OpenContentController.cs" />
     <Compile Include="Components\OpenContentInfo.cs" />
