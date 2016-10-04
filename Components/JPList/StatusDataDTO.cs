@@ -36,6 +36,11 @@ namespace Satrabel.OpenContent.Components.JPList
         /// </summary>
         public List<string> pathGroup { get; set; }
 
+        /// <summary>
+        /// mode : contains , startsWith, endsWith , advanced , only ()
+        /// </summary>
+        public string mode { get; set; }
+
         #endregion
 
         #region "Sorting"

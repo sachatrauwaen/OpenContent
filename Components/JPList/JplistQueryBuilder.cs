@@ -9,6 +9,7 @@ namespace Satrabel.OpenContent.Components.JPList
     {
         public static Select MergeJpListQuery(FieldConfig config, Select select, List<StatusDTO> statuses, string cultureCode)
         {
+            bool onlyTextSearch = false;
             var query = select.Query;
             foreach (StatusDTO status in statuses)
             {
@@ -23,79 +24,88 @@ namespace Satrabel.OpenContent.Components.JPList
                             select.PageIndex = status.data.currentPage;
                             break;
                         }
+
                     case "filter":
                         {
-                            if (status.type == "textbox" && status.data != null && !string.IsNullOrEmpty(status.name) && !string.IsNullOrEmpty(status.data.value))
+                            if (!onlyTextSearch)
                             {
-                                var names = status.name.Split(',');
-                                if (names.Length == 1)
+                                if (status.type == "textbox" && status.data != null && !string.IsNullOrEmpty(status.name) && !string.IsNullOrEmpty(status.data.value))
                                 {
-                                    query.AddRule(FieldConfigUtils.CreateFilterRule(config, cultureCode,
-                                        status.name,
-                                        OperatorEnum.START_WITH,
-                                        new StringRuleValue(status.data.value)
-                                    ));
-                                }
-                                else
-                                {
-                                    var group = new FilterGroup() { Condition = ConditionEnum.OR };
-                                    foreach (var n in names)
+                                    if (status.data.mode == "only")
                                     {
-                                        group.AddRule(FieldConfigUtils.CreateFilterRule(config, cultureCode,
-                                            n,
+                                        query.FilterRules.Clear();
+                                        onlyTextSearch = true;
+                                    }
+                                    var names = status.name.Split(',');
+                                    if (names.Length == 1)
+                                    {
+                                        query.AddRule(FieldConfigUtils.CreateFilterRule(config, cultureCode,
+                                            status.name,
                                             OperatorEnum.START_WITH,
                                             new StringRuleValue(status.data.value)
                                         ));
                                     }
-                                    query.FilterGroups.Add(group);
-                                }
-                            }
-                            else if ((status.type == "checkbox-group-filter" || status.type == "button-filter-group" || status.type == "combined")
-                                        && status.data != null && !string.IsNullOrEmpty(status.name))
-                            {
-                                if (status.data.filterType == "pathGroup" && status.data.pathGroup != null && status.data.pathGroup.Count > 0)
-                                {
-                                    query.AddRule(FieldConfigUtils.CreateFilterRule(config, cultureCode,
-                                        status.name,
-                                        OperatorEnum.IN,
-                                        status.data.pathGroup.Select(s => new StringRuleValue(s))
-                                    ));
-                                }
-                            }
-                            else if (status.type == "filter-select" && status.data != null && !string.IsNullOrEmpty(status.name))
-                            {
-                                if (status.data.filterType == "path" && !string.IsNullOrEmpty(status.data.path) && !string.IsNullOrEmpty("*"))
-                                {
-                                    query.AddRule(FieldConfigUtils.CreateFilterRule(config, cultureCode,
-                                        status.name,
-                                        OperatorEnum.EQUAL,
-                                        new StringRuleValue(status.data.path)
-                                    ));
-                                }
-                            }
-                            else if (status.type == "autocomplete" && status.data != null && !string.IsNullOrEmpty(status.data.path) && !string.IsNullOrEmpty(status.data.value))
-                            {
-                                var names = status.data.path.Split(',');
-                                if (names.Length == 1)
-                                {
-                                    query.AddRule(FieldConfigUtils.CreateFilterRule(config, cultureCode,
-                                        status.data.path,
-                                        OperatorEnum.START_WITH,
-                                        new StringRuleValue(status.data.value)
-                                    ));
-                                }
-                                else
-                                {
-                                    var group = new FilterGroup() { Condition = ConditionEnum.OR };
-                                    foreach (var n in names)
+                                    else
                                     {
-                                        group.AddRule(FieldConfigUtils.CreateFilterRule(config, cultureCode,
-                                            n,
+                                        var group = new FilterGroup() { Condition = ConditionEnum.OR };
+                                        foreach (var n in names)
+                                        {
+                                            group.AddRule(FieldConfigUtils.CreateFilterRule(config, cultureCode,
+                                                n,
+                                                OperatorEnum.START_WITH,
+                                                new StringRuleValue(status.data.value)
+                                            ));
+                                        }
+                                        query.FilterGroups.Add(group);
+                                    }
+                                }
+                                else if ((status.type == "checkbox-group-filter" || status.type == "button-filter-group" || status.type == "combined")
+                                            && status.data != null && !string.IsNullOrEmpty(status.name))
+                                {
+                                    if (status.data.filterType == "pathGroup" && status.data.pathGroup != null && status.data.pathGroup.Count > 0)
+                                    {
+                                        query.AddRule(FieldConfigUtils.CreateFilterRule(config, cultureCode,
+                                            status.name,
+                                            OperatorEnum.IN,
+                                            status.data.pathGroup.Select(s => new StringRuleValue(s))
+                                        ));
+                                    }
+                                }
+                                else if (status.type == "filter-select" && status.data != null && !string.IsNullOrEmpty(status.name))
+                                {
+                                    if (status.data.filterType == "path" && !string.IsNullOrEmpty(status.data.path) && !string.IsNullOrEmpty("*"))
+                                    {
+                                        query.AddRule(FieldConfigUtils.CreateFilterRule(config, cultureCode,
+                                            status.name,
+                                            OperatorEnum.EQUAL,
+                                            new StringRuleValue(status.data.path)
+                                        ));
+                                    }
+                                }
+                                else if (status.type == "autocomplete" && status.data != null && !string.IsNullOrEmpty(status.data.path) && !string.IsNullOrEmpty(status.data.value))
+                                {
+                                    var names = status.data.path.Split(',');
+                                    if (names.Length == 1)
+                                    {
+                                        query.AddRule(FieldConfigUtils.CreateFilterRule(config, cultureCode,
+                                            status.data.path,
                                             OperatorEnum.START_WITH,
                                             new StringRuleValue(status.data.value)
                                         ));
                                     }
-                                    query.FilterGroups.Add(group);
+                                    else
+                                    {
+                                        var group = new FilterGroup() { Condition = ConditionEnum.OR };
+                                        foreach (var n in names)
+                                        {
+                                            group.AddRule(FieldConfigUtils.CreateFilterRule(config, cultureCode,
+                                                n,
+                                                OperatorEnum.START_WITH,
+                                                new StringRuleValue(status.data.value)
+                                            ));
+                                        }
+                                        query.FilterGroups.Add(group);
+                                    }
                                 }
                             }
                             break;
