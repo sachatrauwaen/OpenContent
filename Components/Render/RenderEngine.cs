@@ -279,6 +279,10 @@ namespace Satrabel.OpenContent.Components.Render
                     resultList = ds.GetAll(dsContext, queryBuilder.Select).Items;
                     if (LogContext.IsLogActive)
                     {
+                        LogContext.Log(_module.ModuleID, "RequestContext", "EditMode", !addWorkFlow);
+                        LogContext.Log(_module.ModuleID, "RequestContext", "IsEditable", _module.CheckIfEditable(portalSettings));
+                        LogContext.Log(_module.ModuleID, "RequestContext", "UserRoles", portalSettings.UserInfo.Social.Roles.Select(r=> r.RoleName));
+                        LogContext.Log(_module.ModuleID, "RequestContext", "CurrentUserId", portalSettings.UserId);
                         var logKey = "Query";
                         LogContext.Log(_module.ModuleID, logKey, "select", queryBuilder.Select);
                         LogContext.Log(_module.ModuleID, logKey, "result", resultList);
