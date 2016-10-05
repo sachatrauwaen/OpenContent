@@ -68,9 +68,9 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             public OgArticle(string title, string description, string imageUrl)
             {
                 title = Utils.HtmlDecodeIfNeeded(title);
-                title = Utils.HtmlRemoval.StripTagsRegexCompiled(title);
+                title = title.StripHtml();
                 description = Utils.HtmlDecodeIfNeeded(description);
-                description = Utils.HtmlRemoval.StripTagsRegexCompiled(description);
+                description = description.StripHtml();
 
                 Title = title;
                 Description = description;

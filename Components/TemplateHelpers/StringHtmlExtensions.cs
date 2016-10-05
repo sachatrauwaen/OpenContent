@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Web;
 
 namespace Satrabel.OpenContent.Components.TemplateHelpers
 {
@@ -19,7 +21,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         /// <returns></returns>
         public static string TruncateHtml(this string html, int maxCharacters, string trailingText)
         {
-            if (string.IsNullOrEmpty(html))
+            if (String.IsNullOrEmpty(html))
                 return html;
 
             // find the spot to truncate
@@ -60,11 +62,11 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
                     var closeTag = match.Groups["closeTag"].Value;
 
                     // push to stack if open tag and ignore it if it is self-closing, i.e. <br />
-                    if (!string.IsNullOrEmpty(tag) && string.IsNullOrEmpty(match.Groups["selfClose"].Value))
+                    if (!String.IsNullOrEmpty(tag) && String.IsNullOrEmpty(match.Groups["selfClose"].Value))
                         tags.Push(tag);
 
                     // pop from stack if close tag
-                    else if (!string.IsNullOrEmpty(closeTag))
+                    else if (!String.IsNullOrEmpty(closeTag))
                     {
                         // pop the tag to close it.. find the matching opening tag
                         // ignore any unclosed tags
@@ -100,18 +102,6 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         }
 
         /// <summary>
-        /// Strips all HTML tags from a string
-        /// </summary>
-        /// <returns></returns>
-        public static string StripHtml(this string html)
-        {
-            if (string.IsNullOrEmpty(html))
-                return html;
-
-            return Regex.Replace(html, @"<(.|\n)*?>", string.Empty);
-        }
-
-        /// <summary>
         /// Truncates text to a number of characters
         /// </summary>
         /// <param name="text"></param>
@@ -131,7 +121,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         /// <returns></returns>
         public static string Truncate(this string text, int maxCharacters, string trailingText)
         {
-            if (string.IsNullOrEmpty(text) || maxCharacters <= 0 || text.Length <= maxCharacters)
+            if (String.IsNullOrEmpty(text) || maxCharacters <= 0 || text.Length <= maxCharacters)
                 return text;
             else
                 return text.Substring(0, maxCharacters) + trailingText;
@@ -159,12 +149,33 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         /// <returns></returns>
         public static string TruncateWords(this string text, int maxCharacters, string trailingText)
         {
-            if (string.IsNullOrEmpty(text) || maxCharacters <= 0 || text.Length <= maxCharacters)
+            if (String.IsNullOrEmpty(text) || maxCharacters <= 0 || text.Length <= maxCharacters)
                 return text;
 
             // trunctate the text, then remove the partial word at the end
             return Regex.Replace(text.Truncate(maxCharacters),
-                       @"\s+[^\s]+$", string.Empty, RegexOptions.IgnoreCase | RegexOptions.Compiled) + trailingText;
+                       @"\s+[^\s]+$", String.Empty, RegexOptions.IgnoreCase | RegexOptions.Compiled) + trailingText;
+        }
+
+
+        private static readonly Regex HtmlRegex = new Regex(@"<(.|\n)*?>", RegexOptions.Compiled);
+
+        /// <summary>
+        /// Strips all HTML tags from a string
+        /// </summary>
+        /// <returns></returns>
+        public static string StripHtml(this string html)
+        {
+            if (String.IsNullOrEmpty(html)) return html;
+            return HtmlRegex.Replace(html, String.Empty);
+        }
+
+        public static string HtmlDecodeIfNeeded(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return text;
+            if (text.Contains("&lt;") && text.Contains("&gt;"))
+                text = HttpUtility.HtmlDecode(text);
+            return text;
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         {
             if (context == null) return;
             title = Utils.HtmlDecodeIfNeeded(title);
-            title = Utils.HtmlRemoval.StripTagsRegexCompiled(title);
+            title = title.StripHtml();
             if (string.IsNullOrWhiteSpace(title)) return;
             var dnnpage = context.DnnPage();
             if (dnnpage != null)
@@ -31,7 +31,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         {
             if (context == null) return;
             description = Utils.HtmlDecodeIfNeeded(description);
-            description = Utils.HtmlRemoval.StripTagsRegexCompiled(description);
+            description = description.StripHtml();
             if (string.IsNullOrWhiteSpace(description)) return;
             var dnnpage = context.DnnPage();
             if (dnnpage != null)
