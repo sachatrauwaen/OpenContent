@@ -400,9 +400,9 @@ namespace Satrabel.OpenContent
 
 
                 //Edit Raw Data
-                if ( (templateDefined || settings.Manifest != null) &&
-                    (template.DataNeeded() || settings.Template.SettingsNeeded() || template.Manifest.AdditionalDataExists()) && 
-                    !settings.Manifest.DisableEdit)
+                if ( templateDefined && settings.Manifest != null &&
+                     ( template.DataNeeded() || template.SettingsNeeded() || template.Manifest.AdditionalDataExists()) && 
+                     !settings.Manifest.DisableEdit )
                 {
                     actions.Add(ModuleContext.GetNextActionID(),
                         Localization.GetString("EditData.Action", LocalResourceFile),

@@ -41,6 +41,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 RegisterArrayTranslateHelper(hbs);
                 RegisterIfAndHelper(hbs);
                 RegisterConvertHtmlToTextHelper(hbs);
+                RegisterTruncateWordsHelper(hbs);
                 _template = hbs.Compile(source);
             }
             catch (Exception ex)
@@ -96,6 +97,30 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterIfInHelper(hbs);
             RegisterEachPublishedHelper(hbs);
             RegisterConvertHtmlToTextHelper(hbs);
+            RegisterTruncateWordsHelper(hbs);
+        }
+
+        private void RegisterTruncateWordsHelper(HandlebarsDotNet.IHandlebars hbs)
+        {            
+            hbs.RegisterHelper("truncateWords", (writer, context, parameters) =>
+            {
+                try
+                {
+                    string html = parameters[0].ToString();
+                    int maxCharacters = int.Parse(parameters[1].ToString());
+                    string trailingText = "";
+                    if (parameters.Count() > 2)
+                    {
+                        trailingText = parameters[2].ToString();
+                    }
+                    string res = html.TruncateWords(maxCharacters, trailingText);
+                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, res);
+                }
+                catch (Exception)
+                {
+                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "");
+                }
+            });
         }
         public string Execute(Page page, FileUri sourceFileUri, dynamic model)
         {

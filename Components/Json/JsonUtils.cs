@@ -367,5 +367,40 @@ namespace Satrabel.OpenContent.Components.Json
                 }
             }
         }
+
+        public static void RemoveType(JToken o)
+        {
+            var array = o as JArray;
+            if (array != null)
+            {
+                foreach (var value in array)
+                {
+                    var obj = value as JObject;
+                    if (obj != null)
+                    {
+                        if (obj["__type"] != null)
+                        {
+                            obj.Remove("__type");
+                        }
+                        RemoveType(obj);
+                    }
+                }
+            }
+            else
+            {
+                var obj = o as JObject;
+                if (obj != null)
+                {
+                    if (obj["__type"] != null)
+                    {
+                        obj.Remove("__type");
+                    }
+                    foreach (var child in o.Children<JProperty>().ToList())
+                    {
+                        RemoveType(child.Value);
+                    }
+                }
+            }
+        }
     }
 }

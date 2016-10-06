@@ -272,13 +272,17 @@ namespace Satrabel.OpenContent.Components.Render
                     {
                         templateKey = GetTemplateKey(indexConfig);
                     }
-                    bool addWorkFlow = portalSettings.UserMode != PortalSettings.Mode.Edit;
+                    bool isEditable = _module.CheckIfEditable(portalSettings);//portalSettings.UserMode != PortalSettings.Mode.Edit;
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
-                    queryBuilder.Build(settings.Query, addWorkFlow, portalSettings.UserId, DnnLanguageUtils.GetCurrentCultureCode(), portalSettings.UserInfo.Social.Roles, QueryString);
+                    queryBuilder.Build(settings.Query, !isEditable, portalSettings.UserId, DnnLanguageUtils.GetCurrentCultureCode(), portalSettings.UserInfo.Social.Roles, QueryString);
 
                     resultList = ds.GetAll(dsContext, queryBuilder.Select).Items;
                     if (LogContext.IsLogActive)
                     {
+                        //LogContext.Log(_module.ModuleID, "RequestContext", "EditMode", !addWorkFlow);
+                        LogContext.Log(_module.ModuleID, "RequestContext", "IsEditable", isEditable);
+                        LogContext.Log(_module.ModuleID, "RequestContext", "UserRoles", portalSettings.UserInfo.Social.Roles.Select(r=> r.RoleName));
+                        LogContext.Log(_module.ModuleID, "RequestContext", "CurrentUserId", portalSettings.UserId);
                         var logKey = "Query";
                         LogContext.Log(_module.ModuleID, logKey, "select", queryBuilder.Select);
                         LogContext.Log(_module.ModuleID, logKey, "result", resultList);
