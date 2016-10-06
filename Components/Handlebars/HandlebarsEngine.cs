@@ -41,6 +41,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 RegisterArrayTranslateHelper(hbs);
                 RegisterIfAndHelper(hbs);
                 RegisterConvertHtmlToTextHelper(hbs);
+                RegisterTruncateWordsHelper(hbs);
                 _template = hbs.Compile(source);
             }
             catch (Exception ex)
