@@ -170,12 +170,12 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             return HtmlRegex.Replace(html, String.Empty);
         }
 
-        public static string HtmlDecodeIfNeeded(string text)
+        public static string HtmlDecodeIfNeeded(this string html)
         {
-            if (string.IsNullOrEmpty(text)) return text;
-            if (text.Contains("&lt;") && text.Contains("&gt;"))
-                text = HttpUtility.HtmlDecode(text);
-            return text;
+            if (string.IsNullOrEmpty(html)) return html;
+            if (html.Contains("&lt;") && html.Contains("&gt;"))
+                html = HttpUtility.HtmlDecode(html);
+            return html;
         }
     }
 }
