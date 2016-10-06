@@ -22,12 +22,12 @@ namespace Satrabel.OpenContent.Components.Datasource
         }
 
         #region Queries
-        public bool Any(DataSourceContext context)
+        public virtual bool Any(DataSourceContext context)
         {
             OpenContentController ctrl = new OpenContentController();
             return ctrl.GetFirstContent(GetModuleId(context)) != null;
         }
-        public JArray GetVersions(DataSourceContext context, IDataItem item)
+        public virtual JArray GetVersions(DataSourceContext context, IDataItem item)
         {
             var content = (OpenContentInfo)item.Item;
             if (!string.IsNullOrEmpty(content.VersionsJson))
@@ -49,7 +49,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             return null;
         }
 
-        public JToken GetDataVersions(DataSourceContext context, IDataItem item)
+        public virtual JToken GetDataVersions(DataSourceContext context, IDataItem item)
         {
             var content = (AdditionalDataInfo)item.Item;
             if (!string.IsNullOrEmpty(content.VersionsJson))
@@ -71,7 +71,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             return null;
         }
 
-        public JToken GetVersion(DataSourceContext context, IDataItem item, DateTime datetime)
+        public virtual JToken GetVersion(DataSourceContext context, IDataItem item, DateTime datetime)
         {
             var content = (OpenContentInfo)item.Item;
             if (content != null)
@@ -88,7 +88,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             return null;
         }
 
-        public JToken GetDataVersion(DataSourceContext context, IDataItem item, DateTime datetime)
+        public virtual JToken GetDataVersion(DataSourceContext context, IDataItem item, DateTime datetime)
         {
             var content = (AdditionalDataInfo)item.Item;
             if (content != null)
@@ -105,7 +105,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             return null;
         }
 
-        public IDataItem Get(DataSourceContext context, string id)
+        public virtual IDataItem Get(DataSourceContext context, string id)
         {
             OpenContentController ctrl = new OpenContentController();
             OpenContentInfo content = null;
@@ -149,7 +149,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         /// <param name="scope">The Scope. (portal, tab, module, tabmodule)</param>
         /// <param name="key">The unique key in the scope</param>
         /// <returns></returns>
-        public IDataItem GetData(DataSourceContext context, string scope, string key)
+        public virtual IDataItem GetData(DataSourceContext context, string scope, string key)
         {
             string scopeStorage = AdditionalDataUtils.GetScope(scope, context.PortalId, context.TabId, GetModuleId(context), context.TabModuleId);
             var dc = new AdditionalDataController();
@@ -168,7 +168,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             return null;
         }
 
-        public IDataItems GetAll(DataSourceContext context)
+        public virtual IDataItems GetAll(DataSourceContext context)
         {
             OpenContentController ctrl = new OpenContentController();
 
@@ -183,7 +183,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             };
         }
 
-        public IDataItems GetAll(DataSourceContext context, Select select)
+        public virtual IDataItems GetAll(DataSourceContext context, Select select)
         {
             if (select == null)
             {
@@ -230,14 +230,14 @@ namespace Satrabel.OpenContent.Components.Datasource
 
         #region Query Alpaca info for Edit
 
-        public JObject GetAlpaca(DataSourceContext context, bool schema, bool options, bool view)
+        public virtual JObject GetAlpaca(DataSourceContext context, bool schema, bool options, bool view)
         {
             var fb = new FormBuilder(new FolderUri(context.TemplateFolder));
             return fb.BuildForm();
         }
 
         // Additional Data
-        public JObject GetDataAlpaca(DataSourceContext context, bool schema, bool options, bool view, string key)
+        public virtual JObject GetDataAlpaca(DataSourceContext context, bool schema, bool options, bool view, string key)
         {
             var fb = new FormBuilder(new FolderUri(context.TemplateFolder));
             return fb.BuildForm(key);
@@ -249,7 +249,7 @@ namespace Satrabel.OpenContent.Components.Datasource
 
         #region Commands
 
-        public void Add(DataSourceContext context, JToken data)
+        public virtual void Add(DataSourceContext context, JToken data)
         {
             OpenContentController ctrl = new OpenContentController();
             var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder));
@@ -267,7 +267,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             };
             ctrl.AddContent(content, context.Index, indexConfig);
         }
-        public void Update(DataSourceContext context, IDataItem item, JToken data)
+        public virtual void Update(DataSourceContext context, IDataItem item, JToken data)
         {
             OpenContentController ctrl = new OpenContentController();
             var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder));
@@ -279,7 +279,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             content.LastModifiedOnDate = DateTime.Now;
             ctrl.UpdateContent(content, context.Index, indexConfig);
         }
-        public void Delete(DataSourceContext context, IDataItem item)
+        public virtual void Delete(DataSourceContext context, IDataItem item)
         {
             OpenContentController ctrl = new OpenContentController();
             var content = (OpenContentInfo)item.Item;
@@ -308,7 +308,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         /// <param name="scope">The scope.</param>
         /// <param name="key">The key.</param>
         /// <param name="data">The data.</param>
-        public void AddData(DataSourceContext context, string scope, string key, JToken data)
+        public virtual void AddData(DataSourceContext context, string scope, string key, JToken data)
         {
             string scopeStorage = AdditionalDataUtils.GetScope(scope, context.PortalId, context.TabId, GetModuleId(context), context.TabModuleId);
             AdditionalDataController ctrl = new AdditionalDataController();
@@ -332,7 +332,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         /// <param name="context">The context.</param>
         /// <param name="item">The item.</param>
         /// <param name="data">The data.</param>
-        public void UpdateData(DataSourceContext context, IDataItem item, JToken data)
+        public virtual void UpdateData(DataSourceContext context, IDataItem item, JToken data)
         {
             AdditionalDataController ctrl = new AdditionalDataController();
             var additionalData = (AdditionalDataInfo)item.Item;

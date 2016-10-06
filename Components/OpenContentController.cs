@@ -15,6 +15,7 @@ using System.Linq;
 using System.Collections.Generic;
 using DotNetNuke.Common.Utilities;
 using DotNetNuke.Data;
+using DotNetNuke.Entities.Modules;
 using Satrabel.OpenContent.Components.Lucene;
 using Satrabel.OpenContent.Components.Lucene.Config;
 
@@ -34,8 +35,8 @@ namespace Satrabel.OpenContent.Components
             OpenContentVersion ver = new OpenContentVersion()
             {
                 Json = content.JsonAsJToken,
-                CreatedByUserId = content.LastModifiedByUserId,
-                CreatedOnDate = content.LastModifiedOnDate,
+                CreatedByUserId = content.CreatedByUserId,
+                CreatedOnDate = content.CreatedOnDate,
                 LastModifiedByUserId = content.LastModifiedByUserId,
                 LastModifiedOnDate = content.LastModifiedOnDate
             };
@@ -46,6 +47,7 @@ namespace Satrabel.OpenContent.Components
             {
                 var rep = ctx.GetRepository<OpenContentInfo>();
                 rep.Insert(content);
+                ModuleController.SynchronizeModule(content.ModuleId);
             }
             if (index)
             {
@@ -68,6 +70,7 @@ namespace Satrabel.OpenContent.Components
             {
                 var rep = ctx.GetRepository<OpenContentInfo>();
                 rep.Delete(content);
+                ModuleController.SynchronizeModule(content.ModuleId);
             }
             if (index)
             {
@@ -83,8 +86,8 @@ namespace Satrabel.OpenContent.Components
             OpenContentVersion ver = new OpenContentVersion()
             {
                 Json = content.JsonAsJToken,
-                CreatedByUserId = content.LastModifiedByUserId,
-                CreatedOnDate = content.LastModifiedOnDate,
+                CreatedByUserId = content.CreatedByUserId,
+                CreatedOnDate = content.CreatedOnDate,
                 LastModifiedByUserId = content.LastModifiedByUserId,
                 LastModifiedOnDate = content.LastModifiedOnDate
             };
@@ -102,6 +105,7 @@ namespace Satrabel.OpenContent.Components
             {
                 var rep = ctx.GetRepository<OpenContentInfo>();
                 rep.Update(content);
+                ModuleController.SynchronizeModule(content.ModuleId);
             }
             if (index)
             {

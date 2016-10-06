@@ -3,6 +3,7 @@ using DotNetNuke.Security;
 using DotNetNuke.Web.Api;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -45,7 +46,8 @@ namespace Satrabel.OpenContent.Components.JPList
 
                     var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
-                    queryBuilder.Build(settings.Query, PortalSettings.UserMode != PortalSettings.Mode.Edit, UserInfo.UserID, DnnLanguageUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
+                    bool isEditable = ActiveModule.CheckIfEditable(PortalSettings);//portalSettings.UserMode != PortalSettings.Mode.Edit;
+                    queryBuilder.Build(settings.Query, !isEditable, UserInfo.UserID, DnnLanguageUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
 
                     JplistQueryBuilder.MergeJpListQuery(indexConfig, queryBuilder.Select, req.StatusLst, DnnLanguageUtils.GetCurrentCultureCode());
                     IDataItems dsItems;
@@ -79,6 +81,9 @@ namespace Satrabel.OpenContent.Components.JPList
                     //model["luceneQuery"] = dsItems.DebugInfo;
                     if (LogContext.IsLogActive)
                     {
+                        LogContext.Log(ActiveModule.ModuleID, "RequestContext", "IsEditable", isEditable);
+                        LogContext.Log(ActiveModule.ModuleID, "RequestContext", "UserRoles", PortalSettings.UserInfo.Social.Roles.Select(r => r.RoleName));
+                        LogContext.Log(ActiveModule.ModuleID, "RequestContext", "CurrentUserId", PortalSettings.UserId);
                         var logKey = "Query";
                         LogContext.Log(ActiveModule.ModuleID, logKey, "select", queryBuilder.Select);
                         LogContext.Log(ActiveModule.ModuleID, logKey, "result", dsItems);

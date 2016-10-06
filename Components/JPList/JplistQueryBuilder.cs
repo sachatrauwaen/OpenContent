@@ -53,7 +53,7 @@ namespace Satrabel.OpenContent.Components.JPList
                             else if ((status.type == "checkbox-group-filter" || status.type == "button-filter-group" || status.type == "combined")
                                         && status.data != null && !string.IsNullOrEmpty(status.name))
                             {
-                                if (status.data.filterType == "pathGroup" && status.data.pathGroup != null && status.data.pathGroup.Count > 0)
+                                if (status.data.filterType == "pathGroup" && status.data != null && status.data.pathGroup != null && status.data.pathGroup.Count > 0 && status.data.pathGroup[0] != "*")
                                 {
                                     query.AddRule(FieldConfigUtils.CreateFilterRule(config, cultureCode,
                                         status.name,
@@ -64,7 +64,7 @@ namespace Satrabel.OpenContent.Components.JPList
                             }
                             else if (status.type == "filter-select" && status.data != null && !string.IsNullOrEmpty(status.name))
                             {
-                                if (status.data.filterType == "path" && !string.IsNullOrEmpty(status.data.path))
+                                if (status.data.filterType == "path" && !string.IsNullOrEmpty(status.data.path) && (status.data.path != "*") )
                                 {
                                     query.AddRule(FieldConfigUtils.CreateFilterRule(config, cultureCode,
                                         status.name,

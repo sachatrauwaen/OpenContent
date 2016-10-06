@@ -20,8 +20,23 @@
             var windowTop = parent;
             var popup = windowTop.jQuery("#iPopUp");
             if (popup.length > 0) {
+
+                var $window = $(windowTop),
+                            newHeight,
+                            newWidth;
+
+                newHeight = $window.height() - 36;
+                newWidth = Math.min($window.width() - 40, 1200);
+
                 popup.dialog("option", {
-                    close: function () { window.dnnModal.closePopUp(false, ""); }
+                    close: function () { window.dnnModal.closePopUp(false, ""); },
+                    //'position': 'top',
+                    height: newHeight,
+                    width: newWidth,
+                    minWidth: newWidth,
+                    minHeight: newHeight,
+                    //position: 'center'
+                    resizable: false,
                 });
                 $("#<%=hlCancel.ClientID%>").click(function () {
                     dnnModal.closePopUp(false, "");

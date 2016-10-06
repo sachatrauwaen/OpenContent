@@ -33,11 +33,11 @@ namespace Satrabel.OpenContent.Components
     public class FeatureController : ModuleSearchBase, IPortable, IUpgradeable, IModuleSearchResultController
     {
         #region Optional Interfaces
-        public string ExportModule(int ModuleID)
+        public string ExportModule(int moduleId)
         {
             string xml = "";
             OpenContentController ctrl = new OpenContentController();
-            var content = ctrl.GetFirstContent(ModuleID);
+            var content = ctrl.GetFirstContent(moduleId);
             if ((content != null))
             {
                 xml += "<opencontent>";
@@ -46,17 +46,17 @@ namespace Satrabel.OpenContent.Components
             }
             return xml;
         }
-        public void ImportModule(int ModuleID, string Content, string Version, int UserID)
+        public void ImportModule(int moduleId, string Content, string version, int userId)
         {
             OpenContentController ctrl = new OpenContentController();
             XmlNode xml = Globals.GetContent(Content, "opencontent");
             var content = new OpenContentInfo()
             {
-                ModuleId = ModuleID,
+                ModuleId = moduleId,
                 Json = xml.SelectSingleNode("json").InnerText,
-                CreatedByUserId = UserID,
+                CreatedByUserId = userId,
                 CreatedOnDate = DateTime.Now,
-                LastModifiedByUserId = UserID,
+                LastModifiedByUserId = userId,
                 LastModifiedOnDate = DateTime.Now,
                 Title = "",
                 Html = ""
@@ -66,19 +66,29 @@ namespace Satrabel.OpenContent.Components
         #region ModuleSearchBase
         public override IList<SearchDocument> GetModifiedSearchDocuments(ModuleInfo modInfo, DateTime beginDateUtc)
         {
+            Log.Logger.TraceFormat("Indexing content Module {0} - Tab {1} - indexing from {3}", modInfo.ModuleID, modInfo.TabID, modInfo.CultureCode, beginDateUtc);
             var searchDocuments = new List<SearchDocument>();
 
             //If module is marked as "don't index" then return no results
             if (modInfo.ModuleSettings.GetValue("AllowIndex", "True") == "False")
+            {
+                Log.Logger.TraceFormat("Indexing content {0}|{1} - NOT - MODULE Indexing disabled", modInfo.ModuleID, modInfo.CultureCode);
                 return searchDocuments;
+            }
 
             //If tab of the module is marked as "don't index" then return no results
             if (modInfo.ParentTab.TabSettings.GetValue("AllowIndex", "True") == "False")
+            {
+                Log.Logger.TraceFormat("Indexing content {0}|{1} - NOT - TAB Indexing disabled", modInfo.ModuleID, modInfo.CultureCode);
                 return searchDocuments;
+            }
 
             //If tab is marked as "inactive" then return no results
             if (modInfo.ParentTab.DisableLink)
+            {
+                Log.Logger.TraceFormat("Indexing content {0}|{1} - NOT - TAB is inactive", modInfo.ModuleID, modInfo.CultureCode);
                 return searchDocuments;
+            }
 
             OpenContentSettings settings = new OpenContentSettings(modInfo.ModuleSettings);
             if (settings.Template == null || settings.Template.Main == null || !settings.Template.Main.DnnSearch)
@@ -100,62 +110,84 @@ namespace Satrabel.OpenContent.Components
             };
 
             IDataItems contentList = ds.GetAll(dsContext, null);
+            if (!contentList.Items.Any())
+            {
+                Log.Logger.TraceFormat("Indexing content {0}|{1} - NOT - No content found", modInfo.ModuleID, modInfo.CultureCode);
+            }
             foreach (IDataItem content in contentList.Items)
             {
-                if (content != null &&
-                    (content.LastModifiedOnDate.ToUniversalTime() > beginDateUtc &&
-                     content.LastModifiedOnDate.ToUniversalTime() < DateTime.UtcNow))
+                if (content == null)
                 {
-                    Log.Logger.DebugFormat("Indexing content {0}-{1} ({2}) {3} versus {4}", modInfo.ModuleID, modInfo.ModuleTitle, modInfo.TabID, beginDateUtc, content.LastModifiedOnDate.ToUniversalTime());
-
+                    Log.Logger.TraceFormat("Indexing content {0}|{1} - NOT - Content is Null", modInfo.ModuleID, modInfo.CultureCode);
+                }
+                else if ((content.LastModifiedOnDate.ToUniversalTime() > beginDateUtc && content.LastModifiedOnDate.ToUniversalTime() < DateTime.UtcNow))
+                {
                     SearchDocument searchDoc;
-                    string url;
                     if (DnnLanguageUtils.IsMultiLingualPortal(modInfo.PortalID))
                     {
-                        string culture = modInfo.CultureCode;
-                        JToken title;
-                        JToken description;
-                        JToken singleLanguage = content.Data;
-                        JsonUtils.SimplifyJson(singleLanguage, culture);
-
-                        if (content.Title.IsJson())
-                        {
-                            title = singleLanguage["Title"] ?? modInfo.ModuleTitle;
-                            description = singleLanguage["Description"] ?? JsonToSearchableString(content.Data);
-                        }
-                        else
-                        {
-                            title = content.Title;
-                            description = JsonToSearchableString(singleLanguage);
-                        }
-                        searchDoc = CreateSearchDocument(modInfo, content.Id, culture, title.ToString(), description.ToString(), content.LastModifiedOnDate.ToUniversalTime());
+                        searchDoc = GetLocalizedItem(modInfo, content);
                         searchDocuments.Add(searchDoc);
+                        if (modInfo.LocalizedModules != null)
+                            foreach (var localizedModule in modInfo.LocalizedModules)
+                            {
+                                SearchDocument localizedSearchDoc = GetLocalizedItem(localizedModule.Value, content);
+                                searchDocuments.Add(localizedSearchDoc);
+                            }
                     }
                     else
                     {
                         searchDoc = CreateSearchDocument(modInfo, content.Id, "", content.Title, JsonToSearchableString(content.Data), content.LastModifiedOnDate.ToUniversalTime());
                         searchDocuments.Add(searchDoc);
+                        Log.Logger.TraceFormat("Indexing content {0}|{5} -  OK!  {1} ({2}) of {3}", modInfo.ModuleID, searchDoc.Title, modInfo.TabID,  content.LastModifiedOnDate.ToUniversalTime(), modInfo.CultureCode);
                     }
+                }
+                else
+                {
+                    Log.Logger.TraceFormat("Indexing content {0}|{1} - NOT - No need to index: lastmod {2} ", modInfo.ModuleID, modInfo.CultureCode, content.LastModifiedOnDate.ToUniversalTime());
                 }
             }
             return searchDocuments;
         }
 
+        private static SearchDocument GetLocalizedItem(ModuleInfo moduleInfo, IDataItem content)
+        {
+            string culture = moduleInfo.CultureCode;
+            JToken title;
+            JToken description;
+            JToken singleLanguage = content.Data.DeepClone(); //Clone to keep Simplification into this Method
+            JsonUtils.SimplifyJson(singleLanguage, culture);
+
+            if (content.Title.IsJson())
+            {
+                title = singleLanguage["Title"] ?? moduleInfo.ModuleTitle;
+                description = singleLanguage["Description"] ?? JsonToSearchableString(content.Data);
+            }
+            else
+            {
+                title = content.Title;
+                description = JsonToSearchableString(singleLanguage);
+            }
+            var searchDoc = CreateSearchDocument(moduleInfo, content.Id, culture, title.ToString(), description.ToString(), content.LastModifiedOnDate.ToUniversalTime());
+            Log.Logger.DebugFormat("Indexing content {0}|{5} -  OK!  {1} ({2})  {4}", moduleInfo.ModuleID, searchDoc.Title, moduleInfo.TabID, "", content.LastModifiedOnDate.ToUniversalTime(), culture);
+            return searchDoc;
+        }
 
         private static SearchDocument CreateSearchDocument(ModuleInfo modInfo, string itemId, string culture, string title, string body, DateTime time)
         {
             return new SearchDocument
-              {
-                  UniqueKey = modInfo.ModuleID + "-" + itemId + "-" + culture,
-                  PortalId = modInfo.PortalID,
-                  Title = modInfo.ModuleTitle.StripHtml(),
-                  Description = title.StripHtml(),
-                  Body = body.StripHtml(),
-                  ModifiedTimeUtc = time,
-                  CultureCode = culture,
-                  TabId = modInfo.TabID,
-                  Url = "", //we don't set url here because we don't have httpcontext and getting portalsettings is expensive. See GetDocUrl() for alternative
-              };
+            {
+                UniqueKey = modInfo.ModuleID + "-" + itemId + "-" + culture, //Guid.NewGuid().ToString(),
+                PortalId = modInfo.PortalID,
+                Title = modInfo.ModuleTitle.StripHtml(),
+                Description = title.StripHtml(),
+                Body = body.StripHtml(),
+                ModifiedTimeUtc = time,
+                CultureCode = culture,
+                TabId = modInfo.TabID,
+                ModuleId = modInfo.ModuleID,
+                ModuleDefId = modInfo.ModuleDefID,
+                Url = "", //we don't set url here because we don't have httpcontext and getting portalsettings is expensive. See GetDocUrl() for alternative
+            };
         }
 
         protected static string JsonToSearchableString(string json)
@@ -165,9 +197,9 @@ namespace Satrabel.OpenContent.Components
             return result;
         }
 
-        protected static string JsonToSearchableString(JToken data)
+        private static string JsonToSearchableString(JToken data)
         {
-            string tagPattern = @"<(.|\n)*?>";
+            //string tagPattern = @"<(.|\n)*?>";
             string result = "";
 
             if (data.Type == JTokenType.Object)
@@ -212,7 +244,7 @@ namespace Satrabel.OpenContent.Components
         /// <summary>
         /// UpgradeModule implements the IUpgradeable Interface
         /// </summary>
-        /// <param name="Version">The current version of the module</param>
+        /// <param name="version">The current version of the module</param>
         /// -----------------------------------------------------------------------------
         //public string UpgradeModule(string Version)
         //{
@@ -220,10 +252,10 @@ namespace Satrabel.OpenContent.Components
         //}
         #endregion
 
-        public string UpgradeModule(string Version)
+        public string UpgradeModule(string version)
         {
             string res = "";
-            if (Version == "02.01.00")
+            if (version == "02.01.00")
             {
 
                 var pc = new PortalController();
@@ -240,7 +272,7 @@ namespace Satrabel.OpenContent.Components
                     }
                 }
             }
-            return Version + res;
+            return version + res;
         }
 
         #region IModuleSearchResultController

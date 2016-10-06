@@ -94,8 +94,8 @@ namespace Satrabel.OpenContent.Components.Manifest
                                                 ""title"": ""{{templatekey}}"",
                                                 ""main"": {
                                                     ""template"": ""{{templatekey}}{{templateextention}}"",
-                                                    ""schemaInTemplate"": true,
-                                                    ""optionsInTemplate"": true,
+                                                    ""schemaInTemplate"": false,
+                                                    ""optionsInTemplate"": false,
                                                     ""clientSideData"": false
                                                 }
                                             }
@@ -114,6 +114,14 @@ namespace Satrabel.OpenContent.Components.Manifest
         internal static bool SettingsNeeded(this TemplateManifest template)
         {
             var schemaFileUri = new FileUri(template.ManifestFolderUri.UrlFolder, template.Key.ShortKey + "-schema.json");
+            if (schemaFileUri.FileExists)
+                return true;
+
+            return false;
+        }
+        internal static bool DataNeeded(this TemplateManifest template)
+        {
+            var schemaFileUri = new FileUri(template.ManifestFolderUri.UrlFolder,"schema.json");
             if (schemaFileUri.FileExists)
                 return true;
 

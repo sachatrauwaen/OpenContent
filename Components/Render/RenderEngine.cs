@@ -81,7 +81,12 @@ namespace Satrabel.OpenContent.Components.Render
             //start rendering           
             if (_settings.Template != null)
             {
-                if (_renderinfo.Template.IsListTemplate)
+                if (!_settings.Template.DataNeeded())
+                {
+                    _renderinfo.SetData(null, new JObject(), _settings.Data);
+                    _renderinfo.OutputString = GenerateOutput(page, _renderinfo.Template.MainTemplateUri(),  _renderinfo.DataJson, _renderinfo.SettingsJson, _renderinfo.Template.Main);
+                }
+                else if (_renderinfo.Template.IsListTemplate)
                 {
                     LogContext.Log(_module.ModuleID, "RequestContext", "QueryParam Id", ItemId);
                     // Multi items template
@@ -176,7 +181,7 @@ namespace Satrabel.OpenContent.Components.Render
                 bool demoExist = GetDemoData(_renderinfo, _settings);
                 bool settingsNeeded = _renderinfo.Template.SettingsNeeded();
 
-                if (demoExist && (!settingsNeeded || !string.IsNullOrEmpty(_renderinfo.SettingsJson)))
+                if (demoExist && _renderinfo.DataExist && (!settingsNeeded || !string.IsNullOrEmpty(_renderinfo.SettingsJson)))
                 {
                     _renderinfo.OutputString = GenerateOutput(page, _renderinfo.Template.MainTemplateUri(), _renderinfo.DataJson, _renderinfo.SettingsJson, _renderinfo.Template.Main);
                 }
@@ -267,13 +272,17 @@ namespace Satrabel.OpenContent.Components.Render
                     {
                         templateKey = GetTemplateKey(indexConfig);
                     }
-                    bool addWorkFlow = portalSettings.UserMode != PortalSettings.Mode.Edit;
+                    bool isEditable = _module.CheckIfEditable(portalSettings);//portalSettings.UserMode != PortalSettings.Mode.Edit;
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
-                    queryBuilder.Build(settings.Query, addWorkFlow, portalSettings.UserId, DnnLanguageUtils.GetCurrentCultureCode(), portalSettings.UserInfo.Social.Roles, QueryString);
+                    queryBuilder.Build(settings.Query, !isEditable, portalSettings.UserId, DnnLanguageUtils.GetCurrentCultureCode(), portalSettings.UserInfo.Social.Roles, QueryString);
 
                     resultList = ds.GetAll(dsContext, queryBuilder.Select).Items;
                     if (LogContext.IsLogActive)
                     {
+                        //LogContext.Log(_module.ModuleID, "RequestContext", "EditMode", !addWorkFlow);
+                        LogContext.Log(_module.ModuleID, "RequestContext", "IsEditable", isEditable);
+                        LogContext.Log(_module.ModuleID, "RequestContext", "UserRoles", portalSettings.UserInfo.Social.Roles.Select(r=> r.RoleName));
+                        LogContext.Log(_module.ModuleID, "RequestContext", "CurrentUserId", portalSettings.UserId);
                         var logKey = "Query";
                         LogContext.Log(_module.ModuleID, logKey, "select", queryBuilder.Select);
                         LogContext.Log(_module.ModuleID, logKey, "result", resultList);

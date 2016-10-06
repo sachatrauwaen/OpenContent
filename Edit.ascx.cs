@@ -26,7 +26,7 @@ namespace Satrabel.OpenContent
             base.OnInit(e);
             var editLayout = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetEditLayout();
             var bootstrap = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetEditLayout() != AlpacaLayoutEnum.DNN;
-            bool loadBootstrap = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetLoadBootstrap();
+            bool loadBootstrap = bootstrap && OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetLoadBootstrap();
             hlCancel.NavigateUrl = Globals.NavigateURL();
             cmdSave.NavigateUrl = Globals.NavigateURL();
             OpenContentSettings settings = this.OpenContentSettings();

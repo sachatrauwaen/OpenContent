@@ -53,7 +53,6 @@ namespace Satrabel.OpenContent.Components.Manifest
         {
             ManifestFolderUri = templateKey.TemplateDir;
             Key = templateKey;
-        }
-
+        }       
     }
 }

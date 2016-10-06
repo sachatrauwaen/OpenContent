@@ -19,10 +19,10 @@
 <dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/mode/handlebars/handlebars.js" Priority="103" />
 
 <div class="dnnForm dnnRazorHostEditScript dnnClear" id="dnnEditScript">
-    <fieldset>
+    <fieldset class="nomargin">
         <div class="dnnFormItem">
             <dnn:Label id="scriptsLabel" runat="Server" controlname="scriptList" />
-            <asp:DropDownList ID="scriptList" runat="server" AutoPostBack="true" />
+            <asp:DropDownList ID="scriptList" runat="server" AutoPostBack="true" CssClass="nomargin" />
         </div>
         <div class="dnnFormItem">
             <asp:Label ID="Label1" ControlName="txtSource" runat="server" CssClass="dnnLabel" Text="" />
@@ -90,7 +90,7 @@
                 //$('window.frameElement, body, html').css('overflow', 'hidden');
 
 
-                var containerHeight = $(window).height() - 18 - 52 - 52 - 30 - 30;
+                var containerHeight = $(window).height() - 52 - 52 - 40 ;
 
                 //$('.editorContainer').height(containerHeight - $('.editorContainer').offset().top - 110);
                 //$('.editorContainer').height(containerHeight - 250);
@@ -106,6 +106,10 @@
                                 newHeight,
                                 newWidth;
 
+                var $window = $(windowTop),
+                            newHeight,
+                            newWidth;
+
                 newHeight = $window.height() - 36;
                 newWidth = Math.min($window.width() - 40, 1200);
 
@@ -114,6 +118,8 @@
                     //'position': 'top',
                     height: newHeight,
                     width: newWidth,
+                    minWidth: newWidth,
+                    minHeight: newHeight,
                     //position: 'center'
                     resizable: false,
                 });
