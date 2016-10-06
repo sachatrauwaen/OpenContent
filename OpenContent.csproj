@@ -261,7 +261,6 @@
     <Compile Include="Components\TemplateHelpers\RazorExtensions.cs" />
     <Compile Include="Components\TemplateHelpers\StringHtmlExtensions.cs" />
     <Compile Include="Components\TemplateHelpers\UrlHelpers.cs" />
-    <Compile Include="Components\Tools\FixingTools.cs" />
     <Compile Include="Components\Uri\UriFactory.cs" />
     <Compile Include="Components\Uri\PortalFolderUri.cs" />
     <Compile Include="Components\Uri\PortalFileUri.cs" />
