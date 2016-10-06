@@ -68,6 +68,13 @@ namespace Satrabel.OpenContent.Components
         public int ModuleId { get; private set; }
 
         public TemplateManifest Template { get; private set; }
+
+        /// <summary>
+        /// Gets the manifest. Will be Null if no template is defined yet
+        /// </summary>
+        /// <value>
+        /// The manifest.
+        /// </value>
         public Manifest.Manifest Manifest { get; private set; }
 
         public FolderUri TemplateDir { get { return TemplateKey.TemplateDir; } }

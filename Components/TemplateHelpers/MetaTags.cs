@@ -11,8 +11,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         public static void SetPageTitle(HttpContextBase context, string title)
         {
             if (context == null) return;
-            title = Utils.HtmlDecodeIfNeeded(title);
-            title = Utils.HtmlRemoval.StripTagsRegexCompiled(title);
+            title = title.HtmlDecodeIfNeeded().StripHtml();
             if (string.IsNullOrWhiteSpace(title)) return;
             var dnnpage = context.DnnPage();
             if (dnnpage != null)
@@ -30,8 +29,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         public static void SetPageDescription(HttpContextBase context, string description)
         {
             if (context == null) return;
-            description = Utils.HtmlDecodeIfNeeded(description);
-            description = Utils.HtmlRemoval.StripTagsRegexCompiled(description);
+            description = description.HtmlDecodeIfNeeded().StripHtml();
             if (string.IsNullOrWhiteSpace(description)) return;
             var dnnpage = context.DnnPage();
             if (dnnpage != null)
