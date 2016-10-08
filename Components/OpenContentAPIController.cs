@@ -567,7 +567,6 @@ namespace Satrabel.OpenContent.Components
                 module = mc.GetModule(settings.ModuleId, settings.TabId, false);
             }
             var manifest = settings.Template.Manifest;
-            TemplateManifest templateManifest = settings.Template;
             string key = req.dataKey;
             var dataManifest = manifest.GetAdditionalData(key);
             List<LookupResultDTO> res = new List<LookupResultDTO>();
@@ -597,19 +596,6 @@ namespace Satrabel.OpenContent.Components
                     {
                         AddLookupItems(req.valueField, req.textField, req.childrenField, res, json as JArray);
                     }
-                    /*
-                    else if (json is JObject)
-                    {
-                        foreach (var item in json.Children<JProperty>())
-                        {
-                            res.Add(new LookupResultDTO()
-                            {
-                                value = dataManifest.ModelKey ?? key +"/"+item.Name,
-                                text = item.Value[req.textField] == null ? "" : item.Value[req.textField].ToString()
-                            });
-                        }
-                    }
-                     */
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, res);
             }
@@ -672,8 +658,8 @@ namespace Satrabel.OpenContent.Components
                         {
                             res.Add(new LookupResultDTO()
                             {
-                                value = item.Id,
-                                text = item.Title
+                                value = item.Id, //todo user valuefield
+                                text = item.Title //todo user textfield
                             });
                         }
                     }
