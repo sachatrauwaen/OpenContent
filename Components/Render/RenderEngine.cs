@@ -83,8 +83,10 @@ namespace Satrabel.OpenContent.Components.Render
             {
                 if (!_settings.Template.DataNeeded())
                 {
+                    // template without schema & options
+                    // render the template with no data
                     _renderinfo.SetData(null, new JObject(), _settings.Data);
-                    _renderinfo.OutputString = GenerateOutput(page, _renderinfo.Template.MainTemplateUri(),  _renderinfo.DataJson, _renderinfo.SettingsJson, _renderinfo.Template.Main);
+                    _renderinfo.OutputString = GenerateOutput(page, _renderinfo.Template.MainTemplateUri(), _renderinfo.DataJson, _renderinfo.SettingsJson, _renderinfo.Template.Main);
                 }
                 else if (_renderinfo.Template.IsListTemplate)
                 {
@@ -281,7 +283,7 @@ namespace Satrabel.OpenContent.Components.Render
                     {
                         //LogContext.Log(_module.ModuleID, "RequestContext", "EditMode", !addWorkFlow);
                         LogContext.Log(_module.ModuleID, "RequestContext", "IsEditable", isEditable);
-                        LogContext.Log(_module.ModuleID, "RequestContext", "UserRoles", portalSettings.UserInfo.Social.Roles.Select(r=> r.RoleName));
+                        LogContext.Log(_module.ModuleID, "RequestContext", "UserRoles", portalSettings.UserInfo.Social.Roles.Select(r => r.RoleName));
                         LogContext.Log(_module.ModuleID, "RequestContext", "CurrentUserId", portalSettings.UserId);
                         var logKey = "Query";
                         LogContext.Log(_module.ModuleID, logKey, "select", queryBuilder.Select);
@@ -340,6 +342,17 @@ namespace Satrabel.OpenContent.Components.Render
 
             if (dsItem != null)
             {
+                //check permissions
+                var portalSettings = PortalSettings.Current;
+                bool isEditable = _module.CheckIfEditable(portalSettings);
+                if (!isEditable)
+                {
+                    var indexConfig = OpenContentUtils.GetIndexConfig(info.Template.Key.TemplateDir);
+                    if (!OpenContentUtils.HaveViewPermissions(dsItem, portalSettings.UserInfo, indexConfig))
+                    {
+                        throw new UnauthorizedAccessException("No detail view permissions for id " + info.DetailItemId);
+                    }
+                }
                 info.SetData(dsItem, dsItem.Data, settings.Data);
             }
         }
