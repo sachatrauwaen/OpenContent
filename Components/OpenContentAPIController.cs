@@ -636,11 +636,12 @@ namespace Satrabel.OpenContent.Components
         {
             ModuleController mc = new ModuleController();
             var module = mc.GetModule(req.moduleid, req.tabid, false);
+            if (module == null) throw new Exception(string.Format("Can not find ModuleInfo (tabid:{0}, moduleid:{1})", req.tabid, req.moduleid));
+
             var settings = module.OpenContentSettings();
             Manifest.Manifest manifest = settings.Manifest;
             TemplateManifest templateManifest = settings.Template;
             bool listMode = templateManifest != null && templateManifest.IsListTemplate;
-            //JToken json = new JObject();
             List<LookupResultDTO> res = new List<LookupResultDTO>();
             try
             {
@@ -652,7 +653,6 @@ namespace Satrabel.OpenContent.Components
                     TemplateFolder = settings.TemplateDir.FolderPath,
                     Config = manifest.DataSourceConfig
                 };
-                //var dsItem = ds.GetEdit(dsContext, id);
 
                 if (listMode)
                 {
@@ -701,6 +701,7 @@ namespace Satrabel.OpenContent.Components
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
+
         /*
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
