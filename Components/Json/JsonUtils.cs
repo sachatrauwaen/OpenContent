@@ -111,7 +111,7 @@ namespace Satrabel.OpenContent.Components.Json
                     opt = options["fields"][child.Name] as JObject;
                 }
                 if (opt == null) continue;
-                bool lookup = opt != null &&
+                bool lookup = 
                     opt["type"] != null &&
                     opt["type"].ToString() == "select2" &&
                     opt["dataService"] != null &&
