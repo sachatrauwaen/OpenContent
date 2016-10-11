@@ -386,6 +386,14 @@ namespace Satrabel.OpenContent.Components.Rest
             }
         }
 
+        /// <summary>
+        /// Triggers an Action
+        /// </summary>
+        /// <param name="entity">The entity.</param>
+        /// <param name="id">The identifier.</param>
+        /// <param name="memberAction">The member action.</param>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
         [SupportedModules("OpenContent")]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         public HttpResponseMessage Put(string entity, string id, string memberAction, [FromBody]JObject value)
