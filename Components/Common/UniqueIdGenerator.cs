@@ -8,6 +8,7 @@ namespace Satrabel.OpenContent.Components
     /// https://jopinblog.wordpress.com/2009/02/04/a-shorter-friendlier-guiduuid-in-net/
     /// </summary>
     /// <example>
+    ///    var id = UniqueIdGenerator.GetInstance().GetUniqueId();
     ///    var id = UniqueIdGenerator.GetInstance().GetBase32UniqueId(8);
     /// </example>
     public class UniqueIdGenerator
