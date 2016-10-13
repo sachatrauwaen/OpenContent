@@ -487,11 +487,6 @@ namespace Satrabel.OpenContent.Components.Render
 
         private string GenerateOutput(Page page, TemplateManifest templateManifest, TemplateFiles files, JToken dataJson, string settingsJson)
         {
-            // detail template
-            if (dataJson != null)
-            {
-                //todo check view permissions
-            }
             var templateVirtualFolder = templateManifest.ManifestFolderUri.UrlFolder;
             if (!string.IsNullOrEmpty(files.Template))
             {
