@@ -314,8 +314,8 @@ namespace Satrabel.OpenContent
                         continue;
                     }
 
-                    var tabpath = tab.TabPath.Replace("//", "/").TrimEnd(tab.TabName).Trim('/');
-                    var li = new ListItem(string.Format("{2}/{0} - {1}", tab.TabName, item.ModuleTitle, tabpath), item.TabModuleID.ToString());
+                    var tabpath = tab.TabPath.Replace("//", "/").Trim('/');
+                    var li = new ListItem(string.Format("{1} - {0}", item.ModuleTitle, tabpath), item.TabModuleID.ToString());
 
                     listItems.Add(li);
                     if (item.TabID == tabId && item.ModuleID == moduleId)
