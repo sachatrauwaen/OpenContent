@@ -254,7 +254,7 @@ namespace Satrabel.OpenContent.Components
                             url = HttpUtility.HtmlDecode(url);
                         }
 
-                        var editStatus = GetEditStatus(item.CreatedByUserId);
+                        var editStatus = !Manifest.DisableEdit && GetEditStatus(item.CreatedByUserId);
                         context["IsEditable"] = editStatus;
                         context["EditUrl"] = editStatus ? DnnUrlUtils.EditUrl("id", item.Id, Module.ModuleID, PortalSettings) : "";
                         context["DetailUrl"] = Globals.NavigateURL(MainTabId, false, PortalSettings, "", GetCurrentCultureCode(), url.CleanupUrl(), "id=" + item.Id);
@@ -400,7 +400,7 @@ namespace Satrabel.OpenContent.Components
                 context["ModuleId"] = Module.ModuleID;
                 context["ModuleTitle"] = Module.ModuleTitle;
                 context["AddUrl"] = DnnUrlUtils.EditUrl(Module.ModuleID, PortalSettings);
-                var editStatus = GetEditStatus(-1);
+                var editStatus = !Manifest.DisableEdit && GetEditStatus(-1);
                 context["IsEditable"] = editStatus;
                 context["PortalId"] = PortalId;
                 context["MainUrl"] = Globals.NavigateURL(MainTabId, false, PortalSettings, "", GetCurrentCultureCode());
