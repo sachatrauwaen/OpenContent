@@ -154,7 +154,8 @@ namespace Satrabel.OpenContent.Components
 
         public static string CleanUpFileName(string filename)
         {
-            var newName = RemoveDiacritics(filename);
+            var newName = HttpUtility.UrlDecode(filename);
+            newName = RemoveDiacritics(newName);
             newName = returnSafeString(newName);
             return newName;
         }
