@@ -11,37 +11,37 @@
   <!--The order of the <file> elements determines the order of the files in the bundle.-->
   <files>
     <file>AddressField.js</file>
-    <file>MultiUploadField.js</file>
-    <file>GalleryField.js</file>
-    <file>DocumentsField.js</file>
     <file>CKEditorField.js</file>
     <file>DateField.js</file>
-    <file>FileField.js</file>
-    <file>ImageCropField.js</file>
-    <file>ImageCropperField.js</file>
-    <file>ImageCrop2Field.js</file>
-    <file>ImageField.js</file>
-    <file>NumberField.js</file>
-    <file>Select2Field.js</file>
-    <file>Image2Field.js</file>
-    <file>MLImage2Field.js</file>
+    <file>DocumentsField.js</file>
     <file>File2Field.js</file>
-    <file>MLFile2Field.js</file>
+    <file>FileField.js</file>
     <file>Folder2Field.js</file>
-    <file>MLFolder2Field.js</file>
-    <file>Url2Field.js</file>
-    <file>MLUrl2Field.js</file>
-    <file>UrlField.js</file>
-    <file>wysihtmlField.js</file>
-    <file>MLCKEditorField.js</file>
-    <file>MLFileField.js</file>
-    <file>MLImageField.js</file>
-    <file>MLTextField.js</file>
-    <file>MLTextAreaField.js</file>
-    <file>MLUrlField.js</file>
-    <file>mlwysihtmlField.js</file>
+    <file>GalleryField.js</file>
     <file>GuidField.js</file>
     <file>IconField.js</file>
+    <file>Image2Field.js</file>
+    <file>ImageCrop2Field.js</file>
+    <file>ImageCropField.js</file>
+    <file>ImageCropperField.js</file>
+    <file>ImageField.js</file>
+    <file>MLCKEditorField.js</file>
+    <file>MLFile2Field.js</file>
+    <file>MLFileField.js</file>
+    <file>MLFolder2Field.js</file>
+    <file>MLImage2Field.js</file>
+    <file>MLImageField.js</file>
+    <file>MLTextAreaField.js</file>
+    <file>MLTextField.js</file>
+    <file>MLUrl2Field.js</file>
+    <file>MLUrlField.js</file>
+    <file>MLWysihtmlField.js</file>
+    <file>MultiUploadField.js</file>
+    <file>NumberField.js</file>
     <file>Role2Field.js</file>
+    <file>Select2Field.js</file>
+    <file>Url2Field.js</file>
+    <file>UrlField.js</file>
+    <file>WysihtmlField.js</file>
   </files>
 </bundle>

@@ -460,8 +460,8 @@
     <Content Include="alpaca\js\fields\dnn\Image2Field.js" />
     <Content Include="alpaca\js\fields\dnn\Select2Field.js" />
     <Content Include="alpaca\js\fields\dnn\UrlField.js" />
-    <Content Include="alpaca\js\fields\dnn\mlwysihtmlField.js" />
-    <Content Include="alpaca\js\fields\dnn\wysihtmlField.js" />
+    <Content Include="alpaca\js\fields\dnn\MLWysihtmlField.js" />
+    <Content Include="alpaca\js\fields\dnn\WysihtmlField.js" />
     <Content Include="alpaca\js\views\dnnbootstrap.js" />
     <Content Include="alpaca\js\views\dnn.js" />
     <Content Include="alpaca\templates\dnn-edit\container.html" />
