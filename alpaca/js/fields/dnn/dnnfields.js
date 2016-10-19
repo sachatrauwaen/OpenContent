@@ -1396,6 +1396,19 @@
             if (!this.options.uploadfolder) {
                 this.options.uploadfolder = "";
             }
+            if (!this.options.downloadButton) {
+                this.options.downloadButton = false;
+            }
+            if (this.options.downloadButton) {
+                this.options.buttons = {
+                    "downloadButton": {
+                        "value": "Download",
+                        "click": function () {
+                            this.DownLoadFile();
+                        }
+                    }
+                };
+            }
             this.base();
         },
 
@@ -1633,8 +1646,46 @@
                 $(self.field).find("span.twitter-typeahead").first().css("display", "block"); // SPAN to behave more like DIV, next line
                 $(self.field).find("span.twitter-typeahead input.tt-input").first().css("background-color", "");
             }
-        }
+        },
 
+        DownLoadFile: function () {
+            var self = this;
+            var el = this.getTextControlEl();
+            var data = self.getValue();
+            var urlPattern = new RegExp("^(http[s]?:\\/\\/(www\\.)?|ftp:\\/\\/(www\\.)?|(www\‌​\.)?){1}([0-9A-Za-z-‌​\\.@:%_\+~#=]+)+((\\‌​.[a-zA-Z]{2,3})+)(/(‌​.)*)?(\\?(.)*)?");
+            if (!data || !self.isURL(data)) {
+                alert("url not valid");
+                return;
+            }
+            var postData = { url: data, uploadfolder: self.options.uploadfolder };
+            $(self.getControlEl()).css('cursor', 'wait');
+            $.ajax({
+                type: "POST",
+                url: self.sf.getServiceRoot('OpenContent') + "DnnEntitiesAPI/DownloadFile",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(postData),
+                beforeSend: self.sf.setModuleHeaders
+            }).done(function (res) {
+                if (res.error) {
+                    alert(res.error);
+                }else {
+                    self.setValue(res.url);
+                    $(el).change();
+                }
+                setTimeout(function () {
+                    $(self.getControlEl()).css('cursor', 'initial');
+                }, 500);
+            }).fail(function (xhr, result, status) {
+                alert("Uh-oh, something broke: " + status);
+                $(self.getControlEl()).css('cursor', 'initial');
+            });
+        },
+        isURL: function (str) {
+            var urlRegex = '^(?!mailto:)(?:(?:http|https|ftp)://)(?:\\S+(?::\\S*)?@)?(?:(?:(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[0-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)(?:\\.(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)*(?:\\.(?:[a-z\\u00a1-\\uffff]{2,})))|localhost)(?::\\d{2,5})?(?:(/|\\?|#)[^\\s]*)?$';
+            var url = new RegExp(urlRegex, 'i');
+            return str.length < 2083 && url.test(str);
+        }
         /* end_builder_helpers */
     });
 
