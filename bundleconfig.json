@@ -5,6 +5,7 @@
             "alpaca/js/fields/dnn/AddressField.js",
             "alpaca/js/fields/dnn/CKEditorField.js",
             "alpaca/js/fields/dnn/DateField.js",
+            "alpaca/js/fields/dnn/MultiUploadField.js",
             "alpaca/js/fields/dnn/DocumentsField.js",
             "alpaca/js/fields/dnn/File2Field.js",
             "alpaca/js/fields/dnn/FileField.js",
@@ -12,11 +13,17 @@
             "alpaca/js/fields/dnn/GalleryField.js",
             "alpaca/js/fields/dnn/GuidField.js",
             "alpaca/js/fields/dnn/IconField.js",
+            "alpaca/js/fields/dnn/ImageField.js",
             "alpaca/js/fields/dnn/Image2Field.js",
             "alpaca/js/fields/dnn/ImageCrop2Field.js",
             "alpaca/js/fields/dnn/ImageCropField.js",
             "alpaca/js/fields/dnn/ImageCropperField.js",
-            "alpaca/js/fields/dnn/ImageField.js",
+            "alpaca/js/fields/dnn/NumberField.js",
+            "alpaca/js/fields/dnn/Role2Field.js",
+            "alpaca/js/fields/dnn/Select2Field.js",
+            "alpaca/js/fields/dnn/UrlField.js",
+            "alpaca/js/fields/dnn/Url2Field.js",
+            "alpaca/js/fields/dnn/WysihtmlField.js",
             "alpaca/js/fields/dnn/MLCKEditorField.js",
             "alpaca/js/fields/dnn/MLFile2Field.js",
             "alpaca/js/fields/dnn/MLFileField.js",
@@ -27,14 +34,7 @@
             "alpaca/js/fields/dnn/MLTextField.js",
             "alpaca/js/fields/dnn/MLUrl2Field.js",
             "alpaca/js/fields/dnn/MLUrlField.js",
-            "alpaca/js/fields/dnn/MLWysihtmlField.js",
-            "alpaca/js/fields/dnn/MultiUploadField.js",
-            "alpaca/js/fields/dnn/NumberField.js",
-            "alpaca/js/fields/dnn/Role2Field.js",
-            "alpaca/js/fields/dnn/Select2Field.js",
-            "alpaca/js/fields/dnn/Url2Field.js",
-            "alpaca/js/fields/dnn/UrlField.js",
-            "alpaca/js/fields/dnn/WysihtmlField.js"
+            "alpaca/js/fields/dnn/MLWysihtmlField.js"
         ]
     }
 ]
