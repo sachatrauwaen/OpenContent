@@ -3,6 +3,7 @@ using DotNetNuke.Web.Client.ClientResourceManagement;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Web.Hosting;
 using System.Web.UI;
 using DotNetNuke.UI.Modules;
@@ -188,6 +189,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
 
                         form.Controls.Add(CKDNNporid);
                         CKDNNporid.Value = ModuleContext.PortalId.ToString();
+                        GenerateEditorLoadScript(ModuleContext.PortalId);
                     }
                     else
                     {
@@ -286,7 +288,143 @@ namespace Satrabel.OpenContent.Components.Alpaca
             return "en_US";
         }
 
+        /// <summary>
+        /// Generates the editor load script.
+        /// </summary>
+        private void GenerateEditorLoadScript(int portalId)
+        {
+            //var editorVar = string.Format(
+            //    "editor{0}",
+            //    ClientID.Substring(ClientID.LastIndexOf("_", StringComparison.Ordinal) + 1).Replace(
+            //        "-", string.Empty));
 
+            //var editorFixedId = ClientID.Replace("-", string.Empty).Replace(".", string.Empty);
+            var editorFixedId = "opencontentCK";
 
+            ////if (HasMsAjax)
+            ////{
+            //var postBackScript =
+            //    string.Format(
+            //        @"if (CKEDITOR && CKEDITOR.instances && CKEDITOR.instances.{0}) {{ CKEDITOR.instances.{0}.updateElement(); CKEDITOR.instances.{0}.destroy(); }}",
+            //        editorFixedId);
+
+            //RegisterOnSubmitStatement(
+            //    GetType(), string.Format("CKEditor_OnAjaxSubmit_{0}", editorFixedId), postBackScript);
+            ////}
+
+            var editorScript = new StringBuilder();
+
+            //editorScript.AppendFormat(
+            //    "Sys.WebForms.PageRequestManager.getInstance().add_pageLoaded(LoadCKEditorInstance_{0});", editorFixedId);
+
+            //editorScript.AppendFormat("function LoadCKEditorInstance_{0}(sender,args) {{", editorFixedId);
+
+            //editorScript.AppendFormat(
+            //    @"if (jQuery(""[id*='UpdatePanel']"").length == 0 && CKEDITOR && CKEDITOR.instances && CKEDITOR.instances.{0}) {{ CKEDITOR.instances.{0}.updateElement();}}",
+            //    editorFixedId);
+
+            //editorScript.AppendFormat(
+            //    "if (document.getElementById('{0}') == null){{return;}}",
+            //    editorFixedId);
+
+            //// Render EditorConfig
+            //var editorConfigScript = new StringBuilder();
+            //editorConfigScript.AppendFormat("var editorConfig{0} = {{", editorVar);
+
+            //var keysCount = Settings.Keys.Count;
+            //var currentCount = 0;
+
+            //// Write options
+            //foreach (string key in Settings.Keys)
+            //{
+            //    var value = Settings[key];
+
+            //    currentCount++;
+
+            //    // Is boolean state or string
+            //    if (value.Equals("true", StringComparison.InvariantCultureIgnoreCase)
+            //        || value.Equals("false", StringComparison.InvariantCultureIgnoreCase) || value.StartsWith("[")
+            //        || value.StartsWith("{") || Utility.IsNumeric(value))
+            //    {
+            //        if (value.Equals("True"))
+            //        {
+            //            value = "true";
+            //        }
+            //        else if (value.Equals("False"))
+            //        {
+            //            value = "false";
+            //        }
+
+            //        editorConfigScript.AppendFormat("{0}:{1}", key, value);
+
+            //        editorConfigScript.Append(currentCount == keysCount ? "};" : ",");
+            //    }
+            //    else
+            //    {
+            //        if (key == "browser")
+            //        {
+            //            continue;
+            //        }
+
+            //        editorConfigScript.AppendFormat("{0}:\'{1}\'", key, value);
+
+            //        editorConfigScript.Append(currentCount == keysCount ? "};" : ",");
+            //    }
+            //}
+
+            //editorScript.AppendFormat(
+            //    "if (CKEDITOR.instances.{0}){{return;}}",
+            //    editorFixedId);
+
+            //// Check if we can use jQuery or $, and if both fail use ckeditor without the adapter
+            //editorScript.Append("if (jQuery().ckeditor) {");
+
+            //editorScript.AppendFormat("var {0} = jQuery('#{1}').ckeditor(editorConfig{0});", editorVar, editorFixedId);
+
+            //editorScript.Append("} else if ($.ckeditor) {");
+
+            //editorScript.AppendFormat("var {0} = $('#{1}').ckeditor(editorConfig{0});", editorVar, editorFixedId);
+
+            //editorScript.Append("} else {");
+
+            //editorScript.AppendFormat("var {0} = CKEDITOR.replace( '{1}', editorConfig{0});", editorVar, editorFixedId);
+
+            //editorScript.Append("}");
+
+            //// firefox maximize fix
+            //editorScript.Append("CKEDITOR.on('instanceReady', function (ev) {");
+            //editorScript.Append("ev.editor.on('maximize', function () {");
+            //editorScript.Append("if (ev.editor.commands.maximize.state == 1) {");
+            //editorScript.Append("var mainDocument = CKEDITOR.document;");
+            //editorScript.Append("CKEDITOR.env.gecko && mainDocument.getDocumentElement().setStyle( 'position', 'fixed' );");
+            //editorScript.Append("}");
+            //editorScript.Append("});");
+            //editorScript.Append("});");
+
+            editorScript.Append("if(CKEDITOR && CKEDITOR.config){");
+            editorScript.Append("  CKEDITOR.config.portalId = " + portalId);
+            editorScript.Append("  CKEDITOR.config.enableConfigHelper = " + EnableConfigHelper());
+            editorScript.Append("};");
+
+            //if(CKEDITOR && CKEDITOR.config && CKEDITOR.config.plugins ))
+
+            // End of LoadScript
+            //editorScript.Append("}");
+
+            //ClientResourceManager.RegisterScript(string.Format(@"{0}_CKE_Config", editorFixedId), editorConfigScript.ToString(), true);
+            RegisterStartupScript(string.Format(@"{0}_CKE_Startup", editorFixedId), editorScript.ToString(), true);
+        }
+
+        private string EnableConfigHelper()
+        {
+                        ClientResourceManager.RegisterScript(Page, "~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js", FileOrder.Js.DefaultPriority);
+                        ClientResourceManager.RegisterScript(Page, "~/Providers/HtmlEditorProviders/DNNConnect.CKE/js/ckeditor/4.5.3/ckeditor.js", FileOrder.Js.DefaultPriority);
+            throw new System.NotImplementedException();
+        }
+
+        private void RegisterStartupScript(string key, string script, bool addScriptTags)
+        {
+            ScriptManager.RegisterStartupScript(Page, GetType(), key, script, addScriptTags);
+        }
     }
 }
