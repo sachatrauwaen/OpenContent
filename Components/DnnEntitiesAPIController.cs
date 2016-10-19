@@ -589,6 +589,82 @@ namespace Satrabel.OpenContent.Components
         }
 
 
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [HttpPost]
+        public HttpResponseMessage DownloadFile(FileDTO req)
+        {
+            try
+            {
+                var res = new FileDTO()
+                {
+                    url = req.url    
+                };
+                var folderManager = FolderManager.Instance;
+                var fileManager = FileManager.Instance;
+                string RawImageUrl = req.url;
+                if (RawImageUrl.IndexOf('?') > 0)
+                {
+                    RawImageUrl = RawImageUrl.Substring(0, RawImageUrl.IndexOf('?'));
+                }
+                RawImageUrl = RawImageUrl.Replace(PortalSettings.HomeDirectory, "");
+                var file = fileManager.GetFile(ActiveModule.PortalID, RawImageUrl);
+                string uploadfolder = "OpenContent/Files/" + ActiveModule.ModuleID;
+                if (!string.IsNullOrEmpty(req.uploadfolder))
+                {
+                    uploadfolder = req.uploadfolder;
+                }
+                var userFolder = folderManager.GetFolder(PortalSettings.PortalId, uploadfolder);
+                if (userFolder == null)
+                {
+                    userFolder = folderManager.AddFolder(PortalSettings.PortalId, uploadfolder);
+                }
+                string fileName = FileUploadController.CleanUpFileName(Path.GetFileName(req.url));
+                if (file == null && (req.url.StartsWith("http://") || req.url.StartsWith("https://")) )
+                {
+                    int suffix = 0;
+                    string baseFileName = Path.GetFileNameWithoutExtension(req.url);
+                    string extension = Path.GetExtension(req.url);
+                    var fileInfo = fileManager.GetFile(userFolder, fileName);
+                    while (fileInfo != null)
+                    {
+                        suffix++;
+                        fileName = baseFileName + "-" + suffix + extension;
+                        fileInfo = fileManager.GetFile(userFolder, fileName);
+                    }
+                    using (WebClient myWebClient = new WebClient())
+                    {
+                        try
+                        {
+                            var stream = new MemoryStream(myWebClient.DownloadData(req.url));
+                            fileInfo = fileManager.AddFile(userFolder, fileName, stream, true);
+                        }
+                        catch (Exception ex)
+                        {
+                            res.error = ex.Message;
+                            return Request.CreateResponse(HttpStatusCode.OK, res);
+                        }
+                        
+                        
+                        res.url = fileInfo.ToUrl();
+                    }
+                }
+                return Request.CreateResponse(HttpStatusCode.OK, res);
+            }
+            catch (Exception exc)
+            {
+                Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
+
+        public class FileDTO
+        {
+            public string uploadfolder { get; set; }
+            public string url { get; set; }
+
+            public string error { get; set; }
+        }
 
         public class CroppersDTO
         {

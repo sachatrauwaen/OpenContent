@@ -21,6 +21,7 @@ using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.Lucene.Index;
 using Satrabel.OpenContent.Components.TemplateHelpers;
+using Newtonsoft.Json.Linq;
 
 
 namespace Satrabel.OpenContent.Components
@@ -424,11 +425,11 @@ namespace Satrabel.OpenContent.Components
 
         public static bool HasEditPermissions(PortalSettings portalSettings, ModuleInfo module, string editrole, int createdByUserId)
         {
-            return module.HasEditRights() || HasEditRole(portalSettings, module, editrole, createdByUserId);                    
+            return module.HasEditRights() || HasEditRole(portalSettings, module, editrole, createdByUserId);
         }
         public static bool HasEditRole(PortalSettings portalSettings, ModuleInfo module, string editrole, int createdByUserId)
         {
-            return  (!string.IsNullOrEmpty(editrole) && portalSettings.UserInfo.IsInRole(editrole) && (createdByUserId == -1 || portalSettings.UserId == createdByUserId)) ||
+            return (!string.IsNullOrEmpty(editrole) && portalSettings.UserInfo.IsInRole(editrole) && (createdByUserId == -1 || portalSettings.UserId == createdByUserId)) ||
                     (!string.IsNullOrEmpty(editrole) && editrole.ToLower() == "all");
         }
 
@@ -469,5 +470,79 @@ namespace Satrabel.OpenContent.Components
             return false;
         }
 
+
+        internal static bool HaveViewPermissions(Datasource.IDataItem dsItem, DotNetNuke.Entities.Users.UserInfo userInfo, FieldConfig IndexConfig)
+        {
+            if (dsItem == null || dsItem.Data == null) return true;
+
+            bool permissions = true;
+            //publish status , dates
+            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishStatus))
+            {
+                permissions = dsItem.Data[AppConfig.FieldNamePublishStatus] != null &&
+                    dsItem.Data[AppConfig.FieldNamePublishStatus].ToString() == "published";
+            }
+            if (permissions && IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishStartDate))
+            {
+                permissions =   dsItem.Data[AppConfig.FieldNamePublishStartDate] != null && 
+                                dsItem.Data[AppConfig.FieldNamePublishStartDate].Type == JTokenType.Date &&
+                                ((DateTime)dsItem.Data[AppConfig.FieldNamePublishStartDate]) < DateTime.Today;
+
+            }
+            if (permissions && IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishEndDate))
+            {
+                permissions =   dsItem.Data[AppConfig.FieldNamePublishEndDate] != null &&
+                                dsItem.Data[AppConfig.FieldNamePublishEndDate].Type == JTokenType.Date &&
+                                ((DateTime)dsItem.Data[AppConfig.FieldNamePublishEndDate])  >= DateTime.Today;
+            }
+            if (permissions)
+            {
+                // Roles                
+                string fieldName = "";
+                if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey("userrole"))
+                {
+                    fieldName = "userrole";
+                }
+                else if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey("userroles"))
+                {
+                    fieldName = "userroles";
+                }
+                if (!string.IsNullOrEmpty(fieldName))
+                {
+                    permissions = false;
+                    string[] dataRoles = null;
+                    if (dsItem.Data[fieldName] != null)
+                    {
+                        if (dsItem.Data[fieldName].Type == JTokenType.Array)
+                        {
+                            dataRoles = ((JArray)dsItem.Data[fieldName]).Select(d => d.ToString()).ToArray();
+
+                        }
+                        else
+                        {
+                            dataRoles = new string[] { dsItem.Data[fieldName].ToString() };
+                        }
+                    }
+                    if (dataRoles.Contains("AllUsers"))
+                    {
+                        permissions = true;
+                    }
+                    else
+                    {
+                        var roles = userInfo.Social.Roles;
+                        if (roles.Any())
+                        {
+                            permissions = roles.Any(r => dataRoles.Contains(r.RoleID.ToString()));
+                        }
+                        else
+                        {
+                            permissions = dataRoles.Contains("Unauthenticated");
+                        }
+                    }
+                }
+            }
+            return permissions;
+
+        }
     }
 }

@@ -152,7 +152,7 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
-        private string CleanUpFileName(string filename)
+        public static string CleanUpFileName(string filename)
         {
             var newName = RemoveDiacritics(filename);
             newName = returnSafeString(newName);
