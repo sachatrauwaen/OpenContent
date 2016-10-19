@@ -1,4 +1,3 @@
-﻿///#source 1 1 AddressField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -396,7 +395,6 @@
     Alpaca.registerFieldClass("address", Alpaca.Fields.AddressField);
 
 })(jQuery);
-///#source 1 1 MultiUploadField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -543,7 +541,6 @@
     Alpaca.registerFieldClass("multiupload", Alpaca.Fields.MultiUploadField);
 
 })(jQuery);
-///#source 1 1 GalleryField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -612,7 +609,6 @@
     Alpaca.registerFieldClass("gallery", Alpaca.Fields.GalleryField);
 
 })(jQuery);
-///#source 1 1 DocumentsField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -683,7 +679,6 @@
     Alpaca.registerFieldClass("documents", Alpaca.Fields.DocumentsField);
 
 })(jQuery);
-///#source 1 1 CKEditorField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -1030,7 +1025,6 @@
     Alpaca.registerFieldClass("ckeditor", Alpaca.Fields.CKEditorField);
 
 })(jQuery);
-///#source 1 1 DateField.js
 (function ($) {
 
     // NOTE: this requires bootstrap-datetimepicker.js
@@ -1369,7 +1363,6 @@
     Alpaca.registerDefaultFormatFieldMapping("date", "date");
 
 })(jQuery);
-///#source 1 1 FileField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -1641,7 +1634,6 @@
     Alpaca.registerFieldClass("file", Alpaca.Fields.FileField);
 
 })(jQuery);
-///#source 1 1 ImageCropField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -2025,7 +2017,6 @@
     Alpaca.registerFieldClass("imagecrop", Alpaca.Fields.ImageCropField);
 
 })(jQuery);
-///#source 1 1 ImageCropperField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -2586,7 +2577,6 @@
     Alpaca.registerFieldClass("imagecropper", Alpaca.Fields.ImageCropperField);
 
 })(jQuery);
-///#source 1 1 ImageCrop2Field.js
 (function ($) {
     var Alpaca = $.alpaca;
     Alpaca.Fields.ImageCrop2Field = Alpaca.Fields.ListField.extend(
@@ -3110,7 +3100,6 @@
     Alpaca.registerFieldClass("imagecrop2", Alpaca.Fields.ImageCrop2Field);
 
 })(jQuery);
-///#source 1 1 ImageField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -3407,7 +3396,6 @@
     Alpaca.registerFieldClass("image", Alpaca.Fields.ImageField);
 
 })(jQuery);
-///#source 1 1 NumberField.js
 (function($) {
 
     var Alpaca = $.alpaca;
@@ -3767,7 +3755,6 @@
 
 })(jQuery);
 
-///#source 1 1 Select2Field.js
 (function($) {
 
     var Alpaca = $.alpaca;
@@ -4291,7 +4278,6 @@
     Alpaca.registerFieldClass("select2", Alpaca.Fields.Select2Field);
 
 })(jQuery);
-///#source 1 1 Image2Field.js
 (function($) {
     var Alpaca = $.alpaca;
     Alpaca.Fields.Image2Field = Alpaca.Fields.ListField.extend(
@@ -4849,7 +4835,6 @@
     Alpaca.registerFieldClass("image2", Alpaca.Fields.Image2Field);
 
 })(jQuery);
-///#source 1 1 MLImage2Field.js
 (function($) {
 
     var Alpaca = $.alpaca;
@@ -4957,7 +4942,6 @@
     Alpaca.registerFieldClass("mlimage2", Alpaca.Fields.MLImage2Field);
 
 })(jQuery);
-///#source 1 1 File2Field.js
 (function($) {
 
     var Alpaca = $.alpaca;
@@ -5525,7 +5509,6 @@
     Alpaca.registerFieldClass("file2", Alpaca.Fields.File2Field);
 
 })(jQuery);
-///#source 1 1 MLFile2Field.js
 (function($) {
 
     var Alpaca = $.alpaca;
@@ -5622,7 +5605,6 @@
     Alpaca.registerFieldClass("mlfile2", Alpaca.Fields.MLFile2Field);
 
 })(jQuery);
-///#source 1 1 Folder2Field.js
 (function($) {
 
     var Alpaca = $.alpaca;
@@ -6189,7 +6171,6 @@
     Alpaca.registerFieldClass("folder2", Alpaca.Fields.Folder2Field);
 
 })(jQuery);
-///#source 1 1 MLFolder2Field.js
 (function($) {
 
     var Alpaca = $.alpaca;
@@ -6290,7 +6271,6 @@
     Alpaca.registerFieldClass("mlfolder2", Alpaca.Fields.MLFolder2Field);
 
 })(jQuery);
-///#source 1 1 Url2Field.js
 (function($) {
 
     var Alpaca = $.alpaca;
@@ -6825,7 +6805,6 @@
     Alpaca.registerFieldClass("url2", Alpaca.Fields.Url2Field);
 
 })(jQuery);
-///#source 1 1 MLUrl2Field.js
 (function($) {
 
     var Alpaca = $.alpaca;
@@ -6933,7 +6912,6 @@
     Alpaca.registerFieldClass("mlurl2", Alpaca.Fields.MLUrl2Field);
 
 })(jQuery);
-///#source 1 1 UrlField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -7074,7 +7052,6 @@
     Alpaca.registerFieldClass("url", Alpaca.Fields.DnnUrlField);
 
 })(jQuery);
-///#source 1 1 wysihtmlField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -7223,7 +7200,6 @@
     Alpaca.registerFieldClass("wysihtml", Alpaca.Fields.wysihtmlField);
 
 })(jQuery);
-///#source 1 1 MLCKEditorField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -7264,11 +7240,9 @@
             if (!this.options.ckeditor) {
                 this.options.ckeditor = {};
             }
-            /*
-            if (!this.options.ckeditor.extraPlugins) {
-                this.options.ckeditor.extraPlugins = 'confighelper';
-            }
-            */
+             if (CKEDITOR.config.enableConfigHelper && !this.options.ckeditor.extraPlugins) {
+                this.options.ckeditor.extraPlugins = 'dnnpages,confighelper';
+            } 
         },
 
         /**
@@ -7385,7 +7359,6 @@
     Alpaca.registerFieldClass("mlckeditor", Alpaca.Fields.MLCKEditorField);
 
 })(jQuery);
-///#source 1 1 MLFileField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -7535,7 +7508,6 @@
     Alpaca.registerFieldClass("mlfile", Alpaca.Fields.MLFileField);
 
 })(jQuery);
-///#source 1 1 MLImageField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -7685,7 +7657,6 @@
     Alpaca.registerFieldClass("mlimage", Alpaca.Fields.MLImageField);
 
 })(jQuery);
-///#source 1 1 MLTextField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -7858,7 +7829,6 @@
     Alpaca.registerFieldClass("mltext", Alpaca.Fields.MLTextField);
 
 })(jQuery);
-///#source 1 1 MLTextAreaField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -8031,7 +8001,6 @@
     Alpaca.registerFieldClass("mltextarea", Alpaca.Fields.MLTextAreaField);
 
 })(jQuery);
-///#source 1 1 MLUrlField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -8180,7 +8149,6 @@
     Alpaca.registerFieldClass("mlurl", Alpaca.Fields.MLUrlField);
 
 })(jQuery);
-///#source 1 1 mlwysihtmlField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -8326,7 +8294,6 @@
 
 
 })(jQuery);
-///#source 1 1 GuidField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -8424,7 +8391,6 @@
     Alpaca.registerFieldClass("guid", Alpaca.Fields.GuidField);
 
 })(jQuery);
-///#source 1 1 IconField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -9792,7 +9758,6 @@
 
 
 })(jQuery);
-///#source 1 1 Role2Field.js
 (function($) {
 
     var Alpaca = $.alpaca;

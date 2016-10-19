@@ -141,7 +141,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
             if (allFields ||
                     fieldTypes.Contains("select2") || fieldTypes.Contains("image2") || fieldTypes.Contains("file2") || fieldTypes.Contains("url2") ||
                     fieldTypes.Contains("mlimage2") || fieldTypes.Contains("mlfile2") || fieldTypes.Contains("mlurl2") || fieldTypes.Contains("mlfolder2") ||
-                    fieldTypes.Contains("imagecrop2") 
+                    fieldTypes.Contains("imagecrop2")
                 )
             {
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/select2/select2.js", FileOrder.Js.DefaultPriority);
@@ -168,7 +168,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 var form = Page.FindControl("Form");
                 if (form.FindControl("CKDNNporid") == null)
                 {
-                    if (File.Exists(HostingEnvironment.MapPath("~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js")))
+                    if (CKEditorIngoThaWatchaIsInstalled())
                     {
                         ClientResourceManager.RegisterScript(Page, "~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js", FileOrder.Js.DefaultPriority);
                         DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "PortalId", ModuleContext.PortalId.ToString(), true);
@@ -178,8 +178,9 @@ namespace Satrabel.OpenContent.Components.Alpaca
 
                         form.Controls.Add(CKDNNporid);
                         CKDNNporid.Value = ModuleContext.PortalId.ToString();
+                        GenerateEditorLoadScript(ModuleContext.PortalId);
                     }
-                    else if (File.Exists(HostingEnvironment.MapPath("~/Providers/HtmlEditorProviders/DNNConnect.CKE/js/ckeditor/4.5.3/ckeditor.js")))
+                    else if (CKEditorDnnConnectIsInstalled())
                     {
                         ClientResourceManager.RegisterScript(Page, "~/Providers/HtmlEditorProviders/DNNConnect.CKE/js/ckeditor/4.5.3/ckeditor.js", FileOrder.Js.DefaultPriority);
                         DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "PortalId", ModuleContext.PortalId.ToString(), true);
@@ -205,6 +206,17 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/css/glyphicons/glyphicons.css", FileOrder.Css.DefaultPriority + 1);
             }
         }
+
+        private bool CKEditorDnnConnectIsInstalled()
+        {
+            return File.Exists(HostingEnvironment.MapPath("~/Providers/HtmlEditorProviders/DNNConnect.CKE/js/ckeditor/4.5.3/ckeditor.js"));
+        }
+
+        private bool CKEditorIngoThaWatchaIsInstalled()
+        {
+            return File.Exists(HostingEnvironment.MapPath("~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js"));
+        }
+
         private JToken GetOptions()
         {
             string physicalDirectory = HostingEnvironment.MapPath("~/" + VirtualDirectory);
@@ -402,8 +414,8 @@ namespace Satrabel.OpenContent.Components.Alpaca
             //editorScript.Append("});");
 
             editorScript.Append("if(CKEDITOR && CKEDITOR.config){");
-            editorScript.Append("  CKEDITOR.config.portalId = " + portalId);
-            editorScript.Append("  CKEDITOR.config.enableConfigHelper = " + EnableConfigHelper());
+            editorScript.Append("  CKEDITOR.config.portalId = " + portalId + ";");
+            editorScript.Append("  CKEDITOR.config.enableConfigHelper = " + EnableConfigHelper() + ";");
             editorScript.Append("};");
 
             //if(CKEDITOR && CKEDITOR.config && CKEDITOR.config.plugins ))
@@ -417,14 +429,21 @@ namespace Satrabel.OpenContent.Components.Alpaca
 
         private string EnableConfigHelper()
         {
-                        ClientResourceManager.RegisterScript(Page, "~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js", FileOrder.Js.DefaultPriority);
-                        ClientResourceManager.RegisterScript(Page, "~/Providers/HtmlEditorProviders/DNNConnect.CKE/js/ckeditor/4.5.3/ckeditor.js", FileOrder.Js.DefaultPriority);
-            throw new System.NotImplementedException();
+            if (File.Exists(HostingEnvironment.MapPath("~/Providers/HtmlEditorProviders/CKEditor/plugins/confighelper/plugin.js")))
+            {
+                return "true";
+            }
+            else if (File.Exists(HostingEnvironment.MapPath("~/Providers/HtmlEditorProviders/DNNConnect.CKE/js/ckeditor/4.5.3/plugins/confighelper/plugin.js")))
+            {
+                return "true";
+            }
+            return "false";
         }
 
         private void RegisterStartupScript(string key, string script, bool addScriptTags)
         {
             ScriptManager.RegisterStartupScript(Page, GetType(), key, script, addScriptTags);
         }
+
     }
 }

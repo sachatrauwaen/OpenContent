@@ -38,11 +38,9 @@
             if (!this.options.ckeditor) {
                 this.options.ckeditor = {};
             }
-            /*
-            if (!this.options.ckeditor.extraPlugins) {
-                this.options.ckeditor.extraPlugins = 'confighelper';
-            }
-            */
+             if (CKEDITOR.config.enableConfigHelper && !this.options.ckeditor.extraPlugins) {
+                this.options.ckeditor.extraPlugins = 'dnnpages,confighelper';
+            } 
         },
 
         /**
