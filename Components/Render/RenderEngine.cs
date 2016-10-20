@@ -348,9 +348,11 @@ namespace Satrabel.OpenContent.Components.Render
                 if (!isEditable)
                 {
                     var indexConfig = OpenContentUtils.GetIndexConfig(info.Template.Key.TemplateDir);
-                    if (!OpenContentUtils.HaveViewPermissions(dsItem, portalSettings.UserInfo, indexConfig))
+                    string raison;
+                    if (!OpenContentUtils.HaveViewPermissions(dsItem, portalSettings.UserInfo, indexConfig, out raison))
                     {
-                        throw new UnauthorizedAccessException("No detail view permissions for id " + info.DetailItemId);
+                        Exceptions.ProcessHttpException(new HttpException(404, "No detail view permissions for id=" + info.DetailItemId + " ("+raison+")"));
+                        //throw new UnauthorizedAccessException("No detail view permissions for id " + info.DetailItemId);
                     }
                 }
                 info.SetData(dsItem, dsItem.Data, settings.Data);

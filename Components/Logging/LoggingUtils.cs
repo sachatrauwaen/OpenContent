@@ -31,7 +31,7 @@ namespace Satrabel.OpenContent.Components.Logging
         }
         private static string PrepareErrorMessage(DotNetNuke.Web.Razor.RazorModuleBase ctrl, Exception exc)
         {
-            string friendlyMessage = string.Format("Alias: {3} \nTab: {4} - {5} \nModule: {0} \nContext: {2} \nError: {1}",
+            string friendlyMessage = string.Format("\n{1} \n\nAlias: {3} \nTab: {4} - {5} \nModule: {0} \n{2} ",
                 ctrl.ModuleContext.ModuleId,
                 exc.Message,
                 LoggingUtils.HttpRequestLogInfo(HttpContext.Current),
@@ -49,7 +49,7 @@ namespace Satrabel.OpenContent.Components.Logging
         }
         private static string PrepareErrorMessage(DnnApiController ctrl, Exception exc)
         {
-            string friendlyMessage = string.Format("PortalId: {3} \nTab: {4} - {5} \nModule: {0} \nContext: {2} \nError: {1}",
+            string friendlyMessage = string.Format("\n{1} \n\n PortalId: {3} \nTab: {4} - {5} \nModule: {0} \n{2} ",
                 ctrl.ActiveModule.ModuleID,
                 exc.Message,
                 LoggingUtils.HttpRequestLogInfo(HttpContext.Current),
@@ -86,7 +86,7 @@ namespace Satrabel.OpenContent.Components.Logging
         public static void ProcessModuleLoadException(DotNetNuke.Web.Razor.RazorModuleBase ctrl, Exception exc)
         {
             string friendlyMessage = PrepareErrorMessage(ctrl, exc);
-            DotNetNuke.Services.Exceptions.Exceptions.ProcessModuleLoadException(friendlyMessage, ctrl, exc);
+            DotNetNuke.Services.Exceptions.Exceptions.ProcessModuleLoadException(friendlyMessage.Replace("\n", "<br />"), ctrl, exc);
         }
         public static void ProcessModuleLoadException(Control ctrl, ModuleInfo module, Exception exc)
         {
@@ -100,9 +100,9 @@ namespace Satrabel.OpenContent.Components.Logging
             if (context != null)
             {
                 url = context.Request.Url.AbsoluteUri;
-                referrer = context.Request.UrlReferrer == null ? "???" : context.Request.UrlReferrer.AbsoluteUri;
+                referrer = context.Request.UrlReferrer == null ? "" : "\nReferrer: " + context.Request.UrlReferrer.AbsoluteUri;
             }
-            string retval = string.Format("Called from {0}. Referrer: {1}.", url, referrer);
+            string retval = string.Format("Called from {0}. {1}.", url, referrer);
 
             return retval;
         }

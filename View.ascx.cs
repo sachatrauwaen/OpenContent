@@ -41,6 +41,7 @@ using Newtonsoft.Json;
 using System.Text;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.Render;
+using System.Web;
 
 #endregion
 
@@ -186,6 +187,12 @@ namespace Satrabel.OpenContent
             {
                 RenderJsonException(ex);
             }
+                /*
+            catch (HttpException ex)
+            {
+                throw ex;
+            }
+                 */
             catch (Exception ex)
             {
                 LoggingUtils.ProcessModuleLoadException(this, ex);

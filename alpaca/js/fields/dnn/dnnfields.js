@@ -1,3 +1,4 @@
+﻿///#source 1 1 AddressField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -395,6 +396,7 @@
     Alpaca.registerFieldClass("address", Alpaca.Fields.AddressField);
 
 })(jQuery);
+///#source 1 1 CKEditorField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -741,6 +743,7 @@
     Alpaca.registerFieldClass("ckeditor", Alpaca.Fields.CKEditorField);
 
 })(jQuery);
+///#source 1 1 DateField.js
 (function ($) {
 
     // NOTE: this requires bootstrap-datetimepicker.js
@@ -1079,6 +1082,154 @@
     Alpaca.registerDefaultFormatFieldMapping("date", "date");
 
 })(jQuery);
+///#source 1 1 MultiUploadField.js
+(function ($) {
+
+    var Alpaca = $.alpaca;
+
+    Alpaca.Fields.MultiUploadField = Alpaca.Fields.ArrayField.extend(
+    {
+        constructor: function (container, data, options, schema, view, connector) {
+            var self = this;
+            this.base(container, data, options, schema, view, connector);
+            this.sf = connector.servicesFramework;
+            this.itemsCount = 0;
+        },
+        setup: function () {
+
+            this.base();
+            if (!this.options.uploadfolder) {
+                this.options.uploadfolder = "";
+            }
+            this.urlfield = "";
+            if (this.options && this.options.items && (this.options.items.fields || this.options.items.type) ) {
+                if (this.options.items.type == "image") {
+
+                } else if (this.options.items.fields ) {
+                    for (var i in this.options.items.fields) {
+                        var f = this.options.items.fields[i];
+                        if (f.type == "image" || f.type == "mlimage" || f.type == "imagecrop") {
+                            this.urlfield = i;
+                            this.options.uploadfolder = f.uploadfolder;
+                            break;
+                        }
+                        else if (f.type == "file" || f.type == "mlfile") {
+                            this.urlfield = i;
+                            this.options.uploadfolder = f.uploadfolder;
+                            break;
+                        } else if (f.type == "image2" || f.type == "mlimage2") {
+                            this.urlfield = i;
+                            this.options.uploadfolder = f.folder;
+                            break;
+                        }
+                        else if (f.type == "file2" || f.type == "mlfile2") {
+                            this.urlfield = i;
+                            this.options.uploadfolder = f.folder;
+                            break;
+                        }
+                    }
+                }
+            }
+        },
+        afterRenderContainer: function (model, callback) {
+            var self = this;
+            this.base(model, function () {
+                var container = self.getContainerEl();
+                //$(container).addClass("alpaca-MultiUpload");
+                if (!self.isDisplayOnly() ) {
+                   
+                    $('<div style="clear:both;"></div>').prependTo(container);
+                    var progressBar = $('<div class="progress" ><div class="bar" style="width: 0%;"></div></div>').prependTo(container);
+                    var mapButton = $('<input type="file" multiple="multiple" />').prependTo(container);
+
+                    this.wrapper = $("<span class='dnnInputFileWrapper dnnSecondaryAction' style='margin-bottom:10px;;'></span>");
+                    this.wrapper.text("Upload muliple files");
+                    mapButton.wrap(this.wrapper);
+                    if (self.sf){
+                    mapButton.fileupload({
+                        dataType: 'json',
+                        url: self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
+                        maxFileSize: 25000000,
+                        formData: { uploadfolder: self.options.uploadfolder },
+                        beforeSend: self.sf.setModuleHeaders,
+                        change: function (e, data) {
+                            self.itemsCount = self.children.length;
+                        },
+                        add: function (e, data) {
+                            //data.context = $(opts.progressContextSelector);
+                            //data.context.find($(opts.progressFileNameSelector)).html(data.files[0].name);
+                            //data.context.show('fade');
+                            data.submit();
+                        },
+                        progressall: function (e, data) {
+                                var progress = parseInt(data.loaded / data.total * 100, 10);
+                                $('.bar', progressBar).css('width', progress + '%').find('span').html(progress + '%');
+                        },
+                        done: function (e, data) {
+                            if (data.result) {
+                                $.each(data.result, function (index, file) {
+                                    self.handleActionBarAddItemClick(self.itemsCount-1, function (item) {
+                                        var val = item.getValue();
+                                        if (self.urlfield == ""){
+                                            val = file.url;
+                                        }  else {
+                                            val[self.urlfield] = file.url;
+                                        }
+                                        item.setValue(val);
+                                        
+                                    });
+                                    self.itemsCount++;
+                                });
+                            }
+                        }
+                    }).data('loaded', true);
+                    }
+                }
+                callback();
+            });
+        },
+        getTitle: function () {
+            return "Multi Upload";
+        },
+        getDescription: function () {
+            return "Multi Upload for images and files";
+        },
+
+        getSchemaOfOptions: function () {
+            return Alpaca.merge(this.base(), {
+                "properties": {
+                    "validateAddress": {
+                        "title": "Address Validation",
+                        "description": "Enable address validation if true",
+                        "type": "boolean",
+                        "default": true
+                    },
+                    "showMapOnLoad": {
+                        "title": "Whether to show the map when first loaded",
+                        "type": "boolean"
+                    }
+                }
+            });
+        },
+
+        getOptionsForOptions: function () {
+            return Alpaca.merge(this.base(), {
+                "fields": {
+                    "validateAddress": {
+                        "helper": "Address validation if checked",
+                        "rightLabel": "Enable Google Map for address validation?",
+                        "type": "checkbox"
+                    }
+                }
+            });
+        }
+
+    });
+
+    Alpaca.registerFieldClass("multiupload", Alpaca.Fields.MultiUploadField);
+
+})(jQuery);
+///#source 1 1 DocumentsField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -1149,6 +1300,7 @@
     Alpaca.registerFieldClass("documents", Alpaca.Fields.DocumentsField);
 
 })(jQuery);
+///#source 1 1 File2Field.js
 (function($) {
 
     var Alpaca = $.alpaca;
@@ -1716,6 +1868,7 @@
     Alpaca.registerFieldClass("file2", Alpaca.Fields.File2Field);
 
 })(jQuery);
+///#source 1 1 FileField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -2038,6 +2191,7 @@
     Alpaca.registerFieldClass("file", Alpaca.Fields.FileField);
 
 })(jQuery);
+///#source 1 1 Folder2Field.js
 (function($) {
 
     var Alpaca = $.alpaca;
@@ -2604,6 +2758,7 @@
     Alpaca.registerFieldClass("folder2", Alpaca.Fields.Folder2Field);
 
 })(jQuery);
+///#source 1 1 GalleryField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -2672,6 +2827,7 @@
     Alpaca.registerFieldClass("gallery", Alpaca.Fields.GalleryField);
 
 })(jQuery);
+///#source 1 1 GuidField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -2769,6 +2925,7 @@
     Alpaca.registerFieldClass("guid", Alpaca.Fields.GuidField);
 
 })(jQuery);
+///#source 1 1 IconField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -4136,6 +4293,304 @@
 
 
 })(jQuery);
+///#source 1 1 ImageField.js
+(function ($) {
+
+    var Alpaca = $.alpaca;
+    
+    Alpaca.Fields.ImageField = Alpaca.Fields.TextField.extend(
+    /**
+     * @lends Alpaca.Fields.ImageField.prototype
+     */
+    {
+        constructor: function(container, data, options, schema, view, connector)
+        {
+            var self = this;
+            this.base(container, data, options, schema, view, connector);
+            this.sf = connector.servicesFramework;
+        },
+
+        /**
+         * @see Alpaca.Fields.TextField#getFieldType
+         */
+        getFieldType: function () {
+            return "image";
+        }
+        ,
+        setup: function () {
+            if (!this.options.uploadfolder) {
+                this.options.uploadfolder = "";
+            }
+            if (!this.options.uploadhidden) {
+                this.options.uploadhidden = false;
+            }
+            this.base();
+        },
+
+        /**
+         * @see Alpaca.Fields.TextField#getTitle
+         */
+        getTitle: function () {
+            return "Image Field";
+        },
+
+        /**
+         * @see Alpaca.Fields.TextField#getDescription
+         */
+        getDescription: function () {
+            return "Image Field.";
+        },
+        getTextControlEl: function () {
+            return $(this.control.get(0)).find('input[type=text]#' + this.id);
+        },
+        setValue: function (value) {
+            var self = this;
+            //var el = $( this.control).filter('#'+this.id);
+            //var el = $(this.control.get(0)).find('input[type=text]');
+            var el = this.getTextControlEl();
+
+            if (el && el.length > 0) {
+                if (Alpaca.isEmpty(value)) {
+                    el.val("");
+                }
+                else {
+                    el.val(value);
+                    $(self.control).parent().find('.alpaca-image-display img').attr('src', value);
+                }
+            }
+            
+            // be sure to call into base method
+            //this.base(value);
+
+            // if applicable, update the max length indicator
+            this.updateMaxLengthIndicator();
+        },
+
+        getValue: function () {
+            var value = null;
+
+            //var el = $(this.control).filter('#' + this.id);
+            //var el = $(this.control.get(0)).find('input[type=text]');
+            var el = this.getTextControlEl();
+            if (el && el.length > 0) {
+                    value = el.val();
+            }
+            return value;
+        },
+
+        afterRenderControl: function (model, callback) {
+            var self = this;
+            this.base(model, function () {
+                self.handlePostRender(function () {
+                    callback();
+                });
+            });
+        },
+        handlePostRender: function (callback) {
+            var self = this;
+            
+
+            //var el = this.control;
+            var el = this.getTextControlEl();
+
+            if (self.options.uploadhidden) {
+                $(this.control.get(0)).find('input[type=file]').hide();
+            } else {
+                if (self.sf){
+                $(this.control.get(0)).find('input[type=file]').fileupload({
+                    dataType: 'json',
+                    url: self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
+                    maxFileSize: 25000000,
+                    formData: { uploadfolder : self.options.uploadfolder },
+                    beforeSend: self.sf.setModuleHeaders,
+                    add: function (e, data) {
+                        //data.context = $(opts.progressContextSelector);
+                        //data.context.find($(opts.progressFileNameSelector)).html(data.files[0].name);
+                        //data.context.show('fade');
+                        data.submit();
+                    },
+                    progress: function (e, data) {
+                        if (data.context) {
+                            var progress = parseInt(data.loaded / data.total * 100, 10);
+                            data.context.find(opts.progressBarSelector).css('width', progress + '%').find('span').html(progress + '%');
+                        }
+                    },
+                    done: function (e, data) {
+                        if (data.result) {
+                            $.each(data.result, function (index, file) {
+                                self.setValue(file.url);
+                                $(el).change();
+                                //$(el).change();
+                                //$(e.target).parent().find('input[type=text]').val(file.url);
+                                //el.val(file.url);
+                                //$(e.target).parent().find('.alpaca-image-display img').attr('src', file.url);
+                            });
+                        }
+                    }
+                }).data('loaded', true);
+                }
+            }
+            $(el).change(function () {
+
+                var value = $(this).val();
+
+                //var newValue = $(el).typeahead('val');
+                //if (newValue !== value) {
+                    $(self.control).parent().find('.alpaca-image-display img').attr('src', value);
+                //}
+
+            });
+
+            if (self.options.manageurl) {
+                var manageButton = $('<a href="' + self.options.manageurl + '" target="_blank" class="alpaca-form-button">Manage files</a>').appendTo($(el).parent());
+            }
+            
+            callback();
+        },
+        applyTypeAhead: function () {
+            var self = this;
+
+            if (self.control.typeahead && self.options.typeahead && !Alpaca.isEmpty(self.options.typeahead) && self.sf) {
+
+                var tConfig = self.options.typeahead.config;
+                if (!tConfig) {
+                    tConfig = {};
+                }
+                var tDatasets = tDatasets = {};
+                if (!tDatasets.name) {
+                    tDatasets.name = self.getId();
+                }
+
+                var tFolder = self.options.typeahead.Folder;
+                if (!tFolder) {
+                    tFolder = "";
+                }
+
+                var tEvents = tEvents = {};
+
+                var bloodHoundConfig = {
+                    datumTokenizer: function (d) {
+                        return Bloodhound.tokenizers.whitespace(d.value);
+                    },
+                    queryTokenizer: Bloodhound.tokenizers.whitespace
+                };
+
+                /*
+                if (tDatasets.type === "prefetch") {
+                    bloodHoundConfig.prefetch = {
+                        url: tDatasets.source,
+                        ajax: {
+                            //url: sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
+                            beforeSend: connector.servicesFramework.setModuleHeaders,
+        
+                        }
+                    };
+        
+                    if (tDatasets.filter) {
+                        bloodHoundConfig.prefetch.filter = tDatasets.filter;
+                    }
+                }
+                */
+
+                bloodHoundConfig.remote = {
+                    url: self.sf.getServiceRoot('OpenContent') + "DnnEntitiesAPI/Images?q=%QUERY&d=" + tFolder,
+                    ajax: {
+                        beforeSend: self.sf.setModuleHeaders,
+
+                    }
+                };
+
+                if (tDatasets.filter) {
+                    bloodHoundConfig.remote.filter = tDatasets.filter;
+                }
+
+                if (tDatasets.replace) {
+                    bloodHoundConfig.remote.replace = tDatasets.replace;
+                }
+
+
+                var engine = new Bloodhound(bloodHoundConfig);
+                engine.initialize();
+                tDatasets.source = engine.ttAdapter();
+
+                tDatasets.templates = {
+                    "empty": "Nothing found...",
+                    "suggestion": "<div style='width:20%;display:inline-block;background-color:#fff;padding:2px;'><img src='{{value}}' style='height:40px' /></div> {{name}}"
+                };
+
+                // compile templates
+                if (tDatasets.templates) {
+                    for (var k in tDatasets.templates) {
+                        var template = tDatasets.templates[k];
+                        if (typeof (template) === "string") {
+                            tDatasets.templates[k] = Handlebars.compile(template);
+                        }
+                    }
+                }
+
+                //var el = $(this.control.get(0)).find('input[type=text]');
+                var el = this.getTextControlEl();
+                // process typeahead
+                $(el).typeahead(tConfig, tDatasets);
+
+                // listen for "autocompleted" event and set the value of the field
+                $(el).on("typeahead:autocompleted", function (event, datum) {
+                    self.setValue(datum.value);
+                    $(el).change();
+                    //$(self.control).parent().find('input[type=text]').val(datum.value);
+                    //$(self.control).parent().find('.alpaca-image-display img').attr('src', datum.value);
+                });
+
+                // listen for "selected" event and set the value of the field
+                $(el).on("typeahead:selected", function (event, datum) {
+                    self.setValue(datum.value);
+                    $(el).change();
+                    //$(self.control).parent().find('input[type=text]').val(datum.value);
+                    //$(self.control).parent().find('.alpaca-image-display img').attr('src', datum.value);
+                });
+
+                // custom events
+                if (tEvents) {
+                    if (tEvents.autocompleted) {
+                        $(el).on("typeahead:autocompleted", function (event, datum) {
+                            tEvents.autocompleted(event, datum);
+                        });
+                    }
+                    if (tEvents.selected) {
+                        $(el).on("typeahead:selected", function (event, datum) {
+                            tEvents.selected(event, datum);
+                        });
+                    }
+                }
+
+                // when the input value changes, change the query in typeahead
+                // this is to keep the typeahead control sync'd with the actual dom value
+                // only do this if the query doesn't already match
+                //var fi = $(self.control);
+                $(el).change(function () {
+
+                    var value = $(this).val();
+
+                    var newValue = $(el).typeahead('val');
+                    if (newValue !== value) {
+                        $(el).typeahead('val', value);
+                    }
+
+                });
+
+                // some UI cleanup (we don't want typeahead to restyle)
+                $(self.field).find("span.twitter-typeahead").first().css("display", "block"); // SPAN to behave more like DIV, next line
+                $(self.field).find("span.twitter-typeahead input.tt-input").first().css("background-color", "");
+            }
+        }
+
+        /* end_builder_helpers */
+    });
+
+    Alpaca.registerFieldClass("image", Alpaca.Fields.ImageField);
+
+})(jQuery);
+///#source 1 1 Image2Field.js
 (function($) {
     var Alpaca = $.alpaca;
     Alpaca.Fields.Image2Field = Alpaca.Fields.ListField.extend(
@@ -4693,6 +5148,7 @@
     Alpaca.registerFieldClass("image2", Alpaca.Fields.Image2Field);
 
 })(jQuery);
+///#source 1 1 ImageCrop2Field.js
 (function ($) {
     var Alpaca = $.alpaca;
     Alpaca.Fields.ImageCrop2Field = Alpaca.Fields.ListField.extend(
@@ -5216,6 +5672,7 @@
     Alpaca.registerFieldClass("imagecrop2", Alpaca.Fields.ImageCrop2Field);
 
 })(jQuery);
+///#source 1 1 ImageCropField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -5599,6 +6056,7 @@
     Alpaca.registerFieldClass("imagecrop", Alpaca.Fields.ImageCropField);
 
 })(jQuery);
+///#source 1 1 ImageCropperField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -6159,1952 +6617,7 @@
     Alpaca.registerFieldClass("imagecropper", Alpaca.Fields.ImageCropperField);
 
 })(jQuery);
-(function ($) {
-
-    var Alpaca = $.alpaca;
-    
-    Alpaca.Fields.ImageField = Alpaca.Fields.TextField.extend(
-    /**
-     * @lends Alpaca.Fields.ImageField.prototype
-     */
-    {
-        constructor: function(container, data, options, schema, view, connector)
-        {
-            var self = this;
-            this.base(container, data, options, schema, view, connector);
-            this.sf = connector.servicesFramework;
-        },
-
-        /**
-         * @see Alpaca.Fields.TextField#getFieldType
-         */
-        getFieldType: function () {
-            return "image";
-        }
-        ,
-        setup: function () {
-            if (!this.options.uploadfolder) {
-                this.options.uploadfolder = "";
-            }
-            if (!this.options.uploadhidden) {
-                this.options.uploadhidden = false;
-            }
-            this.base();
-        },
-
-        /**
-         * @see Alpaca.Fields.TextField#getTitle
-         */
-        getTitle: function () {
-            return "Image Field";
-        },
-
-        /**
-         * @see Alpaca.Fields.TextField#getDescription
-         */
-        getDescription: function () {
-            return "Image Field.";
-        },
-        getTextControlEl: function () {
-            return $(this.control.get(0)).find('input[type=text]#' + this.id);
-        },
-        setValue: function (value) {
-            var self = this;
-            //var el = $( this.control).filter('#'+this.id);
-            //var el = $(this.control.get(0)).find('input[type=text]');
-            var el = this.getTextControlEl();
-
-            if (el && el.length > 0) {
-                if (Alpaca.isEmpty(value)) {
-                    el.val("");
-                }
-                else {
-                    el.val(value);
-                    $(self.control).parent().find('.alpaca-image-display img').attr('src', value);
-                }
-            }
-            
-            // be sure to call into base method
-            //this.base(value);
-
-            // if applicable, update the max length indicator
-            this.updateMaxLengthIndicator();
-        },
-
-        getValue: function () {
-            var value = null;
-
-            //var el = $(this.control).filter('#' + this.id);
-            //var el = $(this.control.get(0)).find('input[type=text]');
-            var el = this.getTextControlEl();
-            if (el && el.length > 0) {
-                    value = el.val();
-            }
-            return value;
-        },
-
-        afterRenderControl: function (model, callback) {
-            var self = this;
-            this.base(model, function () {
-                self.handlePostRender(function () {
-                    callback();
-                });
-            });
-        },
-        handlePostRender: function (callback) {
-            var self = this;
-            
-
-            //var el = this.control;
-            var el = this.getTextControlEl();
-
-            if (self.options.uploadhidden) {
-                $(this.control.get(0)).find('input[type=file]').hide();
-            } else {
-                if (self.sf){
-                $(this.control.get(0)).find('input[type=file]').fileupload({
-                    dataType: 'json',
-                    url: self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
-                    maxFileSize: 25000000,
-                    formData: { uploadfolder : self.options.uploadfolder },
-                    beforeSend: self.sf.setModuleHeaders,
-                    add: function (e, data) {
-                        //data.context = $(opts.progressContextSelector);
-                        //data.context.find($(opts.progressFileNameSelector)).html(data.files[0].name);
-                        //data.context.show('fade');
-                        data.submit();
-                    },
-                    progress: function (e, data) {
-                        if (data.context) {
-                            var progress = parseInt(data.loaded / data.total * 100, 10);
-                            data.context.find(opts.progressBarSelector).css('width', progress + '%').find('span').html(progress + '%');
-                        }
-                    },
-                    done: function (e, data) {
-                        if (data.result) {
-                            $.each(data.result, function (index, file) {
-                                self.setValue(file.url);
-                                $(el).change();
-                                //$(el).change();
-                                //$(e.target).parent().find('input[type=text]').val(file.url);
-                                //el.val(file.url);
-                                //$(e.target).parent().find('.alpaca-image-display img').attr('src', file.url);
-                            });
-                        }
-                    }
-                }).data('loaded', true);
-                }
-            }
-            $(el).change(function () {
-
-                var value = $(this).val();
-
-                //var newValue = $(el).typeahead('val');
-                //if (newValue !== value) {
-                    $(self.control).parent().find('.alpaca-image-display img').attr('src', value);
-                //}
-
-            });
-
-            if (self.options.manageurl) {
-                var manageButton = $('<a href="' + self.options.manageurl + '" target="_blank" class="alpaca-form-button">Manage files</a>').appendTo($(el).parent());
-            }
-            
-            callback();
-        },
-        applyTypeAhead: function () {
-            var self = this;
-
-            if (self.control.typeahead && self.options.typeahead && !Alpaca.isEmpty(self.options.typeahead) && self.sf) {
-
-                var tConfig = self.options.typeahead.config;
-                if (!tConfig) {
-                    tConfig = {};
-                }
-                var tDatasets = tDatasets = {};
-                if (!tDatasets.name) {
-                    tDatasets.name = self.getId();
-                }
-
-                var tFolder = self.options.typeahead.Folder;
-                if (!tFolder) {
-                    tFolder = "";
-                }
-
-                var tEvents = tEvents = {};
-
-                var bloodHoundConfig = {
-                    datumTokenizer: function (d) {
-                        return Bloodhound.tokenizers.whitespace(d.value);
-                    },
-                    queryTokenizer: Bloodhound.tokenizers.whitespace
-                };
-
-                /*
-                if (tDatasets.type === "prefetch") {
-                    bloodHoundConfig.prefetch = {
-                        url: tDatasets.source,
-                        ajax: {
-                            //url: sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
-                            beforeSend: connector.servicesFramework.setModuleHeaders,
-        
-                        }
-                    };
-        
-                    if (tDatasets.filter) {
-                        bloodHoundConfig.prefetch.filter = tDatasets.filter;
-                    }
-                }
-                */
-
-                bloodHoundConfig.remote = {
-                    url: self.sf.getServiceRoot('OpenContent') + "DnnEntitiesAPI/Images?q=%QUERY&d=" + tFolder,
-                    ajax: {
-                        beforeSend: self.sf.setModuleHeaders,
-
-                    }
-                };
-
-                if (tDatasets.filter) {
-                    bloodHoundConfig.remote.filter = tDatasets.filter;
-                }
-
-                if (tDatasets.replace) {
-                    bloodHoundConfig.remote.replace = tDatasets.replace;
-                }
-
-
-                var engine = new Bloodhound(bloodHoundConfig);
-                engine.initialize();
-                tDatasets.source = engine.ttAdapter();
-
-                tDatasets.templates = {
-                    "empty": "Nothing found...",
-                    "suggestion": "<div style='width:20%;display:inline-block;background-color:#fff;padding:2px;'><img src='{{value}}' style='height:40px' /></div> {{name}}"
-                };
-
-                // compile templates
-                if (tDatasets.templates) {
-                    for (var k in tDatasets.templates) {
-                        var template = tDatasets.templates[k];
-                        if (typeof (template) === "string") {
-                            tDatasets.templates[k] = Handlebars.compile(template);
-                        }
-                    }
-                }
-
-                //var el = $(this.control.get(0)).find('input[type=text]');
-                var el = this.getTextControlEl();
-                // process typeahead
-                $(el).typeahead(tConfig, tDatasets);
-
-                // listen for "autocompleted" event and set the value of the field
-                $(el).on("typeahead:autocompleted", function (event, datum) {
-                    self.setValue(datum.value);
-                    $(el).change();
-                    //$(self.control).parent().find('input[type=text]').val(datum.value);
-                    //$(self.control).parent().find('.alpaca-image-display img').attr('src', datum.value);
-                });
-
-                // listen for "selected" event and set the value of the field
-                $(el).on("typeahead:selected", function (event, datum) {
-                    self.setValue(datum.value);
-                    $(el).change();
-                    //$(self.control).parent().find('input[type=text]').val(datum.value);
-                    //$(self.control).parent().find('.alpaca-image-display img').attr('src', datum.value);
-                });
-
-                // custom events
-                if (tEvents) {
-                    if (tEvents.autocompleted) {
-                        $(el).on("typeahead:autocompleted", function (event, datum) {
-                            tEvents.autocompleted(event, datum);
-                        });
-                    }
-                    if (tEvents.selected) {
-                        $(el).on("typeahead:selected", function (event, datum) {
-                            tEvents.selected(event, datum);
-                        });
-                    }
-                }
-
-                // when the input value changes, change the query in typeahead
-                // this is to keep the typeahead control sync'd with the actual dom value
-                // only do this if the query doesn't already match
-                //var fi = $(self.control);
-                $(el).change(function () {
-
-                    var value = $(this).val();
-
-                    var newValue = $(el).typeahead('val');
-                    if (newValue !== value) {
-                        $(el).typeahead('val', value);
-                    }
-
-                });
-
-                // some UI cleanup (we don't want typeahead to restyle)
-                $(self.field).find("span.twitter-typeahead").first().css("display", "block"); // SPAN to behave more like DIV, next line
-                $(self.field).find("span.twitter-typeahead input.tt-input").first().css("background-color", "");
-            }
-        }
-
-        /* end_builder_helpers */
-    });
-
-    Alpaca.registerFieldClass("image", Alpaca.Fields.ImageField);
-
-})(jQuery);
-(function ($) {
-
-    var Alpaca = $.alpaca;
-
-    Alpaca.Fields.MLCKEditorField = Alpaca.Fields.CKEditorField.extend(
-    /**
-     * @lends Alpaca.Fields.CKEditorField.prototype
-     */
-    {
-
-        constructor: function (container, data, options, schema, view, connector) {
-            var self = this;
-            this.base(container, data, options, schema, view, connector);
-            this.culture = connector.culture;
-            this.defaultCulture = connector.defaultCulture;
-            this.rootUrl = connector.rootUrl;
-        },
-
-        /**
-         * @see Alpaca.Fields.CKEditorField#setup
-         */
-        setup: function () {
-            if (this.data && Alpaca.isObject(this.data)) {
-                this.olddata = this.data;
-            } else if (this.data) {
-                this.olddata = {};
-                this.olddata[this.defaultCulture] = this.data;
-            }
-            
-            if (this.culture != this.defaultCulture && this.olddata && this.olddata[this.defaultCulture]) {
-                this.options.placeholder = this.olddata[this.defaultCulture];
-            } else {
-                this.options.placeholder = "";
-            }
-
-            this.base();
-
-            if (!this.options.ckeditor) {
-                this.options.ckeditor = {};
-            }
-             if (CKEDITOR.config.enableConfigHelper && !this.options.ckeditor.extraPlugins) {
-                this.options.ckeditor.extraPlugins = 'dnnpages,confighelper';
-            } 
-        },
-
-        /**
-         * @see Alpaca.Fields.CKEditorField#getValue
-         */
-        getValue: function () {
-            var val = this.base();
-            var self = this;
-            var o = {};
-            if (this.olddata && Alpaca.isObject(this.olddata)) {
-                $.each(this.olddata, function (key, value) {
-                    var v = Alpaca.copyOf(value);
-                    if (key != self.culture) {
-                        o[key] = v;
-                    }
-                });
-            }
-            if (val != "") {
-                o[self.culture] = val;
-            }
-            if ($.isEmptyObject(o)) {
-                return "";
-            }
-            return o;
-        },
-
-        /**
-         * @see Alpaca.Fields.CKEditorField#setValue
-         */
-        setValue: function (val) {
-            if (val === "") {
-                return;
-            }
-            if (!val) {
-                this.base("");
-                return;
-            }
-            if (Alpaca.isObject(val)) {
-                var v = val[this.culture];
-                if (!v) {
-                    this.base("");
-                    return;
-                }
-                this.base(v);
-            }
-            else
-            {
-                this.base(val);
-            }
-        },
-        afterRenderControl: function (model, callback) {
-            var self = this;
-            this.base(model, function () {
-                self.handlePostRender(function () {
-                    callback();
-                });
-            });
-        },
-        handlePostRender: function (callback) {
-            var self = this;
-            var el = this.getControlEl();
-            $(this.control.get(0)).after('<img src="' + self.rootUrl + 'images/Flags/' + this.culture + '.gif" class="flag" />');
-            callback();
-        },
-        
-        /**
-         * @see Alpaca.Fields.CKEditorField#getTitle
-         */
-        getTitle: function () {
-            return "Multi Language CKEditor Field";
-        },
-
-        /**
-         * @see Alpaca.Fields.CKEditorField#getDescription
-         */
-        getDescription: function () {
-            return "Multi Language CKEditor field .";
-        },
-
-        /**
-         * @private
-         * @see Alpaca.Fields.CKEditorField#getSchemaOfOptions
-         */
-        getSchemaOfOptions: function () {
-            return Alpaca.merge(this.base(), {
-                "properties": {
-                    "separator": {
-                        "title": "Separator",
-                        "description": "Separator used to split tags.",
-                        "type": "string",
-                        "default": ","
-                    }
-                }
-            });
-        },
-
-        /**
-         * @private
-         * @see Alpaca.Fields.CKEditorField#getOptionsForOptions
-         */
-        getOptionsForOptions: function () {
-            return Alpaca.merge(this.base(), {
-                "fields": {
-                    "separator": {
-                        "type": "text"
-                    }
-                }
-            });
-        }
-
-        /* end_builder_helpers */
-    });
-
-    Alpaca.registerFieldClass("mlckeditor", Alpaca.Fields.MLCKEditorField);
-
-})(jQuery);
-(function($) {
-
-    var Alpaca = $.alpaca;
-        
-    Alpaca.Fields.MLFile2Field = Alpaca.Fields.File2Field.extend(
-    /**
-     * @lends Alpaca.Fields.File2Field.prototype
-     */
-    {
-        constructor: function (container, data, options, schema, view, connector) {
-            var self = this;
-            this.base(container, data, options, schema, view, connector);
-            this.culture = connector.culture;
-            this.defaultCulture = connector.defaultCulture;
-            this.rootUrl = connector.rootUrl;
-        },
-        /**
-         * @see Alpaca.Fields.File2Field#setup
-         */
-        setup: function()
-        {
-            var self = this;
-            if (this.data && Alpaca.isObject(this.data)) {
-                this.olddata = this.data;
-            } else if (this.data) {
-                this.olddata = {};
-                this.olddata[this.defaultCulture] = this.data;
-            }
-            this.base();
-        },
-
-        getValue: function () {
-            
-                var val = this.base(val);
-                var self = this;
-                var o = {};
-                if (this.olddata && Alpaca.isObject(this.olddata)) {
-                    $.each(this.olddata, function (key, value) {
-                        var v = Alpaca.copyOf(value);
-                        if (key != self.culture) {
-                            o[key] = v;
-                        }
-                    });
-                }
-                if (val != "") {
-                    o[self.culture] = val;
-                }
-                if ($.isEmptyObject(o)) {
-                    return "";
-                }
-                return o;
-        },
-
-        /**
-         * @see Alpaca.Field#setValue
-         */
-        setValue: function(val)
-        {
-            if (val === "") {
-                return;
-            }
-            if (!val) {
-                this.base("");
-                return;
-            }
-            if (Alpaca.isObject(val)) {
-                var v = val[this.culture];
-                if (!v) {
-                    this.base("");
-                    return;
-                }
-                this.base(v);
-            }
-            else {
-                this.base(val);
-            }
-        },
-        afterRenderControl: function (model, callback) {
-            var self = this;
-            this.base(model, function () {
-                self.handlePostRender2(function () {
-                    callback();
-                });
-            });
-        },
-        handlePostRender2: function (callback) {
-            var self = this;
-            var el = this.getControlEl();
-            callback();
-            $(this.control).parent().find('.select2').after('<img src="' + self.rootUrl + 'images/Flags/' + this.culture + '.gif" class="flag" />');
-        },
-    });
-
-    Alpaca.registerFieldClass("mlfile2", Alpaca.Fields.MLFile2Field);
-
-})(jQuery);
-(function ($) {
-
-    var Alpaca = $.alpaca;
-
-    Alpaca.Fields.MLFileField = Alpaca.Fields.FileField.extend(
-    /**
-     * @lends Alpaca.Fields.MLFileField.prototype
-     */
-    {
-        constructor: function (container, data, options, schema, view, connector) {
-            var self = this;
-            this.base(container, data, options, schema, view, connector);
-            this.culture = connector.culture;
-            this.defaultCulture = connector.defaultCulture;
-            this.rootUrl = connector.rootUrl;
-        },
-
-        /**
-         * @see Alpaca.Fields.MLFileField#setup
-         */
-        setup: function () {
-            if (this.data && Alpaca.isObject(this.data)) {
-                this.olddata = this.data;
-            } else if (this.data) {
-                this.olddata = {};
-                this.olddata[this.defaultCulture] = this.data;
-            }
-            if (this.culture != this.defaultCulture && this.olddata && this.olddata[this.defaultCulture]) {
-                this.options.placeholder = this.olddata[this.defaultCulture];
-            } else {
-                this.options.placeholder = "";
-            }
-
-            this.base();
-        },
-        /**
-         * @see Alpaca.Fields.MLFileField#getValue
-         */
-        getValue: function () {
-            var val = this.base();
-            var self = this;
-            var o = {};
-            if (this.olddata && Alpaca.isObject(this.olddata)) {
-                $.each(this.olddata, function (key, value) {
-                    var v = Alpaca.copyOf(value);
-                    if (key != self.culture) {
-                        o[key] = v;
-                    }
-                });
-            }
-            if (val != "") {
-                o[self.culture] = val;
-            }
-            if ($.isEmptyObject(o)) {
-                return "";
-            }
-            return o;
-        },
-
-        /**
-         * @see Alpaca.Fields.MLFileField#setValue
-         */
-        setValue: function (val) {
-            if (val === "") {
-                return;
-            }
-            if (!val) {
-                this.base("");
-                return;
-            }
-            if (Alpaca.isObject(val)) {
-                var v = val[this.culture];
-                if (!v) {
-                    this.base("");
-                    return;
-                }
-                this.base(v);
-            }
-            else
-            {
-                this.base(val);
-            }
-        },
-        afterRenderControl: function (model, callback) {
-            var self = this;
-            this.base(model, function () {
-                self.handlePostRender(function () {
-                    callback();
-                });
-            });
-        },
-        handlePostRender: function (callback) {
-            var self = this;
-            var el = this.getTextControlEl();
-            $(this.control.get(0)).after('<img src="' + self.rootUrl + 'images/Flags/' + this.culture + '.gif" class="flag" />');
-            callback();
-        },
-        
-        /**
-         * @see Alpaca.Fields.MLFileField#getTitle
-         */
-        getTitle: function () {
-            return "Multi Language Url Field";
-        },
-
-        /**
-         * @see Alpaca.Fields.MLFileField#getDescription
-         */
-        getDescription: function () {
-            return "Multi Language Url field .";
-        },
-
-        /**
-         * @private
-         * @see Alpaca.Fields.MLFileField#getSchemaOfOptions
-         */
-        getSchemaOfOptions: function () {
-            return Alpaca.merge(this.base(), {
-                "properties": {
-                    "separator": {
-                        "title": "Separator",
-                        "description": "Separator used to split tags.",
-                        "type": "string",
-                        "default": ","
-                    }
-                }
-            });
-        },
-
-        /**
-         * @private
-         * @see Alpaca.Fields.MLFileField#getOptionsForOptions
-         */
-        getOptionsForOptions: function () {
-            return Alpaca.merge(this.base(), {
-                "fields": {
-                    "separator": {
-                        "type": "text"
-                    }
-                }
-            });
-        }
-
-        /* end_builder_helpers */
-    });
-
-    Alpaca.registerFieldClass("mlfile", Alpaca.Fields.MLFileField);
-
-})(jQuery);
-(function($) {
-
-    var Alpaca = $.alpaca;
-        
-    Alpaca.Fields.MLFolder2Field = Alpaca.Fields.Folder2Field.extend(
-    /**
-     * @lends Alpaca.Fields.Folder2Field.prototype
-     */
-    {
-        constructor: function (container, data, options, schema, view, connector) {
-            var self = this;
-            this.base(container, data, options, schema, view, connector);
-            this.culture = connector.culture;
-            this.defaultCulture = connector.defaultCulture;
-            this.rootUrl = connector.rootUrl;
-        },
-        /**
-         * @see Alpaca.Fields.Folder2Field#setup
-         */
-        setup: function()
-        {
-            var self = this;
-            if (this.data && Alpaca.isObject(this.data)) {
-                this.olddata = this.data;
-            } else if (this.data) {
-                this.olddata = {};
-                this.olddata[this.defaultCulture] = this.data;
-            }
-            this.base();
-        },
-
-        getValue: function () {
-            
-                var val = this.base(val);
-                var self = this;
-                var o = {};
-                if (this.olddata && Alpaca.isObject(this.olddata)) {
-                    $.each(this.olddata, function (key, value) {
-                        var v = Alpaca.copyOf(value);
-                        if (key != self.culture) {
-                            o[key] = v;
-                        }
-                    });
-                }
-                if (val != "") {
-                    o[self.culture] = val;
-                }
-                if ($.isEmptyObject(o)) {
-                    return "";
-                }
-                return o;
-        },
-
-        /**
-         * @see Alpaca.Field#setValue
-         */
-        setValue: function(val)
-        {
-            if (val === "") {
-                return;
-            }
-            if (!val) {
-                this.base("");
-                return;
-            }
-            if (Alpaca.isObject(val)) {
-                var v = val[this.culture];
-                if (!v) {
-                    this.base("");
-                    return;
-                }
-                this.base(v);
-            }
-            else {
-                this.base(val);
-            }
-        },
-        afterRenderControl: function (model, callback) {
-            var self = this;
-            this.base(model, function () {
-                self.handlePostRender2(function () {
-                    callback();
-                });
-            });
-        },
-        handlePostRender2: function (callback) {
-            var self = this;
-            var el = this.getControlEl();
-
-            
-            callback();
-
-            $(this.control).parent().find('.select2').after('<img src="' + self.rootUrl + 'images/Flags/' + this.culture + '.gif" class="flag" />');
-            
-        },
-    });
-
-    Alpaca.registerFieldClass("mlfolder2", Alpaca.Fields.MLFolder2Field);
-
-})(jQuery);
-(function($) {
-
-    var Alpaca = $.alpaca;
-        
-    Alpaca.Fields.MLImage2Field = Alpaca.Fields.Image2Field.extend(
-    /**
-     * @lends Alpaca.Fields.Image2Field.prototype
-     */
-    {
-        constructor: function (container, data, options, schema, view, connector) {
-            var self = this;
-            this.base(container, data, options, schema, view, connector);
-            //this.sf = connector.servicesFramework;
-            //this.dataSource = {};
-            this.culture = connector.culture;
-            this.defaultCulture = connector.defaultCulture;
-            this.rootUrl = connector.rootUrl;
-        },
-        /**
-         * @see Alpaca.Fields.Image2Field#setup
-         */
-        setup: function()
-        {
-            var self = this;
-            if (this.data && Alpaca.isObject(this.data)) {
-                this.olddata = this.data;
-            } else if (this.data) {
-                this.olddata = {};
-                this.olddata[this.defaultCulture] = this.data;
-            }
-            
-            this.base();
-        },
-
-        getValue: function () {
-            
-                var val = this.base(val);
-
-                var self = this;
-                var o = {};
-                if (this.olddata && Alpaca.isObject(this.olddata)) {
-                    $.each(this.olddata, function (key, value) {
-                        var v = Alpaca.copyOf(value);
-                        if (key != self.culture) {
-                            o[key] = v;
-                        }
-                    });
-                }
-                if (val != "") {
-                    o[self.culture] = val;
-                }
-                if ($.isEmptyObject(o)) {
-                    return "";
-                }
-                return o;
-            
-        },
-
-        /**
-         * @see Alpaca.Field#setValue
-         */
-        setValue: function(val)
-        {
-            
-            if (val === "") {
-                return;
-            }
-            if (!val) {
-                this.base("");
-                return;
-            }
-            if (Alpaca.isObject(val)) {
-                var v = val[this.culture];
-                if (!v) {
-                    this.base("");
-                    return;
-                }
-                this.base(v);
-            }
-            else {
-                this.base(val);
-            }
-
-        },
-        afterRenderControl: function (model, callback) {
-            var self = this;
-            this.base(model, function () {
-                self.handlePostRender2(function () {
-                    callback();
-                });
-            });
-        },
-        handlePostRender2: function (callback) {
-            var self = this;
-            var el = this.getControlEl();
-
-            
-            callback();
-
-            $(this.control).parent().find('.select2').after('<img src="' + self.rootUrl + 'images/Flags/' + this.culture + '.gif" class="flag" />');
-            
-        },
-    });
-
-    Alpaca.registerFieldClass("mlimage2", Alpaca.Fields.MLImage2Field);
-
-})(jQuery);
-(function ($) {
-
-    var Alpaca = $.alpaca;
-
-    Alpaca.Fields.MLImageField = Alpaca.Fields.ImageField.extend(
-    /**
-     * @lends Alpaca.Fields.MLImageField.prototype
-     */
-    {
-        constructor: function (container, data, options, schema, view, connector) {
-            var self = this;
-            this.base(container, data, options, schema, view, connector);
-            this.culture = connector.culture;
-            this.defaultCulture = connector.defaultCulture;
-            this.rootUrl = connector.rootUrl;
-        },
-
-        /**
-         * @see Alpaca.Fields.MLImageField#setup
-         */
-        setup: function () {
-            if (this.data && Alpaca.isObject(this.data)) {
-                this.olddata = this.data;
-            } else if (this.data) {
-                this.olddata = {};
-                this.olddata[this.defaultCulture] = this.data;
-            }
-            if (this.culture != this.defaultCulture && this.olddata && this.olddata[this.defaultCulture]) {
-                this.options.placeholder = this.olddata[this.defaultCulture];
-            } else {
-                this.options.placeholder = "";
-            }
-            this.base();
-        },
-        /**
-         * @see Alpaca.Fields.MLImageField#getValue
-         */
-        getValue: function () {
-            var val = this.base();
-            var self = this;
-            var o = {};
-            if (this.olddata && Alpaca.isObject(this.olddata)) {
-                $.each(this.olddata, function (key, value) {
-                    var v = Alpaca.copyOf(value);
-                    if (key != self.culture) {
-                        o[key] = v;
-                    }
-                });
-            }
-            if (val != "") {
-                o[self.culture] = val;
-            }
-            if ($.isEmptyObject(o)) {
-                return "";
-            }
-            return o;
-        },
-
-        /**
-         * @see Alpaca.Fields.MLImageField#setValue
-         */
-        setValue: function (val) {
-            if (val === "") {
-                return;
-            }
-            if (!val) {
-                this.base("");
-                return;
-            }
-            if (Alpaca.isObject(val)) {
-                var v = val[this.culture];
-                if (!v) {
-                    this.base("");
-                    return;
-                }
-                this.base(v);
-            }
-            else
-            {
-                this.base(val);
-            }
-        },
-        
-        afterRenderControl: function (model, callback) {
-            var self = this;
-            this.base(model, function () {
-                self.handlePostRender2(function () {
-                    callback();
-                });
-            });
-        },
-        handlePostRender2: function (callback) {
-            var self = this;
-            var el = this.getTextControlEl();
-            $(this.control.get(0)).after('<img src="' + self.rootUrl + 'images/Flags/' + this.culture + '.gif" class="flag" />');
-            callback();
-        },
-        
-        /**
-         * @see Alpaca.Fields.MLImageField#getTitle
-         */
-        getTitle: function () {
-            return "Multi Language Url Field";
-        },
-
-        /**
-         * @see Alpaca.Fields.MLImageField#getDescription
-         */
-        getDescription: function () {
-            return "Multi Language Url field .";
-        },
-
-        /**
-         * @private
-         * @see Alpaca.Fields.MLImageField#getSchemaOfOptions
-         */
-        getSchemaOfOptions: function () {
-            return Alpaca.merge(this.base(), {
-                "properties": {
-                    "separator": {
-                        "title": "Separator",
-                        "description": "Separator used to split tags.",
-                        "type": "string",
-                        "default": ","
-                    }
-                }
-            });
-        },
-
-        /**
-         * @private
-         * @see Alpaca.Fields.MLImageField#getOptionsForOptions
-         */
-        getOptionsForOptions: function () {
-            return Alpaca.merge(this.base(), {
-                "fields": {
-                    "separator": {
-                        "type": "text"
-                    }
-                }
-            });
-        }
-
-        /* end_builder_helpers */
-    });
-
-    Alpaca.registerFieldClass("mlimage", Alpaca.Fields.MLImageField);
-
-})(jQuery);
-(function ($) {
-
-    var Alpaca = $.alpaca;
-
-    Alpaca.Fields.MLTextAreaField = Alpaca.Fields.TextAreaField.extend(
-    /**
-     * @lends Alpaca.Fields.TagField.prototype
-     */
-    {
-        constructor: function (container, data, options, schema, view, connector) {
-            var self = this;
-            this.base(container, data, options, schema, view, connector);
-            this.culture = connector.culture;
-            this.defaultCulture = connector.defaultCulture;
-            this.rootUrl = connector.rootUrl;
-        },
-        /**
-         * @see Alpaca.Fields.TextField#getFieldType
-        */
-        /*
-        getFieldType: function () {
-            return "text";
-        },
-        */
-
-        /**
-         * @see Alpaca.Fields.TextField#setup
-         */
-        setup: function () {
-
-            if (this.data && Alpaca.isObject(this.data)) {             
-                this.olddata = this.data;
-            } else if (this.data) {
-                this.olddata = {};
-                this.olddata[this.defaultCulture] = this.data;
-            }
-            
-            
-            if (this.culture != this.defaultCulture && this.olddata && this.olddata[this.defaultCulture]) {
-                this.options.placeholder = this.olddata[this.defaultCulture];
-            } else {
-                this.options.placeholder = "";
-            }
-            this.base();
-            /*
-            Alpaca.mergeObject(this.options, {
-                "fieldClass": "flag-"+this.culture
-            });
-            */
-        },
-        /**
-         * @see Alpaca.Fields.TextField#getValue
-         */
-        getValue: function () {
-            var val = this.base();
-            var self = this;
-            /*
-            if (val === "") {
-                return [];
-            }
-            */
-
-            var o = {};
-            if (this.olddata && Alpaca.isObject(this.olddata)) {
-                $.each(this.olddata, function (key, value) {
-                    var v = Alpaca.copyOf(value);
-                    if (key != self.culture) {
-                        o[key] = v;
-                    }
-                });
-            }
-            if (val != "") {
-                o[self.culture] = val;
-            }
-            if ($.isEmptyObject(o)) {
-                return "";
-            }
-            //o["_type"] = "languages";
-            return o;
-        },
-
-        /**
-         * @see Alpaca.Fields.TextField#setValue
-         */
-        setValue: function (val) {
-            if (val === "") {
-                return;
-            }
-            if (!val) {
-                this.base("");
-                return;
-            }
-            if (Alpaca.isObject(val)) {
-                var v = val[this.culture];
-                if (!v) {
-                    this.base("");
-                    return;
-                }
-                this.base(v);
-            }
-            else
-            {
-                this.base(val);
-            }
-        },
-        afterRenderControl: function (model, callback) {
-            var self = this;
-            this.base(model, function () {
-                self.handlePostRender(function () {
-                    callback();
-                });
-            });
-        },
-        handlePostRender: function (callback) {
-            var self = this;
-            var el = this.getControlEl();
-            $(this.control.get(0)).after('<img src="' + self.rootUrl + 'images/Flags/' + this.culture + '.gif" class="flag" />');
-            //$(this.control.get(0)).after('<div style="background:#eee;margin-bottom: 18px;display:inline-block;padding-bottom:8px;"><span>' + this.culture + '</span></div>');
-            callback();
-        },
-        
-        /**
-         * @see Alpaca.Fields.TextField#getTitle
-         */
-        getTitle: function () {
-            return "Multi Language Text Field";
-        },
-
-        /**
-         * @see Alpaca.Fields.TextField#getDescription
-         */
-        getDescription: function () {
-            return "Multi Language Text field .";
-        },
-
-        /**
-         * @private
-         * @see Alpaca.Fields.TextField#getSchemaOfOptions
-         */
-        getSchemaOfOptions: function () {
-            return Alpaca.merge(this.base(), {
-                "properties": {
-                    "separator": {
-                        "title": "Separator",
-                        "description": "Separator used to split tags.",
-                        "type": "string",
-                        "default": ","
-                    }
-                }
-            });
-        },
-
-        /**
-         * @private
-         * @see Alpaca.Fields.TextField#getOptionsForOptions
-         */
-        getOptionsForOptions: function () {
-            return Alpaca.merge(this.base(), {
-                "fields": {
-                    "separator": {
-                        "type": "text"
-                    }
-                }
-            });
-        }
-
-        /* end_builder_helpers */
-    });
-
-    Alpaca.registerFieldClass("mltextarea", Alpaca.Fields.MLTextAreaField);
-
-})(jQuery);
-(function ($) {
-
-    var Alpaca = $.alpaca;
-
-    Alpaca.Fields.MLTextField = Alpaca.Fields.TextField.extend(
-    /**
-     * @lends Alpaca.Fields.TagField.prototype
-     */
-    {
-        constructor: function (container, data, options, schema, view, connector) {
-            var self = this;
-            this.base(container, data, options, schema, view, connector);
-            this.culture = connector.culture;
-            this.defaultCulture = connector.defaultCulture;
-            this.rootUrl = connector.rootUrl;
-        },
-        /**
-         * @see Alpaca.Fields.TextField#getFieldType
-        */
-        /*
-        getFieldType: function () {
-            return "text";
-        },
-        */
-
-        /**
-         * @see Alpaca.Fields.TextField#setup
-         */
-        setup: function () {
-
-            if (this.data && Alpaca.isObject(this.data)) {             
-                this.olddata = this.data;
-            } else if (this.data) {
-                this.olddata = {};
-                this.olddata[this.defaultCulture] = this.data;
-            }
-            
-            
-            if (this.culture != this.defaultCulture && this.olddata && this.olddata[this.defaultCulture]) {
-                this.options.placeholder = this.olddata[this.defaultCulture];
-            } else {
-                this.options.placeholder = "";
-            }
-            this.base();
-            /*
-            Alpaca.mergeObject(this.options, {
-                "fieldClass": "flag-"+this.culture
-            });
-            */
-        },
-        /**
-         * @see Alpaca.Fields.TextField#getValue
-         */
-        getValue: function () {
-            var val = this.base();
-            var self = this;
-            /*
-            if (val === "") {
-                return [];
-            }
-            */
-
-            var o = {};
-            if (this.olddata && Alpaca.isObject(this.olddata)) {
-                $.each(this.olddata, function (key, value) {
-                    var v = Alpaca.copyOf(value);
-                    if (key != self.culture) {
-                        o[key] = v;
-                    }
-                });
-            }
-            if (val != "") {
-                o[self.culture] = val;
-            }
-            if ($.isEmptyObject(o)) {
-                return "";
-            }
-            //o["_type"] = "languages";
-            return o;
-        },
-
-        /**
-         * @see Alpaca.Fields.TextField#setValue
-         */
-        setValue: function (val) {
-            if (val === "") {
-                return;
-            }
-            if (!val) {
-                this.base("");
-                return;
-            }
-            if (Alpaca.isObject(val)) {
-                var v = val[this.culture];
-                if (!v) {
-                    this.base("");
-                    return;
-                }
-                this.base(v);
-            }
-            else
-            {
-                this.base(val);
-            }
-        },
-        afterRenderControl: function (model, callback) {
-            var self = this;
-            this.base(model, function () {
-                self.handlePostRender(function () {
-                    callback();
-                });
-            });
-        },
-        handlePostRender: function (callback) {
-            var self = this;
-            var el = this.getControlEl();
-            $(this.control.get(0)).after('<img src="' + self.rootUrl + 'images/Flags/' + this.culture + '.gif" class="flag" />');
-            //$(this.control.get(0)).after('<div style="background:#eee;margin-bottom: 18px;display:inline-block;padding-bottom:8px;"><span>' + this.culture + '</span></div>');
-            callback();
-        },
-        
-        /**
-         * @see Alpaca.Fields.TextField#getTitle
-         */
-        getTitle: function () {
-            return "Multi Language Text Field";
-        },
-
-        /**
-         * @see Alpaca.Fields.TextField#getDescription
-         */
-        getDescription: function () {
-            return "Multi Language Text field .";
-        },
-
-        /**
-         * @private
-         * @see Alpaca.Fields.TextField#getSchemaOfOptions
-         */
-        getSchemaOfOptions: function () {
-            return Alpaca.merge(this.base(), {
-                "properties": {
-                    "separator": {
-                        "title": "Separator",
-                        "description": "Separator used to split tags.",
-                        "type": "string",
-                        "default": ","
-                    }
-                }
-            });
-        },
-
-        /**
-         * @private
-         * @see Alpaca.Fields.TextField#getOptionsForOptions
-         */
-        getOptionsForOptions: function () {
-            return Alpaca.merge(this.base(), {
-                "fields": {
-                    "separator": {
-                        "type": "text"
-                    }
-                }
-            });
-        }
-
-        /* end_builder_helpers */
-    });
-
-    Alpaca.registerFieldClass("mltext", Alpaca.Fields.MLTextField);
-
-})(jQuery);
-(function($) {
-
-    var Alpaca = $.alpaca;
-        
-    Alpaca.Fields.MLUrl2Field = Alpaca.Fields.Url2Field.extend(
-    /**
-     * @lends Alpaca.Fields.Url2Field.prototype
-     */
-    {
-        constructor: function (container, data, options, schema, view, connector) {
-            var self = this;
-            this.base(container, data, options, schema, view, connector);
-            //this.sf = connector.servicesFramework;
-            //this.dataSource = {};
-            this.culture = connector.culture;
-            this.defaultCulture = connector.defaultCulture;
-            this.rootUrl = connector.rootUrl;
-        },
-        /**
-         * @see Alpaca.Fields.Url2Field#setup
-         */
-        setup: function()
-        {
-            var self = this;
-            if (this.data && Alpaca.isObject(this.data)) {
-                this.olddata = this.data;
-            } else if (this.data) {
-                this.olddata = {};
-                this.olddata[this.defaultCulture] = this.data;
-            }
-            
-            this.base();
-        },
-
-        getValue: function () {
-            
-                var val = this.base(val);
-
-                var self = this;
-                var o = {};
-                if (this.olddata && Alpaca.isObject(this.olddata)) {
-                    $.each(this.olddata, function (key, value) {
-                        var v = Alpaca.copyOf(value);
-                        if (key != self.culture) {
-                            o[key] = v;
-                        }
-                    });
-                }
-                if (val != "") {
-                    o[self.culture] = val;
-                }
-                if ($.isEmptyObject(o)) {
-                    return "";
-                }
-                return o;
-            
-        },
-
-        /**
-         * @see Alpaca.Field#setValue
-         */
-        setValue: function(val)
-        {
-            
-            if (val === "") {
-                return;
-            }
-            if (!val) {
-                this.base("");
-                return;
-            }
-            if (Alpaca.isObject(val)) {
-                var v = val[this.culture];
-                if (!v) {
-                    this.base("");
-                    return;
-                }
-                this.base(v);
-            }
-            else {
-                this.base(val);
-            }
-
-        },
-        afterRenderControl: function (model, callback) {
-            var self = this;
-            this.base(model, function () {
-                self.handlePostRender2(function () {
-                    callback();
-                });
-            });
-        },
-        handlePostRender2: function (callback) {
-            var self = this;
-            var el = this.getControlEl();
-
-            
-            callback();
-
-            $(this.control).parent().find('.select2').after('<img src="' + self.rootUrl + 'images/Flags/' + this.culture + '.gif" class="flag" />');
-            
-        },
-    });
-
-    Alpaca.registerFieldClass("mlurl2", Alpaca.Fields.MLUrl2Field);
-
-})(jQuery);
-(function ($) {
-
-    var Alpaca = $.alpaca;
-
-    Alpaca.Fields.MLUrlField = Alpaca.Fields.DnnUrlField.extend(
-    /**
-     * @lends Alpaca.Fields.MLUrlField.prototype
-     */
-    {
-        constructor: function (container, data, options, schema, view, connector) {
-            var self = this;
-            this.base(container, data, options, schema, view, connector);
-            this.culture = connector.culture;
-            this.defaultCulture = connector.defaultCulture;
-            this.rootUrl = connector.rootUrl;
-        },
-
-        /**
-         * @see Alpaca.Fields.MLUrlField#setup
-         */
-        setup: function () {
-            if (this.data && Alpaca.isObject(this.data)) {
-                this.olddata = this.data;
-            } else if (this.data) {
-                this.olddata = {};
-                this.olddata[this.defaultCulture] = this.data;
-            }
-            if (this.culture != this.defaultCulture && this.olddata && this.olddata[this.defaultCulture]) {
-                this.options.placeholder = this.olddata[this.defaultCulture];
-            } else {
-                this.options.placeholder = "";
-            }
-            this.base();
-        },
-        /**
-         * @see Alpaca.Fields.MLUrlField#getValue
-         */
-        getValue: function () {
-            var val = this.base();
-            var self = this;
-            var o = {};
-            if (this.olddata && Alpaca.isObject(this.olddata)) {
-                $.each(this.olddata, function (key, value) {
-                    var v = Alpaca.copyOf(value);
-                    if (key != self.culture) {
-                        o[key] = v;
-                    }
-                });
-            }
-            if (val != "") {
-                o[self.culture] = val;
-            }
-            if ($.isEmptyObject(o)) {
-                return "";
-            }
-            return o;
-        },
-
-        /**
-         * @see Alpaca.Fields.MLUrlField#setValue
-         */
-        setValue: function (val) {
-            if (val === "") {
-                return;
-            }
-            if (!val) {
-                this.base("");
-                return;
-            }
-            if (Alpaca.isObject(val)) {
-                var v = val[this.culture];
-                if (!v) {
-                    this.base("");
-                    return;
-                }
-                this.base(v);
-            }
-            else
-            {
-                this.base(val);
-            }
-        },
-        afterRenderControl: function (model, callback) {
-            var self = this;
-            this.base(model, function () {
-                self.handlePostRender(function () {
-                    callback();
-                });
-            });
-        },
-        handlePostRender: function (callback) {
-            var self = this;
-            var el = this.getControlEl();
-            $(this.control.get(0)).after('<img src="' + self.rootUrl + 'images/Flags/' + this.culture + '.gif" class="flag" />');
-            callback();
-        },
-        
-        /**
-         * @see Alpaca.Fields.MLUrlField#getTitle
-         */
-        getTitle: function () {
-            return "Multi Language Url Field";
-        },
-
-        /**
-         * @see Alpaca.Fields.MLUrlField#getDescription
-         */
-        getDescription: function () {
-            return "Multi Language Url field .";
-        },
-
-        /**
-         * @private
-         * @see Alpaca.Fields.MLUrlField#getSchemaOfOptions
-         */
-        getSchemaOfOptions: function () {
-            return Alpaca.merge(this.base(), {
-                "properties": {
-                    "separator": {
-                        "title": "Separator",
-                        "description": "Separator used to split tags.",
-                        "type": "string",
-                        "default": ","
-                    }
-                }
-            });
-        },
-
-        /**
-         * @private
-         * @see Alpaca.Fields.MLUrlField#getOptionsForOptions
-         */
-        getOptionsForOptions: function () {
-            return Alpaca.merge(this.base(), {
-                "fields": {
-                    "separator": {
-                        "type": "text"
-                    }
-                }
-            });
-        }
-
-        /* end_builder_helpers */
-    });
-
-    Alpaca.registerFieldClass("mlurl", Alpaca.Fields.MLUrlField);
-
-})(jQuery);
-(function ($) {
-
-    var Alpaca = $.alpaca;
-
-    Alpaca.Fields.MLwysihtmlField = Alpaca.Fields.wysihtmlField.extend(
-    /**
-     * @lends Alpaca.Fields.MLwysihtmlField.prototype
-     */
-    {
-        constructor: function (container, data, options, schema, view, connector) {
-            var self = this;
-            this.base(container, data, options, schema, view, connector);
-            this.culture = connector.culture;
-            this.defaultCulture = connector.defaultCulture;
-            this.rootUrl = connector.rootUrl;
-        },
-        /**
-         * @see Alpaca.Fields.MLwysihtmlField#setup
-         */
-        setup: function () {
-            if (this.data && Alpaca.isObject(this.data)) {
-                this.olddata = this.data;
-            } else if (this.data) {
-                this.olddata = {};
-                this.olddata[this.defaultCulture] = this.data;
-            }
-            this.base();
-        },
-
-        /**
-         * @see Alpaca.Fields.MLwysihtmlField#getValue
-         */
-        getValue: function () {
-            var val = this.base();
-            var self = this;
-            var o = {};
-            if (this.olddata && Alpaca.isObject(this.olddata)) {
-                $.each(this.olddata, function (key, value) {
-                    var v = Alpaca.copyOf(value);
-                    if (key != self.culture) {
-                        o[key] = v;
-                    }
-                });
-            }
-            if (val != "") {
-                o[self.culture] = val;
-            }
-            if ($.isEmptyObject(o)) {
-                return "";
-            }
-            return o;
-        },
-
-        /**
-         * @see Alpaca.Fields.MLwysihtmlField#setValue
-         */
-        setValue: function (val) {
-            if (val === "") {
-                return;
-            }
-            if (!val) {
-                this.base("");
-                return;
-            }
-            if (Alpaca.isObject(val)) {
-                var v = val[this.culture];
-                if (!v) {
-                    this.base("");
-                    return;
-                }
-                this.base(v);
-            }
-            else {
-                this.base(val);
-            }
-        },
-        afterRenderControl: function (model, callback) {
-            var self = this;
-            this.base(model, function () {
-                self.handlePostRender2(function () {
-                    callback();
-                });
-            });
-        },
-        handlePostRender2: function (callback) {
-            var self = this;
-            var el = this.getControlEl();
-            $(this.control.get(0)).after('<img src="' + self.rootUrl + 'images/Flags/' + this.culture + '.gif" class="flag" />');
-            callback();
-        },
-
-
-        /* builder_helpers */
-
-        /**
-         * @see Alpaca.Fields.TextAreaField#getTitle
-         */
-        getTitle: function () {
-            return "ML wysihtml Field";
-        },
-
-        /**
-         * @see Alpaca.Fields.TextAreaField#getDescription
-         */
-        getDescription: function () {
-            return "Provides an instance of a wysihtml control for use in editing MLHTML.";
-        },
-
-        /**
-         * @private
-         * @see Alpaca.ControlField#getSchemaOfOptions
-         */
-        getSchemaOfOptions: function () {
-            return Alpaca.merge(this.base(), {
-                "properties": {
-                    "wysihtml": {
-                        "title": "CK Editor options",
-                        "description": "Use this entry to provide configuration options to the underlying CKEditor plugin.",
-                        "type": "any"
-                    }
-                }
-            });
-        },
-
-        /**
-         * @private
-         * @see Alpaca.ControlField#getOptionsForOptions
-         */
-        getOptionsForOptions: function () {
-            return Alpaca.merge(this.base(), {
-                "fields": {
-                    "wysiwyg": {
-                        "type": "any"
-                    }
-                }
-            });
-        }
-
-        /* end_builder_helpers */
-    });
-
-    Alpaca.registerFieldClass("mlwysihtml", Alpaca.Fields.MLwysihtmlField);
-
-
-})(jQuery);
-(function ($) {
-
-    var Alpaca = $.alpaca;
-
-    Alpaca.Fields.MultiUploadField = Alpaca.Fields.ArrayField.extend(
-    {
-        constructor: function (container, data, options, schema, view, connector) {
-            var self = this;
-            this.base(container, data, options, schema, view, connector);
-            this.sf = connector.servicesFramework;
-            this.itemsCount = 0;
-        },
-        setup: function () {
-
-            this.base();
-            if (!this.options.uploadfolder) {
-                this.options.uploadfolder = "";
-            }
-            this.urlfield = "";
-            if (this.options && this.options.items && (this.options.items.fields || this.options.items.type) ) {
-                if (this.options.items.type == "image") {
-
-                } else if (this.options.items.fields ) {
-                    for (var i in this.options.items.fields) {
-                        var f = this.options.items.fields[i];
-                        if (f.type == "image" || f.type == "mlimage" || f.type == "imagecrop") {
-                            this.urlfield = i;
-                            this.options.uploadfolder = f.uploadfolder;
-                            break;
-                        }
-                        else if (f.type == "file" || f.type == "mlfile") {
-                            this.urlfield = i;
-                            this.options.uploadfolder = f.uploadfolder;
-                            break;
-                        } else if (f.type == "image2" || f.type == "mlimage2") {
-                            this.urlfield = i;
-                            this.options.uploadfolder = f.folder;
-                            break;
-                        }
-                        else if (f.type == "file2" || f.type == "mlfile2") {
-                            this.urlfield = i;
-                            this.options.uploadfolder = f.folder;
-                            break;
-                        }
-                    }
-                }
-            }
-        },
-        afterRenderContainer: function (model, callback) {
-            var self = this;
-            this.base(model, function () {
-                var container = self.getContainerEl();
-                //$(container).addClass("alpaca-MultiUpload");
-                if (!self.isDisplayOnly() ) {
-                   
-                    $('<div style="clear:both;"></div>').prependTo(container);
-                    var progressBar = $('<div class="progress" ><div class="bar" style="width: 0%;"></div></div>').prependTo(container);
-                    var mapButton = $('<input type="file" multiple="multiple" />').prependTo(container);
-
-                    this.wrapper = $("<span class='dnnInputFileWrapper dnnSecondaryAction' style='margin-bottom:10px;;'></span>");
-                    this.wrapper.text("Upload muliple files");
-                    mapButton.wrap(this.wrapper);
-                    if (self.sf){
-                    mapButton.fileupload({
-                        dataType: 'json',
-                        url: self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
-                        maxFileSize: 25000000,
-                        formData: { uploadfolder: self.options.uploadfolder },
-                        beforeSend: self.sf.setModuleHeaders,
-                        change: function (e, data) {
-                            self.itemsCount = self.children.length;
-                        },
-                        add: function (e, data) {
-                            //data.context = $(opts.progressContextSelector);
-                            //data.context.find($(opts.progressFileNameSelector)).html(data.files[0].name);
-                            //data.context.show('fade');
-                            data.submit();
-                        },
-                        progressall: function (e, data) {
-                                var progress = parseInt(data.loaded / data.total * 100, 10);
-                                $('.bar', progressBar).css('width', progress + '%').find('span').html(progress + '%');
-                        },
-                        done: function (e, data) {
-                            if (data.result) {
-                                $.each(data.result, function (index, file) {
-                                    self.handleActionBarAddItemClick(self.itemsCount-1, function (item) {
-                                        var val = item.getValue();
-                                        if (self.urlfield == ""){
-                                            val = file.url;
-                                        }  else {
-                                            val[self.urlfield] = file.url;
-                                        }
-                                        item.setValue(val);
-                                        
-                                    });
-                                    self.itemsCount++;
-                                });
-                            }
-                        }
-                    }).data('loaded', true);
-                    }
-                }
-                callback();
-            });
-        },
-        getTitle: function () {
-            return "Multi Upload";
-        },
-        getDescription: function () {
-            return "Multi Upload for images and files";
-        },
-
-        getSchemaOfOptions: function () {
-            return Alpaca.merge(this.base(), {
-                "properties": {
-                    "validateAddress": {
-                        "title": "Address Validation",
-                        "description": "Enable address validation if true",
-                        "type": "boolean",
-                        "default": true
-                    },
-                    "showMapOnLoad": {
-                        "title": "Whether to show the map when first loaded",
-                        "type": "boolean"
-                    }
-                }
-            });
-        },
-
-        getOptionsForOptions: function () {
-            return Alpaca.merge(this.base(), {
-                "fields": {
-                    "validateAddress": {
-                        "helper": "Address validation if checked",
-                        "rightLabel": "Enable Google Map for address validation?",
-                        "type": "checkbox"
-                    }
-                }
-            });
-        }
-
-    });
-
-    Alpaca.registerFieldClass("multiupload", Alpaca.Fields.MultiUploadField);
-
-})(jQuery);
+///#source 1 1 NumberField.js
 (function($) {
 
     var Alpaca = $.alpaca;
@@ -8464,6 +6977,7 @@
 
 })(jQuery);
 
+///#source 1 1 Role2Field.js
 (function($) {
 
     var Alpaca = $.alpaca;
@@ -8997,6 +7511,7 @@
     Alpaca.registerFieldClass("role2", Alpaca.Fields.Role2Field);
 
 })(jQuery);
+///#source 1 1 Select2Field.js
 (function($) {
 
     var Alpaca = $.alpaca;
@@ -9520,6 +8035,148 @@
     Alpaca.registerFieldClass("select2", Alpaca.Fields.Select2Field);
 
 })(jQuery);
+///#source 1 1 UrlField.js
+(function ($) {
+
+    var Alpaca = $.alpaca;
+
+    $.alpaca.Fields.DnnUrlField = $.alpaca.Fields.TextField.extend({
+
+        constructor: function (container, data, options, schema, view, connector) {
+            var self = this;
+            this.base(container, data, options, schema, view, connector);
+            this.culture = connector.culture;
+            this.sf = connector.servicesFramework;
+        },
+
+
+        setup: function () {
+            this.base();
+        },
+        applyTypeAhead: function () {
+            var self = this;
+            if (self.sf){
+            var tConfig = tConfig = {};
+            var tDatasets = tDatasets = {};
+            if (!tDatasets.name) {
+                tDatasets.name = self.getId();
+            }
+
+            var tEvents = tEvents = {};
+
+            var bloodHoundConfig = {
+                datumTokenizer: function (d) {
+                    return Bloodhound.tokenizers.whitespace(d.value);
+                },
+                queryTokenizer: Bloodhound.tokenizers.whitespace
+            };
+
+            /*
+            if (tDatasets.type === "prefetch") {
+                bloodHoundConfig.prefetch = {
+                    url: tDatasets.source,
+                    ajax: {
+                        //url: sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
+                        beforeSend: connector.servicesFramework.setModuleHeaders,
+
+                    }
+                };
+
+                if (tDatasets.filter) {
+                    bloodHoundConfig.prefetch.filter = tDatasets.filter;
+                }
+            }
+            */
+
+            bloodHoundConfig.remote = {
+                url: self.sf.getServiceRoot('OpenContent') + "DnnEntitiesAPI/Tabs?q=%QUERY&l=" + self.culture,
+                ajax: {
+                    beforeSend: self.sf.setModuleHeaders,
+                }
+            };
+
+            if (tDatasets.filter) {
+                bloodHoundConfig.remote.filter = tDatasets.filter;
+            }
+
+            if (tDatasets.replace) {
+                bloodHoundConfig.remote.replace = tDatasets.replace;
+            }
+
+
+            var engine = new Bloodhound(bloodHoundConfig);
+            engine.initialize();
+            tDatasets.source = engine.ttAdapter();
+
+            tDatasets.templates = {
+                "empty": "Nothing found...",
+                "suggestion": "{{name}}"
+            };
+
+            // compile templates
+            if (tDatasets.templates) {
+                for (var k in tDatasets.templates) {
+                    var template = tDatasets.templates[k];
+                    if (typeof (template) === "string") {
+                        tDatasets.templates[k] = Handlebars.compile(template);
+                    }
+                }
+            }
+
+            // process typeahead
+            $(self.control).typeahead(tConfig, tDatasets);
+
+            // listen for "autocompleted" event and set the value of the field
+            $(self.control).on("typeahead:autocompleted", function (event, datum) {
+                self.setValue(datum.value);
+                $(self.control).change();
+            });
+
+            // listen for "selected" event and set the value of the field
+            $(self.control).on("typeahead:selected", function (event, datum) {
+                self.setValue(datum.value);
+                $(self.control).change();
+            });
+
+            // custom events
+            if (tEvents) {
+                if (tEvents.autocompleted) {
+                    $(self.control).on("typeahead:autocompleted", function (event, datum) {
+                        tEvents.autocompleted(event, datum);
+                    });
+                }
+                if (tEvents.selected) {
+                    $(self.control).on("typeahead:selected", function (event, datum) {
+                        tEvents.selected(event, datum);
+                    });
+                }
+            }
+
+            // when the input value changes, change the query in typeahead
+            // this is to keep the typeahead control sync'd with the actual dom value
+            // only do this if the query doesn't already match
+            var fi = $(self.control);
+            $(self.control).change(function () {
+
+                var value = $(this).val();
+
+                var newValue = $(fi).typeahead('val');
+                if (newValue !== value) {
+                    $(fi).typeahead('val', newValue);
+                }
+
+            });
+
+            // some UI cleanup (we don't want typeahead to restyle)
+            $(self.field).find("span.twitter-typeahead").first().css("display", "block"); // SPAN to behave more like DIV, next line
+            $(self.field).find("span.twitter-typeahead input.tt-input").first().css("background-color", "");
+            }
+        }
+    });
+    Alpaca.registerFieldClass("url", Alpaca.Fields.DnnUrlField);
+
+})(jQuery);
+///#source 1 1 Url2Field.js
 (function($) {
 
     var Alpaca = $.alpaca;
@@ -10054,146 +8711,7 @@
     Alpaca.registerFieldClass("url2", Alpaca.Fields.Url2Field);
 
 })(jQuery);
-(function ($) {
-
-    var Alpaca = $.alpaca;
-
-    $.alpaca.Fields.DnnUrlField = $.alpaca.Fields.TextField.extend({
-
-        constructor: function (container, data, options, schema, view, connector) {
-            var self = this;
-            this.base(container, data, options, schema, view, connector);
-            this.culture = connector.culture;
-            this.sf = connector.servicesFramework;
-        },
-
-
-        setup: function () {
-            this.base();
-        },
-        applyTypeAhead: function () {
-            var self = this;
-            if (self.sf){
-            var tConfig = tConfig = {};
-            var tDatasets = tDatasets = {};
-            if (!tDatasets.name) {
-                tDatasets.name = self.getId();
-            }
-
-            var tEvents = tEvents = {};
-
-            var bloodHoundConfig = {
-                datumTokenizer: function (d) {
-                    return Bloodhound.tokenizers.whitespace(d.value);
-                },
-                queryTokenizer: Bloodhound.tokenizers.whitespace
-            };
-
-            /*
-            if (tDatasets.type === "prefetch") {
-                bloodHoundConfig.prefetch = {
-                    url: tDatasets.source,
-                    ajax: {
-                        //url: sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
-                        beforeSend: connector.servicesFramework.setModuleHeaders,
-
-                    }
-                };
-
-                if (tDatasets.filter) {
-                    bloodHoundConfig.prefetch.filter = tDatasets.filter;
-                }
-            }
-            */
-
-            bloodHoundConfig.remote = {
-                url: self.sf.getServiceRoot('OpenContent') + "DnnEntitiesAPI/Tabs?q=%QUERY&l=" + self.culture,
-                ajax: {
-                    beforeSend: self.sf.setModuleHeaders,
-                }
-            };
-
-            if (tDatasets.filter) {
-                bloodHoundConfig.remote.filter = tDatasets.filter;
-            }
-
-            if (tDatasets.replace) {
-                bloodHoundConfig.remote.replace = tDatasets.replace;
-            }
-
-
-            var engine = new Bloodhound(bloodHoundConfig);
-            engine.initialize();
-            tDatasets.source = engine.ttAdapter();
-
-            tDatasets.templates = {
-                "empty": "Nothing found...",
-                "suggestion": "{{name}}"
-            };
-
-            // compile templates
-            if (tDatasets.templates) {
-                for (var k in tDatasets.templates) {
-                    var template = tDatasets.templates[k];
-                    if (typeof (template) === "string") {
-                        tDatasets.templates[k] = Handlebars.compile(template);
-                    }
-                }
-            }
-
-            // process typeahead
-            $(self.control).typeahead(tConfig, tDatasets);
-
-            // listen for "autocompleted" event and set the value of the field
-            $(self.control).on("typeahead:autocompleted", function (event, datum) {
-                self.setValue(datum.value);
-                $(self.control).change();
-            });
-
-            // listen for "selected" event and set the value of the field
-            $(self.control).on("typeahead:selected", function (event, datum) {
-                self.setValue(datum.value);
-                $(self.control).change();
-            });
-
-            // custom events
-            if (tEvents) {
-                if (tEvents.autocompleted) {
-                    $(self.control).on("typeahead:autocompleted", function (event, datum) {
-                        tEvents.autocompleted(event, datum);
-                    });
-                }
-                if (tEvents.selected) {
-                    $(self.control).on("typeahead:selected", function (event, datum) {
-                        tEvents.selected(event, datum);
-                    });
-                }
-            }
-
-            // when the input value changes, change the query in typeahead
-            // this is to keep the typeahead control sync'd with the actual dom value
-            // only do this if the query doesn't already match
-            var fi = $(self.control);
-            $(self.control).change(function () {
-
-                var value = $(this).val();
-
-                var newValue = $(fi).typeahead('val');
-                if (newValue !== value) {
-                    $(fi).typeahead('val', newValue);
-                }
-
-            });
-
-            // some UI cleanup (we don't want typeahead to restyle)
-            $(self.field).find("span.twitter-typeahead").first().css("display", "block"); // SPAN to behave more like DIV, next line
-            $(self.field).find("span.twitter-typeahead input.tt-input").first().css("background-color", "");
-            }
-        }
-    });
-    Alpaca.registerFieldClass("url", Alpaca.Fields.DnnUrlField);
-
-})(jQuery);
+///#source 1 1 WysihtmlField.js
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -10340,5 +8858,1520 @@
     });
 
     Alpaca.registerFieldClass("wysihtml", Alpaca.Fields.wysihtmlField);
+
+})(jQuery);
+///#source 1 1 MLCKEditorField.js
+(function ($) {
+
+    var Alpaca = $.alpaca;
+
+    Alpaca.Fields.MLCKEditorField = Alpaca.Fields.CKEditorField.extend(
+    /**
+     * @lends Alpaca.Fields.CKEditorField.prototype
+     */
+    {
+
+        constructor: function (container, data, options, schema, view, connector) {
+            var self = this;
+            this.base(container, data, options, schema, view, connector);
+            this.culture = connector.culture;
+            this.defaultCulture = connector.defaultCulture;
+            this.rootUrl = connector.rootUrl;
+        },
+
+        /**
+         * @see Alpaca.Fields.CKEditorField#setup
+         */
+        setup: function () {
+            if (this.data && Alpaca.isObject(this.data)) {
+                this.olddata = this.data;
+            } else if (this.data) {
+                this.olddata = {};
+                this.olddata[this.defaultCulture] = this.data;
+            }
+            
+            if (this.culture != this.defaultCulture && this.olddata && this.olddata[this.defaultCulture]) {
+                this.options.placeholder = this.olddata[this.defaultCulture];
+            } else {
+                this.options.placeholder = "";
+            }
+
+            this.base();
+
+            if (!this.options.ckeditor) {
+                this.options.ckeditor = {};
+            }
+             if (CKEDITOR.config.enableConfigHelper && !this.options.ckeditor.extraPlugins) {
+                this.options.ckeditor.extraPlugins = 'dnnpages,confighelper';
+            } 
+        },
+
+        /**
+         * @see Alpaca.Fields.CKEditorField#getValue
+         */
+        getValue: function () {
+            var val = this.base();
+            var self = this;
+            var o = {};
+            if (this.olddata && Alpaca.isObject(this.olddata)) {
+                $.each(this.olddata, function (key, value) {
+                    var v = Alpaca.copyOf(value);
+                    if (key != self.culture) {
+                        o[key] = v;
+                    }
+                });
+            }
+            if (val != "") {
+                o[self.culture] = val;
+            }
+            if ($.isEmptyObject(o)) {
+                return "";
+            }
+            return o;
+        },
+
+        /**
+         * @see Alpaca.Fields.CKEditorField#setValue
+         */
+        setValue: function (val) {
+            if (val === "") {
+                return;
+            }
+            if (!val) {
+                this.base("");
+                return;
+            }
+            if (Alpaca.isObject(val)) {
+                var v = val[this.culture];
+                if (!v) {
+                    this.base("");
+                    return;
+                }
+                this.base(v);
+            }
+            else
+            {
+                this.base(val);
+            }
+        },
+        afterRenderControl: function (model, callback) {
+            var self = this;
+            this.base(model, function () {
+                self.handlePostRender(function () {
+                    callback();
+                });
+            });
+        },
+        handlePostRender: function (callback) {
+            var self = this;
+            var el = this.getControlEl();
+            $(this.control.get(0)).after('<img src="' + self.rootUrl + 'images/Flags/' + this.culture + '.gif" class="flag" />');
+            callback();
+        },
+        
+        /**
+         * @see Alpaca.Fields.CKEditorField#getTitle
+         */
+        getTitle: function () {
+            return "Multi Language CKEditor Field";
+        },
+
+        /**
+         * @see Alpaca.Fields.CKEditorField#getDescription
+         */
+        getDescription: function () {
+            return "Multi Language CKEditor field .";
+        },
+
+        /**
+         * @private
+         * @see Alpaca.Fields.CKEditorField#getSchemaOfOptions
+         */
+        getSchemaOfOptions: function () {
+            return Alpaca.merge(this.base(), {
+                "properties": {
+                    "separator": {
+                        "title": "Separator",
+                        "description": "Separator used to split tags.",
+                        "type": "string",
+                        "default": ","
+                    }
+                }
+            });
+        },
+
+        /**
+         * @private
+         * @see Alpaca.Fields.CKEditorField#getOptionsForOptions
+         */
+        getOptionsForOptions: function () {
+            return Alpaca.merge(this.base(), {
+                "fields": {
+                    "separator": {
+                        "type": "text"
+                    }
+                }
+            });
+        }
+
+        /* end_builder_helpers */
+    });
+
+    Alpaca.registerFieldClass("mlckeditor", Alpaca.Fields.MLCKEditorField);
+
+})(jQuery);
+///#source 1 1 MLFile2Field.js
+(function($) {
+
+    var Alpaca = $.alpaca;
+        
+    Alpaca.Fields.MLFile2Field = Alpaca.Fields.File2Field.extend(
+    /**
+     * @lends Alpaca.Fields.File2Field.prototype
+     */
+    {
+        constructor: function (container, data, options, schema, view, connector) {
+            var self = this;
+            this.base(container, data, options, schema, view, connector);
+            this.culture = connector.culture;
+            this.defaultCulture = connector.defaultCulture;
+            this.rootUrl = connector.rootUrl;
+        },
+        /**
+         * @see Alpaca.Fields.File2Field#setup
+         */
+        setup: function()
+        {
+            var self = this;
+            if (this.data && Alpaca.isObject(this.data)) {
+                this.olddata = this.data;
+            } else if (this.data) {
+                this.olddata = {};
+                this.olddata[this.defaultCulture] = this.data;
+            }
+            this.base();
+        },
+
+        getValue: function () {
+            
+                var val = this.base(val);
+                var self = this;
+                var o = {};
+                if (this.olddata && Alpaca.isObject(this.olddata)) {
+                    $.each(this.olddata, function (key, value) {
+                        var v = Alpaca.copyOf(value);
+                        if (key != self.culture) {
+                            o[key] = v;
+                        }
+                    });
+                }
+                if (val != "") {
+                    o[self.culture] = val;
+                }
+                if ($.isEmptyObject(o)) {
+                    return "";
+                }
+                return o;
+        },
+
+        /**
+         * @see Alpaca.Field#setValue
+         */
+        setValue: function(val)
+        {
+            if (val === "") {
+                return;
+            }
+            if (!val) {
+                this.base("");
+                return;
+            }
+            if (Alpaca.isObject(val)) {
+                var v = val[this.culture];
+                if (!v) {
+                    this.base("");
+                    return;
+                }
+                this.base(v);
+            }
+            else {
+                this.base(val);
+            }
+        },
+        afterRenderControl: function (model, callback) {
+            var self = this;
+            this.base(model, function () {
+                self.handlePostRender2(function () {
+                    callback();
+                });
+            });
+        },
+        handlePostRender2: function (callback) {
+            var self = this;
+            var el = this.getControlEl();
+            callback();
+            $(this.control).parent().find('.select2').after('<img src="' + self.rootUrl + 'images/Flags/' + this.culture + '.gif" class="flag" />');
+        },
+    });
+
+    Alpaca.registerFieldClass("mlfile2", Alpaca.Fields.MLFile2Field);
+
+})(jQuery);
+///#source 1 1 MLFileField.js
+(function ($) {
+
+    var Alpaca = $.alpaca;
+
+    Alpaca.Fields.MLFileField = Alpaca.Fields.FileField.extend(
+    /**
+     * @lends Alpaca.Fields.MLFileField.prototype
+     */
+    {
+        constructor: function (container, data, options, schema, view, connector) {
+            var self = this;
+            this.base(container, data, options, schema, view, connector);
+            this.culture = connector.culture;
+            this.defaultCulture = connector.defaultCulture;
+            this.rootUrl = connector.rootUrl;
+        },
+
+        /**
+         * @see Alpaca.Fields.MLFileField#setup
+         */
+        setup: function () {
+            if (this.data && Alpaca.isObject(this.data)) {
+                this.olddata = this.data;
+            } else if (this.data) {
+                this.olddata = {};
+                this.olddata[this.defaultCulture] = this.data;
+            }
+            if (this.culture != this.defaultCulture && this.olddata && this.olddata[this.defaultCulture]) {
+                this.options.placeholder = this.olddata[this.defaultCulture];
+            } else {
+                this.options.placeholder = "";
+            }
+
+            this.base();
+        },
+        /**
+         * @see Alpaca.Fields.MLFileField#getValue
+         */
+        getValue: function () {
+            var val = this.base();
+            var self = this;
+            var o = {};
+            if (this.olddata && Alpaca.isObject(this.olddata)) {
+                $.each(this.olddata, function (key, value) {
+                    var v = Alpaca.copyOf(value);
+                    if (key != self.culture) {
+                        o[key] = v;
+                    }
+                });
+            }
+            if (val != "") {
+                o[self.culture] = val;
+            }
+            if ($.isEmptyObject(o)) {
+                return "";
+            }
+            return o;
+        },
+
+        /**
+         * @see Alpaca.Fields.MLFileField#setValue
+         */
+        setValue: function (val) {
+            if (val === "") {
+                return;
+            }
+            if (!val) {
+                this.base("");
+                return;
+            }
+            if (Alpaca.isObject(val)) {
+                var v = val[this.culture];
+                if (!v) {
+                    this.base("");
+                    return;
+                }
+                this.base(v);
+            }
+            else
+            {
+                this.base(val);
+            }
+        },
+        afterRenderControl: function (model, callback) {
+            var self = this;
+            this.base(model, function () {
+                self.handlePostRender(function () {
+                    callback();
+                });
+            });
+        },
+        handlePostRender: function (callback) {
+            var self = this;
+            var el = this.getTextControlEl();
+            $(this.control.get(0)).after('<img src="' + self.rootUrl + 'images/Flags/' + this.culture + '.gif" class="flag" />');
+            callback();
+        },
+        
+        /**
+         * @see Alpaca.Fields.MLFileField#getTitle
+         */
+        getTitle: function () {
+            return "Multi Language Url Field";
+        },
+
+        /**
+         * @see Alpaca.Fields.MLFileField#getDescription
+         */
+        getDescription: function () {
+            return "Multi Language Url field .";
+        },
+
+        /**
+         * @private
+         * @see Alpaca.Fields.MLFileField#getSchemaOfOptions
+         */
+        getSchemaOfOptions: function () {
+            return Alpaca.merge(this.base(), {
+                "properties": {
+                    "separator": {
+                        "title": "Separator",
+                        "description": "Separator used to split tags.",
+                        "type": "string",
+                        "default": ","
+                    }
+                }
+            });
+        },
+
+        /**
+         * @private
+         * @see Alpaca.Fields.MLFileField#getOptionsForOptions
+         */
+        getOptionsForOptions: function () {
+            return Alpaca.merge(this.base(), {
+                "fields": {
+                    "separator": {
+                        "type": "text"
+                    }
+                }
+            });
+        }
+
+        /* end_builder_helpers */
+    });
+
+    Alpaca.registerFieldClass("mlfile", Alpaca.Fields.MLFileField);
+
+})(jQuery);
+///#source 1 1 MLFolder2Field.js
+(function($) {
+
+    var Alpaca = $.alpaca;
+        
+    Alpaca.Fields.MLFolder2Field = Alpaca.Fields.Folder2Field.extend(
+    /**
+     * @lends Alpaca.Fields.Folder2Field.prototype
+     */
+    {
+        constructor: function (container, data, options, schema, view, connector) {
+            var self = this;
+            this.base(container, data, options, schema, view, connector);
+            this.culture = connector.culture;
+            this.defaultCulture = connector.defaultCulture;
+            this.rootUrl = connector.rootUrl;
+        },
+        /**
+         * @see Alpaca.Fields.Folder2Field#setup
+         */
+        setup: function()
+        {
+            var self = this;
+            if (this.data && Alpaca.isObject(this.data)) {
+                this.olddata = this.data;
+            } else if (this.data) {
+                this.olddata = {};
+                this.olddata[this.defaultCulture] = this.data;
+            }
+            this.base();
+        },
+
+        getValue: function () {
+            
+                var val = this.base(val);
+                var self = this;
+                var o = {};
+                if (this.olddata && Alpaca.isObject(this.olddata)) {
+                    $.each(this.olddata, function (key, value) {
+                        var v = Alpaca.copyOf(value);
+                        if (key != self.culture) {
+                            o[key] = v;
+                        }
+                    });
+                }
+                if (val != "") {
+                    o[self.culture] = val;
+                }
+                if ($.isEmptyObject(o)) {
+                    return "";
+                }
+                return o;
+        },
+
+        /**
+         * @see Alpaca.Field#setValue
+         */
+        setValue: function(val)
+        {
+            if (val === "") {
+                return;
+            }
+            if (!val) {
+                this.base("");
+                return;
+            }
+            if (Alpaca.isObject(val)) {
+                var v = val[this.culture];
+                if (!v) {
+                    this.base("");
+                    return;
+                }
+                this.base(v);
+            }
+            else {
+                this.base(val);
+            }
+        },
+        afterRenderControl: function (model, callback) {
+            var self = this;
+            this.base(model, function () {
+                self.handlePostRender2(function () {
+                    callback();
+                });
+            });
+        },
+        handlePostRender2: function (callback) {
+            var self = this;
+            var el = this.getControlEl();
+
+            
+            callback();
+
+            $(this.control).parent().find('.select2').after('<img src="' + self.rootUrl + 'images/Flags/' + this.culture + '.gif" class="flag" />');
+            
+        },
+    });
+
+    Alpaca.registerFieldClass("mlfolder2", Alpaca.Fields.MLFolder2Field);
+
+})(jQuery);
+///#source 1 1 MLImage2Field.js
+(function($) {
+
+    var Alpaca = $.alpaca;
+        
+    Alpaca.Fields.MLImage2Field = Alpaca.Fields.Image2Field.extend(
+    /**
+     * @lends Alpaca.Fields.Image2Field.prototype
+     */
+    {
+        constructor: function (container, data, options, schema, view, connector) {
+            var self = this;
+            this.base(container, data, options, schema, view, connector);
+            //this.sf = connector.servicesFramework;
+            //this.dataSource = {};
+            this.culture = connector.culture;
+            this.defaultCulture = connector.defaultCulture;
+            this.rootUrl = connector.rootUrl;
+        },
+        /**
+         * @see Alpaca.Fields.Image2Field#setup
+         */
+        setup: function()
+        {
+            var self = this;
+            if (this.data && Alpaca.isObject(this.data)) {
+                this.olddata = this.data;
+            } else if (this.data) {
+                this.olddata = {};
+                this.olddata[this.defaultCulture] = this.data;
+            }
+            
+            this.base();
+        },
+
+        getValue: function () {
+            
+                var val = this.base(val);
+
+                var self = this;
+                var o = {};
+                if (this.olddata && Alpaca.isObject(this.olddata)) {
+                    $.each(this.olddata, function (key, value) {
+                        var v = Alpaca.copyOf(value);
+                        if (key != self.culture) {
+                            o[key] = v;
+                        }
+                    });
+                }
+                if (val != "") {
+                    o[self.culture] = val;
+                }
+                if ($.isEmptyObject(o)) {
+                    return "";
+                }
+                return o;
+            
+        },
+
+        /**
+         * @see Alpaca.Field#setValue
+         */
+        setValue: function(val)
+        {
+            
+            if (val === "") {
+                return;
+            }
+            if (!val) {
+                this.base("");
+                return;
+            }
+            if (Alpaca.isObject(val)) {
+                var v = val[this.culture];
+                if (!v) {
+                    this.base("");
+                    return;
+                }
+                this.base(v);
+            }
+            else {
+                this.base(val);
+            }
+
+        },
+        afterRenderControl: function (model, callback) {
+            var self = this;
+            this.base(model, function () {
+                self.handlePostRender2(function () {
+                    callback();
+                });
+            });
+        },
+        handlePostRender2: function (callback) {
+            var self = this;
+            var el = this.getControlEl();
+
+            
+            callback();
+
+            $(this.control).parent().find('.select2').after('<img src="' + self.rootUrl + 'images/Flags/' + this.culture + '.gif" class="flag" />');
+            
+        },
+    });
+
+    Alpaca.registerFieldClass("mlimage2", Alpaca.Fields.MLImage2Field);
+
+})(jQuery);
+///#source 1 1 MLImageField.js
+(function ($) {
+
+    var Alpaca = $.alpaca;
+
+    Alpaca.Fields.MLImageField = Alpaca.Fields.ImageField.extend(
+    /**
+     * @lends Alpaca.Fields.MLImageField.prototype
+     */
+    {
+        constructor: function (container, data, options, schema, view, connector) {
+            var self = this;
+            this.base(container, data, options, schema, view, connector);
+            this.culture = connector.culture;
+            this.defaultCulture = connector.defaultCulture;
+            this.rootUrl = connector.rootUrl;
+        },
+
+        /**
+         * @see Alpaca.Fields.MLImageField#setup
+         */
+        setup: function () {
+            if (this.data && Alpaca.isObject(this.data)) {
+                this.olddata = this.data;
+            } else if (this.data) {
+                this.olddata = {};
+                this.olddata[this.defaultCulture] = this.data;
+            }
+            if (this.culture != this.defaultCulture && this.olddata && this.olddata[this.defaultCulture]) {
+                this.options.placeholder = this.olddata[this.defaultCulture];
+            } else {
+                this.options.placeholder = "";
+            }
+            this.base();
+        },
+        /**
+         * @see Alpaca.Fields.MLImageField#getValue
+         */
+        getValue: function () {
+            var val = this.base();
+            var self = this;
+            var o = {};
+            if (this.olddata && Alpaca.isObject(this.olddata)) {
+                $.each(this.olddata, function (key, value) {
+                    var v = Alpaca.copyOf(value);
+                    if (key != self.culture) {
+                        o[key] = v;
+                    }
+                });
+            }
+            if (val != "") {
+                o[self.culture] = val;
+            }
+            if ($.isEmptyObject(o)) {
+                return "";
+            }
+            return o;
+        },
+
+        /**
+         * @see Alpaca.Fields.MLImageField#setValue
+         */
+        setValue: function (val) {
+            if (val === "") {
+                return;
+            }
+            if (!val) {
+                this.base("");
+                return;
+            }
+            if (Alpaca.isObject(val)) {
+                var v = val[this.culture];
+                if (!v) {
+                    this.base("");
+                    return;
+                }
+                this.base(v);
+            }
+            else
+            {
+                this.base(val);
+            }
+        },
+        
+        afterRenderControl: function (model, callback) {
+            var self = this;
+            this.base(model, function () {
+                self.handlePostRender2(function () {
+                    callback();
+                });
+            });
+        },
+        handlePostRender2: function (callback) {
+            var self = this;
+            var el = this.getTextControlEl();
+            $(this.control.get(0)).after('<img src="' + self.rootUrl + 'images/Flags/' + this.culture + '.gif" class="flag" />');
+            callback();
+        },
+        
+        /**
+         * @see Alpaca.Fields.MLImageField#getTitle
+         */
+        getTitle: function () {
+            return "Multi Language Url Field";
+        },
+
+        /**
+         * @see Alpaca.Fields.MLImageField#getDescription
+         */
+        getDescription: function () {
+            return "Multi Language Url field .";
+        },
+
+        /**
+         * @private
+         * @see Alpaca.Fields.MLImageField#getSchemaOfOptions
+         */
+        getSchemaOfOptions: function () {
+            return Alpaca.merge(this.base(), {
+                "properties": {
+                    "separator": {
+                        "title": "Separator",
+                        "description": "Separator used to split tags.",
+                        "type": "string",
+                        "default": ","
+                    }
+                }
+            });
+        },
+
+        /**
+         * @private
+         * @see Alpaca.Fields.MLImageField#getOptionsForOptions
+         */
+        getOptionsForOptions: function () {
+            return Alpaca.merge(this.base(), {
+                "fields": {
+                    "separator": {
+                        "type": "text"
+                    }
+                }
+            });
+        }
+
+        /* end_builder_helpers */
+    });
+
+    Alpaca.registerFieldClass("mlimage", Alpaca.Fields.MLImageField);
+
+})(jQuery);
+///#source 1 1 MLTextAreaField.js
+(function ($) {
+
+    var Alpaca = $.alpaca;
+
+    Alpaca.Fields.MLTextAreaField = Alpaca.Fields.TextAreaField.extend(
+    /**
+     * @lends Alpaca.Fields.TagField.prototype
+     */
+    {
+        constructor: function (container, data, options, schema, view, connector) {
+            var self = this;
+            this.base(container, data, options, schema, view, connector);
+            this.culture = connector.culture;
+            this.defaultCulture = connector.defaultCulture;
+            this.rootUrl = connector.rootUrl;
+        },
+        /**
+         * @see Alpaca.Fields.TextField#getFieldType
+        */
+        /*
+        getFieldType: function () {
+            return "text";
+        },
+        */
+
+        /**
+         * @see Alpaca.Fields.TextField#setup
+         */
+        setup: function () {
+
+            if (this.data && Alpaca.isObject(this.data)) {             
+                this.olddata = this.data;
+            } else if (this.data) {
+                this.olddata = {};
+                this.olddata[this.defaultCulture] = this.data;
+            }
+            
+            
+            if (this.culture != this.defaultCulture && this.olddata && this.olddata[this.defaultCulture]) {
+                this.options.placeholder = this.olddata[this.defaultCulture];
+            } else {
+                this.options.placeholder = "";
+            }
+            this.base();
+            /*
+            Alpaca.mergeObject(this.options, {
+                "fieldClass": "flag-"+this.culture
+            });
+            */
+        },
+        /**
+         * @see Alpaca.Fields.TextField#getValue
+         */
+        getValue: function () {
+            var val = this.base();
+            var self = this;
+            /*
+            if (val === "") {
+                return [];
+            }
+            */
+
+            var o = {};
+            if (this.olddata && Alpaca.isObject(this.olddata)) {
+                $.each(this.olddata, function (key, value) {
+                    var v = Alpaca.copyOf(value);
+                    if (key != self.culture) {
+                        o[key] = v;
+                    }
+                });
+            }
+            if (val != "") {
+                o[self.culture] = val;
+            }
+            if ($.isEmptyObject(o)) {
+                return "";
+            }
+            //o["_type"] = "languages";
+            return o;
+        },
+
+        /**
+         * @see Alpaca.Fields.TextField#setValue
+         */
+        setValue: function (val) {
+            if (val === "") {
+                return;
+            }
+            if (!val) {
+                this.base("");
+                return;
+            }
+            if (Alpaca.isObject(val)) {
+                var v = val[this.culture];
+                if (!v) {
+                    this.base("");
+                    return;
+                }
+                this.base(v);
+            }
+            else
+            {
+                this.base(val);
+            }
+        },
+        afterRenderControl: function (model, callback) {
+            var self = this;
+            this.base(model, function () {
+                self.handlePostRender(function () {
+                    callback();
+                });
+            });
+        },
+        handlePostRender: function (callback) {
+            var self = this;
+            var el = this.getControlEl();
+            $(this.control.get(0)).after('<img src="' + self.rootUrl + 'images/Flags/' + this.culture + '.gif" class="flag" />');
+            //$(this.control.get(0)).after('<div style="background:#eee;margin-bottom: 18px;display:inline-block;padding-bottom:8px;"><span>' + this.culture + '</span></div>');
+            callback();
+        },
+        
+        /**
+         * @see Alpaca.Fields.TextField#getTitle
+         */
+        getTitle: function () {
+            return "Multi Language Text Field";
+        },
+
+        /**
+         * @see Alpaca.Fields.TextField#getDescription
+         */
+        getDescription: function () {
+            return "Multi Language Text field .";
+        },
+
+        /**
+         * @private
+         * @see Alpaca.Fields.TextField#getSchemaOfOptions
+         */
+        getSchemaOfOptions: function () {
+            return Alpaca.merge(this.base(), {
+                "properties": {
+                    "separator": {
+                        "title": "Separator",
+                        "description": "Separator used to split tags.",
+                        "type": "string",
+                        "default": ","
+                    }
+                }
+            });
+        },
+
+        /**
+         * @private
+         * @see Alpaca.Fields.TextField#getOptionsForOptions
+         */
+        getOptionsForOptions: function () {
+            return Alpaca.merge(this.base(), {
+                "fields": {
+                    "separator": {
+                        "type": "text"
+                    }
+                }
+            });
+        }
+
+        /* end_builder_helpers */
+    });
+
+    Alpaca.registerFieldClass("mltextarea", Alpaca.Fields.MLTextAreaField);
+
+})(jQuery);
+///#source 1 1 MLTextField.js
+(function ($) {
+
+    var Alpaca = $.alpaca;
+
+    Alpaca.Fields.MLTextField = Alpaca.Fields.TextField.extend(
+    /**
+     * @lends Alpaca.Fields.TagField.prototype
+     */
+    {
+        constructor: function (container, data, options, schema, view, connector) {
+            var self = this;
+            this.base(container, data, options, schema, view, connector);
+            this.culture = connector.culture;
+            this.defaultCulture = connector.defaultCulture;
+            this.rootUrl = connector.rootUrl;
+        },
+        /**
+         * @see Alpaca.Fields.TextField#getFieldType
+        */
+        /*
+        getFieldType: function () {
+            return "text";
+        },
+        */
+
+        /**
+         * @see Alpaca.Fields.TextField#setup
+         */
+        setup: function () {
+
+            if (this.data && Alpaca.isObject(this.data)) {             
+                this.olddata = this.data;
+            } else if (this.data) {
+                this.olddata = {};
+                this.olddata[this.defaultCulture] = this.data;
+            }
+            
+            
+            if (this.culture != this.defaultCulture && this.olddata && this.olddata[this.defaultCulture]) {
+                this.options.placeholder = this.olddata[this.defaultCulture];
+            } else {
+                this.options.placeholder = "";
+            }
+            this.base();
+            /*
+            Alpaca.mergeObject(this.options, {
+                "fieldClass": "flag-"+this.culture
+            });
+            */
+        },
+        /**
+         * @see Alpaca.Fields.TextField#getValue
+         */
+        getValue: function () {
+            var val = this.base();
+            var self = this;
+            /*
+            if (val === "") {
+                return [];
+            }
+            */
+
+            var o = {};
+            if (this.olddata && Alpaca.isObject(this.olddata)) {
+                $.each(this.olddata, function (key, value) {
+                    var v = Alpaca.copyOf(value);
+                    if (key != self.culture) {
+                        o[key] = v;
+                    }
+                });
+            }
+            if (val != "") {
+                o[self.culture] = val;
+            }
+            if ($.isEmptyObject(o)) {
+                return "";
+            }
+            //o["_type"] = "languages";
+            return o;
+        },
+
+        /**
+         * @see Alpaca.Fields.TextField#setValue
+         */
+        setValue: function (val) {
+            if (val === "") {
+                return;
+            }
+            if (!val) {
+                this.base("");
+                return;
+            }
+            if (Alpaca.isObject(val)) {
+                var v = val[this.culture];
+                if (!v) {
+                    this.base("");
+                    return;
+                }
+                this.base(v);
+            }
+            else
+            {
+                this.base(val);
+            }
+        },
+        afterRenderControl: function (model, callback) {
+            var self = this;
+            this.base(model, function () {
+                self.handlePostRender(function () {
+                    callback();
+                });
+            });
+        },
+        handlePostRender: function (callback) {
+            var self = this;
+            var el = this.getControlEl();
+            $(this.control.get(0)).after('<img src="' + self.rootUrl + 'images/Flags/' + this.culture + '.gif" class="flag" />');
+            //$(this.control.get(0)).after('<div style="background:#eee;margin-bottom: 18px;display:inline-block;padding-bottom:8px;"><span>' + this.culture + '</span></div>');
+            callback();
+        },
+        
+        /**
+         * @see Alpaca.Fields.TextField#getTitle
+         */
+        getTitle: function () {
+            return "Multi Language Text Field";
+        },
+
+        /**
+         * @see Alpaca.Fields.TextField#getDescription
+         */
+        getDescription: function () {
+            return "Multi Language Text field .";
+        },
+
+        /**
+         * @private
+         * @see Alpaca.Fields.TextField#getSchemaOfOptions
+         */
+        getSchemaOfOptions: function () {
+            return Alpaca.merge(this.base(), {
+                "properties": {
+                    "separator": {
+                        "title": "Separator",
+                        "description": "Separator used to split tags.",
+                        "type": "string",
+                        "default": ","
+                    }
+                }
+            });
+        },
+
+        /**
+         * @private
+         * @see Alpaca.Fields.TextField#getOptionsForOptions
+         */
+        getOptionsForOptions: function () {
+            return Alpaca.merge(this.base(), {
+                "fields": {
+                    "separator": {
+                        "type": "text"
+                    }
+                }
+            });
+        }
+
+        /* end_builder_helpers */
+    });
+
+    Alpaca.registerFieldClass("mltext", Alpaca.Fields.MLTextField);
+
+})(jQuery);
+///#source 1 1 MLUrl2Field.js
+(function($) {
+
+    var Alpaca = $.alpaca;
+        
+    Alpaca.Fields.MLUrl2Field = Alpaca.Fields.Url2Field.extend(
+    /**
+     * @lends Alpaca.Fields.Url2Field.prototype
+     */
+    {
+        constructor: function (container, data, options, schema, view, connector) {
+            var self = this;
+            this.base(container, data, options, schema, view, connector);
+            //this.sf = connector.servicesFramework;
+            //this.dataSource = {};
+            this.culture = connector.culture;
+            this.defaultCulture = connector.defaultCulture;
+            this.rootUrl = connector.rootUrl;
+        },
+        /**
+         * @see Alpaca.Fields.Url2Field#setup
+         */
+        setup: function()
+        {
+            var self = this;
+            if (this.data && Alpaca.isObject(this.data)) {
+                this.olddata = this.data;
+            } else if (this.data) {
+                this.olddata = {};
+                this.olddata[this.defaultCulture] = this.data;
+            }
+            
+            this.base();
+        },
+
+        getValue: function () {
+            
+                var val = this.base(val);
+
+                var self = this;
+                var o = {};
+                if (this.olddata && Alpaca.isObject(this.olddata)) {
+                    $.each(this.olddata, function (key, value) {
+                        var v = Alpaca.copyOf(value);
+                        if (key != self.culture) {
+                            o[key] = v;
+                        }
+                    });
+                }
+                if (val != "") {
+                    o[self.culture] = val;
+                }
+                if ($.isEmptyObject(o)) {
+                    return "";
+                }
+                return o;
+            
+        },
+
+        /**
+         * @see Alpaca.Field#setValue
+         */
+        setValue: function(val)
+        {
+            
+            if (val === "") {
+                return;
+            }
+            if (!val) {
+                this.base("");
+                return;
+            }
+            if (Alpaca.isObject(val)) {
+                var v = val[this.culture];
+                if (!v) {
+                    this.base("");
+                    return;
+                }
+                this.base(v);
+            }
+            else {
+                this.base(val);
+            }
+
+        },
+        afterRenderControl: function (model, callback) {
+            var self = this;
+            this.base(model, function () {
+                self.handlePostRender2(function () {
+                    callback();
+                });
+            });
+        },
+        handlePostRender2: function (callback) {
+            var self = this;
+            var el = this.getControlEl();
+
+            
+            callback();
+
+            $(this.control).parent().find('.select2').after('<img src="' + self.rootUrl + 'images/Flags/' + this.culture + '.gif" class="flag" />');
+            
+        },
+    });
+
+    Alpaca.registerFieldClass("mlurl2", Alpaca.Fields.MLUrl2Field);
+
+})(jQuery);
+///#source 1 1 MLUrlField.js
+(function ($) {
+
+    var Alpaca = $.alpaca;
+
+    Alpaca.Fields.MLUrlField = Alpaca.Fields.DnnUrlField.extend(
+    /**
+     * @lends Alpaca.Fields.MLUrlField.prototype
+     */
+    {
+        constructor: function (container, data, options, schema, view, connector) {
+            var self = this;
+            this.base(container, data, options, schema, view, connector);
+            this.culture = connector.culture;
+            this.defaultCulture = connector.defaultCulture;
+            this.rootUrl = connector.rootUrl;
+        },
+
+        /**
+         * @see Alpaca.Fields.MLUrlField#setup
+         */
+        setup: function () {
+            if (this.data && Alpaca.isObject(this.data)) {
+                this.olddata = this.data;
+            } else if (this.data) {
+                this.olddata = {};
+                this.olddata[this.defaultCulture] = this.data;
+            }
+            if (this.culture != this.defaultCulture && this.olddata && this.olddata[this.defaultCulture]) {
+                this.options.placeholder = this.olddata[this.defaultCulture];
+            } else {
+                this.options.placeholder = "";
+            }
+            this.base();
+        },
+        /**
+         * @see Alpaca.Fields.MLUrlField#getValue
+         */
+        getValue: function () {
+            var val = this.base();
+            var self = this;
+            var o = {};
+            if (this.olddata && Alpaca.isObject(this.olddata)) {
+                $.each(this.olddata, function (key, value) {
+                    var v = Alpaca.copyOf(value);
+                    if (key != self.culture) {
+                        o[key] = v;
+                    }
+                });
+            }
+            if (val != "") {
+                o[self.culture] = val;
+            }
+            if ($.isEmptyObject(o)) {
+                return "";
+            }
+            return o;
+        },
+
+        /**
+         * @see Alpaca.Fields.MLUrlField#setValue
+         */
+        setValue: function (val) {
+            if (val === "") {
+                return;
+            }
+            if (!val) {
+                this.base("");
+                return;
+            }
+            if (Alpaca.isObject(val)) {
+                var v = val[this.culture];
+                if (!v) {
+                    this.base("");
+                    return;
+                }
+                this.base(v);
+            }
+            else
+            {
+                this.base(val);
+            }
+        },
+        afterRenderControl: function (model, callback) {
+            var self = this;
+            this.base(model, function () {
+                self.handlePostRender(function () {
+                    callback();
+                });
+            });
+        },
+        handlePostRender: function (callback) {
+            var self = this;
+            var el = this.getControlEl();
+            $(this.control.get(0)).after('<img src="' + self.rootUrl + 'images/Flags/' + this.culture + '.gif" class="flag" />');
+            callback();
+        },
+        
+        /**
+         * @see Alpaca.Fields.MLUrlField#getTitle
+         */
+        getTitle: function () {
+            return "Multi Language Url Field";
+        },
+
+        /**
+         * @see Alpaca.Fields.MLUrlField#getDescription
+         */
+        getDescription: function () {
+            return "Multi Language Url field .";
+        },
+
+        /**
+         * @private
+         * @see Alpaca.Fields.MLUrlField#getSchemaOfOptions
+         */
+        getSchemaOfOptions: function () {
+            return Alpaca.merge(this.base(), {
+                "properties": {
+                    "separator": {
+                        "title": "Separator",
+                        "description": "Separator used to split tags.",
+                        "type": "string",
+                        "default": ","
+                    }
+                }
+            });
+        },
+
+        /**
+         * @private
+         * @see Alpaca.Fields.MLUrlField#getOptionsForOptions
+         */
+        getOptionsForOptions: function () {
+            return Alpaca.merge(this.base(), {
+                "fields": {
+                    "separator": {
+                        "type": "text"
+                    }
+                }
+            });
+        }
+
+        /* end_builder_helpers */
+    });
+
+    Alpaca.registerFieldClass("mlurl", Alpaca.Fields.MLUrlField);
+
+})(jQuery);
+///#source 1 1 MLWysihtmlField.js
+(function ($) {
+
+    var Alpaca = $.alpaca;
+
+    Alpaca.Fields.MLwysihtmlField = Alpaca.Fields.wysihtmlField.extend(
+    /**
+     * @lends Alpaca.Fields.MLwysihtmlField.prototype
+     */
+    {
+        constructor: function (container, data, options, schema, view, connector) {
+            var self = this;
+            this.base(container, data, options, schema, view, connector);
+            this.culture = connector.culture;
+            this.defaultCulture = connector.defaultCulture;
+            this.rootUrl = connector.rootUrl;
+        },
+        /**
+         * @see Alpaca.Fields.MLwysihtmlField#setup
+         */
+        setup: function () {
+            if (this.data && Alpaca.isObject(this.data)) {
+                this.olddata = this.data;
+            } else if (this.data) {
+                this.olddata = {};
+                this.olddata[this.defaultCulture] = this.data;
+            }
+            this.base();
+        },
+
+        /**
+         * @see Alpaca.Fields.MLwysihtmlField#getValue
+         */
+        getValue: function () {
+            var val = this.base();
+            var self = this;
+            var o = {};
+            if (this.olddata && Alpaca.isObject(this.olddata)) {
+                $.each(this.olddata, function (key, value) {
+                    var v = Alpaca.copyOf(value);
+                    if (key != self.culture) {
+                        o[key] = v;
+                    }
+                });
+            }
+            if (val != "") {
+                o[self.culture] = val;
+            }
+            if ($.isEmptyObject(o)) {
+                return "";
+            }
+            return o;
+        },
+
+        /**
+         * @see Alpaca.Fields.MLwysihtmlField#setValue
+         */
+        setValue: function (val) {
+            if (val === "") {
+                return;
+            }
+            if (!val) {
+                this.base("");
+                return;
+            }
+            if (Alpaca.isObject(val)) {
+                var v = val[this.culture];
+                if (!v) {
+                    this.base("");
+                    return;
+                }
+                this.base(v);
+            }
+            else {
+                this.base(val);
+            }
+        },
+        afterRenderControl: function (model, callback) {
+            var self = this;
+            this.base(model, function () {
+                self.handlePostRender2(function () {
+                    callback();
+                });
+            });
+        },
+        handlePostRender2: function (callback) {
+            var self = this;
+            var el = this.getControlEl();
+            $(this.control.get(0)).after('<img src="' + self.rootUrl + 'images/Flags/' + this.culture + '.gif" class="flag" />');
+            callback();
+        },
+
+
+        /* builder_helpers */
+
+        /**
+         * @see Alpaca.Fields.TextAreaField#getTitle
+         */
+        getTitle: function () {
+            return "ML wysihtml Field";
+        },
+
+        /**
+         * @see Alpaca.Fields.TextAreaField#getDescription
+         */
+        getDescription: function () {
+            return "Provides an instance of a wysihtml control for use in editing MLHTML.";
+        },
+
+        /**
+         * @private
+         * @see Alpaca.ControlField#getSchemaOfOptions
+         */
+        getSchemaOfOptions: function () {
+            return Alpaca.merge(this.base(), {
+                "properties": {
+                    "wysihtml": {
+                        "title": "CK Editor options",
+                        "description": "Use this entry to provide configuration options to the underlying CKEditor plugin.",
+                        "type": "any"
+                    }
+                }
+            });
+        },
+
+        /**
+         * @private
+         * @see Alpaca.ControlField#getOptionsForOptions
+         */
+        getOptionsForOptions: function () {
+            return Alpaca.merge(this.base(), {
+                "fields": {
+                    "wysiwyg": {
+                        "type": "any"
+                    }
+                }
+            });
+        }
+
+        /* end_builder_helpers */
+    });
+
+    Alpaca.registerFieldClass("mlwysihtml", Alpaca.Fields.MLwysihtmlField);
+
 
 })(jQuery);

@@ -471,8 +471,9 @@ namespace Satrabel.OpenContent.Components
         }
 
 
-        internal static bool HaveViewPermissions(Datasource.IDataItem dsItem, DotNetNuke.Entities.Users.UserInfo userInfo, FieldConfig IndexConfig)
+        internal static bool HaveViewPermissions(Datasource.IDataItem dsItem, DotNetNuke.Entities.Users.UserInfo userInfo, FieldConfig IndexConfig, out string raison)
         {
+            raison = "";
             if (dsItem == null || dsItem.Data == null) return true;
 
             bool permissions = true;
@@ -481,19 +482,21 @@ namespace Satrabel.OpenContent.Components
             {
                 permissions = dsItem.Data[AppConfig.FieldNamePublishStatus] != null &&
                     dsItem.Data[AppConfig.FieldNamePublishStatus].ToString() == "published";
+                if (!permissions) raison = AppConfig.FieldNamePublishStatus;
             }
             if (permissions && IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishStartDate))
             {
                 permissions =   dsItem.Data[AppConfig.FieldNamePublishStartDate] != null && 
                                 dsItem.Data[AppConfig.FieldNamePublishStartDate].Type == JTokenType.Date &&
-                                ((DateTime)dsItem.Data[AppConfig.FieldNamePublishStartDate]) < DateTime.Today;
-
+                                ((DateTime)dsItem.Data[AppConfig.FieldNamePublishStartDate]) <= DateTime.Today;
+                if (!permissions) raison = AppConfig.FieldNamePublishStartDate;
             }
             if (permissions && IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishEndDate))
             {
                 permissions =   dsItem.Data[AppConfig.FieldNamePublishEndDate] != null &&
                                 dsItem.Data[AppConfig.FieldNamePublishEndDate].Type == JTokenType.Date &&
                                 ((DateTime)dsItem.Data[AppConfig.FieldNamePublishEndDate])  >= DateTime.Today;
+                if (!permissions) raison = AppConfig.FieldNamePublishEndDate;
             }
             if (permissions)
             {
@@ -539,6 +542,7 @@ namespace Satrabel.OpenContent.Components
                             permissions = dataRoles.Contains("Unauthenticated");
                         }
                     }
+                    if (!permissions) raison = fieldName;
                 }
             }
             return permissions;
