@@ -44,27 +44,38 @@
   <ItemGroup>
     <Reference Include="ClientDependency.Core, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\bin\ClientDependency.Core.dll</HintPath>
+      <HintPath>ref\dnn732\ClientDependency.Core.dll</HintPath>
+      <Private>False</Private>
     </Reference>
-    <Reference Include="DotNetNuke">
-      <HintPath>..\..\..\bin\DotNetNuke.dll</HintPath>
-    </Reference>
-    <Reference Include="DotNetNuke.Instrumentation">
-      <HintPath>..\..\..\bin\DotNetNuke.Instrumentation.dll</HintPath>
-    </Reference>
-    <Reference Include="DotNetNuke.Web">
-      <HintPath>..\..\..\bin\DotNetNuke.Web.dll</HintPath>
-    </Reference>
-    <Reference Include="DotNetNuke.Web.Client, Version=7.3.2.109, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="DotNetNuke, Version=7.4.1.280, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\bin\DotNetNuke.Web.Client.dll</HintPath>
+      <HintPath>ref\dnn732\DotNetNuke.dll</HintPath>
+      <Private>False</Private>
     </Reference>
-    <Reference Include="DotNetNuke.Web.Razor">
-      <HintPath>..\..\..\bin\DotNetNuke.Web.Razor.dll</HintPath>
+    <Reference Include="DotNetNuke.Instrumentation, Version=7.4.1.280, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ref\dnn732\DotNetNuke.Instrumentation.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="DotNetNuke.Web, Version=7.4.1.280, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ref\dnn732\DotNetNuke.Web.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="DotNetNuke.Web.Client, Version=7.4.1.280, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ref\dnn732\DotNetNuke.Web.Client.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="DotNetNuke.Web.Razor, Version=7.4.1.280, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ref\dnn732\DotNetNuke.Web.Razor.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="DotNetNuke.WebUtility, Version=4.2.1.783, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\bin\DotNetNuke.WebUtility.dll</HintPath>
+      <HintPath>ref\dnn732\DotNetNuke.WebUtility.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="EPPlus, Version=4.1.0.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -76,29 +87,27 @@
     </Reference>
     <Reference Include="Lucene.Net, Version=3.0.3.0, Culture=neutral, PublicKeyToken=85089178b9ac3181, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\bin\Lucene.Net.dll</HintPath>
+      <HintPath>ref\Lucene.Net.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Lucene.Net.Contrib.Analyzers, Version=3.0.3.0, Culture=neutral, PublicKeyToken=85089178b9ac3181, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\bin\Lucene.Net.Contrib.Analyzers.dll</HintPath>
+      <HintPath>ref\Lucene.Net.Contrib.Analyzers.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Lucene.Net.Contrib.FastVectorHighlighter, Version=3.0.3.0, Culture=neutral, PublicKeyToken=85089178b9ac3181, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\bin\Lucene.Net.Contrib.FastVectorHighlighter.dll</HintPath>
+      <HintPath>ref\Lucene.Net.Contrib.FastVectorHighlighter.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>ref\dnn740\Newtonsoft.Json.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="PetaPoco, Version=5.0.1.17400, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\bin\PetaPoco.dll</HintPath>
+      <HintPath>ref\dnn732\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="SharpZipLib, Version=0.81.0.1407, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\bin\SharpZipLib.dll</HintPath>
+      <HintPath>ref\dnn732\SharpZipLib.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -461,8 +470,8 @@
     <Content Include="alpaca\js\fields\dnn\Image2Field.js" />
     <Content Include="alpaca\js\fields\dnn\Select2Field.js" />
     <Content Include="alpaca\js\fields\dnn\UrlField.js" />
-    <Content Include="alpaca\js\fields\dnn\MLWysihtmlField.js" />
-    <Content Include="alpaca\js\fields\dnn\WysihtmlField.js" />
+    <Content Include="alpaca\js\fields\dnn\mlwysihtmlField.js" />
+    <Content Include="alpaca\js\fields\dnn\wysihtmlField.js" />
     <Content Include="alpaca\js\views\dnnbootstrap.js" />
     <Content Include="alpaca\js\views\dnn.js" />
     <Content Include="alpaca\templates\dnn-edit\container.html" />
@@ -927,7 +936,6 @@
     <Content Include="css\glyphicons\fonts\glyphicons-social-regular.eot" />
     <Content Include="css\glyphicons\fonts\glyphicons-social-regular.ttf" />
     <Content Include="css\glyphicons\fonts\glyphicons-social-regular.woff" />
-    <None Include="bundleconfig.json" />
     <None Include="Scripts\_references.js" />
     <Content Include="js\select2\i18n\az.js" />
     <Content Include="js\select2\i18n\bg.js" />
