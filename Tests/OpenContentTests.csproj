@@ -38,8 +38,12 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Handlebars">
-      <HintPath>..\..\..\bin\Handlebars.dll</HintPath>
+    <Reference Include="DotNetNuke.Instrumentation">
+      <HintPath>..\ref\dnn740\DotNetNuke.Instrumentation.dll</HintPath>
+    </Reference>
+    <Reference Include="Handlebars, Version=1.0.0.0, Culture=neutral, PublicKeyToken=22225d0bf33cd661, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\ref\Handlebars.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
