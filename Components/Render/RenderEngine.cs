@@ -287,7 +287,7 @@ namespace Satrabel.OpenContent.Components.Render
                         LogContext.Log(_module.ModuleID, "RequestContext", "CurrentUserId", portalSettings.UserId);
                         var logKey = "Query";
                         LogContext.Log(_module.ModuleID, logKey, "select", queryBuilder.Select);
-                        LogContext.Log(_module.ModuleID, logKey, "result", resultList);
+                        //LogContext.Log(_module.ModuleID, logKey, "result", resultList);
                     }
                     //Log.Logger.DebugFormat("Query returned [{0}] results.", total);
                     if (!resultList.Any())
@@ -311,7 +311,7 @@ namespace Satrabel.OpenContent.Components.Render
                     if (LogContext.IsLogActive)
                     {
                         var logKey = "Get all data of module";
-                        LogContext.Log(_module.ModuleID, logKey, "result", resultList);
+                        //LogContext.Log(_module.ModuleID, logKey, "result", resultList);
                     }
                 }
                 if (resultList.Any())
@@ -337,7 +337,7 @@ namespace Satrabel.OpenContent.Components.Render
             if (LogContext.IsLogActive)
             {
                 var logKey = "Get detail data";
-                LogContext.Log(_module.ModuleID, logKey, "result", dsItem);
+                //LogContext.Log(_module.ModuleID, logKey, "result", dsItem);
             }
 
             if (dsItem != null)
