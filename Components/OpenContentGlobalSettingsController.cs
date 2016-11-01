@@ -13,6 +13,7 @@ namespace Satrabel.OpenContent.Components
         private const AlpacaLayoutEnum SettingsDefaultEditLayout = AlpacaLayoutEnum.DNN;
         private const string SettingsLoadBootstrap = "OpenContent_LoadBootstrap";
         private const bool SettingsDefaultLoadBootstrap = true;
+        private const string SettingsGoogleApiKey = "OpenContent_GoogleApiKey";
 
         public OpenContentGlobalSettingsController(int portalId)
         {
@@ -58,6 +59,15 @@ namespace Satrabel.OpenContent.Components
         public void SetLoadBootstrap(bool loadBootstrap)
         {
             PortalController.UpdatePortalSetting(_portalId, SettingsLoadBootstrap, loadBootstrap.ToString(), true);
+        }
+
+        public string GetGoogleApiKey()
+        {
+            return PortalController.GetPortalSetting(SettingsGoogleApiKey, _portalId, string.Empty);
+        }
+        public void SetGoogleApiKey(string googleMapsApiKey)
+        {
+            PortalController.UpdatePortalSetting(_portalId, SettingsGoogleApiKey, googleMapsApiKey, true);
         }
     }
 

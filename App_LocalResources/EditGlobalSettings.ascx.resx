@@ -141,4 +141,7 @@
   <data name="lLoadBootstrap.Text" xml:space="preserve">
     <value>Load Bootstrap on Edit Form</value>
   </data>
+  <data name="lGoogleApiKey.Text" xml:space="preserve">
+    <value>Google Api Key</value>
+  </data>
 </root>

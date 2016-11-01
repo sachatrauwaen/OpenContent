@@ -94,6 +94,24 @@ namespace Satrabel.OpenContent {
         protected global::System.Web.UI.WebControls.DropDownList ddlLogging;
         
         /// <summary>
+        /// lGoogleApiKey control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.UserControl lGoogleApiKey;
+        
+        /// <summary>
+        /// tbGoogleApiKey control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox tbGoogleApiKey;
+        
+        /// <summary>
         /// lEditLayout control.
         /// </summary>
         /// <remarks>

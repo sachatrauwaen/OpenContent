@@ -23,6 +23,10 @@
         </asp:DropDownList>
     </div>
     <div class="dnnFormItem">
+        <dnn:Label ID="lGoogleApiKey" ControlName="tbGoogleApiKey" runat="server" />
+        <asp:TextBox ID="tbGoogleApiKey" runat="server"></asp:TextBox>
+    </div>
+    <div class="dnnFormItem">
         <dnn:Label ID="lEditLayout" ControlName="ddlEditLayout" runat="server" />
         <asp:DropDownList ID="ddlEditLayout" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlEditLayout_SelectedIndexChanged">
             <asp:ListItem Value="1" Text="DNN"></asp:ListItem>
