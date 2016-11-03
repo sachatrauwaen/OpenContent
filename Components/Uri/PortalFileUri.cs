@@ -16,28 +16,23 @@ namespace Satrabel.OpenContent.Components
     {
         #region Constructors
 
-        public PortalFileUri(int portalid, string pathToFile)
-            : base(pathToFile)
+        public PortalFileUri(int portalid, string pathToFile) : base(pathToFile)
         {
             FileInfo = GetFileInfo(portalid);
         }
-        public PortalFileUri(int portalid, string path, string filename)
-            : base(path, filename)
+        public PortalFileUri(int portalid, string path, string filename) : base(path, filename)
         {
             FileInfo = GetFileInfo(portalid);
         }
-        public PortalFileUri(PortalFolderUri portalFolderUri, string filename)
-            : base(portalFolderUri.FolderPath, filename)
+        public PortalFileUri(PortalFolderUri portalFolderUri, string filename) : base(portalFolderUri.FolderPath, filename)
         {
             FileInfo = GetFileInfo(portalFolderUri.FolderInfo.PortalID);
         }
-        public PortalFileUri(IFileInfo fileInfo)
-            : base(GetFilePath(fileInfo))
+        public PortalFileUri(IFileInfo fileInfo) : base(GetFilePath(fileInfo))
         {
             FileInfo = fileInfo;
         }
-        public PortalFileUri(int fileId)
-            : base(GetFilePath(fileId))
+        public PortalFileUri(int fileId) : base(GetFilePath(fileId))
         {
             var fileInfo = FileManager.Instance.GetFile(fileId);
             if (fileInfo == null)
