@@ -13,6 +13,7 @@ using DotNetNuke.Framework.JavaScriptLibraries;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Json;
 using System.Web.UI.HtmlControls;
+using DotNetNuke.Entities.Portals;
 
 
 namespace Satrabel.OpenContent.Components.Alpaca
@@ -131,7 +132,8 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
             if (allFields || fieldTypes.Contains("address"))
             {
-                ClientResourceManager.RegisterScript(Page, "//maps.googleapis.com/maps/api/js?v=3.exp&libraries=places", FileOrder.Js.DefaultPriority);
+                string apikey = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetGoogleApiKey();
+                ClientResourceManager.RegisterScript(Page, "//maps.googleapis.com/maps/api/js?v=3.exp&libraries=places"+(string.IsNullOrEmpty(apikey) ? "":"&key="+apikey), FileOrder.Js.DefaultPriority);
             }
             if (allFields || fieldTypes.Contains("imagecropper") || fieldTypes.Contains("imagecrop") || fieldTypes.Contains("imagecrop2"))
             {

@@ -36,12 +36,12 @@ namespace Satrabel.OpenContent.Components.Datasource
                 foreach (var version in content.Versions)
                 {
                     var ver = new JObject();
-                    ver["text"] = version.CreatedOnDate.ToShortDateString() + " " + version.CreatedOnDate.ToShortTimeString();
+                    ver["text"] = version.LastModifiedOnDate.ToShortDateString() + " " + version.LastModifiedOnDate.ToShortTimeString();
                     if (verLst.Count == 0) // first
                     {
                         ver["text"] = ver["text"] + " ( current )";
                     }
-                    ver["ticks"] = version.CreatedOnDate.Ticks.ToString();
+                    ver["ticks"] = version.LastModifiedOnDate.Ticks.ToString();
                     verLst.Add(ver);
                 }
                 return verLst;
@@ -58,12 +58,12 @@ namespace Satrabel.OpenContent.Components.Datasource
                 foreach (var version in content.Versions)
                 {
                     var ver = new JObject();
-                    ver["text"] = version.CreatedOnDate.ToShortDateString() + " " + version.CreatedOnDate.ToShortTimeString();
+                    ver["text"] = version.LastModifiedOnDate.ToShortDateString() + " " + version.LastModifiedOnDate.ToShortTimeString();
                     if (verLst.Count == 0) // first
                     {
                         ver["text"] = ver["text"] + " ( current )";
                     }
-                    ver["ticks"] = version.CreatedOnDate.Ticks.ToString();
+                    ver["ticks"] = version.LastModifiedOnDate.Ticks.ToString();
                     verLst.Add(ver);
                 }
                 return verLst;
@@ -78,7 +78,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             {
                 if (!string.IsNullOrEmpty(content.VersionsJson))
                 {
-                    var ver = content.Versions.Single(v => v.CreatedOnDate == datetime);
+                    var ver = content.Versions.Single(v => v.LastModifiedOnDate == datetime);
                     if (ver != null)
                     {
                         return ver.Json;
@@ -95,7 +95,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             {
                 if (!string.IsNullOrEmpty(content.VersionsJson))
                 {
-                    var ver = content.Versions.Single(v => v.CreatedOnDate == datetime);
+                    var ver = content.Versions.Single(v => v.LastModifiedOnDate == datetime);
                     if (ver != null)
                     {
                         return ver.Json;

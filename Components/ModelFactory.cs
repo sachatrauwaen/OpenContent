@@ -398,6 +398,7 @@ namespace Satrabel.OpenContent.Components
                 JObject context = new JObject();
                 model["Context"] = context;
                 context["ModuleId"] = Module.ModuleID;
+                context["GoogleApiKey"] = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetGoogleApiKey();
                 context["ModuleTitle"] = Module.ModuleTitle;
                 context["AddUrl"] = DnnUrlUtils.EditUrl(Module.ModuleID, PortalSettings);
                 var editStatus = !Manifest.DisableEdit && GetEditStatus(-1);
