@@ -1,4 +1,5 @@
 ﻿using System;
+using DotNetNuke.Entities.Portals;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -13,14 +14,33 @@ namespace Satrabel.OpenContent.Components
             }
             catch (Exception ex)
             {
-                Log.Logger.ErrorFormat("Error while trying to create PortalFileUri: ", ex);
+                Log.Logger.ErrorFormat("Error while trying to create PortalFileUri: portalFileId:{0}, {1}", portalFileId, ex);
             }
             return retval;
         }
 
         public static PortalFileUri CreatePortalFileUri(string portalFileId)
         {
-            return CreatePortalFileUri(Convert.ToInt32(portalFileId));
+            int fileId;
+            if (int.TryParse(portalFileId, out fileId))
+            {
+                //the id holds an integer referring to a fileId
+                return CreatePortalFileUri(fileId);
+            }
+            else
+            {
+                //the id holds a path to a file
+                var portalId = DeterminePortalIdFromFilePath(portalFileId);
+                return CreatePortalFileUri(portalId, portalFileId);
+            }
+        }
+
+        private static int DeterminePortalIdFromFilePath(string portalFilePath)
+        {
+            //todo: first try to parse portal from portalFilePath, as it might hold a reference to another portal
+
+            if (PortalSettings.Current == null) return -1;
+            return PortalSettings.Current.PortalId;
         }
 
         public static PortalFileUri CreatePortalFileUri(int portalFileId)
@@ -32,7 +52,20 @@ namespace Satrabel.OpenContent.Components
             }
             catch (Exception ex)
             {
-                Log.Logger.ErrorFormat("Error while trying to create PortalFileUri: ", ex);
+                Log.Logger.ErrorFormat("Error while trying to create PortalFileUri: portalFileId:{0}, {1}", portalFileId, ex);
+            }
+            return retval;
+        }
+        public static PortalFileUri CreatePortalFileUri(int portalId, string filePath)
+        {
+            PortalFileUri retval = null;
+            try
+            {
+                retval = string.IsNullOrEmpty(filePath) || portalId < 0 ? null : new PortalFileUri(portalId, filePath);
+            }
+            catch (Exception ex)
+            {
+                Log.Logger.ErrorFormat("Error while trying to create PortalFileUri: portalid:{0}, filepath:{1}, {2} ", portalId, filePath, ex);
             }
             return retval;
         }
