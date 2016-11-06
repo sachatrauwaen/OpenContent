@@ -101,7 +101,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
         }
 
         private void RegisterTruncateWordsHelper(HandlebarsDotNet.IHandlebars hbs)
-        {            
+        {
             hbs.RegisterHelper("truncateWords", (writer, context, parameters) =>
             {
                 try
@@ -363,6 +363,25 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     DnnUtils.RegisterScript(page, sourceFolder, jsfilename, _jsOrder);
                     _jsOrder++;
                 }
+            });
+            hbs.RegisterHelper("registerform", (writer, context, parameters) =>
+            {
+                string view = "bootstrap";
+                if (parameters.Length == 1)
+                {
+                    view = parameters[0].ToString();
+                }
+                string min = ".min";
+                if (DotNetNuke.Common.HttpContextSource.Current.IsDebuggingEnabled)
+                {
+                    min = "";
+                }
+                DotNetNuke.Framework.ServicesFramework.Instance.RequestAjaxScriptSupport();
+                DnnUtils.RegisterScript(page, sourceFolder, "/DesktopModules/OpenContent/js/lib/handlebars/handlebars" + min + ".js", _jsOrder);
+                _jsOrder++;
+                DnnUtils.RegisterScript(page, sourceFolder, "/DesktopModules/OpenContent/js/alpaca/bootstrap/alpaca" + min + ".js", _jsOrder);
+                _jsOrder++;
+                ClientResourceManager.RegisterStyleSheet(page, page.ResolveUrl("/DesktopModules/OpenContent/js/alpaca/bootstrap/alpaca" + min + ".css"), FileOrder.Css.PortalCss);
             });
         }
         private void RegisterRegisterStylesheetHelper(HandlebarsDotNet.IHandlebars hbs, Page page, string sourceFolder)

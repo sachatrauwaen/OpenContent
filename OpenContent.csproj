@@ -158,6 +158,11 @@
     </Compile>
     <Compile Include="Components\Alpaca\AlpacaLayoutEnum.cs" />
     <Compile Include="Components\AppConfig.cs" />
+    <Compile Include="Components\FormAPIController.cs" />
+    <Compile Include="Components\Form\FormUtils.cs" />
+    <Compile Include="Components\Form\GenSettingsDTO.cs" />
+    <Compile Include="Components\Form\NotificationDTO.cs" />
+    <Compile Include="Components\Form\SettingsDTO.cs" />
     <Compile Include="Components\Utils\ExcelUtils.cs" />
     <Compile Include="Components\Dnn\DnnFileUtils.cs" />
     <Compile Include="Components\Dnn\DnnLanguageUtils.cs" />
@@ -319,6 +324,13 @@
     <Compile Include="Components\Common\Utils.cs" />
     <Compile Include="Components\UrlRewriter\OpenContentUrlRule.cs" />
     <Compile Include="Components\UrlRewriter\OpenContentUrlProvider.cs" />
+    <Compile Include="EditFormSettings.ascx.cs">
+      <DependentUpon>EditFormSettings.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="EditFormSettings.ascx.designer.cs">
+      <DependentUpon>EditFormSettings.ascx</DependentUpon>
+    </Compile>
     <Compile Include="RenderModule.ascx.cs">
       <DependentUpon>RenderModule.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -498,6 +510,7 @@
     <Content Include="css\glyphicons\fonts\glyphicons-regular.svg" />
     <Content Include="css\glyphicons\fonts\glyphicons-social-regular.svg" />
     <Content Include="css\glyphicons\glyphicons.css" />
+    <Content Include="EditFormSettings.ascx" />
     <Content Include="js\bootstrap\css\bootstrap-theme.css" />
     <Content Include="js\bootstrap\css\bootstrap-theme.min.css" />
     <Content Include="js\bootstrap\css\bootstrap.css" />
@@ -1053,6 +1066,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Templates\ViewPage1.cshtml" />
+    <Content Include="formsettings-options.json" />
+    <Content Include="formsettings-schema.json" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
@@ -1146,6 +1161,12 @@
     <Content Include="App_LocalResources\EditSettings.ascx.de-AT.resx" />
     <Content Include="App_LocalResources\EditTemplate.ascx.de-AT.resx" />
     <Content Include="App_LocalResources\ShareTemplate.ascx.de-AT.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_LocalResources\EditSettings.ascx - Copy.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_LocalResources\SharedResources.resx" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

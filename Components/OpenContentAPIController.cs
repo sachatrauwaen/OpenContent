@@ -749,16 +749,23 @@ namespace Satrabel.OpenContent.Components
             }
         }
         */
-        [ValidateAntiForgeryToken]
+         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
         [HttpGet]
         public HttpResponseMessage EditSettings(string key)
+        {
+            return EditSettings(key, true);
+        }
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [HttpGet]
+        public HttpResponseMessage EditSettings(string key, bool templateFolder)
         {
             string data = (string)ActiveModule.ModuleSettings[key];
             try
             {
                 OpenContentSettings settings = ActiveModule.OpenContentSettings();
-                var fb = new FormBuilder(settings.TemplateDir);
+                var fb = new FormBuilder(templateFolder ? settings.TemplateDir : new FolderUri("~/DesktopModules/OpenContent"));
                 JObject json = fb.BuildForm(key);
                 var dataJson = data.ToJObject("Raw settings json");
                 if (dataJson != null)

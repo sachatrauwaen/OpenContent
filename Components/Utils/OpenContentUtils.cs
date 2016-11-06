@@ -470,6 +470,13 @@ namespace Satrabel.OpenContent.Components
             return false;
         }
 
+        internal static bool FormExist(FolderUri folder)
+        {
+            if (folder.FolderExists)
+                return Directory.GetFiles(folder.PhysicalFullDirectory, "form-schema.json").Length > 0;
+            return false;
+        }
+
 
         internal static bool HaveViewPermissions(Datasource.IDataItem dsItem, DotNetNuke.Entities.Users.UserInfo userInfo, FieldConfig IndexConfig, out string raison)
         {
