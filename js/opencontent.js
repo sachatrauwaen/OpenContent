@@ -128,7 +128,7 @@
             }).fail(function (xhr, result, status) {
                 alert("Uh-oh, something broke: " + status);
             });
-        }
+        };
         var formSubmit = function (data) {
             var sf = settings.servicesFramework;
             $.ajax({
@@ -155,7 +155,6 @@
                 if (settings.onSubmited) {
                     settings.onSubmited();
                 }
-                
             }).fail(function (xhr, result, status) {
                 alert("Uh-oh, something broke: " + status);
             });

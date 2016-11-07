@@ -110,13 +110,9 @@
                     "hidden": true
                 },
                  "SiteKey": { 
-                    "title": "reCaptcha Site Key",
-                    "type": "string",
                     "hidden": true
                 },
                 "SecretKey": { 
-                     "title": "reCaptcha Secret Key",
-                    "type": "string",
                     "hidden": true
                 }
             }
