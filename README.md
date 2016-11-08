@@ -8,7 +8,7 @@ Structured Content editing for DNN (Dotnetnuke)
 * Easy content editing of complex layouts by end users
 * Content editing for websites using frameworks like bootstrap
 
-![Screenshot](http://download-codeplex.sec.s-msft.com/Download?ProjectName=opencontent&DownloadId=1455721)
+![Screenshot](http://download-codeplex.sec.s-msft.com/Download?ProjectName=opencontent&DownloadId=14557211)
 
 *Features*
 
