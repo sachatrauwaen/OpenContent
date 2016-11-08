@@ -337,7 +337,7 @@ namespace Satrabel.OpenContent.Components.Render
             if (LogContext.IsLogActive)
             {
                 var logKey = "Get detail data";
-                //LogContext.Log(_module.ModuleID, logKey, "result", dsItem);
+                //LogContext.Log(_module.ModuleID, logKey, "debuginfo", dsItems.DebugInfo);
             }
 
             if (dsItem != null)

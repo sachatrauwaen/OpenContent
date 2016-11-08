@@ -99,7 +99,7 @@ namespace Satrabel.OpenContent.Components.Rest
                     {
                         var logKey = "Query";
                         LogContext.Log(activeModule.ModuleID, logKey, "select", queryBuilder.Select);
-                        LogContext.Log(activeModule.ModuleID, logKey, "result", dsItems);
+                        LogContext.Log(activeModule.ModuleID, logKey, "debuginfo", dsItems.DebugInfo);
                         LogContext.Log(activeModule.ModuleID, logKey, "model", model);
                         res["meta"]["logs"] = JToken.FromObject(LogContext.Current.ModuleLogs(activeModule.ModuleID));
                     }
@@ -207,7 +207,7 @@ namespace Satrabel.OpenContent.Components.Rest
                     {
                         var logKey = "Query";
                         LogContext.Log(activeModule.ModuleID, logKey, "select", queryBuilder.Select);
-                        LogContext.Log(activeModule.ModuleID, logKey, "result", dsItems);
+                        LogContext.Log(activeModule.ModuleID, logKey, "debuginfo", dsItems.DebugInfo);
                         LogContext.Log(activeModule.ModuleID, logKey, "model", model);
                         res["meta"]["logs"] = JToken.FromObject(LogContext.Current.ModuleLogs(activeModule.ModuleID));
 
