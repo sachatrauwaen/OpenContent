@@ -263,7 +263,6 @@ namespace Satrabel.OpenContent.Components.Alpaca
             {
                 optionsConfig = optionsJson.ToObject<OptionsConfig>();
             }
-            List<string> fieldLst = new List<string>();
             foreach (var prop in schemaConfig.Properties)
             {
                 OptionsConfig opts = null;
