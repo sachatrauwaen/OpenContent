@@ -406,13 +406,14 @@ namespace Satrabel.OpenContent.Components
             return FileUri.ReverseMapPath(template);
         }
 
-        public static bool CheckOpenContentSettings(ModuleInfo module, OpenContentSettings settings)
+        public static bool CheckOpenContentSettings(OpenContentModuleInfo module)
         {
             bool result = true;
-            if (module != null && settings != null && settings.TemplateKey != null && settings.TemplateKey.TemplateDir != null && !settings.TemplateKey.TemplateDir.FolderExists)
+            var settings = module.Settings;
+            if (settings != null && settings.TemplateKey != null && settings.TemplateKey.TemplateDir != null && !settings.TemplateKey.TemplateDir.FolderExists)
             {
-                var url = DnnUrlUtils.NavigateUrl(module.TabID);
-                Log.Logger.ErrorFormat("Error loading OpenContent Template on page [{5}-{4}-{1}] module [{2}-{3}]. Reason: Template not found [{0}]", settings.TemplateKey.ToString(), url, module.ModuleID, module.ModuleTitle, module.TabID, module.PortalID);
+                var url = DnnUrlUtils.NavigateUrl(module.ViewModule.TabID);
+                Log.Logger.ErrorFormat("Error loading OpenContent Template on page [{5}-{4}-{1}] module [{2}-{3}]. Reason: Template not found [{0}]", settings.TemplateKey.ToString(), url, module.ViewModule.ModuleID, module.ViewModule.ModuleTitle, module.ViewModule.TabID, module.ViewModule.PortalID);
                 result = false;
             }
             return result;
@@ -425,9 +426,9 @@ namespace Satrabel.OpenContent.Components
 
         public static bool HasEditPermissions(PortalSettings portalSettings, ModuleInfo module, string editrole, int createdByUserId)
         {
-            return module.HasEditRights() || HasEditRole(portalSettings, module, editrole, createdByUserId);
+            return module.HasEditRights() || HasEditRole(portalSettings, editrole, createdByUserId);
         }
-        public static bool HasEditRole(PortalSettings portalSettings, ModuleInfo module, string editrole, int createdByUserId)
+        public static bool HasEditRole(PortalSettings portalSettings, string editrole, int createdByUserId)
         {
             return (!string.IsNullOrEmpty(editrole) && portalSettings.UserInfo.IsInRole(editrole) && (createdByUserId == -1 || portalSettings.UserId == createdByUserId)) ||
                     (!string.IsNullOrEmpty(editrole) && editrole.ToLower() == "all");

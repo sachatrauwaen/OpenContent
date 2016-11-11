@@ -21,18 +21,12 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
-                ModuleController mc = new ModuleController();
-                var requestModule = mc.GetModule(req.ModuleId, req.TabId, false);
+
+                var module = new OpenContentModuleInfo(req.ModuleId, req.TabId);
                 bool index = false;
-                OpenContentSettings settings = requestModule.OpenContentSettings();
-                ModuleInfo module = requestModule;
-                if (settings.ModuleId > 0)
-                {
-                    module = mc.GetModule(settings.ModuleId, settings.TabId, false);
-                }
-                var manifest = settings.Template.Manifest;
-                TemplateManifest templateManifest = settings.Template;
-                index = settings.Template.Manifest.Index;
+                var manifest = module.Settings.Template.Manifest;
+                TemplateManifest templateManifest = module.Settings.Template;
+                index = module.Settings.Template.Manifest.Index;
                 string editRole = manifest.GetEditRole();
 
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
@@ -41,14 +35,14 @@ namespace Satrabel.OpenContent.Components
 
                 if (listMode)
                 {
-                    if (!OpenContentUtils.HasEditPermissions(PortalSettings, module, editRole, createdByUserid))
+                    if (!OpenContentUtils.HasEditPermissions(PortalSettings, module.DataModule, editRole, createdByUserid))
                     {
                         return Request.CreateResponse(HttpStatusCode.Unauthorized);
                     }
-                    var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
+                    var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template.Key.TemplateDir);
                     OpenContentInfo content = new OpenContentInfo()
                         {
-                            ModuleId = module.ModuleID,
+                            ModuleId = module.DataModule.ModuleID,
                             Title = ActiveModule.ModuleTitle,
                             Json = req.json.ToString(),
                             JsonAsJToken = req.json,

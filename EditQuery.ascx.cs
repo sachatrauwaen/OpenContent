@@ -37,8 +37,7 @@ namespace Satrabel.OpenContent
         }
         protected void bIndex_Click(object sender, EventArgs e)
         {
-            OpenContentSettings settings = new OpenContentSettings(Settings);
-            LuceneController.Instance.ReIndexModuleData(ModuleId, settings);
+            LuceneController.Instance.ReIndexModuleData(ModuleId, this.OpenContentSettings());
         }
         protected void bIndexAll_Click(object sender, EventArgs e)
         {

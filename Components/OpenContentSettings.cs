@@ -16,10 +16,7 @@ namespace Satrabel.OpenContent.Components
             return settings.IsOtherModule ? settings.ModuleId : defaultModuleId;
         }
 
-        public static bool IsListTemplate(this OpenContentSettings settings)
-        {
-            return settings.Template != null && settings.Template.IsListTemplate;
-        }
+
     }
 
     public class OpenContentSettings

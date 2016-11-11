@@ -412,7 +412,7 @@ namespace Satrabel.OpenContent
             return tabinfo.IsPublishedTab();
         }
 
-        private bool IsTabWithModuleWithSameMainModule(int tabId, int mainmoduleId)
+        private bool IsTabWithModuleWithSameMainModule(int tabId, int datamoduleId)
         {
             //only tabs with oc-module with main-moduleId= CurrentMainModuleId
             var tabinfo = TabController.Instance.GetTab(tabId, ModuleContext.PortalId);
@@ -421,7 +421,7 @@ namespace Satrabel.OpenContent
                 ModuleInfo moduleInfo = item.Value;
                 if (moduleInfo.ModuleDefinition.FriendlyName == AppConfig.OPENCONTENT)
                 {
-                    if (moduleInfo.OpenContentSettings().GetModuleId(moduleInfo.ModuleID) == mainmoduleId)
+                    if (moduleInfo.OpenContentSettings().GetModuleId(moduleInfo.ModuleID) == datamoduleId)
                     {
                         return true;
                     }

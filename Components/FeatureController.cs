@@ -90,7 +90,7 @@ namespace Satrabel.OpenContent.Components
                 return searchDocuments;
             }
 
-            OpenContentSettings settings = new OpenContentSettings(modInfo.ModuleSettings);
+            OpenContentSettings settings = modInfo.OpenContentSettings();
             if (settings.Template == null || settings.Template.Main == null || !settings.Template.Main.DnnSearch)
             {
                 return searchDocuments;

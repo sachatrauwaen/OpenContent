@@ -28,13 +28,11 @@ namespace Satrabel.OpenContent.Components.Render
     public class RenderEngine
     {
         private readonly RenderInfo _renderinfo = new RenderInfo();
-        private readonly OpenContentSettings _settings;
-        private readonly ModuleInfo _module; // active module (not datasource module)
+        private readonly OpenContentModuleInfo _module; // active module (not datasource module)
 
-        public RenderEngine(ModuleInfo module)
+        public RenderEngine(ModuleInfo viewmodule)
         {
-            _module = module;
-            _settings = module.OpenContentSettings();
+            _module = new OpenContentModuleInfo(viewmodule); 
         }
 
         public RenderInfo Info
@@ -49,7 +47,7 @@ namespace Satrabel.OpenContent.Components.Render
         {
             get
             {
-                return _settings;
+                return _module.Settings;
             }
         }
         public string ItemId // For detail view
@@ -68,29 +66,29 @@ namespace Satrabel.OpenContent.Components.Render
         public string LocalResourceFile { get; set; } // Only for Dnn Razor helpers
         public void Render(Page page)
         {
-            _renderinfo.Template = _settings.Template;
-            if (_settings.TabId > 0 && _settings.ModuleId > 0) // other module
+            _renderinfo.Template = _module.Settings.Template;
+            if (_module.Settings.TabId > 0 && _module.Settings.ModuleId > 0) // other module
             {
                 ModuleController mc = new ModuleController();
-                _renderinfo.SetDataSourceModule(_settings.TabId, _settings.ModuleId, mc.GetModule(_renderinfo.ModuleId, _renderinfo.TabId, false), null, "");
+                _renderinfo.SetDataSourceModule(_module.Settings.TabId, _module.Settings.ModuleId, mc.GetModule(_renderinfo.ModuleId, _renderinfo.TabId, false), null, "");
             }
             else // this module
             {
-                _renderinfo.SetDataSourceModule(_settings.TabId, _module.ModuleID, _module, null, "");
+                _renderinfo.SetDataSourceModule(_module.Settings.TabId, _module.ModuleID, _module.ViewModule, null, "");
             }
             //start rendering           
-            if (_settings.Template != null)
+            if (_module.Settings.Template != null)
             {
-                if (!_settings.Template.DataNeeded())
+                if (!_module.Settings.Template.DataNeeded())
                 {
                     // template without schema & options
                     // render the template with no data
-                    _renderinfo.SetData(null, new JObject(), _settings.Data);
+                    _renderinfo.SetData(null, new JObject(), _module.Settings.Data);
                     _renderinfo.OutputString = GenerateOutput(page, _renderinfo.Template.MainTemplateUri(), _renderinfo.DataJson, _renderinfo.SettingsJson, _renderinfo.Template.Main);
                 }
                 else if (_renderinfo.Template.IsListTemplate)
                 {
-                    LogContext.Log(_module.ModuleID, "RequestContext", "QueryParam Id", ItemId);
+                    LogContext.Log(_module.ViewModule.ModuleID, "RequestContext", "QueryParam Id", ItemId);
                     // Multi items template
                     if (string.IsNullOrEmpty(ItemId))
                     {
@@ -99,14 +97,14 @@ namespace Satrabel.OpenContent.Components.Render
                         {
                             // for list templates a main template need to be defined
                             _renderinfo.Files = _renderinfo.Template.Main;
-                            string templateKey = GetDataList(_renderinfo, _settings, _renderinfo.Template.ClientSideData);
+                            string templateKey = GetDataList(_renderinfo, _module.Settings, _renderinfo.Template.ClientSideData);
                             if (!string.IsNullOrEmpty(templateKey) && _renderinfo.Template.Views != null && _renderinfo.Template.Views.ContainsKey(templateKey))
                             {
                                 _renderinfo.Files = _renderinfo.Template.Views[templateKey];
                             }
                             if (!_renderinfo.SettingsMissing)
                             {
-                                _renderinfo.OutputString = GenerateListOutput(page, _settings.Template, _renderinfo.Files, _renderinfo.DataList, _renderinfo.SettingsJson);
+                                _renderinfo.OutputString = GenerateListOutput(page, _module.Settings.Template, _renderinfo.Files, _renderinfo.DataList, _renderinfo.SettingsJson);
                             }
                         }
                     }
@@ -115,12 +113,12 @@ namespace Satrabel.OpenContent.Components.Render
                         // detail template
                         if (_renderinfo.Template.Detail != null)
                         {
-                            GetDetailData(_renderinfo, _settings);
+                            GetDetailData(_renderinfo, _module.Settings);
                         }
                         if (_renderinfo.Template.Detail != null && !_renderinfo.ShowInitControl)
                         {
                             _renderinfo.Files = _renderinfo.Template.Detail;
-                            _renderinfo.OutputString = GenerateOutput(page, _settings.Template, _renderinfo.Template.Detail, _renderinfo.DataJson, _renderinfo.SettingsJson);
+                            _renderinfo.OutputString = GenerateOutput(page, _module.Settings.Template, _renderinfo.Template.Detail, _renderinfo.DataJson, _renderinfo.SettingsJson);
                         }
                         else // if itemid not corresponding to this module, show list template
                         {
@@ -129,14 +127,14 @@ namespace Satrabel.OpenContent.Components.Render
                             {
                                 // for list templates a main template need to be defined
                                 _renderinfo.Files = _renderinfo.Template.Main;
-                                string templateKey = GetDataList(_renderinfo, _settings, _renderinfo.Template.ClientSideData);
+                                string templateKey = GetDataList(_renderinfo, _module.Settings, _renderinfo.Template.ClientSideData);
                                 if (!string.IsNullOrEmpty(templateKey) && _renderinfo.Template.Views != null && _renderinfo.Template.Views.ContainsKey(templateKey))
                                 {
                                     _renderinfo.Files = _renderinfo.Template.Views[templateKey];
                                 }
                                 if (!_renderinfo.ShowInitControl)
                                 {
-                                    _renderinfo.OutputString = GenerateListOutput(page, _settings.Template, _renderinfo.Files, _renderinfo.DataList, _renderinfo.SettingsJson);
+                                    _renderinfo.OutputString = GenerateListOutput(page, _module.Settings.Template, _renderinfo.Files, _renderinfo.DataList, _renderinfo.SettingsJson);
                                 }
                             }
                         }
@@ -145,7 +143,7 @@ namespace Satrabel.OpenContent.Components.Render
                 else
                 {
                     // single item template
-                    GetSingleData(_renderinfo, _settings);
+                    GetSingleData(_renderinfo, _module.Settings);
                     bool settingsNeeded = _renderinfo.Template.SettingsNeeded();
                     if (!_renderinfo.ShowInitControl && (!settingsNeeded || !string.IsNullOrEmpty(_renderinfo.SettingsJson)))
                     {
@@ -169,7 +167,7 @@ namespace Satrabel.OpenContent.Components.Render
                         // for list templates a main template need to be defined
                         _renderinfo.Files = _renderinfo.Template.Main;
                         /*
-                        GetDataList(_renderinfo, _settings, template.ClientSideData);
+                        GetDataList(_renderinfo, _viewmodule.Settings, template.ClientSideData);
                         if (!_renderinfo.SettingsMissing)
                         {
                             _renderinfo.OutputString = GenerateListOutput(_renderinfo.Template.Uri().UrlFolder, template.Main, _renderinfo.DataList, _renderinfo.SettingsJson);
@@ -180,7 +178,7 @@ namespace Satrabel.OpenContent.Components.Render
             }
             else
             {
-                bool demoExist = GetDemoData(_renderinfo, _settings);
+                bool demoExist = GetDemoData(_renderinfo, _module.Settings);
                 bool settingsNeeded = _renderinfo.Template.SettingsNeeded();
 
                 if (demoExist && _renderinfo.DataExist && (!settingsNeeded || !string.IsNullOrEmpty(_renderinfo.SettingsJson)))
@@ -188,7 +186,7 @@ namespace Satrabel.OpenContent.Components.Render
                     _renderinfo.OutputString = GenerateOutput(page, _renderinfo.Template.MainTemplateUri(), _renderinfo.DataJson, _renderinfo.SettingsJson, _renderinfo.Template.Main);
                 }
                 //too many rendering issues 
-                //bool dsDataExist = _datasource.GetOtherModuleDemoData(_info, _info, _settings);
+                //bool dsDataExist = _datasource.GetOtherModuleDemoData(_info, _info, _viewmodule.Settings);
                 //if (dsDataExist)
                 //    _info.OutputString = GenerateOutput(_info.Template.Uri(), _info.DataJson, _info.SettingsJson, null);
             }
@@ -243,7 +241,7 @@ namespace Satrabel.OpenContent.Components.Render
             var dsContext = new DataSourceContext()
             {
                 ModuleId = info.ModuleId,
-                ActiveModuleId = _module.ModuleID,
+                ActiveModuleId = _module.ViewModule.ModuleID,
                 TemplateFolder = settings.TemplateDir.FolderPath,
                 Config = settings.Manifest.DataSourceConfig
             };
@@ -274,7 +272,7 @@ namespace Satrabel.OpenContent.Components.Render
                     {
                         templateKey = GetTemplateKey(indexConfig);
                     }
-                    bool isEditable = _module.CheckIfEditable(portalSettings);//portalSettings.UserMode != PortalSettings.Mode.Edit;
+                    bool isEditable = _module.ViewModule.CheckIfEditable(portalSettings);//portalSettings.UserMode != PortalSettings.Mode.Edit;
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
                     queryBuilder.Build(settings.Query, !isEditable, portalSettings.UserId, DnnLanguageUtils.GetCurrentCultureCode(), portalSettings.UserInfo.Social.Roles, QueryString);
 
@@ -282,11 +280,11 @@ namespace Satrabel.OpenContent.Components.Render
                     if (LogContext.IsLogActive)
                     {
                         //LogContext.Log(_module.ModuleID, "RequestContext", "EditMode", !addWorkFlow);
-                        LogContext.Log(_module.ModuleID, "RequestContext", "IsEditable", isEditable);
-                        LogContext.Log(_module.ModuleID, "RequestContext", "UserRoles", portalSettings.UserInfo.Social.Roles.Select(r => r.RoleName));
-                        LogContext.Log(_module.ModuleID, "RequestContext", "CurrentUserId", portalSettings.UserId);
+                        LogContext.Log(_module.ViewModule.ModuleID, "RequestContext", "IsEditable", isEditable);
+                        LogContext.Log(_module.ViewModule.ModuleID, "RequestContext", "UserRoles", portalSettings.UserInfo.Social.Roles.Select(r => r.RoleName));
+                        LogContext.Log(_module.ViewModule.ModuleID, "RequestContext", "CurrentUserId", portalSettings.UserId);
                         var logKey = "Query";
-                        LogContext.Log(_module.ModuleID, logKey, "select", queryBuilder.Select);
+                        LogContext.Log(_module.ViewModule.ModuleID, logKey, "select", queryBuilder.Select);
                         //LogContext.Log(_module.ModuleID, logKey, "result", resultList);
                     }
                     //Log.Logger.DebugFormat("Query returned [{0}] results.", total);
@@ -295,7 +293,7 @@ namespace Satrabel.OpenContent.Components.Render
                         if (ds.Any(dsContext) && settings.Query.IsEmpty())
                         {
                             //there seems to be data in de database, but we did not find it in Lucene, so probably the data isn't indexed anymore/yet
-                            Components.Lucene.LuceneController.Instance.ReIndexModuleData(_module.ModuleID, settings);
+                            Components.Lucene.LuceneController.Instance.ReIndexModuleData(_module.ViewModule.ModuleID, settings);
                         }
                         //Log.Logger.DebugFormat("Query did not return any results. API request: [{0}], Lucene Filter: [{1}], Lucene Query:[{2}]", settings.Query, queryDef.Filter == null ? "" : queryDef.Filter.ToString(), queryDef.Query == null ? "" : queryDef.Query.ToString());
                         if (ds.Any(dsContext))
@@ -329,7 +327,7 @@ namespace Satrabel.OpenContent.Components.Render
             var dsContext = new DataSourceContext()
             {
                 ModuleId = info.ModuleId,
-                ActiveModuleId = _module.ModuleID,
+                ActiveModuleId = _module.ViewModule.ModuleID,
                 TemplateFolder = settings.TemplateDir.FolderPath,
                 Config = settings.Manifest.DataSourceConfig
             };
@@ -344,7 +342,7 @@ namespace Satrabel.OpenContent.Components.Render
             {
                 //check permissions
                 var portalSettings = PortalSettings.Current;
-                bool isEditable = _module.CheckIfEditable(portalSettings);
+                bool isEditable = _module.ViewModule.CheckIfEditable(portalSettings);
                 if (!isEditable)
                 {
                     var indexConfig = OpenContentUtils.GetIndexConfig(info.Template.Key.TemplateDir);
@@ -366,7 +364,7 @@ namespace Satrabel.OpenContent.Components.Render
             var dsContext = new DataSourceContext()
             {
                 ModuleId = info.ModuleId,
-                ActiveModuleId = _module.ModuleID,
+                ActiveModuleId = _module.ViewModule.ModuleID,
                 TemplateFolder = settings.TemplateDir.FolderPath,
                 Config = settings.Manifest.DataSourceConfig,
                 Single = true
@@ -497,8 +495,7 @@ namespace Satrabel.OpenContent.Components.Render
 
                 if (dataJson != null)
                 {
-                    int mainTabId = _settings.DetailTabId > 0 ? _settings.DetailTabId : _settings.TabId;
-                    ModelFactory mf = new ModelFactory(_renderinfo.Data, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, PortalSettings.Current, mainTabId, _settings.ModuleId);
+                    ModelFactory mf = new ModelFactory(_renderinfo.Data, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, PortalSettings.Current);
                     dynamic model = mf.GetModelAsDynamic();
                     if (!string.IsNullOrEmpty(_renderinfo.Template.Manifest.DetailMetaTitle))
                     {
@@ -538,15 +535,15 @@ namespace Satrabel.OpenContent.Components.Render
                 if (dataJson != null)
                 {
                     ModelFactory mf;
-                    int mainTabId = _settings.DetailTabId > 0 ? _settings.DetailTabId : _settings.TabId;
+
                     if (_renderinfo.Data == null)
                     {
                         // demo data
-                        mf = new ModelFactory(_renderinfo.DataJson, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, ps, mainTabId, _settings.ModuleId);
+                        mf = new ModelFactory(_renderinfo.DataJson, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, ps);
                     }
                     else
                     {
-                        mf = new ModelFactory(_renderinfo.Data, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, ps, mainTabId, _settings.ModuleId);
+                        mf = new ModelFactory(_renderinfo.Data, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, ps);
                     }
                     dynamic model = mf.GetModelAsDynamic();
                     if (LogContext.IsLogActive)
@@ -586,8 +583,7 @@ namespace Satrabel.OpenContent.Components.Render
                 FileUri templateUri = CheckFiles(templateManifest, files);
                 if (dataList != null)
                 {
-                    int mainTabId = _settings.DetailTabId > 0 ? _settings.DetailTabId : _settings.TabId;
-                    ModelFactory mf = new ModelFactory(dataList, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, PortalSettings.Current, mainTabId, _settings.ModuleId);
+                    ModelFactory mf = new ModelFactory(dataList, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, PortalSettings.Current);
                     dynamic model = mf.GetModelAsDynamic();
                     return ExecuteTemplate(page, templateManifest, files, templateUri, model);
                 }

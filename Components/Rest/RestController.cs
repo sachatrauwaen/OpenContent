@@ -30,19 +30,9 @@ namespace Satrabel.OpenContent.Components.Rest
         {
             try
             {
-                //int ModuleId = int.Parse(Request.Headers.GetValues("ModuleId").First());
-                //int TabId = int.Parse(Request.Headers.GetValues("TabId").First());
-                ModuleController mc = new ModuleController();
-                ModuleInfo activeModule = ActiveModule; //mc.GetModule(ModuleId, TabId, false);
-                OpenContentSettings settings = activeModule.OpenContentSettings();
-                ModuleInfo module = activeModule;
-                if (settings.ModuleId > 0)
-                {
-                    //ModuleController mc = new ModuleController();
-                    module = mc.GetModule(settings.ModuleId, settings.TabId, false);
-                }
-                var manifest = settings.Template.Manifest;
-                var templateManifest = settings.Template;
+                OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
+                var manifest =module.Settings.Template.Manifest;
+                var templateManifest = module.Settings.Template;
                 JObject reqOptions = null;
                 //if (!string.IsNullOrEmpty(req.options))
                 //{
@@ -52,10 +42,10 @@ namespace Satrabel.OpenContent.Components.Rest
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 if (listMode)
                 {
-                    var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
+                    var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template.Key.TemplateDir);
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
                     bool isEditable = ActiveModule.CheckIfEditable(PortalSettings);//portalSettings.UserMode != PortalSettings.Mode.Edit;
-                    queryBuilder.Build(settings.Query, !isEditable, UserInfo.UserID, DnnLanguageUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
+                    queryBuilder.Build(module.Settings.Query, !isEditable, UserInfo.UserID, DnnLanguageUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
                     //if (restSelect != null)
                     //{
                     //    RestQueryBuilder.MergeJpListQuery(indexConfig, queryBuilder.Select, restSelect);
@@ -79,16 +69,15 @@ namespace Satrabel.OpenContent.Components.Rest
                         var ds = DataSourceManager.GetDataSource(manifest.DataSource);
                         var dsContext = new DataSourceContext()
                         {
-                            ModuleId = module.ModuleID,
+                            ModuleId = module.DataModule.ModuleID,
                             UserId = UserInfo.UserID,
-                            TemplateFolder = settings.TemplateDir.FolderPath,
+                            TemplateFolder = module.Settings.TemplateDir.FolderPath,
                             Config = manifest.DataSourceConfig,
                             Options = reqOptions
                         };
                         dsItems = ds.GetAll(dsContext, queryBuilder.Select);
                     }
-                    int mainTabId = settings.DetailTabId > 0 ? settings.DetailTabId : settings.TabId;
-                    ModelFactory mf = new ModelFactory(dsItems.Items, activeModule, PortalSettings, mainTabId);
+                    ModelFactory mf = new ModelFactory(dsItems.Items, module, PortalSettings);
                     mf.Options = reqOptions;
                     var model = mf.GetModelAsJson(false);
                     var res = new JObject();
@@ -98,10 +87,10 @@ namespace Satrabel.OpenContent.Components.Rest
                     if (LogContext.IsLogActive)
                     {
                         var logKey = "Query";
-                        LogContext.Log(activeModule.ModuleID, logKey, "select", queryBuilder.Select);
-                        LogContext.Log(activeModule.ModuleID, logKey, "debuginfo", dsItems.DebugInfo);
-                        LogContext.Log(activeModule.ModuleID, logKey, "model", model);
-                        res["meta"]["logs"] = JToken.FromObject(LogContext.Current.ModuleLogs(activeModule.ModuleID));
+                        LogContext.Log(module.ViewModule.ModuleID, logKey, "select", queryBuilder.Select);
+                        LogContext.Log(module.ViewModule.ModuleID, logKey, "debuginfo", dsItems.DebugInfo);
+                        LogContext.Log(module.ViewModule.ModuleID, logKey, "model", model);
+                        res["meta"]["logs"] = JToken.FromObject(LogContext.Current.ModuleLogs(module.ViewModule.ModuleID));
                     }
                     if (model["Items"] is JArray)
                     {
@@ -146,26 +135,15 @@ namespace Satrabel.OpenContent.Components.Rest
                     restSelect.Sort = JsonConvert.DeserializeObject<List<RestSort>>(sort);
                 }
 
-                //int ModuleId = int.Parse(Request.Headers.GetValues("ModuleId").First());
-                //int TabId = int.Parse(Request.Headers.GetValues("TabId").First());
                 ModuleController mc = new ModuleController();
                 ModuleInfo activeModule = ActiveModule; //mc.GetModule(ModuleId, TabId, false);
 
                 OpenContentSettings settings = activeModule.OpenContentSettings();
-                ModuleInfo module = activeModule;
-                if (settings.ModuleId > 0)
-                {
-                    //ModuleController mc = new ModuleController();
-                    module = mc.GetModule(settings.ModuleId, settings.TabId, false);
-                }
+                OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
                 var manifest = settings.Template.Manifest;
                 var templateManifest = settings.Template;
                 JObject reqOptions = null;
-                //if (!string.IsNullOrEmpty(req.options))
-                //{
-                //    reqOptions = JObject.Parse(req.options);
-                //}
-                //string editRole = manifest.GetEditRole();
+
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 if (listMode)
                 {
@@ -189,7 +167,7 @@ namespace Satrabel.OpenContent.Components.Rest
                         var ds = DataSourceManager.GetDataSource(manifest.DataSource);
                         var dsContext = new DataSourceContext()
                         {
-                            ModuleId = module.ModuleID,
+                            ModuleId = module.DataModule.ModuleID,
                             UserId = UserInfo.UserID,
                             TemplateFolder = settings.TemplateDir.FolderPath,
                             Config = manifest.DataSourceConfig,
@@ -197,8 +175,7 @@ namespace Satrabel.OpenContent.Components.Rest
                         };
                         dsItems = ds.GetAll(dsContext, queryBuilder.Select);
                     }
-                    int mainTabId = settings.DetailTabId > 0 ? settings.DetailTabId : settings.TabId;
-                    ModelFactory mf = new ModelFactory(dsItems.Items, activeModule, PortalSettings, mainTabId);
+                    ModelFactory mf = new ModelFactory(dsItems.Items, module, PortalSettings);
                     mf.Options = reqOptions;
                     var model = mf.GetModelAsJson(false);
                     var res = new JObject();
@@ -244,15 +221,10 @@ namespace Satrabel.OpenContent.Components.Rest
         {
             try
             {
-                OpenContentSettings settings = ActiveModule.OpenContentSettings();
-                ModuleInfo module = ActiveModule;
-                if (settings.ModuleId > 0)
-                {
-                    ModuleController mc = new ModuleController();
-                    module = mc.GetModule(settings.ModuleId, settings.TabId, false);
-                }
-                var manifest = settings.Manifest;
-                TemplateManifest templateManifest = settings.Template;
+                OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
+
+                var manifest = module.Settings.Manifest;
+                TemplateManifest templateManifest = module.Settings.Template;
                 if (manifest.AdditionalDataExists(entity))
                 {
                     var dataManifest = manifest.AdditionalData[entity];
@@ -272,7 +244,7 @@ namespace Satrabel.OpenContent.Components.Rest
                         ModuleId = module.ModuleID,
                         TabModuleId = ActiveModule.TabModuleID,
                         UserId = UserInfo.UserID,
-                        TemplateFolder = settings.TemplateDir.FolderPath,
+                        TemplateFolder = module.Settings.TemplateDir.FolderPath,
                         Config = manifest.DataSourceConfig,
                         //Options = reqOptions
                     };
@@ -307,16 +279,11 @@ namespace Satrabel.OpenContent.Components.Rest
             try
             {
                 bool index = false;
-                OpenContentSettings settings = ActiveModule.OpenContentSettings();
-                ModuleInfo module = ActiveModule;
-                if (settings.ModuleId > 0)
-                {
-                    ModuleController mc = new ModuleController();
-                    module = mc.GetModule(settings.ModuleId, settings.TabId, false);
-                }
-                var manifest = settings.Template.Manifest;
-                TemplateManifest templateManifest = settings.Template;
-                index = settings.Template.Manifest.Index;
+                OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
+
+                var manifest = module.Settings.Template.Manifest;
+                TemplateManifest templateManifest = module.Settings.Template;
+                index = module.Settings.Template.Manifest.Index;
                 string editRole = manifest.GetEditRole();
 
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
@@ -325,10 +292,10 @@ namespace Satrabel.OpenContent.Components.Rest
                 var dsContext = new DataSourceContext()
                 {
                     ModuleId = module.ModuleID,
-                    TemplateFolder = settings.TemplateDir.FolderPath,
+                    TemplateFolder = module.Settings.TemplateDir.FolderPath,
                     Index = index,
                     UserId = UserInfo.UserID,
-                    PortalId = module.PortalID,
+                    PortalId = module.DataModule.PortalID,
                     Config = manifest.DataSourceConfig
                 };
                 string itemId = null;
@@ -402,16 +369,11 @@ namespace Satrabel.OpenContent.Components.Rest
             try
             {
                 bool index = false;
-                OpenContentSettings settings = ActiveModule.OpenContentSettings();
-                ModuleInfo module = ActiveModule;
-                if (settings.ModuleId > 0)
-                {
-                    ModuleController mc = new ModuleController();
-                    module = mc.GetModule(settings.ModuleId, settings.TabId, false);
-                }
-                var manifest = settings.Template.Manifest;
-                TemplateManifest templateManifest = settings.Template;
-                index = settings.Template.Manifest.Index;
+                OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
+
+                var manifest = module.Settings.Template.Manifest;
+                TemplateManifest templateManifest = module.Settings.Template;
+                index = module.Settings.Template.Manifest.Index;
                 string editRole = manifest.GetEditRole();
 
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
@@ -420,10 +382,10 @@ namespace Satrabel.OpenContent.Components.Rest
                 var dsContext = new DataSourceContext()
                 {
                     ModuleId = module.ModuleID,
-                    TemplateFolder = settings.TemplateDir.FolderPath,
+                    TemplateFolder = module.Settings.TemplateDir.FolderPath,
                     Index = index,
                     UserId = UserInfo.UserID,
-                    PortalId = module.PortalID,
+                    PortalId = module.DataModule.PortalID,
                     Config = manifest.DataSourceConfig
                 };
                 string itemId = null;
@@ -476,12 +438,8 @@ namespace Satrabel.OpenContent.Components.Rest
             {
                 bool index = false;
                 OpenContentSettings settings = ActiveModule.OpenContentSettings();
-                ModuleInfo module = ActiveModule;
-                if (settings.ModuleId > 0)
-                {
-                    ModuleController mc = new ModuleController();
-                    module = mc.GetModule(settings.ModuleId, settings.TabId, false);
-                }
+                OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
+
                 var manifest = settings.Template.Manifest;
                 TemplateManifest templateManifest = settings.Template;
                 index = settings.Template.Manifest.Index;
@@ -496,7 +454,7 @@ namespace Satrabel.OpenContent.Components.Rest
                     TemplateFolder = settings.TemplateDir.FolderPath,
                     Index = index,
                     UserId = UserInfo.UserID,
-                    PortalId = module.PortalID,
+                    PortalId = module.DataModule.PortalID,
                     Config = manifest.DataSourceConfig
                 };
 
@@ -536,16 +494,10 @@ namespace Satrabel.OpenContent.Components.Rest
             try
             {
                 bool index = false;
-                OpenContentSettings settings = ActiveModule.OpenContentSettings();
-                ModuleInfo module = ActiveModule;
-                if (settings.ModuleId > 0)
-                {
-                    ModuleController mc = new ModuleController();
-                    module = mc.GetModule(settings.ModuleId, settings.TabId, false);
-                }
-                var manifest = settings.Template.Manifest;
-                TemplateManifest templateManifest = settings.Template;
-                index = settings.Template.Manifest.Index;
+                OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
+                var manifest = module.Settings.Template.Manifest;
+                TemplateManifest templateManifest = module.Settings.Template;
+                index = module.Settings.Template.Manifest.Index;
                 string editRole = manifest.GetEditRole();
 
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
@@ -554,10 +506,10 @@ namespace Satrabel.OpenContent.Components.Rest
                 var dsContext = new DataSourceContext()
                 {
                     ModuleId = module.ModuleID,
-                    TemplateFolder = settings.TemplateDir.FolderPath,
+                    TemplateFolder = module.Settings.TemplateDir.FolderPath,
                     Index = index,
                     UserId = UserInfo.UserID,
-                    PortalId = module.PortalID,
+                    PortalId = module.DataModule.PortalID,
                     Config = manifest.DataSourceConfig
                 };
                 string itemId = null;

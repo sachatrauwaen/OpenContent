@@ -30,8 +30,7 @@ namespace Satrabel.OpenContent
             if (settings.TabId > 0 && settings.ModuleId > 0) // other module
             {
                 ModuleController mc = new ModuleController();
-                renderinfo.SetDataSourceModule(settings.TabId, settings.ModuleId,
-                    mc.GetModule(renderinfo.ModuleId, renderinfo.TabId, false), null, "");
+                renderinfo.SetDataSourceModule(settings.TabId, settings.ModuleId, mc.GetModule(renderinfo.ModuleId, renderinfo.TabId, false), null, "");
             }
             else // this module
             {
