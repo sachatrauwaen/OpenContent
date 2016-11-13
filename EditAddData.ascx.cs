@@ -29,9 +29,9 @@ namespace Satrabel.OpenContent
             cmdSave.NavigateUrl = Globals.NavigateURL();
             OpenContentSettings settings = this.OpenContentSettings();
             AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, settings.Template.ManifestFolderUri.FolderPath, Key);
-            alpaca.RegisterAll();
-            string ItemId = null;//Request.QueryString["id"] == null ? -1 : int.Parse(Request.QueryString["id"]);
-            AlpacaContext = new AlpacaContext(PortalId, ModuleId, ItemId, ScopeWrapper.ClientID, hlCancel.ClientID, cmdSave.ClientID, null, null);
+            alpaca.RegisterAll(false,false);
+            string itemId = null;//Request.QueryString["id"] == null ? -1 : int.Parse(Request.QueryString["id"]);
+            AlpacaContext = new AlpacaContext(PortalId, ModuleId, itemId, ScopeWrapper.ClientID, hlCancel.ClientID, cmdSave.ClientID, null, null);
         }
 
         public AlpacaContext AlpacaContext { get; private set; }

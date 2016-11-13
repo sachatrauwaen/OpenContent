@@ -149,7 +149,7 @@ namespace Satrabel.OpenContent.Components.Lucene
 
             if (module.IsListTemplate() && !module.Settings.IsOtherModule)
             {
-                IndexModuleData(lc, module.ModuleID, module.Settings);
+                IndexModuleData(lc, module.ViewModule.ModuleID, module.Settings);
             }
         }
 

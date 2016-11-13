@@ -87,7 +87,7 @@ namespace Satrabel.OpenContent
 
                         //DataCache.ClearCache();
                         module = mc.GetModule(defaultModule.ModuleID, ModuleContext.TabId, true);
-                        _settings = module.OpenContentSettings();
+                        //_settings = module.OpenContentSettings();
                     }
                 }
             }

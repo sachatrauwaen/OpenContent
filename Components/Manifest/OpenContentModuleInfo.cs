@@ -55,7 +55,7 @@ namespace Satrabel.OpenContent.Components
                 return _settings;
             }
         }
-        public int GetDataModuleTabId()
+        public int GetDetailTabId()
         {
             return Settings.DetailTabId > 0 ? Settings.DetailTabId : (Settings.TabId > 0 ? Settings.TabId : ViewModule.TabID);
         }
@@ -64,5 +64,6 @@ namespace Satrabel.OpenContent.Components
         {
             return Settings.Template != null && Settings.Template.IsListTemplate;
         }
+
     }
 }

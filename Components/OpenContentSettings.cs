@@ -7,10 +7,7 @@ namespace Satrabel.OpenContent.Components
 {
     public static class OpenContentSettingsExtentions
     {
-        public static int GetMainTabId(this OpenContentSettings settings, int moduleTabId)
-        {
-            return settings.DetailTabId > 0 ? settings.DetailTabId : (settings.TabId > 0 ? settings.TabId : moduleTabId);
-        }
+        
         public static int GetModuleId(this OpenContentSettings settings, int defaultModuleId)
         {
             return settings.IsOtherModule ? settings.ModuleId : defaultModuleId;

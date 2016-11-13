@@ -145,7 +145,7 @@ namespace Satrabel.OpenContent.Components
                     PortalId = PortalSettings.PortalId,
                     CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                     TabId = ActiveModule.TabID,
-                    ModuleId = module.ModuleID,
+                    ModuleId = module.DataModule.ModuleID,
                     TabModuleId = ActiveModule.TabModuleID,
                     UserId = UserInfo.UserID,
                     TemplateFolder = module.Settings.TemplateDir.FolderPath,
@@ -189,7 +189,7 @@ namespace Satrabel.OpenContent.Components
                     PortalId = PortalSettings.PortalId,
                     CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                     TabId = ActiveModule.TabID,
-                    ModuleId = module.ModuleID,
+                    ModuleId = module.DataModule.ModuleID,
                     TabModuleId = ActiveModule.TabModuleID,
                     UserId = UserInfo.UserID,
                     TemplateFolder = module.Settings.TemplateDir.FolderPath,
@@ -249,9 +249,9 @@ namespace Satrabel.OpenContent.Components
                 var ds = DataSourceManager.GetDataSource(manifest.DataSource);
                 var dsContext = new DataSourceContext()
                 {
-                    PortalId = module.PortalID,
+                    PortalId = module.DataModule.PortalID,
                     CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
-                    ModuleId = module.ModuleID,
+                    ModuleId = module.DataModule.ModuleID,
                     ActiveModuleId = ActiveModule.ModuleID,
                     TemplateFolder = module.Settings.TemplateDir.FolderPath,
                     Config = manifest.DataSourceConfig
@@ -326,7 +326,7 @@ namespace Satrabel.OpenContent.Components
                 {
                     PortalId = module.DataModule.PortalID,
                     CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
-                    ModuleId = module.ModuleID,
+                    ModuleId = module.DataModule.ModuleID,
                     ActiveModuleId = ActiveModule.ModuleID,
                     TemplateFolder = module.Settings.TemplateDir.FolderPath,
                     Index = index,
@@ -406,7 +406,7 @@ namespace Satrabel.OpenContent.Components
                 var ds = DataSourceManager.GetDataSource(manifest.DataSource);
                 var dsContext = new DataSourceContext()
                 {
-                    ModuleId = module.ModuleID,
+                    ModuleId = module.DataModule.ModuleID,
                     ActiveModuleId = ActiveModule.ModuleID,
                     TemplateFolder = module.Settings.TemplateDir.FolderPath,
                     Index = index,
@@ -545,7 +545,7 @@ namespace Satrabel.OpenContent.Components
                     PortalId = PortalSettings.PortalId,
                     CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                     TabId = ActiveModule.TabID,
-                    ModuleId = module.ModuleID,
+                    ModuleId = module.DataModule.ModuleID,
                     TabModuleId = ActiveModule.TabModuleID,
                     UserId = UserInfo.UserID,
                     TemplateFolder = module.Settings.TemplateDir.FolderPath,
@@ -613,9 +613,9 @@ namespace Satrabel.OpenContent.Components
                 var ds = DataSourceManager.GetDataSource(manifest.DataSource);
                 var dsContext = new DataSourceContext()
                 {
-                    PortalId = module.PortalID,
+                    PortalId = module.DataModule.PortalID,
                     CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
-                    ModuleId = module.ModuleID,
+                    ModuleId = module.DataModule.ModuleID,
                     ActiveModuleId = ActiveModule.ModuleID,
                     TemplateFolder = module.Settings.TemplateDir.FolderPath,
                     Config = manifest.DataSourceConfig

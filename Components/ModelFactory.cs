@@ -30,7 +30,7 @@ namespace Satrabel.OpenContent.Components
         private readonly OpenContentModuleInfo _module;
         private readonly PortalSettings _portalSettings;
         private readonly int _portalId;
-        private readonly int _datamoduleTabId;
+        private readonly int _detailTabId;
         private readonly int _datamoduleModuleId;
         private readonly string _cultureCode;
 
@@ -48,7 +48,7 @@ namespace Satrabel.OpenContent.Components
             this._portalId = portalSettings.PortalId;
             this._templateManifest = templateManifest;
             this._datamoduleModuleId = module.DataModule.ModuleID;
-            this._datamoduleTabId = DnnUtils.GetTabByCurrentCulture(this._portalId, module.GetDataModuleTabId(), GetCurrentCultureCode());
+            this._detailTabId = DnnUtils.GetTabByCurrentCulture(this._portalId, module.GetDetailTabId(), GetCurrentCultureCode());
 
         }
         public ModelFactory(IDataItem data, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleInfo module, PortalSettings portalSettings)
@@ -64,7 +64,7 @@ namespace Satrabel.OpenContent.Components
             this._portalId = portalSettings.PortalId;
             this._templateManifest = templateManifest;
             this._datamoduleModuleId = module.DataModule.ModuleID;
-            this._datamoduleTabId = DnnUtils.GetTabByCurrentCulture(this._portalId, module.GetDataModuleTabId(), GetCurrentCultureCode());
+            this._detailTabId = DnnUtils.GetTabByCurrentCulture(this._portalId, module.GetDetailTabId(), GetCurrentCultureCode());
 
         }
         public ModelFactory(IDataItem data, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleInfo module, int portalId, string cultureCode, int mainTabId, int mainModuleId)
@@ -80,7 +80,7 @@ namespace Satrabel.OpenContent.Components
             this._cultureCode = cultureCode;
             this._templateManifest = templateManifest;
             this._datamoduleModuleId = module.DataModule.ModuleID;
-            this._datamoduleTabId = DnnUtils.GetTabByCurrentCulture(this._portalId, module.GetDataModuleTabId(), GetCurrentCultureCode());
+            this._detailTabId = DnnUtils.GetTabByCurrentCulture(this._portalId, module.GetDetailTabId(), GetCurrentCultureCode());
 
         }
 
@@ -97,7 +97,7 @@ namespace Satrabel.OpenContent.Components
             this._portalId = portalSettings.PortalId;
             this._templateManifest = settings.Template;
             this._datamoduleModuleId = module.DataModule.ModuleID;
-            this._datamoduleTabId = DnnUtils.GetTabByCurrentCulture(this._portalId, module.GetDataModuleTabId(), GetCurrentCultureCode());
+            this._detailTabId = DnnUtils.GetTabByCurrentCulture(this._portalId, module.GetDetailTabId(), GetCurrentCultureCode());
 
         }
 
@@ -113,7 +113,7 @@ namespace Satrabel.OpenContent.Components
             this._portalId = portalSettings.PortalId;
             this._templateManifest = templateManifest;
             this._datamoduleModuleId = module.DataModule.ModuleID;
-            this._datamoduleTabId = DnnUtils.GetTabByCurrentCulture(this._portalId, module.GetDataModuleTabId(), GetCurrentCultureCode());
+            this._detailTabId = DnnUtils.GetTabByCurrentCulture(this._portalId, module.GetDetailTabId(), GetCurrentCultureCode());
         }
 
 
@@ -129,7 +129,7 @@ namespace Satrabel.OpenContent.Components
             this._cultureCode = cultureCode;
             this._templateManifest = templateManifest;
             this._datamoduleModuleId = module.DataModule.ModuleID;
-            this._datamoduleTabId = DnnUtils.GetTabByCurrentCulture(this._portalId, module.GetDataModuleTabId(), GetCurrentCultureCode());
+            this._detailTabId = DnnUtils.GetTabByCurrentCulture(this._portalId, module.GetDetailTabId(), GetCurrentCultureCode());
         }
 
         public dynamic GetModelAsDynamic(bool onlyData = false)
@@ -191,7 +191,7 @@ namespace Satrabel.OpenContent.Components
             {
                 EnhanceModel(model, onlyData);
                 model["Context"]["RssUrl"] = _portalSettings.PortalAlias.HTTPAlias +
-                       "/DesktopModules/OpenContent/API/RssAPI/GetFeed?moduleId=" + _module.ModuleID + "&tabId=" + _datamoduleTabId;
+                       "/DesktopModules/OpenContent/API/RssAPI/GetFeed?moduleId=" + _module.ViewModule.ModuleID + "&tabId=" + _detailTabId;
 
             }
             JArray items = new JArray(); ;
@@ -249,9 +249,9 @@ namespace Satrabel.OpenContent.Components
 
                         var editStatus = !_manifest.DisableEdit && GetEditStatus(item.CreatedByUserId);
                         context["IsEditable"] = editStatus;
-                        context["EditUrl"] = editStatus ? DnnUrlUtils.EditUrl("id", item.Id, _module.ModuleID, _portalSettings) : "";
-                        context["DetailUrl"] = Globals.NavigateURL(_datamoduleTabId, false, _portalSettings, "", GetCurrentCultureCode(), url.CleanupUrl(), "id=" + item.Id);
-                        context["MainUrl"] = Globals.NavigateURL(_datamoduleTabId, false, _portalSettings, "", GetCurrentCultureCode(), "");
+                        context["EditUrl"] = editStatus ? DnnUrlUtils.EditUrl("id", item.Id, _module.ViewModule.ModuleID, _portalSettings) : "";
+                        context["DetailUrl"] = Globals.NavigateURL(_detailTabId, false, _portalSettings, "", GetCurrentCultureCode(), url.CleanupUrl(), "id=" + item.Id);
+                        context["MainUrl"] = Globals.NavigateURL(_detailTabId, false, _portalSettings, "", GetCurrentCultureCode(), "");
                     }
                     items.Add(dyn);
                 }
@@ -336,7 +336,7 @@ namespace Satrabel.OpenContent.Components
                     {
                         PortalId = _portalId,
                         CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
-                        TabId = _module.TabID,
+                        TabId = _module.DataModule.TabID,
                         ModuleId = _datamoduleModuleId,
                         TabModuleId = _module.TabModuleId,
                         Config = _manifest.DataSourceConfig,
@@ -397,14 +397,14 @@ namespace Satrabel.OpenContent.Components
                 // include CONTEXT in the Model
                 JObject context = new JObject();
                 model["Context"] = context;
-                context["ModuleId"] = _module.ModuleID;
+                context["ModuleId"] = _module.ViewModule.ModuleID;
                 context["GoogleApiKey"] = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetGoogleApiKey();
                 context["ModuleTitle"] = _module.ViewModule.ModuleTitle;
-                context["AddUrl"] = DnnUrlUtils.EditUrl(_module.ModuleID, _portalSettings);
+                context["AddUrl"] = DnnUrlUtils.EditUrl(_module.ViewModule.ModuleID, _portalSettings);
                 var editStatus = !_manifest.DisableEdit && GetEditStatus(-1);
                 context["IsEditable"] = editStatus;
                 context["PortalId"] = _portalId;
-                context["MainUrl"] = Globals.NavigateURL(_datamoduleTabId, false, _portalSettings, "", GetCurrentCultureCode());
+                context["MainUrl"] = Globals.NavigateURL(_detailTabId, false, _portalSettings, "", GetCurrentCultureCode());
                 if (_data != null)
                 {
                     string url = "";
@@ -415,9 +415,9 @@ namespace Satrabel.OpenContent.Components
                         url = hbEngine.Execute(_manifest.DetailUrl, dynForHBS);
                         url = HttpUtility.HtmlDecode(url);
                     }
-                    context["DetailUrl"] = Globals.NavigateURL(_datamoduleTabId, false, _portalSettings, "", GetCurrentCultureCode(), url.CleanupUrl(), "id=" + _data.Id);
+                    context["DetailUrl"] = Globals.NavigateURL(_detailTabId, false, _portalSettings, "", GetCurrentCultureCode(), url.CleanupUrl(), "id=" + _data.Id);
                     context["Id"] = _data.Id;
-                    context["EditUrl"] = editStatus ? DnnUrlUtils.EditUrl("id", _data.Id, _module.ModuleID, _portalSettings) : "";
+                    context["EditUrl"] = editStatus ? DnnUrlUtils.EditUrl("id", _data.Id, _module.ViewModule.ModuleID, _portalSettings) : "";
                 }
             }
         }

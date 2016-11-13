@@ -74,7 +74,7 @@ namespace Satrabel.OpenContent.Components.Render
             }
             else // this module
             {
-                _renderinfo.SetDataSourceModule(_module.Settings.TabId, _module.ModuleID, _module.ViewModule, null, "");
+                _renderinfo.SetDataSourceModule(_module.DataModule.TabID, _module.DataModule.ModuleID, _module.ViewModule, null, "");
             }
             //start rendering           
             if (_module.Settings.Template != null)
@@ -240,7 +240,7 @@ namespace Satrabel.OpenContent.Components.Render
             var ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
             var dsContext = new DataSourceContext()
             {
-                PortalId = _module.PortalID,
+                PortalId = _module.DataModule.PortalID,
                 CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                 ModuleId = info.ModuleId,
                 ActiveModuleId = _module.ViewModule.ModuleID,
@@ -473,8 +473,8 @@ namespace Satrabel.OpenContent.Components.Render
             if (LogContext.IsLogActive)
             {
                 var logKey = "Render template";
-                LogContext.Log(_module.ModuleID, logKey, "template", templateUri.FilePath);
-                LogContext.Log(_module.ModuleID, logKey, "model", model);
+                LogContext.Log(_module.ViewModule.ModuleID, logKey, "template", templateUri.FilePath);
+                LogContext.Log(_module.ViewModule.ModuleID, logKey, "model", model);
             }
             if (templateUri.Extension != ".hbs")
             {
@@ -555,8 +555,8 @@ namespace Satrabel.OpenContent.Components.Render
                     if (LogContext.IsLogActive)
                     {
                         var logKey = "Render single item template";
-                        LogContext.Log(_module.ModuleID, logKey, "template", template.FilePath);
-                        LogContext.Log(_module.ModuleID, logKey, "model", model);
+                        LogContext.Log(_module.ViewModule.ModuleID, logKey, "template", template.FilePath);
+                        LogContext.Log(_module.ViewModule.ModuleID, logKey, "model", model);
                     }
 
                     if (template.Extension != ".hbs")

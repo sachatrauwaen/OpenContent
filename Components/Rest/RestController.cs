@@ -243,10 +243,10 @@ namespace Satrabel.OpenContent.Components.Rest
                     var ds = DataSourceManager.GetDataSource(manifest.DataSource);
                     var dsContext = new DataSourceContext()
                     {
-                        PortalId = module.PortalID,
+                        PortalId = module.DataModule.PortalID,
                         CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                         TabId = ActiveModule.TabID,
-                        ModuleId = module.ModuleID,
+                        ModuleId = module.DataModule.ModuleID,
                         TabModuleId = ActiveModule.TabModuleID,
                         UserId = UserInfo.UserID,
                         TemplateFolder = module.Settings.TemplateDir.FolderPath,
@@ -296,7 +296,7 @@ namespace Satrabel.OpenContent.Components.Rest
                 var ds = DataSourceManager.GetDataSource(manifest.DataSource);
                 var dsContext = new DataSourceContext()
                 {
-                    ModuleId = module.ModuleID,
+                    ModuleId = module.DataModule.ModuleID,
                     TemplateFolder = module.Settings.TemplateDir.FolderPath,
                     Index = index,
                     UserId = UserInfo.UserID,
@@ -387,7 +387,7 @@ namespace Satrabel.OpenContent.Components.Rest
                 var ds = DataSourceManager.GetDataSource(manifest.DataSource);
                 var dsContext = new DataSourceContext()
                 {
-                    ModuleId = module.ModuleID,
+                    ModuleId = module.DataModule.ModuleID,
                     TemplateFolder = module.Settings.TemplateDir.FolderPath,
                     Index = index,
                     UserId = UserInfo.UserID,
@@ -457,7 +457,7 @@ namespace Satrabel.OpenContent.Components.Rest
                 var ds = DataSourceManager.GetDataSource(manifest.DataSource);
                 var dsContext = new DataSourceContext()
                 {
-                    ModuleId = module.ModuleID,
+                    ModuleId = module.DataModule.ModuleID,
                     TemplateFolder = settings.TemplateDir.FolderPath,
                     Index = index,
                     UserId = UserInfo.UserID,
@@ -513,7 +513,7 @@ namespace Satrabel.OpenContent.Components.Rest
                 var ds = DataSourceManager.GetDataSource(manifest.DataSource);
                 var dsContext = new DataSourceContext()
                 {
-                    ModuleId = module.ModuleID,
+                    ModuleId = module.DataModule.ModuleID,
                     TemplateFolder = module.Settings.TemplateDir.FolderPath,
                     Index = index,
                     UserId = UserInfo.UserID,

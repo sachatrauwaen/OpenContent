@@ -17,6 +17,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
             Dictionary<string, Locale> dicLocales = LocaleController.Instance.GetLocales(portalId);
             List<OpenContentUrlRule> rules = new List<OpenContentUrlRule>();
             var modules = DnnUtils.GetDnnOpenContentModules(portalId);
+
             foreach (var module in modules)
             {
                 try
@@ -79,7 +80,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                                     var rule = new OpenContentUrlRule
                                     {
                                         CultureCode = ruleCultureCode,
-                                        TabId = mainTabId,
+                                        TabId = module.GetDetailTabId(),
                                         Parameters = "id=" + id,
                                         Url = url
                                     };

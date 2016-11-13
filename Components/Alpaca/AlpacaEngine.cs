@@ -47,12 +47,12 @@ namespace Satrabel.OpenContent.Components.Alpaca
             Prefix = filePrefix;
         }
 
-        public void RegisterAll(bool bootstrap = false, bool loadBootstrap = false)
+        public void RegisterAll(bool bootstrapLayoutEnabled, bool loadBootstrap)
         {
-            RegisterAlpaca(bootstrap, loadBootstrap);
+            RegisterAlpaca(bootstrapLayoutEnabled, loadBootstrap);
             RegisterTemplates();
-            RegisterScripts(bootstrap);
-            RegisterFields(bootstrap);
+            RegisterScripts(bootstrapLayoutEnabled);
+            RegisterFields(bootstrapLayoutEnabled);
         }
         public void RegisterAll(bool bootstrap) // for openform
         {
@@ -133,7 +133,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
             if (allFields || fieldTypes.Contains("address"))
             {
                 string apikey = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetGoogleApiKey();
-                ClientResourceManager.RegisterScript(Page, "//maps.googleapis.com/maps/api/js?v=3.exp&libraries=places"+(string.IsNullOrEmpty(apikey) ? "":"&key="+apikey), FileOrder.Js.DefaultPriority);
+                ClientResourceManager.RegisterScript(Page, "//maps.googleapis.com/maps/api/js?v=3.exp&libraries=places" + (string.IsNullOrEmpty(apikey) ? "" : "&key=" + apikey), FileOrder.Js.DefaultPriority);
             }
             if (allFields || fieldTypes.Contains("imagecropper") || fieldTypes.Contains("imagecrop") || fieldTypes.Contains("imagecrop2"))
             {
