@@ -49,9 +49,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ref\dnn740\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="OpenContent">
-      <HintPath>..\..\..\bin\OpenContent.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
@@ -70,6 +67,15 @@
   <ItemGroup>
     <Compile Include="HandlebarsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OpenContent\OpenContent.csproj">
+      <Project>{7d61a32c-0f21-453f-a981-bd8e5a3a5304}</Project>
+      <Name>OpenContent</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
