@@ -44,3 +44,4 @@ ResourcesZip/
 *.zip
 *.log
 Templates/Develop/
+bin/

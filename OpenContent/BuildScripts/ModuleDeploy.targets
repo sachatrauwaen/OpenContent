@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="windows-1252"?>
+
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <WebsitePath>$(MSBuildProjectDirectory)\..\Website</WebsitePath>
+  </PropertyGroup>
+
+  <Target Name="DeployModule" Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    
+	<!-- Copy files into Website's bin folder -->
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\bin\Debug\OpenContent.dll" DestinationFolder="$(WebsitePath)\bin\" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\bin\Debug\OpenContent.pdb" DestinationFolder="$(WebsitePath)\bin\" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\bin\Debug\Handlebars.dll" DestinationFolder="$(WebsitePath)\bin\" />
+	
+	<!-- Copy files into Website's module folder -->
+    <ItemGroup>
+      <DeployInclude Include="**\*.ascx" Exclude="packages\**" />
+      <DeployInclude Include="**\*.asmx" Exclude="packages\**" />
+      <DeployInclude Include="**\*.css" Exclude="packages\**" />
+      <DeployInclude Include="**\*.html" Exclude="packages\**" />
+      <DeployInclude Include="**\*.htm" Exclude="packages\**" />
+      <DeployInclude Include="**\*.resx" Exclude="packages\**" />
+      <DeployInclude Include="**\*.aspx" Exclude="packages\**" />
+      <DeployInclude Include="**\*.js" Exclude="packages\**;**\_*.js" />
+      <DeployInclude Include="**\images\**" Exclude="packages\**" />
+      <DeployInclude Include="**\web.config" Exclude="packages\**" />
+      <DeployInclude Include="**\css\**" Exclude="packages\**" />
+      <DeployInclude Include="**\fonts\**" Exclude="packages\**" />
+    </ItemGroup>	
+	<Copy SourceFiles="@(DeployInclude)" DestinationFolder="$(WebsitePath)\DesktopModules\OpenContent\%(RecursiveDir)" />
+    
+  </Target>
+</Project>
