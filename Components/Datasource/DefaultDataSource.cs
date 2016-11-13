@@ -72,6 +72,6 @@ namespace Satrabel.OpenContent.Components.Datasource
         }
 
         public abstract string Name { get; }
-        
+
     }
 }
