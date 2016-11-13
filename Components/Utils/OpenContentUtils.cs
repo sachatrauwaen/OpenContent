@@ -22,6 +22,7 @@ using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.Lucene.Index;
 using Satrabel.OpenContent.Components.TemplateHelpers;
 using Newtonsoft.Json.Linq;
+using Satrabel.OpenContent.Components.Datasource;
 
 
 namespace Satrabel.OpenContent.Components
@@ -417,6 +418,25 @@ namespace Satrabel.OpenContent.Components
                 result = false;
             }
             return result;
+        }
+
+        public static DataSourceContext CreateDefaultDataContext(this OpenContentModuleInfo module, out IDataSource ds)
+        {
+            var manifest = module.Settings.Manifest;
+            List<LookupResultDTO> res = new List<LookupResultDTO>();
+
+            ds = DataSourceManager.GetDataSource(manifest.DataSource);
+            var dsContext = new DataSourceContext
+            {
+                PortalId = module.ViewModule.PortalID,
+                //CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
+                TabId = module.DataModule.TabID,
+                ModuleId = module.DataModule.ModuleID,
+                ActiveModuleId = module.ViewModule.ModuleID,
+                TemplateFolder = module.Settings.TemplateDir.FolderPath,
+                Config = manifest.DataSourceConfig,
+            };
+            return dsContext;
         }
 
         public static string ReverseMapPath(string path)
