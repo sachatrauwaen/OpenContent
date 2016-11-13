@@ -15,8 +15,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
         public static List<OpenContentUrlRule> GetRules(int portalId)
         {
             Dictionary<string, Locale> dicLocales = LocaleController.Instance.GetLocales(portalId);
-            List<OpenContentUrlRule> Rules = new List<OpenContentUrlRule>();
-            OpenContentController occ = new OpenContentController();
+            List<OpenContentUrlRule> rules = new List<OpenContentUrlRule>();
             ModuleController mc = new ModuleController();
             ArrayList modules = mc.GetModulesByDefinition(portalId, AppConfig.OPENCONTENT);
             //foreach (ModuleInfo module in modules.OfType<ModuleInfo>().GroupBy(m => m.ModuleID).Select(g => g.First())){                
@@ -88,7 +87,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                                         Parameters = "id=" + id,
                                         Url = url
                                     };
-                                    var reducedRules = Rules.Where(r => r.CultureCode == rule.CultureCode && r.TabId == rule.TabId);
+                                    var reducedRules = rules.Where(r => r.CultureCode == rule.CultureCode && r.TabId == rule.TabId);
                                     bool ruleExist = reducedRules.Any(r => r.Parameters == rule.Parameters);
                                     if (!ruleExist)
                                     {
@@ -96,7 +95,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                                         {
                                             rule.Url = id + "-" + url;
                                         }
-                                        Rules.Add(rule);
+                                        rules.Add(rule);
                                     }
                                 }
                             }
@@ -108,7 +107,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                     Log.Logger.Error("Failed to generate url for opencontent module " + module.ModuleID, ex);
                 }
             }
-            return Rules;
+            return rules;
         }
     }
 }
