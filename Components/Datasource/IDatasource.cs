@@ -71,6 +71,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         /// <param name="schema">Must return schema information</param>
         /// <param name="options">Must return options information</param>
         /// <param name="view">Must return view information</param>
+        /// <param name="key"></param>
         /// <returns>Alpaca json object { schema: ..., options : ..., view: ...}  </returns>
         JObject GetDataAlpaca(DataSourceContext context, bool schema, bool options, bool view, string key);
 

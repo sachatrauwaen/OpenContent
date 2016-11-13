@@ -140,13 +140,14 @@ namespace Satrabel.OpenContent.Components
             return JsonUtils.JsonToDynamic(model.ToString());
         }
 
-        /*
-         * For Url Rewriter
-         */
+        /// <summary>
+        /// Gets the model as dynamic list, used by Url Rewriter
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<dynamic> GetModelAsDynamicList()
         {
             var completeModel = new JObject();
-            CompleteModel(completeModel, true);
+            EnhanceModel(completeModel, true);
             if (_dataList != null)
             {
                 foreach (var item in _dataList)
@@ -188,9 +189,10 @@ namespace Satrabel.OpenContent.Components
             JObject model = new JObject();
             if (!onlyData)
             {
-                CompleteModel(model, onlyData);
+                EnhanceModel(model, onlyData);
                 model["Context"]["RssUrl"] = _portalSettings.PortalAlias.HTTPAlias +
                        "/DesktopModules/OpenContent/API/RssAPI/GetFeed?moduleId=" + _module.ModuleID + "&tabId=" + _datamoduleTabId;
+
             }
             JArray items = new JArray(); ;
             model["Items"] = items;
@@ -264,24 +266,30 @@ namespace Satrabel.OpenContent.Components
             {
                 JsonUtils.SimplifyJson(model, GetCurrentCultureCode());
             }
-            var completeModel = new JObject();
-            CompleteModel(completeModel, onlyData);
-            if (_manifest.AdditionalDataExists() && completeModel["AdditionalData"] != null && completeModel["Options"] != null)
+
+            var enhancedModel = new JObject();
+            EnhanceModel(enhancedModel, onlyData);
+            if (_manifest.AdditionalDataExists() && enhancedModel["AdditionalData"] != null && enhancedModel["Options"] != null)
+
             {
-                JsonUtils.LookupJson(model, completeModel["AdditionalData"] as JObject, completeModel["Options"] as JObject);
+                JsonUtils.LookupJson(model, enhancedModel["AdditionalData"] as JObject, enhancedModel["Options"] as JObject);
             }
-            JsonUtils.Merge(model, completeModel);
+            JsonUtils.Merge(model, enhancedModel);
             return model;
         }
 
-        private void CompleteModel(JObject model, bool onlyData)
+        private void EnhanceModel(JObject model, bool onlyData)
         {
+            if (!onlyData && _templateFiles != null && _templateFiles.SchemaInTemplate)
+            // include SCHEMA info in the Model
             if (!onlyData && _templateFiles != null && _templateFiles.SchemaInTemplate)
             {
                 // schema
                 string schemaFilename = _physicalTemplateFolder + "schema.json";
                 model["Schema"] = JsonUtils.GetJsonFromFile(schemaFilename);
             }
+
+            // include OPTIONS info in the Model
             if (_templateFiles != null && _templateFiles.OptionsInTemplate)
             {
                 // options
@@ -316,7 +324,7 @@ namespace Satrabel.OpenContent.Components
                 }
             }
 
-            // additional data
+                        // include additional data in the Model
             if (_templateFiles != null && _templateFiles.AdditionalDataInTemplate && _manifest.AdditionalDataExists())
             {
                 var additionalData = model["AdditionalData"] = new JObject();
@@ -327,6 +335,7 @@ namespace Satrabel.OpenContent.Components
                     var dsContext = new DataSourceContext()
                     {
                         PortalId = _portalId,
+                        CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                         TabId = _module.TabID,
                         ModuleId = _datamoduleModuleId,
                         TabModuleId = _module.TabModuleId,
@@ -346,7 +355,7 @@ namespace Satrabel.OpenContent.Components
                 }
             }
 
-            // settings
+            // include settings in the Model
             if (!onlyData && _templateManifest.SettingsNeeded() && !string.IsNullOrEmpty(_settingsJson))
             {
                 try
@@ -364,7 +373,7 @@ namespace Satrabel.OpenContent.Components
                 }
             }
 
-            // static localization
+            // include static localization in the Model
             if (!onlyData)
             {
                 JToken localizationJson = null;
@@ -385,7 +394,7 @@ namespace Satrabel.OpenContent.Components
 
             if (!onlyData)
             {
-                // context
+                // include CONTEXT in the Model
                 JObject context = new JObject();
                 model["Context"] = context;
                 context["ModuleId"] = _module.ModuleID;

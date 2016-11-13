@@ -83,7 +83,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         public override JObject GetAlpaca(DataSourceContext context, bool schema, bool options, bool view)
         {
             var fb = new FormBuilder(new FolderUri(context.TemplateFolder));
-            return fb.BuildForm();
+            return fb.BuildForm("",context.CurrentCultureCode);
         }
 
         public override void Add(DataSourceContext context, Newtonsoft.Json.Linq.JToken data)

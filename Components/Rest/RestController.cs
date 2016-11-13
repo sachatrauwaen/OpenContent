@@ -69,6 +69,8 @@ namespace Satrabel.OpenContent.Components.Rest
                         var ds = DataSourceManager.GetDataSource(manifest.DataSource);
                         var dsContext = new DataSourceContext()
                         {
+                            PortalId = module.DataModule.PortalID,
+                            CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                             ModuleId = module.DataModule.ModuleID,
                             UserId = UserInfo.UserID,
                             TemplateFolder = module.Settings.TemplateDir.FolderPath,
@@ -167,6 +169,8 @@ namespace Satrabel.OpenContent.Components.Rest
                         var ds = DataSourceManager.GetDataSource(manifest.DataSource);
                         var dsContext = new DataSourceContext()
                         {
+                            PortalId = module.DataModule.PortalID,
+                            CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                             ModuleId = module.DataModule.ModuleID,
                             UserId = UserInfo.UserID,
                             TemplateFolder = settings.TemplateDir.FolderPath,
@@ -239,7 +243,8 @@ namespace Satrabel.OpenContent.Components.Rest
                     var ds = DataSourceManager.GetDataSource(manifest.DataSource);
                     var dsContext = new DataSourceContext()
                     {
-                        PortalId = PortalSettings.PortalId,
+                        PortalId = module.PortalID,
+                        CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                         TabId = ActiveModule.TabID,
                         ModuleId = module.ModuleID,
                         TabModuleId = ActiveModule.TabModuleID,
@@ -296,6 +301,7 @@ namespace Satrabel.OpenContent.Components.Rest
                     Index = index,
                     UserId = UserInfo.UserID,
                     PortalId = module.DataModule.PortalID,
+                    CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                     Config = manifest.DataSourceConfig
                 };
                 string itemId = null;
@@ -386,6 +392,7 @@ namespace Satrabel.OpenContent.Components.Rest
                     Index = index,
                     UserId = UserInfo.UserID,
                     PortalId = module.DataModule.PortalID,
+                    CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                     Config = manifest.DataSourceConfig
                 };
                 string itemId = null;
@@ -455,6 +462,7 @@ namespace Satrabel.OpenContent.Components.Rest
                     Index = index,
                     UserId = UserInfo.UserID,
                     PortalId = module.DataModule.PortalID,
+                    CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                     Config = manifest.DataSourceConfig
                 };
 
@@ -510,6 +518,7 @@ namespace Satrabel.OpenContent.Components.Rest
                     Index = index,
                     UserId = UserInfo.UserID,
                     PortalId = module.DataModule.PortalID,
+                    CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                     Config = manifest.DataSourceConfig
                 };
                 string itemId = null;

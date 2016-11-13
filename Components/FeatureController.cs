@@ -190,12 +190,12 @@ namespace Satrabel.OpenContent.Components
             };
         }
 
-        protected static string JsonToSearchableString(string json)
-        {
-            dynamic data = JToken.Parse(json);
-            string result = JsonToSearchableString(data);
-            return result;
-        }
+        //protected static string JsonToSearchableString(string json)
+        //{
+        //    dynamic data = JToken.Parse(json);
+        //    string result = JsonToSearchableString(data);
+        //    return result;
+        //}
 
         private static string JsonToSearchableString(JToken data)
         {

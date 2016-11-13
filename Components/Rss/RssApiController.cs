@@ -56,6 +56,8 @@ namespace Satrabel.OpenContent.Components.Rss
                     ModuleId = module.DataModule.ModuleID,
                     UserId = UserInfo.UserID,
                     TemplateFolder = module.Settings.TemplateDir.FolderPath,
+                    PortalId = module.DataModule.PortalID,
+                    CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                     Config = manifest.DataSourceConfig
                 };
                 var dsItems = ds.GetAll(dsContext, queryBuilder.Select);
