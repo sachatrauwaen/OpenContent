@@ -9,6 +9,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         public string TemplateFolder { get; set; }
         public int PortalId { get; set; }
         public int UserId { get; set; } // Only Used for Add and Update commands
+        public string CurrentCultureCode { get; set; }
         public bool Index { get; set; }
         public JObject Config { get; set; }
 

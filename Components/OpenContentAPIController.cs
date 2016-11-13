@@ -153,6 +153,7 @@ namespace Satrabel.OpenContent.Components
                 var dsContext = new DataSourceContext()
                 {
                     PortalId = PortalSettings.PortalId,
+                    CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                     TabId = ActiveModule.TabID,
                     ModuleId = module.ModuleID,
                     TabModuleId = ActiveModule.TabModuleID,
@@ -202,6 +203,7 @@ namespace Satrabel.OpenContent.Components
                 var dsContext = new DataSourceContext()
                 {
                     PortalId = PortalSettings.PortalId,
+                    CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                     TabId = ActiveModule.TabID,
                     ModuleId = module.ModuleID,
                     TabModuleId = ActiveModule.TabModuleID,
@@ -309,7 +311,7 @@ namespace Satrabel.OpenContent.Components
                 var templateUri = new FileUri(template);
                 string key = templateUri.FileNameWithoutExtension;
                 var fb = new FormBuilder(templateUri);
-                JObject json = fb.BuildForm(key);
+                JObject json = fb.BuildForm(key, DnnLanguageUtils.GetCurrentCultureCode());
 
                 var dataJson = data.ToJObject("Raw settings json");
                 if (dataJson != null)
@@ -354,6 +356,7 @@ namespace Satrabel.OpenContent.Components
                     Index = index,
                     UserId = UserInfo.UserID,
                     PortalId = module.PortalID,
+                    CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                     Config = manifest.DataSourceConfig
                 };
                 IDataItem dsItem = null;
@@ -441,6 +444,7 @@ namespace Satrabel.OpenContent.Components
                     Index = index,
                     UserId = UserInfo.UserID,
                     PortalId = module.PortalID,
+                    CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                     Config = manifest.DataSourceConfig
                 };
                 IDataItem content = null;
@@ -577,6 +581,7 @@ namespace Satrabel.OpenContent.Components
                 var dsContext = new DataSourceContext()
                 {
                     PortalId = PortalSettings.PortalId,
+                    CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                     TabId = ActiveModule.TabID,
                     ModuleId = module.ModuleID,
                     TabModuleId = ActiveModule.TabModuleID,
@@ -759,7 +764,7 @@ namespace Satrabel.OpenContent.Components
             {
                 OpenContentSettings settings = ActiveModule.OpenContentSettings();
                 var fb = new FormBuilder(settings.TemplateDir);
-                JObject json = fb.BuildForm(key);
+                JObject json = fb.BuildForm(key, DnnLanguageUtils.GetCurrentCultureCode());
                 var dataJson = data.ToJObject("Raw settings json");
                 if (dataJson != null)
                     json["data"] = dataJson;

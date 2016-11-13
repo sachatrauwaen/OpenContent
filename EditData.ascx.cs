@@ -202,6 +202,7 @@ namespace Satrabel.OpenContent
                         var dsContext = new DataSourceContext()
                         {
                             PortalId = PortalSettings.PortalId,
+                            CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                             TabId = TabId,
                             ModuleId = ModId,
                             TabModuleId = this.TabModuleId,
@@ -266,6 +267,7 @@ namespace Satrabel.OpenContent
             var dsContext = new DataSourceContext()
             {
                 PortalId = PortalSettings.PortalId,
+                CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                 TabId = TabId,
                 ModuleId = ModId,
                 TabModuleId = this.TabModuleId,

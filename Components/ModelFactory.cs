@@ -333,6 +333,7 @@ namespace Satrabel.OpenContent.Components
                     var dsContext = new DataSourceContext()
                     {
                         PortalId = PortalId,
+                        CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                         TabId = Module.TabID,
                         ModuleId = MainModuleId,
                         TabModuleId = Module.TabModuleID,
