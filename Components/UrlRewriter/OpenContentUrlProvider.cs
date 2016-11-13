@@ -33,6 +33,8 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                         {
                             ModuleId = mainModuleId,
                             TemplateFolder = settings.TemplateDir.FolderPath,
+                            PortalId = module.PortalID,
+                            //CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),   ==> todo: gives errors as PortalSettings is not available in context of scheduler
                             Config = settings.Manifest.DataSourceConfig,
                             Agent = "OpenContentUrlProvider.GetRules()"
                         };

@@ -70,6 +70,8 @@ namespace Satrabel.OpenContent
                 ModuleId = ModId,
                 ActiveModuleId = ModuleContext.ModuleId,
                 TemplateFolder = settings.TemplateDir.FolderPath,
+                PortalId = ModuleContext.PortalId,
+                CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                 Single = true
             };
             var dsItem = ds.Get(dsContext, null);
@@ -116,6 +118,8 @@ namespace Satrabel.OpenContent
                             ModuleId = ModId,
                             ActiveModuleId = ModuleContext.ModuleId,
                             TemplateFolder = settings.TemplateDir.FolderPath,
+                            PortalId = ModuleContext.PortalId,
+                            CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                             Config = settings.Manifest.DataSourceConfig
                         };
                         if (template != null && template.IsListTemplate)
@@ -320,6 +324,8 @@ namespace Satrabel.OpenContent
                 TemplateFolder = settings.TemplateDir.FolderPath,
                 Index = index,
                 UserId = UserInfo.UserID,
+                PortalId = ModuleContext.PortalId,
+                CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                 Config = settings.Manifest.DataSourceConfig
             };
             if (template != null && template.IsListTemplate)

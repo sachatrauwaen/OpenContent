@@ -67,6 +67,8 @@ namespace Satrabel.OpenContent.Components
                 var ds = DataSourceManager.GetDataSource(manifest.DataSource);
                 var dsContext = new DataSourceContext()
                 {
+                    PortalId = module.PortalID,
+                    CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                     ModuleId = module.ModuleID,
                     ActiveModuleId = ActiveModule.ModuleID,
                     TemplateFolder = settings.TemplateDir.FolderPath,
@@ -271,6 +273,8 @@ namespace Satrabel.OpenContent.Components
                 var ds = DataSourceManager.GetDataSource(manifest.DataSource);
                 var dsContext = new DataSourceContext()
                 {
+                    PortalId = module.PortalID,
+                    CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                     ModuleId = module.ModuleID,
                     ActiveModuleId = ActiveModule.ModuleID,
                     TemplateFolder = settings.TemplateDir.FolderPath,
@@ -350,13 +354,13 @@ namespace Satrabel.OpenContent.Components
                 var ds = DataSourceManager.GetDataSource(manifest.DataSource);
                 var dsContext = new DataSourceContext()
                 {
+                    PortalId = module.PortalID,
+                    CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                     ModuleId = module.ModuleID,
                     ActiveModuleId = ActiveModule.ModuleID,
                     TemplateFolder = settings.TemplateDir.FolderPath,
                     Index = index,
                     UserId = UserInfo.UserID,
-                    PortalId = module.PortalID,
-                    CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                     Config = manifest.DataSourceConfig
                 };
                 IDataItem dsItem = null;
@@ -653,6 +657,8 @@ namespace Satrabel.OpenContent.Components
                 var ds = DataSourceManager.GetDataSource(manifest.DataSource);
                 var dsContext = new DataSourceContext()
                 {
+                    PortalId = module.PortalID,
+                    CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                     ModuleId = module.ModuleID,
                     ActiveModuleId = ActiveModule.ModuleID,
                     TemplateFolder = settings.TemplateDir.FolderPath,

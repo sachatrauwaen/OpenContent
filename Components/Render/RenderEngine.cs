@@ -242,6 +242,8 @@ namespace Satrabel.OpenContent.Components.Render
             var ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
             var dsContext = new DataSourceContext()
             {
+                PortalId = _module.PortalID,
+                CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                 ModuleId = info.ModuleId,
                 ActiveModuleId = _module.ModuleID,
                 TemplateFolder = settings.TemplateDir.FolderPath,
@@ -328,6 +330,8 @@ namespace Satrabel.OpenContent.Components.Render
             var ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
             var dsContext = new DataSourceContext()
             {
+                PortalId = _module.PortalID,
+                CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                 ModuleId = info.ModuleId,
                 ActiveModuleId = _module.ModuleID,
                 TemplateFolder = settings.TemplateDir.FolderPath,
@@ -365,6 +369,8 @@ namespace Satrabel.OpenContent.Components.Render
             var ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
             var dsContext = new DataSourceContext()
             {
+                PortalId = _module.PortalID,
+                CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                 ModuleId = info.ModuleId,
                 ActiveModuleId = _module.ModuleID,
                 TemplateFolder = settings.TemplateDir.FolderPath,
