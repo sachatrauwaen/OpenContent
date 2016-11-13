@@ -1076,30 +1076,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Components\Images\" />
-    <Folder Include="js\alpaca-1.5.17\alpaca\bootstrap\images\" />
-    <Folder Include="js\alpaca-1.5.17\alpaca\web\images\" />
-    <Folder Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\build\css\" />
-    <Folder Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\build\js\" />
-    <Folder Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\docs\" />
-    <Folder Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\src\js\" />
-    <Folder Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\src\less\" />
-    <Folder Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\src\nuget\" />
-    <Folder Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\src\sass\" />
-    <Folder Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\tasks\" />
-    <Folder Include="js\alpaca-1.5.17\lib\handlebars\lib\handlebars\" />
-    <Folder Include="js\alpaca-1.5.17\lib\moment\benchmarks\" />
-    <Folder Include="js\alpaca-1.5.17\lib\moment\locale\" />
-    <Folder Include="js\alpaca-1.5.17\lib\moment\meteor\" />
-    <Folder Include="js\alpaca-1.5.17\lib\moment\min\" />
-    <Folder Include="js\alpaca-1.5.17\lib\moment\scripts\" />
-    <Folder Include="js\alpaca-1.5.17\lib\typeahead.js\dist\" />
-    <Folder Include="js\alpaca-1.5.17\lib\typeahead.js\doc\migration\" />
-    <Folder Include="js\alpaca-1.5.17\lib\typeahead.js\src\bloodhound\" />
-    <Folder Include="js\alpaca-1.5.17\lib\typeahead.js\src\common\" />
-    <Folder Include="js\alpaca-1.5.17\lib\typeahead.js\src\typeahead\" />
-    <Folder Include="js\alpaca-1.5.17\lib\typeahead.js\test\fixtures\" />
-    <Folder Include="js\alpaca-1.5.17\lib\typeahead.js\test\helpers\" />
-    <Folder Include="js\alpaca-1.5.17\lib\typeahead.js\test\integration\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_LocalResources\EditSettings.ascx.de-DE.resx" />
