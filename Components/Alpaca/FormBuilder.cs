@@ -201,7 +201,12 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
         }
 
-        public JObject BuildForm(string key = "")
+        //public JObject BuildForm()
+        //{
+        //    return BuildForm("", DnnLanguageUtils.GetCurrentCultureCode());
+        //}
+
+        public JObject BuildForm(string key, string currentCultureCode)
         {
             if (key == "query")
             {
@@ -209,10 +214,16 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
             else
             {
-                return Build(key);
+                return Build(key, currentCultureCode);
             }
         }
-        private JObject Build(string key = "")
+
+        private JObject Build()
+        {
+            return Build("", DnnLanguageUtils.GetCurrentCultureCode());
+        }
+
+        private JObject Build(string key, string currentCultureCode)
         {
             string prefix = string.IsNullOrEmpty(key) ? "" : key + "-";
             JObject json = new JObject();
@@ -227,7 +238,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 json["options"] = optionsJson;
 
             // language options
-            optionsJson = JsonUtils.LoadJsonFromFile(templateUri.UrlFolder + prefix + "options." + DnnLanguageUtils.GetCurrentCultureCode() + ".json");
+            optionsJson = JsonUtils.LoadJsonFromFile(templateUri.UrlFolder + prefix + "options." + currentCultureCode + ".json");
             if (optionsJson != null)
                 json["options"] = json["options"].JsonMerge(optionsJson);
 
@@ -263,7 +274,6 @@ namespace Satrabel.OpenContent.Components.Alpaca
             {
                 optionsConfig = optionsJson.ToObject<OptionsConfig>();
             }
-            List<string> fieldLst = new List<string>();
             foreach (var prop in schemaConfig.Properties)
             {
                 OptionsConfig opts = null;

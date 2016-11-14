@@ -233,14 +233,14 @@ namespace Satrabel.OpenContent.Components.Datasource
         public virtual JObject GetAlpaca(DataSourceContext context, bool schema, bool options, bool view)
         {
             var fb = new FormBuilder(new FolderUri(context.TemplateFolder));
-            return fb.BuildForm();
+            return fb.BuildForm("", context.CurrentCultureCode);
         }
 
         // Additional Data
         public virtual JObject GetDataAlpaca(DataSourceContext context, bool schema, bool options, bool view, string key)
         {
             var fb = new FormBuilder(new FolderUri(context.TemplateFolder));
-            return fb.BuildForm(key);
+            return fb.BuildForm(key, context.CurrentCultureCode);
         }
 
         #endregion

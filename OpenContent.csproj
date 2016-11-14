@@ -104,10 +104,12 @@
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>ref\dnn732\Newtonsoft.Json.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="SharpZipLib, Version=0.81.0.1407, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>ref\dnn732\SharpZipLib.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -158,11 +160,8 @@
     </Compile>
     <Compile Include="Components\Alpaca\AlpacaLayoutEnum.cs" />
     <Compile Include="Components\AppConfig.cs" />
-    <Compile Include="Components\FormAPIController.cs" />
-    <Compile Include="Components\Form\FormUtils.cs" />
-    <Compile Include="Components\Form\GenSettingsDTO.cs" />
-    <Compile Include="Components\Form\NotificationDTO.cs" />
-    <Compile Include="Components\Form\SettingsDTO.cs" />
+    <Compile Include="Components\Dnn\OpenContentModuleInfo.cs" />
+    <Compile Include="Components\Datasource\DnnTabsDataSource.cs" />
     <Compile Include="Components\Utils\ExcelUtils.cs" />
     <Compile Include="Components\Dnn\DnnFileUtils.cs" />
     <Compile Include="Components\Dnn\DnnLanguageUtils.cs" />
@@ -324,13 +323,6 @@
     <Compile Include="Components\Common\Utils.cs" />
     <Compile Include="Components\UrlRewriter\OpenContentUrlRule.cs" />
     <Compile Include="Components\UrlRewriter\OpenContentUrlProvider.cs" />
-    <Compile Include="EditFormSettings.ascx.cs">
-      <DependentUpon>EditFormSettings.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EditFormSettings.ascx.designer.cs">
-      <DependentUpon>EditFormSettings.ascx</DependentUpon>
-    </Compile>
     <Compile Include="RenderModule.ascx.cs">
       <DependentUpon>RenderModule.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -510,7 +502,6 @@
     <Content Include="css\glyphicons\fonts\glyphicons-regular.svg" />
     <Content Include="css\glyphicons\fonts\glyphicons-social-regular.svg" />
     <Content Include="css\glyphicons\glyphicons.css" />
-    <Content Include="EditFormSettings.ascx" />
     <Content Include="js\bootstrap\css\bootstrap-theme.css" />
     <Content Include="js\bootstrap\css\bootstrap-theme.min.css" />
     <Content Include="js\bootstrap\css\bootstrap.css" />
@@ -1066,8 +1057,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Templates\ViewPage1.cshtml" />
-    <Content Include="formsettings-options.json" />
-    <Content Include="formsettings-schema.json" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
@@ -1091,30 +1080,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Components\Images\" />
-    <Folder Include="js\alpaca-1.5.17\alpaca\bootstrap\images\" />
-    <Folder Include="js\alpaca-1.5.17\alpaca\web\images\" />
-    <Folder Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\build\css\" />
-    <Folder Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\build\js\" />
-    <Folder Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\docs\" />
-    <Folder Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\src\js\" />
-    <Folder Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\src\less\" />
-    <Folder Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\src\nuget\" />
-    <Folder Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\src\sass\" />
-    <Folder Include="js\alpaca-1.5.17\lib\eonasdan-bootstrap-datetimepicker\tasks\" />
-    <Folder Include="js\alpaca-1.5.17\lib\handlebars\lib\handlebars\" />
-    <Folder Include="js\alpaca-1.5.17\lib\moment\benchmarks\" />
-    <Folder Include="js\alpaca-1.5.17\lib\moment\locale\" />
-    <Folder Include="js\alpaca-1.5.17\lib\moment\meteor\" />
-    <Folder Include="js\alpaca-1.5.17\lib\moment\min\" />
-    <Folder Include="js\alpaca-1.5.17\lib\moment\scripts\" />
-    <Folder Include="js\alpaca-1.5.17\lib\typeahead.js\dist\" />
-    <Folder Include="js\alpaca-1.5.17\lib\typeahead.js\doc\migration\" />
-    <Folder Include="js\alpaca-1.5.17\lib\typeahead.js\src\bloodhound\" />
-    <Folder Include="js\alpaca-1.5.17\lib\typeahead.js\src\common\" />
-    <Folder Include="js\alpaca-1.5.17\lib\typeahead.js\src\typeahead\" />
-    <Folder Include="js\alpaca-1.5.17\lib\typeahead.js\test\fixtures\" />
-    <Folder Include="js\alpaca-1.5.17\lib\typeahead.js\test\helpers\" />
-    <Folder Include="js\alpaca-1.5.17\lib\typeahead.js\test\integration\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_LocalResources\EditSettings.ascx.de-DE.resx" />
@@ -1161,12 +1126,6 @@
     <Content Include="App_LocalResources\EditSettings.ascx.de-AT.resx" />
     <Content Include="App_LocalResources\EditTemplate.ascx.de-AT.resx" />
     <Content Include="App_LocalResources\ShareTemplate.ascx.de-AT.resx" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="App_LocalResources\EditSettings.ascx - Copy.resx" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="App_LocalResources\SharedResources.resx" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

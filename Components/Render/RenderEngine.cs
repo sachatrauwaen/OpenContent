@@ -242,6 +242,8 @@ namespace Satrabel.OpenContent.Components.Render
             var ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
             var dsContext = new DataSourceContext()
             {
+                PortalId = _module.PortalID,
+                CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                 ModuleId = info.ModuleId,
                 ActiveModuleId = _module.ModuleID,
                 TemplateFolder = settings.TemplateDir.FolderPath,
@@ -287,7 +289,7 @@ namespace Satrabel.OpenContent.Components.Render
                         LogContext.Log(_module.ModuleID, "RequestContext", "CurrentUserId", portalSettings.UserId);
                         var logKey = "Query";
                         LogContext.Log(_module.ModuleID, logKey, "select", queryBuilder.Select);
-                        LogContext.Log(_module.ModuleID, logKey, "result", resultList);
+                        //LogContext.Log(_module.ModuleID, logKey, "result", resultList);
                     }
                     //Log.Logger.DebugFormat("Query returned [{0}] results.", total);
                     if (!resultList.Any())
@@ -311,7 +313,7 @@ namespace Satrabel.OpenContent.Components.Render
                     if (LogContext.IsLogActive)
                     {
                         var logKey = "Get all data of module";
-                        LogContext.Log(_module.ModuleID, logKey, "result", resultList);
+                        //LogContext.Log(_module.ModuleID, logKey, "result", resultList);
                     }
                 }
                 if (resultList.Any())
@@ -328,6 +330,8 @@ namespace Satrabel.OpenContent.Components.Render
             var ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
             var dsContext = new DataSourceContext()
             {
+                PortalId = _module.PortalID,
+                CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                 ModuleId = info.ModuleId,
                 ActiveModuleId = _module.ModuleID,
                 TemplateFolder = settings.TemplateDir.FolderPath,
@@ -337,7 +341,7 @@ namespace Satrabel.OpenContent.Components.Render
             if (LogContext.IsLogActive)
             {
                 var logKey = "Get detail data";
-                LogContext.Log(_module.ModuleID, logKey, "result", dsItem);
+                //LogContext.Log(_module.ModuleID, logKey, "debuginfo", dsItems.DebugInfo);
             }
 
             if (dsItem != null)
@@ -365,6 +369,8 @@ namespace Satrabel.OpenContent.Components.Render
             var ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
             var dsContext = new DataSourceContext()
             {
+                PortalId = _module.PortalID,
+                CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                 ModuleId = info.ModuleId,
                 ActiveModuleId = _module.ModuleID,
                 TemplateFolder = settings.TemplateDir.FolderPath,

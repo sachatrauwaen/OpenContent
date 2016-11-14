@@ -13,6 +13,12 @@ namespace Satrabel.OpenContent.Components.Datasource
             Items = items;
             Total = total;
         }
+        public DefaultDataItems(IEnumerable<IDataItem> items, int total, string debugInfo)
+        {
+            Items = items;
+            Total = total;
+            DebugInfo = debugInfo;
+        }
 
         public IEnumerable<IDataItem> Items
         {
@@ -25,6 +31,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             get;
             set;
         }
+
         public string DebugInfo { get; set; }
     }
 }

@@ -1,23 +1,22 @@
 ﻿using System;
+using System.Collections;
 using System.Linq;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Reflection;
-using System.Threading;
 using System.Web;
 using System.Web.UI;
 using DotNetNuke.Common;
 using DotNetNuke.Common.Utilities;
+using DotNetNuke.Entities.Content;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Entities.Tabs;
 using DotNetNuke.Security;
 using DotNetNuke.Security.Permissions;
-using DotNetNuke.Services.FileSystem;
 using DotNetNuke.Services.Localization;
 using DotNetNuke.Services.Personalization;
 using DotNetNuke.UI.Modules;
 using DotNetNuke.Web.Client.ClientResourceManagement;
+
 
 namespace Satrabel.OpenContent.Components
 {
@@ -46,6 +45,13 @@ namespace Satrabel.OpenContent.Components
                 }
             }
             return modules.FirstOrDefault();
+        }
+
+        public static IEnumerable<OpenContentModuleInfo> GetDnnOpenContentModules(int portalId)
+        {
+            ModuleController mc = new ModuleController();
+            ArrayList modules = mc.GetModulesByDefinition(portalId, AppConfig.OPENCONTENT);
+            return modules.OfType<ModuleInfo>().Select(module => new OpenContentModuleInfo(module));
         }
 
         /// <summary>

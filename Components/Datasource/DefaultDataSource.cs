@@ -27,7 +27,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         public virtual JObject GetAlpaca(DataSourceContext context, bool schema, bool options, bool view)
         {
             var fb = new FormBuilder(new FolderUri(context.TemplateFolder));
-            return fb.BuildForm();
+            return fb.BuildForm("", context.CurrentCultureCode);
         }
         public virtual JObject GetDataAlpaca(DataSourceContext context, bool schema, bool options, bool view, string key)
         {
@@ -72,6 +72,6 @@ namespace Satrabel.OpenContent.Components.Datasource
         }
 
         public abstract string Name { get; }
-        
+
     }
 }
