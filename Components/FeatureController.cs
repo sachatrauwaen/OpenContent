@@ -90,6 +90,7 @@ namespace Satrabel.OpenContent.Components
                 return searchDocuments;
             }
 
+            var module = new OpenContentModuleInfo(modInfo);
             OpenContentSettings settings = modInfo.OpenContentSettings();
             if (settings.Template == null || settings.Template.Main == null || !settings.Template.Main.DnnSearch)
             {
@@ -100,14 +101,8 @@ namespace Satrabel.OpenContent.Components
                 return searchDocuments;
             }
 
-            var ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
-            var dsContext = new DataSourceContext()
-            {
-                ModuleId = modInfo.ModuleID,
-                ActiveModuleId = modInfo.ModuleID,
-                TemplateFolder = settings.TemplateDir.FolderPath,
-                Config = settings.Manifest.DataSourceConfig
-            };
+            IDataSource ds;
+            var dsContext = OpenContentUtils.CreateDataContext(module, out ds);
 
             IDataItems contentList = ds.GetAll(dsContext, null);
             if (!contentList.Items.Any())

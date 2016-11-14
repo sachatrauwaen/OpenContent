@@ -63,11 +63,11 @@ namespace Satrabel.OpenContent
         {
 
             OpenContentSettings settings = this.OpenContentSettings();
-            int ModId = settings.IsOtherModule ? settings.ModuleId : ModuleId;
+            int modId = settings.IsOtherModule ? settings.ModuleId : ModuleId;
             var ds = DataSourceManager.GetDataSource("OpenContent");
             var dsContext = new DataSourceContext()
             {
-                ModuleId = ModId,
+                ModuleId = modId,
                 ActiveModuleId = ModuleContext.ModuleId,
                 TemplateFolder = settings.TemplateDir.FolderPath,
                 PortalId = ModuleContext.PortalId,
@@ -264,7 +264,7 @@ namespace Satrabel.OpenContent
         private void SaveAdditionalData(string key)
         {
             OpenContentSettings settings = this.OpenContentSettings();
-            int ModId = settings.IsOtherModule ? settings.ModuleId : ModuleId;
+            int modId = settings.IsOtherModule ? settings.ModuleId : ModuleId;
             var manifest = settings.Manifest;
             var dataManifest = manifest.GetAdditionalData(key);
             var ds = DataSourceManager.GetDataSource(manifest.DataSource);
@@ -273,7 +273,7 @@ namespace Satrabel.OpenContent
                 PortalId = PortalSettings.PortalId,
                 CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                 TabId = TabId,
-                ModuleId = ModId,
+                ModuleId = modId,
                 TabModuleId = this.TabModuleId,
                 UserId = UserInfo.UserID,
                 TemplateFolder = settings.TemplateDir.FolderPath,

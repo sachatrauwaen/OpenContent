@@ -32,13 +32,8 @@ namespace Satrabel.OpenContent.Components
     [SupportedModules("OpenContent")]
     public class OpenContentAPIController : DnnApiController
     {
-        public PortalFolderUri BaseDir
-        {
-            get
-            {
-                return new PortalFolderUri(PortalSettings.PortalId, PortalSettings.HomeDirectory + "/OpenContent/Templates/");
-            }
-        }
+        public PortalFolderUri BaseDir => new PortalFolderUri(PortalSettings.PortalId, PortalSettings.HomeDirectory + "/OpenContent/Templates/");
+
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         [HttpGet]
@@ -54,22 +49,14 @@ namespace Satrabel.OpenContent.Components
             try
             {
                 var module = new OpenContentModuleInfo(ActiveModule);
-                var dataModule = module.DataModule;
                 var manifest = module.Settings.Manifest;
                 TemplateManifest templateManifest = module.Settings.Template;
                 string editRole = manifest.GetEditRole();
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
-                var ds = DataSourceManager.GetDataSource(manifest.DataSource);
-                var dsContext = new DataSourceContext()
-                {
-                    PortalId = dataModule.PortalID,
 
-                    ModuleId = dataModule.ModuleID,
-                    ActiveModuleId = ActiveModule.ModuleID,
-                    TemplateFolder = module.Settings.TemplateDir.FolderPath,
-                    Config = manifest.DataSourceConfig,
-                    CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
-                };
+                IDataSource ds;
+                var dsContext = OpenContentUtils.CreateDataContext(module, out ds);
+
                 IDataItem dsItem = null;
                 if (listMode)
                 {
@@ -114,7 +101,7 @@ namespace Satrabel.OpenContent.Components
                     createdByUserid = dsItem.CreatedByUserId;
                 }
 
-                if (!OpenContentUtils.HasEditPermissions(PortalSettings, dataModule, editRole, createdByUserid))
+                if (!OpenContentUtils.HasEditPermissions(PortalSettings, module.DataModule, editRole, createdByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
@@ -141,25 +128,8 @@ namespace Satrabel.OpenContent.Components
                 //var templateFolder = string.IsNullOrEmpty(dataManifest.TemplateFolder) ? module.Settings.TemplateDir : module.Settings.TemplateDir.ParentFolder.Append(dataManifest.TemplateFolder);
                 int createdByUserid = -1;
 
-                //IDataSource ds;
-                //var dsContext = module.CreateDefaultDataContext(out ds);
-                //dsContext.UserId = UserInfo.UserID;
-                //dsContext.CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode();
-
-                var ds = DataSourceManager.GetDataSource(manifest.DataSource);
-                var dsContext = new DataSourceContext()
-                {
-                    PortalId = PortalSettings.PortalId,
-                    TabId = ActiveModule.TabID,
-                    ModuleId = module.DataModule.ModuleID,
-                    TabModuleId = ActiveModule.TabModuleID,
-                    TemplateFolder = module.Settings.TemplateDir.FolderPath,
-                    Config = manifest.DataSourceConfig,
-
-                    UserId = UserInfo.UserID,
-                    CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
-                    //Options = reqOptions
-                };
+                IDataSource ds;
+                var dsContext = OpenContentUtils.CreateDataContext(module, out ds, UserInfo.UserID);
 
                 var dsItem = ds.GetData(dsContext, dataManifest.ScopeType, dataManifest.StorageKey ?? key);
                 var json = ds.GetDataAlpaca(dsContext, true, true, true, key);
@@ -192,20 +162,10 @@ namespace Satrabel.OpenContent.Components
                 var manifest = module.Settings.Template.Manifest;
                 string key = json["key"].ToString();
                 var dataManifest = manifest.GetAdditionalData(key);
-                var ds = DataSourceManager.GetDataSource(manifest.DataSource);
-                var dsContext = new DataSourceContext()
-                {
-                    PortalId = PortalSettings.PortalId,
-                    TabId = ActiveModule.TabID,
-                    ModuleId = module.DataModule.ModuleID,
-                    TabModuleId = ActiveModule.TabModuleID,
-                    TemplateFolder = module.Settings.TemplateDir.FolderPath,
-                    Config = manifest.DataSourceConfig,
 
-                    UserId = UserInfo.UserID,
-                    CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
-                    //Options = reqOptions
-                };
+                IDataSource ds;
+                var dsContext = OpenContentUtils.CreateDataContext(module, out ds, UserInfo.UserID);
+
                 var dsItem = ds.GetData(dsContext, dataManifest.ScopeType, dataManifest.StorageKey ?? key);
                 if (dsItem == null)
                 {
@@ -256,18 +216,10 @@ namespace Satrabel.OpenContent.Components
             try
             {
                 int createdByUserid = -1;
-                var ds = DataSourceManager.GetDataSource(manifest.DataSource);
-                var dsContext = new DataSourceContext()
-                {
-                    PortalId = module.DataModule.PortalID,
 
-                    ModuleId = module.DataModule.ModuleID,
-                    ActiveModuleId = ActiveModule.ModuleID,
-                    TemplateFolder = module.Settings.TemplateDir.FolderPath,
-                    Config = manifest.DataSourceConfig,
+                IDataSource ds;
+                var dsContext = OpenContentUtils.CreateDataContext(module, out ds, UserInfo.UserID);
 
-                    CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
-                };
                 var dsItem = ds.Get(dsContext, id);
                 if (dsItem != null)
                 {
@@ -324,27 +276,17 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
-                bool index = false;
                 var module = new OpenContentModuleInfo(ActiveModule);
                 var manifest = module.Settings.Template.Manifest;
                 TemplateManifest templateManifest = module.Settings.Template;
-                index = module.Settings.Template.Manifest.Index;
                 string editRole = manifest.GetEditRole();
 
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 int createdByUserid = -1;
-                var ds = DataSourceManager.GetDataSource(manifest.DataSource);
-                var dsContext = new DataSourceContext()
-                {
-                    PortalId = module.DataModule.PortalID,
-                    CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
-                    ModuleId = module.DataModule.ModuleID,
-                    ActiveModuleId = ActiveModule.ModuleID,
-                    TemplateFolder = module.Settings.TemplateDir.FolderPath,
-                    Index = index,
-                    UserId = UserInfo.UserID,
-                    Config = manifest.DataSourceConfig
-                };
+
+                IDataSource ds;
+                var dsContext = OpenContentUtils.CreateDataContext(module, out ds, UserInfo.UserID);
+
                 IDataItem dsItem = null;
                 if (listMode)
                 {
@@ -407,26 +349,16 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
-                bool index = false;
                 var module = new OpenContentModuleInfo(ActiveModule);
                 var manifest = module.Settings.Template.Manifest;
                 TemplateManifest templateManifest = module.Settings.Template;
-                index = manifest.Index;
                 string editRole = manifest.GetEditRole();
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 int createdByUserid = -1;
-                var ds = DataSourceManager.GetDataSource(manifest.DataSource);
-                var dsContext = new DataSourceContext()
-                {
-                    ModuleId = module.DataModule.ModuleID,
-                    ActiveModuleId = ActiveModule.ModuleID,
-                    TemplateFolder = module.Settings.TemplateDir.FolderPath,
-                    Index = index,
-                    UserId = UserInfo.UserID,
-                    PortalId = module.DataModule.PortalID,
-                    CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
-                    Config = manifest.DataSourceConfig
-                };
+
+                IDataSource ds;
+                var dsContext = OpenContentUtils.CreateDataContext(module, out ds, UserInfo.UserID);
+
                 IDataItem content = null;
                 if (listMode)
                 {
@@ -551,19 +483,9 @@ namespace Satrabel.OpenContent.Components
             List<LookupResultDTO> res = new List<LookupResultDTO>();
             try
             {
-                var ds = DataSourceManager.GetDataSource(manifest.DataSource);
-                var dsContext = new DataSourceContext()
-                {
-                    PortalId = PortalSettings.PortalId,
-                    CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
-                    TabId = ActiveModule.TabID,
-                    ModuleId = module.DataModule.ModuleID,
-                    TabModuleId = ActiveModule.TabModuleID,
-                    UserId = UserInfo.UserID,
-                    TemplateFolder = module.Settings.TemplateDir.FolderPath,
-                    Config = manifest.DataSourceConfig,
-                    //Options = reqOptions
-                };
+                IDataSource ds;
+                var dsContext = OpenContentUtils.CreateDataContext(module, out ds, UserInfo.UserID);
+
                 var dsItem = ds.GetData(dsContext, dataManifest.ScopeType, dataManifest.StorageKey ?? key);
                 if (dsItem != null)
                 {
@@ -614,7 +536,7 @@ namespace Satrabel.OpenContent.Components
         public HttpResponseMessage Lookup(LookupRequestDTO req)
         {
             var module = new OpenContentModuleInfo(req.moduleid, req.tabid);
-            if (module == null) throw new Exception(string.Format("Can not find ModuleInfo (tabid:{0}, moduleid:{1})", req.tabid, req.moduleid));
+            if (module == null) throw new Exception($"Can not find ModuleInfo (tabid:{req.tabid}, moduleid:{req.moduleid})");
 
             Manifest.Manifest manifest = module.Settings.Manifest;
             TemplateManifest templateManifest = module.Settings.Template;
@@ -622,16 +544,8 @@ namespace Satrabel.OpenContent.Components
             List<LookupResultDTO> res = new List<LookupResultDTO>();
             try
             {
-                var ds = DataSourceManager.GetDataSource(manifest.DataSource);
-                var dsContext = new DataSourceContext()
-                {
-                    PortalId = module.DataModule.PortalID,
-                    CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
-                    ModuleId = module.DataModule.ModuleID,
-                    ActiveModuleId = ActiveModule.ModuleID,
-                    TemplateFolder = module.Settings.TemplateDir.FolderPath,
-                    Config = manifest.DataSourceConfig
-                };
+                IDataSource ds;
+                var dsContext = OpenContentUtils.CreateDataContext(module, out ds, UserInfo.UserID);
 
                 if (listMode)
                 {
@@ -728,7 +642,7 @@ namespace Satrabel.OpenContent.Components
             }
         }
         */
-         [ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
         [HttpGet]
         public HttpResponseMessage EditSettings(string key)

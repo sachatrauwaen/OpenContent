@@ -420,7 +420,7 @@ namespace Satrabel.OpenContent.Components
             return result;
         }
 
-        public static DataSourceContext CreateDefaultDataContext(this OpenContentModuleInfo module, out IDataSource ds)
+        public static DataSourceContext CreateDataContext(OpenContentModuleInfo module, out IDataSource ds, int userId = -1, bool single = false, JObject options = null)
         {
             var manifest = module.Settings.Manifest;
             List<LookupResultDTO> res = new List<LookupResultDTO>();
@@ -429,13 +429,19 @@ namespace Satrabel.OpenContent.Components
             var dsContext = new DataSourceContext
             {
                 PortalId = module.ViewModule.PortalID,
-                TabId = module.DataModule.TabID,
-                ModuleId = module.DataModule.ModuleID,
                 ActiveModuleId = module.ViewModule.ModuleID,
+                TabId = module.ViewModule.TabID,
+                ModuleId = module.DataModule.ModuleID,
                 TemplateFolder = module.Settings.TemplateDir.FolderPath,
+                UserId = userId,
                 Config = manifest.DataSourceConfig,
-                //CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
+                Index = module.Settings.Template.Manifest.Index,
+                Options = options,
             };
+            if (PortalSettings.Current != null)
+            {
+                dsContext.CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode();
+            }
             return dsContext;
         }
 

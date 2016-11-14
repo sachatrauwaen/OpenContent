@@ -281,13 +281,13 @@ namespace Satrabel.OpenContent.Components
         private void EnhanceModel(JObject model, bool onlyData)
         {
             if (!onlyData && _templateFiles != null && _templateFiles.SchemaInTemplate)
-            // include SCHEMA info in the Model
-            if (!onlyData && _templateFiles != null && _templateFiles.SchemaInTemplate)
-            {
-                // schema
-                string schemaFilename = _physicalTemplateFolder + "schema.json";
-                model["Schema"] = JsonUtils.GetJsonFromFile(schemaFilename);
-            }
+                // include SCHEMA info in the Model
+                if (!onlyData && _templateFiles != null && _templateFiles.SchemaInTemplate)
+                {
+                    // schema
+                    string schemaFilename = _physicalTemplateFolder + "schema.json";
+                    model["Schema"] = JsonUtils.GetJsonFromFile(schemaFilename);
+                }
 
             // include OPTIONS info in the Model
             if (_templateFiles != null && _templateFiles.OptionsInTemplate)
@@ -324,7 +324,7 @@ namespace Satrabel.OpenContent.Components
                 }
             }
 
-                        // include additional data in the Model
+            // include additional data in the Model
             if (_templateFiles != null && _templateFiles.AdditionalDataInTemplate && _manifest.AdditionalDataExists())
             {
                 var additionalData = model["AdditionalData"] = new JObject();
@@ -335,15 +335,14 @@ namespace Satrabel.OpenContent.Components
                     var dsContext = new DataSourceContext()
                     {
                         PortalId = _portalId,
-                        CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
-                        TabId = _module.DataModule.TabID,
+                        TabId = _module.ViewModule.TabID,
                         ModuleId = _datamoduleModuleId,
                         TabModuleId = _module.TabModuleId,
                         Config = _manifest.DataSourceConfig,
                     };
                     var dsItem = ds.GetData(dsContext, dataManifest.ScopeType, dataManifest.StorageKey ?? item.Key);
                     JToken additionalDataJson = new JObject();
-                    if (dsItem != null && dsItem.Data != null)
+                    if (dsItem?.Data != null)
                     {
                         if (LocaleController.Instance.GetLocales(_portalId).Count > 1)
                         {

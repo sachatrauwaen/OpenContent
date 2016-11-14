@@ -34,14 +34,6 @@ namespace Satrabel.OpenContent.Components.Rss
             var rssTemplate = new FileUri(module.Settings.TemplateDir, template + ".hbs");
             string source = File.ReadAllText(rssTemplate.PhysicalFilePath);
 
-            //var ds = DataSourceManager.GetDataSource(AppConfig.FriendlyName());
-            //var dsContext = new DataSourceContext()
-            //{
-            //    ModuleId = moduleId,
-            //    ActiveModuleId = module.ViewModule.ModuleID,
-            //    TemplateFolder = settings.TemplateDir.FolderPath
-            //};
-
             bool useLucene = module.Settings.Template.Manifest.Index;
             if (useLucene)
             {
@@ -50,41 +42,11 @@ namespace Satrabel.OpenContent.Components.Rss
                 QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
                 queryBuilder.Build(module.Settings.Query, PortalSettings.UserMode != PortalSettings.Mode.Edit, UserInfo.UserID, DnnLanguageUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
 
-                var ds = DataSourceManager.GetDataSource(manifest.DataSource);
-                var dsContext = new DataSourceContext()
-                {
-                    ModuleId = module.DataModule.ModuleID,
-                    UserId = UserInfo.UserID,
-                    TemplateFolder = module.Settings.TemplateDir.FolderPath,
-                    PortalId = module.DataModule.PortalID,
-                    CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
-                    Config = manifest.DataSourceConfig
-                };
-                var dsItems = ds.GetAll(dsContext, queryBuilder.Select);
-                //int mainTabId = module.Settings.DetailTabId > 0 ? module.Settings.DetailTabId : module.Settings.TabId;
-                //ModelFactory mf = new ModelFactory(dsItems.Items, ActiveModule, PortalSettings, mainTabId);
-                //var model = mf.GetModelAsJson(false);
+                IDataSource ds;
+                var dsContext = OpenContentUtils.CreateDataContext(module, out ds, UserInfo.UserID);
 
+                var dsItems = ds.GetAll(dsContext, queryBuilder.Select);
                 dataList = dsItems.Items;
-                /*
-                var queryDef = new QueryDefinition(indexConfig);
-                queryDef.BuildFilter(true);
-                queryDef.BuildSort("");
-                SearchResults docs = LuceneController.Instance.Search(moduleId.ToString(), queryDef);
-                if (docs != null)
-                {
-                    int total = docs.TotalResults;
-                    foreach (var item in docs.ids)
-                    {
-                        var dsItem = ds.Get(dsContext, item);
-                        //var content = ctrl.GetContent(int.Parse(item));
-                        if (dsItem != null)
-                        {
-                            dataList.Add(dsItem);
-                        }
-                    }
-                }
-                 */
             }
 
             ModelFactory mf = new ModelFactory(dataList, null, module.Settings.TemplateDir.PhysicalFullDirectory, manifest, null, null, module, PortalSettings);

@@ -22,6 +22,7 @@ using System.Web.Hosting;
 using DotNetNuke.Services.Exceptions;
 using DotNetNuke.UI.Modules;
 using Newtonsoft.Json.Linq;
+using IDataSource = Satrabel.OpenContent.Components.Datasource.IDataSource;
 
 namespace Satrabel.OpenContent.Components.Render
 {
@@ -237,16 +238,10 @@ namespace Satrabel.OpenContent.Components.Render
         {
             string templateKey = "";
             info.ResetData();
-            var ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
-            var dsContext = new DataSourceContext()
-            {
-                PortalId = _module.DataModule.PortalID,
-                CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
-                ModuleId = info.ModuleId,
-                ActiveModuleId = _module.ViewModule.ModuleID,
-                TemplateFolder = settings.TemplateDir.FolderPath,
-                Config = settings.Manifest.DataSourceConfig
-            };
+
+            IDataSource ds;
+            var dsContext = OpenContentUtils.CreateDataContext(_module, out ds);
+
             IEnumerable<IDataItem> resultList = new List<IDataItem>();
             if (clientSide || !info.Files.DataInTemplate)
             {
@@ -364,17 +359,10 @@ namespace Satrabel.OpenContent.Components.Render
         public void GetSingleData(RenderInfo info, OpenContentSettings settings)
         {
             info.ResetData();
-            var ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
-            var dsContext = new DataSourceContext()
-            {
-                PortalId = _module.DataModule.PortalID,
-                CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
-                ModuleId = info.ModuleId,
-                ActiveModuleId = _module.ViewModule.ModuleID,
-                TemplateFolder = settings.TemplateDir.FolderPath,
-                Config = settings.Manifest.DataSourceConfig,
-                Single = true
-            };
+
+            IDataSource ds;
+            var dsContext = OpenContentUtils.CreateDataContext(_module, out ds,-1,true);
+            
             var dsItem = ds.Get(dsContext, null);
             if (dsItem != null)
             {

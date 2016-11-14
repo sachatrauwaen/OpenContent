@@ -24,16 +24,10 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                 {
                     if (module.IsListTemplate() && (!module.Settings.IsOtherModule || module.Settings.DetailTabId > 0))
                     {
-                        var ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
-                        var dsContext = new DataSourceContext()
-                        {
-                            ModuleId = module.DataModule.ModuleID,
-                            TemplateFolder = module.Settings.TemplateDir.FolderPath,
-                            Config = module.Settings.Manifest.DataSourceConfig,
-                            PortalId = module.DataModule.PortalID,
-                            //CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),   ==> todo: gives errors as PortalSettings is not available in context of scheduler
-                            Agent = "OpenContentUrlProvider.GetRules()"
-                        };
+                        IDataSource ds;
+                        var dsContext = OpenContentUtils.CreateDataContext(module, out ds);
+                        dsContext.Agent = "OpenContentUrlProvider.GetRules()";
+
                         var dataList = ds.GetAll(dsContext, null).Items;
                         if (dataList.Count() > 1000)
                         {
