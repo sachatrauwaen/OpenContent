@@ -429,12 +429,12 @@ namespace Satrabel.OpenContent.Components
             var dsContext = new DataSourceContext
             {
                 PortalId = module.ViewModule.PortalID,
-                //CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                 TabId = module.DataModule.TabID,
                 ModuleId = module.DataModule.ModuleID,
                 ActiveModuleId = module.ViewModule.ModuleID,
                 TemplateFolder = module.Settings.TemplateDir.FolderPath,
                 Config = manifest.DataSourceConfig,
+                //CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
             };
             return dsContext;
         }

@@ -63,11 +63,12 @@ namespace Satrabel.OpenContent.Components
                 var dsContext = new DataSourceContext()
                 {
                     PortalId = dataModule.PortalID,
-                    CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
+
                     ModuleId = dataModule.ModuleID,
                     ActiveModuleId = ActiveModule.ModuleID,
                     TemplateFolder = module.Settings.TemplateDir.FolderPath,
-                    Config = manifest.DataSourceConfig
+                    Config = manifest.DataSourceConfig,
+                    CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                 };
                 IDataItem dsItem = null;
                 if (listMode)
@@ -139,19 +140,27 @@ namespace Satrabel.OpenContent.Components
                 var dataManifest = manifest.GetAdditionalData(key);
                 //var templateFolder = string.IsNullOrEmpty(dataManifest.TemplateFolder) ? module.Settings.TemplateDir : module.Settings.TemplateDir.ParentFolder.Append(dataManifest.TemplateFolder);
                 int createdByUserid = -1;
+
+                //IDataSource ds;
+                //var dsContext = module.CreateDefaultDataContext(out ds);
+                //dsContext.UserId = UserInfo.UserID;
+                //dsContext.CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode();
+
                 var ds = DataSourceManager.GetDataSource(manifest.DataSource);
                 var dsContext = new DataSourceContext()
                 {
                     PortalId = PortalSettings.PortalId,
-                    CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                     TabId = ActiveModule.TabID,
                     ModuleId = module.DataModule.ModuleID,
                     TabModuleId = ActiveModule.TabModuleID,
-                    UserId = UserInfo.UserID,
                     TemplateFolder = module.Settings.TemplateDir.FolderPath,
                     Config = manifest.DataSourceConfig,
+
+                    UserId = UserInfo.UserID,
+                    CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                     //Options = reqOptions
                 };
+
                 var dsItem = ds.GetData(dsContext, dataManifest.ScopeType, dataManifest.StorageKey ?? key);
                 var json = ds.GetDataAlpaca(dsContext, true, true, true, key);
                 if (dsItem != null)
@@ -162,7 +171,7 @@ namespace Satrabel.OpenContent.Components
                     {
                         json["versions"] = versions;
                     }
-                    createdByUserid = dsItem.CreatedByUserId;
+                    //createdByUserid = dsItem.CreatedByUserId;
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, json);
             }
@@ -187,13 +196,14 @@ namespace Satrabel.OpenContent.Components
                 var dsContext = new DataSourceContext()
                 {
                     PortalId = PortalSettings.PortalId,
-                    CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                     TabId = ActiveModule.TabID,
                     ModuleId = module.DataModule.ModuleID,
                     TabModuleId = ActiveModule.TabModuleID,
-                    UserId = UserInfo.UserID,
                     TemplateFolder = module.Settings.TemplateDir.FolderPath,
                     Config = manifest.DataSourceConfig,
+
+                    UserId = UserInfo.UserID,
+                    CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                     //Options = reqOptions
                 };
                 var dsItem = ds.GetData(dsContext, dataManifest.ScopeType, dataManifest.StorageKey ?? key);
@@ -250,11 +260,13 @@ namespace Satrabel.OpenContent.Components
                 var dsContext = new DataSourceContext()
                 {
                     PortalId = module.DataModule.PortalID,
-                    CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
+
                     ModuleId = module.DataModule.ModuleID,
                     ActiveModuleId = ActiveModule.ModuleID,
                     TemplateFolder = module.Settings.TemplateDir.FolderPath,
-                    Config = manifest.DataSourceConfig
+                    Config = manifest.DataSourceConfig,
+
+                    CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                 };
                 var dsItem = ds.Get(dsContext, id);
                 if (dsItem != null)

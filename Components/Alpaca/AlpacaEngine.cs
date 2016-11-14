@@ -47,16 +47,22 @@ namespace Satrabel.OpenContent.Components.Alpaca
             Prefix = filePrefix;
         }
 
+        public void RegisterAll() // for openform
+        {
+            RegisterAll(false, false);
+        }
+
+        public void RegisterAll(bool bootstrap) // for openform
+        {
+            RegisterAll(bootstrap, false);
+        }
+
         public void RegisterAll(bool bootstrapLayoutEnabled, bool loadBootstrap)
         {
             RegisterAlpaca(bootstrapLayoutEnabled, loadBootstrap);
             RegisterTemplates();
             RegisterScripts(bootstrapLayoutEnabled);
             RegisterFields(bootstrapLayoutEnabled);
-        }
-        public void RegisterAll(bool bootstrap) // for openform
-        {
-            RegisterAll(bootstrap, false);
         }
 
         private void RegisterAlpaca(bool bootstrap, bool loadBootstrap)
