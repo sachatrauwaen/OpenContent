@@ -353,6 +353,21 @@ namespace Satrabel.OpenContent
                         true,
                         false);
                 }
+
+                if (templateDefined && OpenContentUtils.FormExist(settings.Template.ManifestFolderUri))
+                {
+                    actions.Add(ModuleContext.GetNextActionID(),
+                        Localization.GetString("FormSettings.Action", LocalResourceFile),
+                        ModuleActionType.ContentOptions,
+                        "",
+                        "~/DesktopModules/OpenContent/images/editsettings2.png",
+                        ModuleContext.EditUrl("formsettings"),
+                        false,
+                        SecurityAccessLevel.Edit,
+                        true,
+                        false);
+                }
+
                 actions.Add(ModuleContext.GetNextActionID(),
                     Localization.GetString("EditInit.Action", LocalResourceFile),
                     ModuleActionType.ContentOptions,
@@ -380,6 +395,7 @@ namespace Satrabel.OpenContent
                             false);
                     }
                 }
+                                
 
                 if (templateDefined && OpenContentUtils.BuildersExist(settings.Template.ManifestFolderUri))
                     actions.Add(ModuleContext.GetNextActionID(),

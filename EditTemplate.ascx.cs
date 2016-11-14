@@ -301,7 +301,7 @@ namespace Satrabel.OpenContent
                 txtSource.Text = "";
             }
             SetFileType(srcFile);
-            cmdBuilder.Visible = scriptList.SelectedValue.EndsWith("schema.json");
+            cmdBuilder.Visible = scriptList.SelectedValue.EndsWith("schema.json") && scriptList.SelectedValue != "form-schaema.json";
         }
         private void SetFileType(string filePath)
         {
@@ -383,6 +383,7 @@ namespace Satrabel.OpenContent
                         scriptList.Items.Add(new ListItem(title + "Options - " + item.Code, "options." + item.Code + ".json"));
                     }
                 }
+               
                 if (!OpenContentUtils.BuilderExist(settings.Template.ManifestFolderUri, template.Key.ShortKey))
                 {
                     scriptList.Items.Add(new ListItem("Settings Schema", template.Key.ShortKey + "-schema.json"));
@@ -411,6 +412,17 @@ namespace Satrabel.OpenContent
                 foreach (Locale item in LocaleController.Instance.GetLocales(PortalId).Values)
                 {
                     scriptList.Items.Add(new ListItem("Localization - " + item.Code, item.Code + ".json"));
+                }
+                //if (OpenContentUtils.FormExist(settings.Template.ManifestFolderUri))
+                {
+                    string title = "Form ";
+                    scriptList.Items.Add(new ListItem(title + "Schema", "form-schema.json"));
+                    scriptList.Items.Add(new ListItem(title + "Options", "form-options.json"));
+                    //scriptList.Items.Add(new ListItem("Edit Layout Options - Template File Overides", "options." + template.FileNameWithoutExtension + ".json"));
+                    foreach (Locale item in LocaleController.Instance.GetLocales(PortalId).Values)
+                    {
+                        scriptList.Items.Add(new ListItem(title + "Options - " + item.Code, "options." + item.Code + ".json"));
+                    }
                 }
             }
         }
