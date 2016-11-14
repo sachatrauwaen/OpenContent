@@ -421,21 +421,7 @@ namespace Satrabel.OpenContent.Components
 
         public static DataSourceContext CreateDefaultDataContext(this OpenContentModuleInfo module, out IDataSource ds)
         {
-            var manifest = module.Settings.Manifest;
-            List<LookupResultDTO> res = new List<LookupResultDTO>();
-
-            ds = DataSourceManager.GetDataSource(manifest.DataSource);
-            var dsContext = new DataSourceContext
-            {
-                PortalId = module.ViewModule.PortalID,
-                //CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
-                TabId = module.DataModule.TabID,
-                ModuleId = module.DataModule.ModuleID,
-                ActiveModuleId = module.ViewModule.ModuleID,
-                TemplateFolder = module.Settings.TemplateDir.FolderPath,
-                Config = manifest.DataSourceConfig,
-            };
-            return dsContext;
+            throw new NotImplementedException();
         }
 
         public static string ReverseMapPath(string path)
@@ -506,16 +492,16 @@ namespace Satrabel.OpenContent.Components
             }
             if (permissions && IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishStartDate))
             {
-                permissions =   dsItem.Data[AppConfig.FieldNamePublishStartDate] != null && 
+                permissions = dsItem.Data[AppConfig.FieldNamePublishStartDate] != null &&
                                 dsItem.Data[AppConfig.FieldNamePublishStartDate].Type == JTokenType.Date &&
                                 ((DateTime)dsItem.Data[AppConfig.FieldNamePublishStartDate]) <= DateTime.Today;
                 if (!permissions) raison = AppConfig.FieldNamePublishStartDate;
             }
             if (permissions && IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishEndDate))
             {
-                permissions =   dsItem.Data[AppConfig.FieldNamePublishEndDate] != null &&
+                permissions = dsItem.Data[AppConfig.FieldNamePublishEndDate] != null &&
                                 dsItem.Data[AppConfig.FieldNamePublishEndDate].Type == JTokenType.Date &&
-                                ((DateTime)dsItem.Data[AppConfig.FieldNamePublishEndDate])  >= DateTime.Today;
+                                ((DateTime)dsItem.Data[AppConfig.FieldNamePublishEndDate]) >= DateTime.Today;
                 if (!permissions) raison = AppConfig.FieldNamePublishEndDate;
             }
             if (permissions)

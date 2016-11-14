@@ -15,6 +15,15 @@ namespace Satrabel.OpenContent.Components
             TabModuleID = viewModule.TabModuleID;
         }
 
+        public OpenContentModuleInfo(int moduleId, int tabId)
+        {
+            ModuleController mc = new ModuleController();
+            ViewModule = mc.GetModule(moduleId, tabId, false);
+            TabID = ViewModule.TabID;
+            ModuleID = ViewModule.ModuleID;
+            TabModuleID = ViewModule.TabModuleID;
+        }
+
         public ModuleInfo ViewModule { get;  }
 
         public int TabID { get; }
