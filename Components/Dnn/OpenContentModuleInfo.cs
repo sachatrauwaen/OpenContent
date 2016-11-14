@@ -24,13 +24,13 @@ namespace Satrabel.OpenContent.Components
             TabModuleID = ViewModule.TabModuleID;
         }
 
-        public ModuleInfo ViewModule { get;  }
+        public ModuleInfo ViewModule { get; private set; }
 
-        public int TabID { get; }
-        public int ModuleID { get; }
-        public int TabModuleID { get; }
-        public string TemplateKey { get; }
-        public OpenContentSettings Settings { get; }
+        public int TabID { get; private set; }
+        public int ModuleID { get; private set; }
+        public int TabModuleID { get; private set; }
+        public string TemplateKey { get; private set; }
+        public OpenContentSettings Settings { get; private set; }
 
     }
 }
