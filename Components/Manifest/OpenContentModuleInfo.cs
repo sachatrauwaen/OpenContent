@@ -45,7 +45,8 @@ namespace Satrabel.OpenContent.Components
         public int TabId { get; }
         public int ModuleId { get; }
         public int TabModuleId { get; }
-        public string TemplateKey { get { return Settings.Template == null ? string.Empty : Settings.Template.Key.ToString(); } }
+        public string TemplateKey => Settings.Template?.Key.ToString() ?? string.Empty;
+
         public OpenContentSettings Settings
         {
             get

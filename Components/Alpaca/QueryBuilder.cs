@@ -64,7 +64,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
             {
                 excludeCurrentItem = (bool)vExcludeCurrentItem.Value;
             }
-            if (excludeCurrentItem && queryString != null && queryString["id"] != null)
+            if (excludeCurrentItem && queryString?["id"] != null)
             {
                 workFlowFilter.AddRule(new FilterRule()
                 {
@@ -140,7 +140,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                             }
                             workFlowFilter.FilterGroups.Add(arrGroup);
                         }
-                        else if (queryString != null && queryString[item.Name] != null)
+                        else if (queryString?[item.Name] != null)
                         {
                             workFlowFilter.AddRule(FieldConfigUtils.CreateFilterRule(IndexConfig, cultureCode,
 
@@ -155,7 +155,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                         var valObj = (JObject)item.Value;
                         var startDays = valObj["StartDays"] as JValue;
                         var endDays = valObj["EndDays"] as JValue;
-                        if ((startDays != null && startDays.Value != null) || (endDays != null && endDays.Value != null))
+                        if ((startDays?.Value != null) || (endDays?.Value != null))
                         {
                             var startDate = DateTime.MinValue;
                             var endDate = DateTime.MaxValue;
@@ -231,7 +231,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
         private void AddWorkflowFilter(FilterGroup filter)
         {
 
-            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishStatus))
+            if (IndexConfig?.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishStatus))
             {
                 filter.AddRule(new FilterRule()
                 {
@@ -240,7 +240,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     FieldType = FieldTypeEnum.KEY
                 });
             }
-            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishStartDate))
+            if (IndexConfig?.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishStartDate))
             {
                 //DateTime startDate = DateTime.MinValue;
                 //DateTime endDate = DateTime.Today;
@@ -252,7 +252,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     FieldType = FieldTypeEnum.DATETIME
                 });
             }
-            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishEndDate))
+            if (IndexConfig?.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishEndDate))
             {
                 //DateTime startDate = DateTime.Today;
                 //DateTime endDate = DateTime.MaxValue;
@@ -269,11 +269,11 @@ namespace Satrabel.OpenContent.Components.Alpaca
         private void AddRolesFilter(FilterGroup filter, IList<UserRoleInfo> roles)
         {
             string fieldName = "";
-            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey("userrole"))
+            if (IndexConfig?.Fields != null && IndexConfig.Fields.ContainsKey("userrole"))
             {
                 fieldName = "userrole";
             }
-            else if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey("userroles"))
+            else if (IndexConfig?.Fields != null && IndexConfig.Fields.ContainsKey("userroles"))
             {
                 fieldName = "userroles";
             }
@@ -349,7 +349,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
         private bool SortfieldMultiLanguage(string fieldName)
         {
 
-            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey(fieldName))
+            if (IndexConfig?.Fields != null && IndexConfig.Fields.ContainsKey(fieldName))
             {
                 var config = IndexConfig.Fields[fieldName].Items == null ? IndexConfig.Fields[fieldName] : IndexConfig.Fields[fieldName].Items;
                 return config.MultiLanguage;

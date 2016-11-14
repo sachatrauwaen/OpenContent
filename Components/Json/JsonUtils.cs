@@ -106,17 +106,15 @@ namespace Satrabel.OpenContent.Components.Json
             foreach (var child in o.Children<JProperty>().ToList())
             {
                 JObject opt = null;
-                if (options != null && options["fields"] != null)
+                if (options?["fields"] != null)
                 {
                     opt = options["fields"][child.Name] as JObject;
                 }
                 if (opt == null) continue;
                 bool lookup = 
                     opt["type"] != null &&
-                    opt["type"].ToString() == "select2" &&
-                    opt["dataService"] != null &&
-                    opt["dataService"]["data"] != null &&
-                    opt["dataService"]["data"]["dataKey"] != null;
+                    opt["type"].ToString() == "select2" && 
+                    opt["dataService"]?["data"]?["dataKey"] != null;
 
                 string dataKey = "";
                 string dataMember = "";
@@ -124,8 +122,8 @@ namespace Satrabel.OpenContent.Components.Json
                 if (lookup)
                 {
                     dataKey = opt["dataService"]["data"]["dataKey"].ToString();
-                    dataMember = opt["dataService"]["data"]["dataMember"] == null ? "" : opt["dataService"]["data"]["dataMember"].ToString();
-                    valueField = opt["dataService"]["data"]["valueField"] == null ? "Id" : opt["dataService"]["data"]["valueField"].ToString();
+                    dataMember = opt["dataService"]["data"]["dataMember"]?.ToString() ?? "";
+                    valueField = opt["dataService"]["data"]["valueField"]?.ToString() ?? "Id";
                 }
 
                 var childProperty = child;
