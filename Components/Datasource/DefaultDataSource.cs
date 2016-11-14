@@ -17,7 +17,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         {
             return GetAll(context, null).Items.SingleOrDefault(i => i.Id == id);
         }
-        public abstract IDataItems GetAll(DataSourceContext context, Search.Select select);
+        public abstract IDataItems GetAll(DataSourceContext context, Search.Select selectQuery);
 
         public virtual IDataItem GetData(DataSourceContext context, string scope, string key)
         {

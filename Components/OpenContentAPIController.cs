@@ -54,8 +54,8 @@ namespace Satrabel.OpenContent.Components
                 string editRole = manifest.GetEditRole();
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
 
-                IDataSource ds;
-                var dsContext = OpenContentUtils.CreateDataContext(module, out ds);
+                IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
+                var dsContext = OpenContentUtils.CreateDataContext(module);
 
                 IDataItem dsItem = null;
                 if (listMode)
@@ -101,7 +101,7 @@ namespace Satrabel.OpenContent.Components
                     createdByUserid = dsItem.CreatedByUserId;
                 }
 
-                if (!OpenContentUtils.HasEditPermissions(PortalSettings, module.DataModule, editRole, createdByUserid))
+                if (!OpenContentUtils.HasEditPermissions(PortalSettings, module.ViewModule, editRole, createdByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
@@ -125,11 +125,9 @@ namespace Satrabel.OpenContent.Components
                 var module = new OpenContentModuleInfo(ActiveModule);
                 var manifest = module.Settings.Manifest;
                 var dataManifest = manifest.GetAdditionalData(key);
-                //var templateFolder = string.IsNullOrEmpty(dataManifest.TemplateFolder) ? module.Settings.TemplateDir : module.Settings.TemplateDir.ParentFolder.Append(dataManifest.TemplateFolder);
-                int createdByUserid = -1;
 
-                IDataSource ds;
-                var dsContext = OpenContentUtils.CreateDataContext(module, out ds, UserInfo.UserID);
+                IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
+                var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
 
                 var dsItem = ds.GetData(dsContext, dataManifest.ScopeType, dataManifest.StorageKey ?? key);
                 var json = ds.GetDataAlpaca(dsContext, true, true, true, key);
@@ -141,7 +139,6 @@ namespace Satrabel.OpenContent.Components
                     {
                         json["versions"] = versions;
                     }
-                    //createdByUserid = dsItem.CreatedByUserId;
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, json);
             }
@@ -163,8 +160,8 @@ namespace Satrabel.OpenContent.Components
                 string key = json["key"].ToString();
                 var dataManifest = manifest.GetAdditionalData(key);
 
-                IDataSource ds;
-                var dsContext = OpenContentUtils.CreateDataContext(module, out ds, UserInfo.UserID);
+                IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
+                var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
 
                 var dsItem = ds.GetData(dsContext, dataManifest.ScopeType, dataManifest.StorageKey ?? key);
                 if (dsItem == null)
@@ -217,8 +214,8 @@ namespace Satrabel.OpenContent.Components
             {
                 int createdByUserid = -1;
 
-                IDataSource ds;
-                var dsContext = OpenContentUtils.CreateDataContext(module, out ds, UserInfo.UserID);
+                IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
+                var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
 
                 var dsItem = ds.Get(dsContext, id);
                 if (dsItem != null)
@@ -284,8 +281,8 @@ namespace Satrabel.OpenContent.Components
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 int createdByUserid = -1;
 
-                IDataSource ds;
-                var dsContext = OpenContentUtils.CreateDataContext(module, out ds, UserInfo.UserID);
+                IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
+                var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
 
                 IDataItem dsItem = null;
                 if (listMode)
@@ -356,8 +353,8 @@ namespace Satrabel.OpenContent.Components
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 int createdByUserid = -1;
 
-                IDataSource ds;
-                var dsContext = OpenContentUtils.CreateDataContext(module, out ds, UserInfo.UserID);
+                IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
+                var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
 
                 IDataItem content = null;
                 if (listMode)
@@ -483,8 +480,8 @@ namespace Satrabel.OpenContent.Components
             List<LookupResultDTO> res = new List<LookupResultDTO>();
             try
             {
-                IDataSource ds;
-                var dsContext = OpenContentUtils.CreateDataContext(module, out ds, UserInfo.UserID);
+                IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
+                var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
 
                 var dsItem = ds.GetData(dsContext, dataManifest.ScopeType, dataManifest.StorageKey ?? key);
                 if (dsItem != null)
@@ -544,8 +541,8 @@ namespace Satrabel.OpenContent.Components
             List<LookupResultDTO> res = new List<LookupResultDTO>();
             try
             {
-                IDataSource ds;
-                var dsContext = OpenContentUtils.CreateDataContext(module, out ds, UserInfo.UserID);
+                IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
+                var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
 
                 if (listMode)
                 {

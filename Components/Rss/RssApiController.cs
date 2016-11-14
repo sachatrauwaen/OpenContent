@@ -42,8 +42,8 @@ namespace Satrabel.OpenContent.Components.Rss
                 QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
                 queryBuilder.Build(module.Settings.Query, PortalSettings.UserMode != PortalSettings.Mode.Edit, UserInfo.UserID, DnnLanguageUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
 
-                IDataSource ds;
-                var dsContext = OpenContentUtils.CreateDataContext(module, out ds, UserInfo.UserID);
+                IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
+                var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
 
                 var dsItems = ds.GetAll(dsContext, queryBuilder.Select);
                 dataList = dsItems.Items;

@@ -411,7 +411,7 @@ namespace Satrabel.OpenContent.Components
         {
             bool result = true;
             var settings = module.Settings;
-            if (settings != null && settings.TemplateKey != null && settings.TemplateKey.TemplateDir != null && !settings.TemplateKey.TemplateDir.FolderExists)
+            if (settings?.TemplateKey?.TemplateDir != null && !settings.TemplateKey.TemplateDir.FolderExists)
             {
                 var url = DnnUrlUtils.NavigateUrl(module.ViewModule.TabID);
                 Log.Logger.ErrorFormat("Error loading OpenContent Template on page [{5}-{4}-{1}] module [{2}-{3}]. Reason: Template not found [{0}]", settings.TemplateKey.ToString(), url, module.ViewModule.ModuleID, module.ViewModule.ModuleTitle, module.ViewModule.TabID, module.ViewModule.PortalID);
@@ -420,12 +420,8 @@ namespace Satrabel.OpenContent.Components
             return result;
         }
 
-        public static DataSourceContext CreateDataContext(OpenContentModuleInfo module, out IDataSource ds, int userId = -1, bool single = false, JObject options = null)
+        public static DataSourceContext CreateDataContext(OpenContentModuleInfo module, int userId = -1, bool single = false, JObject options = null)
         {
-            var manifest = module.Settings.Manifest;
-            List<LookupResultDTO> res = new List<LookupResultDTO>();
-
-            ds = DataSourceManager.GetDataSource(manifest.DataSource);
             var dsContext = new DataSourceContext
             {
                 PortalId = module.ViewModule.PortalID,
@@ -434,12 +430,14 @@ namespace Satrabel.OpenContent.Components
                 ModuleId = module.DataModule.ModuleID,
                 TemplateFolder = module.Settings.TemplateDir.FolderPath,
                 UserId = userId,
-                Config = manifest.DataSourceConfig,
+                Config = module.Settings.Manifest.DataSourceConfig,
                 Index = module.Settings.Template.Manifest.Index,
                 Options = options,
+                Single = single,
             };
-            if (PortalSettings.Current != null)
+            if (PortalSettings.Current != null) 
             {
+                //PortalSettings is null if called from scheduler (eg UrlRewriter, Search, ...)
                 dsContext.CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode();
             }
             return dsContext;

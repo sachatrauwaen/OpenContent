@@ -33,7 +33,7 @@ namespace Satrabel.OpenContent.Components.Render
 
         public RenderEngine(ModuleInfo viewmodule)
         {
-            _module = new OpenContentModuleInfo(viewmodule); 
+            _module = new OpenContentModuleInfo(viewmodule);
         }
 
         public RenderInfo Info
@@ -239,8 +239,8 @@ namespace Satrabel.OpenContent.Components.Render
             string templateKey = "";
             info.ResetData();
 
-            IDataSource ds;
-            var dsContext = OpenContentUtils.CreateDataContext(_module, out ds);
+            IDataSource ds = DataSourceManager.GetDataSource(_module.Settings.Manifest.DataSource);
+            var dsContext = OpenContentUtils.CreateDataContext(_module);
 
             IEnumerable<IDataItem> resultList = new List<IDataItem>();
             if (clientSide || !info.Files.DataInTemplate)
@@ -348,7 +348,7 @@ namespace Satrabel.OpenContent.Components.Render
                     string raison;
                     if (!OpenContentUtils.HaveViewPermissions(dsItem, portalSettings.UserInfo, indexConfig, out raison))
                     {
-                        Exceptions.ProcessHttpException(new HttpException(404, "No detail view permissions for id=" + info.DetailItemId + " ("+raison+")"));
+                        Exceptions.ProcessHttpException(new HttpException(404, "No detail view permissions for id=" + info.DetailItemId + " (" + raison + ")"));
                         //throw new UnauthorizedAccessException("No detail view permissions for id " + info.DetailItemId);
                     }
                 }
@@ -360,9 +360,9 @@ namespace Satrabel.OpenContent.Components.Render
         {
             info.ResetData();
 
-            IDataSource ds;
-            var dsContext = OpenContentUtils.CreateDataContext(_module, out ds,-1,true);
-            
+            IDataSource ds = DataSourceManager.GetDataSource(_module.Settings.Manifest.DataSource);
+            var dsContext = OpenContentUtils.CreateDataContext(_module, -1, true);
+
             var dsItem = ds.Get(dsContext, null);
             if (dsItem != null)
             {

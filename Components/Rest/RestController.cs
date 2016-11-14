@@ -66,8 +66,8 @@ namespace Satrabel.OpenContent.Components.Rest
                     }
                     else
                     {
-                        IDataSource ds;
-                        var dsContext = OpenContentUtils.CreateDataContext(module, out ds, UserInfo.UserID,false, reqOptions);
+                        IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
+                        var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID,false, reqOptions);
                         dsItems = ds.GetAll(dsContext, queryBuilder.Select);
                     }
                     ModelFactory mf = new ModelFactory(dsItems.Items, module, PortalSettings);
@@ -156,8 +156,8 @@ namespace Satrabel.OpenContent.Components.Rest
                     }
                     else
                     {
-                        IDataSource ds;
-                        var dsContext = OpenContentUtils.CreateDataContext(module, out ds, UserInfo.UserID, false, reqOptions);
+                        IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
+                        var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID, false, reqOptions);
 
                         dsItems = ds.GetAll(dsContext, queryBuilder.Select);
                     }
@@ -223,8 +223,8 @@ namespace Satrabel.OpenContent.Components.Rest
 
                     int createdByUserid = -1;
 
-                    IDataSource ds;
-                    var dsContext = OpenContentUtils.CreateDataContext(module, out ds, UserInfo.UserID);
+                    IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
+                    var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
 
                     var dsItem = ds.GetData(dsContext, dataManifest.ScopeType, dataManifest.StorageKey ?? entity);
                     if (dsItem != null)
@@ -265,8 +265,8 @@ namespace Satrabel.OpenContent.Components.Rest
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 int createdByUserid = -1;
 
-                IDataSource ds;
-                var dsContext = OpenContentUtils.CreateDataContext(module, out ds, UserInfo.UserID);
+                IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
+                var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
 
                 IDataItem dsItem = null;
                 if (listMode)
@@ -346,8 +346,8 @@ namespace Satrabel.OpenContent.Components.Rest
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 int createdByUserid = -1;
 
-                IDataSource ds;
-                var dsContext = OpenContentUtils.CreateDataContext(module, out ds, UserInfo.UserID);
+                IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
+                var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
 
                 IDataItem dsItem = null;
                 if (listMode)
@@ -406,8 +406,8 @@ namespace Satrabel.OpenContent.Components.Rest
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 int createdByUserid = -1;
 
-                IDataSource ds;
-                var dsContext = OpenContentUtils.CreateDataContext(module, out ds, UserInfo.UserID);
+                IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
+                var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
 
                 if (!OpenContentUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, createdByUserid))
                 {
@@ -439,8 +439,8 @@ namespace Satrabel.OpenContent.Components.Rest
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 int createdByUserid = -1;
 
-                IDataSource ds;
-                var dsContext = OpenContentUtils.CreateDataContext(module, out ds, UserInfo.UserID);
+                IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
+                var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
 
                 IDataItem dsItem = null;
                 if (listMode)

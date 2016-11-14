@@ -31,7 +31,6 @@ namespace Satrabel.OpenContent.Components
         private readonly PortalSettings _portalSettings;
         private readonly int _portalId;
         private readonly int _detailTabId;
-        private readonly int _datamoduleModuleId;
         private readonly string _cultureCode;
 
         public JObject Options { get; set; } // alpaca options.json format
@@ -47,10 +46,9 @@ namespace Satrabel.OpenContent.Components
             this._portalSettings = portalSettings;
             this._portalId = portalSettings.PortalId;
             this._templateManifest = templateManifest;
-            this._datamoduleModuleId = module.DataModule.ModuleID;
             this._detailTabId = DnnUtils.GetTabByCurrentCulture(this._portalId, module.GetDetailTabId(), GetCurrentCultureCode());
-
         }
+
         public ModelFactory(IDataItem data, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleInfo module, PortalSettings portalSettings)
         {
             this._dataJson = data.Data;
@@ -63,9 +61,7 @@ namespace Satrabel.OpenContent.Components
             this._portalSettings = portalSettings;
             this._portalId = portalSettings.PortalId;
             this._templateManifest = templateManifest;
-            this._datamoduleModuleId = module.DataModule.ModuleID;
             this._detailTabId = DnnUtils.GetTabByCurrentCulture(this._portalId, module.GetDetailTabId(), GetCurrentCultureCode());
-
         }
         public ModelFactory(IDataItem data, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleInfo module, int portalId, string cultureCode, int mainTabId, int mainModuleId)
         {
@@ -79,9 +75,7 @@ namespace Satrabel.OpenContent.Components
             this._portalId = portalId;
             this._cultureCode = cultureCode;
             this._templateManifest = templateManifest;
-            this._datamoduleModuleId = module.DataModule.ModuleID;
             this._detailTabId = DnnUtils.GetTabByCurrentCulture(this._portalId, module.GetDetailTabId(), GetCurrentCultureCode());
-
         }
 
         public ModelFactory(IEnumerable<IDataItem> dataList, OpenContentModuleInfo module, PortalSettings portalSettings)
@@ -96,9 +90,7 @@ namespace Satrabel.OpenContent.Components
             this._portalSettings = portalSettings;
             this._portalId = portalSettings.PortalId;
             this._templateManifest = settings.Template;
-            this._datamoduleModuleId = module.DataModule.ModuleID;
             this._detailTabId = DnnUtils.GetTabByCurrentCulture(this._portalId, module.GetDetailTabId(), GetCurrentCultureCode());
-
         }
 
         public ModelFactory(IEnumerable<IDataItem> dataList, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleInfo module, PortalSettings portalSettings)
@@ -112,7 +104,6 @@ namespace Satrabel.OpenContent.Components
             this._portalSettings = portalSettings;
             this._portalId = portalSettings.PortalId;
             this._templateManifest = templateManifest;
-            this._datamoduleModuleId = module.DataModule.ModuleID;
             this._detailTabId = DnnUtils.GetTabByCurrentCulture(this._portalId, module.GetDetailTabId(), GetCurrentCultureCode());
         }
 
@@ -128,7 +119,6 @@ namespace Satrabel.OpenContent.Components
             this._portalId = portalId;
             this._cultureCode = cultureCode;
             this._templateManifest = templateManifest;
-            this._datamoduleModuleId = module.DataModule.ModuleID;
             this._detailTabId = DnnUtils.GetTabByCurrentCulture(this._portalId, module.GetDetailTabId(), GetCurrentCultureCode());
         }
 
@@ -332,14 +322,7 @@ namespace Satrabel.OpenContent.Components
                 {
                     var dataManifest = item.Value;
                     var ds = DataSourceManager.GetDataSource(_manifest.DataSource);
-                    var dsContext = new DataSourceContext()
-                    {
-                        PortalId = _portalId,
-                        TabId = _module.ViewModule.TabID,
-                        ModuleId = _datamoduleModuleId,
-                        TabModuleId = _module.TabModuleId,
-                        Config = _manifest.DataSourceConfig,
-                    };
+                    var dsContext = OpenContentUtils.CreateDataContext(_module);
                     var dsItem = ds.GetData(dsContext, dataManifest.ScopeType, dataManifest.StorageKey ?? item.Key);
                     JToken additionalDataJson = new JObject();
                     if (dsItem?.Data != null)
@@ -425,7 +408,7 @@ namespace Satrabel.OpenContent.Components
         {
             string editRole = _manifest.GetEditRole();
             return (IsEditable || OpenContentUtils.HasEditRole(_portalSettings, editRole, createdByUser)) // edit Role can edit whtout be in edit mode
-                    && OpenContentUtils.HasEditPermissions(_portalSettings, _module.DataModule, editRole, createdByUser);
+                    && OpenContentUtils.HasEditPermissions(_portalSettings, _module.ViewModule, editRole, createdByUser);
         }
 
         private string GetCurrentCultureCode()

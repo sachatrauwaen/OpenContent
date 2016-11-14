@@ -24,8 +24,8 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                 {
                     if (module.IsListTemplate() && (!module.Settings.IsOtherModule || module.Settings.DetailTabId > 0))
                     {
-                        IDataSource ds;
-                        var dsContext = OpenContentUtils.CreateDataContext(module, out ds);
+                        IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
+                        var dsContext = OpenContentUtils.CreateDataContext(module);
                         dsContext.Agent = "OpenContentUrlProvider.GetRules()";
 
                         var dataList = ds.GetAll(dsContext, null).Items;

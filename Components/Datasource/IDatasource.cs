@@ -36,9 +36,9 @@ namespace Satrabel.OpenContent.Components.Datasource
         /// Gets items of a list datasource based on a query, 
         /// </summary>
         /// <param name="context">The context.</param>
-        /// <param name="select">The select. (if null must return all data)</param>
+        /// <param name="selectQuery">The select. (if null must return all data)</param>
         /// <returns></returns>
-        IDataItems GetAll(DataSourceContext context, Select select);
+        IDataItems GetAll(DataSourceContext context, Select selectQuery);
 
         /// <summary>
         /// Gets Alpaca Schema, Options and View json, 

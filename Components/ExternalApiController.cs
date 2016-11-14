@@ -35,7 +35,7 @@ namespace Satrabel.OpenContent.Components
 
                 if (listMode)
                 {
-                    if (!OpenContentUtils.HasEditPermissions(PortalSettings, module.DataModule, editRole, createdByUserid))
+                    if (!OpenContentUtils.HasEditPermissions(PortalSettings, module.ViewModule, editRole, createdByUserid))
                     {
                         return Request.CreateResponse(HttpStatusCode.Unauthorized);
                     }

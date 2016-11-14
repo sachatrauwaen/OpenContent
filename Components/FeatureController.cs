@@ -101,8 +101,8 @@ namespace Satrabel.OpenContent.Components
                 return searchDocuments;
             }
 
-            IDataSource ds;
-            var dsContext = OpenContentUtils.CreateDataContext(module, out ds);
+            IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
+            var dsContext = OpenContentUtils.CreateDataContext(module);
 
             IDataItems contentList = ds.GetAll(dsContext, null);
             if (!contentList.Items.Any())

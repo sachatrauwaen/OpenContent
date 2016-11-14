@@ -55,9 +55,8 @@ namespace Satrabel.OpenContent.Components.JPList
                     }
                     else
                     {
-                        IDataSource ds;
-                        var dsContext = OpenContentUtils.CreateDataContext(module, out ds, UserInfo.UserID,false, reqOptions);
-
+                        IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
+                        var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID, false, reqOptions);
                         dsItems = ds.GetAll(dsContext, queryBuilder.Select);
                     }
                     ModelFactory mf = new ModelFactory(dsItems.Items, module, PortalSettings);

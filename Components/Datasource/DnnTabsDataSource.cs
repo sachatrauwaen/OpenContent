@@ -23,20 +23,20 @@ namespace Satrabel.OpenContent.Components.Datasource
         {
             return GetAll(context, null).Items.SingleOrDefault(i => i.Id == id);
         }
-        public override IDataItems GetAll(DataSourceContext context, Search.Select select)
+        public override IDataItems GetAll(DataSourceContext context, Search.Select selectQuery)
         {
             int AdminTabId = PortalSettings.Current.AdminTabId;
             var tabs = TabController.GetTabsBySortOrder(context.PortalId).Where(t => t.ParentId != AdminTabId && !t.IsSuperTab);
             tabs = tabs.Where(t => Navigation.CanShowTab(t, false, true, false));
             int total = tabs.Count();
-            if (select != null)
+            if (selectQuery != null)
             {
-                var tabName = select.Query.FilterRules.FirstOrDefault(f => f.Field == "TabName");
+                var tabName = selectQuery.Query.FilterRules.FirstOrDefault(f => f.Field == "TabName");
                 if (tabName != null)
                 {
                     tabs = tabs.Where(t => t.TabName.ToLower().Contains(tabName.Value.AsString.ToLower()));
                 }
-                tabs = tabs.Skip(select.PageIndex * select.PageSize).Take(select.PageSize).ToList();
+                tabs = tabs.Skip(selectQuery.PageIndex * selectQuery.PageSize).Take(selectQuery.PageSize).ToList();
             }
             var dataList = new List<IDataItem>();
             foreach (var tab in tabs)

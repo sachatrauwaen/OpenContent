@@ -183,9 +183,9 @@ namespace Satrabel.OpenContent.Components.Datasource
             };
         }
 
-        public virtual IDataItems GetAll(DataSourceContext context, Select select)
+        public virtual IDataItems GetAll(DataSourceContext context, Select selectQuery)
         {
-            if (select == null)
+            if (selectQuery == null)
             {
                 return GetAll(context);
             }
@@ -193,7 +193,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             {
                 OpenContentController ctrl = new OpenContentController();
                 SelectQueryDefinition def = new SelectQueryDefinition();
-                def.Build(@select);
+                def.Build(selectQuery);
                 if (LogContext.IsLogActive)
                 {
                     var logKey = "Lucene query";
