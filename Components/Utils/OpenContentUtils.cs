@@ -491,6 +491,13 @@ namespace Satrabel.OpenContent.Components
             return false;
         }
 
+        internal static bool FormExist(FolderUri folder)
+        {
+            if (folder.FolderExists)
+                return Directory.GetFiles(folder.PhysicalFullDirectory, "form-schema.json").Length > 0;
+            return false;
+        }
+
 
         internal static bool HaveViewPermissions(Datasource.IDataItem dsItem, DotNetNuke.Entities.Users.UserInfo userInfo, FieldConfig IndexConfig, out string raison)
         {
@@ -507,16 +514,16 @@ namespace Satrabel.OpenContent.Components
             }
             if (permissions && IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishStartDate))
             {
-                permissions =   dsItem.Data[AppConfig.FieldNamePublishStartDate] != null && 
+                permissions = dsItem.Data[AppConfig.FieldNamePublishStartDate] != null &&
                                 dsItem.Data[AppConfig.FieldNamePublishStartDate].Type == JTokenType.Date &&
                                 ((DateTime)dsItem.Data[AppConfig.FieldNamePublishStartDate]) <= DateTime.Today;
                 if (!permissions) raison = AppConfig.FieldNamePublishStartDate;
             }
             if (permissions && IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishEndDate))
             {
-                permissions =   dsItem.Data[AppConfig.FieldNamePublishEndDate] != null &&
+                permissions = dsItem.Data[AppConfig.FieldNamePublishEndDate] != null &&
                                 dsItem.Data[AppConfig.FieldNamePublishEndDate].Type == JTokenType.Date &&
-                                ((DateTime)dsItem.Data[AppConfig.FieldNamePublishEndDate])  >= DateTime.Today;
+                                ((DateTime)dsItem.Data[AppConfig.FieldNamePublishEndDate]) >= DateTime.Today;
                 if (!permissions) raison = AppConfig.FieldNamePublishEndDate;
             }
             if (permissions)

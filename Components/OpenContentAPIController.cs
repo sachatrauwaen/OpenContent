@@ -681,16 +681,70 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
+        /*
         [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
+        [HttpPost]
+        public HttpResponseMessage List(ListDTO req)
+        {
+            OpenContentSettings settings = ActiveModule.OpenContentSettings();
+            ModuleInfo module = ActiveModule;
+            if (settings.ModuleId > 0)
+            {
+                ModuleController mc = new ModuleController();
+                module = mc.GetModule(settings.ModuleId, settings.TabId, false);
+            }
+            var manifest = settings.Template.Manifest;
+            TemplateManifest templateManifest = settings.Template;
+            string editRole = manifest.GetEditRole();
+            bool listMode = templateManifest != null && templateManifest.IsListTemplate;
+            JArray json = new JArray();
+            try
+            {
+                if (listMode)
+                {
+                    var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
+
+                    var docs = LuceneController.Instance.Search(module.ModuleID.ToString(), "Title", req.query, "", "", 10, 0, indexConfig);
+                    foreach (var item in docs.ids)
+                    {
+                        var content = GetContent(module.ModuleID, listMode, int.Parse(item));
+                        if (content != null)
+                        {
+                            json.Add(content.Json.ToJObject("GetContent " + item));
+                        }
+                    }
+                }
+                else
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "not supported because not in multi items template ");
+                }
+                return Request.CreateResponse(HttpStatusCode.OK, json);
+            }
+            catch (Exception exc)
+            {
+                Log.Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
+        */
+         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
         [HttpGet]
         public HttpResponseMessage EditSettings(string key)
+        {
+            return EditSettings(key, true);
+        }
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [HttpGet]
+        public HttpResponseMessage EditSettings(string key, bool templateFolder)
         {
             string data = (string)ActiveModule.ModuleSettings[key];
             try
             {
                 OpenContentSettings settings = ActiveModule.OpenContentSettings();
-                var fb = new FormBuilder(settings.TemplateDir);
+                var fb = new FormBuilder(templateFolder ? settings.TemplateDir : new FolderUri("~/DesktopModules/OpenContent"));
                 JObject json = fb.BuildForm(key, DnnLanguageUtils.GetCurrentCultureCode());
                 var dataJson = data.ToJObject("Raw settings json");
                 if (dataJson != null)
