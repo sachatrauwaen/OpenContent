@@ -45,12 +45,12 @@ namespace Satrabel.OpenContent.Components.Datasource
         }
         public virtual JToken GetDataVersions(DataSourceContext context, IDataItem item)
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         public virtual JToken GetDataVersion(DataSourceContext context, IDataItem item, DateTime datetime)
         {
-            throw new NotImplementedException();
+            return null;
         }
         public abstract void Add(DataSourceContext context, JToken data);
 

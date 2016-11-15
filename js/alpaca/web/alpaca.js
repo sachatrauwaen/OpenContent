@@ -22846,7 +22846,7 @@ this["HandlebarsPrecompiled"]["web-edit"]["wizard"] = Handlebars.template({"1":f
             }
 
             // default html5 input type = "color";
-            if (typeof(this.options.spectrum) === "undefined" && self.spectrumAvailable)
+            if (typeof(this.options.spectrum) === "undefined" && !self.spectrumAvailable)
             {
                 this.inputType = "color";
             }

@@ -218,6 +218,18 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
         }
 
+        public JObject BuildForm(string key)
+        {
+            if (key == "query")
+            {
+                return BuildQuerySettings();
+            }
+            else
+            {
+                return Build(key, DnnLanguageUtils.GetCurrentCultureCode());
+            }
+        }
+
         private JObject Build()
         {
             return Build("", DnnLanguageUtils.GetCurrentCultureCode());
