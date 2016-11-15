@@ -197,8 +197,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 //var module=new OpenContentModuleInfo()
                 //var context=OpenContentUtils.CreateDataContext()
                 IDataItems data = GetAll(context);
-
-                    return data;
+                return data;
             }
             return null;
         }

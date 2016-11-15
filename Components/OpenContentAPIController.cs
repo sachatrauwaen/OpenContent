@@ -20,6 +20,7 @@ using DotNetNuke.Security;
 using Satrabel.OpenContent.Components.Json;
 using DotNetNuke.Entities.Modules;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Manifest;
@@ -489,46 +490,41 @@ namespace Satrabel.OpenContent.Components
                 {
                     if (additionalDataManifest.SourceRelatedDataSource == RelatedDataSourceType.AdditionalData)
                     {
-                        JToken json = dataItems.Items.First().Data;
+                        JToken data = dataItems.Items.First().Data;
                         if (!string.IsNullOrEmpty(req.dataMember))
                         {
-                            json = json[req.dataMember];
+                            data = data[req.dataMember];
                         }
-                        if (json is JArray)
+                        if (data is JArray)
                         {
                             if (LocaleController.Instance.GetLocales(PortalSettings.PortalId).Count > 1)
                             {
-                                JsonUtils.SimplifyJson(json, DnnLanguageUtils.GetCurrentCultureCode());
+                                JsonUtils.SimplifyJson(data, DnnLanguageUtils.GetCurrentCultureCode());
                             }
-                            AddLookupItems(req.valueField, req.textField, req.childrenField, res, json as JArray);
+                            AddLookupItems(req.valueField, req.textField, req.childrenField, res, data as JArray);
                         }
                     }
                     else if (additionalDataManifest.SourceRelatedDataSource == RelatedDataSourceType.MainData)
                     {
-                        foreach (var item in dataItems.Items)
+                        JArray jsonList = new JArray();
+                        if (!string.IsNullOrEmpty(req.dataMember))
                         {
-                            JToken json = item.Data;
-                            if (!string.IsNullOrEmpty(req.dataMember))
-                            {
-                                json = json[req.dataMember];
-                            }
-                            if (json is JArray)
+                            Debugger.Break(); //should we do anything here?
+                        }
+                        foreach (var dataItem in dataItems.Items)
+                        {
+                            JToken data = dataItem.Data;
+                            if (data != null)
                             {
                                 if (LocaleController.Instance.GetLocales(PortalSettings.PortalId).Count > 1)
                                 {
-                                    JsonUtils.SimplifyJson(json, DnnLanguageUtils.GetCurrentCultureCode());
+                                    JsonUtils.SimplifyJson(data, DnnLanguageUtils.GetCurrentCultureCode());
                                 }
-                                AddLookupItems(req.valueField, req.textField, req.childrenField, res, json as JArray);
+                                data["Id"] = dataItem.Id; //add the contentItem Id to the json
+                                jsonList.Add(data);
                             }
-
-                        //    res.Add(new LookupResultDTO()
-                        //    {
-                        //        value = item.Data.ToString(),
-                        //        text = item.Data.ToString(),
-                        //    //value = item[req.valueField] == null ? "" : item[req.valueField].ToString(),
-                        //    //text = item[req.textField] == null ? "" : item[req.textField].ToString()
-                        //});
                         }
+                        AddLookupItems(req.valueField, req.textField, req.childrenField, res, jsonList as JArray);
                     }
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, res);

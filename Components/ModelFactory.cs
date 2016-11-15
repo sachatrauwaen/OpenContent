@@ -351,6 +351,7 @@ namespace Satrabel.OpenContent.Components
                                     {
                                         JsonUtils.SimplifyJson(data, GetCurrentCultureCode());
                                     }
+                                    data["Id"] = dataItem.Id; //add the contentItem Id to the json
                                     jsonList.Add(data);
                                 }
                             }
