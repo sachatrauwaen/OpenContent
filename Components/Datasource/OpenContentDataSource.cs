@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.Logging;
+using Satrabel.OpenContent.Components.Manifest;
 
 namespace Satrabel.OpenContent.Components.Datasource
 {
@@ -168,6 +169,40 @@ namespace Satrabel.OpenContent.Components.Datasource
             return null;
         }
 
+        public IDataItems GetRelatedData(DataSourceContext context, string scope, string key, RelatedDataSourceType sourceRelatedData)
+        {
+            if (sourceRelatedData == RelatedDataSourceType.AdditionalData)
+            {
+                var scopeStorage = AdditionalDataUtils.GetScope(scope, context.PortalId, context.TabId, GetModuleId(context), context.TabModuleId);
+                var dc = new AdditionalDataController();
+                AdditionalDataInfo data = dc.GetData(scopeStorage, key);
+                if (data != null)
+                {
+                    var dataItem = new DefaultDataItem
+                    {
+                        Data = data.Json.ToJObject("GetContent " + scope + "/" + key),
+                        CreatedByUserId = data.CreatedByUserId,
+                        Item = data
+                    };
+                    LogContext.Log(context.ActiveModuleId, "Get Data", "Result", dataItem);
+
+                    var itemList = new List<IDataItem> { dataItem };
+                    var dataItems = new DefaultDataItems(itemList, 1);
+
+                    return dataItems;
+                }
+            }
+            else
+            {
+                //var module=new OpenContentModuleInfo()
+                //var context=OpenContentUtils.CreateDataContext()
+                IDataItems data = GetAll(context);
+
+                    return data;
+            }
+            return null;
+        }
+
         public virtual IDataItems GetAll(DataSourceContext context)
         {
             OpenContentController ctrl = new OpenContentController();
@@ -223,7 +258,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 {
                     Items = dataList,
                     Total = total,
-                    DebugInfo = def.Filter.ToString() + " - " + def.Query.ToString() + " - " + def.Sort.ToString()
+                    DebugInfo = def.Filter + " - " + def.Query + " - " + def.Sort
                 };
             }
         }
@@ -348,11 +383,11 @@ namespace Satrabel.OpenContent.Components.Datasource
 
         private static int GetModuleId(DataSourceContext context)
         {
-            return context.Config != null && context.Config["ModuleId"] != null ? context.Config["ModuleId"].Value<int>() : context.ModuleId;
+            return context.Config?["ModuleId"]?.Value<int>() ?? context.ModuleId;
         }
         private static int GetTabId(DataSourceContext context)
         {
-            return context.Config != null && context.Config["TabId"] != null ? context.Config["TabId"].Value<int>() : context.TabId;
+            return context.Config?["TabId"]?.Value<int>() ?? context.TabId;
         }
         private static DefaultDataItem CreateDefaultDataItem(OpenContentInfo content)
         {

@@ -177,9 +177,9 @@
     <Compile Include="AlpacaFormBuilder.ascx.designer.cs">
       <DependentUpon>AlpacaFormBuilder.ascx</DependentUpon>
     </Compile>
-    <Compile Include="Components\AdditionalDataController.cs" />
-    <Compile Include="Components\AdditionalDataInfo.cs" />
-    <Compile Include="Components\AdditionalDataUtils.cs" />
+    <Compile Include="Components\AdditionalData\AdditionalDataController.cs" />
+    <Compile Include="Components\AdditionalData\AdditionalDataInfo.cs" />
+    <Compile Include="Components\AdditionalData\AdditionalDataUtils.cs" />
     <Compile Include="Components\Alpaca\AlpacaContext.cs" />
     <Compile Include="Components\Alpaca\AlpacaEngine.cs" />
     <Compile Include="Components\Alpaca\FormBuilder.cs" />

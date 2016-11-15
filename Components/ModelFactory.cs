@@ -323,15 +323,39 @@ namespace Satrabel.OpenContent.Components
                     var dataManifest = item.Value;
                     var ds = DataSourceManager.GetDataSource(_manifest.DataSource);
                     var dsContext = OpenContentUtils.CreateDataContext(_module);
-                    var dsItem = ds.GetData(dsContext, dataManifest.ScopeType, dataManifest.StorageKey ?? item.Key);
+                    var dataItems = ds.GetRelatedData(dsContext, dataManifest.ScopeType, dataManifest.StorageKey ?? item.Key, dataManifest.SourceRelatedDataSource);
                     JToken additionalDataJson = new JObject();
-                    if (dsItem?.Data != null)
+                    if (dataItems != null && dataItems.Items.Any())
                     {
-                        if (LocaleController.Instance.GetLocales(_portalId).Count > 1)
+                        if (dataManifest.SourceRelatedDataSource == RelatedDataSourceType.AdditionalData)
                         {
-                            JsonUtils.SimplifyJson(dsItem.Data, GetCurrentCultureCode());
+                            var data = dataItems.Items.FirstOrDefault()?.Data;
+                            if (data != null)
+                            {
+                                if (LocaleController.Instance.GetLocales(_portalId).Count > 1)
+                                {
+                                    JsonUtils.SimplifyJson(data, GetCurrentCultureCode());
+                                }
+                                additionalDataJson = data;
+                            }
                         }
-                        additionalDataJson = dsItem.Data;
+                        else if (dataManifest.SourceRelatedDataSource == RelatedDataSourceType.MainData)
+                        {
+                            JArray jsonList = new JArray();
+                            foreach (var dataItem in dataItems.Items)
+                            {
+                                var data = dataItem.Data;
+                                if (data != null)
+                                {
+                                    if (LocaleController.Instance.GetLocales(_portalId).Count > 1)
+                                    {
+                                        JsonUtils.SimplifyJson(data, GetCurrentCultureCode());
+                                    }
+                                    jsonList.Add(data);
+                                }
+                            }
+                            additionalDataJson = jsonList;
+                        }
                     }
                     additionalData[(item.Value.ModelKey ?? item.Key).ToLowerInvariant()] = additionalDataJson;
                 }

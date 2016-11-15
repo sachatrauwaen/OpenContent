@@ -20,6 +20,7 @@ using DotNetNuke.Security;
 using Satrabel.OpenContent.Components.Json;
 using DotNetNuke.Entities.Modules;
 using System.Collections.Generic;
+using System.Linq;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.Datasource;
@@ -476,28 +477,58 @@ namespace Satrabel.OpenContent.Components
             var module = new OpenContentModuleInfo(ActiveModule);
             var manifest = module.Settings.Template.Manifest;
             string key = req.dataKey;
-            var dataManifest = manifest.GetAdditionalData(key);
+            var additionalDataManifest = manifest.GetAdditionalData(key);
             List<LookupResultDTO> res = new List<LookupResultDTO>();
             try
             {
                 IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
 
-                var dsItem = ds.GetData(dsContext, dataManifest.ScopeType, dataManifest.StorageKey ?? key);
-                if (dsItem != null)
+                var dataItems = ds.GetRelatedData(dsContext, additionalDataManifest.ScopeType, additionalDataManifest.StorageKey ?? key, additionalDataManifest.SourceRelatedDataSource);
+                if (dataItems != null && dataItems.Items.Any())
                 {
-                    JToken json = dsItem.Data;
-                    if (!string.IsNullOrEmpty(req.dataMember))
+                    if (additionalDataManifest.SourceRelatedDataSource == RelatedDataSourceType.AdditionalData)
                     {
-                        json = json[req.dataMember];
-                    }
-                    if (json is JArray)
-                    {
-                        if (LocaleController.Instance.GetLocales(PortalSettings.PortalId).Count > 1)
+                        JToken json = dataItems.Items.First().Data;
+                        if (!string.IsNullOrEmpty(req.dataMember))
                         {
-                            JsonUtils.SimplifyJson(json, DnnLanguageUtils.GetCurrentCultureCode());
+                            json = json[req.dataMember];
                         }
-                        AddLookupItems(req.valueField, req.textField, req.childrenField, res, json as JArray);
+                        if (json is JArray)
+                        {
+                            if (LocaleController.Instance.GetLocales(PortalSettings.PortalId).Count > 1)
+                            {
+                                JsonUtils.SimplifyJson(json, DnnLanguageUtils.GetCurrentCultureCode());
+                            }
+                            AddLookupItems(req.valueField, req.textField, req.childrenField, res, json as JArray);
+                        }
+                    }
+                    else if (additionalDataManifest.SourceRelatedDataSource == RelatedDataSourceType.MainData)
+                    {
+                        foreach (var item in dataItems.Items)
+                        {
+                            JToken json = item.Data;
+                            if (!string.IsNullOrEmpty(req.dataMember))
+                            {
+                                json = json[req.dataMember];
+                            }
+                            if (json is JArray)
+                            {
+                                if (LocaleController.Instance.GetLocales(PortalSettings.PortalId).Count > 1)
+                                {
+                                    JsonUtils.SimplifyJson(json, DnnLanguageUtils.GetCurrentCultureCode());
+                                }
+                                AddLookupItems(req.valueField, req.textField, req.childrenField, res, json as JArray);
+                            }
+
+                        //    res.Add(new LookupResultDTO()
+                        //    {
+                        //        value = item.Data.ToString(),
+                        //        text = item.Data.ToString(),
+                        //    //value = item[req.valueField] == null ? "" : item[req.valueField].ToString(),
+                        //    //text = item[req.textField] == null ? "" : item[req.textField].ToString()
+                        //});
+                        }
                     }
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, res);

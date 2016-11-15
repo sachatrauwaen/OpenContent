@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json.Linq;
@@ -173,8 +174,9 @@ namespace Satrabel.OpenContent.Components.Json
                         {
                             o[childProperty.Name] = GenerateObject(additionalData, dataKey, val, dataMember, valueField);
                         }
-                        catch (System.Exception)
+                        catch (System.Exception ex)
                         {
+                            Debugger.Break();
                         }
                     }
                 }
