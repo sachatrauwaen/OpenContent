@@ -112,7 +112,10 @@ namespace Satrabel.OpenContent.Components.Datasource
 
             if (!string.IsNullOrEmpty(id) && id != "-1")
             {
-                LogContext.Log(context.ActiveModuleId, "Get DataItem", "Request", string.Format("{0}.Get() with id {1}", Name, id));
+                if (LogContext.IsLogActive)
+                {
+                    LogContext.Log(context.ActiveModuleId, "Get DataItem", "Request", string.Format("{0}.Get() with id {1}", Name, id));
+                }
                 int idint;
                 if (int.TryParse(id, out idint))
                 {
@@ -121,7 +124,10 @@ namespace Satrabel.OpenContent.Components.Datasource
             }
             else
             {
-                LogContext.Log(context.ActiveModuleId, "Get DataItem", "Request", string.Format("{0}.Get() with id {1}. Returning first item of module.", Name, id));
+                if (LogContext.IsLogActive)
+                {
+                    LogContext.Log(context.ActiveModuleId, "Get DataItem", "Request", string.Format("{0}.Get() with id {1}. Returning first item of module.", Name, id));
+                }
                 content = ctrl.GetFirstContent(GetModuleId(context)); // single item
             }
             if (content == null)
@@ -132,12 +138,18 @@ namespace Satrabel.OpenContent.Components.Datasource
             else if (content.ModuleId == GetModuleId(context))
             {
                 var dataItem = CreateDefaultDataItem(content);
-                LogContext.Log(context.ActiveModuleId, "Get DataItem", "Result", dataItem);
+                if (LogContext.IsLogActive)
+                {
+                    LogContext.Log(context.ActiveModuleId, "Get DataItem", "Result", dataItem.Data);
+                }
                 return dataItem;
             }
             else
             {
-                LogContext.Log(context.ActiveModuleId, "Get DataItem", "Result", string.Format("no item returned as incompatible module ids {0}-{1}", content.ModuleId, GetModuleId(context)));
+                if (LogContext.IsLogActive)
+                {
+                    LogContext.Log(context.ActiveModuleId, "Get DataItem", "Result", string.Format("no item returned as incompatible module ids {0}-{1}", content.ModuleId, GetModuleId(context)));
+                }
             }
             return null;
         }
@@ -162,7 +174,9 @@ namespace Satrabel.OpenContent.Components.Datasource
                     CreatedByUserId = data.CreatedByUserId,
                     Item = data
                 };
-                LogContext.Log(context.ActiveModuleId, "Get Data", "Result", dataItem);
+                if (LogContext.IsLogActive) { 
+                    LogContext.Log(context.ActiveModuleId, "Get Data", key, dataItem.Data);
+                }
                 return dataItem;
             }
             return null;

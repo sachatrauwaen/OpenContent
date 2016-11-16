@@ -44,6 +44,7 @@ namespace Satrabel.OpenContent.Components.Logging
         }
         public static void Log(int moduleId, string title, string label, object message)
         {
+            if (IsLogActive)
             {
                 ModuleLogInfo module;
                 List<LogInfo> messages;
