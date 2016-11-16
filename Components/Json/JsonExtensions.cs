@@ -167,7 +167,7 @@ namespace Satrabel.OpenContent.Components.Json
         private static JavaScriptSerializer SerializerFactory()
         {
             // Allow large JSON strings to be serialized and deserialized.
-            return new JavaScriptSerializer { MaxJsonLength = Int32.MaxValue };
+            return new JavaScriptSerializer { MaxJsonLength = int.MaxValue };
         }
     }
 }

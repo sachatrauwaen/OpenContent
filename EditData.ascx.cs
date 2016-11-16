@@ -230,9 +230,9 @@ namespace Satrabel.OpenContent
             sourceList.Items.Add(new ListItem(cData, cData));
             sourceList.Items.Add(new ListItem(cSettings, cSettings));
             sourceList.Items.Add(new ListItem(cFilter, cFilter));
-            if (template != null && template.Manifest != null && template.Manifest.AdditionalDataExists())
+            if (template != null && template.Manifest != null && template.Manifest.AdditionalDataDefined())
             {
-                foreach (var addData in template.Manifest.AdditionalData)
+                foreach (var addData in template.Manifest.AdditionalDataDefinition)
                 {
                     string title = string.IsNullOrEmpty(addData.Value.Title) ? addData.Key : addData.Value.Title;
                     sourceList.Items.Add(new ListItem(title, addData.Key));

@@ -485,33 +485,21 @@ namespace Satrabel.OpenContent.Components
                 IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
 
-                var dataItems = ds.GetRelatedData(dsContext, additionalDataManifest.ScopeType, additionalDataManifest.StorageKey ?? key, additionalDataManifest.SourceRelatedDataSource);
-                if (dataItems != null && dataItems.Items.Any())
+                var dataItems = ds.GetData(dsContext, additionalDataManifest.ScopeType, additionalDataManifest.StorageKey ?? key);
+                if (dataItems != null)
                 {
-                    if (additionalDataManifest.SourceRelatedDataSource == RelatedDataSourceType.AdditionalData)
+                    JToken json = dataItems.Data;
+                    if (!string.IsNullOrEmpty(req.dataMember))
                     {
-                        JToken data = dataItems.Items.First().Data;
-                        if (!string.IsNullOrEmpty(req.dataMember))
-                        {
-                            data = data[req.dataMember];
-                        }
-                        if (data is JArray)
-                        {
-                            if (LocaleController.Instance.GetLocales(PortalSettings.PortalId).Count > 1)
-                            {
-                                JsonUtils.SimplifyJson(data, DnnLanguageUtils.GetCurrentCultureCode());
-                            }
-                            AddLookupItems(req.valueField, req.textField, req.childrenField, res, data as JArray);
-                        }
+                        json = json[req.dataMember];
                     }
-                    else if (additionalDataManifest.SourceRelatedDataSource == RelatedDataSourceType.MainData)
+                    if (json is JArray)
                     {
-                        if (!string.IsNullOrEmpty(req.dataMember))
+                        if (LocaleController.Instance.GetLocales(PortalSettings.PortalId).Count > 1)
                         {
-                            Debugger.Break(); //should we do anything here?
+                            JsonUtils.SimplifyJson(json, DnnLanguageUtils.GetCurrentCultureCode());
                         }
-                        var jsonList = dataItems.ToAdditionalDataArray(PortalSettings.PortalId, DnnLanguageUtils.GetCurrentCultureCode());
-                        AddLookupItems(req.valueField, req.textField, req.childrenField, res, jsonList as JArray);
+                        AddLookupItems(req.valueField, req.textField, req.childrenField, res, json as JArray);
                     }
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, res);

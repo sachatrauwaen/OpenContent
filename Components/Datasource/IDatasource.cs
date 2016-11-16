@@ -66,15 +66,6 @@ namespace Satrabel.OpenContent.Components.Datasource
         IDataItem GetData(DataSourceContext context, string scope, string key);
 
         /// <summary>
-        /// Gets additional data of a datasource.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="scope">The Scope. (portal, tab, module, tabmodule)</param>
-        /// <param name="key">The unique keyin the scope</param>
-        /// <param name="sourceRelatedData">The source type of the related data (AdditionalData or MainData)</param>
-        IDataItems GetRelatedData(DataSourceContext context, string scope, string key, RelatedDataSourceType sourceRelatedData);
-
-        /// <summary>
         /// Gets Alpaca Schema, Options and View json for Additional data
         /// </summary>
         /// <param name="context">The context.</param>

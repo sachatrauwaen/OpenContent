@@ -448,9 +448,9 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 try
                 {
                     object[] a;
-                    if (parameters[0] is IEnumerable<Object>)
+                    if (parameters[0] is IEnumerable<object>)
                     {
-                        var en = parameters[0] as IEnumerable<Object>;
+                        var en = parameters[0] as IEnumerable<object>;
                         a = en.ToArray();
                     }
                     else
@@ -477,9 +477,9 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 try
                 {
                     object[] a;
-                    if (parameters[0] is IEnumerable<Object>)
+                    if (parameters[0] is IEnumerable<object>)
                     {
-                        var en = parameters[0] as IEnumerable<Object>;
+                        var en = parameters[0] as IEnumerable<object>;
                         a = en.ToArray();
                     }
                     else
@@ -487,9 +487,9 @@ namespace Satrabel.OpenContent.Components.Handlebars
                         a = (object[])parameters[0];
                     }
                     object[] b;
-                    if (parameters[1] is IEnumerable<Object>)
+                    if (parameters[1] is IEnumerable<object>)
                     {
-                        var en = parameters[1] as IEnumerable<Object>;
+                        var en = parameters[1] as IEnumerable<object>;
                         b = en.ToArray();
                     }
                     else
@@ -515,9 +515,9 @@ namespace Satrabel.OpenContent.Components.Handlebars
             hbs.RegisterHelper("lookup", (writer, options, context, arguments) =>
             {
                 object[] arr;
-                if (arguments[0] is IEnumerable<Object>)
+                if (arguments[0] is IEnumerable<object>)
                 {
-                    var en = arguments[0] as IEnumerable<Object>;
+                    var en = arguments[0] as IEnumerable<object>;
                     arr = en.ToArray();
                 }
                 else
@@ -529,7 +529,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 var value = arguments[2].ToString();
                 foreach (var obj in arr)
                 {
-                    Object member = DynamicUtils.GetMemberValue(obj, field);
+                    object member = DynamicUtils.GetMemberValue(obj, field);
                     if (value.Equals(member))
                     {
                         options.Template(writer, (object)obj);

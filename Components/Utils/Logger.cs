@@ -28,7 +28,7 @@ namespace Satrabel.OpenContent.Components
                     ? st.GetFrame(2).GetMethod().Name
                     : st.GetFrame(1).GetMethod().Name;
 
-                Logger.DebugFormat("Result from '{0}' with status '{1}': {2} \r\n", method, response.StatusCode.ToString(), String.IsNullOrEmpty(responsemessage) ? "<empty>" : responsemessage);
+                Logger.DebugFormat("Result from '{0}' with status '{1}': {2} \r\n", method, response.StatusCode.ToString(), string.IsNullOrEmpty(responsemessage) ? "<empty>" : responsemessage);
             }
         }
     }

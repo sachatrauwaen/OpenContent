@@ -39,23 +39,10 @@ namespace Satrabel.OpenContent.Components
             return AdditionalDataUtils.GetScope(manifest.ScopeType, portalId, tabId, moduleId, tabModuleId);
         }
 
-        internal static JArray ToAdditionalDataArray(this IDataItems dataItems, int portalId, string currentCultureCode)
+        internal static RelatedDataSourceType SourceRelatedData(this DataSourceContext context)
         {
-            JArray jsonList = new JArray();
-            foreach (var dataItem in dataItems.Items)
-            {
-                var data = dataItem.Data;
-                if (data != null)
-                {
-                    if (LocaleController.Instance.GetLocales(portalId).Count > 1)
-                    {
-                        JsonUtils.SimplifyJson(data, currentCultureCode);
-                    }
-                    data["Id"] = dataItem.Id; //add the contentItem Id to the json   //ContentId
-                    jsonList.Add(data);
-                }
-            }
-            return jsonList;
+            return context.ModuleId2 > 0 ? RelatedDataSourceType.MainData : RelatedDataSourceType.AdditionalData;
         }
+
     }
 }

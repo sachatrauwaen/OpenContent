@@ -229,7 +229,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             Query query;
             try
             {
-                if (String.IsNullOrEmpty(searchQuery))
+                if (string.IsNullOrEmpty(searchQuery))
                 {
                     query = new MatchAllDocsQuery();
                 }

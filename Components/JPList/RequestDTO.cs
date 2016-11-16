@@ -15,7 +15,7 @@ namespace Satrabel.OpenContent.Components.JPList
             get
             {
                 var lst = new List<StatusDTO>();
-                if (!String.IsNullOrEmpty(statuses))
+                if (!string.IsNullOrEmpty(statuses))
                 {
                     lst = JsonConvert.DeserializeObject<List<StatusDTO>>(HttpUtility.UrlDecode(statuses));
                     if (lst != null)

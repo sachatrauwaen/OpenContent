@@ -25,11 +25,6 @@ namespace Satrabel.OpenContent.Components.Datasource
             throw new NotImplementedException();
         }
 
-        public virtual IDataItems GetRelatedData(DataSourceContext context, string scope, string key, RelatedDataSourceType sourceRelatedData)
-        {
-            throw new NotImplementedException();
-        }
-
         public virtual JObject GetAlpaca(DataSourceContext context, bool schema, bool options, bool view)
         {
             var fb = new FormBuilder(new FolderUri(context.TemplateFolder));

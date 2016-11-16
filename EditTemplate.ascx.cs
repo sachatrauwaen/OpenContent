@@ -393,9 +393,9 @@ namespace Satrabel.OpenContent
                         scriptList.Items.Add(new ListItem("Settings Options - " + item.Code, template.Key.ShortKey + "-options." + item.Code + ".json"));
                     }
                 }
-                if (template.Manifest.AdditionalDataExists())
+                if (template.Manifest.AdditionalDataDefined())
                 {
-                    foreach (var addData in template.Manifest.AdditionalData)
+                    foreach (var addData in template.Manifest.AdditionalDataDefinition)
                     {
                         if (!OpenContentUtils.BuilderExist(settings.Template.ManifestFolderUri, addData.Key))
                         {

@@ -137,7 +137,7 @@ namespace Satrabel.OpenContent.Components
         public IEnumerable<dynamic> GetModelAsDynamicList()
         {
             var completeModel = new JObject();
-            EnhanceModel(completeModel, true);
+            ExtendModel(completeModel, true);
             if (_dataList != null)
             {
                 foreach (var item in _dataList)
@@ -147,11 +147,8 @@ namespace Satrabel.OpenContent.Components
                     {
                         JsonUtils.SimplifyJson(model, GetCurrentCultureCode());
                     }
-                    if (_manifest.AdditionalDataExists() && completeModel["AdditionalData"] != null && completeModel["Options"] != null)
-                    {
-                        JsonUtils.LookupJson(model, completeModel["AdditionalData"] as JObject, completeModel["Options"] as JObject);
-                    }
-                    //JsonUtils.Merge(model, completeModel);
+                    EnhanceSelect2(model, completeModel);
+
                     JObject context = new JObject();
                     model["Context"] = context;
                     context["Id"] = item.Id;
@@ -179,7 +176,7 @@ namespace Satrabel.OpenContent.Components
             JObject model = new JObject();
             if (!onlyData)
             {
-                EnhanceModel(model, onlyData);
+                ExtendModel(model, onlyData);
                 model["Context"]["RssUrl"] = _portalSettings.PortalAlias.HTTPAlias +
                        "/DesktopModules/OpenContent/API/RssAPI/GetFeed?moduleId=" + _module.ViewModule.ModuleID + "&tabId=" + _detailTabId;
 
@@ -196,10 +193,8 @@ namespace Satrabel.OpenContent.Components
                     {
                         JsonUtils.SimplifyJson(dyn, GetCurrentCultureCode());
                     }
-                    if (_manifest != null && _manifest.AdditionalDataExists() && model["AdditionalData"] != null && model["Options"] != null)
-                    {
-                        JsonUtils.LookupJson(dyn, model["AdditionalData"] as JObject, model["Options"] as JObject);
-                    }
+                    EnhanceSelect2(dyn, model);
+
                     if (Options != null && model["Options"] != null)
                     {
                         JsonUtils.ImagesJson(dyn, Options, model["Options"] as JObject, IsEditable);
@@ -258,17 +253,33 @@ namespace Satrabel.OpenContent.Components
             }
 
             var enhancedModel = new JObject();
-            EnhanceModel(enhancedModel, onlyData);
-            if (_manifest.AdditionalDataExists() && enhancedModel["AdditionalData"] != null && enhancedModel["Options"] != null)
+            ExtendModel(enhancedModel, onlyData);
+            EnhanceSelect2(model, enhancedModel);
 
-            {
-                JsonUtils.LookupJson(model, enhancedModel["AdditionalData"] as JObject, enhancedModel["Options"] as JObject);
-            }
             JsonUtils.Merge(model, enhancedModel);
             return model;
         }
 
-        private void EnhanceModel(JObject model, bool onlyData)
+        private void EnhanceSelect2(JObject model, JObject enhancedModel)
+        {
+            //if (_manifest.AdditionalDataExists() && enhancedModel["AdditionalData"] != null && enhancedModel["Options"] != null)
+            //{
+            //    JsonUtils.LookupJson(model, enhancedModel["AdditionalData"] as JObject, enhancedModel["Options"] as JObject);
+            //}
+            if (_manifest.AdditionalDataDefined())
+            {
+                if (enhancedModel["AdditionalData"] != null && enhancedModel["Options"] != null)
+                {
+                    JsonUtils.LookupJson(model, enhancedModel["AdditionalData"] as JObject, enhancedModel["Options"] as JObject);
+                }
+                foreach (var additionalDataDef in _manifest.AdditionalDataDefinition.Where(i => i.Value.SourceRelatedDataSource == RelatedDataSourceType.MainData))
+                {
+                    JsonUtils.LookupSelect2InOtherModule(model, enhancedModel["Options"] as JObject);
+                }
+            }
+        }
+
+        private void ExtendModel(JObject model, bool onlyData)
         {
             if (!onlyData && _templateFiles != null && _templateFiles.SchemaInTemplate)
                 // include SCHEMA info in the Model
@@ -315,34 +326,24 @@ namespace Satrabel.OpenContent.Components
             }
 
             // include additional data in the Model
-            if (_templateFiles != null && _templateFiles.AdditionalDataInTemplate && _manifest.AdditionalDataExists())
+            if (_templateFiles != null && _templateFiles.AdditionalDataInTemplate && _manifest.AdditionalDataDefined())
             {
                 var additionalData = model["AdditionalData"] = new JObject();
-                foreach (var item in _manifest.AdditionalData)
+                foreach (var item in _manifest.AdditionalDataDefinition)
                 {
                     var dataManifest = item.Value;
                     var ds = DataSourceManager.GetDataSource(_manifest.DataSource);
                     var dsContext = OpenContentUtils.CreateDataContext(_module);
-                    IDataItems dataItems = ds.GetRelatedData(dsContext, dataManifest.ScopeType, dataManifest.StorageKey ?? item.Key, dataManifest.SourceRelatedDataSource);
+                    IDataItem dataItem = ds.GetData(dsContext, dataManifest.ScopeType, dataManifest.StorageKey ?? item.Key);
                     JToken additionalDataJson = new JObject();
-                    if (dataItems != null && dataItems.Items.Any())
+                    var json = dataItem?.Data;
+                    if (json != null)
                     {
-                        if (dataManifest.SourceRelatedDataSource == RelatedDataSourceType.AdditionalData)
+                        if (LocaleController.Instance.GetLocales(_portalId).Count > 1)
                         {
-                            var data = dataItems.Items.FirstOrDefault()?.Data;
-                            if (data != null)
-                            {
-                                if (LocaleController.Instance.GetLocales(_portalId).Count > 1)
-                                {
-                                    JsonUtils.SimplifyJson(data, GetCurrentCultureCode());
-                                }
-                                additionalDataJson = data;
-                            }
+                            JsonUtils.SimplifyJson(json, GetCurrentCultureCode());
                         }
-                        else if (dataManifest.SourceRelatedDataSource == RelatedDataSourceType.MainData)
-                        {
-                            additionalDataJson = dataItems.ToAdditionalDataArray(_portalId, GetCurrentCultureCode());
-                        }
+                        additionalDataJson = json;
                     }
                     additionalData[(item.Value.ModelKey ?? item.Key).ToLowerInvariant()] = additionalDataJson;
                 }
@@ -444,7 +445,6 @@ namespace Satrabel.OpenContent.Components
                 if (!_isEditable.HasValue)
                 {
                     _isEditable = _module.DataModule.CheckIfEditable(PortalSettings.Current);
-
                 }
                 return _isEditable.Value;
             }

@@ -42,6 +42,9 @@ using System.Text;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.Render;
 using System.Web;
+using DotNetNuke.Common;
+using DotNetNuke.Web.UI.WebControls;
+using Satrabel.OpenContent.Components.Dnn;
 
 #endregion
 
@@ -306,9 +309,9 @@ namespace Satrabel.OpenContent
                         true,
                         false);
                 }
-                if (templateDefined && template.Manifest.AdditionalDataExists() && !settings.Manifest.DisableEdit)
+                if (templateDefined && template.Manifest.AdditionalDataDefined() && !settings.Manifest.DisableEdit)
                 {
-                    foreach (var addData in template.Manifest.AdditionalData)
+                    foreach (var addData in template.Manifest.AdditionalDataDefinition)
                     {
                         if (addData.Value.SourceRelatedDataSource == RelatedDataSourceType.AdditionalData)
                         {
@@ -325,7 +328,16 @@ namespace Satrabel.OpenContent
                         }
                         else
                         {
-                            
+                            actions.Add(ModuleContext.GetNextActionID(),
+                              addData.Value.Title,
+                              ModuleActionType.EditContent,
+                              "",
+                              "~/DesktopModules/OpenContent/images/editcontent2.png",
+                              DnnUrlUtils.NavigateUrl(addData.Value.DataTabId),
+                              false,
+                              SecurityAccessLevel.Edit,
+                              true,
+                              false);
                         }
                     }
                 }
@@ -431,7 +443,7 @@ namespace Satrabel.OpenContent
 
                 //Edit Raw Data
                 if (templateDefined && settings.Manifest != null &&
-                     (template.DataNeeded() || template.SettingsNeeded() || template.Manifest.AdditionalDataExists()) && !settings.Manifest.DisableEdit)
+                     (template.DataNeeded() || template.SettingsNeeded() || template.Manifest.AdditionalDataDefined()) && !settings.Manifest.DisableEdit)
                 {
                     actions.Add(ModuleContext.GetNextActionID(),
                         Localization.GetString("EditData.Action", LocalResourceFile),

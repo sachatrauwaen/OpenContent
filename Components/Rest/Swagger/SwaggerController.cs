@@ -55,9 +55,9 @@ namespace Satrabel.OpenContent.Components.Rest.Swagger
                     Name = "Items",
                     Description = manifest.Title
                 });
-                if (manifest.AdditionalData != null)
+                if (manifest.AdditionalDataDefinition != null)
                 {
-                    foreach (var entity in manifest.AdditionalData)
+                    foreach (var entity in manifest.AdditionalDataDefinition)
                     {
                         swagger.Tags.Add(new Tag()
                         {
@@ -293,9 +293,9 @@ namespace Satrabel.OpenContent.Components.Rest.Swagger
                     swagger.Definitions.Add("items", schemaJson);
                 }
 
-                if (manifest.AdditionalData != null)
+                if (manifest.AdditionalDataDefinition != null)
                 {
-                    foreach (var entity in manifest.AdditionalData.Keys)
+                    foreach (var entity in manifest.AdditionalDataDefinition.Keys)
                     {
                         var schemaJson = JsonUtils.LoadJsonFromFile(templateFolder + entity + "-schema.json");
                         if (schemaJson["items"] != null)

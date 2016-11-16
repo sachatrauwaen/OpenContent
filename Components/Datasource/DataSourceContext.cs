@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using Satrabel.OpenContent.Components.Manifest;
 
 namespace Satrabel.OpenContent.Components.Datasource
 {
@@ -32,6 +33,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         /// The module identifier.
         /// </value>
         public int ModuleId { get; set; }
+        public int ModuleId2 { get; set; }
         /// <summary>
         /// Gets or sets the tab identifier of the View Module.
         /// </summary>
@@ -45,5 +47,6 @@ namespace Satrabel.OpenContent.Components.Datasource
         /// Gets or sets the agent, which is a string uniquely identifying the calling agent.
         /// </summary>
         public string Agent { get; set; }
+
     }
 }

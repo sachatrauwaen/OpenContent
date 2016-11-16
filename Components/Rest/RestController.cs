@@ -211,9 +211,9 @@ namespace Satrabel.OpenContent.Components.Rest
 
                 var manifest = module.Settings.Manifest;
                 TemplateManifest templateManifest = module.Settings.Template;
-                if (manifest.AdditionalDataExists(entity))
+                if (manifest.AdditionalDataDefined(entity))
                 {
-                    var dataManifest = manifest.AdditionalData[entity];
+                    var dataManifest = manifest.AdditionalDataDefinition[entity];
                     //string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings.PortalId, ActiveModule.TabID, module.ModuleID, ActiveModule.TabModuleID);
 
                     //var templateFolder = string.IsNullOrEmpty(dataManifest.TemplateFolder) ? settings.TemplateDir : settings.TemplateDir.ParentFolder.Append(dataManifest.TemplateFolder);

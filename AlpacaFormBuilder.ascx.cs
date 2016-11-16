@@ -48,9 +48,9 @@ namespace Satrabel.OpenContent
             {
                 ddlForms.Items.Add(new ListItem("Settings", settings.Template.Key.ShortKey));
             }
-            if (settings.Template.Manifest.AdditionalDataExists())
+            if (settings.Template.Manifest.AdditionalDataDefined())
             {
-                foreach (var addData in settings.Template.Manifest.AdditionalData)
+                foreach (var addData in settings.Template.Manifest.AdditionalDataDefinition)
                 {
                     if (OpenContentUtils.BuilderExist(settings.Template.ManifestFolderUri, addData.Key))
                     {
