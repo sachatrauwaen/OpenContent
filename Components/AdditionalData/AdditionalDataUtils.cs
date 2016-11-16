@@ -1,4 +1,8 @@
-﻿using Satrabel.OpenContent.Components.Manifest;
+﻿using DotNetNuke.Services.Localization;
+using Newtonsoft.Json.Linq;
+using Satrabel.OpenContent.Components.Datasource;
+using Satrabel.OpenContent.Components.Json;
+using Satrabel.OpenContent.Components.Manifest;
 
 
 namespace Satrabel.OpenContent.Components
@@ -33,6 +37,25 @@ namespace Satrabel.OpenContent.Components
         internal static string GetScope(AdditionalDataManifest manifest, int portalId, int tabId, int moduleId, int tabModuleId)
         {
             return AdditionalDataUtils.GetScope(manifest.ScopeType, portalId, tabId, moduleId, tabModuleId);
+        }
+
+        internal static JArray ToAdditionalDataArray(this IDataItems dataItems, int portalId, string currentCultureCode)
+        {
+            JArray jsonList = new JArray();
+            foreach (var dataItem in dataItems.Items)
+            {
+                var data = dataItem.Data;
+                if (data != null)
+                {
+                    if (LocaleController.Instance.GetLocales(portalId).Count > 1)
+                    {
+                        JsonUtils.SimplifyJson(data, currentCultureCode);
+                    }
+                    data["Id"] = dataItem.Id; //add the contentItem Id to the json   //ContentId
+                    jsonList.Add(data);
+                }
+            }
+            return jsonList;
         }
     }
 }

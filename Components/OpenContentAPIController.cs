@@ -506,24 +506,11 @@ namespace Satrabel.OpenContent.Components
                     }
                     else if (additionalDataManifest.SourceRelatedDataSource == RelatedDataSourceType.MainData)
                     {
-                        JArray jsonList = new JArray();
                         if (!string.IsNullOrEmpty(req.dataMember))
                         {
                             Debugger.Break(); //should we do anything here?
                         }
-                        foreach (var dataItem in dataItems.Items)
-                        {
-                            JToken data = dataItem.Data;
-                            if (data != null)
-                            {
-                                if (LocaleController.Instance.GetLocales(PortalSettings.PortalId).Count > 1)
-                                {
-                                    JsonUtils.SimplifyJson(data, DnnLanguageUtils.GetCurrentCultureCode());
-                                }
-                                data["Id"] = dataItem.Id; //add the contentItem Id to the json
-                                jsonList.Add(data);
-                            }
-                        }
+                        var jsonList = dataItems.ToAdditionalDataArray(PortalSettings.PortalId, DnnLanguageUtils.GetCurrentCultureCode());
                         AddLookupItems(req.valueField, req.textField, req.childrenField, res, jsonList as JArray);
                     }
                 }

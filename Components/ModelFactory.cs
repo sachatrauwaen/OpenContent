@@ -323,7 +323,7 @@ namespace Satrabel.OpenContent.Components
                     var dataManifest = item.Value;
                     var ds = DataSourceManager.GetDataSource(_manifest.DataSource);
                     var dsContext = OpenContentUtils.CreateDataContext(_module);
-                    var dataItems = ds.GetRelatedData(dsContext, dataManifest.ScopeType, dataManifest.StorageKey ?? item.Key, dataManifest.SourceRelatedDataSource);
+                    IDataItems dataItems = ds.GetRelatedData(dsContext, dataManifest.ScopeType, dataManifest.StorageKey ?? item.Key, dataManifest.SourceRelatedDataSource);
                     JToken additionalDataJson = new JObject();
                     if (dataItems != null && dataItems.Items.Any())
                     {
@@ -341,21 +341,7 @@ namespace Satrabel.OpenContent.Components
                         }
                         else if (dataManifest.SourceRelatedDataSource == RelatedDataSourceType.MainData)
                         {
-                            JArray jsonList = new JArray();
-                            foreach (var dataItem in dataItems.Items)
-                            {
-                                var data = dataItem.Data;
-                                if (data != null)
-                                {
-                                    if (LocaleController.Instance.GetLocales(_portalId).Count > 1)
-                                    {
-                                        JsonUtils.SimplifyJson(data, GetCurrentCultureCode());
-                                    }
-                                    data["Id"] = dataItem.Id; //add the contentItem Id to the json
-                                    jsonList.Add(data);
-                                }
-                            }
-                            additionalDataJson = jsonList;
+                            additionalDataJson = dataItems.ToAdditionalDataArray(_portalId, GetCurrentCultureCode());
                         }
                     }
                     additionalData[(item.Value.ModelKey ?? item.Key).ToLowerInvariant()] = additionalDataJson;

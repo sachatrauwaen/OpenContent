@@ -187,12 +187,12 @@ namespace Satrabel.OpenContent
             {
                 RenderJsonException(ex);
             }
-                /*
-            catch (HttpException ex)
-            {
-                throw ex;
-            }
-                 */
+            /*
+        catch (HttpException ex)
+        {
+            throw ex;
+        }
+             */
             catch (Exception ex)
             {
                 LoggingUtils.ProcessModuleLoadException(this, ex);
@@ -300,7 +300,7 @@ namespace Satrabel.OpenContent
                         ModuleActionType.AddContent,
                         "",
                          (listMode && string.IsNullOrEmpty(_itemId) ? "~/DesktopModules/OpenContent/images/addcontent2.png" : "~/DesktopModules/OpenContent/images/editcontent2.png"),
-                        (listMode && !string.IsNullOrEmpty(_itemId) ? ModuleContext.EditUrl("id", _itemId.ToString()) : ModuleContext.EditUrl()),
+                        (listMode && !string.IsNullOrEmpty(_itemId) ? ModuleContext.EditUrl("id", _itemId) : ModuleContext.EditUrl()),
                         false,
                         SecurityAccessLevel.Edit,
                         true,
@@ -310,16 +310,23 @@ namespace Satrabel.OpenContent
                 {
                     foreach (var addData in template.Manifest.AdditionalData)
                     {
-                        actions.Add(ModuleContext.GetNextActionID(),
-                            addData.Value.Title,
-                            ModuleActionType.EditContent,
-                            "",
-                            "~/DesktopModules/OpenContent/images/editcontent2.png",
-                            ModuleContext.EditUrl("key", addData.Key, "EditAddData"),
-                            false,
-                            SecurityAccessLevel.Edit,
-                            true,
-                            false);
+                        if (addData.Value.SourceRelatedDataSource == RelatedDataSourceType.AdditionalData)
+                        {
+                            actions.Add(ModuleContext.GetNextActionID(),
+                                addData.Value.Title,
+                                ModuleActionType.EditContent,
+                                "",
+                                "~/DesktopModules/OpenContent/images/editcontent2.png",
+                                ModuleContext.EditUrl("key", addData.Key, "EditAddData"),
+                                false,
+                                SecurityAccessLevel.Edit,
+                                true,
+                                false);
+                        }
+                        else
+                        {
+                            
+                        }
                     }
                 }
                 /*
@@ -395,7 +402,7 @@ namespace Satrabel.OpenContent
                             false);
                     }
                 }
-                                
+
 
                 if (templateDefined && OpenContentUtils.BuildersExist(settings.Template.ManifestFolderUri))
                     actions.Add(ModuleContext.GetNextActionID(),
@@ -423,9 +430,8 @@ namespace Satrabel.OpenContent
 
 
                 //Edit Raw Data
-                if ( templateDefined && settings.Manifest != null &&
-                     ( template.DataNeeded() || template.SettingsNeeded() || template.Manifest.AdditionalDataExists()) && 
-                     !settings.Manifest.DisableEdit )
+                if (templateDefined && settings.Manifest != null &&
+                     (template.DataNeeded() || template.SettingsNeeded() || template.Manifest.AdditionalDataExists()) && !settings.Manifest.DisableEdit)
                 {
                     actions.Add(ModuleContext.GetNextActionID(),
                         Localization.GetString("EditData.Action", LocalResourceFile),
@@ -499,7 +505,7 @@ namespace Satrabel.OpenContent
             return editUrl.Remove(0, pos);
         }
         #endregion
-      
+
         #region Exceptions
         private void RenderTemplateException(TemplateException ex)
         {
