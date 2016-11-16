@@ -33,7 +33,6 @@ namespace Satrabel.OpenContent.Components.Datasource
         /// The module identifier.
         /// </value>
         public int ModuleId { get; set; }
-        public int ModuleId2 { get; set; }
         /// <summary>
         /// Gets or sets the tab identifier of the View Module.
         /// </summary>

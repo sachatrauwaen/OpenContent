@@ -152,48 +152,19 @@ namespace Satrabel.OpenContent.Components.Datasource
         /// <returns></returns>
         public virtual IDataItem GetData(DataSourceContext context, string scope, string key)
         {
-            var sourceRelatedData = context.SourceRelatedData();
-            if (sourceRelatedData == RelatedDataSourceType.AdditionalData)
+            string scopeStorage = AdditionalDataUtils.GetScope(scope, context.PortalId, context.TabId, GetModuleId(context), context.TabModuleId);
+            var dc = new AdditionalDataController();
+            var json = dc.GetData(scopeStorage, key);
+            if (json != null)
             {
-                string scopeStorage = AdditionalDataUtils.GetScope(scope, context.PortalId, context.TabId, GetModuleId(context), context.TabModuleId);
-                var dc = new AdditionalDataController();
-                var json = dc.GetData(scopeStorage, key);
-                if (json != null)
+                var dataItem = new DefaultDataItem
                 {
-                    var dataItem = new DefaultDataItem
-                    {
-                        Data = json.Json.ToJObject("GetContent " + scope + "/" + key),
-                        CreatedByUserId = json.CreatedByUserId,
-                        Item = json
-                    };
-                    LogContext.Log(context.ActiveModuleId, "Get Data", "Result", dataItem);
-                    return dataItem;
-                }
-            }
-            else
-            {
-                IDataItems dataItems = GetAll(context);
-
-                JArray json = new JArray();
-                foreach (var dataItem in dataItems.Items)
-                {
-                    var itemData = dataItem.Data;
-                    if (itemData != null)
-                    {
-                        itemData["Id"] = dataItem.Id; //add the contentItem Id to the json   //ContentId
-                        json.Add(itemData);
-                    }
-                }
-                if (json != null)
-                {
-                    var dataItem = new DefaultDataItem
-                    {
-                        Data = json.ToJObject("GetContent " + "other module " + "/" + key),
-                        Item = json
-                    };
-                    LogContext.Log(context.ActiveModuleId, "Get Data", "Result", dataItem);
-                    return dataItem;
-                }
+                    Data = json.Json.ToJObject("GetContent " + scope + "/" + key),
+                    CreatedByUserId = json.CreatedByUserId,
+                    Item = json
+                };
+                LogContext.Log(context.ActiveModuleId, "Get Data", "Result", dataItem);
+                return dataItem;
             }
             return null;
         }

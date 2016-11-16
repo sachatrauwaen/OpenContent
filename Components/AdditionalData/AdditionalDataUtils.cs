@@ -39,10 +39,5 @@ namespace Satrabel.OpenContent.Components
             return AdditionalDataUtils.GetScope(manifest.ScopeType, portalId, tabId, moduleId, tabModuleId);
         }
 
-        internal static RelatedDataSourceType SourceRelatedData(this DataSourceContext context)
-        {
-            return context.ModuleId2 > 0 ? RelatedDataSourceType.MainData : RelatedDataSourceType.AdditionalData;
-        }
-
     }
 }

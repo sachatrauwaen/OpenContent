@@ -208,8 +208,8 @@ namespace Satrabel.OpenContent.Components.Json
                 {
                     dataMember = opt["dataService"]["data"]["dataMember"]?.ToString() ?? "";
                     valueField = opt["dataService"]["data"]["valueField"]?.ToString() ?? "Id";
-                    moduleId = opt["dataService"]["data"]["valueField"]?.ToString() ?? "Id";
-                    tabId = opt["dataService"]["data"]["valueField"]?.ToString() ?? "Id";
+                    moduleId = opt["dataService"]["data"]["moduleId"]?.ToString() ?? "0";
+                    tabId = opt["dataService"]["data"]["tabId"]?.ToString() ?? "0";
                 }
 
                 var childProperty = child;
@@ -236,11 +236,11 @@ namespace Satrabel.OpenContent.Components.Json
                                     var ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                                     var dsContext = OpenContentUtils.CreateDataContext(module);
                                     IDataItem dataItem = ds.Get(dsContext, val.ToString());
-                                    newArray.Add(GenerateObject2(dataItem, val.ToString(), dataMember, valueField));
+                                    newArray.Add(GenerateObject(dataItem, val.ToString(), dataMember, valueField));
                                 }
                                 catch (System.Exception)
                                 {
-                            Debugger.Break();
+                                    Debugger.Break();
                                 }
                             }
                         }
@@ -266,7 +266,7 @@ namespace Satrabel.OpenContent.Components.Json
                             var ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                             var dsContext = OpenContentUtils.CreateDataContext(module);
                             IDataItem dataItem = ds.Get(dsContext, val);
-                            o[childProperty.Name] = GenerateObject2(dataItem, val, dataMember, valueField);
+                            o[childProperty.Name] = GenerateObject(dataItem, val, dataMember, valueField);
                         }
                         catch (System.Exception ex)
                         {
@@ -381,24 +381,16 @@ namespace Satrabel.OpenContent.Components.Json
             var portalFileUri = new PortalFileUri(f);
             return portalFileUri.EditUrl();
         }
-        private static JObject GenerateObject2(IDataItem additionalData, string id, string dataMember, string valueField)
+        private static JObject GenerateObject(IDataItem additionalData, string id, string dataMember, string valueField)
         {
-            var json = additionalData.Data;
-            if (!string.IsNullOrEmpty(dataMember))
+            var json = additionalData?.Data;
+            //if (!string.IsNullOrEmpty(dataMember))
+            //{
+            //    json = json[dataMember];
+            //}
+            if (json != null)
             {
-                json = json[dataMember];
-            }
-            JArray array = json as JArray;
-            if (array != null)
-            {
-                foreach (var obj in array)
-                {
-                    var objid = obj[valueField].ToString();
-                    if (id.Equals(objid))
-                    {
-                        return obj as JObject;
-                    }
-                }
+                return json as JObject;
             }
             JObject res = new JObject();
             res["Id"] = id;

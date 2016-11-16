@@ -262,33 +262,22 @@ namespace Satrabel.OpenContent.Components
 
         private void EnhanceSelect2(JObject model, JObject enhancedModel)
         {
-            //if (_manifest.AdditionalDataExists() && enhancedModel["AdditionalData"] != null && enhancedModel["Options"] != null)
-            //{
-            //    JsonUtils.LookupJson(model, enhancedModel["AdditionalData"] as JObject, enhancedModel["Options"] as JObject);
-            //}
-            if (_manifest.AdditionalDataDefined())
+            if (_manifest.AdditionalDataDefined() && enhancedModel["AdditionalData"] != null && enhancedModel["Options"] != null)
             {
-                if (enhancedModel["AdditionalData"] != null && enhancedModel["Options"] != null)
-                {
-                    JsonUtils.LookupJson(model, enhancedModel["AdditionalData"] as JObject, enhancedModel["Options"] as JObject);
-                }
-                foreach (var additionalDataDef in _manifest.AdditionalDataDefinition.Where(i => i.Value.SourceRelatedDataSource == RelatedDataSourceType.MainData))
-                {
-                    JsonUtils.LookupSelect2InOtherModule(model, enhancedModel["Options"] as JObject);
-                }
+                JsonUtils.LookupJson(model, enhancedModel["AdditionalData"] as JObject, enhancedModel["Options"] as JObject);
             }
+            JsonUtils.LookupSelect2InOtherModule(model, enhancedModel["Options"] as JObject);
         }
 
         private void ExtendModel(JObject model, bool onlyData)
         {
+            // include SCHEMA info in the Model
             if (!onlyData && _templateFiles != null && _templateFiles.SchemaInTemplate)
-                // include SCHEMA info in the Model
-                if (!onlyData && _templateFiles != null && _templateFiles.SchemaInTemplate)
-                {
-                    // schema
-                    string schemaFilename = _physicalTemplateFolder + "schema.json";
-                    model["Schema"] = JsonUtils.GetJsonFromFile(schemaFilename);
-                }
+            {
+                // schema
+                string schemaFilename = _physicalTemplateFolder + "schema.json";
+                model["Schema"] = JsonUtils.GetJsonFromFile(schemaFilename);
+            }
 
             // include OPTIONS info in the Model
             if (_templateFiles != null && _templateFiles.OptionsInTemplate)
