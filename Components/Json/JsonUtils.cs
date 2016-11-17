@@ -284,18 +284,17 @@ namespace Satrabel.OpenContent.Components.Json
             foreach (var child in o.Children<JProperty>().ToList())
             {
                 JObject opt = null;
-                if (options != null && options["fields"] != null)
+                if (options?["fields"] != null)
                 {
                     opt = options["fields"][child.Name] as JObject;
                 }
                 JObject reqOpt = null;
-                if (requestOptions != null && requestOptions["fields"] != null)
+                if (requestOptions?["fields"] != null)
                 {
                     reqOpt = requestOptions["fields"][child.Name] as JObject;
                 }
 
-                bool image = opt != null &&
-                    opt["type"] != null && opt["type"].ToString() == "image2";
+                bool image = opt?["type"] != null && opt["type"].ToString() == "image2";
 
                 if (image && reqOpt != null)
                 {

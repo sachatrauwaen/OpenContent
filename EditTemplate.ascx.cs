@@ -461,7 +461,6 @@ namespace Satrabel.OpenContent
                 }
             }
 
-
             FileUri template = ModuleContext.OpenContentSettings().Template.MainTemplateUri();
             string templateFolder = Path.GetDirectoryName(template.FilePath);
             string scriptFile = templateFolder + "/" + scriptList.SelectedValue;
