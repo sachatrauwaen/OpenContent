@@ -175,13 +175,14 @@ alpacaEngine.engine = function(config) {
             "postRender": function (control) {
                 var selfControl = control;
                 $("#"+self.saveButton).click(function () {
-                    selfControl.refreshValidationState(true);
-                    if (selfControl.isValid(true)) {
-                        var value = selfControl.getValue();
-                        //alert(JSON.stringify(value, null, "  "));
-                        var href = $(this).attr('href');
-                        self.FormSubmit(value, href);
-                    }
+                    selfControl.refreshValidationState(true, function () {
+                        if (selfControl.isValid(true)) {
+                            var value = selfControl.getValue();
+                            //alert(JSON.stringify(value, null, "  "));
+                            var href = $(this).attr('href');
+                            self.FormSubmit(value, href);
+                        }
+                    });
                     return false;
                 });
 
