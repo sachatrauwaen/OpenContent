@@ -435,7 +435,7 @@ namespace Satrabel.OpenContent.Components
                 Options = options,
                 Single = single,
             };
-            if (PortalSettings.Current != null) 
+            if (PortalSettings.Current != null)
             {
                 //PortalSettings is null if called from scheduler (eg UrlRewriter, Search, ...)
                 dsContext.CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode();
@@ -454,8 +454,10 @@ namespace Satrabel.OpenContent.Components
         }
         public static bool HasEditRole(PortalSettings portalSettings, string editrole, int createdByUserId)
         {
-            return (!string.IsNullOrEmpty(editrole) && portalSettings.UserInfo.IsInRole(editrole) && (createdByUserId == -1 || portalSettings.UserId == createdByUserId)) ||
-                    (!string.IsNullOrEmpty(editrole) && editrole.ToLower() == "all");
+            if (string.IsNullOrEmpty(editrole)) return false;
+            if (editrole.ToLower() == "all") return true;
+            if (portalSettings.UserInfo.IsInRole(editrole) && (createdByUserId == -1 || createdByUserId == portalSettings.UserId)) return true;
+            return false;
         }
 
         internal static FieldConfig GetIndexConfig(FolderUri folder)

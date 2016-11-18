@@ -7,13 +7,13 @@ using Satrabel.OpenContent.Components.Manifest;
 using System;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Web.Http;
 
 namespace Satrabel.OpenContent.Components
 {
     public class ExternalApiController : DnnApiController
     {
-
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         [ValidateAntiForgeryToken]
         [HttpPost]
@@ -21,12 +21,9 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
-
                 var module = new OpenContentModuleInfo(req.ModuleId, req.TabId);
-                bool index = false;
                 var manifest = module.Settings.Template.Manifest;
                 TemplateManifest templateManifest = module.Settings.Template;
-                index = module.Settings.Template.Manifest.Index;
                 string editRole = manifest.GetEditRole();
 
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
@@ -37,21 +34,22 @@ namespace Satrabel.OpenContent.Components
                 {
                     if (!OpenContentUtils.HasEditPermissions(PortalSettings, module.ViewModule, editRole, createdByUserid))
                     {
-                        return Request.CreateResponse(HttpStatusCode.Unauthorized);
+                        return Request.CreateResponse(HttpStatusCode.Unauthorized, "Failed the HasEditPermissions() check");
                     }
+                    var index = module.Settings.Template.Manifest.Index;
                     var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template.Key.TemplateDir);
                     OpenContentInfo content = new OpenContentInfo()
-                        {
-                            ModuleId = module.DataModule.ModuleID,
-                            Title = ActiveModule.ModuleTitle,
-                            Json = req.json.ToString(),
-                            JsonAsJToken = req.json,
-                            CreatedByUserId = UserInfo.UserID,
-                            CreatedOnDate = DateTime.Now,
-                            LastModifiedByUserId = UserInfo.UserID,
-                            LastModifiedOnDate = DateTime.Now,
-                            Html = "",
-                        };
+                    {
+                        ModuleId = module.DataModule.ModuleID,
+                        Title = ActiveModule.ModuleTitle,
+                        Json = req.json.ToString(),
+                        JsonAsJToken = req.json,
+                        CreatedByUserId = UserInfo.UserID,
+                        CreatedOnDate = DateTime.Now,
+                        LastModifiedByUserId = UserInfo.UserID,
+                        LastModifiedOnDate = DateTime.Now,
+                        Html = "",
+                    };
                     ctrl.AddContent(content, index, indexConfig);
                     return Request.CreateResponse(HttpStatusCode.OK, "");
                 }

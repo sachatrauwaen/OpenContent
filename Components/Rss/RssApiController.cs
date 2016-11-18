@@ -29,7 +29,6 @@ namespace Satrabel.OpenContent.Components.Rss
             IEnumerable<IDataItem> dataList = new List<IDataItem>();
             var module = new OpenContentModuleInfo(moduleId, tabId);
             var manifest = module.Settings.Template.Manifest;
-            var templateManifest = module.Settings.Template;
 
             var rssTemplate = new FileUri(module.Settings.TemplateDir, template + ".hbs");
             string source = File.ReadAllText(rssTemplate.PhysicalFilePath);
@@ -57,7 +56,6 @@ namespace Satrabel.OpenContent.Components.Rss
             response.Content = new StringContent(res);
             response.Content.Headers.ContentType = new MediaTypeHeaderValue(mediaType);
             return response;
-
         }
     }
 }
