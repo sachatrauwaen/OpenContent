@@ -221,8 +221,6 @@ namespace Satrabel.OpenContent.Components.Rest
                     //JObject json = fb.BuildForm(entity);
                     var res = new JObject();
 
-                    int createdByUserid = -1;
-
                     IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                     var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
 
@@ -230,7 +228,6 @@ namespace Satrabel.OpenContent.Components.Rest
                     if (dsItem != null)
                     {
                         var json = dsItem.Data;
-                        createdByUserid = dsItem.CreatedByUserId;
                         JsonUtils.IdJson(json);
                         res[entity] = json;
                     }
@@ -283,7 +280,6 @@ namespace Satrabel.OpenContent.Components.Rest
                 {
                     dsContext.Single = true;
                     dsItem = ds.Get(dsContext, null);
-                    //dsItem = ctrl.GetFirstContent(module.ModuleID);
                     if (dsItem != null)
                         createdByUserid = dsItem.CreatedByUserId;
                 }
@@ -338,7 +334,6 @@ namespace Satrabel.OpenContent.Components.Rest
             try
             {
                 OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
-
                 var manifest = module.Settings.Template.Manifest;
                 TemplateManifest templateManifest = module.Settings.Template;
                 string editRole = manifest.GetEditRole();
@@ -356,7 +351,6 @@ namespace Satrabel.OpenContent.Components.Rest
                     {
                         var itemId = id;
                         dsItem = ds.Get(dsContext, itemId);
-                        //content = ctrl.GetContent(itemId);
                         if (dsItem != null)
                             createdByUserid = dsItem.CreatedByUserId;
                     }
@@ -396,20 +390,15 @@ namespace Satrabel.OpenContent.Components.Rest
             // Add
             try
             {
-                OpenContentSettings settings = ActiveModule.OpenContentSettings();
                 OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
 
-                var manifest = settings.Template.Manifest;
-                TemplateManifest templateManifest = settings.Template;
+                var manifest = module.Settings.Template.Manifest;
                 string editRole = manifest.GetEditRole();
-
-                bool listMode = templateManifest != null && templateManifest.IsListTemplate;
-                int createdByUserid = -1;
 
                 IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
 
-                if (!OpenContentUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, createdByUserid))
+                if (!OpenContentUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, -1))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }

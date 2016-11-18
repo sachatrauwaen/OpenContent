@@ -72,9 +72,6 @@ namespace Satrabel.OpenContent.Components
         public Manifest.Manifest Manifest { get; private set; }
 
         public FolderUri TemplateDir { get { return TemplateKey.TemplateDir; } }
-        //public TemplateKey TemplateKey { get { return Template == null ? "" : Template.FileNameWithoutExtension; } }
-
-        //internal FileUri Template { get; private set; }
 
         public string Data { get; private set; }
 

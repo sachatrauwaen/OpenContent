@@ -12,7 +12,7 @@ namespace Satrabel.OpenContent.Components.Manifest
         internal static Manifest GetManifest(TemplateKey templateKey)
         {
             TemplateManifest templateManifest;
-            var manifest = GetManifest(templateKey, out  templateManifest);
+            var manifest = GetManifest(templateKey, out templateManifest);
             return manifest;
         }
         internal static Manifest GetManifest(TemplateKey templateKey, out TemplateManifest templateManifest)
@@ -121,7 +121,7 @@ namespace Satrabel.OpenContent.Components.Manifest
         }
         internal static bool DataNeeded(this TemplateManifest template)
         {
-            var schemaFileUri = new FileUri(template.ManifestFolderUri.UrlFolder,"schema.json");
+            var schemaFileUri = new FileUri(template.ManifestFolderUri.UrlFolder, "schema.json");
             if (schemaFileUri.FileExists)
                 return true;
 

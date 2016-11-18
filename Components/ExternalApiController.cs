@@ -22,18 +22,19 @@ namespace Satrabel.OpenContent.Components
             try
             {
                 var module = new OpenContentModuleInfo(req.ModuleId, req.TabId);
+                var manifest2 = module.Settings.Manifest;
                 var manifest = module.Settings.Template.Manifest;
                 TemplateManifest templateManifest = module.Settings.Template;
                 string editRole = manifest.GetEditRole();
 
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
-                int createdByUserid = -1;
                 OpenContentController ctrl = new OpenContentController();
 
                 if (listMode)
                 {
-                    if (!OpenContentUtils.HasEditPermissions(PortalSettings, module.ViewModule, editRole, createdByUserid))
+                    if (!OpenContentUtils.HasEditPermissions(PortalSettings, module.ViewModule, editRole, -1))
                     {
+                        Log.Logger.WarnFormat("Failed the HasEditPermissions() check for ");
                         return Request.CreateResponse(HttpStatusCode.Unauthorized, "Failed the HasEditPermissions() check");
                     }
                     var index = module.Settings.Template.Manifest.Index;

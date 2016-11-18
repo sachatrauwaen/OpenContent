@@ -197,7 +197,7 @@ namespace Satrabel.OpenContent.Components
 
                     if (Options != null && model["Options"] != null)
                     {
-                        JsonUtils.ImagesJson(dyn, Options, model["Options"] as JObject, IsEditable);
+                        JsonUtils.ImagesJson(dyn, Options, model["Options"] as JObject, IsEditMode);
                     }
                     JObject context = new JObject();
                     dyn["Context"] = context;
@@ -232,7 +232,7 @@ namespace Satrabel.OpenContent.Components
                             url = HttpUtility.HtmlDecode(url);
                         }
 
-                        var editStatus = !_manifest.DisableEdit && GetEditStatus(item.CreatedByUserId);
+                        var editStatus = !_manifest.DisableEdit && IsEditAllowed(item.CreatedByUserId);
                         context["IsEditable"] = editStatus;
                         context["EditUrl"] = editStatus ? DnnUrlUtils.EditUrl("id", item.Id, _module.ViewModule.ModuleID, _portalSettings) : "";
                         context["DetailUrl"] = Globals.NavigateURL(_detailTabId, false, _portalSettings, "", GetCurrentCultureCode(), url.CleanupUrl(), "id=" + item.Id);
@@ -384,14 +384,15 @@ namespace Satrabel.OpenContent.Components
                 context["GoogleApiKey"] = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetGoogleApiKey();
                 context["ModuleTitle"] = _module.ViewModule.ModuleTitle;
                 context["AddUrl"] = DnnUrlUtils.EditUrl(_module.ViewModule.ModuleID, _portalSettings);
-                var editStatus = !_manifest.DisableEdit && GetEditStatus(-1);
-                context["IsEditable"] = editStatus;
+                var editIsAllowed = !_manifest.DisableEdit && IsEditAllowed(-1);
+                context["IsEditable"] = editIsAllowed; //allowed to edit the item or list (meaning allow Add)
+                context["IsEditMode"] = IsEditMode;
                 context["PortalId"] = _portalId;
                 context["MainUrl"] = Globals.NavigateURL(_detailTabId, false, _portalSettings, "", GetCurrentCultureCode());
                 if (_data != null)
                 {
                     string url = "";
-                    if (_manifest != null && !string.IsNullOrEmpty(_manifest.DetailUrl))
+                    if (!string.IsNullOrEmpty(_manifest?.DetailUrl))
                     {
                         HandlebarsEngine hbEngine = new HandlebarsEngine();
                         dynamic dynForHBS = JsonUtils.JsonToDynamic(model.ToString());
@@ -400,15 +401,15 @@ namespace Satrabel.OpenContent.Components
                     }
                     context["DetailUrl"] = Globals.NavigateURL(_detailTabId, false, _portalSettings, "", GetCurrentCultureCode(), url.CleanupUrl(), "id=" + _data.Id);
                     context["Id"] = _data.Id;
-                    context["EditUrl"] = editStatus ? DnnUrlUtils.EditUrl("id", _data.Id, _module.ViewModule.ModuleID, _portalSettings) : "";
+                    context["EditUrl"] = editIsAllowed ? DnnUrlUtils.EditUrl("id", _data.Id, _module.ViewModule.ModuleID, _portalSettings) : "";
                 }
             }
         }
 
-        private bool GetEditStatus(int createdByUser)
+        private bool IsEditAllowed(int createdByUser)
         {
             string editRole = _manifest.GetEditRole();
-            return (IsEditable || OpenContentUtils.HasEditRole(_portalSettings, editRole, createdByUser)) // edit Role can edit whtout be in edit mode
+            return (IsEditMode || OpenContentUtils.HasEditRole(_portalSettings, editRole, createdByUser)) // edit Role can edit whtout be in edit mode
                     && OpenContentUtils.HasEditPermissions(_portalSettings, _module.ViewModule, editRole, createdByUser);
         }
 
@@ -424,18 +425,18 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
-        private bool? _isEditable;
-        private bool IsEditable
+        private bool? _isEditMode;
+        private bool IsEditMode
         {
             get
             {
                 //Perform tri-state switch check to avoid having to perform a security
                 //role lookup on every property access (instead caching the result)
-                if (!_isEditable.HasValue)
+                if (!_isEditMode.HasValue)
                 {
-                    _isEditable = _module.DataModule.CheckIfEditable(PortalSettings.Current);
+                    _isEditMode = _module.DataModule.CheckIfEditable(PortalSettings.Current);
                 }
-                return _isEditable.Value;
+                return _isEditMode.Value;
             }
         }
     }
