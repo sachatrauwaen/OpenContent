@@ -43,7 +43,7 @@
         "type": "edit",
         "ui": "dnnbootstrap",
         "title": "Bootstrap Edit View for DNN",
-        "displayReadonly": false,
+        "displayReadonly": true,
         "templates": {
             "control-image": "#dnn-edit-control-image",
             "control-imagecrop": "#dnn-edit-control-imagecrop",
@@ -65,7 +65,7 @@
         "parent": "dnnbootstrap-edit",
         "title": "Bootstrap Create View for DNN",
         "type": "create",
-        "displayReadonly": false
+        "displayReadonly": true
     });
 
     Alpaca.registerView({

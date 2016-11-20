@@ -43,7 +43,7 @@ namespace Satrabel.OpenContent.Components.Manifest
         public string DetailUrl { get; set; }
 
         [JsonProperty(PropertyName = "additionalData")]
-        public Dictionary<string, AdditionalDataManifest> AdditionalData
+        public Dictionary<string, AdditionalDataManifest> AdditionalDataDefinition
         {
             get { return _additionalData; }
             set { _additionalData = new Dictionary<string, AdditionalDataManifest>(value, StringComparer.OrdinalIgnoreCase); }
@@ -87,15 +87,15 @@ namespace Satrabel.OpenContent.Components.Manifest
         }
         public AdditionalDataManifest GetAdditionalData(string key)
         {
-            return AdditionalData[key.ToLowerInvariant()];
+            return AdditionalDataDefinition[key.ToLowerInvariant()];
         }
 
-        public bool AdditionalDataExists(string key = "")
+        public bool AdditionalDataDefined(string key = "")
         {
             if (key == "")
-                return AdditionalData != null;
+                return AdditionalDataDefinition != null;
             else
-                return AdditionalData.ContainsKey(key.ToLowerInvariant());
+                return AdditionalDataDefinition.ContainsKey(key.ToLowerInvariant());
         }
     }
 }

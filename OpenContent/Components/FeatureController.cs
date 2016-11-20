@@ -90,7 +90,8 @@ namespace Satrabel.OpenContent.Components
                 return searchDocuments;
             }
 
-            OpenContentSettings settings = new OpenContentSettings(modInfo.ModuleSettings);
+            var module = new OpenContentModuleInfo(modInfo);
+            OpenContentSettings settings = modInfo.OpenContentSettings();
             if (settings.Template == null || settings.Template.Main == null || !settings.Template.Main.DnnSearch)
             {
                 return searchDocuments;
@@ -100,14 +101,8 @@ namespace Satrabel.OpenContent.Components
                 return searchDocuments;
             }
 
-            var ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
-            var dsContext = new DataSourceContext()
-            {
-                ModuleId = modInfo.ModuleID,
-                ActiveModuleId = modInfo.ModuleID,
-                TemplateFolder = settings.TemplateDir.FolderPath,
-                Config = settings.Manifest.DataSourceConfig
-            };
+            IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
+            var dsContext = OpenContentUtils.CreateDataContext(module);
 
             IDataItems contentList = ds.GetAll(dsContext, null);
             if (!contentList.Items.Any())
@@ -190,12 +185,12 @@ namespace Satrabel.OpenContent.Components
             };
         }
 
-        protected static string JsonToSearchableString(string json)
-        {
-            dynamic data = JToken.Parse(json);
-            string result = JsonToSearchableString(data);
-            return result;
-        }
+        //protected static string JsonToSearchableString(string json)
+        //{
+        //    dynamic data = JToken.Parse(json);
+        //    string result = JsonToSearchableString(data);
+        //    return result;
+        //}
 
         private static string JsonToSearchableString(JToken data)
         {

@@ -7,19 +7,13 @@ namespace Satrabel.OpenContent.Components
 {
     public static class OpenContentSettingsExtentions
     {
-        public static int GetMainTabId(this OpenContentSettings settings, int moduleTabId)
-        {
-            return settings.DetailTabId > 0 ? settings.DetailTabId : (settings.TabId > 0 ? settings.TabId : moduleTabId);
-        }
+        
         public static int GetModuleId(this OpenContentSettings settings, int defaultModuleId)
         {
             return settings.IsOtherModule ? settings.ModuleId : defaultModuleId;
         }
 
-        public static bool IsListTemplate(this OpenContentSettings settings)
-        {
-            return settings.Template != null && settings.Template.IsListTemplate;
-        }
+
     }
 
     public class OpenContentSettings
@@ -78,9 +72,6 @@ namespace Satrabel.OpenContent.Components
         public Manifest.Manifest Manifest { get; private set; }
 
         public FolderUri TemplateDir { get { return TemplateKey.TemplateDir; } }
-        //public TemplateKey TemplateKey { get { return Template == null ? "" : Template.FileNameWithoutExtension; } }
-
-        //internal FileUri Template { get; private set; }
 
         public string Data { get; private set; }
 

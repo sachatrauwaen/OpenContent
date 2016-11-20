@@ -101,7 +101,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
         }
 
         private void RegisterTruncateWordsHelper(HandlebarsDotNet.IHandlebars hbs)
-        {            
+        {
             hbs.RegisterHelper("truncateWords", (writer, context, parameters) =>
             {
                 try
@@ -364,6 +364,25 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     _jsOrder++;
                 }
             });
+            hbs.RegisterHelper("registerform", (writer, context, parameters) =>
+            {
+                string view = "bootstrap";
+                if (parameters.Length == 1)
+                {
+                    view = parameters[0].ToString();
+                }
+                string min = ".min";
+                if (DotNetNuke.Common.HttpContextSource.Current.IsDebuggingEnabled)
+                {
+                    min = "";
+                }
+                DotNetNuke.Framework.ServicesFramework.Instance.RequestAjaxScriptSupport();
+                DnnUtils.RegisterScript(page, sourceFolder, "/DesktopModules/OpenContent/js/lib/handlebars/handlebars" + min + ".js", _jsOrder);
+                _jsOrder++;
+                DnnUtils.RegisterScript(page, sourceFolder, "/DesktopModules/OpenContent/js/alpaca/bootstrap/alpaca" + min + ".js", _jsOrder);
+                _jsOrder++;
+                ClientResourceManager.RegisterStyleSheet(page, page.ResolveUrl("/DesktopModules/OpenContent/js/alpaca/bootstrap/alpaca" + min + ".css"), FileOrder.Css.PortalCss);
+            });
         }
         private void RegisterRegisterStylesheetHelper(HandlebarsDotNet.IHandlebars hbs, Page page, string sourceFolder)
         {
@@ -429,9 +448,9 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 try
                 {
                     object[] a;
-                    if (parameters[0] is IEnumerable<Object>)
+                    if (parameters[0] is IEnumerable<object>)
                     {
-                        var en = parameters[0] as IEnumerable<Object>;
+                        var en = parameters[0] as IEnumerable<object>;
                         a = en.ToArray();
                     }
                     else
@@ -458,9 +477,9 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 try
                 {
                     object[] a;
-                    if (parameters[0] is IEnumerable<Object>)
+                    if (parameters[0] is IEnumerable<object>)
                     {
-                        var en = parameters[0] as IEnumerable<Object>;
+                        var en = parameters[0] as IEnumerable<object>;
                         a = en.ToArray();
                     }
                     else
@@ -468,9 +487,9 @@ namespace Satrabel.OpenContent.Components.Handlebars
                         a = (object[])parameters[0];
                     }
                     object[] b;
-                    if (parameters[1] is IEnumerable<Object>)
+                    if (parameters[1] is IEnumerable<object>)
                     {
-                        var en = parameters[1] as IEnumerable<Object>;
+                        var en = parameters[1] as IEnumerable<object>;
                         b = en.ToArray();
                     }
                     else
@@ -496,9 +515,9 @@ namespace Satrabel.OpenContent.Components.Handlebars
             hbs.RegisterHelper("lookup", (writer, options, context, arguments) =>
             {
                 object[] arr;
-                if (arguments[0] is IEnumerable<Object>)
+                if (arguments[0] is IEnumerable<object>)
                 {
-                    var en = arguments[0] as IEnumerable<Object>;
+                    var en = arguments[0] as IEnumerable<object>;
                     arr = en.ToArray();
                 }
                 else
@@ -510,7 +529,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 var value = arguments[2].ToString();
                 foreach (var obj in arr)
                 {
-                    Object member = DynamicUtils.GetMemberValue(obj, field);
+                    object member = DynamicUtils.GetMemberValue(obj, field);
                     if (value.Equals(member))
                     {
                         options.Template(writer, (object)obj);

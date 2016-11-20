@@ -73,11 +73,11 @@ namespace Satrabel.OpenContent.Components.Manifest
 
         #region DataSource Module information
 
-        public void SetDataSourceModule(int tabId, int moduleId, ModuleInfo getModule, TemplateManifest template, string data)
+        public void SetDataSourceModule(int tabId, int moduleId, ModuleInfo viewModule, TemplateManifest template, string data)
         {
             TabId = tabId;
             ModuleId = moduleId;
-            Module = getModule;
+            Module = viewModule;
             OtherModuleTemplate = template;
             OtherModuleSettingsJson = data;
         }

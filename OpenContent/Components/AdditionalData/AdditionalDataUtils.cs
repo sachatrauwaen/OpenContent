@@ -1,4 +1,8 @@
-﻿using Satrabel.OpenContent.Components.Manifest;
+﻿using DotNetNuke.Services.Localization;
+using Newtonsoft.Json.Linq;
+using Satrabel.OpenContent.Components.Datasource;
+using Satrabel.OpenContent.Components.Json;
+using Satrabel.OpenContent.Components.Manifest;
 
 
 namespace Satrabel.OpenContent.Components
@@ -34,5 +38,6 @@ namespace Satrabel.OpenContent.Components
         {
             return AdditionalDataUtils.GetScope(manifest.ScopeType, portalId, tabId, moduleId, tabModuleId);
         }
+
     }
 }

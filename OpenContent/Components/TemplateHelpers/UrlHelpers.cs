@@ -29,18 +29,18 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             return portalFileUri.UrlFilePath;
         }
 
-        public static string CleanupUrl(this string url)
+        public static string CleanupUrl(this string text)
         {
             const string replaceWith = "-";
 
             const string accentFrom = "ÀÁÂÃÄÅàáâãäåảạăắằẳẵặấầẩẫậÒÓÔÕÖØòóôõöøỏõọồốổỗộơớờởợÈÉÊËèéêëẻẽẹếềểễệÌÍÎÏìíîïỉĩịÙÚÛÜùúûüủũụưứừửữựÿýỳỷỹỵÑñÇçĞğİıŞş₤€ßđ";
             const string accentTo = "AAAAAAaaaaaaaaaaaaaaaaaaaOOOOOOoooooooooooooooooooEEEEeeeeeeeeeeeeIIIIiiiiiiiUUUUuuuuuuuuuuuuuyyyyyyNnCcGgIiSsLEsd";
 
-            url = url.ToLower().Trim();
+            text = text.ToLower().Trim();
 
-            StringBuilder result = new StringBuilder(url.Length);
-            int i = 0; int last = url.ToCharArray().GetUpperBound(0);
-            foreach (char c in url)
+            StringBuilder result = new StringBuilder(text.Length);
+            int i = 0; int last = text.ToCharArray().GetUpperBound(0);
+            foreach (char c in text)
             {
 
                 //use string for manipulation
@@ -49,9 +49,9 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
                 {
                     ch = replaceWith;
                 }
-                else if (@".[]|:;`%\\""".Contains(ch))
+                else if (@".[]|:;`%\\""^№".Contains(ch))
                     ch = "";
-                else if (@" &$+,/=?@~#<>()¿¡«»!'’–*…".Contains(ch))
+                else if (@" &$+,/=?@~#<>(){}¿¡«»!'’–*…“”".Contains(ch))
                     ch = replaceWith;
                 else
                 {

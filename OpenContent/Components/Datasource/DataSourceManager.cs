@@ -48,7 +48,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             }
         }
 
-        internal static bool IsValidDataSourceProvider(Type t)
+        private static bool IsValidDataSourceProvider(Type t)
         {
             return t != null && t.IsClass && !t.IsAbstract && t.IsVisible && typeof(IDataSource).IsAssignableFrom(t);
         }
@@ -61,7 +61,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             var dataSource = _dataSources.SingleOrDefault(ds => ds.Name == name);
             if (dataSource == null)
             {
-                throw new ArgumentException(string.Format("DataSource provider {0} doesn't exist", name));
+                throw new ArgumentException($"DataSource provider {name} doesn't exist");
             }
             return dataSource;
         }

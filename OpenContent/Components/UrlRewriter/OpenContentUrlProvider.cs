@@ -16,43 +16,34 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
         {
             Dictionary<string, Locale> dicLocales = LocaleController.Instance.GetLocales(portalId);
             List<OpenContentUrlRule> rules = new List<OpenContentUrlRule>();
-            ModuleController mc = new ModuleController();
-            ArrayList modules = mc.GetModulesByDefinition(portalId, AppConfig.OPENCONTENT);
-            //foreach (ModuleInfo module in modules.OfType<ModuleInfo>().GroupBy(m => m.ModuleID).Select(g => g.First())){                
-            foreach (ModuleInfo module in modules.OfType<ModuleInfo>())
+            var modules = DnnUtils.GetDnnOpenContentModules(portalId);
+
+            foreach (var module in modules)
             {
                 try
                 {
-                    OpenContentSettings settings = new OpenContentSettings(module.ModuleSettings);
-                    int mainTabId = settings.GetMainTabId(module.TabID);
-                    int mainModuleId = settings.GetModuleId(module.ModuleID);
-                    if (settings.IsListTemplate() && (!settings.IsOtherModule || settings.DetailTabId > 0))
+                    if (module.IsListTemplate() && (!module.Settings.IsOtherModule || module.Settings.DetailTabId > 0))
                     {
-                        var ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
-                        var dsContext = new DataSourceContext()
-                        {
-                            ModuleId = mainModuleId,
-                            TemplateFolder = settings.TemplateDir.FolderPath,
-                            Config = settings.Manifest.DataSourceConfig,
-                            Agent = "OpenContentUrlProvider.GetRules()"
-                        };
-                        IEnumerable<IDataItem> dataList = new List<IDataItem>();
-                        dataList = ds.GetAll(dsContext, null).Items;
+                        IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
+                        var dsContext = OpenContentUtils.CreateDataContext(module);
+                        dsContext.Agent = "OpenContentUrlProvider.GetRules()";
+
+                        var dataList = ds.GetAll(dsContext, null).Items;
                         if (dataList.Count() > 1000)
                         {
                             continue;
                         }
-                        var physicalTemplateFolder = settings.TemplateDir.PhysicalFullDirectory + "\\";
+                        var physicalTemplateFolder = module.Settings.TemplateDir.PhysicalFullDirectory + "\\";
                         HandlebarsEngine hbEngine = new HandlebarsEngine();
-                        if (!string.IsNullOrEmpty(settings.Manifest.DetailUrl))
+                        if (!string.IsNullOrEmpty(module.Settings.Manifest.DetailUrl))
                         {
-                            hbEngine.Compile(settings.Manifest.DetailUrl);
+                            hbEngine.Compile(module.Settings.Manifest.DetailUrl);
                         }
                         foreach (KeyValuePair<string, Locale> key in dicLocales)
                         {
                             string cultureCode = key.Value.Code;
                             string ruleCultureCode = (dicLocales.Count > 1 ? cultureCode : null);
-                            ModelFactory mf = new ModelFactory(dataList, settings.Data, physicalTemplateFolder, settings.Template.Manifest, settings.Template, settings.Template.Main, module, portalId, cultureCode, mainTabId, mainModuleId);
+                            ModelFactory mf = new ModelFactory(dataList, module.Settings.Data, physicalTemplateFolder, module.Settings.Template.Manifest, module.Settings.Template, module.Settings.Template.Main, module, portalId, cultureCode);
                             //dynamic model = mf.GetModelAsDynamic(true);
                             //dynamic items = model.Items;
                             IEnumerable<dynamic> items = mf.GetModelAsDynamicList();
@@ -62,7 +53,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                             {
                                 string id = content.Context.Id;
                                 string url = "content-" + id;
-                                if (!string.IsNullOrEmpty(settings.Manifest.DetailUrl))
+                                if (!string.IsNullOrEmpty(module.Settings.Manifest.DetailUrl))
                                 {
                                     try
                                     {
@@ -83,7 +74,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                                     var rule = new OpenContentUrlRule
                                     {
                                         CultureCode = ruleCultureCode,
-                                        TabId = mainTabId,
+                                        TabId = module.GetDetailTabId(),
                                         Parameters = "id=" + id,
                                         Url = url
                                     };
@@ -104,7 +95,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                 }
                 catch (Exception ex)
                 {
-                    Log.Logger.Error("Failed to generate url for opencontent module " + module.ModuleID, ex);
+                    Log.Logger.Error("Failed to generate url for opencontent module " + module.ViewModule.ModuleID, ex);
                 }
             }
             return rules;

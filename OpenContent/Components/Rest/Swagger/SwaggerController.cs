@@ -32,18 +32,9 @@ namespace Satrabel.OpenContent.Components.Rest.Swagger
         {
             try
             {
-                ModuleController mc = new ModuleController();
-                var ActiveModule = mc.GetModule(moduleId, tabId, false);
-                OpenContentSettings settings = ActiveModule.OpenContentSettings();
-                ModuleInfo module = ActiveModule;
-                if (settings.ModuleId > 0)
-                {
-                    //ModuleController mc = new ModuleController();
-                    module = mc.GetModule(settings.ModuleId, settings.TabId, false);
-                }
-                var manifest = settings.Manifest;
-                TemplateManifest templateManifest = settings.Template;
-                string TemplateFolder = settings.TemplateDir.UrlFolder;
+                var module = new OpenContentModuleInfo(moduleId, tabId);
+                var manifest = module.Settings.Manifest;
+                string templateFolder = module.Settings.TemplateDir.UrlFolder;
 
                 var swagger = new SwaggerRoot();
                 swagger.Info.Title = "OpenContent Rest API";
@@ -64,9 +55,9 @@ namespace Satrabel.OpenContent.Components.Rest.Swagger
                     Name = "Items",
                     Description = manifest.Title
                 });
-                if (manifest.AdditionalData != null)
+                if (manifest.AdditionalDataDefinition != null)
                 {
-                    foreach (var entity in manifest.AdditionalData)
+                    foreach (var entity in manifest.AdditionalDataDefinition)
                     {
                         swagger.Tags.Add(new Tag()
                         {
@@ -101,13 +92,14 @@ namespace Satrabel.OpenContent.Components.Rest.Swagger
                 */
                 {
                     // main item
-                    var schemaJson = JsonUtils.LoadJsonFromFile(TemplateFolder + "schema.json");
+                    var schemaJson = JsonUtils.LoadJsonFromFile(templateFolder + "schema.json");
 
-                    var resItems = new List<SchemaObject>();
-                    resItems.Add(new SchemaObject()
-                    {
-                        Ref = "#/definitions/items"
-                    });
+                    //var resItems = new List<SchemaObject>();
+                    //resItems.Add(new SchemaObject()
+                    //{
+                    //    Ref = "#/definitions/items"
+                    //});
+                    
                     // Get()
                     // Get(pageIndex, pageSize, filter, sort)
                     var pi = new PathItem();
@@ -301,11 +293,11 @@ namespace Satrabel.OpenContent.Components.Rest.Swagger
                     swagger.Definitions.Add("items", schemaJson);
                 }
 
-                if (manifest.AdditionalData != null)
+                if (manifest.AdditionalDataDefinition != null)
                 {
-                    foreach (var entity in manifest.AdditionalData.Keys)
+                    foreach (var entity in manifest.AdditionalDataDefinition.Keys)
                     {
-                        var schemaJson = JsonUtils.LoadJsonFromFile(TemplateFolder + entity + "-schema.json");
+                        var schemaJson = JsonUtils.LoadJsonFromFile(templateFolder + entity + "-schema.json");
                         if (schemaJson["items"] != null)
                         {
                             var entityName = entity.ToLower();

@@ -31,7 +31,7 @@ namespace Satrabel.OpenContent
             cmdSave.NavigateUrl = Globals.NavigateURL();
             OpenContentSettings settings = this.OpenContentSettings();
             AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, "" /*settings.Template.Uri().FolderPath*/, "builder");
-            alpaca.RegisterAll(false);
+            alpaca.RegisterAll(false, false);
             //string ItemId = Request.QueryString["id"];
             //AlpacaContext = new AlpacaContext(PortalId, ModuleId, ItemId, ScopeWrapper.ClientID, null, cmdSave.ClientID, null, null);
             ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/builder/formbuilder.js", FileOrder.Js.DefaultPriority);
@@ -48,9 +48,9 @@ namespace Satrabel.OpenContent
             {
                 ddlForms.Items.Add(new ListItem("Settings", settings.Template.Key.ShortKey));
             }
-            if (settings.Template.Manifest.AdditionalDataExists())
+            if (settings.Template.Manifest.AdditionalDataDefined())
             {
-                foreach (var addData in settings.Template.Manifest.AdditionalData)
+                foreach (var addData in settings.Template.Manifest.AdditionalDataDefinition)
                 {
                     if (OpenContentUtils.BuilderExist(settings.Template.ManifestFolderUri, addData.Key))
                     {

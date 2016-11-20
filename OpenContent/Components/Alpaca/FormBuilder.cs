@@ -117,8 +117,8 @@ namespace Satrabel.OpenContent.Components.Alpaca
             {
                 string propKey = prefix + prop.Key;
                 string propTitle = prefix + prop.Value.Title;
-                var opts = optionsConfig != null && optionsConfig.Fields != null && optionsConfig.Fields.ContainsKey(prop.Key) ? optionsConfig.Fields[prop.Key] : null;
-                var idxs = indexConfig != null && indexConfig.Fields != null && indexConfig.Fields.ContainsKey(prop.Key) ? indexConfig.Fields[prop.Key] : null;
+                var opts = optionsConfig?.Fields != null && optionsConfig.Fields.ContainsKey(prop.Key) ? optionsConfig.Fields[prop.Key] : null;
+                var idxs = indexConfig?.Fields != null && indexConfig.Fields.ContainsKey(prop.Key) ? indexConfig.Fields[prop.Key] : null;
                 if (prop.Key == AppConfig.FieldNamePublishStatus || prop.Key == AppConfig.FieldNamePublishStartDate || prop.Key == AppConfig.FieldNamePublishEndDate)
                 {
                     fieldLst.Add(propKey);
@@ -201,7 +201,12 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
         }
 
-        public JObject BuildForm(string key = "")
+        //public JObject BuildForm()
+        //{
+        //    return BuildForm("", DnnLanguageUtils.GetCurrentCultureCode());
+        //}
+
+        public JObject BuildForm(string key, string currentCultureCode)
         {
             if (key == "query")
             {
@@ -209,10 +214,28 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
             else
             {
-                return Build(key);
+                return Build(key, currentCultureCode);
             }
         }
-        private JObject Build(string key = "")
+
+        public JObject BuildForm(string key)
+        {
+            if (key == "query")
+            {
+                return BuildQuerySettings();
+            }
+            else
+            {
+                return Build(key, DnnLanguageUtils.GetCurrentCultureCode());
+            }
+        }
+
+        private JObject Build()
+        {
+            return Build("", DnnLanguageUtils.GetCurrentCultureCode());
+        }
+
+        private JObject Build(string key, string currentCultureCode)
         {
             string prefix = string.IsNullOrEmpty(key) ? "" : key + "-";
             JObject json = new JObject();
@@ -227,7 +250,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 json["options"] = optionsJson;
 
             // language options
-            optionsJson = JsonUtils.LoadJsonFromFile(templateUri.UrlFolder + prefix + "options." + DnnLanguageUtils.GetCurrentCultureCode() + ".json");
+            optionsJson = JsonUtils.LoadJsonFromFile(templateUri.UrlFolder + prefix + "options." + currentCultureCode + ".json");
             if (optionsJson != null)
                 json["options"] = json["options"].JsonMerge(optionsJson);
 

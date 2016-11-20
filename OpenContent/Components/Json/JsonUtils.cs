@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.TemplateHelpers;
 using DotNetNuke.Services.FileSystem;
+using Satrabel.OpenContent.Components.Datasource;
 
 
 namespace Satrabel.OpenContent.Components.Json
@@ -106,17 +108,15 @@ namespace Satrabel.OpenContent.Components.Json
             foreach (var child in o.Children<JProperty>().ToList())
             {
                 JObject opt = null;
-                if (options != null && options["fields"] != null)
+                if (options?["fields"] != null)
                 {
                     opt = options["fields"][child.Name] as JObject;
                 }
                 if (opt == null) continue;
-                bool lookup = 
+                bool lookup =
                     opt["type"] != null &&
                     opt["type"].ToString() == "select2" &&
-                    opt["dataService"] != null &&
-                    opt["dataService"]["data"] != null &&
-                    opt["dataService"]["data"]["dataKey"] != null;
+                    opt["dataService"]?["data"]?["dataKey"] != null;
 
                 string dataKey = "";
                 string dataMember = "";
@@ -124,8 +124,8 @@ namespace Satrabel.OpenContent.Components.Json
                 if (lookup)
                 {
                     dataKey = opt["dataService"]["data"]["dataKey"].ToString();
-                    dataMember = opt["dataService"]["data"]["dataMember"] == null ? "" : opt["dataService"]["data"]["dataMember"].ToString();
-                    valueField = opt["dataService"]["data"]["valueField"] == null ? "Id" : opt["dataService"]["data"]["valueField"].ToString();
+                    dataMember = opt["dataService"]["data"]["dataMember"]?.ToString() ?? "";
+                    valueField = opt["dataService"]["data"]["valueField"]?.ToString() ?? "Id";
                 }
 
                 var childProperty = child;
@@ -175,31 +175,126 @@ namespace Satrabel.OpenContent.Components.Json
                         {
                             o[childProperty.Name] = GenerateObject(additionalData, dataKey, val, dataMember, valueField);
                         }
-                        catch (System.Exception)
+                        catch (System.Exception ex)
                         {
+                            Debugger.Break();
                         }
                     }
                 }
             }
         }
 
+        public static void LookupSelect2InOtherModule(JObject o, JObject options)
+        {
+            foreach (var child in o.Children<JProperty>().ToList())
+            {
+                JObject opt = null;
+                if (options?["fields"] != null)
+                {
+                    opt = options["fields"][child.Name] as JObject;
+                }
+                if (opt == null) continue;
+                bool lookup =
+                    opt["type"] != null &&
+                    opt["type"].ToString() == "select2" &&
+                    opt["dataService"]?["data"]?["moduleId"] != null &&
+                    opt["dataService"]?["data"]?["tabId"] != null;
+
+                string dataMember = "";
+                string valueField = "Id";
+                string moduleId = "";
+                string tabId = "";
+                if (lookup)
+                {
+                    dataMember = opt["dataService"]["data"]["dataMember"]?.ToString() ?? "";
+                    valueField = opt["dataService"]["data"]["valueField"]?.ToString() ?? "Id";
+                    moduleId = opt["dataService"]["data"]["moduleId"]?.ToString() ?? "0";
+                    tabId = opt["dataService"]["data"]["tabId"]?.ToString() ?? "0";
+                }
+
+                var childProperty = child;
+
+                if (childProperty.Value is JArray)
+                {
+                    var array = childProperty.Value as JArray;
+                    JArray newArray = new JArray();
+                    foreach (var value in array)
+                    {
+                        var obj = value as JObject;
+                        if (obj != null)
+                        {
+                            LookupSelect2InOtherModule(obj, opt["items"] as JObject);
+                        }
+                        else if (lookup)
+                        {
+                            var val = value as JValue;
+                            if (val != null)
+                            {
+                                try
+                                {
+                                    var module = new OpenContentModuleInfo(int.Parse(moduleId), int.Parse(tabId));
+                                    var ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
+                                    var dsContext = OpenContentUtils.CreateDataContext(module);
+                                    IDataItem dataItem = ds.Get(dsContext, val.ToString());
+                                    newArray.Add(GenerateObject(dataItem, val.ToString(), dataMember, valueField));
+                                }
+                                catch (System.Exception)
+                                {
+                                    Debugger.Break();
+                                }
+                            }
+                        }
+                    }
+                    if (lookup)
+                    {
+                        childProperty.Value = newArray;
+                    }
+                }
+                else if (childProperty.Value is JObject)
+                {
+                    var obj = childProperty.Value as JObject;
+                    LookupSelect2InOtherModule(obj, opt);
+                }
+                else if (childProperty.Value is JValue)
+                {
+                    if (lookup)
+                    {
+                        string val = childProperty.Value.ToString();
+                        try
+                        {
+                            var module = new OpenContentModuleInfo(int.Parse(moduleId), int.Parse(tabId));
+                            var ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
+                            var dsContext = OpenContentUtils.CreateDataContext(module);
+                            IDataItem dataItem = ds.Get(dsContext, val);
+                            o[childProperty.Name] = GenerateObject(dataItem, val, dataMember, valueField);
+                        }
+                        catch (System.Exception ex)
+                        {
+                            Debugger.Break();
+                        }
+                    }
+                }
+            }
+        }
+
+
+
         public static void ImagesJson(JObject o, JObject requestOptions, JObject options, bool isEditable)
         {
             foreach (var child in o.Children<JProperty>().ToList())
             {
                 JObject opt = null;
-                if (options != null && options["fields"] != null)
+                if (options?["fields"] != null)
                 {
                     opt = options["fields"][child.Name] as JObject;
                 }
                 JObject reqOpt = null;
-                if (requestOptions != null && requestOptions["fields"] != null)
+                if (requestOptions?["fields"] != null)
                 {
                     reqOpt = requestOptions["fields"][child.Name] as JObject;
                 }
 
-                bool image = opt != null &&
-                    opt["type"] != null && opt["type"].ToString() == "image2";
+                bool image = opt?["type"] != null && opt["type"].ToString() == "image2";
 
                 if (image && reqOpt != null)
                 {
@@ -284,6 +379,22 @@ namespace Satrabel.OpenContent.Components.Json
             if (f == null) return "";
             var portalFileUri = new PortalFileUri(f);
             return portalFileUri.EditUrl();
+        }
+        private static JObject GenerateObject(IDataItem additionalData, string id, string dataMember, string valueField)
+        {
+            var json = additionalData?.Data;
+            //if (!string.IsNullOrEmpty(dataMember))
+            //{
+            //    json = json[dataMember];
+            //}
+            if (json != null)
+            {
+                return json as JObject;
+            }
+            JObject res = new JObject();
+            res["Id"] = id;
+            res["Title"] = "unknow";
+            return res;
         }
 
         private static JObject GenerateObject(JObject additionalData, string key, string id, string dataMember, string valueField)

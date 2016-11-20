@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Datasource.Search;
 using System;
+using Satrabel.OpenContent.Components.Manifest;
 
 namespace Satrabel.OpenContent.Components.Datasource
 {
@@ -36,9 +37,9 @@ namespace Satrabel.OpenContent.Components.Datasource
         /// Gets items of a list datasource based on a query, 
         /// </summary>
         /// <param name="context">The context.</param>
-        /// <param name="select">The select. (if null must return all data)</param>
+        /// <param name="selectQuery">The select. (if null must return all data)</param>
         /// <returns></returns>
-        IDataItems GetAll(DataSourceContext context, Select select);
+        IDataItems GetAll(DataSourceContext context, Select selectQuery);
 
         /// <summary>
         /// Gets Alpaca Schema, Options and View json, 
@@ -71,6 +72,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         /// <param name="schema">Must return schema information</param>
         /// <param name="options">Must return options information</param>
         /// <param name="view">Must return view information</param>
+        /// <param name="key"></param>
         /// <returns>Alpaca json object { schema: ..., options : ..., view: ...}  </returns>
         JObject GetDataAlpaca(DataSourceContext context, bool schema, bool options, bool view, string key);
 

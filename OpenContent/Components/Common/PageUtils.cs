@@ -180,7 +180,7 @@ namespace Satrabel.OpenContent.Components
                     strBreadCrumbs += HttpUtility.HtmlDecode(separator);
                 }
                 string strLabel = objTab.LocalizedTabName;
-                if (useTitle && !String.IsNullOrEmpty(objTab.Title))
+                if (useTitle && !string.IsNullOrEmpty(objTab.Title))
                 {
                     strLabel = objTab.Title;
                 }

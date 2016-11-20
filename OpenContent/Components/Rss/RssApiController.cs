@@ -27,66 +27,28 @@ namespace Satrabel.OpenContent.Components.Rss
         {
             ModuleController mc = new ModuleController();
             IEnumerable<IDataItem> dataList = new List<IDataItem>();
-            var module = mc.GetModule(moduleId, tabId, false);
-            OpenContentSettings settings = module.OpenContentSettings();
-            var manifest = settings.Template.Manifest;
-            var templateManifest = settings.Template;
+            var module = new OpenContentModuleInfo(moduleId, tabId);
+            var manifest = module.Settings.Template.Manifest;
 
-            var rssTemplate = new FileUri(settings.TemplateDir, template + ".hbs");
+            var rssTemplate = new FileUri(module.Settings.TemplateDir, template + ".hbs");
             string source = File.ReadAllText(rssTemplate.PhysicalFilePath);
 
-            //var ds = DataSourceManager.GetDataSource(AppConfig.FriendlyName());
-            //var dsContext = new DataSourceContext()
-            //{
-            //    ModuleId = moduleId,
-            //    ActiveModuleId = module.ModuleID,
-            //    TemplateFolder = settings.TemplateDir.FolderPath
-            //};
-
-            bool useLucene = settings.Template.Manifest.Index;
+            bool useLucene = module.Settings.Template.Manifest.Index;
             if (useLucene)
             {
-                var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
+                var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template.Key.TemplateDir);
 
                 QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
-                queryBuilder.Build(settings.Query, PortalSettings.UserMode != PortalSettings.Mode.Edit, UserInfo.UserID, DnnLanguageUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
+                queryBuilder.Build(module.Settings.Query, PortalSettings.UserMode != PortalSettings.Mode.Edit, UserInfo.UserID, DnnLanguageUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
 
-                var ds = DataSourceManager.GetDataSource(manifest.DataSource);
-                var dsContext = new DataSourceContext()
-                {
-                    ModuleId = module.ModuleID,
-                    UserId = UserInfo.UserID,
-                    TemplateFolder = settings.TemplateDir.FolderPath,
-                    Config = manifest.DataSourceConfig
-                };
+                IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
+                var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
+
                 var dsItems = ds.GetAll(dsContext, queryBuilder.Select);
-                int mainTabId = settings.DetailTabId > 0 ? settings.DetailTabId : settings.TabId;
-                //ModelFactory mf = new ModelFactory(dsItems.Items, ActiveModule, PortalSettings, mainTabId);
-                //var model = mf.GetModelAsJson(false);
-
                 dataList = dsItems.Items;
-                /*
-                var queryDef = new QueryDefinition(indexConfig);
-                queryDef.BuildFilter(true);
-                queryDef.BuildSort("");
-                SearchResults docs = LuceneController.Instance.Search(moduleId.ToString(), queryDef);
-                if (docs != null)
-                {
-                    int total = docs.TotalResults;
-                    foreach (var item in docs.ids)
-                    {
-                        var dsItem = ds.Get(dsContext, item);
-                        //var content = ctrl.GetContent(int.Parse(item));
-                        if (dsItem != null)
-                        {
-                            dataList.Add(dsItem);
-                        }
-                    }
-                }
-                 */
             }
 
-            ModelFactory mf = new ModelFactory(dataList, null, settings.TemplateDir.PhysicalFullDirectory, manifest, null, null, module, PortalSettings, tabId, moduleId);
+            ModelFactory mf = new ModelFactory(dataList, null, module.Settings.TemplateDir.PhysicalFullDirectory, manifest, null, null, module, PortalSettings);
             dynamic model = mf.GetModelAsDynamic(true);
             HandlebarsEngine hbEngine = new HandlebarsEngine();
             string res = hbEngine.Execute(source, model);
@@ -94,7 +56,6 @@ namespace Satrabel.OpenContent.Components.Rss
             response.Content = new StringContent(res);
             response.Content.Headers.ContentType = new MediaTypeHeaderValue(mediaType);
             return response;
-
         }
     }
 }

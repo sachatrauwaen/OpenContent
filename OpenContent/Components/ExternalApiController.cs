@@ -7,13 +7,13 @@ using Satrabel.OpenContent.Components.Manifest;
 using System;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Web.Http;
 
 namespace Satrabel.OpenContent.Components
 {
     public class ExternalApiController : DnnApiController
     {
-
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         [ValidateAntiForgeryToken]
         [HttpPost]
@@ -21,43 +21,36 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
-                ModuleController mc = new ModuleController();
-                var requestModule = mc.GetModule(req.ModuleId, req.TabId, false);
-                bool index = false;
-                OpenContentSettings settings = requestModule.OpenContentSettings();
-                ModuleInfo module = requestModule;
-                if (settings.ModuleId > 0)
-                {
-                    module = mc.GetModule(settings.ModuleId, settings.TabId, false);
-                }
-                var manifest = settings.Template.Manifest;
-                TemplateManifest templateManifest = settings.Template;
-                index = settings.Template.Manifest.Index;
+                var module = new OpenContentModuleInfo(req.ModuleId, req.TabId);
+                var manifest2 = module.Settings.Manifest;
+                var manifest = module.Settings.Template.Manifest;
+                TemplateManifest templateManifest = module.Settings.Template;
                 string editRole = manifest.GetEditRole();
 
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
-                int createdByUserid = -1;
                 OpenContentController ctrl = new OpenContentController();
 
                 if (listMode)
                 {
-                    if (!OpenContentUtils.HasEditPermissions(PortalSettings, module, editRole, createdByUserid))
+                    if (!OpenContentUtils.HasEditPermissions(PortalSettings, module.ViewModule, editRole, -1))
                     {
-                        return Request.CreateResponse(HttpStatusCode.Unauthorized);
+                        Log.Logger.WarnFormat("Failed the HasEditPermissions() check for ");
+                        return Request.CreateResponse(HttpStatusCode.Unauthorized, "Failed the HasEditPermissions() check");
                     }
-                    var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
+                    var index = module.Settings.Template.Manifest.Index;
+                    var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template.Key.TemplateDir);
                     OpenContentInfo content = new OpenContentInfo()
-                        {
-                            ModuleId = module.ModuleID,
-                            Title = ActiveModule.ModuleTitle,
-                            Json = req.json.ToString(),
-                            JsonAsJToken = req.json,
-                            CreatedByUserId = UserInfo.UserID,
-                            CreatedOnDate = DateTime.Now,
-                            LastModifiedByUserId = UserInfo.UserID,
-                            LastModifiedOnDate = DateTime.Now,
-                            Html = "",
-                        };
+                    {
+                        ModuleId = module.DataModule.ModuleID,
+                        Title = ActiveModule.ModuleTitle,
+                        Json = req.json.ToString(),
+                        JsonAsJToken = req.json,
+                        CreatedByUserId = UserInfo.UserID,
+                        CreatedOnDate = DateTime.Now,
+                        LastModifiedByUserId = UserInfo.UserID,
+                        LastModifiedOnDate = DateTime.Now,
+                        Html = "",
+                    };
                     ctrl.AddContent(content, index, indexConfig);
                     return Request.CreateResponse(HttpStatusCode.OK, "");
                 }

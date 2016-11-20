@@ -22,6 +22,7 @@ using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.Lucene.Index;
 using Satrabel.OpenContent.Components.TemplateHelpers;
 using Newtonsoft.Json.Linq;
+using Satrabel.OpenContent.Components.Datasource;
 
 
 namespace Satrabel.OpenContent.Components
@@ -406,16 +407,40 @@ namespace Satrabel.OpenContent.Components
             return FileUri.ReverseMapPath(template);
         }
 
-        public static bool CheckOpenContentSettings(ModuleInfo module, OpenContentSettings settings)
+        public static bool CheckOpenContentSettings(OpenContentModuleInfo module)
         {
             bool result = true;
-            if (module != null && settings != null && settings.TemplateKey != null && settings.TemplateKey.TemplateDir != null && !settings.TemplateKey.TemplateDir.FolderExists)
+            var settings = module.Settings;
+            if (settings?.TemplateKey?.TemplateDir != null && !settings.TemplateKey.TemplateDir.FolderExists)
             {
-                var url = DnnUrlUtils.NavigateUrl(module.TabID);
-                Log.Logger.ErrorFormat("Error loading OpenContent Template on page [{5}-{4}-{1}] module [{2}-{3}]. Reason: Template not found [{0}]", settings.TemplateKey.ToString(), url, module.ModuleID, module.ModuleTitle, module.TabID, module.PortalID);
+                var url = DnnUrlUtils.NavigateUrl(module.ViewModule.TabID);
+                Log.Logger.ErrorFormat("Error loading OpenContent Template on page [{5}-{4}-{1}] module [{2}-{3}]. Reason: Template not found [{0}]", settings.TemplateKey.ToString(), url, module.ViewModule.ModuleID, module.ViewModule.ModuleTitle, module.ViewModule.TabID, module.ViewModule.PortalID);
                 result = false;
             }
             return result;
+        }
+
+        public static DataSourceContext CreateDataContext(OpenContentModuleInfo module, int userId = -1, bool single = false, JObject options = null)
+        {
+            var dsContext = new DataSourceContext
+            {
+                PortalId = module.ViewModule.PortalID,
+                ActiveModuleId = module.ViewModule.ModuleID,
+                TabId = module.ViewModule.TabID,
+                ModuleId = module.DataModule.ModuleID,
+                TemplateFolder = module.Settings.TemplateDir.FolderPath,
+                UserId = userId,
+                Config = module.Settings.Manifest.DataSourceConfig,
+                Index = module.Settings.Template.Manifest.Index,
+                Options = options,
+                Single = single,
+            };
+            if (PortalSettings.Current != null)
+            {
+                //PortalSettings is null if called from scheduler (eg UrlRewriter, Search, ...)
+                dsContext.CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode();
+            }
+            return dsContext;
         }
 
         public static string ReverseMapPath(string path)
@@ -425,12 +450,14 @@ namespace Satrabel.OpenContent.Components
 
         public static bool HasEditPermissions(PortalSettings portalSettings, ModuleInfo module, string editrole, int createdByUserId)
         {
-            return module.HasEditRights() || HasEditRole(portalSettings, module, editrole, createdByUserId);
+            return module.HasEditRights() || HasEditRole(portalSettings, editrole, createdByUserId);
         }
-        public static bool HasEditRole(PortalSettings portalSettings, ModuleInfo module, string editrole, int createdByUserId)
+        public static bool HasEditRole(PortalSettings portalSettings, string editrole, int createdByUserId)
         {
-            return (!string.IsNullOrEmpty(editrole) && portalSettings.UserInfo.IsInRole(editrole) && (createdByUserId == -1 || portalSettings.UserId == createdByUserId)) ||
-                    (!string.IsNullOrEmpty(editrole) && editrole.ToLower() == "all");
+            if (string.IsNullOrEmpty(editrole)) return false;
+            if (editrole.ToLower() == "all") return true;
+            if (portalSettings.UserInfo.IsInRole(editrole) && (createdByUserId == -1 || createdByUserId == portalSettings.UserId)) return true;
+            return false;
         }
 
         internal static FieldConfig GetIndexConfig(FolderUri folder)
@@ -470,6 +497,13 @@ namespace Satrabel.OpenContent.Components
             return false;
         }
 
+        internal static bool FormExist(FolderUri folder)
+        {
+            if (folder.FolderExists)
+                return Directory.GetFiles(folder.PhysicalFullDirectory, "form-schema.json").Length > 0;
+            return false;
+        }
+
 
         internal static bool HaveViewPermissions(Datasource.IDataItem dsItem, DotNetNuke.Entities.Users.UserInfo userInfo, FieldConfig IndexConfig, out string raison)
         {
@@ -486,16 +520,16 @@ namespace Satrabel.OpenContent.Components
             }
             if (permissions && IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishStartDate))
             {
-                permissions =   dsItem.Data[AppConfig.FieldNamePublishStartDate] != null && 
+                permissions = dsItem.Data[AppConfig.FieldNamePublishStartDate] != null &&
                                 dsItem.Data[AppConfig.FieldNamePublishStartDate].Type == JTokenType.Date &&
                                 ((DateTime)dsItem.Data[AppConfig.FieldNamePublishStartDate]) <= DateTime.Today;
                 if (!permissions) raison = AppConfig.FieldNamePublishStartDate;
             }
             if (permissions && IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishEndDate))
             {
-                permissions =   dsItem.Data[AppConfig.FieldNamePublishEndDate] != null &&
+                permissions = dsItem.Data[AppConfig.FieldNamePublishEndDate] != null &&
                                 dsItem.Data[AppConfig.FieldNamePublishEndDate].Type == JTokenType.Date &&
-                                ((DateTime)dsItem.Data[AppConfig.FieldNamePublishEndDate])  >= DateTime.Today;
+                                ((DateTime)dsItem.Data[AppConfig.FieldNamePublishEndDate]) >= DateTime.Today;
                 if (!permissions) raison = AppConfig.FieldNamePublishEndDate;
             }
             if (permissions)

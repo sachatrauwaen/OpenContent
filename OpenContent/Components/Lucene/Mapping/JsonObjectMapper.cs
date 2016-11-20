@@ -286,9 +286,9 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
         /// </returns>
         private static string MakePrefix<TAdd>(string prefix, TAdd add)
         {
-            if (!String.IsNullOrEmpty(prefix))
+            if (!string.IsNullOrEmpty(prefix))
             {
-                return String.Format("{0}.{1}", prefix, add);
+                return string.Format("{0}.{1}", prefix, add);
             }
             else
             {

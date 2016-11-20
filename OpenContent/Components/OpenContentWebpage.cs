@@ -44,6 +44,21 @@ namespace Satrabel.OpenContent.Components
             DnnUtils.RegisterScript((Page)HttpContext.Current.CurrentHandler, VirtualPath, jsfilename, JSOrder);
             JSOrder++;
         }
+        public void RegisterForm(string view = "bootstrap")
+        {
+            string min = ".min";
+            if (DotNetNuke.Common.HttpContextSource.Current.IsDebuggingEnabled)
+            {
+                min = "";
+            }
+            var page = (Page)HttpContext.Current.CurrentHandler;
+            DotNetNuke.Framework.ServicesFramework.Instance.RequestAjaxScriptSupport();
+            DnnUtils.RegisterScript(page, VirtualPath, "/DesktopModules/OpenContent/js/lib/handlebars/handlebars" + min + ".js", JSOrder);
+            JSOrder++;
+            DnnUtils.RegisterScript(page, VirtualPath, "/DesktopModules/OpenContent/js/alpaca/bootstrap/alpaca" + min + ".js", JSOrder);
+            JSOrder++;
+            ClientResourceManager.RegisterStyleSheet(page, page.ResolveUrl("/DesktopModules/OpenContent/js/alpaca/bootstrap/alpaca" + min + ".css"), FileOrder.Css.PortalCss);
+        }
 
         #endregion
 

@@ -122,8 +122,8 @@ namespace Satrabel.OpenContent.Components.Lucene
                     ModuleController mc = new ModuleController();
                     foreach (PortalInfo portal in PortalController.Instance.GetPortals())
                     {
-                        ArrayList modules = mc.GetModulesByDefinition(portal.PortalID, AppConfig.OPENCONTENT);
-                        foreach (ModuleInfo module in modules.OfType<ModuleInfo>())
+                        var modules = DnnUtils.GetDnnOpenContentModules(portal.PortalID);
+                        foreach (var module in modules)
                         {
                             IndexModule(lc, module);
                         }
@@ -143,14 +143,13 @@ namespace Satrabel.OpenContent.Components.Lucene
             Log.Logger.Info("Finished Reindexing all OpenContent data, from all portals");
         }
 
-        private void IndexModule(LuceneController lc, ModuleInfo module)
+        private void IndexModule(LuceneController lc, OpenContentModuleInfo module)
         {
-            OpenContentSettings settings = new OpenContentSettings(module.ModuleSettings);
-            OpenContentUtils.CheckOpenContentSettings(module, settings);
+            OpenContentUtils.CheckOpenContentSettings(module);
 
-            if (settings.IsListTemplate() && !settings.IsOtherModule)
+            if (module.IsListTemplate() && !module.Settings.IsOtherModule)
             {
-                IndexModuleData(lc, module.ModuleID, settings);
+                IndexModuleData(lc, module.ViewModule.ModuleID, module.Settings);
             }
         }
 
@@ -230,7 +229,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             Query query;
             try
             {
-                if (String.IsNullOrEmpty(searchQuery))
+                if (string.IsNullOrEmpty(searchQuery))
                 {
                     query = new MatchAllDocsQuery();
                 }

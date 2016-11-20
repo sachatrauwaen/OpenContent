@@ -14,29 +14,28 @@ using DotNetNuke.Entities.Modules;
 using DotNetNuke.Common;
 using Satrabel.OpenContent.Components;
 using Satrabel.OpenContent.Components.Alpaca;
+using Satrabel.OpenContent.Components.Lucene;
 
 #endregion
 
 namespace Satrabel.OpenContent
 {
-    public partial class EditAddData : PortalModuleBase
+    public partial class EditFormSettings : PortalModuleBase
     {
         protected override void OnInit(EventArgs e)
         {
             base.OnInit(e);
-            Key = Request.QueryString["key"];
             hlCancel.NavigateUrl = Globals.NavigateURL();
             cmdSave.NavigateUrl = Globals.NavigateURL();
             OpenContentSettings settings = this.OpenContentSettings();
-            AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, settings.Template.ManifestFolderUri.FolderPath, Key);
-            alpaca.RegisterAll(false,false);
-            string itemId = null;//Request.QueryString["id"] == null ? -1 : int.Parse(Request.QueryString["id"]);
+            AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, "~/DeskTopModules/OpenContent", "formsettings");
+            //AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, "", "");
+            alpaca.RegisterAll();
+            string itemId = null;
             AlpacaContext = new AlpacaContext(PortalId, ModuleId, itemId, ScopeWrapper.ClientID, hlCancel.ClientID, cmdSave.ClientID, null, null);
         }
 
         public AlpacaContext AlpacaContext { get; private set; }
-
-        public string Key { get; private set; }
     }
 }
 

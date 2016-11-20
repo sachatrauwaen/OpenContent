@@ -21,7 +21,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         /// <returns></returns>
         public static string TruncateHtml(this string html, int maxCharacters, string trailingText)
         {
-            if (String.IsNullOrEmpty(html))
+            if (string.IsNullOrEmpty(html))
                 return html;
 
             // find the spot to truncate
@@ -62,11 +62,11 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
                     var closeTag = match.Groups["closeTag"].Value;
 
                     // push to stack if open tag and ignore it if it is self-closing, i.e. <br />
-                    if (!String.IsNullOrEmpty(tag) && String.IsNullOrEmpty(match.Groups["selfClose"].Value))
+                    if (!string.IsNullOrEmpty(tag) && string.IsNullOrEmpty(match.Groups["selfClose"].Value))
                         tags.Push(tag);
 
                     // pop from stack if close tag
-                    else if (!String.IsNullOrEmpty(closeTag))
+                    else if (!string.IsNullOrEmpty(closeTag))
                     {
                         // pop the tag to close it.. find the matching opening tag
                         // ignore any unclosed tags
@@ -121,7 +121,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         /// <returns></returns>
         public static string Truncate(this string text, int maxCharacters, string trailingText)
         {
-            if (String.IsNullOrEmpty(text) || maxCharacters <= 0 || text.Length <= maxCharacters)
+            if (string.IsNullOrEmpty(text) || maxCharacters <= 0 || text.Length <= maxCharacters)
                 return text;
             else
                 return text.Substring(0, maxCharacters) + trailingText;
@@ -149,12 +149,12 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         /// <returns></returns>
         public static string TruncateWords(this string text, int maxCharacters, string trailingText)
         {
-            if (String.IsNullOrEmpty(text) || maxCharacters <= 0 || text.Length <= maxCharacters)
+            if (string.IsNullOrEmpty(text) || maxCharacters <= 0 || text.Length <= maxCharacters)
                 return text;
 
             // trunctate the text, then remove the partial word at the end
             return Regex.Replace(text.Truncate(maxCharacters),
-                       @"\s+[^\s]+$", String.Empty, RegexOptions.IgnoreCase | RegexOptions.Compiled) + trailingText;
+                       @"\s+[^\s]+$", string.Empty, RegexOptions.IgnoreCase | RegexOptions.Compiled) + trailingText;
         }
 
 
@@ -166,8 +166,8 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         /// <returns></returns>
         public static string StripHtml(this string html)
         {
-            if (String.IsNullOrEmpty(html)) return html;
-            return HtmlRegex.Replace(html, String.Empty);
+            if (string.IsNullOrEmpty(html)) return html;
+            return HtmlRegex.Replace(html, string.Empty);
         }
 
         public static string HtmlDecodeIfNeeded(this string html)

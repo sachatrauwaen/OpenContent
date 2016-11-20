@@ -25,15 +25,10 @@ namespace Satrabel.OpenContent.Components.JPList
         {
             try
             {
-                OpenContentSettings settings = ActiveModule.OpenContentSettings();
-                ModuleInfo module = ActiveModule;
-                if (settings.ModuleId > 0)
-                {
-                    ModuleController mc = new ModuleController();
-                    module = mc.GetModule(settings.ModuleId, settings.TabId, false);
-                }
-                var manifest = settings.Template.Manifest;
-                var templateManifest = settings.Template;
+                OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
+                var dataModule = module.DataModule;
+                var manifest = module.Settings.Template.Manifest;
+                var templateManifest = module.Settings.Template;
                 JObject reqOptions = null;
                 if (!string.IsNullOrEmpty(req.options))
                 {
@@ -43,11 +38,10 @@ namespace Satrabel.OpenContent.Components.JPList
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 if (listMode)
                 {
-
-                    var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
+                    var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template.Key.TemplateDir);
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
                     bool isEditable = ActiveModule.CheckIfEditable(PortalSettings);//portalSettings.UserMode != PortalSettings.Mode.Edit;
-                    queryBuilder.Build(settings.Query, !isEditable, UserInfo.UserID, DnnLanguageUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
+                    queryBuilder.Build(module.Settings.Query, !isEditable, UserInfo.UserID, DnnLanguageUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
 
                     JplistQueryBuilder.MergeJpListQuery(indexConfig, queryBuilder.Select, req.StatusLst, DnnLanguageUtils.GetCurrentCultureCode());
                     IDataItems dsItems;
@@ -61,20 +55,11 @@ namespace Satrabel.OpenContent.Components.JPList
                     }
                     else
                     {
-                        var ds = DataSourceManager.GetDataSource(manifest.DataSource);
-                        var dsContext = new DataSourceContext()
-                        {
-                            ModuleId = module.ModuleID,
-                            ActiveModuleId = ActiveModule.ModuleID,
-                            UserId = UserInfo.UserID,
-                            TemplateFolder = settings.TemplateDir.FolderPath,
-                            Config = manifest.DataSourceConfig,
-                            Options = reqOptions
-                        };
+                        IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
+                        var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID, false, reqOptions);
                         dsItems = ds.GetAll(dsContext, queryBuilder.Select);
                     }
-                    int mainTabId = settings.DetailTabId > 0 ? settings.DetailTabId : settings.TabId;
-                    ModelFactory mf = new ModelFactory(dsItems.Items, ActiveModule, PortalSettings, mainTabId);
+                    ModelFactory mf = new ModelFactory(dsItems.Items, module, PortalSettings);
                     mf.Options = reqOptions;
                     var model = mf.GetModelAsJson(false);
 

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.Logging;
+using Satrabel.OpenContent.Components.Manifest;
 
 namespace Satrabel.OpenContent.Components.Datasource
 {
@@ -112,7 +113,10 @@ namespace Satrabel.OpenContent.Components.Datasource
 
             if (!string.IsNullOrEmpty(id) && id != "-1")
             {
-                LogContext.Log(context.ActiveModuleId, "Get DataItem", "Request", string.Format("{0}.Get() with id {1}", Name, id));
+                if (LogContext.IsLogActive)
+                {
+                    LogContext.Log(context.ActiveModuleId, "Get DataItem", "Request", string.Format("{0}.Get() with id {1}", Name, id));
+                }
                 int idint;
                 if (int.TryParse(id, out idint))
                 {
@@ -121,7 +125,10 @@ namespace Satrabel.OpenContent.Components.Datasource
             }
             else
             {
-                LogContext.Log(context.ActiveModuleId, "Get DataItem", "Request", string.Format("{0}.Get() with id {1}. Returning first item of module.", Name, id));
+                if (LogContext.IsLogActive)
+                {
+                    LogContext.Log(context.ActiveModuleId, "Get DataItem", "Request", string.Format("{0}.Get() with id {1}. Returning first item of module.", Name, id));
+                }
                 content = ctrl.GetFirstContent(GetModuleId(context)); // single item
             }
             if (content == null)
@@ -132,12 +139,18 @@ namespace Satrabel.OpenContent.Components.Datasource
             else if (content.ModuleId == GetModuleId(context))
             {
                 var dataItem = CreateDefaultDataItem(content);
-                LogContext.Log(context.ActiveModuleId, "Get DataItem", "Result", dataItem);
+                if (LogContext.IsLogActive)
+                {
+                    LogContext.Log(context.ActiveModuleId, "Get DataItem", "Result", dataItem.Data);
+                }
                 return dataItem;
             }
             else
             {
-                LogContext.Log(context.ActiveModuleId, "Get DataItem", "Result", string.Format("no item returned as incompatible module ids {0}-{1}", content.ModuleId, GetModuleId(context)));
+                if (LogContext.IsLogActive)
+                {
+                    LogContext.Log(context.ActiveModuleId, "Get DataItem", "Result", string.Format("no item returned as incompatible module ids {0}-{1}", content.ModuleId, GetModuleId(context)));
+                }
             }
             return null;
         }
@@ -153,16 +166,18 @@ namespace Satrabel.OpenContent.Components.Datasource
         {
             string scopeStorage = AdditionalDataUtils.GetScope(scope, context.PortalId, context.TabId, GetModuleId(context), context.TabModuleId);
             var dc = new AdditionalDataController();
-            var data = dc.GetData(scopeStorage, key);
-            if (data != null)
+            var json = dc.GetData(scopeStorage, key);
+            if (json != null)
             {
                 var dataItem = new DefaultDataItem
                 {
-                    Data = data.Json.ToJObject("GetContent " + scope + "/" + key),
-                    CreatedByUserId = data.CreatedByUserId,
-                    Item = data
+                    Data = json.Json.ToJObject("GetContent " + scope + "/" + key),
+                    CreatedByUserId = json.CreatedByUserId,
+                    Item = json
                 };
-                LogContext.Log(context.ActiveModuleId, "Get Data", "Result", dataItem);
+                if (LogContext.IsLogActive) { 
+                    LogContext.Log(context.ActiveModuleId, "Get Data", key, dataItem.Data);
+                }
                 return dataItem;
             }
             return null;
@@ -183,9 +198,9 @@ namespace Satrabel.OpenContent.Components.Datasource
             };
         }
 
-        public virtual IDataItems GetAll(DataSourceContext context, Select select)
+        public virtual IDataItems GetAll(DataSourceContext context, Select selectQuery)
         {
-            if (select == null)
+            if (selectQuery == null)
             {
                 return GetAll(context);
             }
@@ -193,7 +208,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             {
                 OpenContentController ctrl = new OpenContentController();
                 SelectQueryDefinition def = new SelectQueryDefinition();
-                def.Build(@select);
+                def.Build(selectQuery);
                 if (LogContext.IsLogActive)
                 {
                     var logKey = "Lucene query";
@@ -223,7 +238,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 {
                     Items = dataList,
                     Total = total,
-                    DebugInfo = def.Filter.ToString() + " - " + def.Query.ToString() + " - " + def.Sort.ToString()
+                    DebugInfo = def.Filter + " - " + def.Query + " - " + def.Sort
                 };
             }
         }
@@ -233,14 +248,14 @@ namespace Satrabel.OpenContent.Components.Datasource
         public virtual JObject GetAlpaca(DataSourceContext context, bool schema, bool options, bool view)
         {
             var fb = new FormBuilder(new FolderUri(context.TemplateFolder));
-            return fb.BuildForm();
+            return fb.BuildForm("", context.CurrentCultureCode);
         }
 
         // Additional Data
         public virtual JObject GetDataAlpaca(DataSourceContext context, bool schema, bool options, bool view, string key)
         {
             var fb = new FormBuilder(new FolderUri(context.TemplateFolder));
-            return fb.BuildForm(key);
+            return fb.BuildForm(key, context.CurrentCultureCode);
         }
 
         #endregion
@@ -348,11 +363,11 @@ namespace Satrabel.OpenContent.Components.Datasource
 
         private static int GetModuleId(DataSourceContext context)
         {
-            return context.Config != null && context.Config["ModuleId"] != null ? context.Config["ModuleId"].Value<int>() : context.ModuleId;
+            return context.Config?["ModuleId"]?.Value<int>() ?? context.ModuleId;
         }
         private static int GetTabId(DataSourceContext context)
         {
-            return context.Config != null && context.Config["TabId"] != null ? context.Config["TabId"].Value<int>() : context.TabId;
+            return context.Config?["TabId"]?.Value<int>() ?? context.TabId;
         }
         private static DefaultDataItem CreateDefaultDataItem(OpenContentInfo content)
         {

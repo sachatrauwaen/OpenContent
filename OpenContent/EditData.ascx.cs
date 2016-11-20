@@ -63,13 +63,15 @@ namespace Satrabel.OpenContent
         {
 
             OpenContentSettings settings = this.OpenContentSettings();
-            int ModId = settings.IsOtherModule ? settings.ModuleId : ModuleId;
+            int modId = settings.IsOtherModule ? settings.ModuleId : ModuleId;
             var ds = DataSourceManager.GetDataSource("OpenContent");
             var dsContext = new DataSourceContext()
             {
-                ModuleId = ModId,
+                ModuleId = modId,
                 ActiveModuleId = ModuleContext.ModuleId,
                 TemplateFolder = settings.TemplateDir.FolderPath,
+                PortalId = ModuleContext.PortalId,
+                CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                 Single = true
             };
             var dsItem = ds.Get(dsContext, null);
@@ -116,6 +118,8 @@ namespace Satrabel.OpenContent
                             ModuleId = ModId,
                             ActiveModuleId = ModuleContext.ModuleId,
                             TemplateFolder = settings.TemplateDir.FolderPath,
+                            PortalId = ModuleContext.PortalId,
+                            CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                             Config = settings.Manifest.DataSourceConfig
                         };
                         if (template != null && template.IsListTemplate)
@@ -202,6 +206,7 @@ namespace Satrabel.OpenContent
                         var dsContext = new DataSourceContext()
                         {
                             PortalId = PortalSettings.PortalId,
+                            CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                             TabId = TabId,
                             ModuleId = ModId,
                             TabModuleId = this.TabModuleId,
@@ -225,9 +230,9 @@ namespace Satrabel.OpenContent
             sourceList.Items.Add(new ListItem(cData, cData));
             sourceList.Items.Add(new ListItem(cSettings, cSettings));
             sourceList.Items.Add(new ListItem(cFilter, cFilter));
-            if (template != null && template.Manifest != null && template.Manifest.AdditionalDataExists())
+            if (template != null && template.Manifest != null && template.Manifest.AdditionalDataDefined())
             {
-                foreach (var addData in template.Manifest.AdditionalData)
+                foreach (var addData in template.Manifest.AdditionalDataDefinition)
                 {
                     string title = string.IsNullOrEmpty(addData.Value.Title) ? addData.Key : addData.Value.Title;
                     sourceList.Items.Add(new ListItem(title, addData.Key));
@@ -259,15 +264,16 @@ namespace Satrabel.OpenContent
         private void SaveAdditionalData(string key)
         {
             OpenContentSettings settings = this.OpenContentSettings();
-            int ModId = settings.IsOtherModule ? settings.ModuleId : ModuleId;
+            int modId = settings.IsOtherModule ? settings.ModuleId : ModuleId;
             var manifest = settings.Manifest;
             var dataManifest = manifest.GetAdditionalData(key);
             var ds = DataSourceManager.GetDataSource(manifest.DataSource);
             var dsContext = new DataSourceContext()
             {
                 PortalId = PortalSettings.PortalId,
+                CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                 TabId = TabId,
-                ModuleId = ModId,
+                ModuleId = modId,
                 TabModuleId = this.TabModuleId,
                 UserId = UserInfo.UserID,
                 TemplateFolder = settings.TemplateDir.FolderPath,
@@ -318,6 +324,8 @@ namespace Satrabel.OpenContent
                 TemplateFolder = settings.TemplateDir.FolderPath,
                 Index = index,
                 UserId = UserInfo.UserID,
+                PortalId = ModuleContext.PortalId,
+                CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
                 Config = settings.Manifest.DataSourceConfig
             };
             if (template != null && template.IsListTemplate)

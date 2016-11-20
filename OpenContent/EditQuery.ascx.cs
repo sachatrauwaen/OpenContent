@@ -31,14 +31,13 @@ namespace Satrabel.OpenContent
             //OpenContentSettings settings = this.OpenContentSettings();
             //AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, settings.Template.Uri().FolderPath, "query");
             AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, "", "");
-            alpaca.RegisterAll();
+            alpaca.RegisterAll(false, false);
             string itemId = null;//Request.QueryString["id"] == null ? -1 : int.Parse(Request.QueryString["id"]);
             AlpacaContext = new AlpacaContext(PortalId, ModuleId, itemId, ScopeWrapper.ClientID, hlCancel.ClientID, cmdSave.ClientID, null, null);
         }
         protected void bIndex_Click(object sender, EventArgs e)
         {
-            OpenContentSettings settings = new OpenContentSettings(Settings);
-            LuceneController.Instance.ReIndexModuleData(ModuleId, settings);
+            LuceneController.Instance.ReIndexModuleData(ModuleId, this.OpenContentSettings());
         }
         protected void bIndexAll_Click(object sender, EventArgs e)
         {

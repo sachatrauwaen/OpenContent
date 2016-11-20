@@ -36,7 +36,7 @@ namespace Satrabel.OpenContent
             if (settings.TemplateAvailable)
             {
                 AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, settings.TemplateDir.FolderPath, settings.TemplateKey.ShortKey);
-                alpaca.RegisterAll();
+                alpaca.RegisterAll(false, false);
             }
         }
 
