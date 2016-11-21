@@ -6,6 +6,11 @@
     <WebsitePath>$(MSBuildProjectDirectory)\..\Website</WebsitePath>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <ImportPath Condition="Exists('$(MSBuildProjectDirectory)\..\custom.targets')">$(MSBuildProjectDirectory)\..\custom.targets</ImportPath>
+  </PropertyGroup>
+  <Import Project="$(ImportPath)" Condition=" '$(ImportPath)' != '' "/>
+
   <Target Name="DeployModule" Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     
 	<!-- Copy files into Website's bin folder -->
