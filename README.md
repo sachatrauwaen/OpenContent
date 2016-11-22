@@ -9,6 +9,9 @@ Structured Content editing for DNN (Dotnetnuke)
 * Content editing for websites using frameworks like bootstrap
 
 ![Screenshot](http://www.openextensions.net/admin/file-management/Portals/0/opencontent4.jpg)
+![Alt text](http://www.openextensions.net/admin/file-management/Portals/0/opencontent4.jpg)
+
+<img src="http://www.openextensions.net/admin/file-management/Portals/0/opencontent4.jpg" width="350"/>
 
 *Features*
 
