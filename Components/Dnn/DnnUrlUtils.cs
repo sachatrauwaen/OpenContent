@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Web;
 using DotNetNuke.Common;
 using DotNetNuke.Common.Utilities;
 using DotNetNuke.Entities.Portals;
@@ -68,6 +69,10 @@ namespace Satrabel.OpenContent.Components.Dnn
             return NavigateUrl(tabId, moduleId, controlKey, Globals.glbDefaultPage, pageRedirect, ps, additionalParameters);
         }
 
+        internal static string CurrentUrl(HttpContext httpcontext)
+        {
+            return httpcontext?.Request.Url.AbsoluteUri ?? "???";
+        }
         private static string NavigateUrl(int tabId, int moduleId, string controlKey, string pageName, bool pageRedirect, PortalSettings ps, params string[] additionalParameters)
         {
             var isSuperTab = Globals.IsHostTab(tabId);

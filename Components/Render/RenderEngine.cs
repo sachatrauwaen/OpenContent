@@ -22,6 +22,7 @@ using System.Web.Hosting;
 using DotNetNuke.Services.Exceptions;
 using DotNetNuke.UI.Modules;
 using Newtonsoft.Json.Linq;
+using Satrabel.OpenContent.Components.Dnn;
 using IDataSource = Satrabel.OpenContent.Components.Datasource.IDataSource;
 
 namespace Satrabel.OpenContent.Components.Render
@@ -103,7 +104,7 @@ namespace Satrabel.OpenContent.Components.Render
                             {
                                 _renderinfo.Files = _renderinfo.Template.Views[templateKey];
                             }
-                            if (!_renderinfo.SettingsMissing)
+                            if (!_renderinfo.ShowInitControl)
                             {
                                 _renderinfo.OutputString = GenerateListOutput(page, _module.Settings.Template, _renderinfo.Files, _renderinfo.DataList, _renderinfo.SettingsJson);
                             }
@@ -121,7 +122,7 @@ namespace Satrabel.OpenContent.Components.Render
                             _renderinfo.Files = _renderinfo.Template.Detail;
                             _renderinfo.OutputString = GenerateOutput(page, _module.Settings.Template, _renderinfo.Template.Detail, _renderinfo.DataJson, _renderinfo.SettingsJson);
                         }
-                        else // if itemid not corresponding to this module, show list template
+                        else // if itemid not corresponding to this module or no DetailTemplate present, show list template
                         {
                             // List template
                             if (_renderinfo.Template.Main != null)
@@ -449,9 +450,10 @@ namespace Satrabel.OpenContent.Components.Render
             }
             catch (Exception ex)
             {
-                Exceptions.LogException(ex);
                 string stack = string.Join("\n", ex.StackTrace.Split('\n').Where(s => s.Contains("\\Portals\\") && s.Contains("in")).Select(s => s.Substring(s.IndexOf("in"))).ToArray());
-                throw new TemplateException("Failed to render Razor template " + template.FilePath + "\n" + stack, ex, model, template.FilePath);
+                var renderException = new TemplateException("Failed to render Razor template " + template.FilePath + "\n" + stack, ex, model, template.FilePath);
+                Exceptions.LogException(new Exception("Error on url " + DnnUrlUtils.CurrentUrl(HttpContext.Current), renderException));
+                throw renderException;
             }
             return writer.ToString();
         }
