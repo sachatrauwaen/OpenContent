@@ -8,7 +8,7 @@ Structured Content editing for DNN (Dotnetnuke)
 * Easy content editing of complex layouts by end users
 * Content editing for websites using frameworks like bootstrap
 
-<img src="https://cloud.githubusercontent.com/assets/5989191/20521415/79c19126-b0ab-11e6-9cae-f33ae35e554a.jpg" width="30%"></img> <img src="https://cloud.githubusercontent.com/assets/5989191/20521433/90932b76-b0ab-11e6-8702-6c2656b89b89.JPG" width="30%"></img> <img src="https://cloud.githubusercontent.com/assets/5989191/20521445/9be3a690-b0ab-11e6-8a0f-d71422916f38.JPG" width="30%"></img> 
+<img src="https://cloud.githubusercontent.com/assets/5989191/20521415/79c19126-b0ab-11e6-9cae-f33ae35e554a.jpg" width="45%"></img> <img src="https://cloud.githubusercontent.com/assets/5989191/20521433/90932b76-b0ab-11e6-8702-6c2656b89b89.JPG" width="45%"></img> 
 
 *Features*
 
