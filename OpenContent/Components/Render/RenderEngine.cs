@@ -121,7 +121,7 @@ namespace Satrabel.OpenContent.Components.Render
                             _renderinfo.Files = _renderinfo.Template.Detail;
                             _renderinfo.OutputString = GenerateOutput(page, _module.Settings.Template, _renderinfo.Template.Detail, _renderinfo.DataJson, _renderinfo.SettingsJson);
                         }
-                        else // if itemid not corresponding to this module, show list template
+                        else // if itemid not corresponding to this module or no DetailTemplate present, show list template
                         {
                             // List template
                             if (_renderinfo.Template.Main != null)

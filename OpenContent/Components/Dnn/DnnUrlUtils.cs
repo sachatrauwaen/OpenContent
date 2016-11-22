@@ -37,7 +37,7 @@ namespace Satrabel.OpenContent.Components.Dnn
             string moduleIdParam = string.Empty;
             if (moduleId != 0)
             {
-                moduleIdParam = string.Format("mid={0}", moduleId);
+                moduleIdParam = $"mid={moduleId}";
             }
 
             string[] parameters;
@@ -45,7 +45,7 @@ namespace Satrabel.OpenContent.Components.Dnn
             {
                 parameters = new string[2 + additionalParameters.Length];
                 parameters[0] = moduleIdParam;
-                parameters[1] = string.Format("{0}={1}", keyName, keyValue);
+                parameters[1] = $"{keyName}={keyValue}";
                 Array.Copy(additionalParameters, 0, parameters, 2, additionalParameters.Length);
             }
             else

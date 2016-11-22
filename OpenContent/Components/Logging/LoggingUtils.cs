@@ -102,7 +102,7 @@ namespace Satrabel.OpenContent.Components.Logging
                 url = context.Request.Url.AbsoluteUri;
                 referrer = context.Request.UrlReferrer == null ? "" : "\nReferrer: " + context.Request.UrlReferrer.AbsoluteUri;
             }
-            string retval = string.Format("Called from {0}. {1}.", url, referrer);
+            string retval = $"Called from {url}. {referrer}.";
 
             return retval;
         }
