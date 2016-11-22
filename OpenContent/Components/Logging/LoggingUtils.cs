@@ -5,11 +5,49 @@ using Satrabel.OpenContent.Components.Dnn;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Entities.Modules;
 using System.Web.UI;
+using Satrabel.OpenContent.Components.Render;
 
 namespace Satrabel.OpenContent.Components.Logging
 {
     public static class LoggingUtils
     {
+        private static string PrepareErrorMessage(RenderEngine module, Exception exc)
+        {
+            var ps = PortalSettings.Current;
+            string friendlyMessage;
+            if (ps == null)
+            {
+                friendlyMessage = string.Format("Alias: {3} \nTab: {4} - {5} \nModule: {0} \nContext: {2} \nError: {1}",
+                    module.ModuleContext.ModuleId,
+                    exc.Message,
+                    LoggingUtils.HttpRequestLogInfo(HttpContext.Current),
+                    "unknown",
+                    "unknown",
+                    DnnUrlUtils.NavigateUrl(module.ModuleContext.TabId)
+                );
+            }
+            else
+            {
+                friendlyMessage = string.Format("Alias: {3} \nTab: {4} - {5} \nModule: {0} \nContext: {2} \nError: {1}",
+                   module.ModuleContext.ModuleId,
+                   exc.Message,
+                   LoggingUtils.HttpRequestLogInfo(HttpContext.Current),
+                   ps.PortalAlias.HTTPAlias,
+                   ps.ActiveTab.TabID,
+                   DnnUrlUtils.NavigateUrl(ps.ActiveTab.TabID)
+                   );
+            }
+            Exception lastExc = exc;
+            while (lastExc.InnerException != null)
+            {
+                lastExc = lastExc.InnerException;
+                friendlyMessage += "\n" + lastExc.Message;
+            }
+            return friendlyMessage;
+        }
+
+
+
         private static string PrepareErrorMessage(ModuleInfo module, Exception exc)
         {
             var ps = PortalSettings.Current;
@@ -78,6 +116,11 @@ namespace Satrabel.OpenContent.Components.Logging
         }
 
         public static void ProcessApiLoadException(DnnApiController ctrl, Exception exc)
+        {
+            string friendlyMessage = PrepareErrorMessage(ctrl, exc);
+            Log.Logger.Error(friendlyMessage);
+        }
+        public static void RenderEngineException(RenderEngine ctrl, Exception exc)
         {
             string friendlyMessage = PrepareErrorMessage(ctrl, exc);
             Log.Logger.Error(friendlyMessage);
