@@ -1,4 +1,44 @@
-<script type="text/x-handlebars-template" id="dnn-edit-container">
+<script type=text/x-handlebars-template id=dnn-edit-control>
+
+    <div class="dnnFormItem">
+
+        {{#if options.label}}
+        <div class="dnnLabel" style="position: relative;">
+            <label class="{{#if options.labelClass}}{{options.labelClass}}{{/if}} control-label alpaca-control-label" for="{{id}}">
+                <span>{{{options.label}}}</span>
+            </label>
+            {{#if options.helpers}}
+            <a tabindex="-1" class="dnnFormHelp" href="#"></a>
+            <div class="dnnTooltip">
+                <div class="dnnFormHelpContent dnnClear" style="visibility: hidden;">
+                    <span class="dnnHelpText">
+                        {{#each options.helpers}}
+                            {{{.}}}
+                        {{/each}}
+                    </span>
+                    <a href="#" class="pinHelp"></a>
+                </div>
+            </div>
+            {{/if}}
+
+        </div>
+        {{/if}}
+
+        {{#control}}{{/control}}
+        <div style="clear:both"></div>      
+        {{#if options.renderButtons}}
+        {{#if options.buttons}}
+        <div class="alpaca-control-buttons-container">
+            {{#each options.buttons}}
+            <button data-key="{{@key}}" type="{{type}}" class="alpaca-control-button alpaca-control-button-{{@key}} {{styles}}" {{#each value}} {{@key}}="{{value}}" {{/each}}>{{{value}}}</button>
+            {{/each}}
+        </div>
+        {{/if}}
+        {{/if}}
+
+    </div>
+
+</script><script type=text/x-handlebars-template id=dnn-edit-container>
 
     <div class="dnnForm">
         
@@ -42,7 +82,7 @@
         {{/if}}
     </div>
 
-</script><script type="text/x-handlebars-template" id="dnn-edit-control-checkbox">
+</script><script type=text/x-handlebars-template id=dnn-edit-control-checkbox>
 
     {{#if options.multiple}}
     <div>
@@ -75,7 +115,11 @@
 
     {{/if}}
 
-</script><script type="text/x-handlebars-template" id="dnn-edit-control-file">
+</script><script type=text/x-handlebars-template id=dnn-edit-control-ckeditor>
+    
+    <textarea id="{{id}}" {{#if options.placeholder}} placeholder="{{options.placeholder}}" {{/if}} cols="80" rows="10"></textarea>
+
+</script><script type=text/x-handlebars-template id=dnn-edit-control-file>
     <div>
         <div class="alpaca-control-container">
             <input type="file" id="{{id}}-file" {{#if options.size}} size="{{options.size}}" {{/if}} {{#if options.readonly}} readonly="readonly" {{/if}} style="margin-bottom:5px;" />
@@ -83,7 +127,43 @@
         </div>
         <div style="clear:both;"></div>
     </div>
-</script><script type="text/x-handlebars-template" id="dnn-edit-control-image">
+</script><script type=text/x-handlebars-template id=dnn-edit-control-file2>
+    <div class="alpaca-control-container">
+        <select id="{{id}}" {{#if options.readonly}} readonly="readonly" {{/if}} {{#if options.multiple}} multiple="multiple" {{/if}} {{#if options.size}} size="{{options.size}}" {{/if}} {{#if name}} name="{{name}}" {{/if}}>
+
+            {{#if options.multiple}}
+
+                {{#if options.hideNone}}
+                {{else}}
+                <option value="">{{{options.noneLabel}}}</option>
+                {{/if}}
+
+                {{#each selectOptions}}
+                <option value="{{{value}}}" {{#if selected}} selected="selected" {{/if}}>{{text}}</option>
+                {{/each}}
+
+            {{else}}
+
+                {{#if options.hideNone}}
+                {{else}}
+                <option value="">{{{options.noneLabel}}}</option>
+                {{/if}}
+
+                {{#each selectOptions}}
+                <option value="{{{value}}}" {{#if selected}} selected="selected" {{/if}}>{{text}}</option>
+                {{/each}}
+
+            {{/if}}
+
+        </select>
+        <input type="file" id="{{id}}-file" {{#if options.size}} size="{{options.size}}" {{/if}} {{#if options.readonly}} readonly="readonly" {{/if}} style="margin-top:5px;margin-bottom:5px;" />
+        {{#if options.downloadButton}}
+        <input type="text" id="{{id}}-text" {{#if options.size}} size="{{options.size}}" {{/if}} {{#if options.readonly}} readonly="readonly" {{/if}} style="margin-top:5px;margin-bottom:5px;" placeholder="External File Url" />
+        {{/if}}
+
+
+    </div>
+</script><script type=text/x-handlebars-template id=dnn-edit-control-image>
     <div>
         <div class="alpaca-control-container">
             <input type="file" id="{{id}}-file" {{#if options.size}} size="{{options.size}}" {{/if}} {{#if options.readonly}} readonly="readonly" {{/if}} style="margin-bottom:5px;" />
@@ -95,7 +175,7 @@
         </div>
         <div style="clear:both;"></div>
     </div>
-</script><script type="text/x-handlebars-template" id="dnn-edit-control-imagecrop">
+</script><script type=text/x-handlebars-template id=dnn-edit-control-imagecrop>
     <div>
         <div class="alpaca-control-container">
 
@@ -110,7 +190,7 @@
         </div>
         <div style="clear:both;"></div>
     </div>
-</script><script type="text/x-handlebars-template" id="dnn-edit-control-imagecrop2">
+</script><script type=text/x-handlebars-template id=dnn-edit-control-imagecrop2>
     <div class="alpaca-control-container">
         <input type="file" id="{{id}}-file" {{#if options.size}} size="{{options.size}}" {{/if}} {{#if options.readonly}} readonly="readonly" {{/if}} style="margin-bottom:5px;" />
         
@@ -146,7 +226,7 @@
             <img id="{{id}}-image" src="{{data.url}}" class="image">
         </div>
     </div>
-</script><script type="text/x-handlebars-template" id="dnn-edit-control-imagecropper">
+</script><script type=text/x-handlebars-template id=dnn-edit-control-imagecropper>
     <div class="alpaca-control-container">
         <input type="file" id="{{id}}-file" {{#if options.size}} size="{{options.size}}" {{/if}} {{#if options.readonly}} readonly="readonly" {{/if}} style="margin-bottom:5px;" />
         <input type="text" id="{{id}}" {{#if options.placeholder}} placeholder="{{options.placeholder}}" {{/if}} {{#if options.size}} size="{{options.size}}" {{/if}} {{#if options.readonly}} readonly="readonly" {{/if}} {{#if name}} name="{{name}}" {{/if}} {{#each options.data}} data-{{@key}}="{{this}}" {{/each}} />
@@ -154,7 +234,7 @@
             <img id="{{id}}-image" src="{{data.url}}" class="image">
         </div>
     </div>
-</script><script type="text/x-handlebars-template" id="dnn-edit-control-wysihtml">
+</script><script type=text/x-handlebars-template id=dnn-edit-control-wysihtml>
     <div>
         <div id="{{id}}-toolbar" style="display: none;" class="toolbar">
             <a data-wysihtml5-command="bold"><i class="fa fa-bold"></i></a>
@@ -213,48 +293,4 @@
         </div>
         <div id="{{id}}" data-placeholder="Go on, start editing..." class="editor editable"></div>
     </div>
-</script><script type="text/x-handlebars-template" id="dnn-edit-control-ckeditor">
-    
-    <textarea id="{{id}}" {{#if options.placeholder}} placeholder="{{options.placeholder}}" {{/if}} cols="80" rows="10"></textarea>
-
-</script><script type="text/x-handlebars-template" id="dnn-edit-control">
-
-    <div class="dnnFormItem">
-
-        {{#if options.label}}
-        <div class="dnnLabel" style="position: relative;">
-            <label class="{{#if options.labelClass}}{{options.labelClass}}{{/if}} control-label alpaca-control-label" for="{{id}}">
-                <span>{{{options.label}}}</span>
-            </label>
-            {{#if options.helpers}}
-            <a tabindex="-1" class="dnnFormHelp" href="#"></a>
-            <div class="dnnTooltip">
-                <div class="dnnFormHelpContent dnnClear" style="visibility: hidden;">
-                    <span class="dnnHelpText">
-                        {{#each options.helpers}}
-                            {{{.}}}
-                        {{/each}}
-                    </span>
-                    <a href="#" class="pinHelp"></a>
-                </div>
-            </div>
-            {{/if}}
-
-        </div>
-        {{/if}}
-
-        {{#control}}{{/control}}
-        <div style="clear:both"></div>      
-        {{#if options.renderButtons}}
-        {{#if options.buttons}}
-        <div class="alpaca-control-buttons-container">
-            {{#each options.buttons}}
-            <button data-key="{{@key}}" type="{{type}}" class="alpaca-control-button alpaca-control-button-{{@key}} {{styles}}" {{#each value}} {{@key}}="{{value}}" {{/each}}>{{{value}}}</button>
-            {{/each}}
-        </div>
-        {{/if}}
-        {{/if}}
-
-    </div>
-
 </script>

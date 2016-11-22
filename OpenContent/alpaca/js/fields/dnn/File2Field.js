@@ -18,7 +18,7 @@
          */
         getFieldType: function()
         {
-            return "select";
+            return "file2";
         },
 
         /**
@@ -39,6 +39,19 @@
             // exemple :  ^.*\.(jpg|JPG|gif|GIF|doc|DOC|pdf|PDF)$
             if (!this.options.filter) {
                 this.options.filter = "";
+            }
+            if (!this.options.downloadButton) {
+                this.options.downloadButton = false;
+            }
+            if (this.options.downloadButton) {
+                this.options.buttons = {
+                    "downloadButton": {
+                        "value": "Upload External File",
+                        "click": function () {
+                            this.DownLoadFile();
+                        }
+                    }
+                };
             }
             this.base();
         },
@@ -70,7 +83,9 @@
                 {
                     if (!Alpaca.isEmpty(val) && this.control)
                     {
-                        this.control.val(val);
+                        //this.control.val(val);
+                        $(this.control).find('select').val(val);
+                        $(this.control).find('select').trigger('change.select2');
                     }
                     this.base(val);
                 }
@@ -87,7 +102,9 @@
                     */
                     if (this.control && typeof(val) != "undefined" && val != null)
                     {
-                        this.control.val(val);
+                        //this.control.val(val);
+                        $(this.control).find('select').val(val);
+                        $(this.control).find('select').trigger('change.select2');
                     }
                     this.base(val);
                 }
@@ -111,7 +128,7 @@
                 }
             }
         },
-
+        /*
         initControlEvents: function()
         {
             var self = this;
@@ -144,7 +161,7 @@
                 });
             }
         },
-
+        */
         beforeRenderControl: function(model, callback)
         {
             var self = this;
@@ -304,11 +321,55 @@
                         return $state;
                     };
 
-                    $(self.getControlEl()).select2(settings);
+                    $('select', self.getControlEl()).select2(settings);
                 }
 
-                callback();
+                if (self.options.uploadhidden) {
+                    $(self.getControlEl()).find('input[type=file]').hide();
+                } else {
+                    if (self.sf) {
+                        $(self.getControlEl()).find('input[type=file]').fileupload({
+                            dataType: 'json',
+                            url: self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
+                            maxFileSize: 25000000,
+                            formData: { uploadfolder: self.options.folder },
+                            beforeSend: self.sf.setModuleHeaders,
+                            add: function (e, data) {
+                                //data.context = $(opts.progressContextSelector);
+                                //data.context.find($(opts.progressFileNameSelector)).html(data.files[0].name);
+                                //data.context.show('fade');
 
+                                if (data && data.files && data.files.length > 0) {
+
+                                    if (self.isFilter(data.files[0].name)) {
+                                        data.submit();
+                                    }
+                                    else{
+                                        alert("file not in filter");
+                                        return;
+                                    }
+                                }
+                                
+                            },
+                            progress: function (e, data) {
+                                if (data.context) {
+                                    var progress = parseInt(data.loaded / data.total * 100, 10);
+                                    data.context.find(opts.progressBarSelector).css('width', progress + '%').find('span').html(progress + '%');
+                                }
+                            },
+                            done: function (e, data) {
+                                if (data.result) {
+                                    $.each(data.result, function (index, file) {
+                                        self.refresh(function () {
+                                            self.setValue(file.id);
+                                        });
+                                    });
+                                }
+                            }
+                        }).data('loaded', true);
+                    }
+                }
+                callback();
             });
         },
 
@@ -404,64 +465,7 @@
             });
         },
 
-        /**
-         * Validates if number of items has been less than minItems.
-         * @returns {Boolean} true if number of items has been less than minItems
-         */
-        _validateMinItems: function()
-        {
-            if (this.schema.items && this.schema.items.minItems)
-            {
-                if ($(":selected",this.control).length < this.schema.items.minItems)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        },
-
-        /**
-         * Validates if number of items has been over maxItems.
-         * @returns {Boolean} true if number of items has been over maxItems
-         */
-        _validateMaxItems: function()
-        {
-            if (this.schema.items && this.schema.items.maxItems)
-            {
-                if ($(":selected",this.control).length > this.schema.items.maxItems)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        },
-
-        /**
-         * @see Alpaca.ContainerField#handleValidate
-         */
-        handleValidate: function()
-        {
-            var baseStatus = this.base();
-
-            var valInfo = this.validation;
-
-            var status = this._validateMaxItems();
-            valInfo["tooManyItems"] = {
-                "message": status ? "" : Alpaca.substituteTokens(this.getMessage("tooManyItems"), [this.schema.items.maxItems]),
-                "status": status
-            };
-
-            status = this._validateMinItems();
-            valInfo["notEnoughItems"] = {
-                "message": status ? "" : Alpaca.substituteTokens(this.getMessage("notEnoughItems"), [this.schema.items.minItems]),
-                "status": status
-            };
-
-            return baseStatus && valInfo["tooManyItems"]["status"] && valInfo["notEnoughItems"]["status"];
-        },
-
+       
         /**
          * @see Alpaca.Field#focus
          */
@@ -479,10 +483,62 @@
                     onFocusCallback(this);
                 }
             }
-        }
+        },
+        getTextControlEl: function () {
+            var self = this;
+            return $(self.getControlEl()).find('input[type=text]');
+        },
 
-        /* builder_helpers */
-        ,
+        DownLoadFile: function () {
+            var self = this;
+            var el = this.getTextControlEl();
+            var data = el.val();
+            if (!data || !self.isURL(data)) {
+                alert("url not valid");
+                return;
+            }
+            if (!self.isFilter(data)) {
+                alert("url not in filter");
+                return;
+            }
+            
+            var postData = { url: data, uploadfolder: self.options.folder };
+            $(self.getControlEl()).css('cursor', 'wait');
+            $.ajax({
+                type: "POST",
+                url: self.sf.getServiceRoot('OpenContent') + "DnnEntitiesAPI/DownloadFile",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(postData),
+                beforeSend: self.sf.setModuleHeaders
+            }).done(function (res) {
+                if (res.error) {
+                    alert(res.error);
+                }else {
+                    self.refresh(function () {
+                        self.setValue(res.id);
+                    });
+                }
+                setTimeout(function () {
+                    $(self.getControlEl()).css('cursor', 'initial');
+                }, 500);
+            }).fail(function (xhr, result, status) {
+                alert("Uh-oh, something broke: " + status);
+                $(self.getControlEl()).css('cursor', 'initial');
+            });
+        },
+        isURL: function (str) {
+            var urlRegex = '^(?!mailto:)(?:(?:http|https|ftp)://)(?:\\S+(?::\\S*)?@)?(?:(?:(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[0-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)(?:\\.(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)*(?:\\.(?:[a-z\\u00a1-\\uffff]{2,})))|localhost)(?::\\d{2,5})?(?:(/|\\?|#)[^\\s]*)?$';
+            var url = new RegExp(urlRegex, 'i');
+            return str.length < 2083 && url.test(str);
+        },
+        isFilter: function (str) {
+            if (this.options.filter) {                
+                var url = new RegExp(this.options.filter, 'i');
+                return str.length < 2083 && url.test(str);
+            }
+            return true;            
+        },
 
         /**
          * @see Alpaca.Field#getTitle

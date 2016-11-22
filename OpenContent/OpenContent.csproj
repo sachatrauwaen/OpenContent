@@ -5,7 +5,8 @@
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
   </PropertyGroup>
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  
+  
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -495,10 +496,15 @@
     <Content Include="alpaca\js\fields\dnn\wysihtmlField.js" />
     <Content Include="alpaca\js\views\dnnbootstrap.js" />
     <Content Include="alpaca\js\views\dnn.js" />
+    <Content Include="alpaca\templates\dnn-edit\bundle.html" />
+    <Content Include="alpaca\templates\dnn-edit\bundle.min.html">
+      <DependentUpon>bundle.html</DependentUpon>
+    </Content>
     <Content Include="alpaca\templates\dnn-edit\container.html" />
     <Content Include="alpaca\templates\dnn-edit\control-checkbox.html" />
     <Content Include="alpaca\templates\dnn-edit\control-file.html" />
     <Content Include="alpaca\templates\dnn-edit\control-imagecrop.html" />
+    <Content Include="alpaca\templates\dnn-edit\control-file2.html" />
     <Content Include="alpaca\templates\dnn-edit\control-imagecrop2.html" />
     <Content Include="alpaca\templates\dnn-edit\control-imagecropper.html" />
     <Content Include="alpaca\templates\dnn-edit\control-image.html" />
@@ -960,6 +966,7 @@
     <Content Include="BuildScripts\ModuleDeploy.targets">
       <SubType>Designer</SubType>
     </Content>
+    <None Include="bundleconfig.json" />
     <None Include="Scripts\_references.js" />
     <Content Include="js\select2\i18n\az.js" />
     <Content Include="js\select2\i18n\bg.js" />
@@ -1034,7 +1041,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="BuildScripts\ModulePackage.targets" />
+    <Content Include="BuildScripts\ModulePackage.targets">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="BuildScripts\MSBuild.Community.Tasks.Targets" />
   </ItemGroup>
   <ItemGroup>

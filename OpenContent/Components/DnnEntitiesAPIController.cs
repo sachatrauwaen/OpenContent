@@ -595,10 +595,6 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
-                var res = new FileDTO()
-                {
-                    url = req.url    
-                };
                 var folderManager = FolderManager.Instance;
                 var fileManager = FileManager.Instance;
                 string RawImageUrl = req.url;
@@ -636,19 +632,25 @@ namespace Satrabel.OpenContent.Components
                         try
                         {
                             var stream = new MemoryStream(myWebClient.DownloadData(req.url));
-                            fileInfo = fileManager.AddFile(userFolder, fileName, stream, true);
+                            file = fileManager.AddFile(userFolder, fileName, stream, true);
                         }
                         catch (Exception ex)
                         {
-                            res.error = ex.Message;
-                            return Request.CreateResponse(HttpStatusCode.OK, res);
+                            return Request.CreateResponse(HttpStatusCode.OK, new
+                            {
+                                url = "",
+                                id = -1,
+                                error = ex.Message
+                            });
                         }
                         
-                        
-                        res.url = fileInfo.ToUrl();
                     }
                 }
-                return Request.CreateResponse(HttpStatusCode.OK, res);
+                return Request.CreateResponse(HttpStatusCode.OK, new {
+                        url = file.ToUrl(),
+                        id = file.FileId,
+                        error = ""
+                });
             }
             catch (Exception exc)
             {

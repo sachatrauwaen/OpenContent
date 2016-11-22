@@ -134,7 +134,7 @@ namespace Satrabel.OpenContent.Components
                         type = fileInfo.ContentType,
                         size = file.ContentLength,
                         progress = "1.0",
-                        url = fileInfo.ToUrl(),
+                        url = RemoveCachbuster(fileInfo.ToUrl()),
                         thumbnail_url = fileIcon,
                         message = "success",
                         id = fileInfo.FileId,
@@ -150,6 +150,19 @@ namespace Satrabel.OpenContent.Components
                     });
                 }
             }
+        }
+
+        private string RemoveCachbuster(string url)
+        {
+            if (!string.IsNullOrEmpty(url))
+            {
+                int idx = url.IndexOf("?ver=");
+                if (idx > 0)
+                {
+                    return url.Substring(0, idx);
+                }
+            }
+            return url;
         }
 
         public static string CleanUpFileName(string filename)

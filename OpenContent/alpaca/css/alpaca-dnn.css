@@ -176,7 +176,9 @@
     }
 
 .dnnFormItem.alpaca-field.alpaca-field-file input[type=text],
-.dnnFormItem.alpaca-field.alpaca-field-file .twitter-typeahead {
+.dnnFormItem.alpaca-field.alpaca-field-file2 input[type=text],
+.dnnFormItem.alpaca-field.alpaca-field-file .twitter-typeahead
+{
     /*
     padding-left:32%;
     margin-left:38px;
@@ -683,5 +685,5 @@ div.progress {
 
 .alpaca-control-buttons-container {
      padding-left: 32%;
-    margin-left: 18px;
+    margin-left: 40px;
 }

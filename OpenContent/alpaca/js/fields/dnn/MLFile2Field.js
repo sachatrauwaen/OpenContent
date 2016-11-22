@@ -87,7 +87,7 @@
             var self = this;
             var el = this.getControlEl();
             callback();
-            $(this.control).parent().find('.select2').after('<img src="' + self.rootUrl + 'images/Flags/' + this.culture + '.gif" class="flag" />');
+            $(this.control).after('<img src="' + self.rootUrl + 'images/Flags/' + this.culture + '.gif" class="flag" />');
         },
     });
 
