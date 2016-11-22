@@ -5,8 +5,6 @@
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
   </PropertyGroup>
-  
-  
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -178,6 +176,11 @@
     </Compile>
     <Compile Include="Components\Alpaca\AlpacaLayoutEnum.cs" />
     <Compile Include="Components\AppConfig.cs" />
+    <Compile Include="Components\FormAPIController.cs" />
+    <Compile Include="Components\Form\FormUtils.cs" />
+    <Compile Include="Components\Form\GenSettingsDTO.cs" />
+    <Compile Include="Components\Form\NotificationDTO.cs" />
+    <Compile Include="Components\Form\SettingsDTO.cs" />
     <Compile Include="Components\Manifest\OpenContentModuleInfo.cs" />
     <Compile Include="Components\Datasource\DnnTabsDataSource.cs" />
     <Compile Include="Components\Utils\ExcelUtils.cs" />
@@ -532,6 +535,8 @@
     <Content Include="js\bootstrap\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="js\bootstrap\js\bootstrap.js" />
     <Content Include="js\bootstrap\js\bootstrap.min.js" />
+    <Content Include="js\select2\select2-bootstrap.css" />
+    <Content Include="js\select2\select2-bootstrap.min.css" />
     <Content Include="js\swagger\css\print.css" />
     <Content Include="js\swagger\css\reset.css" />
     <Content Include="js\swagger\css\screen.css" />

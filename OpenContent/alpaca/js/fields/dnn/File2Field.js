@@ -53,12 +53,51 @@
                     }
                 };
             }
+            
+            if (this.options.lazyLoading) {
+                var pageSize = 10;
+                this.options.select2 = {
+                    ajax: {
+                        url: this.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "FilesLookup",
+                        beforeSend: this.sf.setModuleHeaders,
+                        type: "get",
+                        dataType: 'json',
+                        delay: 250,
+                        data: function (params) {
+                            return {
+                                q: params.term ? params.term : "*", // search term
+                                d: self.options.folder, 
+                                filter: self.options.filter,
+                                pageIndex: params.page ? params.page : 1,
+                                pageSize: pageSize
+                            };
+                        },
+                        processResults: function (data, params) {
+                            // parse the results into the format expected by Select2
+                            // since we are using custom formatting functions we do not need to
+                            // alter the remote JSON data, except to indicate that infinite
+                            // scrolling can be used
+                            params.page = params.page || 1;
+
+                            return {
+                                results: data.items,
+                                pagination: {
+                                    more: (params.page * pageSize) < data.total
+                                }
+                            };
+                        },
+                        cache: true
+                    },
+                    escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+                    minimumInputLength: 0
+                }
+            };
             this.base();
         },
 
         getValue: function () {
             if (this.control && this.control.length > 0) {
-                var val = this._getControlVal(true);
+                var val = $(this.control).find('select').val();
                 if (typeof (val) === "undefined") {
                     val = this.data;
                 }
@@ -67,9 +106,10 @@
                         val[i] = this.ensureProperType(val[i]);
                     }
                 }
-
-                return this.base(val);
+                return val;
+                //return this.base(val);
             }
+            return null;
         },
 
         /**
@@ -83,9 +123,9 @@
                 {
                     if (!Alpaca.isEmpty(val) && this.control)
                     {
-                        //this.control.val(val);
-                        $(this.control).find('select').val(val);
-                        $(this.control).find('select').trigger('change.select2');
+                        $select = $(this.control).find('select');
+                        $select.val(val);
+                        $select.trigger('change.select2');
                     }
                     this.base(val);
                 }
@@ -102,9 +142,9 @@
                     */
                     if (this.control && typeof(val) != "undefined" && val != null)
                     {
-                        //this.control.val(val);
-                        $(this.control).find('select').val(val);
-                        $(this.control).find('select').trigger('change.select2');
+                        $select = $(this.control).find('select');
+                        $select.val(val);
+                        $select.trigger('change.select2');
                     }
                     this.base(val);
                 }
@@ -182,6 +222,21 @@
                         model.selectOptions = self.selectOptions;
                         callback();
                     };
+                    if (self.options.lazyLoading) {
+                        if (self.data) {
+                            self.getFileUrl(self.data, function (data) {
+                                self.selectOptions.push({
+                                    "value": self.data,
+                                    "text": data.text
+                                });
+                                self.dataSource[self.data] = data.text;
+                                completionFunction();
+                            });
+                        } else {
+                            completionFunction();
+                        }
+                    }
+                    else {
                     var postData = { q: "*", d: self.options.folder, filter: self.options.filter };
                     $.ajax({
                         url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "FilesLookup",
@@ -192,7 +247,6 @@
                         data: postData,
                         success: function (jsonDocument) {
                             var ds = jsonDocument;
-
                             if (self.options.dsTransformer && Alpaca.isFunction(self.options.dsTransformer)) {
                                 ds = self.options.dsTransformer(ds);
                             }
@@ -237,6 +291,7 @@
                             });
                         }
                     });
+                    }
                 }
                 else {
                     callback();
@@ -303,11 +358,15 @@
                     }
                     */
 
+                    
                     settings.templateResult = function (state) {
-                        if (!state.id) { return state.text; }
+
+                        if (state.loading) return state.text;
+
+                        //if (!state.id) { return state.text; }
                         
                         var $state = $(
-                          '<span>' + state.text + '</span>'
+                            '<span>' + state.text + '</span>'
                         );
                         return $state;
                     };
@@ -316,11 +375,11 @@
                         if (!state.id) { return state.text; }
                         
                         var $state = $(
-                          '<span>' + state.text + '</span>'
+                            '<span>' + state.text + '</span>'
                         );
                         return $state;
                     };
-
+                    
                     $('select', self.getControlEl()).select2(settings);
                 }
 
@@ -361,7 +420,17 @@
                                 if (data.result) {
                                     $.each(data.result, function (index, file) {
                                         self.refresh(function () {
-                                            self.setValue(file.id);
+                                            //self.setValue(file.id);
+                                            $select = $(self.control).find('select');
+                                            if (self.options.lazyLoading) {
+                                                self.getFileUrl(file.id, function (f) {
+                                                    $select.find("option").first().val(f.id).text(f.text).removeData();
+                                                    $select.val(file.id).change();
+                                                });
+                                            }
+                                            else {
+                                                $select.val(file.id).change();
+                                            }
                                         });
                                     });
                                 }
@@ -373,11 +442,12 @@
             });
         },
 
-        getFileUrl : function(fileid){
+        getFileUrl : function(fileid, callback){
+            var self = this;
             if (self.sf){
-                var postData = { fileid: fileid };
+                var postData = { fileid: fileid, folder: self.options.folder };
                 $.ajax({
-                    url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "FileUrl",
+                    url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "FileInfo",
                     beforeSend: self.sf.setModuleHeaders,
                     type: "get",
                     asych : false,
@@ -385,10 +455,10 @@
                     //contentType: "application/json; charset=utf-8",
                     data: postData,
                     success: function (data) {
-                        return data;
+                        if (callback) callback(data);
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
-                        return "";
+                        alert("Error getFileUrl " + fileid);
                     }
                 });
             }
@@ -427,20 +497,21 @@
                     }
 
                     $.each(val, function(i,v) {
-
+                        /*
                         if ($.inArray(v, _this.schema["enum"]) <= -1)
                         {
                             isValid = false;
                             return false;
                         }
-
+                        */
                     });
 
                     return isValid;
                 }
                 else
                 {
-                    return ($.inArray(val, this.schema["enum"]) > -1);
+                    //return ($.inArray(val, this.schema["enum"]) > -1);
+                    return true;
                 }
             }
             else
@@ -514,9 +585,20 @@
             }).done(function (res) {
                 if (res.error) {
                     alert(res.error);
-                }else {
+                } else {                    
                     self.refresh(function () {
-                        self.setValue(res.id);
+                        
+                        //self.setValue(res.id);
+                        $select = $(self.control).find('select');
+                        if (self.options.lazyLoading) {
+                            self.getFileUrl(res.id, function (f) {
+                                $select.find("option").first().val(f.id).text(f.text).removeData();
+                                $select.val(res.id).change();
+                            });
+                        }
+                        else {
+                            $select.val(res.id).change();
+                        }
                     });
                 }
                 setTimeout(function () {
