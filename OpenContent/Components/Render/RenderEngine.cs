@@ -103,7 +103,7 @@ namespace Satrabel.OpenContent.Components.Render
                             {
                                 _renderinfo.Files = _renderinfo.Template.Views[templateKey];
                             }
-                            if (!_renderinfo.SettingsMissing)
+                            if (!_renderinfo.ShowInitControl)
                             {
                                 _renderinfo.OutputString = GenerateListOutput(page, _module.Settings.Template, _renderinfo.Files, _renderinfo.DataList, _renderinfo.SettingsJson);
                             }
