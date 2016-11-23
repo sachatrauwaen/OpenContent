@@ -149,7 +149,16 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 }
                 else if (prop.Value.Type == "number")
                 {
+                    var newProp = new SchemaConfig()
+                    {
+                        Type = prop.Value.Type,
+                        Title = prop.Value.Title
+                    };
+                    newSchemaFilter.Properties.Add(propKey, newProp);
 
+                    var newField = new OptionsConfig();
+                    newOptionsFilter.Fields.Add(propKey, newField);
+                    
                     fieldLst.Add(propKey);
                 }
                 else if (optType == "text" || optType == "mltext" || optType == "checkbox" || optType == "select" || optType == "select2")

@@ -75,6 +75,11 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                         int ival = rule.Value.AsBoolean ? 1 : 0;
                         q.Add(NumericRangeQuery.NewIntRange(fieldName, ival, ival, true, true), cond);
                     }
+                    else if (rule.FieldType == FieldTypeEnum.FLOAT)
+                    {
+                        float fval = rule.Value.AsFloat;
+                        q.Add(NumericRangeQuery.NewFloatRange(fieldName, fval, fval, true, true), cond);
+                    }
                     else if (rule.FieldType == FieldTypeEnum.STRING || rule.FieldType == FieldTypeEnum.TEXT || rule.FieldType == FieldTypeEnum.HTML)
                     {
                         q.Add(LuceneController.ParseQuery(rule.Value.AsString + "*", fieldName), cond);

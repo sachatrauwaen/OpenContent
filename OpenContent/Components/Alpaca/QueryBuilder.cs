@@ -94,7 +94,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 foreach (var item in filter.Properties())
                 {
                     var fieldConfig = FieldConfigUtils.GetField(IndexConfig, item.Name);
-                    if (item.Value is JValue) // text
+                    if (item.Value is JValue) // text, int
                     {
                         var val = item.Value.ToString();
                         if (fieldConfig != null && fieldConfig.IndexType == "boolean")
@@ -107,6 +107,19 @@ namespace Satrabel.OpenContent.Components.Alpaca
                                     Field = item.Name,
                                     FieldType = FieldTypeEnum.BOOLEAN,
                                     Value = new BooleanRuleValue(bval)
+                                });
+                            }
+                        }
+                        else if (fieldConfig != null && fieldConfig.IndexType == "float")
+                        {
+                            float fval;
+                            if (float.TryParse(val, out fval))
+                            {
+                                workFlowFilter.AddRule(new FilterRule()
+                                {
+                                    Field = item.Name,
+                                    FieldType = FieldTypeEnum.FLOAT,
+                                    Value = new FloatRuleValue(fval)
                                 });
                             }
                         }
