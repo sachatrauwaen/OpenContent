@@ -446,7 +446,7 @@ h2.dnnFormSectionHead a {
 .alpaca-field-table .select2-container, .alpaca-control-container.alpaca-control .select2-container{
     width: 100% !important;
     max-width: 461px;
-    margin-bottom: 0 !important;
+    /*margin-bottom: 0 !important;*/
 }
 
 

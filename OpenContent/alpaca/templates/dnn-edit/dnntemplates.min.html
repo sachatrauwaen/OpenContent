@@ -1,44 +1,4 @@
-<script type=text/x-handlebars-template id=dnn-edit-control>
-
-    <div class="dnnFormItem">
-
-        {{#if options.label}}
-        <div class="dnnLabel" style="position: relative;">
-            <label class="{{#if options.labelClass}}{{options.labelClass}}{{/if}} control-label alpaca-control-label" for="{{id}}">
-                <span>{{{options.label}}}</span>
-            </label>
-            {{#if options.helpers}}
-            <a tabindex="-1" class="dnnFormHelp" href="#"></a>
-            <div class="dnnTooltip">
-                <div class="dnnFormHelpContent dnnClear" style="visibility: hidden;">
-                    <span class="dnnHelpText">
-                        {{#each options.helpers}}
-                            {{{.}}}
-                        {{/each}}
-                    </span>
-                    <a href="#" class="pinHelp"></a>
-                </div>
-            </div>
-            {{/if}}
-
-        </div>
-        {{/if}}
-
-        {{#control}}{{/control}}
-        <div style="clear:both"></div>      
-        {{#if options.renderButtons}}
-        {{#if options.buttons}}
-        <div class="alpaca-control-buttons-container">
-            {{#each options.buttons}}
-            <button data-key="{{@key}}" type="{{type}}" class="alpaca-control-button alpaca-control-button-{{@key}} {{styles}}" {{#each value}} {{@key}}="{{value}}" {{/each}}>{{{value}}}</button>
-            {{/each}}
-        </div>
-        {{/if}}
-        {{/if}}
-
-    </div>
-
-</script><script type=text/x-handlebars-template id=dnn-edit-container>
+<script type=text/x-handlebars-template id=dnn-edit-container>
 
     <div class="dnnForm">
         
@@ -156,8 +116,10 @@
             {{/if}}
 
         </select>
+        {{#if options.showFileUpload}}
         <input type="file" id="{{id}}-file" {{#if options.size}} size="{{options.size}}" {{/if}} {{#if options.readonly}} readonly="readonly" {{/if}} style="margin-top:5px;margin-bottom:5px;" />
-        {{#if options.downloadButton}}
+        {{/if}}
+        {{#if options.showUrlUpload}}
         <input type="text" id="{{id}}-text" {{#if options.size}} size="{{options.size}}" {{/if}} {{#if options.readonly}} readonly="readonly" {{/if}} style="margin-top:5px;margin-bottom:5px;" placeholder="External File Url" />
         {{/if}}
 
@@ -293,4 +255,44 @@
         </div>
         <div id="{{id}}" data-placeholder="Go on, start editing..." class="editor editable"></div>
     </div>
+</script><script type=text/x-handlebars-template id=dnn-edit-control>
+
+    <div class="dnnFormItem">
+
+        {{#if options.label}}
+        <div class="dnnLabel" style="position: relative;">
+            <label class="{{#if options.labelClass}}{{options.labelClass}}{{/if}} control-label alpaca-control-label" for="{{id}}">
+                <span>{{{options.label}}}</span>
+            </label>
+            {{#if options.helpers}}
+            <a tabindex="-1" class="dnnFormHelp" href="#"></a>
+            <div class="dnnTooltip">
+                <div class="dnnFormHelpContent dnnClear" style="visibility: hidden;">
+                    <span class="dnnHelpText">
+                        {{#each options.helpers}}
+                            {{{.}}}
+                        {{/each}}
+                    </span>
+                    <a href="#" class="pinHelp"></a>
+                </div>
+            </div>
+            {{/if}}
+
+        </div>
+        {{/if}}
+
+        {{#control}}{{/control}}
+        <div style="clear:both"></div>      
+        {{#if options.renderButtons}}
+        {{#if options.buttons}}
+        <div class="alpaca-control-buttons-container">
+            {{#each options.buttons}}
+            <button data-key="{{@key}}" type="{{type}}" class="alpaca-control-button alpaca-control-button-{{@key}} {{styles}}" {{#each value}} {{@key}}="{{value}}" {{/each}}>{{{value}}}</button>
+            {{/each}}
+        </div>
+        {{/if}}
+        {{/if}}
+
+    </div>
+
 </script>
