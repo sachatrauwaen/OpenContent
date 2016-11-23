@@ -199,7 +199,7 @@ namespace Satrabel.OpenContent.Components
                 var folderManager = FolderManager.Instance;
                 var fileManager = FileManager.Instance;
                 var portalFolder = folderManager.GetFolder(PortalSettings.PortalId, d ?? "");
-                var files = folderManager.GetFiles(portalFolder, true);
+                var files = folderManager.GetFiles(portalFolder, true);                
                 if (q != "*" && !string.IsNullOrEmpty(q))
                 {
                     files = files.Where(f => f.FileName.ToLower().Contains(q.ToLower()));
@@ -212,6 +212,47 @@ namespace Satrabel.OpenContent.Components
                 int folderLength = (d == null) ? 0 : d.Length;
                 var res = files.Select(f => new { value = f.FileId.ToString(), url = fileManager.GetUrl(f), text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName /*+ (string.IsNullOrEmpty(f.Folder) ? "" : " (" + f.Folder.Trim('/') + ")")*/ });
                 return Request.CreateResponse(HttpStatusCode.OK, res);
+            }
+            catch (Exception exc)
+            {
+                Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
+
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [HttpGet]
+        public HttpResponseMessage FilesLookup(string q, string d, string filter, int pageIndex, int pageSize)
+        {
+            try
+            {
+                var folderManager = FolderManager.Instance;
+                var fileManager = FileManager.Instance;
+                var portalFolder = folderManager.GetFolder(PortalSettings.PortalId, d ?? "");
+                var files = folderManager.GetFiles(portalFolder, true);
+                if (q != "*" && !string.IsNullOrEmpty(q))
+                {
+                    files = files.Where(f => f.FileName.ToLower().Contains(q.ToLower()));
+                }
+                if (!string.IsNullOrEmpty(filter))
+                {
+                    var rx = new Regex(filter, RegexOptions.IgnoreCase);
+                    files = files.Where(f => rx.IsMatch(f.FileName));
+                }
+                int total = files.Count();
+                if (pageIndex > 0 && pageSize > 0)
+                {
+                    files = files.Skip((pageIndex-1) * pageSize).Take(pageSize);
+                }
+                int folderLength = (d == null) ? 0 : d.Length;
+                var res = files.Select(f => new { id = f.FileId.ToString(), url = fileManager.GetUrl(f), text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName /*+ (string.IsNullOrEmpty(f.Folder) ? "" : " (" + f.Folder.Trim('/') + ")")*/ });
+                return Request.CreateResponse(HttpStatusCode.OK, new {
+                    items = res,
+                    total = total,
+                    pageIndex,
+                    pageSize
+                });
             }
             catch (Exception exc)
             {
@@ -327,6 +368,31 @@ namespace Satrabel.OpenContent.Components
                 var fileManager = FileManager.Instance;
                 IFileInfo File = fileManager.GetFile(fileid);
                 return Request.CreateResponse(HttpStatusCode.OK, fileManager.GetUrl(File));
+            }
+            catch (Exception exc)
+            {
+                Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
+
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [HttpGet]
+        public HttpResponseMessage FileInfo(int fileid, string folder = "")
+        {
+            try
+            {
+                var fileManager = FileManager.Instance;
+                IFileInfo f = fileManager.GetFile(fileid);
+                int folderLength = folder == null ? 0 : folder.Length;
+                return Request.CreateResponse(HttpStatusCode.OK, new
+                {
+                    id = f.FileId.ToString(), 
+                    url = fileManager.GetUrl(f), 
+                    text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName
+
+                    });
             }
             catch (Exception exc)
             {
