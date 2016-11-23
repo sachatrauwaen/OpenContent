@@ -26,8 +26,6 @@ namespace Satrabel.OpenContent.Components.JPList
             try
             {
                 OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
-                var dataModule = module.DataModule;
-                var manifest = module.Settings.Template.Manifest;
                 var templateManifest = module.Settings.Template;
                 JObject reqOptions = null;
                 if (!string.IsNullOrEmpty(req.options))

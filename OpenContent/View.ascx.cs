@@ -190,12 +190,6 @@ namespace Satrabel.OpenContent
             {
                 RenderJsonException(ex);
             }
-            /*
-        catch (HttpException ex)
-        {
-            throw ex;
-        }
-             */
             catch (Exception ex)
             {
                 LoggingUtils.ProcessModuleLoadException(this, ex);
