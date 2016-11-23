@@ -458,6 +458,10 @@
     <Content Include="alpaca\css\img\Delete_16X16_Gray.png" />
     <Content Include="alpaca\css\img\Dn_16X16_Standard.png" />
     <Content Include="alpaca\css\img\Up_16X16_Standard.png" />
+    <Content Include="alpaca\js\fields\dnn\dnnfields.js" />
+    <Content Include="alpaca\js\fields\dnn\dnnfields.min.js">
+      <DependentUpon>dnnfields.js</DependentUpon>
+    </Content>
     <Content Include="alpaca\js\fields\dnn\Folder2Field.js" />
     <Content Include="alpaca\js\fields\dnn\GalleryField.js" />
     <Content Include="alpaca\js\fields\dnn\ImageCrop2Field.js" />
@@ -469,12 +473,6 @@
     <Content Include="alpaca\js\fields\dnn\DocumentsField.js" />
     <Content Include="alpaca\js\fields\dnn\AddressField.js" />
     <Content Include="alpaca\js\fields\dnn\CKEditorField.js" />
-    <Content Include="alpaca\js\fields\dnn\dnnfields.js">
-      <DependentUpon>dnnfields.js.bundle</DependentUpon>
-    </Content>
-    <Content Include="alpaca\js\fields\dnn\dnnfields.min.js">
-      <DependentUpon>dnnfields.js</DependentUpon>
-    </Content>
     <Content Include="alpaca\js\fields\dnn\GuidField.js" />
     <Content Include="alpaca\js\fields\dnn\IconField.js" />
     <Content Include="alpaca\js\fields\dnn\ImageField.js" />
@@ -499,10 +497,6 @@
     <Content Include="alpaca\js\fields\dnn\wysihtmlField.js" />
     <Content Include="alpaca\js\views\dnnbootstrap.js" />
     <Content Include="alpaca\js\views\dnn.js" />
-    <Content Include="alpaca\templates\dnn-edit\bundle.html" />
-    <Content Include="alpaca\templates\dnn-edit\bundle.min.html">
-      <DependentUpon>bundle.html</DependentUpon>
-    </Content>
     <Content Include="alpaca\templates\dnn-edit\container.html" />
     <Content Include="alpaca\templates\dnn-edit\control-checkbox.html" />
     <Content Include="alpaca\templates\dnn-edit\control-file.html" />
@@ -514,13 +508,11 @@
     <Content Include="alpaca\templates\dnn-edit\control-ckeditor.html" />
     <Content Include="alpaca\templates\dnn-edit\control-wysihtml.html" />
     <Content Include="alpaca\templates\dnn-edit\control.html" />
-    <Content Include="alpaca\templates\dnn-edit\dnntemplates.html">
-      <DependentUpon>dnntemplates.html.bundle</DependentUpon>
-    </Content>
+    <Content Include="AlpacaFormBuilder.ascx" />
+    <Content Include="alpaca\templates\dnn-edit\dnntemplates.html" />
     <Content Include="alpaca\templates\dnn-edit\dnntemplates.min.html">
       <DependentUpon>dnntemplates.html</DependentUpon>
     </Content>
-    <Content Include="AlpacaFormBuilder.ascx" />
     <Content Include="css\edit.css" />
     <Content Include="css\font-awesome\css\font-awesome.css" />
     <Content Include="css\font-awesome\css\font-awesome.min.css" />
@@ -888,11 +880,6 @@
     <Content Include="js\lib\typeahead.js\test\typeahead_view_spec.js" />
     <Content Include="js\opencontent.js" />
     <Content Include="Providers\DataProviders\SqlDataProvider\01.04.01.SqlDataProvider" />
-    <Content Include="alpaca\js\fields\dnn\dnnfields.js.bundle" />
-    <Content Include="alpaca\js\fields\dnn\dnnfields.min.js.map">
-      <DependentUpon>dnnfields.min.js</DependentUpon>
-    </Content>
-    <Content Include="alpaca\templates\dnn-edit\dnntemplates.html.bundle" />
     <Content Include="Providers\DataProviders\SqlDataProvider\02.00.03.SqlDataProvider" />
     <Content Include="js\fontIconPicker\css\iconpicker.eot" />
     <Content Include="js\fontIconPicker\css\iconpicker.ttf" />

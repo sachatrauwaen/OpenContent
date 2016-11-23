@@ -1337,10 +1337,13 @@
             if (!this.options.filter) {
                 this.options.filter = "";
             }
-            if (!this.options.downloadButton) {
-                this.options.downloadButton = false;
+            if (!this.options.showUrlUpload) {
+                this.options.showUrlUpload = false;
             }
-            if (this.options.downloadButton) {
+            if (!this.options.showFileUpload) {
+                this.options.showFileUpload = false;
+            }
+            if (this.options.showUrlUpload) {
                 this.options.buttons = {
                     "downloadButton": {
                         "value": "Upload External File",
@@ -1350,7 +1353,7 @@
                     }
                 };
             }
-            
+            var self = this;
             if (this.options.lazyLoading) {
                 var pageSize = 10;
                 this.options.select2 = {
@@ -1370,12 +1373,13 @@
                             };
                         },
                         processResults: function (data, params) {
-                            // parse the results into the format expected by Select2
-                            // since we are using custom formatting functions we do not need to
-                            // alter the remote JSON data, except to indicate that infinite
-                            // scrolling can be used
                             params.page = params.page || 1;
-
+                            if (params.page == 1) {
+                                data.items.unshift({
+                                    id: "",
+                                    text: self.options.noneLabel
+                                })
+                            }
                             return {
                                 results: data.items,
                                 pagination: {
@@ -1385,7 +1389,7 @@
                         },
                         cache: true
                     },
-                    escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+                    escapeMarkup: function (markup) { return markup; },
                     minimumInputLength: 0
                 }
             };
@@ -1505,9 +1509,7 @@
 
             this.base(model, function() {
                 self.selectOptions = [];
-
                 if (self.sf) {
-
                     var completionFunction = function () {
                         self.schema.enum = [];
                         self.options.optionLabels = [];
@@ -1534,60 +1536,60 @@
                         }
                     }
                     else {
-                    var postData = { q: "*", d: self.options.folder, filter: self.options.filter };
-                    $.ajax({
-                        url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "FilesLookup",
-                        beforeSend: self.sf.setModuleHeaders,
-                        type: "get",
-                        dataType: "json",
-                        //contentType: "application/json; charset=utf-8",
-                        data: postData,
-                        success: function (jsonDocument) {
-                            var ds = jsonDocument;
-                            if (self.options.dsTransformer && Alpaca.isFunction(self.options.dsTransformer)) {
-                                ds = self.options.dsTransformer(ds);
-                            }
-                            if (ds) {
-                                if (Alpaca.isObject(ds)) {
-                                    // for objects, we walk through one key at a time
-                                    // the insertion order is the order of the keys from the map
-                                    // to preserve order, consider using an array as below
-                                    $.each(ds, function (key, value) {
-                                        self.selectOptions.push({
-                                            "value": key,
-                                            "text": value
-                                        });
-                                    });
-                                    completionFunction();
+                        var postData = { q: "*", d: self.options.folder, filter: self.options.filter };
+                        $.ajax({
+                            url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "FilesLookup",
+                            beforeSend: self.sf.setModuleHeaders,
+                            type: "get",
+                            dataType: "json",
+                            //contentType: "application/json; charset=utf-8",
+                            data: postData,
+                            success: function (jsonDocument) {
+                                var ds = jsonDocument;
+                                if (self.options.dsTransformer && Alpaca.isFunction(self.options.dsTransformer)) {
+                                    ds = self.options.dsTransformer(ds);
                                 }
-                                else if (Alpaca.isArray(ds)) {
-                                    // for arrays, we walk through one index at a time
-                                    // the insertion order is dictated by the order of the indices into the array
-                                    // this preserves order
-                                    $.each(ds, function (index, value) {
-                                        self.selectOptions.push({
-                                            "value": value.value,
-                                            "text": value.text
+                                if (ds) {
+                                    if (Alpaca.isObject(ds)) {
+                                        // for objects, we walk through one key at a time
+                                        // the insertion order is the order of the keys from the map
+                                        // to preserve order, consider using an array as below
+                                        $.each(ds, function (key, value) {
+                                            self.selectOptions.push({
+                                                "value": key,
+                                                "text": value
+                                            });
                                         });
-                                        self.dataSource[value.value] = value;
-                                    });
-                                    completionFunction();
+                                        completionFunction();
+                                    }
+                                    else if (Alpaca.isArray(ds)) {
+                                        // for arrays, we walk through one index at a time
+                                        // the insertion order is dictated by the order of the indices into the array
+                                        // this preserves order
+                                        $.each(ds, function (index, value) {
+                                            self.selectOptions.push({
+                                                "value": value.value,
+                                                "text": value.text
+                                            });
+                                            self.dataSource[value.value] = value;
+                                        });
+                                        completionFunction();
+                                    }
                                 }
-                            }
-                        },
-                        "error": function (jqXHR, textStatus, errorThrown) {
+                            },
+                            "error": function (jqXHR, textStatus, errorThrown) {
 
-                            self.errorCallback({
-                                "message": "Unable to load data from uri : " + self.options.dataSource,
-                                "stage": "DATASOURCE_LOADING_ERROR",
-                                "details": {
-                                    "jqXHR": jqXHR,
-                                    "textStatus": textStatus,
-                                    "errorThrown": errorThrown
-                                }
-                            });
-                        }
-                    });
+                                self.errorCallback({
+                                    "message": "Unable to load data from uri : " + self.options.dataSource,
+                                    "stage": "DATASOURCE_LOADING_ERROR",
+                                    "details": {
+                                        "jqXHR": jqXHR,
+                                        "textStatus": textStatus,
+                                        "errorThrown": errorThrown
+                                    }
+                                });
+                            }
+                        });
                     }
                 }
                 else {
@@ -1716,19 +1718,20 @@
                             done: function (e, data) {
                                 if (data.result) {
                                     $.each(data.result, function (index, file) {
-                                        self.refresh(function () {
-                                            //self.setValue(file.id);
-                                            $select = $(self.control).find('select');
-                                            if (self.options.lazyLoading) {
-                                                self.getFileUrl(file.id, function (f) {
-                                                    $select.find("option").first().val(f.id).text(f.text).removeData();
-                                                    $select.val(file.id).change();
-                                                });
-                                            }
-                                            else {
+                                        $select = $(self.control).find('select');
+                                        if (self.options.lazyLoading) {
+                                            self.getFileUrl(file.id, function (f) {
+                                                $select.find("option").first().val(f.id).text(f.text).removeData();
                                                 $select.val(file.id).change();
-                                            }
-                                        });
+                                            });
+                                        }
+                                        else {
+                                            self.refresh(function () {
+                                                //self.setValue(file.id);
+                                                $select = $(self.control).find('select');
+                                                $select.val(file.id).change();
+                                            });
+                                        }
                                     });
                                 }
                             }
@@ -1883,20 +1886,20 @@
                 if (res.error) {
                     alert(res.error);
                 } else {                    
-                    self.refresh(function () {
-                        
-                        //self.setValue(res.id);
-                        $select = $(self.control).find('select');
-                        if (self.options.lazyLoading) {
-                            self.getFileUrl(res.id, function (f) {
-                                $select.find("option").first().val(f.id).text(f.text).removeData();
-                                $select.val(res.id).change();
-                            });
-                        }
-                        else {
+                    $select = $(self.control).find('select');
+                    if (self.options.lazyLoading) {
+                        self.getFileUrl(res.id, function (f) {
+                            $select.find("option").first().val(f.id).text(f.text).removeData();
                             $select.val(res.id).change();
-                        }
-                    });
+                        });
+                    }
+                    else {
+                        self.refresh(function () {
+                            //self.setValue(file.id);
+                            $select = $(self.control).find('select');
+                            $select.val(res.id).change();
+                        });
+                    }
                 }
                 setTimeout(function () {
                     $(self.getControlEl()).css('cursor', 'initial');

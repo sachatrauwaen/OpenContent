@@ -27,8 +27,10 @@
             {{/if}}
 
         </select>
+        {{#if options.showFileUpload}}
         <input type="file" id="{{id}}-file" {{#if options.size}} size="{{options.size}}" {{/if}} {{#if options.readonly}} readonly="readonly" {{/if}} style="margin-top:5px;margin-bottom:5px;" />
-        {{#if options.downloadButton}}
+        {{/if}}
+        {{#if options.showUrlUpload}}
         <input type="text" id="{{id}}-text" {{#if options.size}} size="{{options.size}}" {{/if}} {{#if options.readonly}} readonly="readonly" {{/if}} style="margin-top:5px;margin-bottom:5px;" placeholder="External File Url" />
         {{/if}}
 
