@@ -1149,6 +1149,12 @@
     <Content Include="App_LocalResources\EditTemplate.ascx.de-AT.resx" />
     <Content Include="App_LocalResources\ShareTemplate.ascx.de-AT.resx" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_LocalResources\SharedResources.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_LocalResources\View.ascx.de-AT.resx" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
   </PropertyGroup>

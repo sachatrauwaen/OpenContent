@@ -123,4 +123,7 @@
   <data name="cmdSave.Text" xml:space="preserve">
     <value>Save</value>
   </data>
+  <data name="cmdSaveClose.Text" xml:space="preserve">
+    <value>Save and Close</value>
+  </data>
 </root>

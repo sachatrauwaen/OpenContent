@@ -37,6 +37,7 @@ namespace Satrabel.OpenContent
         {
             base.OnInit(e);
             cmdSave.Click += cmdSave_Click;
+            cmdSaveClose.Click += cmdSaveClose_Click;
             cmdCancel.Click += cmdCancel_Click;
             cmdImport.Click += cmdImport_Click;
             cmdRestApi.NavigateUrl = Globals.NavigateURL("Swagger", "mid=" + ModuleContext.ModuleId) + "?popUp=true";
@@ -44,6 +45,12 @@ namespace Satrabel.OpenContent
             //ServicesFramework.Instance.RequestAjaxAntiForgerySupport();
             sourceList.SelectedIndexChanged += sourceList_SelectedIndexChanged;
             ddlVersions.SelectedIndexChanged += ddlVersions_SelectedIndexChanged;
+        }
+
+        private void cmdSaveClose_Click(object sender, EventArgs e)
+        {
+            cmdSave_Click(sender, e);
+            Response.Redirect(Globals.NavigateURL(), true);
         }
 
         private void cmdImport_Click(object sender, EventArgs e)
@@ -258,7 +265,7 @@ namespace Satrabel.OpenContent
             {
                 SaveAdditionalData(sourceList.SelectedValue);
             }
-            Response.Redirect(Globals.NavigateURL(), true);
+            
         }
 
         private void SaveAdditionalData(string key)

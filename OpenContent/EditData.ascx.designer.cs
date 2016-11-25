@@ -49,6 +49,15 @@ namespace Satrabel.OpenContent {
         protected global::System.Web.UI.WebControls.LinkButton cmdSave;
         
         /// <summary>
+        /// cmdSaveClose control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton cmdSaveClose;
+        
+        /// <summary>
         /// cmdCancel control.
         /// </summary>
         /// <remarks>

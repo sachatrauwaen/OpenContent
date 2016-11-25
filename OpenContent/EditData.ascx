@@ -29,6 +29,8 @@
         <li>
             <asp:LinkButton ID="cmdSave" resourcekey="cmdSave" runat="server" CssClass="dnnPrimaryAction" />
         </li>
+         <li>
+            <asp:LinkButton ID="cmdSaveClose" resourcekey="cmdSaveClose" runat="server" CssClass="dnnSecondaryAction" /></li>
         <li>
             <asp:LinkButton ID="cmdCancel" resourcekey="cmdCancel" runat="server" CssClass="dnnSecondaryAction" CausesValidation="False" />
         </li>
