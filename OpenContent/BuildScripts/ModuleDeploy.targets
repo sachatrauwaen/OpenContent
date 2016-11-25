@@ -32,6 +32,7 @@
       <DeployInclude Include="**\web.config" Exclude="packages\**" />
       <DeployInclude Include="**\css\**" Exclude="packages\**" />
       <DeployInclude Include="**\fonts\**" Exclude="packages\**" />
+      <DeployInclude Include="**\font\**" Exclude="packages\**" />
     </ItemGroup>	
 	<Copy SourceFiles="@(DeployInclude)" DestinationFolder="$(WebsitePath)\DesktopModules\OpenContent\%(RecursiveDir)" SkipUnchangedFiles="True" />
     

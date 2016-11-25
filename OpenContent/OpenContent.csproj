@@ -478,6 +478,7 @@
     <Content Include="alpaca\js\fields\dnn\ImageField.js" />
     <Content Include="alpaca\js\fields\dnn\MLImage2Field.js" />
     <Content Include="alpaca\js\fields\dnn\Role2Field.js" />
+    <Content Include="alpaca\js\fields\dnn\SummernoteField.js" />
     <Content Include="alpaca\js\fields\dnn\Url2Field.js" />
     <Content Include="alpaca\js\fields\dnn\File2Field.js" />
     <Content Include="alpaca\js\fields\dnn\ImageCropperField.js" />

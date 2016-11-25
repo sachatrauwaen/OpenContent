@@ -30,6 +30,7 @@
       <InstallInclude Include="**\web.config" Exclude="packages\**" />
       <InstallInclude Include="**\css\**" Exclude="packages\**" />
       <InstallInclude Include="**\fonts\**" Exclude="packages\**" />
+      <InstallInclude Include="**\font\**" Exclude="packages\**" />
     </ItemGroup>
 
     <ItemGroup>
