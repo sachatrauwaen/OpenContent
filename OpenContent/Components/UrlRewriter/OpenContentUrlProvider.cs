@@ -14,15 +14,32 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
     {
         public static List<OpenContentUrlRule> GetRules(int portalId)
         {
+#if DEBUG
+            var stopwatch = new System.Diagnostics.Stopwatch();
+            stopwatch.Start();
+#endif
+            UrlRulesCaching.PurgeExpiredItems(portalId);
             Dictionary<string, Locale> dicLocales = LocaleController.Instance.GetLocales(portalId);
             List<OpenContentUrlRule> rules = new List<OpenContentUrlRule>();
             var modules = DnnUtils.GetDnnOpenContentModules(portalId);
 
             foreach (var module in modules)
             {
+                
+                List<OpenContentUrlRule> moduleRules = UrlRulesCaching.GetModule(portalId, module.TabModuleId, module.ModuleId, UrlRulesCaching.GenerateCacheKey(module.TabId, module.ModuleId, null));
+                if (moduleRules != null)
+                {
+                    rules.AddRange(moduleRules);
+                    continue;
+                }
+                moduleRules = new List<OpenContentUrlRule>();
                 try
                 {
-                    if (module.IsListTemplate() && (!module.Settings.IsOtherModule || module.Settings.DetailTabId > 0))
+                    if (module.IsListTemplate() && module.Settings.Template.Detail != null && 
+                            (   (!module.Settings.IsOtherModule && module.Settings.DetailTabId < 0) ||
+                                (module.Settings.DetailTabId == module.TabId)
+                            )
+                        )
                     {
                         IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                         var dsContext = OpenContentUtils.CreateDataContext(module);
@@ -87,17 +104,25 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                                             rule.Url = id + "-" + url;
                                         }
                                         rules.Add(rule);
+                                        moduleRules.Add(rule);
                                     }
                                 }
                             }
                         }
                     }
+                    UrlRulesCaching.SetModule(portalId, module.TabId, module.ModuleId, UrlRulesCaching.GenerateCacheKey(module.TabId, module.ModuleId, null), new TimeSpan(1, 0,0,0), moduleRules);
                 }
                 catch (Exception ex)
                 {
                     Log.Logger.Error("Failed to generate url for opencontent module " + module.ViewModule.ModuleID, ex);
                 }
+
             }
+#if DEBUG
+            stopwatch.Stop();
+            Console.WriteLine("Time elapsed: {0} s {1} ms", stopwatch.Elapsed.Seconds , stopwatch.Elapsed.Milliseconds);
+            Log.Logger.Error(string.Format("Time elapsed: {0} s {1} ms", stopwatch.Elapsed.Seconds, stopwatch.Elapsed.Milliseconds));
+#endif
             return rules;
         }
     }
