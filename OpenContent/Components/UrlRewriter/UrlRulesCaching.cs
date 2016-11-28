@@ -36,7 +36,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
             return moduleId + "_" + tabId + "_" + ByteArrayToString(hash);
         }
 
-        protected static string ByteArrayToString(byte[] arrInput)
+        private static string ByteArrayToString(byte[] arrInput)
         {
             int i;
             var sOutput = new StringBuilder(arrInput.Length);
@@ -77,13 +77,9 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                     return cacheFolder;
                 }
             }
-
             var portalController = new PortalController();
             PortalInfo portalInfo = portalController.GetPortal(portalId);
-
-            string homeDirectoryMapPath = portalInfo.HomeDirectoryMapPath;
-
-
+            string homeDirectoryMapPath = portalInfo.HomeSystemDirectoryMapPath;
             if (!(string.IsNullOrEmpty(homeDirectoryMapPath)))
             {
                 cacheFolder = string.Concat(homeDirectoryMapPath, "Cache\\OpenContentUrlRules\\");
@@ -98,11 +94,8 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                 if (!CacheFolderPath.ContainsKey(portalId))
                     CacheFolderPath.Add(portalId, cacheFolder);
             }
-
             return cacheFolder;
         }
-
-
         private static bool IsFileExpired(string file)
         {
             StreamReader oRead = null;
