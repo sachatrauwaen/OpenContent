@@ -293,12 +293,14 @@ namespace Satrabel.OpenContent.Components.Datasource
             content.LastModifiedByUserId = context.UserId;
             content.LastModifiedOnDate = DateTime.Now;
             ctrl.UpdateContent(content, context.Index, indexConfig);
+            ClearCache(context);
         }
         public virtual void Delete(DataSourceContext context, IDataItem item)
         {
             OpenContentController ctrl = new OpenContentController();
             var content = (OpenContentInfo)item.Item;
             ctrl.DeleteContent(content, context.Index);
+            ClearCache(context);
         }
 
         /// <summary>
@@ -355,6 +357,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             additionalData.LastModifiedByUserId = context.UserId;
             additionalData.LastModifiedOnDate = DateTime.Now;
             ctrl.UpdateData(additionalData);
+            ClearCache(context);
         }
 
         #endregion
@@ -383,6 +386,12 @@ namespace Satrabel.OpenContent.Components.Datasource
                 Item = content
             };
         }
+
+        private static void ClearCache(DataSourceContext context)
+        {
+            UrlRewriter.UrlRulesCaching.Remove(context.PortalId, context.ModuleId);
+        }
+
         #endregion
     }
 }

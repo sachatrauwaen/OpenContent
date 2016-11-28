@@ -7,27 +7,28 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenContent", "OpenContent\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenContentTests", "OpenContentTests\OpenContentTests.csproj", "{5703831E-F8C9-4832-9B06-1A2D24426CDF}"
 EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "dnn741", "http://localhost:54068", "{08875787-57B8-48D1-82FD-378B0E7F5963}"
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "OpenContent", "http://localhost/OpenContent", "{0F975911-A89B-4662-B8BD-F6A764E56D48}"
 	ProjectSection(WebsiteProperties) = preProject
-		UseIISExpress = "true"
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
-		Debug.AspNetCompiler.VirtualPath = "/localhost_54068"
-		Debug.AspNetCompiler.PhysicalPath = "..\Website\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_54068\"
+		UseIISExpress = "false"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5"
+		Debug.AspNetCompiler.VirtualPath = "/OpenContent"
+		Debug.AspNetCompiler.PhysicalPath = "Website\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\OpenContent\"
 		Debug.AspNetCompiler.Updateable = "true"
 		Debug.AspNetCompiler.ForceOverwrite = "true"
 		Debug.AspNetCompiler.FixedNames = "false"
 		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/localhost_54068"
-		Release.AspNetCompiler.PhysicalPath = "..\Website\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_54068\"
+		Release.AspNetCompiler.VirtualPath = "/OpenContent"
+		Release.AspNetCompiler.PhysicalPath = "Website\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\OpenContent\"
 		Release.AspNetCompiler.Updateable = "true"
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
-		SlnRelativePath = "..\Website\"
+		SlnRelativePath = "Website\"
 	EndProjectSection
 EndProject
+
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
