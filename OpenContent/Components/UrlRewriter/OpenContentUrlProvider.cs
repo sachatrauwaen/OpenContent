@@ -110,7 +110,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                             }
                         }
                         UrlRulesCaching.SetModule(portalId, module.TabId, module.ModuleId, UrlRulesCaching.GenerateCacheKey(module.TabId, module.ModuleId, null), new TimeSpan(1, 0, 0, 0), moduleRules);
-                    }                    
+                    }
                 }
                 catch (Exception ex)
                 {
