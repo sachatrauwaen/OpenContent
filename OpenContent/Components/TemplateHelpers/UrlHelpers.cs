@@ -51,7 +51,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
                 }
                 else if (@".[]|:;`%\\""^№".Contains(ch))
                     ch = "";
-                else if (@" &$+,/=?@~#<>(){}¿¡«»!'’–*…“”".Contains(ch))
+                else if (@" &$+,/=?@~#<>(){}¿¡«»!'‘’–*…“”".Contains(ch))
                     ch = replaceWith;
                 else
                 {
