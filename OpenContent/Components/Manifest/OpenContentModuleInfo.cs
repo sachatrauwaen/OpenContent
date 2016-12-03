@@ -12,7 +12,6 @@ namespace Satrabel.OpenContent.Components
             ViewModule = viewModule;
             TabId = ViewModule.TabID;
             ModuleId = ViewModule.ModuleID;
-            TabModuleId = ViewModule.TabModuleID;
         }
 
         public OpenContentModuleInfo(int moduleId, int tabId)
@@ -21,7 +20,6 @@ namespace Satrabel.OpenContent.Components
             ViewModule = mc.GetModule(moduleId, tabId, false);
             TabId = ViewModule.TabID;
             ModuleId = ViewModule.ModuleID;
-            TabModuleId = ViewModule.TabModuleID;
         }
 
         public ModuleInfo ViewModule { get; }
@@ -44,8 +42,6 @@ namespace Satrabel.OpenContent.Components
 
         public int TabId { get; }
         public int ModuleId { get; }
-        public int TabModuleId { get; }
-        public string TemplateKey => Settings.Template?.Key.ToString() ?? string.Empty;
 
         public OpenContentSettings Settings
         {

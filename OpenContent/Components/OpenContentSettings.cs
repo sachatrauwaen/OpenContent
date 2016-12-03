@@ -7,7 +7,7 @@ namespace Satrabel.OpenContent.Components
 {
     public static class OpenContentSettingsExtentions
     {
-        
+
         public static int GetModuleId(this OpenContentSettings settings, int defaultModuleId)
         {
             return settings.IsOtherModule ? settings.ModuleId : defaultModuleId;
@@ -26,8 +26,7 @@ namespace Satrabel.OpenContent.Components
             FirstTimeInitialisation = string.IsNullOrEmpty(template);
             if (!FirstTimeInitialisation)
             {
-                var templateUri = new FileUri(template);
-                TemplateKey = new TemplateKey(templateUri);
+                TemplateKey = new TemplateKey(new FileUri(template));
                 TemplateManifest templateManifest;
                 Manifest = ManifestUtils.GetManifest(TemplateKey, out templateManifest);
                 Template = templateManifest;
