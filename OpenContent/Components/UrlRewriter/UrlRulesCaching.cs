@@ -165,30 +165,44 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                     string key = varyByParms.Current.Key.ToLower();
                     cacheKey.Append(string.Concat(key, "=", varyByParms.Current.Value, "|"));
                 }
+
+                varyByParms.Dispose();
             }
             return GenerateCacheKeyHash(tabId, moduleId, cacheKey.ToString());
         }
 
-        public int GetItemCount(int portalId, int tabId, int moduleId)
+        public static List<OpenContentUrlRule> GetModule(int portalId, string cacheKey)
         {
-            return GetCachedItemCount(portalId);
-        }
 
-        public static List<OpenContentUrlRule> GetModule(int portalId, int tabId, int moduleId, string cacheKey)
-        {
-            
-            string cachedModule = GetCachedOutputFileName(portalId, cacheKey);
+            string cacheFileName = GetCachedOutputFileName(portalId, cacheKey);
             try
             {
-                if (!File.Exists(cachedModule))
+                if (!File.Exists(cacheFileName))
                 {
                     return null;
                 }
-                if (IsFileExpired(GetAttribFileName(portalId,  cacheKey)))
+                if (IsFileExpired(GetAttribFileName(portalId, cacheKey)))
                 {
                     return null;
                 }
-                return JsonConvert.DeserializeObject<List<OpenContentUrlRule>>(File.ReadAllText(cachedModule));
+                return JsonConvert.DeserializeObject<List<OpenContentUrlRule>>(File.ReadAllText(cacheFileName));
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public static List<OpenContentUrlRule> GetModule(int portalId, string cacheKey, List<string> validCacheItems)
+        {
+            string dataCacheFileName = GetCachedOutputFileName(portalId, cacheKey);
+            try
+            {
+                if (!validCacheItems.Contains(dataCacheFileName))
+                {
+                    return null;
+                }
+                return JsonConvert.DeserializeObject<List<OpenContentUrlRule>>(File.ReadAllText(dataCacheFileName));
             }
             catch
             {
@@ -282,5 +296,21 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
         }
 
         #endregion
+
+
+    }
+
+    public class PurgeResult
+    {
+        public PurgeResult(int i, List<string> validCacheItems, StringBuilder filesNotDeleted)
+        {
+            this.PurgedItemCount = i;
+            this.ValidCacheItems = validCacheItems;
+            this.FilesNotDeleted = filesNotDeleted;
+        }
+
+        public int PurgedItemCount { get; }
+        public List<string> ValidCacheItems { get; }
+        public StringBuilder FilesNotDeleted { get; }
     }
 }

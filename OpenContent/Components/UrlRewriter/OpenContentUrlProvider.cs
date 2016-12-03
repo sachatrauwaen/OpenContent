@@ -18,36 +18,43 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
             var stopwatch = new System.Diagnostics.Stopwatch();
             stopwatch.Start();
 #endif
-            UrlRulesCaching.PurgeExpiredItems(portalId);
+            var purgeResult = UrlRulesCaching.PurgeExpiredItems(portalId);
             Dictionary<string, Locale> dicLocales = LocaleController.Instance.GetLocales(portalId);
             List<OpenContentUrlRule> rules = new List<OpenContentUrlRule>();
-            var modules = DnnUtils.GetDnnOpenContentModules(portalId);
+            var modules = DnnUtils.GetDnnOpenContentModules(portalId).ToList();
+
+            var cachedModules = 0;
+            var nonCached = 0;
 
             foreach (var module in modules)
             {
-                
-                List<OpenContentUrlRule> moduleRules = UrlRulesCaching.GetModule(portalId, module.TabModuleId, module.ModuleId, UrlRulesCaching.GenerateCacheKey(module.TabId, module.ModuleId, null));
+                var cacheKey = UrlRulesCaching.GenerateCacheKey(module.TabId, module.ModuleId, null);
+                List<OpenContentUrlRule> moduleRules = UrlRulesCaching.GetModule(portalId, cacheKey, purgeResult.ValidCacheItems);
                 if (moduleRules != null)
                 {
                     rules.AddRange(moduleRules);
+                    cachedModules += 1;
                     continue;
                 }
-                moduleRules = new List<OpenContentUrlRule>();
                 try
                 {
-                    if (module.IsListTemplate() && module.Settings.Template.Detail != null && 
-                            (   (!module.Settings.IsOtherModule && module.Settings.DetailTabId <= 0) ||
+                    if (module.IsListTemplate() && module.Settings.Template.Detail != null &&
+                            ((!module.Settings.IsOtherModule && module.Settings.DetailTabId <= 0) ||
                                 (module.Settings.DetailTabId == module.TabId)
                             )
                         )
                     {
+                        nonCached += 1;
+
+                        moduleRules = new List<OpenContentUrlRule>();
                         IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                         var dsContext = OpenContentUtils.CreateDataContext(module);
                         dsContext.Agent = "OpenContentUrlProvider.GetRules()";
 
-                        var dataList = ds.GetAll(dsContext, null).Items;
+                        var dataList = ds.GetAll(dsContext, null).Items.ToList();
                         if (dataList.Count() > 1000)
                         {
+                            Log.Logger.Warn($"Module {module.DataModule.ModuleID} (portal/tab {module.DataModule.PortalID}/{module.DataModule.TabID}) has >1000 items. We are not making sluggs for them as this would be too inefficient");
                             continue;
                         }
                         var physicalTemplateFolder = module.Settings.TemplateDir.PhysicalFullDirectory + "\\";
@@ -95,7 +102,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                                         Parameters = "id=" + id,
                                         Url = url
                                     };
-                                    var reducedRules = rules.Where(r => r.CultureCode == rule.CultureCode && r.TabId == rule.TabId);
+                                    var reducedRules = rules.Where(r => r.CultureCode == rule.CultureCode && r.TabId == rule.TabId).ToList();
                                     bool ruleExist = reducedRules.Any(r => r.Parameters == rule.Parameters);
                                     if (!ruleExist)
                                     {
@@ -120,8 +127,10 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
             }
 #if DEBUG
             stopwatch.Stop();
-            Console.WriteLine("Time elapsed: {0} s {1} ms", stopwatch.Elapsed.Seconds , stopwatch.Elapsed.Milliseconds);
-            Log.Logger.Error(string.Format("Time elapsed: {0} s {1} ms", stopwatch.Elapsed.Seconds, stopwatch.Elapsed.Milliseconds));
+            decimal speed = (cachedModules + nonCached) == 0 ? -1 : stopwatch.Elapsed.Milliseconds / (cachedModules + nonCached);
+            var mess = $"PortalId: {portalId}. Time elapsed: {stopwatch.Elapsed.Milliseconds}ms. Module Count: {modules.Count()}. Relevant Modules: {cachedModules + nonCached}. CachedModules: {cachedModules}. PurgedItems: {purgeResult.PurgedItemCount}. Speed: {speed}";
+            Log.Logger.Error(mess);
+            Console.WriteLine(mess);
 #endif
             return rules;
         }
