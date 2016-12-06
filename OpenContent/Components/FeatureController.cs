@@ -37,31 +37,37 @@ namespace Satrabel.OpenContent.Components
         {
             string xml = "";
             OpenContentController ctrl = new OpenContentController();
-            var content = ctrl.GetFirstContent(moduleId);
-            if ((content != null))
+            var items = ctrl.GetContents(moduleId);
+            xml += "<opencontent>";
+            foreach (var item in items)
             {
-                xml += "<opencontent>";
-                xml += "<json>" + XmlUtils.XMLEncode(content.Json) + "</json>";
-                xml += "</opencontent>";
+                xml += "<json>" + XmlUtils.XMLEncode(item.Json) + "</json>";
             }
+            xml += "</opencontent>";
             return xml;
         }
         public void ImportModule(int moduleId, string Content, string version, int userId)
         {
+            var module = new OpenContentModuleInfo(moduleId, Null.NullInteger);
+            var index = module.Settings.Template.Manifest.Index;
+            var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template.Key.TemplateDir);
             OpenContentController ctrl = new OpenContentController();
             XmlNode xml = Globals.GetContent(Content, "opencontent");
-            var content = new OpenContentInfo()
+            foreach (XmlNode item in xml.SelectNodes("json"))
             {
-                ModuleId = moduleId,
-                Json = xml.SelectSingleNode("json").InnerText,
-                CreatedByUserId = userId,
-                CreatedOnDate = DateTime.Now,
-                LastModifiedByUserId = userId,
-                LastModifiedOnDate = DateTime.Now,
-                Title = "",
-                Html = ""
-            };
-            ctrl.AddContent(content, false, null);
+                var contentInfo = new OpenContentInfo()
+                {
+                    ModuleId = moduleId,
+                    Json = item.InnerText,
+                    CreatedByUserId = userId,
+                    CreatedOnDate = DateTime.Now,
+                    LastModifiedByUserId = userId,
+                    LastModifiedOnDate = DateTime.Now,
+                    Title = "",
+                    Html = ""
+                };
+                ctrl.AddContent(contentInfo, index, indexConfig);
+            }
         }
         #region ModuleSearchBase
         public override IList<SearchDocument> GetModifiedSearchDocuments(ModuleInfo modInfo, DateTime beginDateUtc)
