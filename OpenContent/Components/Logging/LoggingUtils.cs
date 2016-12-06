@@ -29,7 +29,7 @@ namespace Satrabel.OpenContent.Components.Logging
             else
             {
                 friendlyMessage = string.Format("Alias: {3} \nTab: {4} - {5} \nModule: {0} \nContext: {2} \nError: {1}",
-                   module.ModuleContext.ModuleId,
+                   module?.ModuleContext?.ModuleId,
                    exc.Message,
                    LoggingUtils.HttpRequestLogInfo(HttpContext.Current),
                    ps.PortalAlias.HTTPAlias,

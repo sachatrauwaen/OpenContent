@@ -427,6 +427,7 @@ namespace Satrabel.OpenContent.Components
                 PortalId = module.ViewModule.PortalID,
                 ActiveModuleId = module.ViewModule.ModuleID,
                 TabId = module.ViewModule.TabID,
+                TabModuleId = module.ViewModule.TabModuleID,
                 ModuleId = module.DataModule.ModuleID,
                 TemplateFolder = module.Settings.TemplateDir.FolderPath,
                 UserId = userId,

@@ -16,10 +16,11 @@ using System.Web;
 
 namespace Satrabel.OpenContent.Components.UrlRewriter
 {
-    public class UrlRulesCaching
+    public static class UrlRulesCaching
     {
         #region Private Members
-        public const string UrlRuleConfigCacheKey = "UrlRuleConfig{0}";
+
+        private const string UrlRuleConfigCacheKey = "UrlRuleConfig{0}";
         private const string DataFileExtension = ".data.resources";
         private const string AttribFileExtension = ".attrib.resources";
         private static readonly SharedDictionary<int, string> CacheFolderPath = new SharedDictionary<int, string>(LockingStrategy.ReaderWriter);
@@ -53,7 +54,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
 
         private static int GetCachedItemCount(int portalId)
         {
-            return Directory.GetFiles(GetCacheFolder(portalId), String.Format("*{0}", DataFileExtension)).Length;
+            return Directory.GetFiles(GetCacheFolder(portalId), $"*{DataFileExtension}").Length;
         }
 
         private static string GetCachedOutputFileName(int portalId, string cacheKey)
@@ -119,10 +120,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
             }
             finally
             {
-                if (oRead != null)
-                {
-                    oRead.Close();
-                }
+                oRead?.Close();
             }
         }
 
@@ -130,11 +128,11 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
         {
             var filesNotDeleted = new StringBuilder();
             int i = 0;
-            foreach (string File in Directory.GetFiles(folder, "*.resources"))
+            foreach (string file in Directory.GetFiles(folder, "*.resources"))
             {
-                if (!FileSystemUtils.DeleteFileWithWait(File, 100, 200))
+                if (!FileSystemUtils.DeleteFileWithWait(file, 100, 200))
                 {
-                    filesNotDeleted.Append(String.Format("{0};", File));
+                    filesNotDeleted.Append($"{file};");
                 }
                 else
                 {
@@ -143,7 +141,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
             }
             if (filesNotDeleted.Length > 0)
             {
-                throw new IOException(String.Format("Deleted {0} files, however, some files are locked.  Could not delete the following files: {1}", i, filesNotDeleted));
+                throw new IOException($"Deleted {i} files, however, some files are locked.  Could not delete the following files: {filesNotDeleted}");
             }
         }
 
@@ -167,36 +165,49 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                     string key = varyByParms.Current.Key.ToLower();
                     cacheKey.Append(string.Concat(key, "=", varyByParms.Current.Value, "|"));
                 }
+
+                varyByParms.Dispose();
             }
             return GenerateCacheKeyHash(tabId, moduleId, cacheKey.ToString());
         }
 
-        public int GetItemCount(int portalId, int tabId, int moduleId)
+        public static List<OpenContentUrlRule> GetModule(int portalId, string cacheKey)
         {
-            return GetCachedItemCount(portalId);
-        }
 
-        public static List<OpenContentUrlRule> GetModule(int portalId, int tabId, int moduleId, string cacheKey)
-        {
-            
-            string cachedModule = GetCachedOutputFileName(portalId, cacheKey);
+            string cacheFileName = GetCachedOutputFileName(portalId, cacheKey);
             try
             {
-                if (!File.Exists(cachedModule))
+                if (!File.Exists(cacheFileName))
                 {
                     return null;
                 }
-                if (IsFileExpired(GetAttribFileName(portalId,  cacheKey)))
+                if (IsFileExpired(GetAttribFileName(portalId, cacheKey)))
                 {
                     return null;
                 }
-                return JsonConvert.DeserializeObject<List<OpenContentUrlRule>>(File.ReadAllText(cachedModule));
+                return JsonConvert.DeserializeObject<List<OpenContentUrlRule>>(File.ReadAllText(cacheFileName));
             }
             catch
             {
                 return null;
             }
-            
+        }
+
+        public static List<OpenContentUrlRule> GetModule(int portalId, string cacheKey, List<string> validCacheItems)
+        {
+            string dataCacheFileName = GetCachedOutputFileName(portalId, cacheKey);
+            try
+            {
+                if (!validCacheItems.Contains(dataCacheFileName))
+                {
+                    return null;
+                }
+                return JsonConvert.DeserializeObject<List<OpenContentUrlRule>>(File.ReadAllText(dataCacheFileName));
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public static void PurgeCache(int portalId)
@@ -204,49 +215,54 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
             PurgeCache(GetCacheFolder(portalId));
         }
 
-        public static void PurgeExpiredItems(int portalId)
+        public static PurgeResult PurgeExpiredItems(int portalId)
         {
             var filesNotDeleted = new StringBuilder();
-            int i = 0;
+            int purgedCount = 0;
             string cacheFolder = GetCacheFolder(portalId);
+            var validCacheItems = new List<string>();
+
             if (Directory.Exists(cacheFolder) && IsPathInApplication(cacheFolder))
             {
-                foreach (string File in Directory.GetFiles(cacheFolder, String.Format("*{0}", AttribFileExtension)))
+                foreach (string attribCacheFileName in Directory.GetFiles(cacheFolder, $"*{AttribFileExtension}"))
                 {
-                    if (IsFileExpired(File))
+                    string dataCacheFileName = attribCacheFileName.Replace(AttribFileExtension, DataFileExtension);
+                    if (IsFileExpired(attribCacheFileName))
                     {
-                        string fileToDelete = File.Replace(AttribFileExtension, DataFileExtension);
-                        if (!FileSystemUtils.DeleteFileWithWait(fileToDelete, 100, 200))
+                        if (!FileSystemUtils.DeleteFileWithWait(dataCacheFileName, 100, 200))
                         {
-                            filesNotDeleted.Append(String.Format("{0};", fileToDelete));
+                            filesNotDeleted.Append($"{dataCacheFileName};");
                         }
                         else
                         {
-                            i += 1;
+                            purgedCount += 1;
                         }
+                    }
+                    else
+                    {
+                        validCacheItems.Add(dataCacheFileName);
                     }
                 }
             }
             if (filesNotDeleted.Length > 0)
             {
-                throw new IOException(String.Format("Deleted {0} files, however, some files are locked.  Could not delete the following files: {1}", i, filesNotDeleted));
+                throw new IOException($"Deleted {purgedCount} files, however, some files are locked.  Could not delete the following files: {filesNotDeleted}");
             }
+            var pr = new PurgeResult(purgedCount, validCacheItems, filesNotDeleted);
+            return pr;
         }
 
         public static void SetModule(int portalId, int tabId, int moduleId, string cacheKey, TimeSpan duration, List<OpenContentUrlRule> rules)
         {
             try
             {
-
                 string cachedOutputFile = GetCachedOutputFileName(portalId, cacheKey);
-
                 if (File.Exists(cachedOutputFile))
                 {
                     FileSystemUtils.DeleteFileWithWait(cachedOutputFile, 100, 200);
                 }
 
                 string attribFile = GetAttribFileName(portalId, cacheKey);
-
                 File.WriteAllText(cachedOutputFile, JsonConvert.SerializeObject(rules));
                 File.WriteAllLines(attribFile, new[] { DateTime.UtcNow.Add(duration).ToString(CultureInfo.InvariantCulture) });
             }
@@ -261,11 +277,11 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
             string cacheFolder = GetCacheFolder(portalId);
             var filesNotDeleted = new StringBuilder();
             int i = 0;
-            foreach (string File in Directory.GetFiles(cacheFolder, moduleId + "_*.*"))
+            foreach (string file in Directory.GetFiles(cacheFolder, moduleId + "_*.*"))
             {
-                if (!FileSystemUtils.DeleteFileWithWait(File, 100, 200))
+                if (!FileSystemUtils.DeleteFileWithWait(file, 100, 200))
                 {
-                    filesNotDeleted.Append(File + ";");
+                    filesNotDeleted.Append(file + ";");
                 }
                 else
                 {
@@ -276,9 +292,25 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
             {
                 throw new IOException("Deleted " + i + " files, however, some files are locked.  Could not delete the following files: " + filesNotDeleted);
             }
-            DataCache.ClearCache(String.Format(UrlRuleConfigCacheKey, portalId));
+            DataCache.ClearCache(string.Format(UrlRuleConfigCacheKey, portalId));
         }
 
         #endregion
+
+
+    }
+
+    public class PurgeResult
+    {
+        public PurgeResult(int i, List<string> validCacheItems, StringBuilder filesNotDeleted)
+        {
+            this.PurgedItemCount = i;
+            this.ValidCacheItems = validCacheItems;
+            this.FilesNotDeleted = filesNotDeleted;
+        }
+
+        public int PurgedItemCount { get; }
+        public List<string> ValidCacheItems { get; }
+        public StringBuilder FilesNotDeleted { get; }
     }
 }

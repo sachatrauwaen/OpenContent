@@ -53,7 +53,7 @@ namespace Satrabel.OpenContent
             var module = mc.GetModule(ModuleId, TabId, false);
             if (module == null)
             {
-                DotNetNuke.UI.Skins.Skin.AddPageMessage(Page, "OpenContent RenderModule SkinObject", string.Format("No module exist for TabId {0} and ModuleId {1} ", TabId, module), DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
+                DotNetNuke.UI.Skins.Skin.AddPageMessage(Page, "OpenContent RenderModule SkinObject", $"No module exist for TabId {TabId} and ModuleId {ModuleId} ", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
                 return;
             }
             var engine = new RenderEngine(module);

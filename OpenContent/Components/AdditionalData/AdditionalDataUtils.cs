@@ -1,4 +1,5 @@
-﻿using DotNetNuke.Services.Localization;
+﻿using System;
+using DotNetNuke.Services.Localization;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Json;
@@ -12,25 +13,23 @@ namespace Satrabel.OpenContent.Components
 
         internal static string GetScope(string scopeType, int portalId, int tabId, int moduleId, int tabModuleId)
         {
-            if (scopeType == "portal")
+            switch (scopeType)
             {
-                return scopeType + "/" + portalId;
-            }
-            else if (scopeType == "tab")
-            {
-                return scopeType + "/" + tabId;
-            }
-            else if (scopeType == "tabmodule")
-            {
-                return scopeType + "/" + tabModuleId;
-            }
-            else if (scopeType == "module")
-            {
-                return scopeType + "/" + moduleId;
-            }
-            else
-            {
-                return "module/" + moduleId;
+                case "portal":
+                    if (portalId < 0) throw new ArgumentException("portalId should not be < 0");
+                    return scopeType + "/" + portalId;
+                case "tab":
+                    if (tabId < 0) throw new ArgumentException("tabId should not be < 0");
+                    return scopeType + "/" + tabId;
+                case "tabmodule":
+                    if (tabModuleId < 0) throw new ArgumentException("tabModuleId should not be < 0");
+                    return scopeType + "/" + tabModuleId;
+                case "module":
+                    if (moduleId < 0) throw new ArgumentException("moduleId should not be < 0");
+                    return scopeType + "/" + moduleId;
+                default:
+                    if (moduleId < 0) throw new ArgumentException("moduleId should not be < 0");
+                    return "module/" + moduleId;
             }
         }
 
