@@ -10,13 +10,18 @@ namespace Satrabel.OpenContent.Components.Datasource
         public int UserId { get; set; } // Only Used for Add and Update commands
         public string CurrentCultureCode { get; set; }
         public bool Index { get; set; }
+        /// <summary>
+        /// Datasource Config comming from the manifest
+        /// </summary>
         public JObject Config { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="DataSourceContext"/> is a single item.
         /// </summary>
         public bool Single { get; set; }
-
+        /// <summary>
+        /// Options comming from the requester (data on the webapi call)
+        /// </summary>
         public JObject Options { get; set; }
 
         /// <summary>
