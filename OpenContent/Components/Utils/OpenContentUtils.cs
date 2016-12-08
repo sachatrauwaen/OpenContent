@@ -435,6 +435,8 @@ namespace Satrabel.OpenContent.Components
                 Index = module.Settings.Template.Manifest.Index,
                 Options = options,
                 Single = single,
+                Scope = module.Settings.Template.Scope,
+                Collection = module.Settings.Template.Collection
             };
             if (PortalSettings.Current != null)
             {

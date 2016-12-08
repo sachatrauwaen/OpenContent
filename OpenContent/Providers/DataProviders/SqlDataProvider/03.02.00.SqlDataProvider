@@ -1,0 +1,57 @@
+﻿/************************************************************/
+/*****              SqlDataProvider                     *****/
+/*****                                                  *****/
+/*****                                                  *****/
+/***** Note: To manually execute this script you must   *****/
+/*****       perform a search and replace operation     *****/
+/*****       for {databaseOwner} and {objectQualifier}  *****/
+/*****                                                  *****/
+/************************************************************/
+
+
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}OpenContent_Documents]') AND type in (N'U'))
+DROP TABLE {databaseOwner}[{objectQualifier}OpenContent_Documents]
+GO
+
+CREATE TABLE {databaseOwner}{objectQualifier}OpenContent_Documents
+    (
+    DocumentId int NOT NULL IDENTITY (1, 1),
+	Scope varchar(100) NOT NULL,
+    Collection varchar(100) NOT NULL,
+	DocumentKey varchar(100) NOT NULL,
+	Json nvarchar(max) NULL,
+	VersionsJson nvarchar(MAX) NULL,
+    CreatedOnDate datetime NOT NULL,
+    CreatedByUserId int NOT NULL,
+    LastModifiedOnDate datetime NOT NULL,
+    LastModifiedByUserId int NOT NULL
+    )  ON [PRIMARY]
+     TEXTIMAGE_ON [PRIMARY]
+GO
+
+ALTER TABLE {databaseOwner}{objectQualifier}OpenContent_Documents ADD CONSTRAINT
+    PK_{objectQualifier}OpenContent_Documents PRIMARY KEY CLUSTERED 
+    (
+    DocumentId
+    ) WITH( STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+
+GO
+
+
+IF EXISTS(SELECT * FROM sys.indexes WHERE name = 'IX_{objectQualifier}OpenContent_Documents_ScopeColId' AND object_id = OBJECT_ID('{objectQualifier}OpenContent_Documents'))
+DROP INDEX IX_{objectQualifier}OpenContent_Documents_ScopeColId ON {objectQualifier}OpenContent_Documents
+GO
+
+CREATE UNIQUE NONCLUSTERED INDEX [IX_{objectQualifier}OpenContent_Documents_ScopeColId] ON {databaseOwner}[{objectQualifier}OpenContent_Documents] 
+	(
+		[Scope],
+		[Collection],
+		[DocumentKey]
+	)
+
+GO
+
+
+/************************************************************/
+/*****              SqlDataProvider                     *****/
+/************************************************************/

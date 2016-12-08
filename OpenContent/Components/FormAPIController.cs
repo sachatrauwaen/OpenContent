@@ -3,6 +3,7 @@ using DotNetNuke.Web.Api;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Alpaca;
+using Satrabel.OpenContent.Components.Documents;
 using Satrabel.OpenContent.Components.Form;
 using Satrabel.OpenContent.Components.Handlebars;
 using Satrabel.OpenContent.Components.Json;
@@ -37,12 +38,12 @@ namespace Satrabel.OpenContent.Components
                 {
                     var formBuilder = new FormBuilder(settings.TemplateDir);
                     json = formBuilder.BuildForm("form");
-                    
+
                     if (UserInfo.UserID > 0 && json["schema"] is JObject)
                     {
                         FormUtils.InitFields((JObject)json["schema"], UserInfo);
                     }
-                    
+
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, json);
             }
@@ -75,6 +76,23 @@ namespace Satrabel.OpenContent.Components
                 ctrl.AddContent(content);
                  */
 
+                var module = new OpenContentModuleInfo(ActiveModule);
+                var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.TemplateDir);
+
+                form["Source"] = "OpenContent/";
+                DocumentController ctrl = new DocumentController();
+                var content = new DocumentInfo()
+                {
+                    Scope = "module/"+moduleId.ToString(),
+                    Collection = "FormSubmissions",
+                    //Id = Id,
+                    Json = form.ToString(),
+                    CreatedByUserId = UserInfo.UserID,
+                    CreatedOnDate = DateTime.Now,
+                    LastModifiedByUserId = UserInfo.UserID,
+                    LastModifiedOnDate = DateTime.Now
+                };
+                ctrl.AddDocument(content, indexConfig);
                 string Message = "Form submitted.";
                 var Errors = new List<string>();
 
@@ -100,9 +118,7 @@ namespace Satrabel.OpenContent.Components
                         }
                          */
                         data = FormUtils.GenerateFormData(form.ToString(), out formData);
-                        
                     }
-
 
                     if (settings != null && settings.Notifications != null)
                     {

@@ -52,5 +52,8 @@ namespace Satrabel.OpenContent.Components.Datasource
         /// </summary>
         public string Agent { get; set; }
 
+        public string Scope { get; set; }
+        public string Collection { get; set; }
+
     }
 }

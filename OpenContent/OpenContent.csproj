@@ -174,13 +174,18 @@
     <Compile Include="AddEdit.ascx.designer.cs">
       <DependentUpon>AddEdit.ascx</DependentUpon>
     </Compile>
+    <Compile Include="Components\Documents\DocumentController.cs" />
+    <Compile Include="Components\Documents\DocumentInfo.cs" />
+    <Compile Include="Components\Documents\DocumentUtils.cs" />
     <Compile Include="Components\Alpaca\AlpacaLayoutEnum.cs" />
     <Compile Include="Components\AppConfig.cs" />
+    <Compile Include="Components\Documents\ObjectId.cs" />
     <Compile Include="Components\FormAPIController.cs" />
     <Compile Include="Components\Form\FormUtils.cs" />
     <Compile Include="Components\Form\GenSettingsDTO.cs" />
     <Compile Include="Components\Form\NotificationDTO.cs" />
     <Compile Include="Components\Form\SettingsDTO.cs" />
+    <Compile Include="Components\Lucene\Index\IIndexableItem.cs" />
     <Compile Include="Components\Manifest\OpenContentModuleInfo.cs" />
     <Compile Include="Components\Datasource\DnnTabsDataSource.cs" />
     <Compile Include="Components\UrlRewriter\UrlRulesCaching.cs" />
@@ -961,6 +966,7 @@
       <SubType>Designer</SubType>
     </Content>
     <None Include="bundleconfig.json" />
+    <Content Include="Providers\DataProviders\SqlDataProvider\03.02.00.SqlDataProvider" />
     <None Include="Scripts\_references.js" />
     <Content Include="js\select2\i18n\az.js" />
     <Content Include="js\select2\i18n\bg.js" />

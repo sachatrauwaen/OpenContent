@@ -9,6 +9,7 @@ using System.Linq;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.Logging;
 using Satrabel.OpenContent.Components.Manifest;
+using Satrabel.OpenContent.Components.Documents;
 
 namespace Satrabel.OpenContent.Components.Datasource
 {
@@ -30,22 +31,47 @@ namespace Satrabel.OpenContent.Components.Datasource
         }
         public virtual JArray GetVersions(DataSourceContext context, IDataItem item)
         {
-            var content = (OpenContentInfo)item.Item;
-            if (!string.IsNullOrEmpty(content.VersionsJson))
+            if (item.Item is OpenContentInfo)
             {
-                var verLst = new JArray();
-                foreach (var version in content.Versions)
+                var content = (OpenContentInfo)item.Item;
+                if (!string.IsNullOrEmpty(content.VersionsJson))
                 {
-                    var ver = new JObject();
-                    ver["text"] = version.LastModifiedOnDate.ToShortDateString() + " " + version.LastModifiedOnDate.ToShortTimeString();
-                    if (verLst.Count == 0) // first
+                    var verLst = new JArray();
+                    foreach (var version in content.Versions)
                     {
-                        ver["text"] = ver["text"] + " ( current )";
+                        var ver = new JObject();
+                        ver["text"] = version.LastModifiedOnDate.ToShortDateString() + " " + version.LastModifiedOnDate.ToShortTimeString();
+                        if (verLst.Count == 0) // first
+                        {
+                            ver["text"] = ver["text"] + " ( current )";
+                        }
+                        ver["ticks"] = version.LastModifiedOnDate.Ticks.ToString();
+                        verLst.Add(ver);
                     }
-                    ver["ticks"] = version.LastModifiedOnDate.Ticks.ToString();
-                    verLst.Add(ver);
+                    return verLst;
                 }
-                return verLst;
+                return null;
+            }
+            if (item.Item is OpenContentInfo)
+            {
+                var content = (OpenContentInfo)item.Item;
+                if (!string.IsNullOrEmpty(content.VersionsJson))
+                {
+                    var verLst = new JArray();
+                    foreach (var version in content.Versions)
+                    {
+                        var ver = new JObject();
+                        ver["text"] = version.LastModifiedOnDate.ToShortDateString() + " " + version.LastModifiedOnDate.ToShortTimeString();
+                        if (verLst.Count == 0) // first
+                        {
+                            ver["text"] = ver["text"] + " ( current )";
+                        }
+                        ver["ticks"] = version.LastModifiedOnDate.Ticks.ToString();
+                        verLst.Add(ver);
+                    }
+                    return verLst;
+                }
+                return null;
             }
             return null;
         }
@@ -105,8 +131,19 @@ namespace Satrabel.OpenContent.Components.Datasource
             }
             return null;
         }
-
         public virtual IDataItem Get(DataSourceContext context, string id)
+        {
+            if (!string.IsNullOrEmpty(context.Scope) && !string.IsNullOrEmpty(context.Collection))
+            {
+                return GetDocument(context, id);
+            }
+            else
+            {
+                return GetContent(context, id);
+            }
+        }
+
+        public virtual IDataItem GetContent(DataSourceContext context, string id)
         {
             OpenContentController ctrl = new OpenContentController();
             OpenContentInfo content = null;
@@ -155,6 +192,48 @@ namespace Satrabel.OpenContent.Components.Datasource
             return null;
         }
 
+        public virtual IDataItem GetDocument(DataSourceContext context, string id)
+        {
+            DocumentController ctrl = new DocumentController();
+            DocumentInfo content = null;
+            string scopeStorage = AdditionalDataUtils.GetScope(context.Scope, context.PortalId, context.TabId, GetModuleId(context), context.TabModuleId);
+            if (!string.IsNullOrEmpty(id) && id != "-1")
+            {
+                if (LogContext.IsLogActive)
+                {
+                    LogContext.Log(context.ActiveModuleId, "Get DataItem", "Request", string.Format("{0}.Get() with id {1}", Name, id));
+                }
+                int idint;
+                if (int.TryParse(id, out idint))
+                {
+                    content = ctrl.GetDocumentById(idint);
+                }
+            }
+            
+            if (content == null)
+            {
+                Log.Logger.WarnFormat("Item not shown because no content item found. Id [{0}]. Context TabId: [{1}], ModuleId: [{2}]", id, GetTabId(context), GetModuleId(context));
+                LogContext.Log(context.ActiveModuleId, "Get DataItem", "Result", "not item found with id " + id);
+            }
+            else if (content.Scope == scopeStorage && content.Collection == context.Collection)
+            {
+                var dataItem = CreateDefaultDataItem(content);
+                if (LogContext.IsLogActive)
+                {
+                    LogContext.Log(context.ActiveModuleId, "Get DataItem", "Result", dataItem.Data);
+                }
+                return dataItem;
+            }
+            else
+            {
+                if (LogContext.IsLogActive)
+                {
+                    LogContext.Log(context.ActiveModuleId, "Get DataItem", "Result", string.Format("no item returned as incompatible module ids {0}-{1}", content.Scope+"/"+content.Collection, scopeStorage+"/"+context.Collection));
+                }
+            }
+            return null;
+        }
+
         /// <summary>
         /// Gets additional/related data of a datasource.
         /// </summary>
@@ -197,8 +276,32 @@ namespace Satrabel.OpenContent.Components.Datasource
                 Total = dataList.Count()
             };
         }
+        public virtual IDataItems GetAllDocuments(DataSourceContext context)
+        {
+            DocumentController ctrl = new DocumentController();
+            string scopeStorage = AdditionalDataUtils.GetScope(context.Scope, context.PortalId, context.TabId, GetModuleId(context), context.TabModuleId);
+            var dataList = ctrl.GetDocuments(scopeStorage, context.Collection)
+                .OrderBy(i => i.CreatedOnDate)
+                .Select(content => CreateDefaultDataItem(content));
 
+            return new DefaultDataItems()
+            {
+                Items = dataList,
+                Total = dataList.Count()
+            };
+        }
         public virtual IDataItems GetAll(DataSourceContext context, Select selectQuery)
+        {
+            if (!string.IsNullOrEmpty(context.Scope) && !string.IsNullOrEmpty(context.Collection))
+            {
+                return GetAllDocuments(context, selectQuery);
+            }
+            else
+            {
+                return GetAllContents(context, selectQuery);
+            }
+        }
+        private IDataItems GetAllContents(DataSourceContext context, Select selectQuery)
         {
             if (selectQuery == null)
             {
@@ -206,19 +309,8 @@ namespace Satrabel.OpenContent.Components.Datasource
             }
             else
             {
+                SelectQueryDefinition def = BuildQuery(context, selectQuery);
                 OpenContentController ctrl = new OpenContentController();
-                SelectQueryDefinition def = new SelectQueryDefinition();
-                def.Build(selectQuery);
-                if (LogContext.IsLogActive)
-                {
-                    var logKey = "Lucene query";
-                    LogContext.Log(context.ActiveModuleId, logKey, "Filter", def.Filter.ToString());
-                    LogContext.Log(context.ActiveModuleId, logKey, "Query", def.Query.ToString());
-                    LogContext.Log(context.ActiveModuleId, logKey, "Sort", def.Sort.ToString());
-                    LogContext.Log(context.ActiveModuleId, logKey, "PageIndex", def.PageIndex);
-                    LogContext.Log(context.ActiveModuleId, logKey, "PageSize", def.PageSize);
-                }
-
                 SearchResults docs = LuceneController.Instance.Search(GetModuleId(context).ToString(), def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
                 int total = docs.TotalResults;
                 var dataList = new List<IDataItem>();
@@ -243,12 +335,64 @@ namespace Satrabel.OpenContent.Components.Datasource
             }
         }
 
+        private IDataItems GetAllDocuments(DataSourceContext context, Select selectQuery)
+        {
+            if (selectQuery == null)
+            {
+                return GetAllDocuments(context);
+            }
+            else
+            {
+                SelectQueryDefinition def = BuildQuery(context, selectQuery);
+                string scopeStorage = AdditionalDataUtils.GetScope(context.Scope, context.PortalId, context.TabId, GetModuleId(context), context.TabModuleId);
+                SearchResults docs = LuceneController.Instance.Search(scopeStorage + "/" + context.Collection, def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
+                int total = docs.TotalResults;
+                DocumentController ctrl = new DocumentController();
+                var dataList = new List<IDataItem>();
+                foreach (string item in docs.ids)
+                {
+                    var doc = ctrl.GetDocumentById(int.Parse(item));
+                    if (doc != null)
+                    {
+                        dataList.Add(CreateDefaultDataItem(doc));
+                    }
+                    else
+                    {
+                        Log.Logger.DebugFormat("OpenContentDataSource.GetAll() ContentItem not found [{0}]", item);
+                    }
+                }
+                return new DefaultDataItems()
+                {
+                    Items = dataList,
+                    Total = total,
+                    DebugInfo = def.Filter + " - " + def.Query + " - " + def.Sort
+                };
+            }
+        }
+
+        private static SelectQueryDefinition BuildQuery(DataSourceContext context, Select selectQuery)
+        {
+            SelectQueryDefinition def = new SelectQueryDefinition();
+            def.Build(selectQuery);
+            if (LogContext.IsLogActive)
+            {
+                var logKey = "Lucene query";
+                LogContext.Log(context.ActiveModuleId, logKey, "Filter", def.Filter.ToString());
+                LogContext.Log(context.ActiveModuleId, logKey, "Query", def.Query.ToString());
+                LogContext.Log(context.ActiveModuleId, logKey, "Sort", def.Sort.ToString());
+                LogContext.Log(context.ActiveModuleId, logKey, "PageIndex", def.PageIndex);
+                LogContext.Log(context.ActiveModuleId, logKey, "PageSize", def.PageSize);
+            }
+
+            return def;
+        }
+
         #region Query Alpaca info for Edit
 
         public virtual JObject GetAlpaca(DataSourceContext context, bool schema, bool options, bool view)
         {
             var fb = new FormBuilder(new FolderUri(context.TemplateFolder));
-            return fb.BuildForm("", context.CurrentCultureCode);
+            return fb.BuildForm(context.Collection, context.CurrentCultureCode);
         }
 
         // Additional Data
@@ -384,6 +528,21 @@ namespace Satrabel.OpenContent.Components.Datasource
                 LastModifiedOnDate = content.LastModifiedOnDate,
                 CreatedOnDate = content.CreatedOnDate,
                 Item = content
+            };
+        }
+
+        private static DefaultDataItem CreateDefaultDataItem(DocumentInfo doc)
+        {
+            return new DefaultDataItem
+            {
+                Id = doc.DocumentId.ToString(),
+                Title = doc.Scope+"/"+doc.Collection+"/"+doc.Key,
+                Data = doc.JsonAsJToken,
+                CreatedByUserId = doc.CreatedByUserId,
+                LastModifiedByUserId = doc.LastModifiedByUserId,
+                LastModifiedOnDate = doc.LastModifiedOnDate,
+                CreatedOnDate = doc.CreatedOnDate,
+                Item = doc
             };
         }
 
