@@ -67,136 +67,75 @@ namespace Satrabel.OpenContent.Components.Render
         public string LocalResourceFile { get; set; } // Only for Dnn Razor helpers
         public void Render(Page page)
         {
-            _renderinfo.Template = _module.Settings.Template;
-            if (_module.Settings.TabId > 0 && _module.Settings.ModuleId > 0) // other module
+            _renderinfo.Template = Settings.Template;
+            if (Settings.TabId > 0 && Settings.ModuleId > 0) // other module
             {
                 ModuleController mc = new ModuleController();
-                _renderinfo.SetDataSourceModule(_module.Settings.TabId, _module.Settings.ModuleId, mc.GetModule(_renderinfo.ModuleId, _renderinfo.TabId, false), null, "");
+                _renderinfo.SetDataSourceModule(Settings.TabId, Settings.ModuleId, mc.GetModule(_renderinfo.ModuleId, _renderinfo.TabId, false), null, "");
             }
             else // this module
             {
                 _renderinfo.SetDataSourceModule(_module.DataModule.TabID, _module.DataModule.ModuleID, _module.ViewModule, null, "");
             }
             //start rendering           
-            if (_module.Settings.Template != null)
+            if (Settings.Template != null)
             {
-                if (!_module.Settings.Template.DataNeeded())
+                if (!Settings.Template.DataNeeded())
                 {
                     // template without schema & options
                     // render the template with no data
-                    _renderinfo.SetData(null, new JObject(), _module.Settings.Data);
+                    _renderinfo.SetData(null, new JObject(), Settings.Data);
                     _renderinfo.OutputString = GenerateOutput(page, _renderinfo.Template.MainTemplateUri(), _renderinfo.DataJson, _renderinfo.SettingsJson, _renderinfo.Template.Main);
                 }
                 else if (_renderinfo.Template.IsListTemplate)
                 {
                     LogContext.Log(_module.ViewModule.ModuleID, "RequestContext", "QueryParam Id", ItemId);
-
-                    string view = QueryString["view"];
-                    if (!string.IsNullOrEmpty(view) && _renderinfo.Template.Views != null && _renderinfo.Template.Views.ContainsKey(view))
+                    // Multi items template
+                    if (string.IsNullOrEmpty(ItemId))
                     {
-                        // view
-                        /*
-                        _renderinfo.Files = _renderinfo.Template.Views[view];                        
-                        if (string.IsNullOrEmpty(ItemId))
+                        // List template
+                        if (_renderinfo.Template.Main != null)
                         {
-                            // List template
-                            if (_renderinfo.Template.Main != null)
+                            // for list templates a main template need to be defined
+                            _renderinfo.Files = _renderinfo.Template.Main;
+                            string templateKey = GetDataList(_renderinfo, Settings, _renderinfo.Template.ClientSideData);
+                            if (!string.IsNullOrEmpty(templateKey) && _renderinfo.Template.Views != null && _renderinfo.Template.Views.ContainsKey(templateKey))
                             {
-                                // for list templates a main template need to be defined
-                                _renderinfo.Files = _renderinfo.Template.Main;
-                                string templateKey = GetDataList(_renderinfo, _module.Settings, _renderinfo.Template.ClientSideData);
-                                if (!string.IsNullOrEmpty(templateKey) && _renderinfo.Template.Views != null && _renderinfo.Template.Views.ContainsKey(templateKey))
-                                {
-                                    _renderinfo.Files = _renderinfo.Template.Views[templateKey];
-                                }
-                                if (!_renderinfo.ShowInitControl)
-                                {
-                                    _renderinfo.OutputString = GenerateListOutput(page, _module.Settings.Template, _renderinfo.Files, _renderinfo.DataList, _renderinfo.SettingsJson);
-                                }
+                                _renderinfo.Files = _renderinfo.Template.Views[templateKey];
+                            }
+                            if (!_renderinfo.ShowInitControl)
+                            {
+                                _renderinfo.OutputString = GenerateListOutput(page, Settings.Template, _renderinfo.Files, _renderinfo.DataList, _renderinfo.SettingsJson);
                             }
                         }
-                        else
-                        {
-                            // detail template
-                            if (_renderinfo.Template.Detail != null)
-                            {
-                                GetDetailData(_renderinfo, _module.Settings);
-                            }
-                            if (_renderinfo.Template.Detail != null && !_renderinfo.ShowInitControl)
-                            {
-                                _renderinfo.Files = _renderinfo.Template.Detail;
-                                _renderinfo.OutputString = GenerateOutput(page, _module.Settings.Template, _renderinfo.Template.Detail, _renderinfo.DataJson, _renderinfo.SettingsJson);
-                            }
-                            else // if itemid not corresponding to this module or no DetailTemplate present, show list template
-                            {
-                                // List template
-                                if (_renderinfo.Template.Main != null)
-                                {
-                                    // for list templates a main template need to be defined
-                                    _renderinfo.Files = _renderinfo.Template.Main;
-                                    string templateKey = GetDataList(_renderinfo, _module.Settings, _renderinfo.Template.ClientSideData);
-                                    if (!string.IsNullOrEmpty(templateKey) && _renderinfo.Template.Views != null && _renderinfo.Template.Views.ContainsKey(templateKey))
-                                    {
-                                        _renderinfo.Files = _renderinfo.Template.Views[templateKey];
-                                    }
-                                    if (!_renderinfo.ShowInitControl)
-                                    {
-                                        _renderinfo.OutputString = GenerateListOutput(page, _module.Settings.Template, _renderinfo.Files, _renderinfo.DataList, _renderinfo.SettingsJson);
-                                    }
-                                }
-                            }
-                        }
-                        */
                     }
                     else
                     {
-                        // Multi items template
-                        if (string.IsNullOrEmpty(ItemId))
+                        // detail template
+                        if (_renderinfo.Template.Detail != null)
+                        {
+                            GetDetailData(_renderinfo, Settings);
+                        }
+                        if (_renderinfo.Template.Detail != null && !_renderinfo.ShowInitControl)
+                        {
+                            _renderinfo.Files = _renderinfo.Template.Detail;
+                            _renderinfo.OutputString = GenerateOutput(page, Settings.Template, _renderinfo.Template.Detail, _renderinfo.DataJson, _renderinfo.SettingsJson);
+                        }
+                        else // if itemid not corresponding to this module or no DetailTemplate present, show list template
                         {
                             // List template
                             if (_renderinfo.Template.Main != null)
                             {
                                 // for list templates a main template need to be defined
                                 _renderinfo.Files = _renderinfo.Template.Main;
-                                string templateKey = GetDataList(_renderinfo, _module.Settings, _renderinfo.Template.ClientSideData);
+                                string templateKey = GetDataList(_renderinfo, Settings, _renderinfo.Template.ClientSideData);
                                 if (!string.IsNullOrEmpty(templateKey) && _renderinfo.Template.Views != null && _renderinfo.Template.Views.ContainsKey(templateKey))
                                 {
                                     _renderinfo.Files = _renderinfo.Template.Views[templateKey];
                                 }
                                 if (!_renderinfo.ShowInitControl)
                                 {
-                                    _renderinfo.OutputString = GenerateListOutput(page, _module.Settings.Template, _renderinfo.Files, _renderinfo.DataList, _renderinfo.SettingsJson);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            // detail template
-                            if (_renderinfo.Template.Detail != null)
-                            {
-                                GetDetailData(_renderinfo, _module.Settings);
-                            }
-                            if (_renderinfo.Template.Detail != null && !_renderinfo.ShowInitControl)
-                            {
-                                _renderinfo.Files = _renderinfo.Template.Detail;
-                                _renderinfo.OutputString = GenerateOutput(page, _module.Settings.Template, _renderinfo.Template.Detail, _renderinfo.DataJson, _renderinfo.SettingsJson);
-                            }
-                            else // if itemid not corresponding to this module or no DetailTemplate present, show list template
-                            {
-                                // List template
-                                if (_renderinfo.Template.Main != null)
-                                {
-                                    // for list templates a main template need to be defined
-                                    _renderinfo.Files = _renderinfo.Template.Main;
-                                    string templateKey = GetDataList(_renderinfo, _module.Settings, _renderinfo.Template.ClientSideData);
-                                    if (!string.IsNullOrEmpty(templateKey) && _renderinfo.Template.Views != null && _renderinfo.Template.Views.ContainsKey(templateKey))
-                                    {
-                                        _renderinfo.Files = _renderinfo.Template.Views[templateKey];
-                                    }
-                                    if (!_renderinfo.ShowInitControl)
-                                    {
-                                        _renderinfo.OutputString = GenerateListOutput(page, _module.Settings.Template, _renderinfo.Files, _renderinfo.DataList, _renderinfo.SettingsJson);
-                                    }
+                                    _renderinfo.OutputString = GenerateListOutput(page, Settings.Template, _renderinfo.Files, _renderinfo.DataList, _renderinfo.SettingsJson);
                                 }
                             }
                         }
@@ -205,7 +144,7 @@ namespace Satrabel.OpenContent.Components.Render
                 else
                 {
                     // single item template
-                    GetSingleData(_renderinfo, _module.Settings);
+                    GetSingleData(_renderinfo, Settings);
                     bool settingsNeeded = _renderinfo.Template.SettingsNeeded();
                     if (!_renderinfo.ShowInitControl && (!settingsNeeded || !string.IsNullOrEmpty(_renderinfo.SettingsJson)))
                     {
@@ -240,7 +179,7 @@ namespace Satrabel.OpenContent.Components.Render
             }
             else
             {
-                bool demoExist = GetDemoData(_renderinfo, _module.Settings);
+                bool demoExist = GetDemoData(_renderinfo, Settings);
                 bool settingsNeeded = _renderinfo.Template.SettingsNeeded();
 
                 if (demoExist && _renderinfo.DataExist && (!settingsNeeded || !string.IsNullOrEmpty(_renderinfo.SettingsJson)))
@@ -300,7 +239,7 @@ namespace Satrabel.OpenContent.Components.Render
             string templateKey = "";
             info.ResetData();
 
-            IDataSource ds = DataSourceManager.GetDataSource(_module.Settings.Manifest.DataSource);
+            IDataSource ds = DataSourceManager.GetDataSource(Settings.Manifest.DataSource);
             var dsContext = OpenContentUtils.CreateDataContext(_module);
 
             IEnumerable<IDataItem> resultList = new List<IDataItem>();
@@ -421,7 +360,7 @@ namespace Satrabel.OpenContent.Components.Render
         {
             info.ResetData();
 
-            IDataSource ds = DataSourceManager.GetDataSource(_module.Settings.Manifest.DataSource);
+            IDataSource ds = DataSourceManager.GetDataSource(Settings.Manifest.DataSource);
             var dsContext = OpenContentUtils.CreateDataContext(_module, -1, true);
 
             var dsItem = ds.Get(dsContext, null);
