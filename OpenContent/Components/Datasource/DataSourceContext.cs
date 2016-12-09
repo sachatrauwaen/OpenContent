@@ -51,8 +51,6 @@ namespace Satrabel.OpenContent.Components.Datasource
         /// Gets or sets the agent, which is a string uniquely identifying the calling agent.
         /// </summary>
         public string Agent { get; set; }
-
-        public string Scope { get; set; }
         public string Collection { get; set; }
 
     }

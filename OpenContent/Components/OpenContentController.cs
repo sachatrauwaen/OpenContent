@@ -18,6 +18,7 @@ using DotNetNuke.Data;
 using DotNetNuke.Entities.Modules;
 using Satrabel.OpenContent.Components.Lucene;
 using Satrabel.OpenContent.Components.Lucene.Config;
+using Satrabel.OpenContent.Components.Documents;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -31,10 +32,22 @@ namespace Satrabel.OpenContent.Components
         public void AddContent(OpenContentInfo content, bool index, FieldConfig indexConfig)
         {
             ClearCache(content);
-
+            var json = content.JsonAsJToken;
+            if (json["_id"] != null)
+            {
+                content.Key = json["_id"].ToString();
+            }
+            if (string.IsNullOrEmpty(content.Key))
+            {
+                content.Key = ObjectId.NewObjectId().ToString();
+            }
+            if (string.IsNullOrEmpty(content.Collection))
+            {
+                content.Collection = "Items";
+            }
             OpenContentVersion ver = new OpenContentVersion()
             {
-                Json = content.JsonAsJToken,
+                Json = json,
                 CreatedByUserId = content.CreatedByUserId,
                 CreatedOnDate = content.CreatedOnDate,
                 LastModifiedByUserId = content.LastModifiedByUserId,
@@ -174,6 +187,27 @@ namespace Satrabel.OpenContent.Components
                     }
                     return content;
                 });
+        }
+
+        public OpenContentInfo GetDocument(int moduleId, string collection, string key)
+        {
+            IEnumerable<OpenContentInfo> documents;
+            using (IDataContext ctx = DataContext.Instance())
+            {
+                var rep = ctx.GetRepository<OpenContentInfo>();
+                documents = rep.Find("WHERE ModuleId = @0 AND Collection = @1 AND DocumentKey = @3", moduleId, collection, key);
+            }
+            return documents.SingleOrDefault();
+        }
+        public IEnumerable<OpenContentInfo> GetDocuments(int moduleId, string collection)
+        {
+            IEnumerable<OpenContentInfo> documents;
+            using (IDataContext ctx = DataContext.Instance())
+            {
+                var rep = ctx.GetRepository<OpenContentInfo>();
+                documents = rep.Find("WHERE ModuleId = @0 AND Collection = @1", moduleId, collection);
+            }
+            return documents;
         }
 
         #endregion

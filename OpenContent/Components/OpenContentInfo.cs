@@ -36,8 +36,10 @@ namespace Satrabel.OpenContent.Components
             Json = json;
         }
         public int ContentId { get; set; }
-        public string Title { get; set; }
-        public string Html { get; set; }
+        [ColumnName("DocumentKey")] 
+        public string Key { get; internal set; }
+        public string Collection { get; internal set; }
+        public string Title { get; set; }        
         public string Json { get; set; }
 
         [IgnoreColumn]
@@ -85,6 +87,7 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
+        #region IIndexableItem
         public string GetId()
         {
             return ContentId.ToString();
@@ -92,7 +95,10 @@ namespace Satrabel.OpenContent.Components
 
         public string GetScope()
         {
-            return ModuleId.ToString();
+            if (Collection == "Items")
+                return ModuleId.ToString();
+            else
+                return ModuleId.ToString()+"/"+ Collection;
         }
 
         public string GetCreatedByUserId()
@@ -114,5 +120,6 @@ namespace Satrabel.OpenContent.Components
         {
             return Json;
         }
+        #endregion
     }
 }

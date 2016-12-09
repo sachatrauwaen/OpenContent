@@ -80,19 +80,18 @@ namespace Satrabel.OpenContent.Components
                 var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.TemplateDir);
 
                 form["Source"] = "OpenContent/";
-                DocumentController ctrl = new DocumentController();
-                var content = new DocumentInfo()
+                OpenContentController ctrl = new OpenContentController();
+                var content = new OpenContentInfo()
                 {
-                    Scope = "module/"+moduleId.ToString(),
-                    Collection = "FormSubmissions",
-                    //Id = Id,
+                    ModuleId = moduleId,
+                    Collection = "Submissions",
                     Json = form.ToString(),
                     CreatedByUserId = UserInfo.UserID,
                     CreatedOnDate = DateTime.Now,
                     LastModifiedByUserId = UserInfo.UserID,
                     LastModifiedOnDate = DateTime.Now
                 };
-                ctrl.AddDocument(content, indexConfig);
+                ctrl.AddContent(content, module.Settings.Manifest.Index, indexConfig);
                 string Message = "Form submitted.";
                 var Errors = new List<string>();
 

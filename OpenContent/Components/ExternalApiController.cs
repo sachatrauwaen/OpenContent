@@ -42,14 +42,14 @@ namespace Satrabel.OpenContent.Components
                     OpenContentInfo content = new OpenContentInfo()
                     {
                         ModuleId = module.DataModule.ModuleID,
+                        Collection= req.Collection,
                         Title = ActiveModule.ModuleTitle,
                         Json = req.json.ToString(),
                         JsonAsJToken = req.json,
                         CreatedByUserId = UserInfo.UserID,
                         CreatedOnDate = DateTime.Now,
                         LastModifiedByUserId = UserInfo.UserID,
-                        LastModifiedOnDate = DateTime.Now,
-                        Html = "",
+                        LastModifiedOnDate = DateTime.Now
                     };
                     ctrl.AddContent(content, index, indexConfig);
                     return Request.CreateResponse(HttpStatusCode.OK, "");
@@ -68,6 +68,7 @@ namespace Satrabel.OpenContent.Components
         public class UpdateRequest
         {
             public int ModuleId { get; set; }
+            public string Collection { get; set; }
             public int TabId { get; set; }
             public JObject json { get; set; }
         }
