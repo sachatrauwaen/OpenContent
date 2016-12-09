@@ -17,10 +17,11 @@ namespace Satrabel.OpenContent
     public partial class RenderModule : SkinObjectBase
     {
         public int ModuleId { get; set; }
-        public int TabId { get; set; }        
+        public int TabId { get; set; }
         public string HideOnTabIds { get; set; }
         public bool ShowOnAdminTabs { get; set; }
         public bool ShowOnHostTabs { get; set; }
+        public string Template { get; set; }
         private void InitializeComponent()
         {
         }
@@ -48,13 +49,27 @@ namespace Satrabel.OpenContent
             if (hideTabs.Contains(activeTab.TabID)) return;
             if (!ShowOnAdminTabs && activeTab.ParentId == PortalSettings.AdminTabId) return;
             if (!ShowOnHostTabs && activeTab.IsSuperTab) return;
-            
+
             ModuleController mc = new ModuleController();
             var module = mc.GetModule(ModuleId, TabId, false);
             if (module == null)
             {
                 DotNetNuke.UI.Skins.Skin.AddPageMessage(Page, "OpenContent RenderModule SkinObject", $"No module exist for TabId {TabId} and ModuleId {ModuleId} ", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
                 return;
+            }
+            if (!string.IsNullOrEmpty(Template))
+            {
+                var moduleClone = new ModuleInfo();
+                foreach (System.Collections.DictionaryEntry item in module.ModuleSettings)
+                {
+                    moduleClone.ModuleSettings.Add(item.Key, item.Value);
+                }
+                moduleClone.ModuleID = module.ModuleID;
+                moduleClone.TabID = module.TabID;
+                moduleClone.TabModuleID = module.TabModuleID;
+                moduleClone.PortalID = module.PortalID;
+                moduleClone.ModuleSettings["template"] = Template;
+                module = moduleClone;
             }
             var engine = new RenderEngine(module);
             try
@@ -90,7 +105,7 @@ namespace Satrabel.OpenContent
         }
         private void RenderTemplateException(TemplateException ex, ModuleInfo module)
         {
-            DotNetNuke.UI.Skins.Skin.AddPageMessage(Page,"OpenContent RenderModule SkinObject", "<p><b>Template error</b></p>" + ex.MessageAsHtml, DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
+            DotNetNuke.UI.Skins.Skin.AddPageMessage(Page, "OpenContent RenderModule SkinObject", "<p><b>Template error</b></p>" + ex.MessageAsHtml, DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
             if (LogContext.IsLogActive)
             {
                 var logKey = "Error in tempate";
@@ -102,7 +117,7 @@ namespace Satrabel.OpenContent
         }
         private void RenderJsonException(InvalidJsonFileException ex, ModuleInfo module)
         {
-            DotNetNuke.UI.Skins.Skin.AddModuleMessage(Page,"OpenContent RenderModule SkinObject", "<p><b>Json error</b></p>" + ex.MessageAsHtml, DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
+            DotNetNuke.UI.Skins.Skin.AddModuleMessage(Page, "OpenContent RenderModule SkinObject", "<p><b>Json error</b></p>" + ex.MessageAsHtml, DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
             if (LogContext.IsLogActive)
             {
                 var logKey = "Error in json";
