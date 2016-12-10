@@ -31,16 +31,13 @@ namespace Satrabel.OpenContent.Components.Rest
             try
             {
                 OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
-                var manifest =module.Settings.Template.Manifest;
-                var templateManifest = module.Settings.Template;
                 JObject reqOptions = null;
                 //if (!string.IsNullOrEmpty(req.options))
                 //{
                 //    reqOptions = JObject.Parse(req.options);
                 //}
                 //string editRole = manifest.GetEditRole();
-                bool listMode = templateManifest != null && templateManifest.IsListTemplate;
-                if (listMode)
+                if (module.IsListMode())
                 {
                     var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template.Key.TemplateDir);
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
@@ -128,20 +125,17 @@ namespace Satrabel.OpenContent.Components.Rest
                     restSelect.Sort = JsonConvert.DeserializeObject<List<RestSort>>(sort);
                 }
 
-                ModuleController mc = new ModuleController();
-                ModuleInfo activeModule = ActiveModule; //mc.GetModule(ModuleId, TabId, false);
+                ModuleInfo activeModule = ActiveModule; 
 
                 OpenContentSettings settings = activeModule.OpenContentSettings();
                 OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
-                var templateManifest = settings.Template;
                 JObject reqOptions = null;
 
-                bool listMode = templateManifest != null && templateManifest.IsListTemplate;
-                if (listMode)
+                if (module.IsListMode())
                 {
                     var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
-                    bool isEditable = ActiveModule.CheckIfEditable(PortalSettings);//portalSettings.UserMode != PortalSettings.Mode.Edit;
+                    bool isEditable = ActiveModule.CheckIfEditable(PortalSettings);
                     queryBuilder.Build(settings.Query, !isEditable, UserInfo.UserID, DnnLanguageUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
 
                     RestQueryBuilder.MergeQuery(indexConfig, queryBuilder.Select, restSelect, DnnLanguageUtils.GetCurrentCultureCode());
@@ -255,18 +249,14 @@ namespace Satrabel.OpenContent.Components.Rest
             {
                 OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
 
-                var manifest = module.Settings.Template.Manifest;
-                TemplateManifest templateManifest = module.Settings.Template;
-                string editRole = manifest.GetEditRole();
-
-                bool listMode = templateManifest != null && templateManifest.IsListTemplate;
+                string editRole = module.Settings.Template.Manifest.GetEditRole();
                 int createdByUserid = -1;
 
                 IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
 
                 IDataItem dsItem = null;
-                if (listMode)
+                if (module.IsListMode())
                 {
                     if (id != null)
                     {
@@ -334,18 +324,14 @@ namespace Satrabel.OpenContent.Components.Rest
             try
             {
                 OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
-                var manifest = module.Settings.Template.Manifest;
-                TemplateManifest templateManifest = module.Settings.Template;
-                string editRole = manifest.GetEditRole();
-
-                bool listMode = templateManifest != null && templateManifest.IsListTemplate;
+                string editRole = module.Settings.Template.Manifest.GetEditRole();
                 int createdByUserid = -1;
 
                 IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
 
                 IDataItem dsItem = null;
-                if (listMode)
+                if (module.IsListMode())
                 {
                     if (id != null)
                     {
@@ -421,18 +407,14 @@ namespace Satrabel.OpenContent.Components.Rest
             try
             {
                 OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
-                var manifest = module.Settings.Template.Manifest;
-                TemplateManifest templateManifest = module.Settings.Template;
-                string editRole = manifest.GetEditRole();
-
-                bool listMode = templateManifest != null && templateManifest.IsListTemplate;
+                string editRole = module.Settings.Template.Manifest.GetEditRole();
                 int createdByUserid = -1;
 
                 IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
 
                 IDataItem dsItem = null;
-                if (listMode)
+                if (module.IsListMode())
                 {
                     if (id != null)
                     {

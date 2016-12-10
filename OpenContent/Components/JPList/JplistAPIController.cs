@@ -26,15 +26,13 @@ namespace Satrabel.OpenContent.Components.JPList
             try
             {
                 OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
-                var templateManifest = module.Settings.Template;
                 JObject reqOptions = null;
                 if (!string.IsNullOrEmpty(req.options))
                 {
                     reqOptions = JObject.Parse(req.options);
                 }
                 //string editRole = manifest.GetEditRole();
-                bool listMode = templateManifest != null && templateManifest.IsListTemplate;
-                if (listMode)
+                if (module.IsListMode())
                 {
                     var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template.Key.TemplateDir);
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);

@@ -38,7 +38,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                 }
                 try
                 {
-                    if (module.IsListTemplate() && module.Settings.Template.Detail != null &&
+                    if (module.IsListMode() && module.Settings.Template.Detail != null &&
                             ((!module.Settings.IsOtherModule && module.Settings.DetailTabId <= 0) ||
                                 (module.Settings.DetailTabId == module.TabId)
                             )

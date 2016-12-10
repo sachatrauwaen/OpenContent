@@ -57,7 +57,7 @@ namespace Satrabel.OpenContent.Components
             return Settings.DetailTabId > 0 ? Settings.DetailTabId : (Settings.TabId > 0 ? Settings.TabId : ViewModule.TabID);
         }
 
-        public bool IsListTemplate()
+        public bool IsListMode()
         {
             return Settings.Template != null && Settings.Template.IsListTemplate;
         }
