@@ -121,14 +121,18 @@ namespace Satrabel.OpenContent.Components
             if (otherModuleTemplate != null)
             {
                 var selDir = otherModuleTemplate.PhysicalFullDirectory;
+                if (!dirs.Contains(selDir))
+                {
+                    selDir = Path.GetDirectoryName(selDir);
+                }
                 dirs = new string[] { selDir };
             }
-
             List<ListItem> lst = new List<ListItem>();
             foreach (var dir in dirs)
             {
                 string templateCat = "Site";
-                string dirName = Path.GetFileNameWithoutExtension(dir);
+                //string dirName = Path.GetFileNameWithoutExtension(dir);
+                string dirName = dir.Substring(basePath.Length);
                 int modId = -1;
                 if (int.TryParse(dirName, out modId))
                 {
@@ -160,7 +164,7 @@ namespace Satrabel.OpenContent.Components
                             foreach (var template in manifest.Templates)
                             {
                                 FileUri templateUri = new FileUri(manifestFileUri.FolderPath, template.Key);
-                                string templateName = dirName;
+                                string templateName = Path.GetDirectoryName(manifestFile).Substring(basePath.Length).Replace("\\"," / ");
                                 if (!string.IsNullOrEmpty(template.Value.Title))
                                 {
                                     templateName = templateName + " - " + template.Value.Title;
@@ -435,7 +439,7 @@ namespace Satrabel.OpenContent.Components
                 Index = module.Settings.Template.Manifest.Index,
                 Options = options,
                 Single = single,
-                Collection = module.Settings.Template.Collection
+                Collection = string.IsNullOrEmpty(module.Settings.Template.Collection) ? "Items" : module.Settings.Template.Collection
             };
             if (PortalSettings.Current != null)
             {
@@ -461,13 +465,16 @@ namespace Satrabel.OpenContent.Components
             if (portalSettings.UserInfo.IsInRole(editrole) && (createdByUserId == -1 || createdByUserId == portalSettings.UserId)) return true;
             return false;
         }
-
-        internal static FieldConfig GetIndexConfig(FolderUri folder)
+        internal static FieldConfig GetIndexConfig(TemplateManifest template)
+        {
+            return GetIndexConfig(template.Key.TemplateDir, template.Collection);
+        }
+        internal static FieldConfig GetIndexConfig(FolderUri folder, string collection)
         {
             try
             {
                 var fb = new FormBuilder(folder);
-                FieldConfig indexConfig = fb.BuildIndex();
+                FieldConfig indexConfig = fb.BuildIndex(collection);
                 return indexConfig;
             }
             catch (Exception ex)

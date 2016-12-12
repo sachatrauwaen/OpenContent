@@ -95,10 +95,7 @@ namespace Satrabel.OpenContent.Components
 
         public string GetScope()
         {
-            if (Collection == "Items")
-                return ModuleId.ToString();
-            else
-                return ModuleId.ToString()+"/"+ Collection;
+            return OpenContentInfo.GetScope(ModuleId, Collection);
         }
 
         public string GetCreatedByUserId()
@@ -119,6 +116,14 @@ namespace Satrabel.OpenContent.Components
         public string GetSource()
         {
             return Json;
+        }
+
+        public static string GetScope(int moduleId, string collection)
+        {
+            if (collection == "Items")
+                return moduleId.ToString();
+            else
+                return moduleId.ToString() + "/" + collection;
         }
         #endregion
     }

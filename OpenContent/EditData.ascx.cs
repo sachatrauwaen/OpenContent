@@ -113,22 +113,20 @@ namespace Satrabel.OpenContent
                 case cData:
                     {
                         TemplateManifest template = null;
-                        OpenContentSettings settings = this.OpenContentSettings();
-                        int ModId = settings.IsOtherModule ? settings.ModuleId : ModuleId;
+                        var module = new OpenContentModuleInfo(this.ModuleConfiguration);
+                        var manifest = module.Settings.Manifest;
+                        TemplateManifest templateManifest = module.Settings.Template;
+                        string editRole = manifest.GetEditRole();
+                        bool listMode = templateManifest != null && templateManifest.IsListTemplate;
+
+                        IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
+                        var dsContext = OpenContentUtils.CreateDataContext(module);
+                        OpenContentSettings settings = module.Settings;
                         if (settings.TemplateAvailable)
                         {
                             template = settings.Template;
                         }
-                        var ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
-                        var dsContext = new DataSourceContext()
-                        {
-                            ModuleId = ModId,
-                            ActiveModuleId = ModuleContext.ModuleId,
-                            TemplateFolder = settings.TemplateDir.FolderPath,
-                            PortalId = ModuleContext.PortalId,
-                            CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
-                            Config = settings.Manifest.DataSourceConfig
-                        };
+                        
                         if (template != null && template.IsListTemplate)
                         {
                             ddlVersions.Visible = false;
@@ -204,24 +202,17 @@ namespace Satrabel.OpenContent
                     break;
                 default:
                     {
-                        OpenContentSettings settings = this.OpenContentSettings();
-                        int ModId = settings.IsOtherModule ? settings.ModuleId : ModuleId;
-                        var manifest = settings.Manifest;
+                        var module = new OpenContentModuleInfo(this.ModuleConfiguration);
+                        var manifest = module.Settings.Manifest;
+                        TemplateManifest templateManifest = module.Settings.Template;
+                        string editRole = manifest.GetEditRole();
+                        bool listMode = templateManifest != null && templateManifest.IsListTemplate;
+
+                        IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
+                        var dsContext = OpenContentUtils.CreateDataContext(module);
                         string key = selectedDataType;
                         var dataManifest = manifest.GetAdditionalData(key);
-                        var ds = DataSourceManager.GetDataSource(manifest.DataSource);
-                        var dsContext = new DataSourceContext()
-                        {
-                            PortalId = PortalSettings.PortalId,
-                            CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
-                            TabId = TabId,
-                            ModuleId = ModId,
-                            TabModuleId = this.TabModuleId,
-                            UserId = UserInfo.UserID,
-                            TemplateFolder = settings.TemplateDir.FolderPath,
-                            Config = manifest.DataSourceConfig,
-                            //Options = reqOptions
-                        };
+                        
                         var dsItem = ds.GetData(dsContext, dataManifest.ScopeType, dataManifest.StorageKey ?? key);
                         json = dsItem == null ? "" : dsItem.Data.ToString();
                         break;
@@ -307,34 +298,17 @@ namespace Satrabel.OpenContent
 
         private void SaveData()
         {
-            TemplateManifest template = null;
-            OpenContentSettings settings = this.OpenContentSettings();
-            int ModId = settings.IsOtherModule ? settings.ModuleId : ModuleId;
-            bool index = false;
-            if (settings.TemplateAvailable)
-            {
-                template = settings.Template;
-                index = settings.Template.Manifest.Index;
-            }
-            /*
-            FieldConfig indexConfig = null;
-            if (index)
-            {
-                indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
-            }
-             */
-            var ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
-            var dsContext = new DataSourceContext()
-            {
-                ModuleId = ModId,
-                ActiveModuleId = ModuleContext.ModuleId,
-                TemplateFolder = settings.TemplateDir.FolderPath,
-                Index = index,
-                UserId = UserInfo.UserID,
-                PortalId = ModuleContext.PortalId,
-                CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
-                Config = settings.Manifest.DataSourceConfig
-            };
+            var module = new OpenContentModuleInfo(this.ModuleConfiguration);
+            var manifest = module.Settings.Manifest;
+            TemplateManifest template = module.Settings.Template;
+            string editRole = manifest.GetEditRole();
+            bool listMode = template != null && template.IsListTemplate;
+
+            IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
+            var dsContext = OpenContentUtils.CreateDataContext(module);
+
+     
+            
             if (template != null && template.IsListTemplate)
             {
                 string itemId = Request.QueryString["id"];

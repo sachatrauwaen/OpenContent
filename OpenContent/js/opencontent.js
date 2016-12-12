@@ -51,7 +51,7 @@
             onSubmited: null
         }, options || {});
         // Public method - can be called from client code
-        this.submit = function () {
+        this.submit = function (id) {
             if (elem.alpaca("exists")) {
                 var control = elem.alpaca("get");
                 control.refreshValidationState(true, function () {
@@ -65,7 +65,7 @@
                             value.recaptcha = recap;
                         }
                         //$(this).prop('disabled', true);
-                        formSubmit(value);
+                        formSubmit(id, value);
                         //$(document).trigger("postSubmitForm.openform", [value, moduleId, sf]);
                     }
                 });
@@ -84,6 +84,12 @@
                 if (field){
                     field.setValue(data);
                 }
+            }
+        };
+        this.getField = function (fieldPath) {
+            if (elem.alpaca("exists")) {
+                var control = elem.alpaca("get");
+                return control.getControlByPath(fieldPath);
             }
         };
         this.destroy = function () {
@@ -122,6 +128,9 @@
                     "connector": connector,
                     "postRender": function (control) {
                         var selfControl = control;
+                        if (settings.onRendered) {
+                            settings.onRendered(selfControl);
+                        }
                         //$(document).trigger("postRenderForm.opencontent", [control, moduleId, sf]);
                     }
                 });
@@ -129,12 +138,17 @@
                 alert("Uh-oh, something broke: " + status);
             });
         };
-        var formSubmit = function (data) {
+        var formSubmit = function (id, data) {
+            if (settings.onSubmit) {
+                settings.onSubmit(data);
+            }
             var sf = settings.servicesFramework;
             $.ajax({
                 type: "POST",
                 url: sf.getServiceRoot('OpenContent') + "FormAPI/Submit",
-                data: data,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify({ id: id, form : data }),
                 beforeSend: sf.setModuleHeaders
             }).done(function (data) {
                 if (data.Errors && data.Errors.length > 0) {
@@ -153,7 +167,7 @@
                 elem.hide();
                 elem.parent().append("<div class='ResultMessage'>" + data.Message + "</div>");
                 if (settings.onSubmited) {
-                    settings.onSubmited();
+                    settings.onSubmited(data);
                 }
             }).fail(function (xhr, result, status) {
                 alert("Uh-oh, something broke: " + status);

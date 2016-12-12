@@ -23,6 +23,7 @@ using DotNetNuke.Web.Client.ClientResourceManagement;
 using DotNetNuke.Web.Client;
 using Newtonsoft.Json;
 using System.Text;
+using System.Collections;
 
 #endregion
 
@@ -49,7 +50,25 @@ namespace Satrabel.OpenContent
             AlpacaContext.Horizontal = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetEditLayout() == AlpacaLayoutEnum.BootstrapHorizontal;
 
             ModuleInfo module = ModuleContext.Configuration;
-            engine = new RenderEngine(module);
+            IDictionary moduleSettings = new Hashtable(module.ModuleSettings);
+            moduleSettings["template"] = settings.TemplateKey.Folder + "/" + "formsubmissions";
+            moduleSettings["data"] = "";
+            moduleSettings["query"] = "";
+
+            /*
+            var moduleClone = new ModuleInfo();
+            foreach (System.Collections.DictionaryEntry item in module.ModuleSettings)
+            {
+                moduleClone.ModuleSettings.Add(item.Key, item.Value);
+            }
+            moduleClone.ModuleID = module.ModuleID;
+            moduleClone.TabID = module.TabID;
+            moduleClone.TabModuleID = module.TabModuleID;
+            moduleClone.PortalID = module.PortalID;
+            moduleClone.ModuleSettings["template"] = settings.TemplateKey.ToString();
+            module = moduleClone;
+            */
+            engine = new RenderEngine(module, moduleSettings);
         }
         protected override void OnLoad(EventArgs e)
         {
@@ -85,8 +104,9 @@ namespace Satrabel.OpenContent
             if (engine.Info.Template != null && !string.IsNullOrEmpty(engine.Info.OutputString))
             {
                 //Rendering was succesful.
-                var lit = new LiteralControl(Server.HtmlDecode(engine.Info.OutputString));
-                Controls.Add(lit);
+                //var lit = new LiteralControl(Server.HtmlDecode(engine.Info.OutputString));
+                //Controls.Add(lit);
+                Literal1.Text = Server.HtmlDecode(engine.Info.OutputString);
                 var mst = engine.Info.Template.Manifest;
                 try
                 {

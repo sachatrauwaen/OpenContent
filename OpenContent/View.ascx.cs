@@ -335,6 +335,51 @@ namespace Satrabel.OpenContent
                         }
                     }
                 }
+
+                if (templateDefined /*&& template.Manifest.AdditionalDataDefined()*/ && !settings.Manifest.DisableEdit)
+                {
+                    /*
+                    foreach (var addData in template.Manifest.AdditionalDataDefinition)
+                    {
+                        if (addData.Value.SourceRelatedDataSource == RelatedDataSourceType.AdditionalData)
+                        {
+                            actions.Add(ModuleContext.GetNextActionID(),
+                                addData.Value.Title,
+                                ModuleActionType.EditContent,
+                                "",
+                                "~/DesktopModules/OpenContent/images/editcontent2.png",
+                                ModuleContext.EditUrl("key", addData.Key, "EditAddData"),
+                                false,
+                                SecurityAccessLevel.Edit,
+                                true,
+                                false);
+                        }
+                        else
+                        {
+                            actions.Add(ModuleContext.GetNextActionID(),
+                              addData.Value.Title,
+                              ModuleActionType.EditContent,
+                              "",
+                              "~/DesktopModules/OpenContent/images/editcontent2.png",
+                              DnnUrlUtils.NavigateUrl(addData.Value.DataTabId),
+                              false,
+                              SecurityAccessLevel.Edit,
+                              true,
+                              false);
+                        }
+                    }*/
+                    actions.Add(ModuleContext.GetNextActionID(),
+                                "Submissions",
+                                ModuleActionType.EditContent,
+                                "",
+                                "~/DesktopModules/OpenContent/images/editcontent2.png",
+                                ModuleContext.EditUrl("collection", "Submissions", "EditCollection"),
+                                false,
+                                SecurityAccessLevel.Edit,
+                                true,
+                                false);
+                }
+
                 /*
                 string AddEditControl = PortalController.GetPortalSetting("OpenContent_AddEditControl", ModuleContext.PortalId, "");
                 if (TemplateDefined && !string.IsNullOrEmpty(AddEditControl))

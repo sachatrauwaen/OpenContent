@@ -54,7 +54,7 @@ namespace Satrabel.OpenContent.Components
         {
             var module = new OpenContentModuleInfo(moduleId, Null.NullInteger);
             var index = module.Settings.Template.Manifest.Index;
-            var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template.Key.TemplateDir);
+            var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template);
             OpenContentController ctrl = new OpenContentController();
             XmlNode xml = Globals.GetContent(Content, "opencontent");
             foreach (XmlNode item in xml.SelectNodes("item"))

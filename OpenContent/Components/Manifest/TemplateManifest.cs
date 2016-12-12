@@ -25,11 +25,10 @@ namespace Satrabel.OpenContent.Components.Manifest
 
         [JsonProperty(PropertyName = "clientSideData")]
         public bool ClientSideData { get; set; }
-
-        [JsonProperty(PropertyName = "scope")]
-        public string Scope { get; set; }
+        
         [JsonProperty(PropertyName = "collection")]
         public string Collection { get; set; }
+
 
         public bool IsListTemplate
         {

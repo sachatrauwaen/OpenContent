@@ -1,6 +1,6 @@
 <%@ Control Language="C#" AutoEventWireup="false" Inherits="Satrabel.OpenContent.EditCollection" CodeBehind="EditCollection.ascx.cs" %>
 <%@ Import Namespace="Newtonsoft.Json" %>
-
+<asp:Literal ID="Literal1" runat="server"></asp:Literal>
 <asp:Panel ID="ScopeWrapper" runat="server">
     <div> 
         <asp:GridView ID="GridView1" runat="server"></asp:GridView>

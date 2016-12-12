@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Lucene.Config;
+using Lucene.Net.QueryParsers;
 
 namespace Satrabel.OpenContent.Components.Lucene.Mapping
 {
@@ -164,7 +165,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
 
                         if (fieldconfig != null && fieldconfig.IndexType == "key")
                         {
-                            doc.Add(new Field(prefix, value.Value.ToString(), Field.Store.NO, Field.Index.NOT_ANALYZED));
+                            doc.Add(new Field(prefix, QueryParser.Escape(value.Value.ToString()), Field.Store.NO, Field.Index.NOT_ANALYZED));
                         }
                         else if (fieldconfig != null && fieldconfig.IndexType == "html")
                         {

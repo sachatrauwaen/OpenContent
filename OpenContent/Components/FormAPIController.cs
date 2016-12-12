@@ -3,6 +3,7 @@ using DotNetNuke.Web.Api;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Alpaca;
+using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Documents;
 using Satrabel.OpenContent.Components.Form;
 using Satrabel.OpenContent.Components.Handlebars;
@@ -55,37 +56,31 @@ namespace Satrabel.OpenContent.Components
         }
         [HttpPost]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
-        public HttpResponseMessage Submit(JObject form)
+        public HttpResponseMessage Submit(SubmitDTO req)
         {
             try
             {
-                int moduleId = ActiveModule.ModuleID;
-                /*
-                OpenFormController ctrl = new OpenFormController();
-                var content = new OpenFormInfo()
-                {
-                    ModuleId = moduleId,
-                    Json = form.ToString(),
-                    CreatedByUserId = UserInfo.UserID,
-                    CreatedOnDate = DateTime.Now,
-                    LastModifiedByUserId = UserInfo.UserID,
-                    LastModifiedOnDate = DateTime.Now,
-                    Html = "",
-                    Title = "Form submitted - " + DateTime.Now.ToString()
-                };
-                ctrl.AddContent(content);
-                 */
-
                 var module = new OpenContentModuleInfo(ActiveModule);
-                var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.TemplateDir);
+                Manifest.Manifest manifest = module.Settings.Manifest;
+                IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
+                var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
+                //var source = req.form["Source"].ToString();
+                var dsItem = ds.Get(dsContext, req.id);
+                var res = ds.Action(dsContext, "FormSubmit", dsItem, req.form);
+                return Request.CreateResponse(HttpStatusCode.OK, res);
 
-                form["Source"] = "OpenContent/";
+
+                int moduleId = ActiveModule.ModuleID;
+
+                var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.TemplateDir, "Submissions");
+
                 OpenContentController ctrl = new OpenContentController();
                 var content = new OpenContentInfo()
                 {
                     ModuleId = moduleId,
                     Collection = "Submissions",
-                    Json = form.ToString(),
+                    Title = "Form",
+                    Json = req.form.ToString(),
                     CreatedByUserId = UserInfo.UserID,
                     CreatedOnDate = DateTime.Now,
                     LastModifiedByUserId = UserInfo.UserID,
@@ -102,7 +97,7 @@ namespace Satrabel.OpenContent.Components
                     HandlebarsEngine hbs = new HandlebarsEngine();
                     dynamic data = null;
                     string formData = "";
-                    if (form != null)
+                    if (req.form != null)
                     {
                         /*
                         if (!string.IsNullOrEmpty(settings.Settings.SiteKey))
@@ -116,7 +111,7 @@ namespace Satrabel.OpenContent.Components
                             form.Remove("recaptcha");
                         }
                          */
-                        data = FormUtils.GenerateFormData(form.ToString(), out formData);
+                        data = FormUtils.GenerateFormData(req.form.ToString(), out formData);
                     }
 
                     if (settings != null && settings.Notifications != null)
@@ -125,12 +120,12 @@ namespace Satrabel.OpenContent.Components
                         {
                             try
                             {
-                                MailAddress from = FormUtils.GenerateMailAddress(notification.From, notification.FromEmail, notification.FromName, notification.FromEmailField, notification.FromNameField, form);
-                                MailAddress to = FormUtils.GenerateMailAddress(notification.To, notification.ToEmail, notification.ToName, notification.ToEmailField, notification.ToNameField, form);
+                                MailAddress from = FormUtils.GenerateMailAddress(notification.From, notification.FromEmail, notification.FromName, notification.FromEmailField, notification.FromNameField, req.form);
+                                MailAddress to = FormUtils.GenerateMailAddress(notification.To, notification.ToEmail, notification.ToName, notification.ToEmailField, notification.ToNameField, req.form);
                                 MailAddress reply = null;
                                 if (!string.IsNullOrEmpty(notification.ReplyTo))
                                 {
-                                    reply = FormUtils.GenerateMailAddress(notification.ReplyTo, notification.ReplyToEmail, notification.ReplyToName, notification.ReplyToEmailField, notification.ReplyToNameField, form);
+                                    reply = FormUtils.GenerateMailAddress(notification.ReplyTo, notification.ReplyToEmail, notification.ReplyToName, notification.ReplyToEmailField, notification.ReplyToNameField, req.form);
                                 }
                                 string body = formData;
                                 if (!string.IsNullOrEmpty(notification.EmailBody))
@@ -180,5 +175,11 @@ namespace Satrabel.OpenContent.Components
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
+    }
+
+    public class SubmitDTO
+    {
+        public JObject form { get; set; }
+        public string id { get; set; }
     }
 }

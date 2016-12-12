@@ -23,6 +23,7 @@ using DotNetNuke.Services.Exceptions;
 using DotNetNuke.UI.Modules;
 using Newtonsoft.Json.Linq;
 using IDataSource = Satrabel.OpenContent.Components.Datasource.IDataSource;
+using System.Collections;
 
 namespace Satrabel.OpenContent.Components.Render
 {
@@ -31,9 +32,9 @@ namespace Satrabel.OpenContent.Components.Render
         private readonly RenderInfo _renderinfo = new RenderInfo();
         private readonly OpenContentModuleInfo _module; // active module (not datasource module)
 
-        public RenderEngine(ModuleInfo viewmodule)
+        public RenderEngine(ModuleInfo viewmodule, IDictionary moduleSettings = null)
         {
-            _module = new OpenContentModuleInfo(viewmodule);
+            _module = new OpenContentModuleInfo(viewmodule, moduleSettings);
         }
 
         public RenderInfo Info
@@ -114,7 +115,7 @@ namespace Satrabel.OpenContent.Components.Render
                         // detail template
                         if (_renderinfo.Template.Detail != null)
                         {
-                            GetDetailData(_renderinfo, Settings);
+                            GetDetailData(_renderinfo, _module);
                         }
                         if (_renderinfo.Template.Detail != null && !_renderinfo.ShowInitControl)
                         {
@@ -253,7 +254,7 @@ namespace Satrabel.OpenContent.Components.Render
 
                 if (info.Template.Views != null)
                 {
-                    var indexConfig = OpenContentUtils.GetIndexConfig(info.Template.Key.TemplateDir);
+                    var indexConfig = OpenContentUtils.GetIndexConfig(info.Template);
                     templateKey = GetTemplateKey(indexConfig);
                 }
             }
@@ -264,7 +265,7 @@ namespace Satrabel.OpenContent.Components.Render
                 if (useLucene)
                 {
                     PortalSettings portalSettings = PortalSettings.Current;
-                    var indexConfig = OpenContentUtils.GetIndexConfig(info.Template.Key.TemplateDir);
+                    var indexConfig = OpenContentUtils.GetIndexConfig(info.Template);
                     if (info.Template.Views != null)
                     {
                         templateKey = GetTemplateKey(indexConfig);
@@ -317,19 +318,12 @@ namespace Satrabel.OpenContent.Components.Render
             return templateKey;
         }
 
-        public void GetDetailData(RenderInfo info, OpenContentSettings settings)
+        public void GetDetailData(RenderInfo info, OpenContentModuleInfo module)
         {
             info.ResetData();
-            var ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
-            var dsContext = new DataSourceContext()
-            {
-                PortalId = _module.DataModule.PortalID,
-                CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
-                ModuleId = info.ModuleId,
-                ActiveModuleId = _module.ViewModule.ModuleID,
-                TemplateFolder = settings.TemplateDir.FolderPath,
-                Config = settings.Manifest.DataSourceConfig
-            };
+            var ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
+            var dsContext = OpenContentUtils.CreateDataContext(module);
+            
             var dsItem = ds.Get(dsContext, info.DetailItemId);
             if (LogContext.IsLogActive)
             {
@@ -344,7 +338,7 @@ namespace Satrabel.OpenContent.Components.Render
                 bool isEditable = _module.ViewModule.CheckIfEditable(portalSettings);
                 if (!isEditable)
                 {
-                    var indexConfig = OpenContentUtils.GetIndexConfig(info.Template.Key.TemplateDir);
+                    var indexConfig = OpenContentUtils.GetIndexConfig(info.Template);
                     string raison;
                     if (!OpenContentUtils.HaveViewPermissions(dsItem, portalSettings.UserInfo, indexConfig, out raison))
                     {
@@ -352,7 +346,7 @@ namespace Satrabel.OpenContent.Components.Render
                         //throw new UnauthorizedAccessException("No detail view permissions for id " + info.DetailItemId);
                     }
                 }
-                info.SetData(dsItem, dsItem.Data, settings.Data);
+                info.SetData(dsItem, dsItem.Data, module.Settings.Data);
             }
         }
 

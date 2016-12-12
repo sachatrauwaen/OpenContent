@@ -40,6 +40,7 @@ namespace Satrabel.OpenContent.Components
             if (string.IsNullOrEmpty(content.Key))
             {
                 content.Key = ObjectId.NewObjectId().ToString();
+                json["_id"] = content.Key;
             }
             if (string.IsNullOrEmpty(content.Collection))
             {
@@ -95,7 +96,6 @@ namespace Satrabel.OpenContent.Components
         public void UpdateContent(OpenContentInfo content, bool index, FieldConfig indexConfig)
         {
             ClearCache(content);
-
             OpenContentVersion ver = new OpenContentVersion()
             {
                 Json = content.JsonAsJToken,
@@ -189,23 +189,34 @@ namespace Satrabel.OpenContent.Components
                 });
         }
 
-        public OpenContentInfo GetDocument(int moduleId, string collection, string key)
+        public OpenContentInfo GetContent(int moduleId, string collection, string key)
         {
             IEnumerable<OpenContentInfo> documents;
             using (IDataContext ctx = DataContext.Instance())
             {
                 var rep = ctx.GetRepository<OpenContentInfo>();
-                documents = rep.Find("WHERE ModuleId = @0 AND Collection = @1 AND DocumentKey = @3", moduleId, collection, key);
+                documents = rep.Find("WHERE ModuleId = @0 AND Collection = @1 AND DocumentKey = @2", moduleId, collection, key);
             }
             return documents.SingleOrDefault();
         }
-        public IEnumerable<OpenContentInfo> GetDocuments(int moduleId, string collection)
+        public IEnumerable<OpenContentInfo> GetContents(int moduleId, string collection)
         {
             IEnumerable<OpenContentInfo> documents;
             using (IDataContext ctx = DataContext.Instance())
             {
                 var rep = ctx.GetRepository<OpenContentInfo>();
                 documents = rep.Find("WHERE ModuleId = @0 AND Collection = @1", moduleId, collection);
+            }
+            return documents;
+        }
+
+        public IEnumerable<OpenContentInfo> GetContents(int[] ids)
+        {
+            IEnumerable<OpenContentInfo> documents;
+            using (IDataContext ctx = DataContext.Instance())
+            {
+                var rep = ctx.GetRepository<OpenContentInfo>();
+                documents = rep.Find("WHERE ContentId IN ("+string.Join(",", ids)+")");
             }
             return documents;
         }

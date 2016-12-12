@@ -137,7 +137,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 Log.Logger.WarnFormat("Item not shown because no content item found. Id [{0}]. Context TabId: [{1}], ModuleId: [{2}]", id, GetTabId(context), GetModuleId(context));
                 LogContext.Log(context.ActiveModuleId, "Get DataItem", "Result", "not item found with id " + id);
             }
-            else if (content.ModuleId == GetModuleId(context))
+            else if (content.ModuleId == GetModuleId(context) && content.Collection == context.Collection)
             {
                 var dataItem = CreateDefaultDataItem(content);
                 if (LogContext.IsLogActive)
@@ -190,7 +190,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         {
             OpenContentController ctrl = new OpenContentController();
 
-            var dataList = ctrl.GetContents(GetModuleId(context))
+            var dataList = ctrl.GetContents(GetModuleId(context), context.Collection)
                 .OrderBy(i => i.CreatedOnDate)
                 .Select(content => CreateDefaultDataItem(content));
 
@@ -204,6 +204,10 @@ namespace Satrabel.OpenContent.Components.Datasource
         
         public virtual IDataItems GetAll(DataSourceContext context, Select selectQuery)
         {
+            if (LogContext.IsLogActive)
+            {
+                LogContext.Log(context.ActiveModuleId, "Datasource", "Context", context);
+            }
             if (selectQuery == null)
             {
                 return GetAll(context);
@@ -212,7 +216,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             {
                 SelectQueryDefinition def = BuildQuery(context, selectQuery);
                 OpenContentController ctrl = new OpenContentController();
-                SearchResults docs = LuceneController.Instance.Search(GetModuleId(context).ToString(), def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
+                SearchResults docs = LuceneController.Instance.Search(OpenContentInfo.GetScope(GetModuleId(context), context.Collection), def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
                 int total = docs.TotalResults;
                 var dataList = new List<IDataItem>();
                 foreach (string item in docs.ids)
@@ -278,7 +282,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         public virtual void Add(DataSourceContext context, JToken data)
         {
             OpenContentController ctrl = new OpenContentController();
-            var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder));
+            var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection);
             var content = new OpenContentInfo()
             {
                 ModuleId = GetModuleId(context),
@@ -296,7 +300,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         public virtual void Update(DataSourceContext context, IDataItem item, JToken data)
         {
             OpenContentController ctrl = new OpenContentController();
-            var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder));
+            var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection);
             var content = (OpenContentInfo)item.Item;
             content.Title = data["Title"] == null ? "" : data["Title"].ToString();
             content.Json = data.ToString();
@@ -375,7 +379,7 @@ namespace Satrabel.OpenContent.Components.Datasource
 
         #region Private Methods
 
-        private static int GetModuleId(DataSourceContext context)
+        protected static int GetModuleId(DataSourceContext context)
         {
             return context.Config?["ModuleId"]?.Value<int>() ?? context.ModuleId;
         }
@@ -388,6 +392,8 @@ namespace Satrabel.OpenContent.Components.Datasource
             return new DefaultDataItem
             {
                 Id = content.ContentId.ToString(),
+                Key = content.Key,
+                Collection = content.Collection,
                 Title = content.Title,
                 Data = content.JsonAsJToken,
                 CreatedByUserId = content.CreatedByUserId,

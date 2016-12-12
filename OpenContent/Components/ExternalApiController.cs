@@ -38,7 +38,7 @@ namespace Satrabel.OpenContent.Components
                         return Request.CreateResponse(HttpStatusCode.Unauthorized, "Failed the HasEditPermissions() check");
                     }
                     var index = module.Settings.Template.Manifest.Index;
-                    var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template.Key.TemplateDir);
+                    var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template.Key.TemplateDir, "Items");
                     OpenContentInfo content = new OpenContentInfo()
                     {
                         ModuleId = module.DataModule.ModuleID,

@@ -176,6 +176,8 @@
     </Compile>
     <Compile Include="Components\Alpaca\AlpacaLayoutEnum.cs" />
     <Compile Include="Components\AppConfig.cs" />
+    <Compile Include="Components\Datasource\BookingDataSource.cs" />
+    <Compile Include="Components\Documents\DocumentUtils.cs" />
     <Compile Include="Components\Documents\ObjectId.cs" />
     <Compile Include="Components\FormAPIController.cs" />
     <Compile Include="Components\Form\FormUtils.cs" />

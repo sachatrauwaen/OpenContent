@@ -6,6 +6,8 @@ namespace Satrabel.OpenContent.Components.Datasource
     public interface IDataItem
     {
         string Id { get; set; }
+        string Collection { get; set; }
+        string Key { get; set; }
         string Title { get; set; }
         JToken Data { get; set; }
         int CreatedByUserId { get; set; }

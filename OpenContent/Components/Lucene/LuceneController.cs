@@ -164,7 +164,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             FieldConfig indexConfig = null;
             if (index)
             {
-                indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
+                indexConfig = OpenContentUtils.GetIndexConfig(settings.Template);
             }
 
             if (settings.IsOtherModule)
@@ -172,9 +172,9 @@ namespace Satrabel.OpenContent.Components.Lucene
                 moduleId = settings.ModuleId;
             }
 
-            lc.Store.Delete(new TermQuery(new Term("$type", moduleId.ToString())));
+            lc.Store.Delete(new TermQuery(new Term("$type", OpenContentInfo.GetScope(moduleId, settings.Template.Collection))));
             OpenContentController occ = new OpenContentController();
-            foreach (var item in occ.GetContents(moduleId))
+            foreach (var item in occ.GetContents(moduleId, settings.Template.Collection))
             {
                 lc.Add(item, indexConfig);
             }

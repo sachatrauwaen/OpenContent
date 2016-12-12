@@ -36,7 +36,7 @@ namespace Satrabel.OpenContent.Components.Rss
             bool useLucene = module.Settings.Template.Manifest.Index;
             if (useLucene)
             {
-                var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template.Key.TemplateDir);
+                var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template);
 
                 QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
                 queryBuilder.Build(module.Settings.Query, PortalSettings.UserMode != PortalSettings.Mode.Edit, UserInfo.UserID, DnnLanguageUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
