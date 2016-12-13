@@ -45,3 +45,7 @@ ResourcesZip/
 *.zip
 *.log
 Templates/Develop/
+.vs/
+packages/
+OpenContent/bin/
+custom.targets
