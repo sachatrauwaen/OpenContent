@@ -33,5 +33,8 @@ namespace Satrabel.OpenContent.Components.Manifest
         /// </value>
         [JsonProperty(PropertyName = "dnnsearch")]
         public bool DnnSearch { get; set; }
+
+        [JsonProperty(PropertyName = "model")]
+        public Dictionary<string, CollectionManifest> Model { get; set; }
     }
 }

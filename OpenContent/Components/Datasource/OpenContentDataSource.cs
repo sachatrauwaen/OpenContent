@@ -106,7 +106,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             }
             return null;
         }
-       
+
         public virtual IDataItem Get(DataSourceContext context, string id)
         {
             OpenContentController ctrl = new OpenContentController();
@@ -156,7 +156,36 @@ namespace Satrabel.OpenContent.Components.Datasource
             return null;
         }
 
-      
+        public virtual IDataItem GetRelation(DataSourceContext context, string id)
+        {
+            OpenContentController ctrl = new OpenContentController();
+            OpenContentInfo content = null;
+            if (!string.IsNullOrEmpty(id))
+            {
+                if (LogContext.IsLogActive)
+                {
+                    LogContext.Log(context.ActiveModuleId, "Get DataItem", "Request", string.Format("{0}.Get() with id {1}", Name, id));
+                }
+                var colkey = DocumentUtils.GetCollectionKey(id);
+                content = ctrl.GetContent(GetModuleId(context), colkey.Collection, colkey.Key);
+            }
+            if (content == null)
+            {
+                Log.Logger.WarnFormat("Item not shown because no content item found. Id [{0}]. Context TabId: [{1}], ModuleId: [{2}]", id, GetTabId(context), GetModuleId(context));
+                LogContext.Log(context.ActiveModuleId, "Get DataItem", "Result", "not item found with id " + id);
+            }
+            else 
+            {
+                var dataItem = CreateDefaultDataItem(content);
+                if (LogContext.IsLogActive)
+                {
+                    LogContext.Log(context.ActiveModuleId, "Get DataItem", "Result", dataItem.Data);
+                }
+                return dataItem;
+            }
+            return null;
+        }
+
         /// <summary>
         /// Gets additional/related data of a datasource.
         /// </summary>
@@ -200,8 +229,8 @@ namespace Satrabel.OpenContent.Components.Datasource
                 Total = dataList.Count()
             };
         }
-        
-        
+
+
         public virtual IDataItems GetAll(DataSourceContext context, Select selectQuery)
         {
             if (LogContext.IsLogActive)
@@ -240,7 +269,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             }
         }
 
-       
+
         private static SelectQueryDefinition BuildQuery(DataSourceContext context, Select selectQuery)
         {
             SelectQueryDefinition def = new SelectQueryDefinition();

@@ -96,9 +96,11 @@ namespace Satrabel.OpenContent.Components
         public void UpdateContent(OpenContentInfo content, bool index, FieldConfig indexConfig)
         {
             ClearCache(content);
+            var json = content.JsonAsJToken;
+            json["_id"] = content.Key;
             OpenContentVersion ver = new OpenContentVersion()
             {
-                Json = content.JsonAsJToken,
+                Json = json,
                 CreatedByUserId = content.CreatedByUserId,
                 CreatedOnDate = content.CreatedOnDate,
                 LastModifiedByUserId = content.LastModifiedByUserId,

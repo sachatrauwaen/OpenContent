@@ -12,6 +12,7 @@ using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Logging;
+using Satrabel.OpenContent.Components.Render;
 
 namespace Satrabel.OpenContent.Components.JPList
 {
@@ -57,7 +58,7 @@ namespace Satrabel.OpenContent.Components.JPList
                         var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID, false, reqOptions);
                         dsItems = ds.GetAll(dsContext, queryBuilder.Select);
                     }
-                    ModelFactory mf = new ModelFactory(dsItems.Items, module, PortalSettings);
+                    var mf = new ModelFactoryMultiple(dsItems.Items, module, PortalSettings);
                     mf.Options = reqOptions;
                     var model = mf.GetModelAsJson(false);
 

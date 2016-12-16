@@ -6,7 +6,8 @@ using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.TemplateHelpers;
 using DotNetNuke.Services.FileSystem;
 using Satrabel.OpenContent.Components.Datasource;
-
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Satrabel.OpenContent.Components.Json
 {
@@ -37,6 +38,7 @@ namespace Satrabel.OpenContent.Components.Json
         }
         public static void SimplifyJson(JObject o, string culture)
         {
+            
             foreach (var child in o.Children<JProperty>().ToList())
             {
                 var childProperty = child;
@@ -103,7 +105,7 @@ namespace Satrabel.OpenContent.Components.Json
             }
         }
 
-        public static void LookupJson(JObject o, JObject additionalData, JObject options)
+        public static void LookupJson(JObject o, JObject additionalData, JObject options, List<string> includes, Func<string, JObject> objFromCollection, string prefix ="")
         {
             foreach (var child in o.Children<JProperty>().ToList())
             {
@@ -113,10 +115,21 @@ namespace Satrabel.OpenContent.Components.Json
                     opt = options["fields"][child.Name] as JObject;
                 }
                 if (opt == null) continue;
+
                 bool lookup =
                     opt["type"] != null &&
                     opt["type"].ToString() == "select2" &&
                     opt["dataService"]?["data"]?["dataKey"] != null;
+
+                /*
+                bool relation =
+                    opt["type"] != null &&
+                    opt["type"].ToString() == "select2" &&
+                    opt["dataService"]?["data"]?["collection"] != null;
+                */
+
+                string field = (string.IsNullOrEmpty(prefix) ? child.Name : prefix + "."+ child.Name);
+                bool include = includes.Contains(field);
 
                 string dataKey = "";
                 string dataMember = "";
@@ -139,7 +152,7 @@ namespace Satrabel.OpenContent.Components.Json
                         var obj = value as JObject;
                         if (obj != null)
                         {
-                            LookupJson(obj, additionalData, opt["items"] as JObject);
+                            LookupJson(obj, additionalData, opt["items"] as JObject, includes, objFromCollection, field);
                         }
                         else if (lookup)
                         {
@@ -164,7 +177,7 @@ namespace Satrabel.OpenContent.Components.Json
                 else if (childProperty.Value is JObject)
                 {
                     var obj = childProperty.Value as JObject;
-                    LookupJson(obj, additionalData, opt);
+                    LookupJson(obj, additionalData, opt, includes, objFromCollection, field);
                 }
                 else if (childProperty.Value is JValue)
                 {
@@ -174,6 +187,18 @@ namespace Satrabel.OpenContent.Components.Json
                         try
                         {
                             o[childProperty.Name] = GenerateObject(additionalData, dataKey, val, dataMember, valueField);
+                        }
+                        catch (System.Exception ex)
+                        {
+                            Debugger.Break();
+                        }
+                    }
+                    else if (include)
+                    {
+                        string val = childProperty.Value.ToString();
+                        try
+                        {
+                            o[childProperty.Name] = objFromCollection(val);
                         }
                         catch (System.Exception ex)
                         {

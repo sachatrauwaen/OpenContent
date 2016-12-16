@@ -10,6 +10,7 @@ using DotNetNuke.Entities.Portals;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Alpaca;
+using Satrabel.OpenContent.Components.Render;
 
 namespace Satrabel.OpenContent.Components.Rss
 {
@@ -48,7 +49,7 @@ namespace Satrabel.OpenContent.Components.Rss
                 dataList = dsItems.Items;
             }
 
-            ModelFactory mf = new ModelFactory(dataList, null, module.Settings.TemplateDir.PhysicalFullDirectory, manifest, null, null, module, PortalSettings);
+            var mf = new ModelFactoryMultiple(dataList, null, module.Settings.TemplateDir.PhysicalFullDirectory, manifest, null, null, module, PortalSettings);
             dynamic model = mf.GetModelAsDynamic(true);
             HandlebarsEngine hbEngine = new HandlebarsEngine();
             string res = hbEngine.Execute(source, model);

@@ -2,6 +2,7 @@
 using DotNetNuke.Services.Localization;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Handlebars;
+using Satrabel.OpenContent.Components.Render;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -67,7 +68,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                         {
                             string cultureCode = key.Value.Code;
                             string ruleCultureCode = (dicLocales.Count > 1 ? cultureCode : null);
-                            ModelFactory mf = new ModelFactory(dataList, module.Settings.Data, physicalTemplateFolder, module.Settings.Template.Manifest, module.Settings.Template, module.Settings.Template.Main, module, portalId, cultureCode);
+                            ModelFactoryMultiple mf = new ModelFactoryMultiple(dataList, module.Settings.Data, physicalTemplateFolder, module.Settings.Template.Manifest, module.Settings.Template, module.Settings.Template.Main, module, portalId, cultureCode);
                             //dynamic model = mf.GetModelAsDynamic(true);
                             //dynamic items = model.Items;
                             IEnumerable<dynamic> items = mf.GetModelAsDynamicList();

@@ -483,7 +483,7 @@ namespace Satrabel.OpenContent.Components.Render
 
                 if (dataJson != null)
                 {
-                    ModelFactory mf = new ModelFactory(_renderinfo.Data, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, PortalSettings.Current);
+                    var mf = new ModelFactorySingle(_renderinfo.Data, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, PortalSettings.Current);
                     dynamic model = mf.GetModelAsDynamic();
                     if (!string.IsNullOrEmpty(_renderinfo.Template.Manifest.DetailMetaTitle))
                     {
@@ -522,16 +522,16 @@ namespace Satrabel.OpenContent.Components.Render
                 string physicalTemplateFolder = HostingEnvironment.MapPath(templateVirtualFolder);
                 if (dataJson != null)
                 {
-                    ModelFactory mf;
+                    ModelFactorySingle mf;
 
                     if (_renderinfo.Data == null)
                     {
                         // demo data
-                        mf = new ModelFactory(_renderinfo.DataJson, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, ps);
+                        mf = new ModelFactorySingle(_renderinfo.DataJson, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, ps);
                     }
                     else
                     {
-                        mf = new ModelFactory(_renderinfo.Data, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, ps);
+                        mf = new ModelFactorySingle(_renderinfo.Data, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, ps);
                     }
                     dynamic model = mf.GetModelAsDynamic();
                     if (LogContext.IsLogActive)
@@ -571,7 +571,7 @@ namespace Satrabel.OpenContent.Components.Render
                 FileUri templateUri = CheckFiles(templateManifest, files);
                 if (dataList != null)
                 {
-                    ModelFactory mf = new ModelFactory(dataList, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, PortalSettings.Current);
+                    ModelFactoryMultiple mf = new ModelFactoryMultiple(dataList, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, PortalSettings.Current);
                     dynamic model = mf.GetModelAsDynamic();
                     return ExecuteTemplate(page, templateManifest, files, templateUri, model);
                 }
