@@ -376,7 +376,9 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 {
                     min = "";
                 }
-                DotNetNuke.Framework.ServicesFramework.Instance.RequestAjaxScriptSupport();
+                //DotNetNuke.Framework.ServicesFramework.Instance.RequestAjaxScriptSupport();
+
+                RegisterAjaxScript(page);
                 DnnUtils.RegisterScript(page, sourceFolder, "/DesktopModules/OpenContent/js/lib/handlebars/handlebars" + min + ".js", _jsOrder);
                 _jsOrder++;
                 DnnUtils.RegisterScript(page, sourceFolder, "/DesktopModules/OpenContent/js/alpaca/bootstrap/alpaca" + min + ".js", _jsOrder);
@@ -393,7 +395,8 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 }
                 bool bootstrap = true;
                 bool loadBootstrap = false;
-                DotNetNuke.Framework.ServicesFramework.Instance.RequestAjaxScriptSupport();
+                //DotNetNuke.Framework.ServicesFramework.Instance.RequestAjaxScriptSupport();
+                RegisterAjaxScript(page);
                 AlpacaEngine alpaca = new AlpacaEngine(page, PortalSettings.Current.PortalId, sourceFolder, prefix);
                 alpaca.RegisterAll(bootstrap, loadBootstrap);
 
@@ -718,5 +721,39 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 }
             });
         }
+
+        private void RegisterAjaxScript(Page page)
+        {
+            var portalSettings = PortalSettings.Current;
+            if (portalSettings == null) return;
+            var path = portalSettings.PortalAlias.HTTPAlias;
+            int index = path.IndexOf('/');
+            if (index > 0)
+            {
+                path = path.Substring(index);
+            }
+            else
+            {
+                path = "/";
+            }
+            path = path.EndsWith("/") ? path : path + "/";
+            DotNetNuke.Framework.JavaScriptLibraries.JavaScript.RegisterClientReference(page, DotNetNuke.UI.Utilities.ClientAPI.ClientNamespaceReferences.dnn);
+            DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(page, "sf_siteRoot", path, /*overwrite*/ true);
+            DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(page, "sf_tabId", PortalSettings.Current.ActiveTab.TabID.ToString(CultureInfo.InvariantCulture), /*overwrite*/ true);
+
+            string scriptPath;
+            if (DotNetNuke.Common.HttpContextSource.Current.IsDebuggingEnabled)
+            {
+                scriptPath = "~/js/Debug/dnn.servicesframework.js";
+            }
+            else
+            {
+                scriptPath = "~/js/dnn.servicesframework.js";
+            }
+
+            ClientResourceManager.RegisterScript(page, scriptPath);
+        }
+
+
     }
 }
