@@ -37,12 +37,12 @@ namespace Satrabel.OpenContent.Components.Alpaca
         private string Prefix { get; set; }
 
         public Page Page { get; private set; }
-        public ModuleInstanceContext ModuleContext { get; private set; }
+        public int PortalId { get; private set; }
 
-        public AlpacaEngine(Page Page, ModuleInstanceContext moduleContext, string virtualDir, string filePrefix)
+        public AlpacaEngine(Page Page, int portalId, string virtualDir, string filePrefix)
         {
             this.Page = Page;
-            this.ModuleContext = moduleContext;
+            this.PortalId = portalId;
             VirtualDirectory = virtualDir;
             Prefix = filePrefix;
         }
@@ -98,7 +98,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
         }
         public void RegisterTemplates()
         {
-
+            /*
             var body = (HtmlGenericControl)Page.FindControl("Body");
             if (body.FindControl("oc-dnntemplates") == null)
             {
@@ -108,7 +108,9 @@ namespace Satrabel.OpenContent.Components.Alpaca
 
                 body.Controls.Add(lit);
             }
-
+            */
+            string templates = File.ReadAllText(HostingEnvironment.MapPath("~/DesktopModules/OpenContent/alpaca/templates/dnn-edit/dnntemplates.html"));
+            RegisterStartupScript("oc-dnntemplates", templates, false);
         }
 
         public void RegisterScripts(bool bootstrap)
@@ -173,32 +175,37 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
             if (allFields || fieldTypes.Contains("ckeditor") || fieldTypes.Contains("mlckeditor"))
             {
-                var form = Page.FindControl("Form");
-                if (form.FindControl("CKDNNporid") == null)
+                //var form = Page.FindControl("Form");
+                //if (form.FindControl("CKDNNporid") == null)
                 {
                     if (CKEditorIngoThaWatchaIsInstalled())
                     {
                         ClientResourceManager.RegisterScript(Page, "~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js", FileOrder.Js.DefaultPriority);
-                        DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "PortalId", ModuleContext.PortalId.ToString(), true);
+                        DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "PortalId", PortalId.ToString(), true);
+                        /*
                         var CKDNNporid = new HiddenField();
                         CKDNNporid.ID = "CKDNNporid";
                         CKDNNporid.ClientIDMode = ClientIDMode.Static;
-
                         form.Controls.Add(CKDNNporid);
-                        CKDNNporid.Value = ModuleContext.PortalId.ToString();
-                        GenerateEditorLoadScript(ModuleContext.PortalId);
+                        CKDNNporid.Value = PortalId.ToString();
+                        */
+                        RegisterStartupScript("oc-ckdnnporid", string.Format(@"<input type=""hidden"" id=""CKDNNporid"" value=""{0}"">", PortalId), false);
+                        GenerateEditorLoadScript(PortalId);
                     }
                     else if (CKEditorDnnConnectIsInstalled())
                     {
                         ClientResourceManager.RegisterScript(Page, "~/Providers/HtmlEditorProviders/DNNConnect.CKE/js/ckeditor/4.5.3/ckeditor.js", FileOrder.Js.DefaultPriority);
-                        DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "PortalId", ModuleContext.PortalId.ToString(), true);
+                        DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "PortalId", PortalId.ToString(), true);
+                        /*
                         var CKDNNporid = new HiddenField();
                         CKDNNporid.ID = "CKDNNporid";
                         CKDNNporid.ClientIDMode = ClientIDMode.Static;
 
                         form.Controls.Add(CKDNNporid);
-                        CKDNNporid.Value = ModuleContext.PortalId.ToString();
-                        GenerateEditorLoadScript(ModuleContext.PortalId);
+                        CKDNNporid.Value = PortalId.ToString();
+                        */
+                        RegisterStartupScript("oc-ckdnnporid", string.Format(@"<input type=""hidden"" id=""CKDNNporid"" value=""{0}"">", PortalId), false);
+                        GenerateEditorLoadScript(PortalId);
                     }
                     else
                     {

@@ -27,6 +27,7 @@ namespace Satrabel.OpenContent.Components
     public class OpenContentInfo : IIndexableItem
     {
         private JToken _jsonAsJToken = null;
+        private string _json;
         public OpenContentInfo()
         {
 
@@ -35,12 +36,36 @@ namespace Satrabel.OpenContent.Components
         {
             Json = json;
         }
+
         public int ContentId { get; set; }
-        [ColumnName("DocumentKey")] 
+        [ColumnName("DocumentKey")]
         public string Key { get; internal set; }
+        [IgnoreColumn]
+        public string Id
+        {
+            get
+            {
+                if (Collection == AppConfig.DEFAULT_COLLECTION)
+                    return ContentId.ToString();
+                else
+                    return Key;
+            }
+        }
+
         public string Collection { get; internal set; }
-        public string Title { get; set; }        
-        public string Json { get; set; }
+        public string Title { get; set; }
+        public string Json
+        {
+            get
+            {
+                return _json;
+            }
+            set
+            {
+                _json = value;
+                _jsonAsJToken = null;
+            }
+        }
 
         [IgnoreColumn]
         public JToken JsonAsJToken
@@ -57,6 +82,7 @@ namespace Satrabel.OpenContent.Components
             set
             {
                 _jsonAsJToken = value;
+                _json = _jsonAsJToken.ToString();
             }
         }
         public int ModuleId { get; set; }

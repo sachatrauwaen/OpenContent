@@ -3,6 +3,7 @@ using DotNetNuke.Entities.Portals;
 using DotNetNuke.Entities.Users;
 using DotNetNuke.Services.Mail;
 using Newtonsoft.Json.Linq;
+using Satrabel.OpenContent.Components.Handlebars;
 using Satrabel.OpenContent.Components.Json;
 using System;
 using System.Collections.Generic;
@@ -170,6 +171,98 @@ namespace Satrabel.OpenContent.Components.Form
             {
                 schemaJson["properties"]["Country"]["default"] = userInfo.Profile.Country;
             }
+        }
+
+        public static JObject FormSubmit(JObject formInfo)
+        {
+            SettingsDTO settings = null;
+            if (formInfo["formSettings"] is JObject)
+            {
+                settings = (formInfo["formSettings"] as JObject).ToObject<SettingsDTO>();
+                var form = formInfo["form"] as JObject;
+                return FormSubmit(form, settings);
+            }
+            return null;
+        }
+        public static JObject FormSubmit(JObject form, SettingsDTO settings)
+        {
+            if (form != null)
+            {
+                HandlebarsEngine hbs = new HandlebarsEngine();
+                dynamic data = null;
+                string formData = "";
+                if (form != null)
+                {
+                    /*
+                    if (!string.IsNullOrEmpty(settings.Settings.SiteKey))
+                    {
+                        Recaptcha recaptcha = new Recaptcha(settings.Settings.SiteKey, settings.Settings.SecretKey);
+                        RecaptchaValidationResult validationResult = recaptcha.Validate(form["recaptcha"].ToString());
+                        if (!validationResult.Succeeded)
+                        {
+                            return Request.CreateResponse(HttpStatusCode.Forbidden);
+                        }
+                        form.Remove("recaptcha");
+                    }
+                     */
+                    data = FormUtils.GenerateFormData(form.ToString(), out formData);
+                }
+                // Send emails
+                string Message = "Form submitted.";
+                var Errors = new List<string>();
+                if (settings != null && settings.Notifications != null)
+                {
+                    foreach (var notification in settings.Notifications)
+                    {
+                        try
+                        {
+                            MailAddress from = FormUtils.GenerateMailAddress(notification.From, notification.FromEmail, notification.FromName, notification.FromEmailField, notification.FromNameField, form);
+                            MailAddress to = FormUtils.GenerateMailAddress(notification.To, notification.ToEmail, notification.ToName, notification.ToEmailField, notification.ToNameField, form);
+                            MailAddress reply = null;
+                            if (!string.IsNullOrEmpty(notification.ReplyTo))
+                            {
+                                reply = FormUtils.GenerateMailAddress(notification.ReplyTo, notification.ReplyToEmail, notification.ReplyToName, notification.ReplyToEmailField, notification.ReplyToNameField, form);
+                            }
+                            string body = formData;
+                            if (!string.IsNullOrEmpty(notification.EmailBody))
+                            {
+                                body = hbs.Execute(notification.EmailBody, data);
+                            }
+
+                            string send = FormUtils.SendMail(from.ToString(), to.ToString(), (reply == null ? "" : reply.ToString()), notification.EmailSubject, body);
+                            if (!string.IsNullOrEmpty(send))
+                            {
+                                Errors.Add("From:" + from.ToString() + " - To:" + to.ToString() + " - " + send);
+                            }
+                        }
+                        catch (Exception exc)
+                        {
+                            Errors.Add("Notification " + (settings.Notifications.IndexOf(notification) + 1) + " : " + exc.Message);
+                            Log.Logger.Error(exc);
+                        }
+                    }
+                }
+                if (settings != null && settings.Settings != null)
+                {
+                    if (!string.IsNullOrEmpty(settings.Settings.Message))
+                    {
+                        Message = hbs.Execute(settings.Settings.Message, data);
+                    }
+                    else
+                    {
+                        Message = "Message sended.";
+                    }
+                    //Tracking = settings.Settings.Tracking;
+                    if (!string.IsNullOrEmpty(settings.Settings.Tracking))
+                    {
+                        //res.RedirectUrl = Globals.NavigateURL(ActiveModule.TabID, "", "result=" + content.ContentId);
+                    }
+                }
+                var res = new JObject();
+                res["message"] = Message;
+                return res;
+            }
+            return null;
         }
     }
 }

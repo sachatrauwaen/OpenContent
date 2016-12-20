@@ -15,7 +15,7 @@ using Satrabel.OpenContent.Components.Dynamic;
 using System.Collections;
 using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components.Logging;
-
+using Satrabel.OpenContent.Components.Alpaca;
 
 namespace Satrabel.OpenContent.Components.Handlebars
 {
@@ -383,6 +383,22 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 _jsOrder++;
                 ClientResourceManager.RegisterStyleSheet(page, page.ResolveUrl("/DesktopModules/OpenContent/js/alpaca/bootstrap/alpaca" + min + ".css"), FileOrder.Css.PortalCss);
             });
+            
+            hbs.RegisterHelper("registereditform", (writer, context, parameters) =>
+            {
+                string prefix = "";
+                if (parameters.Length == 1)
+                {
+                    prefix = parameters[0].ToString();
+                }
+                bool bootstrap = true;
+                bool loadBootstrap = false;
+                DotNetNuke.Framework.ServicesFramework.Instance.RequestAjaxScriptSupport();
+                AlpacaEngine alpaca = new AlpacaEngine(page, PortalSettings.Current.PortalId, sourceFolder, prefix);
+                alpaca.RegisterAll(bootstrap, loadBootstrap);
+
+            });
+            
         }
         private void RegisterRegisterStylesheetHelper(HandlebarsDotNet.IHandlebars hbs, Page page, string sourceFolder)
         {

@@ -1,9 +1,13 @@
-﻿using DotNetNuke.Entities.Portals;
+﻿using DotNetNuke.Common;
+using DotNetNuke.Entities.Portals;
 using DotNetNuke.Services.Localization;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Datasource;
+using Satrabel.OpenContent.Components.Dnn;
+using Satrabel.OpenContent.Components.Handlebars;
 using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Manifest;
+using Satrabel.OpenContent.Components.TemplateHelpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,11 +58,31 @@ namespace Satrabel.OpenContent.Components.Render
 
             var enhancedModel = new JObject();
             ExtendModel(enhancedModel, onlyData);
+            ExtendModelSingle(enhancedModel, onlyData);
             EnhanceSelect2(model, enhancedModel);
 
             JsonUtils.Merge(model, enhancedModel);
             return model;
         }
 
+        private void ExtendModelSingle(JObject model, bool onlyDataa)
+        {
+            if (_data != null)
+            {
+                var context = model["Context"];
+                string url = "";
+                if (!string.IsNullOrEmpty(_manifest?.DetailUrl))
+                {
+                    HandlebarsEngine hbEngine = new HandlebarsEngine();
+                    dynamic dynForHBS = JsonUtils.JsonToDynamic(model.ToString());
+                    url = hbEngine.Execute(_manifest.DetailUrl, dynForHBS);
+                    url = HttpUtility.HtmlDecode(url);
+                }
+                context["DetailUrl"] = Globals.NavigateURL(_detailTabId, false, _portalSettings, "", GetCurrentCultureCode(), UrlHelpers.CleanupUrl(url), "id=" + _data.Id);
+                context["Id"] = _data.Id;
+                var editIsAllowed = !_manifest.DisableEdit && IsEditAllowed(_data.CreatedByUserId);
+                context["EditUrl"] = editIsAllowed ? DnnUrlUtils.EditUrl("id", _data.Id, _module.ViewModule.ModuleID, _portalSettings) : "";
+            }
+        }
     }
 }

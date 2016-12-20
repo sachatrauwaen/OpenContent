@@ -44,7 +44,7 @@ namespace Satrabel.OpenContent.Components
                 xml += "<item>";
                 xml += "<json>" + XmlUtils.XMLEncode(item.Json) + "</json>";
                 xml += "<collection>" + XmlUtils.XMLEncode(item.Collection) + "</collection>";
-                xml += "<key>" + XmlUtils.XMLEncode(item.Key) + "</key>";
+                xml += "<key>" + XmlUtils.XMLEncode(item.Id) + "</key>";
                 xml += "</item>";
             }
             xml += "</opencontent>";
@@ -66,7 +66,7 @@ namespace Satrabel.OpenContent.Components
                 {
                     ModuleId = moduleId,
                     Collection= collection== null ? "" : collection.InnerText,
-                    Key= key == null ? "" :  key.InnerText,
+                    Key = key == null ? "" :  key.InnerText,
                     Json = item.InnerText,
                     CreatedByUserId = userId,
                     CreatedOnDate = DateTime.Now,

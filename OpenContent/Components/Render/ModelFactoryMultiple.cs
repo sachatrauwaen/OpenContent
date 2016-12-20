@@ -90,7 +90,6 @@ namespace Satrabel.OpenContent.Components.Render
                     JObject context = new JObject();
                     dyn["Context"] = context;
                     context["Id"] = item.Id;
-                    context["Key"] = item.Key;
                     context["Collection"] = item.Collection;
                     if (onlyData)
                     {

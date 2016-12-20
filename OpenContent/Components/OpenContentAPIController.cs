@@ -103,6 +103,17 @@ namespace Satrabel.OpenContent.Components
                     createdByUserid = dsItem.CreatedByUserId;
                 }
 
+                var context = new JObject();
+                var currentLocale = LocaleController.Instance.GetCurrentLocale(PortalSettings.PortalId);
+                context["culture"] = currentLocale.Code;
+                context["defaultCulture"] = LocaleController.Instance.GetDefaultLocale(PortalSettings.PortalId).Code;
+                context["numberDecimalSeparator"] = currentLocale.Culture.NumberFormat.NumberDecimalSeparator;
+                context["rootUrl"] = System.Web.VirtualPathUtility.ToAbsolute(string.Concat(System.Web.HttpRuntime.AppDomainAppVirtualPath, "/"));
+                context["alpacaCulture"] = AlpacaEngine.AlpacaCulture(currentLocale.Code);
+                context["bootstrap"] = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetEditLayout() != AlpacaLayoutEnum.DNN;
+                context["horizontal"] = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetEditLayout() == AlpacaLayoutEnum.BootstrapHorizontal;
+                json["context"] = context;
+
                 if (!OpenContentUtils.HasEditPermissions(PortalSettings, module.ViewModule, editRole, createdByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
@@ -651,7 +662,7 @@ namespace Satrabel.OpenContent.Components
                                 */
                                 res.Add(new LookupResultDTO()
                                 {
-                                    value = req.collection+"/"+item.Key, 
+                                    value = item.Id,
                                     text = json[req.textField].ToString()
                                 });
                             }
@@ -753,7 +764,7 @@ namespace Satrabel.OpenContent.Components
             try
             {
                 OpenContentSettings settings = ActiveModule.OpenContentSettings();
-                var fb = new FormBuilder( settings.TemplateDir);
+                var fb = new FormBuilder(settings.TemplateDir);
                 JObject json = fb.BuildQuerySettings(settings.Template.Collection);
                 var dataJson = data.ToJObject("quey settings json");
                 if (dataJson != null)

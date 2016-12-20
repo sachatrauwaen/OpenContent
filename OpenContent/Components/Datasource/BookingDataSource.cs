@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Datasource.Search;
-using Satrabel.OpenContent.Components.Documents;
 using Satrabel.OpenContent.Components.Form;
 using Satrabel.OpenContent.Components.Handlebars;
 using Satrabel.OpenContent.Components.Logging;
@@ -32,8 +31,27 @@ namespace Satrabel.OpenContent.Components.Datasource
             {
                 AfterGetEvent(context, dataItem);
             }
+            else if (context.Collection == "Submissions") // Events
+            {
+                AfterGetSubmission(context, dataItem);
+            }
             return dataItem;
         }
+
+        private void AfterGetSubmission(DataSourceContext context, IDataItem dataItem)
+        {
+            var booking = dataItem.Data.ToObject<BookingDTO>();
+            var bookingCount = GetBookingCount(context, booking.EventId);
+            var ev = Get<EventDTO>(context, booking.EventId);
+            var eventCat = Get<EventCategoryDTO>(context, ev.EventCategory);
+            var max = eventCat.Max;
+
+            dataItem.Data["BookingMax"] = max - bookingCount;
+            dataItem.Data["EventMax"] = max;
+            dataItem.Data["BookingCount"] = bookingCount;
+            dataItem.Data["EventCategory"] = ev.EventCategory;
+        }
+
         public override IDataItems GetAll(DataSourceContext context, Select selectQuery)
         {
             var res = base.GetAll(context, selectQuery);
@@ -62,7 +80,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             if (action == "FormSubmit")
             {
                 var ev = item.Data.ToObject<EventDTO>();
-                FormSubmit(context, data as JObject, ev);
+                FormSubmit(context, data["form"] as JObject, ev);
                 AfterGetEvent(context, item);
                 return item.Data;
             }
@@ -83,8 +101,8 @@ namespace Satrabel.OpenContent.Components.Datasource
         private void AfterGetEvent(DataSourceContext context, IDataItem dataItem)
         {
             var ev = dataItem.Data.ToObject<EventDTO>();
-             var bookingCount = GetBookingCount(context, dataItem.Key);
-            var eventCat = Get<EventCategoryDTO>(context, ev.EventCategoryKey);
+             var bookingCount = GetBookingCount(context, dataItem.Id);
+            var eventCat = Get<EventCategoryDTO>(context, ev.EventCategory);
             var max = eventCat.Max;
 
             dataItem.Data["BookingMax"] = max-bookingCount;
@@ -103,7 +121,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 Field = "Source",
                 FieldType = FieldTypeEnum.KEY,
                 FieldOperator = OperatorEnum.EQUAL,
-                Value = new StringRuleValue("Items/" + eventKey)
+                Value = new StringRuleValue(eventKey)
             });
             def.Build(select);
             SearchResults docs = LuceneController.Instance.Search(OpenContentInfo.GetScope(GetModuleId(context), "Submissions"), def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
@@ -145,12 +163,12 @@ namespace Satrabel.OpenContent.Components.Datasource
         {
             if (oldBooking.Quantity != newBooking.Quantity)
             {
-                int actualBookingCount = GetBookingCount(context, oldBooking.EventKey);
+                int actualBookingCount = GetBookingCount(context, oldBooking.EventId);
                 int quantityChange = newBooking.Quantity - oldBooking.Quantity;
-                var ev = Get<EventDTO>(context, oldBooking.EventKey);
+                var ev = Get<EventDTO>(context, oldBooking.EventId);
                 if (ev != null)
                 {
-                    var eventCat = Get<EventCategoryDTO>(context, ev.EventCategoryKey);
+                    var eventCat = Get<EventCategoryDTO>(context, ev.EventCategory);
                     if (quantityChange > 0 && (actualBookingCount + quantityChange) > eventCat.Max)
                     {
                         throw new Exception("quantity change not alowed");
@@ -166,9 +184,9 @@ namespace Satrabel.OpenContent.Components.Datasource
         }
         private void FormSubmit(DataSourceContext context, JObject form, EventDTO ev)
         {
-            var colkey = ev.EventCategory.Split('/');
+            //var colkey = ev.EventCategory.Split('/');
             OpenContentController ctrl = new OpenContentController();
-            var evCat = ctrl.GetContent(context.ModuleId, colkey[0], colkey[1]).JsonAsJToken.ToObject<EventCategoryDTO>();
+            var evCat = ctrl.GetContent(context.ModuleId, "EventCategory", ev.EventCategory).JsonAsJToken.ToObject<EventCategoryDTO>();
 
             var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), "Submissions");
             var content = new OpenContentInfo()
@@ -184,102 +202,23 @@ namespace Satrabel.OpenContent.Components.Datasource
             };
             ctrl.AddContent(content, true, indexConfig);
 
-            var settings = evCat.FormSettings;
-            if (settings != null)
-            {
-                HandlebarsEngine hbs = new HandlebarsEngine();
-                dynamic data = null;
-                string formData = "";
-                if (form != null)
-                {
-                    /*
-                    if (!string.IsNullOrEmpty(settings.Settings.SiteKey))
-                    {
-                        Recaptcha recaptcha = new Recaptcha(settings.Settings.SiteKey, settings.Settings.SecretKey);
-                        RecaptchaValidationResult validationResult = recaptcha.Validate(form["recaptcha"].ToString());
-                        if (!validationResult.Succeeded)
-                        {
-                            return Request.CreateResponse(HttpStatusCode.Forbidden);
-                        }
-                        form.Remove("recaptcha");
-                    }
-                     */
-                    data = FormUtils.GenerateFormData(form.ToString(), out formData);
-                }
-                // Send emails
-                string Message = "Form submitted.";
-                var Errors = new List<string>();
-                if (settings != null && settings.Notifications != null)
-                {
-                    foreach (var notification in settings.Notifications)
-                    {
-                        try
-                        {
-                            MailAddress from = FormUtils.GenerateMailAddress(notification.From, notification.FromEmail, notification.FromName, notification.FromEmailField, notification.FromNameField, form);
-                            MailAddress to = FormUtils.GenerateMailAddress(notification.To, notification.ToEmail, notification.ToName, notification.ToEmailField, notification.ToNameField, form);
-                            MailAddress reply = null;
-                            if (!string.IsNullOrEmpty(notification.ReplyTo))
-                            {
-                                reply = FormUtils.GenerateMailAddress(notification.ReplyTo, notification.ReplyToEmail, notification.ReplyToName, notification.ReplyToEmailField, notification.ReplyToNameField, form);
-                            }
-                            string body = formData;
-                            if (!string.IsNullOrEmpty(notification.EmailBody))
-                            {
-                                body = hbs.Execute(notification.EmailBody, data);
-                            }
-
-                            string send = FormUtils.SendMail(from.ToString(), to.ToString(), (reply == null ? "" : reply.ToString()), notification.EmailSubject, body);
-                            if (!string.IsNullOrEmpty(send))
-                            {
-                                Errors.Add("From:" + from.ToString() + " - To:" + to.ToString() + " - " + send);
-                            }
-                        }
-                        catch (Exception exc)
-                        {
-                            Errors.Add("Notification " + (settings.Notifications.IndexOf(notification) + 1) + " : " + exc.Message);
-                            Log.Logger.Error(exc);
-                        }
-                    }
-                }
-                if (settings != null && settings.Settings != null)
-                {
-                    if (!string.IsNullOrEmpty(settings.Settings.Message))
-                    {
-                        Message = hbs.Execute(settings.Settings.Message, data);
-                    }
-                    else
-                    {
-                        Message = "Message sended.";
-                    }
-                    //Tracking = settings.Settings.Tracking;
-                    if (!string.IsNullOrEmpty(settings.Settings.Tracking))
-                    {
-                        //res.RedirectUrl = Globals.NavigateURL(ActiveModule.TabID, "", "result=" + content.ContentId);
-                    }
-                }
-            }
+            FormUtils.FormSubmit(form, evCat.FormSettings);
         }
     }
 
     public class EventDTO
     {
         public string EventCategory { get; set; }
-        public string EventCategoryKey
-        {
-            get
-            {
-                return DocumentUtils.GetCollectionKey(EventCategory).Key;
-            }
-        }
+       
     }
 
     public class BookingDTO
     {
-        public string EventKey
+        public string EventId
         {
             get
             {
-                return DocumentUtils.GetCollectionKey(Source).Key;
+                return Source;
             }
         }
         public string Source { get; set; }

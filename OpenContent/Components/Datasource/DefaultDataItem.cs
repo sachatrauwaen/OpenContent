@@ -14,7 +14,6 @@ namespace Satrabel.OpenContent.Components.Datasource
             Data = json;
         }
         public string Id { get; set; }
-        public string Key { get; set; }
         public string Collection { get; set; }
         public string Title { get; set; }
         public JToken Data { get; set; }

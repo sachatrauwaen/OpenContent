@@ -105,7 +105,7 @@ namespace Satrabel.OpenContent.Components.Json
             }
         }
 
-        public static void LookupJson(JObject o, JObject additionalData, JObject options, List<string> includes, Func<string, JObject> objFromCollection, string prefix ="")
+        public static void LookupJson(JObject o, JObject additionalData, JObject options, List<string> includes, Func<string, string, JObject> objFromCollection, string prefix ="")
         {
             foreach (var child in o.Children<JProperty>().ToList())
             {
@@ -129,7 +129,8 @@ namespace Satrabel.OpenContent.Components.Json
                 */
 
                 string field = (string.IsNullOrEmpty(prefix) ? child.Name : prefix + "."+ child.Name);
-                bool include = includes.Contains(field);
+                bool include = includes != null && includes.Contains(field);
+                string collection = opt["dataService"]?["data"]?["collection"] != null ? opt["dataService"]?["data"]?["collection"].ToString() : "";
 
                 string dataKey = "";
                 string dataMember = "";
@@ -193,12 +194,12 @@ namespace Satrabel.OpenContent.Components.Json
                             Debugger.Break();
                         }
                     }
-                    else if (include)
+                    else if (include && !string.IsNullOrEmpty(collection))
                     {
                         string val = childProperty.Value.ToString();
                         try
                         {
-                            o[childProperty.Name] = objFromCollection(val);
+                            o[childProperty.Name] = objFromCollection(collection, val);
                         }
                         catch (System.Exception ex)
                         {

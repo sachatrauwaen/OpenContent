@@ -1,4 +1,4 @@
- using System;
+using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -57,6 +57,7 @@ namespace Satrabel.OpenContent.Components.Manifest
 
         [JsonProperty(PropertyName = "disableEdit")]
         public bool DisableEdit { get; set; }
+
        
 
         public bool HasTemplates { get { return (Templates != null); } }

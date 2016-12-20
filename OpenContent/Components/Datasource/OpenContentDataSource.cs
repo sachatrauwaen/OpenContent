@@ -8,8 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.Logging;
-using Satrabel.OpenContent.Components.Manifest;
-using Satrabel.OpenContent.Components.Documents;
+using Satrabel.OpenContent.Components.Form;
 
 namespace Satrabel.OpenContent.Components.Datasource
 {
@@ -118,11 +117,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 {
                     LogContext.Log(context.ActiveModuleId, "Get DataItem", "Request", string.Format("{0}.Get() with id {1}", Name, id));
                 }
-                int idint;
-                if (int.TryParse(id, out idint))
-                {
-                    content = ctrl.GetContent(idint);
-                }
+                content = ctrl.GetContent(GetModuleId(context), context.Collection, id);
             }
             else
             {
@@ -152,36 +147,6 @@ namespace Satrabel.OpenContent.Components.Datasource
                 {
                     LogContext.Log(context.ActiveModuleId, "Get DataItem", "Result", string.Format("no item returned as incompatible module ids {0}-{1}", content.ModuleId, GetModuleId(context)));
                 }
-            }
-            return null;
-        }
-
-        public virtual IDataItem GetRelation(DataSourceContext context, string id)
-        {
-            OpenContentController ctrl = new OpenContentController();
-            OpenContentInfo content = null;
-            if (!string.IsNullOrEmpty(id))
-            {
-                if (LogContext.IsLogActive)
-                {
-                    LogContext.Log(context.ActiveModuleId, "Get DataItem", "Request", string.Format("{0}.Get() with id {1}", Name, id));
-                }
-                var colkey = DocumentUtils.GetCollectionKey(id);
-                content = ctrl.GetContent(GetModuleId(context), colkey.Collection, colkey.Key);
-            }
-            if (content == null)
-            {
-                Log.Logger.WarnFormat("Item not shown because no content item found. Id [{0}]. Context TabId: [{1}], ModuleId: [{2}]", id, GetTabId(context), GetModuleId(context));
-                LogContext.Log(context.ActiveModuleId, "Get DataItem", "Result", "not item found with id " + id);
-            }
-            else 
-            {
-                var dataItem = CreateDefaultDataItem(content);
-                if (LogContext.IsLogActive)
-                {
-                    LogContext.Log(context.ActiveModuleId, "Get DataItem", "Result", dataItem.Data);
-                }
-                return dataItem;
             }
             return null;
         }
@@ -318,7 +283,6 @@ namespace Satrabel.OpenContent.Components.Datasource
                 Collection = context.Collection,
                 Title = data["Title"] == null ? "" : data["Title"].ToString(),
                 Json = data.ToString(),
-                JsonAsJToken = data,
                 CreatedByUserId = context.UserId,
                 CreatedOnDate = DateTime.Now,
                 LastModifiedByUserId = context.UserId,
@@ -333,7 +297,6 @@ namespace Satrabel.OpenContent.Components.Datasource
             var content = (OpenContentInfo)item.Item;
             content.Title = data["Title"] == null ? "" : data["Title"].ToString();
             content.Json = data.ToString();
-            content.JsonAsJToken = data;
             content.LastModifiedByUserId = context.UserId;
             content.LastModifiedOnDate = DateTime.Now;
             ctrl.UpdateContent(content, context.Index, indexConfig);
@@ -358,7 +321,11 @@ namespace Satrabel.OpenContent.Components.Datasource
         /// <exception cref="System.NotImplementedException"></exception>
         public virtual JToken Action(DataSourceContext context, string action, IDataItem item, JToken data)
         {
-            throw new NotImplementedException();
+            if (action == "FormSubmit")
+            {
+                return FormUtils.FormSubmit(data as JObject);                
+            }
+            return null;
         }
 
         /// <summary>
@@ -420,8 +387,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         {
             return new DefaultDataItem
             {
-                Id = content.ContentId.ToString(),
-                Key = content.Key,
+                Id = content.Id,
                 Collection = content.Collection,
                 Title = content.Title,
                 Data = content.JsonAsJToken,

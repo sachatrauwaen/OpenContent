@@ -102,6 +102,10 @@ namespace Satrabel.OpenContent
             ti.ModuleContext = ModuleContext;
             ti.Settings = _settings;
             ti.Renderinfo = _renderinfo;
+            /*
+            AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext.PortalId, _settings.Template.ManifestFolderUri.FolderPath, "Submissions");
+            alpaca.RegisterAll(true, false);
+            */
         }
         protected override void OnLoad(EventArgs e)
         {

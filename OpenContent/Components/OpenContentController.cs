@@ -18,7 +18,7 @@ using DotNetNuke.Data;
 using DotNetNuke.Entities.Modules;
 using Satrabel.OpenContent.Components.Lucene;
 using Satrabel.OpenContent.Components.Lucene.Config;
-using Satrabel.OpenContent.Components.Documents;
+using Satrabel.OpenContent.Components.Common;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -33,18 +33,22 @@ namespace Satrabel.OpenContent.Components
         {
             ClearCache(content);
             var json = content.JsonAsJToken;
-            if (json["_id"] != null)
-            {
-                content.Key = json["_id"].ToString();
-            }
             if (string.IsNullOrEmpty(content.Key))
             {
-                content.Key = ObjectId.NewObjectId().ToString();
-                json["_id"] = content.Key;
+                if (json["_id"] != null)
+                {
+                    content.Key = json["_id"].ToString();
+                }
+                else
+                {
+                    content.Key = ObjectId.NewObjectId().ToString();
+                    //json["_id"] = content.Id;
+                    //content.Json = json.ToString();
+                }
             }
             if (string.IsNullOrEmpty(content.Collection))
             {
-                content.Collection = "Items";
+                content.Collection = AppConfig.DEFAULT_COLLECTION;
             }
             OpenContentVersion ver = new OpenContentVersion()
             {
@@ -97,7 +101,8 @@ namespace Satrabel.OpenContent.Components
         {
             ClearCache(content);
             var json = content.JsonAsJToken;
-            json["_id"] = content.Key;
+            //json["_id"] = content.Id;
+            //content.Json = json.ToString();
             OpenContentVersion ver = new OpenContentVersion()
             {
                 Json = json,
@@ -124,9 +129,7 @@ namespace Satrabel.OpenContent.Components
             }
             if (index)
             {
-
                 content.HydrateDefaultFields(indexConfig);
-
                 LuceneController.Instance.Update(content, indexConfig);
                 LuceneController.Instance.Store.Commit();
             }
@@ -191,7 +194,18 @@ namespace Satrabel.OpenContent.Components
                 });
         }
 
-        public OpenContentInfo GetContent(int moduleId, string collection, string key)
+        public OpenContentInfo GetContent(int moduleId, string collection, string id)
+        {
+            if (collection == AppConfig.DEFAULT_COLLECTION)
+            {
+                return GetContent(int.Parse(id));
+            }
+            else
+            {
+                return GetContentByKey(moduleId, collection, id);
+            }
+        }
+        private OpenContentInfo GetContentByKey(int moduleId, string collection, string key)
         {
             IEnumerable<OpenContentInfo> documents;
             using (IDataContext ctx = DataContext.Instance())
@@ -212,13 +226,13 @@ namespace Satrabel.OpenContent.Components
             return documents;
         }
 
-        public IEnumerable<OpenContentInfo> GetContents(int[] ids)
+        public IEnumerable<OpenContentInfo> GetContents(int[] contentIds)
         {
             IEnumerable<OpenContentInfo> documents;
             using (IDataContext ctx = DataContext.Instance())
             {
                 var rep = ctx.GetRepository<OpenContentInfo>();
-                documents = rep.Find("WHERE ContentId IN ("+string.Join(",", ids)+")");
+                documents = rep.Find("WHERE ContentId IN (" + string.Join(",", contentIds) + ")");
             }
             return documents;
         }

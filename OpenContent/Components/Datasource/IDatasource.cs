@@ -34,14 +34,6 @@ namespace Satrabel.OpenContent.Components.Datasource
         IDataItem Get(DataSourceContext context, string id);
 
         /// <summary>
-        /// Gets the specified item of a relation in a list datasource.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="id">The identifier. (collection/key)</param>
-        /// <returns></returns>
-        IDataItem GetRelation(DataSourceContext context, string id);
-
-        /// <summary>
         /// Gets items of a list datasource based on a query, 
         /// </summary>
         /// <param name="context">The context.</param>

@@ -2,6 +2,11 @@
 ALTER TABLE {databaseOwner}[{objectQualifier}OpenContent_Items] DROP CONSTRAINT [FK_OpenContent_Items_Modules]
 GO
 
+IF EXISTS(SELECT * FROM sys.indexes WHERE name = 'IX_{objectQualifier}OpenContent_Items_ModIdColKey' AND object_id = OBJECT_ID('{objectQualifier}OpenContent_Items'))
+DROP INDEX IX_{objectQualifier}OpenContent_Items_ScopeColId ON {objectQualifier}OpenContent_Items
+GO
+
+
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}OpenContent_Items]') AND type in (N'U'))
 DROP TABLE {databaseOwner}[{objectQualifier}OpenContent_Items]
 GO
@@ -9,3 +14,4 @@ GO
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}OpenContent_Data]') AND type in (N'U'))
 DROP TABLE {databaseOwner}[{objectQualifier}OpenContent_AdditionalData]
 GO
+

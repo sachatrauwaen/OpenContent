@@ -5,7 +5,7 @@ using System.Security;
 using System.Threading;
 
 
-namespace Satrabel.OpenContent.Components.Documents
+namespace Satrabel.OpenContent.Components.Common
 {
     /// <summary>
     /// Represent a 12-bytes BSON type used in document Id

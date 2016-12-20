@@ -4,7 +4,6 @@ using DotNetNuke.Services.Localization;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Dnn;
-using Satrabel.OpenContent.Components.Documents;
 using Satrabel.OpenContent.Components.Handlebars;
 using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Manifest;
@@ -124,23 +123,25 @@ namespace Satrabel.OpenContent.Components.Render
             */
             if (enhance)
             {
-                var colManifest = _templateFiles.Model[colName];
+                var colManifest = _templateFiles.Model == null ? null : _templateFiles.Model[colName];
+                var includes = colManifest == null ? null : colManifest.Includes;
                 var ds = DataSourceManager.GetDataSource(_manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(_module);
-                JsonUtils.LookupJson(model, enhancedModel["AdditionalData"] as JObject, enhancedModel["Options"] as JObject, colManifest.Includes, (colkey) =>
+                JsonUtils.LookupJson(model, enhancedModel["AdditionalData"] as JObject, enhancedModel["Options"] as JObject, includes, (col, id) =>
                 {
-                    var dsItem = ds.GetRelation(dsContext, colkey);
+                    dsContext.Collection = col;
+                    var dsItem = ds.Get(dsContext, id);
                     if (dsItem != null && dsItem.Data is JObject)
                     {
                         return dsItem.Data as JObject;
                     }
                     else
                     {
-                        return new JObject(new JObject(new
-                        {
-                            Id = colkey,
-                            Title = "not found"
-                        }));
+                        JObject res = new JObject();
+                        res["Id"] = id;
+                        res["Collection"] = col;
+                        res["Title"] = "unknow";
+                        return res;
                     }
                 });
             }
@@ -155,102 +156,75 @@ namespace Satrabel.OpenContent.Components.Render
         {
             if (_portalSettings == null) onlyData = true;
 
-            // include SCHEMA info in the Model
-            if (!onlyData && _templateFiles != null && _templateFiles.SchemaInTemplate)
+            var ds = DataSourceManager.GetDataSource(_manifest.DataSource);
+            var dsContext = OpenContentUtils.CreateDataContext(_module);
+            if (_templateFiles != null)
             {
-                // schema
-                string schemaFilename = _physicalTemplateFolder + "schema.json";
-                model["Schema"] = JsonUtils.GetJsonFromFile(schemaFilename);
-            }
-
-            // include OPTIONS info in the Model
-            if (_templateFiles != null && _templateFiles.OptionsInTemplate)
-            {
-                // options
-                JToken optionsJson = null;
-                // default options
-                string optionsFilename = _physicalTemplateFolder + "options.json";
-                if (File.Exists(optionsFilename))
+                bool includeSchema = !onlyData && _templateFiles.SchemaInTemplate;
+                bool includeOptions = _templateFiles.OptionsInTemplate;
+                if (includeSchema || includeOptions)
                 {
-                    string fileContent = File.ReadAllText(optionsFilename);
-                    if (!string.IsNullOrWhiteSpace(fileContent))
+                    var alpaca = ds.GetAlpaca(dsContext, includeSchema, includeOptions, false);
+                    // include SCHEMA info in the Model
+                    if (includeSchema)
                     {
-                        optionsJson = fileContent.ToJObject("Options");
+                        model["Schema"] = alpaca["schema"];
+                    }
+                    // include OPTIONS info in the Model
+                    if (includeOptions)
+                    {
+                        model["Options"] = alpaca["options"];
                     }
                 }
-                // language options
-                optionsFilename = _physicalTemplateFolder + "options." + GetCurrentCultureCode() + ".json";
-                if (File.Exists(optionsFilename))
+                // include additional data in the Model
+                if (_templateFiles.AdditionalDataInTemplate && _manifest.AdditionalDataDefined())
                 {
-                    string fileContent = File.ReadAllText(optionsFilename);
-                    if (!string.IsNullOrWhiteSpace(fileContent))
+                    var additionalData = model["AdditionalData"] = new JObject();
+                    foreach (var item in _manifest.AdditionalDataDefinition)
                     {
-                        var extraJson = fileContent.ToJObject("Options cultureSpecific");
-                        if (optionsJson == null)
-                            optionsJson = extraJson;
-                        else
-                            optionsJson = optionsJson.JsonMerge(extraJson);
-                    }
-                }
-                if (optionsJson != null)
-                {
-                    model["Options"] = optionsJson;
-                }
-            }
-
-            // include additional data in the Model
-            if (_templateFiles != null && _templateFiles.AdditionalDataInTemplate && _manifest.AdditionalDataDefined())
-            {
-                var additionalData = model["AdditionalData"] = new JObject();
-                foreach (var item in _manifest.AdditionalDataDefinition)
-                {
-                    var dataManifest = item.Value;
-                    var ds = DataSourceManager.GetDataSource(_manifest.DataSource);
-                    var dsContext = OpenContentUtils.CreateDataContext(_module);
-                    IDataItem dataItem = ds.GetData(dsContext, dataManifest.ScopeType, dataManifest.StorageKey ?? item.Key);
-                    JToken additionalDataJson = new JObject();
-                    var json = dataItem?.Data;
-                    if (json != null)
-                    {
-                        if (LocaleController.Instance.GetLocales(_portalId).Count > 1)
+                        var dataManifest = item.Value;
+                        IDataItem dataItem = ds.GetData(dsContext, dataManifest.ScopeType, dataManifest.StorageKey ?? item.Key);
+                        JToken additionalDataJson = new JObject();
+                        var json = dataItem?.Data;
+                        if (json != null)
                         {
-                            JsonUtils.SimplifyJson(json, GetCurrentCultureCode());
+                            if (LocaleController.Instance.GetLocales(_portalId).Count > 1)
+                            {
+                                JsonUtils.SimplifyJson(json, GetCurrentCultureCode());
+                            }
+                            additionalDataJson = json;
                         }
-                        additionalDataJson = json;
+                        additionalData[(item.Value.ModelKey ?? item.Key).ToLowerInvariant()] = additionalDataJson;
                     }
-                    additionalData[(item.Value.ModelKey ?? item.Key).ToLowerInvariant()] = additionalDataJson;
                 }
-            }
-
-            // include collections
-            if (_templateFiles != null && _templateFiles.Model != null)
-            {
-                var collections = model["Collections"] = new JObject();
-                foreach (var item in _templateFiles.Model.Where(c=> c.Key != "Items"))
+                // include collections
+                if (_templateFiles.Model != null)
                 {
-                    var colManifest = item.Value;
-                    var ds = DataSourceManager.GetDataSource(_manifest.DataSource);
-                    var dsContext = OpenContentUtils.CreateDataContext(_module);
-                    dsContext.Collection = item.Key;
-                    IDataItems dataItems = ds.GetAll(dsContext, null);
-                    var colDataJson = new JArray();
-                    foreach (var dataItem in dataItems.Items)
+                    var dsColContext = OpenContentUtils.CreateDataContext(_module);
+                    var collections = model["Collections"] = new JObject();
+                    foreach (var item in _templateFiles.Model.Where(c => c.Key != _templateManifest.Collection))
                     {
-                        var json = dataItem.Data;
-                        if (json != null && LocaleController.Instance.GetLocales(_portalId).Count > 1)
+                        var colManifest = item.Value;
+                        dsContext.Collection = item.Key;
+                        IDataItems dataItems = ds.GetAll(dsColContext, null);
+                        var colDataJson = new JArray();
+                        foreach (var dataItem in dataItems.Items)
                         {
-                            JsonUtils.SimplifyJson(json, GetCurrentCultureCode());
+                            var json = dataItem.Data;
+                            if (json != null && LocaleController.Instance.GetLocales(_portalId).Count > 1)
+                            {
+                                JsonUtils.SimplifyJson(json, GetCurrentCultureCode());
+                            }
+                            if (json is JObject)
+                            {
+                                EnhanceSelect2(json as JObject, model);
+                            }
+                            colDataJson.Add(json);
                         }
-                        if (json is JObject)
-                        {
-                            EnhanceSelect2(json as JObject, model);
-                        }
-                        colDataJson.Add(json);
+                        collections[item.Key] = colDataJson;
                     }
-                    collections[item.Key] = colDataJson;
                 }
             }
-
             // include settings in the Model
             if (!onlyData && _templateManifest.SettingsNeeded() && !string.IsNullOrEmpty(_settingsJson))
             {
@@ -287,7 +261,6 @@ namespace Satrabel.OpenContent.Components.Render
                     model["Localization"] = localizationJson;
                 }
             }
-
             if (!onlyData)
             {
                 // include CONTEXT in the Model
@@ -296,38 +269,12 @@ namespace Satrabel.OpenContent.Components.Render
                 context["ModuleId"] = _module.ViewModule.ModuleID;
                 context["GoogleApiKey"] = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetGoogleApiKey();
                 context["ModuleTitle"] = _module.ViewModule.ModuleTitle;
+                context["AddUrl"] = DnnUrlUtils.EditUrl(_module.ViewModule.ModuleID, _portalSettings);
                 var editIsAllowed = !_manifest.DisableEdit && IsEditAllowed(-1);
                 context["IsEditable"] = editIsAllowed; //allowed to edit the item or list (meaning allow Add)
                 context["IsEditMode"] = IsEditMode;
                 context["PortalId"] = _portalId;
                 context["MainUrl"] = Globals.NavigateURL(_detailTabId, false, _portalSettings, "", GetCurrentCultureCode());
-
-                context["AddUrl"] = DnnUrlUtils.EditUrl(_module.ViewModule.ModuleID, _portalSettings);
-                context["EditUrl"] = DnnUrlUtils.EditUrl(_module.ViewModule.ModuleID, _portalSettings);
-
-                /*
-                if (_data == null) // multiple
-                {
-                    context["AddUrl"] = DnnUrlUtils.EditUrl(_module.ViewModule.ModuleID, _portalSettings);
-                    context["EditUrl"] = DnnUrlUtils.EditUrl(_module.ViewModule.ModuleID, _portalSettings); // backward compatibility
-                }
-                else // single
-                {
-                    
-                    string url = "";
-                    if (!string.IsNullOrEmpty(_manifest?.DetailUrl))
-                    {
-                        HandlebarsEngine hbEngine = new HandlebarsEngine();
-                        dynamic dynForHBS = JsonUtils.JsonToDynamic(model.ToString());
-                        url = hbEngine.Execute(_manifest.DetailUrl, dynForHBS);
-                        url = HttpUtility.HtmlDecode(url);
-                    }
-                    context["DetailUrl"] = Globals.NavigateURL(_detailTabId, false, _portalSettings, "", GetCurrentCultureCode(), url.CleanupUrl(), "id=" + _data.Id);
-                    
-                    context["Id"] = _data.Id;
-                    context["EditUrl"] = editIsAllowed ? DnnUrlUtils.EditUrl(_module.ViewModule.ModuleID, _portalSettings) : "";
-                }
-                */
             }
         }
 
