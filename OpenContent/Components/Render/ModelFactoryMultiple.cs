@@ -1,5 +1,6 @@
 ﻿using DotNetNuke.Common;
 using DotNetNuke.Entities.Portals;
+using DotNetNuke.Entities.Users;
 using DotNetNuke.Services.Localization;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Datasource;
@@ -19,17 +20,17 @@ namespace Satrabel.OpenContent.Components.Render
     {
         private readonly IEnumerable<IDataItem> _dataList = null;
 
-        public ModelFactoryMultiple(IEnumerable<IDataItem> dataList, OpenContentModuleInfo module, PortalSettings portalSettings):
+        public ModelFactoryMultiple(IEnumerable<IDataItem> dataList, OpenContentModuleInfo module, PortalSettings portalSettings) :
             base(module, portalSettings)
         {
             this._dataList = dataList;
         }
-        public ModelFactoryMultiple(IEnumerable<IDataItem> dataList, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleInfo module, PortalSettings portalSettings):
+        public ModelFactoryMultiple(IEnumerable<IDataItem> dataList, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleInfo module, PortalSettings portalSettings) :
             base(settingsJson, physicalTemplateFolder, manifest, templateManifest, templateFiles, module, portalSettings)
         {
             this._dataList = dataList;
         }
-        public ModelFactoryMultiple(IEnumerable<IDataItem> dataList, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleInfo module, int portalId, string cultureCode):
+        public ModelFactoryMultiple(IEnumerable<IDataItem> dataList, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleInfo module, int portalId, string cultureCode) :
             base(settingsJson, physicalTemplateFolder, manifest, templateManifest, templateFiles, module, portalId, cultureCode)
         {
             this._dataList = dataList;
@@ -47,14 +48,14 @@ namespace Satrabel.OpenContent.Components.Render
                 foreach (var item in _dataList)
                 {
                     var model = item.Data as JObject;
+                    JObject context = new JObject();
+                    model["Context"] = context;
+                    context["Id"] = item.Id;
                     if (LocaleController.Instance.GetLocales(_portalId).Count > 1)
                     {
                         JsonUtils.SimplifyJson(model, GetCurrentCultureCode());
                     }
                     EnhanceSelect2(model, completeModel);
-                    JObject context = new JObject();
-                    model["Context"] = context;
-                    context["Id"] = item.Id;
                     yield return JsonUtils.JsonToDynamic(model.ToString());
                 }
             }
@@ -78,19 +79,21 @@ namespace Satrabel.OpenContent.Components.Render
                 foreach (var item in _dataList)
                 {
                     JObject dyn = item.Data as JObject;
+                    JObject context = new JObject();
+                    dyn["Context"] = context;
+                    context["Id"] = item.Id;
                     if (LocaleController.Instance.GetLocales(_portalId).Count > 1)
                     {
                         JsonUtils.SimplifyJson(dyn, GetCurrentCultureCode());
                     }
                     EnhanceSelect2(dyn, model);
+                    EnhanceUser(dyn, item.CreatedByUserId);
                     if (Options != null && model["Options"] != null)
                     {
                         JsonUtils.ImagesJson(dyn, Options, model["Options"] as JObject, IsEditMode);
                     }
-                    JObject context = new JObject();
-                    dyn["Context"] = context;
-                    context["Id"] = item.Id;
-                    context["Collection"] = item.Collection;
+
+
                     if (onlyData)
                     {
                         RemoveNoData(model);
@@ -115,6 +118,31 @@ namespace Satrabel.OpenContent.Components.Render
                 }
             }
             return model;
+        }
+
+        private void EnhanceUser(JObject model, int createdByUserId)
+        {
+            string colName = _templateManifest == null || string.IsNullOrEmpty(_templateManifest.Collection) ? "Items" : _templateManifest.Collection;
+            if (_templateManifest != null && !string.IsNullOrEmpty(colName) && _templateFiles.Model != null && _templateFiles.Model.ContainsKey(colName))
+            {
+                var colManifest = _templateFiles.Model[colName];
+                if (colManifest != null)
+                {
+                    // enhance Context with dnn user
+                    if (colManifest.CreateByUser && model["Context"] != null)
+                    {
+                        var dnnUser = UserController.GetUserById(_portalId, createdByUserId);
+                        if (dnnUser != null) { 
+                        var user = new JObject();
+                        user["DisplayName"] = dnnUser.DisplayName;
+                        user["FirstName"] = dnnUser.FirstName;
+                        user["LastName"] = dnnUser.LastName;
+                        user["Email"] = dnnUser.Email;
+                        model["Context"]["CreatedByUser"] = user;
+                        }
+                    }
+                }
+            }
         }
 
         private static void RemoveNoData(JObject model)

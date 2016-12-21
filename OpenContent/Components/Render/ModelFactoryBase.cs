@@ -17,19 +17,11 @@ namespace Satrabel.OpenContent.Components.Render
 {
     public abstract class ModelFactoryBase
     {
-
-
         private readonly string _settingsJson;
         private readonly string _physicalTemplateFolder;
-
-
-        private readonly TemplateFiles _templateFiles;
-
-
+        protected readonly TemplateFiles _templateFiles;
         protected readonly int _portalId;
-
         private readonly string _cultureCode;
-
         // only multiple
         protected readonly Manifest.Manifest _manifest;
         protected readonly TemplateManifest _templateManifest;
@@ -211,12 +203,16 @@ namespace Satrabel.OpenContent.Components.Render
                         foreach (var dataItem in dataItems.Items)
                         {
                             var json = dataItem.Data;
+                            
                             if (json != null && LocaleController.Instance.GetLocales(_portalId).Count > 1)
                             {
                                 JsonUtils.SimplifyJson(json, GetCurrentCultureCode());
                             }
                             if (json is JObject)
                             {
+                                JObject context = new JObject();
+                                json["Context"] = context;
+                                context["Id"] = dataItem.Id;
                                 EnhanceSelect2(json as JObject, model);
                             }
                             colDataJson.Add(json);

@@ -128,7 +128,6 @@ namespace Satrabel.OpenContent.Components.Rest
                 {
                     restSelect.Sort = JsonConvert.DeserializeObject<List<RestSort>>(sort);
                 }
-
                 ModuleController mc = new ModuleController();
                 ModuleInfo activeModule = ActiveModule; //mc.GetModule(ModuleId, TabId, false);
 

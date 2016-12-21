@@ -176,7 +176,6 @@
     </Compile>
     <Compile Include="Components\Alpaca\AlpacaLayoutEnum.cs" />
     <Compile Include="Components\AppConfig.cs" />
-    <Compile Include="Components\Datasource\BookingDataSource.cs" />
     <Compile Include="Components\Common\ObjectId.cs" />
     <Compile Include="Components\FormAPIController.cs" />
     <Compile Include="Components\Form\FormUtils.cs" />
@@ -351,20 +350,6 @@
     <Compile Include="Components\Common\Utils.cs" />
     <Compile Include="Components\UrlRewriter\OpenContentUrlRule.cs" />
     <Compile Include="Components\UrlRewriter\OpenContentUrlProvider.cs" />
-    <Compile Include="EditCollection.ascx.cs">
-      <DependentUpon>EditCollection.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EditCollection.ascx.designer.cs">
-      <DependentUpon>EditCollection.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="EditFormSettings.ascx.cs">
-      <DependentUpon>EditFormSettings.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EditFormSettings.ascx.designer.cs">
-      <DependentUpon>EditFormSettings.ascx</DependentUpon>
-    </Compile>
     <Compile Include="RenderModule.ascx.cs">
       <DependentUpon>RenderModule.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -542,8 +527,6 @@
     <Content Include="css\glyphicons\fonts\glyphicons-regular.svg" />
     <Content Include="css\glyphicons\fonts\glyphicons-social-regular.svg" />
     <Content Include="css\glyphicons\glyphicons.css" />
-    <Content Include="EditCollection.ascx" />
-    <Content Include="EditFormSettings.ascx" />
     <Content Include="js\bootstrap\css\bootstrap-theme.css" />
     <Content Include="js\bootstrap\css\bootstrap-theme.min.css" />
     <Content Include="js\bootstrap\css\bootstrap.css" />
@@ -983,9 +966,6 @@
       <SubType>Designer</SubType>
     </Content>
     <None Include="bundleconfig.json" />
-    <Content Include="Providers\DataProviders\SqlDataProvider\03.02.00.SqlDataProvider" />
-    <Content Include="formsettings-options.json" />
-    <Content Include="formsettings-schema.json" />
     <None Include="Scripts\_references.js" />
     <Content Include="js\select2\i18n\az.js" />
     <Content Include="js\select2\i18n\bg.js" />
