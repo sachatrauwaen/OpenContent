@@ -29,11 +29,13 @@ namespace Satrabel.OpenContent.Components.Datasource
             var dataItem = base.Get(context, id);
             if (context.Collection == "Items") // Events
             {
-                AfterGetEvent(context, dataItem);
+                if (dataItem != null)
+                    AfterGetEvent(context, dataItem);
             }
             else if (context.Collection == "Submissions") // Events
             {
-                AfterGetSubmission(context, dataItem);
+                if (dataItem != null)
+                    AfterGetSubmission(context, dataItem);
             }
             return dataItem;
         }
@@ -43,13 +45,15 @@ namespace Satrabel.OpenContent.Components.Datasource
             var booking = dataItem.Data.ToObject<BookingDTO>();
             var bookingCount = GetBookingCount(context, booking.EventId);
             var ev = Get<EventDTO>(context, booking.EventId);
-            var eventCat = Get<EventCategoryDTO>(context, ev.EventCategory);
-            var max = eventCat.Max;
-
-            dataItem.Data["BookingMax"] = max - bookingCount;
-            dataItem.Data["EventMax"] = max;
-            dataItem.Data["BookingCount"] = bookingCount;
-            dataItem.Data["EventCategory"] = ev.EventCategory;
+            if (ev != null)
+            {
+                var eventCat = Get<EventCategoryDTO>(context, ev.EventCategory);
+                var max = eventCat.Max;
+                dataItem.Data["BookingMax"] = max - bookingCount;
+                dataItem.Data["EventMax"] = max;
+                dataItem.Data["BookingCount"] = bookingCount;
+                dataItem.Data["EventCategory"] = ev.EventCategory;
+            }
         }
 
         public override IDataItems GetAll(DataSourceContext context, Select selectQuery)
@@ -101,11 +105,11 @@ namespace Satrabel.OpenContent.Components.Datasource
         private void AfterGetEvent(DataSourceContext context, IDataItem dataItem)
         {
             var ev = dataItem.Data.ToObject<EventDTO>();
-             var bookingCount = GetBookingCount(context, dataItem.Id);
+            var bookingCount = GetBookingCount(context, dataItem.Id);
             var eventCat = Get<EventCategoryDTO>(context, ev.EventCategory);
             var max = eventCat.Max;
 
-            dataItem.Data["BookingMax"] = max-bookingCount;
+            dataItem.Data["BookingMax"] = max - bookingCount;
             dataItem.Data["EventMax"] = max;
             dataItem.Data["BookingCount"] = bookingCount;
             dataItem.Data["EventCategory"] = ev.EventCategory;
@@ -176,7 +180,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                     if (quantityChange != 0)
                     {
 
-                       // send notifications
+                        // send notifications
 
                     }
                 }
@@ -209,7 +213,7 @@ namespace Satrabel.OpenContent.Components.Datasource
     public class EventDTO
     {
         public string EventCategory { get; set; }
-       
+
     }
 
     public class BookingDTO

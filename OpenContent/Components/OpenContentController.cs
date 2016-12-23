@@ -198,7 +198,11 @@ namespace Satrabel.OpenContent.Components
         {
             if (collection == AppConfig.DEFAULT_COLLECTION)
             {
-                return GetContent(int.Parse(id));
+                int intid = 0;
+                if (int.TryParse(id, out intid))
+                    return GetContent(intid);
+                else
+                    return null;
             }
             else
             {
