@@ -85,6 +85,7 @@ function getSchema(formdef) {
     }
     var schematypes = {
         "text": "string",
+        "number": "number",
         "select": "string",
         "radio": "string",
         "checkbox": "boolean",
