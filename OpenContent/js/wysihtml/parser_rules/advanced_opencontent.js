@@ -146,7 +146,11 @@ var wysihtml5ParserRules = {
         "h4": {
             "add_class": {
                 "align": "align_text"
-            }
+            },
+            "keep_styles": {
+                "textAlign": 1,
+                "float": 1
+            },
         },
         "em": {},
         "title": {
@@ -241,7 +245,11 @@ var wysihtml5ParserRules = {
         "h1": {
             "add_class": {
                 "align": "align_text"
-            }
+            },
+            "keep_styles": {
+                "textAlign": 1,
+                "float": 1
+            },
         },
         "head": {
             "remove": 1
@@ -273,7 +281,11 @@ var wysihtml5ParserRules = {
         "div": {
             "add_class": {
                 "align": "align_text"
-            }
+            },
+            "keep_styles": {
+                "textAlign": 1,
+                "float": 1
+            },
         },
         "option": {
             "rename_tag": "span"
@@ -314,7 +326,11 @@ var wysihtml5ParserRules = {
         "h5": {
             "add_class": {
                 "align": "align_text"
-            }
+            },
+            "keep_styles": {
+                "textAlign": 1,
+                "float": 1
+            },
         },
         "meta": {
             "remove": 1
@@ -418,7 +434,11 @@ var wysihtml5ParserRules = {
         "h3": {
             "add_class": {
                 "align": "align_text"
-            }
+            },
+            "keep_styles": {
+                "textAlign": 1,
+                "float": 1
+            },
         },
         "textarea": {
             "rename_tag": "span"
@@ -458,7 +478,11 @@ var wysihtml5ParserRules = {
         "h6": {
             "add_class": {
                 "align": "align_text"
-            }
+            },
+            "keep_styles": {
+                "textAlign": 1,
+                "float": 1
+            },
         },
         "param": {
             "remove": 1
@@ -536,7 +560,11 @@ var wysihtml5ParserRules = {
         "h2": {
             "add_class": {
                 "align": "align_text"
-            }
+            },
+            "keep_styles": {
+                "textAlign": 1,
+                "float": 1
+            },
         },
         "ins": {
             "rename_tag": "span"
@@ -544,7 +572,11 @@ var wysihtml5ParserRules = {
         "p": {
             "add_class": {
                 "align": "align_text"
-            }
+            },
+            "keep_styles": {
+                "textAlign": 1,
+                "float": 1
+            },
         },
         "sub": {},
         "comment": {
