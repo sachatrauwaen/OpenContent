@@ -25,6 +25,11 @@ namespace Satrabel.OpenContent.Components.Render
         {
             this._dataList = dataList;
         }
+        public ModelFactoryMultiple(IEnumerable<IDataItem> dataList, OpenContentModuleInfo module, PortalSettings portalSettings, string collection) :
+            base(module, portalSettings, collection)
+        {
+            this._dataList = dataList;
+        }
         public ModelFactoryMultiple(IEnumerable<IDataItem> dataList, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleInfo module, PortalSettings portalSettings) :
             base(settingsJson, physicalTemplateFolder, manifest, templateManifest, templateFiles, module, portalSettings)
         {
@@ -64,15 +69,25 @@ namespace Satrabel.OpenContent.Components.Render
         {
             if (_portalSettings == null) onlyData = true;
             JObject model = new JObject();
+            var itemsModel = model;
+            /*
+            if (!string.IsNullOrEmpty(_collection))
+            {
+                itemsModel = new JObject();
+                model[_collection] = itemsModel;
+            }
+            */
             if (!onlyData)
             {
                 ExtendModel(model, onlyData);
-                model["Context"]["RssUrl"] = _portalSettings.PortalAlias.HTTPAlias +
+                ExtendSchemaOptions(itemsModel, onlyData);
+                ExtendItemsModel(itemsModel, onlyData);
+                itemsModel["Context"]["RssUrl"] = _portalSettings.PortalAlias.HTTPAlias +
                        "/DesktopModules/OpenContent/API/RssAPI/GetFeed?moduleId=" + _module.ViewModule.ModuleID + "&tabId=" + _detailTabId;
             }
             //string collectionName = string.IsNullOrEmpty(_templateManifest.Collection) ? "Items" : _templateManifest.Collection;
             JArray items = new JArray(); ;
-            model["Items"] = items;
+            itemsModel["Items"] = items;
             //string editRole = Manifest.GetEditRole();
             if (_dataList != null && _dataList.Any())
             {
@@ -86,17 +101,15 @@ namespace Satrabel.OpenContent.Components.Render
                     {
                         JsonUtils.SimplifyJson(dyn, GetCurrentCultureCode());
                     }
-                    EnhanceSelect2(dyn, model);
+                    EnhanceSelect2(dyn, itemsModel);
                     EnhanceUser(dyn, item.CreatedByUserId);
-                    if (Options != null && model["Options"] != null)
+                    if (Options != null && itemsModel["Options"] != null)
                     {
-                        JsonUtils.ImagesJson(dyn, Options, model["Options"] as JObject, IsEditMode);
+                        JsonUtils.ImagesJson(dyn, Options, itemsModel["Options"] as JObject, IsEditMode);
                     }
-
-
                     if (onlyData)
                     {
-                        RemoveNoData(model);
+                        RemoveNoData(itemsModel);
                     }
                     else
                     {
@@ -110,7 +123,7 @@ namespace Satrabel.OpenContent.Components.Render
                         }
                         var editStatus = !_manifest.DisableEdit && IsEditAllowed(item.CreatedByUserId);
                         context["IsEditable"] = editStatus;
-                        context["EditUrl"] = editStatus ? DnnUrlUtils.EditUrl("id", item.Id, _module.ViewModule.ModuleID, _portalSettings) : "";
+                        context["EditUrl"] = DnnUrlUtils.EditUrl("id", item.Id, _module.ViewModule.ModuleID, _portalSettings);
                         context["DetailUrl"] = Globals.NavigateURL(_detailTabId, false, _portalSettings, "", GetCurrentCultureCode(), UrlHelpers.CleanupUrl(url), "id=" + item.Id);
                         context["MainUrl"] = Globals.NavigateURL(_detailTabId, false, _portalSettings, "", GetCurrentCultureCode(), "");
                     }
@@ -120,9 +133,30 @@ namespace Satrabel.OpenContent.Components.Render
             return model;
         }
 
+        private void ExtendItemsModel(JObject model, bool onlyData)
+        {
+            if (_portalSettings == null) onlyData = true;
+
+            if (!onlyData)
+            {
+                // include CONTEXT in the Model
+                JObject context;
+                if (model["Context"] is JObject)
+                {
+                    context = model["Context"] as JObject;
+                }
+                else
+                {
+                    context = new JObject();
+                    model["Context"] = context;
+                }
+                context["AddUrl"] = DnnUrlUtils.EditUrl(_module.ViewModule.ModuleID, _portalSettings);
+            }
+        }
+
         private void EnhanceUser(JObject model, int createdByUserId)
         {
-            string colName = _templateManifest == null || string.IsNullOrEmpty(_templateManifest.Collection) ? "Items" : _templateManifest.Collection;
+            string colName = string.IsNullOrEmpty(_collection) ? "Items" : _collection;
             if (_templateManifest != null && !string.IsNullOrEmpty(colName) && _templateFiles.Model != null && _templateFiles.Model.ContainsKey(colName))
             {
                 var colManifest = _templateFiles.Model[colName];

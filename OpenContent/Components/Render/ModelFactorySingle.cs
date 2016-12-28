@@ -32,6 +32,12 @@ namespace Satrabel.OpenContent.Components.Render
             this._dataJson = data.Data;
             this._data = data;
         }
+        public ModelFactorySingle(IDataItem data, OpenContentModuleInfo module, PortalSettings portalSettings, string collection) :
+            base(module, portalSettings, collection)
+        {
+            this._dataJson = data.Data;
+            this._data = data;
+        }
         /*
         public ModelFactory(IDataItem data, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleInfo module, int portalId, string cultureCode, int mainTabId, int mainModuleId)
         {
@@ -55,12 +61,11 @@ namespace Satrabel.OpenContent.Components.Render
             {
                 JsonUtils.SimplifyJson(model, GetCurrentCultureCode());
             }
-
             var enhancedModel = new JObject();
+            ExtendSchemaOptions(enhancedModel, onlyData);
             ExtendModel(enhancedModel, onlyData);
             ExtendModelSingle(enhancedModel, onlyData);
             EnhanceSelect2(model, enhancedModel);
-
             JsonUtils.Merge(model, enhancedModel);
             return model;
         }

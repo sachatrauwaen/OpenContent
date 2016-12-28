@@ -351,6 +351,13 @@
     <Compile Include="Components\Common\Utils.cs" />
     <Compile Include="Components\UrlRewriter\OpenContentUrlRule.cs" />
     <Compile Include="Components\UrlRewriter\OpenContentUrlProvider.cs" />
+    <Compile Include="EditFormSettings.ascx.cs">
+      <DependentUpon>EditFormSettings.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="EditFormSettings.ascx.designer.cs">
+      <DependentUpon>EditFormSettings.ascx</DependentUpon>
+    </Compile>
     <Compile Include="RenderModule.ascx.cs">
       <DependentUpon>RenderModule.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -528,6 +535,7 @@
     <Content Include="css\glyphicons\fonts\glyphicons-regular.svg" />
     <Content Include="css\glyphicons\fonts\glyphicons-social-regular.svg" />
     <Content Include="css\glyphicons\glyphicons.css" />
+    <Content Include="EditFormSettings.ascx" />
     <Content Include="js\bootstrap\css\bootstrap-theme.css" />
     <Content Include="js\bootstrap\css\bootstrap-theme.min.css" />
     <Content Include="js\bootstrap\css\bootstrap.css" />
@@ -535,8 +543,85 @@
     <Content Include="js\bootstrap\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="js\bootstrap\js\bootstrap.js" />
     <Content Include="js\bootstrap\js\bootstrap.min.js" />
+    <Content Include="js\jplist\ajax-loader-line.gif" />
+    <Content Include="js\jplist\ajax-loader.gif" />
+    <Content Include="js\jplist\grid-btn-disabled.png" />
+    <Content Include="js\jplist\grid-btn.png" />
+    <Content Include="js\jplist\jplist.bootstrap-pagination-bundle.min.js" />
+    <Content Include="js\jplist\jplist.bootstrap-sort-dropdown.min.js" />
+    <Content Include="js\jplist\jplist.core.min.css" />
+    <Content Include="js\jplist\jplist.core.min.js" />
+    <Content Include="js\jplist\jplist.counter-control.min.js" />
+    <Content Include="js\jplist\jplist.filter-dropdown-bundle.min.js" />
+    <Content Include="js\jplist\jplist.filter-toggle-bundle.min.css" />
+    <Content Include="js\jplist\jplist.filter-toggle-bundle.min.js" />
+    <Content Include="js\jplist\jplist.history-bundle.min.css" />
+    <Content Include="js\jplist\jplist.history-bundle.min.js" />
+    <Content Include="js\jplist\jplist.jquery-ui-bundle.min.css" />
+    <Content Include="js\jplist\jplist.jquery-ui-bundle.min.js" />
+    <Content Include="js\jplist\jplist.pagination-bundle.min.css" />
+    <Content Include="js\jplist\jplist.pagination-bundle.min.js" />
+    <Content Include="js\jplist\jplist.preloader-control.min.css" />
+    <Content Include="js\jplist\jplist.preloader-control.min.js" />
+    <Content Include="js\jplist\jplist.sort-bundle.min.js" />
+    <Content Include="js\jplist\jplist.textbox-filter.min.css" />
+    <Content Include="js\jplist\jplist.textbox-filter.min.js" />
+    <Content Include="js\jplist\jplist.views-control.min.css" />
+    <Content Include="js\jplist\jplist.views-control.min.js" />
+    <Content Include="js\jplist\list-btn-disabled.png" />
+    <Content Include="js\jplist\list-btn.png" />
+    <Content Include="js\jplist\rocket.png" />
+    <Content Include="js\jplist\thumbs-btn-disabled.png" />
+    <Content Include="js\jplist\thumbs-btn.png" />
+    <Content Include="js\oc.jquery.js" />
     <Content Include="js\select2\select2-bootstrap.css" />
     <Content Include="js\select2\select2-bootstrap.min.css" />
+    <Content Include="js\summernote\lang\summernote-ar-AR.js" />
+    <Content Include="js\summernote\lang\summernote-bg-BG.js" />
+    <Content Include="js\summernote\lang\summernote-ca-ES.js" />
+    <Content Include="js\summernote\lang\summernote-cs-CZ.js" />
+    <Content Include="js\summernote\lang\summernote-da-DK.js" />
+    <Content Include="js\summernote\lang\summernote-de-DE.js" />
+    <Content Include="js\summernote\lang\summernote-es-ES.js" />
+    <Content Include="js\summernote\lang\summernote-es-EU.js" />
+    <Content Include="js\summernote\lang\summernote-fa-IR.js" />
+    <Content Include="js\summernote\lang\summernote-fi-FI.js" />
+    <Content Include="js\summernote\lang\summernote-fr-FR.js" />
+    <Content Include="js\summernote\lang\summernote-gl-ES.js" />
+    <Content Include="js\summernote\lang\summernote-he-IL.js" />
+    <Content Include="js\summernote\lang\summernote-hr-HR.js" />
+    <Content Include="js\summernote\lang\summernote-hu-HU.js" />
+    <Content Include="js\summernote\lang\summernote-id-ID.js" />
+    <Content Include="js\summernote\lang\summernote-it-IT.js" />
+    <Content Include="js\summernote\lang\summernote-ja-JP.js" />
+    <Content Include="js\summernote\lang\summernote-ko-KR.js" />
+    <Content Include="js\summernote\lang\summernote-lt-LT.js" />
+    <Content Include="js\summernote\lang\summernote-lt-LV.js" />
+    <Content Include="js\summernote\lang\summernote-nb-NO.js" />
+    <Content Include="js\summernote\lang\summernote-nl-NL.js" />
+    <Content Include="js\summernote\lang\summernote-pl-PL.js" />
+    <Content Include="js\summernote\lang\summernote-pt-BR.js" />
+    <Content Include="js\summernote\lang\summernote-pt-PT.js" />
+    <Content Include="js\summernote\lang\summernote-ro-RO.js" />
+    <Content Include="js\summernote\lang\summernote-ru-RU.js" />
+    <Content Include="js\summernote\lang\summernote-sk-SK.js" />
+    <Content Include="js\summernote\lang\summernote-sl-SI.js" />
+    <Content Include="js\summernote\lang\summernote-sr-RS-Latin.js" />
+    <Content Include="js\summernote\lang\summernote-sr-RS.js" />
+    <Content Include="js\summernote\lang\summernote-sv-SE.js" />
+    <Content Include="js\summernote\lang\summernote-th-TH.js" />
+    <Content Include="js\summernote\lang\summernote-tr-TR.js" />
+    <Content Include="js\summernote\lang\summernote-uk-UA.js" />
+    <Content Include="js\summernote\lang\summernote-vi-VN.js" />
+    <Content Include="js\summernote\lang\summernote-zh-CN.js" />
+    <Content Include="js\summernote\lang\summernote-zh-TW.js" />
+    <Content Include="js\summernote\plugin\databasic\summernote-ext-databasic.css" />
+    <Content Include="js\summernote\plugin\databasic\summernote-ext-databasic.js" />
+    <Content Include="js\summernote\plugin\hello\summernote-ext-hello.js" />
+    <Content Include="js\summernote\plugin\specialchars\summernote-ext-specialchars.js" />
+    <Content Include="js\summernote\summernote.css" />
+    <Content Include="js\summernote\summernote.js" />
+    <Content Include="js\summernote\summernote.min.js" />
     <Content Include="js\swagger\css\print.css" />
     <Content Include="js\swagger\css\reset.css" />
     <Content Include="js\swagger\css\screen.css" />
@@ -582,6 +667,7 @@
     <Content Include="js\swagger\o2c.html" />
     <Content Include="js\swagger\swagger-ui.js" />
     <Content Include="js\swagger\swagger-ui.min.js" />
+    <Content Include="js\oc.vue.js" />
     <Content Include="RenderModule.ascx" />
     <Content Include="Swagger.ascx" />
     <Content Include="EditAddData.ascx" />
@@ -967,6 +1053,11 @@
       <SubType>Designer</SubType>
     </Content>
     <None Include="bundleconfig.json" />
+    <Content Include="js\summernote\font\summernote.eot" />
+    <Content Include="js\summernote\font\summernote.ttf" />
+    <Content Include="js\summernote\font\summernote.woff" />
+    <Content Include="formsettings-options.json" />
+    <Content Include="formsettings-schema.json" />
     <None Include="Scripts\_references.js" />
     <Content Include="js\select2\i18n\az.js" />
     <Content Include="js\select2\i18n\bg.js" />
@@ -1085,7 +1176,6 @@
     <Content Include="web.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Templates\ViewPage1.cshtml" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>

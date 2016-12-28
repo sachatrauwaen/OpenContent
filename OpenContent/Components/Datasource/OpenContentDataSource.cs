@@ -113,18 +113,22 @@ namespace Satrabel.OpenContent.Components.Datasource
 
             if (!string.IsNullOrEmpty(id) && id != "-1")
             {
+                /*
                 if (LogContext.IsLogActive)
                 {
                     LogContext.Log(context.ActiveModuleId, "Get DataItem", "Request", string.Format("{0}.Get() with id {1}", Name, id));
                 }
+                */
                 content = ctrl.GetContent(GetModuleId(context), context.Collection, id);
             }
             else
             {
+                /*
                 if (LogContext.IsLogActive)
                 {
                     LogContext.Log(context.ActiveModuleId, "Get DataItem", "Request", string.Format("{0}.Get() with id {1}. Returning first item of module.", Name, id));
                 }
+                */
                 content = ctrl.GetFirstContent(GetModuleId(context)); // single item
             }
             if (content == null)
@@ -198,10 +202,12 @@ namespace Satrabel.OpenContent.Components.Datasource
 
         public virtual IDataItems GetAll(DataSourceContext context, Select selectQuery)
         {
+            /*
             if (LogContext.IsLogActive)
             {
                 LogContext.Log(context.ActiveModuleId, "Datasource", "Context", context);
             }
+            */
             if (selectQuery == null)
             {
                 return GetAll(context);

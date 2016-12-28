@@ -84,11 +84,37 @@ namespace Satrabel.OpenContent.Components.Datasource
             if (action == "FormSubmit")
             {
                 var ev = item.Data.ToObject<EventDTO>();
-                FormSubmit(context, data["form"] as JObject, ev);
+                var res = FormSubmit(context, data["form"] as JObject, ev);
                 AfterGetEvent(context, item);
-                return item.Data;
+                res["Event"] = item.Data;
+                return res;
+            }
+            else if (action == "UpdateSubmission")
+            {
+                var oldBooking = item.Data.ToObject<BookingDTO>();
+                var newBooking = data["form"].ToObject<BookingDTO>();
+
+                var res = UpdateSubmission(context, item, data["form"] as JObject, oldBooking, newBooking);
+                res["Submission"] = item.Data;
+                return res;
             }
             return null;
+        }
+        public override void Add(DataSourceContext context, JToken data)
+        {
+            if (context.Collection == "Submissions")
+            {
+                BeforeAddSubmission(context, data);
+            }
+            base.Add(context, data);
+        }
+
+        private void BeforeAddSubmission(DataSourceContext context, JToken data)
+        {
+            var ev = GetEvent(context, data["Source"].ToString());
+            data["StartDate"] = ev.StartDate.ToString("o");
+            data["EventCategory"] = ev.EventCategory;
+            data["Title"] = ev.StartDate.ToString("dd/MM/yyyy HH:mm") + " - " + ev.Title;
         }
 
         public override void Update(DataSourceContext context, IDataItem item, JToken data)
@@ -145,7 +171,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         private EventDTO GetEvent(DataSourceContext context, string key)
         {
             OpenContentController ctrl = new OpenContentController();
-            var item = ctrl.GetContent(context.ModuleId, "EventCategory", key);
+            var item = ctrl.GetContent(context.ModuleId, "Items", key);
             return item.JsonAsJToken.ToObject<EventDTO>();
         }
 
@@ -186,13 +212,13 @@ namespace Satrabel.OpenContent.Components.Datasource
                 }
             }
         }
-        private void FormSubmit(DataSourceContext context, JObject form, EventDTO ev)
+        private JObject FormSubmit(DataSourceContext context, JObject form, EventDTO ev)
         {
             //var colkey = ev.EventCategory.Split('/');
             OpenContentController ctrl = new OpenContentController();
             var evCat = ctrl.GetContent(context.ModuleId, "EventCategory", ev.EventCategory).JsonAsJToken.ToObject<EventCategoryDTO>();
-
             var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), "Submissions");
+            BeforeAddSubmission(context, form);
             var content = new OpenContentInfo()
             {
                 ModuleId = context.ModuleId,
@@ -206,14 +232,35 @@ namespace Satrabel.OpenContent.Components.Datasource
             };
             ctrl.AddContent(content, true, indexConfig);
 
-            FormUtils.FormSubmit(form, evCat.FormSettings);
+            return FormUtils.FormSubmit(form, evCat.FormSettings);
+        }
+        private JObject UpdateSubmission(DataSourceContext context, IDataItem item, JObject form, BookingDTO oldBooking, BookingDTO newBooking)
+        {
+            //var colkey = ev.EventCategory.Split('/');
+            OpenContentController ctrl = new OpenContentController();
+            var evCat = ctrl.GetContent(context.ModuleId, "EventCategory", oldBooking.EventCategory).JsonAsJToken.ToObject<EventCategoryDTO>();
+            var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), "Submissions");
+            //BeforeAddSubmission(context, form);
+            var oldData = item.Data;
+
+            oldData["Name"] = newBooking.Name;
+            oldData["Email"] = newBooking.Email;
+            oldData["Quantity"] = newBooking.Quantity.ToString();
+
+            var content = (OpenContentInfo)item.Item;
+            content.Json = oldData.ToString();
+            content.LastModifiedByUserId = context.UserId;
+            content.LastModifiedOnDate = DateTime.Now;
+            ctrl.UpdateContent(content, true, indexConfig);
+            return FormUtils.FormSubmit(form, evCat.FormSettings);
         }
     }
 
     public class EventDTO
     {
         public string EventCategory { get; set; }
-
+        public DateTime StartDate { get; set; }
+        public string Title { get; set; }
     }
 
     public class BookingDTO
@@ -227,6 +274,9 @@ namespace Satrabel.OpenContent.Components.Datasource
         }
         public string Source { get; set; }
         public int Quantity { get; set; }
+        public string EventCategory { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
     }
     public class EventCategoryDTO
     {

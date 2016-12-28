@@ -119,69 +119,8 @@ namespace Satrabel.OpenContent
             engine.ModuleContext = ModuleContext;
             if (!Page.IsPostBack)
             {
-                if (ModuleContext.PortalSettings.UserId > 0)
-                {
-                    string OpenContent_EditorsRoleId = PortalController.GetPortalSetting("OpenContent_EditorsRoleId", ModuleContext.PortalId, "");
-                    if (!string.IsNullOrEmpty(OpenContent_EditorsRoleId))
-                    {
-                        int roleId = int.Parse(OpenContent_EditorsRoleId);
-                        var objModule = ModuleContext.Configuration;
-                        //todo: probable DNN bug.  objModule.ModulePermissions doesn't return correct permissions for attached multi-lingual modules
-                        //don't alter permissions of modules that are non-default language and that are attached
-                        var permExist = objModule.ModulePermissions.Where(tp => tp.RoleID == roleId).Any();
-                        if (!permExist)
-                        {
-                            //todo sacha: add two permissions, read and write; Or better still add all permissions that are available. eg if you installed extra permissions
-
-                            var permissionController = new PermissionController();
-                            // view permission
-                            var arrSystemModuleViewPermissions = permissionController.GetPermissionByCodeAndKey("SYSTEM_MODULE_DEFINITION", "VIEW");
-                            var permission = (PermissionInfo)arrSystemModuleViewPermissions[0];
-                            var objModulePermission = new ModulePermissionInfo
-                            {
-                                ModuleID = ModuleContext.Configuration.ModuleID,
-                                //ModuleDefID = permission.ModuleDefID,
-                                //PermissionCode = permission.PermissionCode,
-                                PermissionID = permission.PermissionID,
-                                PermissionKey = permission.PermissionKey,
-                                RoleID = roleId,
-                                //UserID = userId,
-                                AllowAccess = true
-                            };
-                            objModule.ModulePermissions.Add(objModulePermission);
-
-                            // edit permission
-                            arrSystemModuleViewPermissions = permissionController.GetPermissionByCodeAndKey("SYSTEM_MODULE_DEFINITION", "EDIT");
-                            permission = (PermissionInfo)arrSystemModuleViewPermissions[0];
-                            objModulePermission = new ModulePermissionInfo
-                            {
-                                ModuleID = ModuleContext.Configuration.ModuleID,
-                                //ModuleDefID = permission.ModuleDefID,
-                                //PermissionCode = permission.PermissionCode,
-                                PermissionID = permission.PermissionID,
-                                PermissionKey = permission.PermissionKey,
-                                RoleID = roleId,
-                                //UserID = userId,
-                                AllowAccess = true
-                            };
-                            objModule.ModulePermissions.Add(objModulePermission);
-                            try
-                            {
-                                ModulePermissionController.SaveModulePermissions(objModule);
-                            }
-                            catch (Exception ex)
-                            {
-                                //Log.Logger.ErrorFormat("Failed to automaticly set the permission. It already exists? tab={0}, moduletitle={1} ", objModule.TabID ,objModule.ModuleTitle);
-                            }
-                        }
-                    }
-                }
+                AddEditorRole();
             }
-        }
-        protected override void OnPreRender(EventArgs e)
-        {
-            //base.OnPreRender(e);
-            //pHelp.Visible = false;
             try
             {
                 engine.Render(Page);
@@ -198,6 +137,73 @@ namespace Satrabel.OpenContent
             {
                 LoggingUtils.ProcessModuleLoadException(this, ex);
             }
+        }
+
+        private void AddEditorRole()
+        {
+            if (ModuleContext.PortalSettings.UserId > 0)
+            {
+                string OpenContent_EditorsRoleId = PortalController.GetPortalSetting("OpenContent_EditorsRoleId", ModuleContext.PortalId, "");
+                if (!string.IsNullOrEmpty(OpenContent_EditorsRoleId))
+                {
+                    int roleId = int.Parse(OpenContent_EditorsRoleId);
+                    var objModule = ModuleContext.Configuration;
+                    //todo: probable DNN bug.  objModule.ModulePermissions doesn't return correct permissions for attached multi-lingual modules
+                    //don't alter permissions of modules that are non-default language and that are attached
+                    var permExist = objModule.ModulePermissions.Where(tp => tp.RoleID == roleId).Any();
+                    if (!permExist)
+                    {
+                        //todo sacha: add two permissions, read and write; Or better still add all permissions that are available. eg if you installed extra permissions
+
+                        var permissionController = new PermissionController();
+                        // view permission
+                        var arrSystemModuleViewPermissions = permissionController.GetPermissionByCodeAndKey("SYSTEM_MODULE_DEFINITION", "VIEW");
+                        var permission = (PermissionInfo)arrSystemModuleViewPermissions[0];
+                        var objModulePermission = new ModulePermissionInfo
+                        {
+                            ModuleID = ModuleContext.Configuration.ModuleID,
+                            //ModuleDefID = permission.ModuleDefID,
+                            //PermissionCode = permission.PermissionCode,
+                            PermissionID = permission.PermissionID,
+                            PermissionKey = permission.PermissionKey,
+                            RoleID = roleId,
+                            //UserID = userId,
+                            AllowAccess = true
+                        };
+                        objModule.ModulePermissions.Add(objModulePermission);
+
+                        // edit permission
+                        arrSystemModuleViewPermissions = permissionController.GetPermissionByCodeAndKey("SYSTEM_MODULE_DEFINITION", "EDIT");
+                        permission = (PermissionInfo)arrSystemModuleViewPermissions[0];
+                        objModulePermission = new ModulePermissionInfo
+                        {
+                            ModuleID = ModuleContext.Configuration.ModuleID,
+                            //ModuleDefID = permission.ModuleDefID,
+                            //PermissionCode = permission.PermissionCode,
+                            PermissionID = permission.PermissionID,
+                            PermissionKey = permission.PermissionKey,
+                            RoleID = roleId,
+                            //UserID = userId,
+                            AllowAccess = true
+                        };
+                        objModule.ModulePermissions.Add(objModulePermission);
+                        try
+                        {
+                            ModulePermissionController.SaveModulePermissions(objModule);
+                        }
+                        catch (Exception ex)
+                        {
+                            //Log.Logger.ErrorFormat("Failed to automaticly set the permission. It already exists? tab={0}, moduletitle={1} ", objModule.TabID ,objModule.ModuleTitle);
+                        }
+                    }
+                }
+            }
+        }
+
+        protected override void OnPreRender(EventArgs e)
+        {
+            //base.OnPreRender(e);
+            //pHelp.Visible = false;
             GenerateAndRenderDemoData();
             if (_renderinfo.Template != null && !string.IsNullOrEmpty(_renderinfo.OutputString))
             {
@@ -224,13 +230,13 @@ namespace Satrabel.OpenContent
             {
                 ClientResourceManager.RegisterScript(Page, Page.ResolveUrl("~/DesktopModules/OpenContent/js/opencontent.js"), FileOrder.Js.DefaultPriority);
                 StringBuilder logScript = new StringBuilder();
-                logScript.AppendLine("<script type=\"text/javascript\"> ");
+                //logScript.AppendLine("<script type=\"text/javascript\"> ");
                 logScript.AppendLine("$(document).ready(function () { ");
                 logScript.AppendLine("var logs = " + JsonConvert.SerializeObject(LogContext.Current.ModuleLogs(ModuleContext.ModuleId)) + "; ");
-                logScript.AppendLine("$.fn.openContent.printLogs('Module " + ModuleContext.ModuleId + " - " + ModuleContext.Configuration.ModuleTitle + "', logs);");
+                logScript.AppendLine("$.fn.openContent.printLogs(\"Module " + ModuleContext.ModuleId + " - " + ModuleContext.Configuration.ModuleTitle + "\", logs);");
                 logScript.AppendLine("});");
-                logScript.AppendLine("</script>");
-                Page.ClientScript.RegisterClientScriptBlock(this.GetType(), "logScript" + ModuleContext.ModuleId, logScript.ToString());
+                //logScript.AppendLine("</script>");
+                Page.ClientScript.RegisterClientScriptBlock(this.GetType(), "logScript" + ModuleContext.ModuleId, /*DotNetNuke.UI.Utilities.ClientAPI.EscapeForJavascript*/(logScript.ToString()), true);
             }
         }
 

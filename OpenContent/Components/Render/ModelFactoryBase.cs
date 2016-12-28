@@ -2,7 +2,9 @@
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Services.Localization;
 using Newtonsoft.Json.Linq;
+using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Datasource;
+using Satrabel.OpenContent.Components.Datasource.Search;
 using Satrabel.OpenContent.Components.Dnn;
 using Satrabel.OpenContent.Components.Handlebars;
 using Satrabel.OpenContent.Components.Json;
@@ -22,6 +24,7 @@ namespace Satrabel.OpenContent.Components.Render
         protected readonly TemplateFiles _templateFiles;
         protected readonly int _portalId;
         private readonly string _cultureCode;
+        protected readonly string _collection;
         // only multiple
         protected readonly Manifest.Manifest _manifest;
         protected readonly TemplateManifest _templateManifest;
@@ -41,6 +44,7 @@ namespace Satrabel.OpenContent.Components.Render
             this._portalSettings = portalSettings;
             this._portalId = portalSettings.PortalId;
             this._templateManifest = templateManifest;
+            this._collection = templateManifest.Collection;
             this._detailTabId = DnnUtils.GetTabByCurrentCulture(this._portalId, module.GetDetailTabId(), GetCurrentCultureCode());
         }
 
@@ -56,6 +60,7 @@ namespace Satrabel.OpenContent.Components.Render
             this._cultureCode = cultureCode;
             this._portalId = portalId;
             this._templateManifest = templateManifest;
+            this._collection = templateManifest.Collection;
             this._detailTabId = DnnUtils.GetTabByCurrentCulture(this._portalId, module.GetDetailTabId(), GetCurrentCultureCode());
         }
 
@@ -70,6 +75,21 @@ namespace Satrabel.OpenContent.Components.Render
             this._portalSettings = portalSettings;
             this._portalId = portalSettings.PortalId;
             this._templateManifest = settings.Template;
+            this._collection = _templateManifest.Collection;
+            this._detailTabId = DnnUtils.GetTabByCurrentCulture(this._portalId, module.GetDetailTabId(), GetCurrentCultureCode());
+        }
+        public ModelFactoryBase(OpenContentModuleInfo module, PortalSettings portalSettings, string collection)
+        {
+            OpenContentSettings settings = module.Settings;
+            this._settingsJson = settings.Data;
+            this._physicalTemplateFolder = settings.Template.ManifestFolderUri.PhysicalFullDirectory + "\\";
+            this._manifest = settings.Template.Manifest;
+            this._templateFiles = settings.Template != null ? settings.Template.Main : null;
+            this._module = module;
+            this._portalSettings = portalSettings;
+            this._portalId = portalSettings.PortalId;
+            this._templateManifest = settings.Template;
+            this._collection = collection;
             this._detailTabId = DnnUtils.GetTabByCurrentCulture(this._portalId, module.GetDetailTabId(), GetCurrentCultureCode());
         }
 
@@ -103,7 +123,7 @@ namespace Satrabel.OpenContent.Components.Render
 
         protected void EnhanceSelect2(JObject model, JObject enhancedModel)
         {
-            string colName = string.IsNullOrEmpty(_templateManifest.Collection) ? "Items" : _templateManifest.Collection;
+            string colName = string.IsNullOrEmpty(_collection) ? "Items" : _collection;
             bool enhance = (_manifest.AdditionalDataDefined() && enhancedModel["AdditionalData"] != null && enhancedModel["Options"] != null) ||
                             (_templateFiles.Model != null && _templateFiles.Model.ContainsKey(colName) && enhancedModel["Options"] != null);
 
@@ -147,27 +167,10 @@ namespace Satrabel.OpenContent.Components.Render
         protected void ExtendModel(JObject model, bool onlyData)
         {
             if (_portalSettings == null) onlyData = true;
-
             var ds = DataSourceManager.GetDataSource(_manifest.DataSource);
             var dsContext = OpenContentUtils.CreateDataContext(_module);
             if (_templateFiles != null)
             {
-                bool includeSchema = !onlyData && _templateFiles.SchemaInTemplate;
-                bool includeOptions = _templateFiles.OptionsInTemplate;
-                if (includeSchema || includeOptions)
-                {
-                    var alpaca = ds.GetAlpaca(dsContext, includeSchema, includeOptions, false);
-                    // include SCHEMA info in the Model
-                    if (includeSchema)
-                    {
-                        model["Schema"] = alpaca["schema"];
-                    }
-                    // include OPTIONS info in the Model
-                    if (includeOptions)
-                    {
-                        model["Options"] = alpaca["options"];
-                    }
-                }
                 // include additional data in the Model
                 if (_templateFiles.AdditionalDataInTemplate && _manifest.AdditionalDataDefined())
                 {
@@ -190,34 +193,49 @@ namespace Satrabel.OpenContent.Components.Render
                     }
                 }
                 // include collections
+
                 if (_templateFiles.Model != null)
                 {
-                    var dsColContext = OpenContentUtils.CreateDataContext(_module);
-                    var collections = model["Collections"] = new JObject();
-                    foreach (var item in _templateFiles.Model.Where(c => c.Key != _templateManifest.Collection))
+                    var additionalCollections = _templateFiles.Model.Where(c => c.Key != _collection);
+                    if (additionalCollections.Any())
                     {
-                        var colManifest = item.Value;
-                        dsContext.Collection = item.Key;
-                        IDataItems dataItems = ds.GetAll(dsColContext, null);
-                        var colDataJson = new JArray();
-                        foreach (var dataItem in dataItems.Items)
+                        var collections = model["Collections"] = new JObject();
+                        var dsColContext = OpenContentUtils.CreateDataContext(_module);
+                        foreach (var item in additionalCollections)
                         {
-                            var json = dataItem.Data;
-                            
-                            if (json != null && LocaleController.Instance.GetLocales(_portalId).Count > 1)
+                            var colManifest = item.Value;
+                            dsColContext.Collection = item.Key;
+                            Select select = null;
+                            if (item.Value.Query != null)
                             {
-                                JsonUtils.SimplifyJson(json, GetCurrentCultureCode());
+                                var indexConfig = OpenContentUtils.GetIndexConfig(_module.Settings.TemplateDir, item.Key);
+                                QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
+                                var u = PortalSettings.Current.UserInfo;
+                                queryBuilder.Build(item.Value.Query, true, u.UserID, DnnLanguageUtils.GetCurrentCultureCode(), u.Social.Roles);
+                                select = queryBuilder.Select;
                             }
-                            if (json is JObject)
+                            IDataItems dataItems = ds.GetAll(dsColContext, select);
+                            var colDataJson = new JArray();
+                            foreach (var dataItem in dataItems.Items)
                             {
-                                JObject context = new JObject();
-                                json["Context"] = context;
-                                context["Id"] = dataItem.Id;
-                                EnhanceSelect2(json as JObject, model);
+                                var json = dataItem.Data;
+
+                                if (json != null && LocaleController.Instance.GetLocales(_portalId).Count > 1)
+                                {
+                                    JsonUtils.SimplifyJson(json, GetCurrentCultureCode());
+                                }
+                                if (json is JObject)
+                                {
+                                    JObject context = new JObject();
+                                    json["Context"] = context;
+                                    context["Id"] = dataItem.Id;
+                                    EnhanceSelect2(json as JObject, model);
+                                }
+                                colDataJson.Add(json);
                             }
-                            colDataJson.Add(json);
+                            collections[item.Key] = new JObject();
+                            collections[item.Key]["Items"] = colDataJson;
                         }
-                        collections[item.Key] = colDataJson;
                     }
                 }
             }
@@ -265,7 +283,6 @@ namespace Satrabel.OpenContent.Components.Render
                 context["ModuleId"] = _module.ViewModule.ModuleID;
                 context["GoogleApiKey"] = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetGoogleApiKey();
                 context["ModuleTitle"] = _module.ViewModule.ModuleTitle;
-                context["AddUrl"] = DnnUrlUtils.EditUrl(_module.ViewModule.ModuleID, _portalSettings);
                 var editIsAllowed = !_manifest.DisableEdit && IsEditAllowed(-1);
                 context["IsEditable"] = editIsAllowed; //allowed to edit the item or list (meaning allow Add)
                 context["IsEditMode"] = IsEditMode;
@@ -273,6 +290,35 @@ namespace Satrabel.OpenContent.Components.Render
                 context["MainUrl"] = Globals.NavigateURL(_detailTabId, false, _portalSettings, "", GetCurrentCultureCode());
             }
         }
+
+        protected void ExtendSchemaOptions(JObject model, bool onlyData)
+        {
+            if (_portalSettings == null) onlyData = true;
+
+            var ds = DataSourceManager.GetDataSource(_manifest.DataSource);
+            var dsContext = OpenContentUtils.CreateDataContext(_module);
+            if (_templateFiles != null)
+            {
+                bool includeSchema = !onlyData && _templateFiles.SchemaInTemplate;
+                bool includeOptions = _templateFiles.OptionsInTemplate;
+                if (includeSchema || includeOptions)
+                {
+                    var alpaca = ds.GetAlpaca(dsContext, includeSchema, includeOptions, false);
+                    // include SCHEMA info in the Model
+                    if (includeSchema)
+                    {
+                        model["Schema"] = alpaca["schema"];
+                    }
+                    // include OPTIONS info in the Model
+                    if (includeOptions)
+                    {
+                        model["Options"] = alpaca["options"];
+                    }
+                }
+            }
+        }
+
+
 
         protected bool IsEditAllowed(int createdByUser)
         {

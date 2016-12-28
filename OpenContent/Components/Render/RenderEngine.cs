@@ -90,7 +90,7 @@ namespace Satrabel.OpenContent.Components.Render
                 }
                 else if (_renderinfo.Template.IsListTemplate)
                 {
-                    LogContext.Log(_module.ViewModule.ModuleID, "RequestContext", "QueryParam Id", ItemId);
+                    
                     // Multi items template
                     if (string.IsNullOrEmpty(ItemId))
                     {
@@ -112,6 +112,7 @@ namespace Satrabel.OpenContent.Components.Render
                     }
                     else
                     {
+                        LogContext.Log(_module.ViewModule.ModuleID, "RequestContext", "QueryParam Id", ItemId);
                         // detail template
                         if (_renderinfo.Template.Detail != null)
                         {
