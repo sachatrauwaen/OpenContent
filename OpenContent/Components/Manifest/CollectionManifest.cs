@@ -18,6 +18,6 @@ namespace Satrabel.OpenContent.Components.Manifest
         [JsonProperty(PropertyName = "includes")]
         public List<string> Includes { get; set; }
         [JsonProperty(PropertyName = "query")]
-        public JObject Query { get; internal set; }
+        public JObject Query { get; set; }
     }
 }
