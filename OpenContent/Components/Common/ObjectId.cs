@@ -99,7 +99,7 @@ namespace Satrabel.OpenContent.Components.Common
         public ObjectId(byte[] bytes)
         {
             if (bytes == null) throw new ArgumentNullException("bytes");
-            if (bytes.Length != 12) throw new ArgumentException("bytes", "Byte array must be 12 bytes long");
+            if (bytes.Length != 12) throw new ArgumentException("Byte array must be 12 bytes long", "bytes");
 
             this.Timestamp = (bytes[0] << 24) + (bytes[1] << 16) + (bytes[2] << 8) + bytes[3];
             this.Machine = (bytes[4] << 16) + (bytes[5] << 8) + bytes[6];
@@ -112,7 +112,7 @@ namespace Satrabel.OpenContent.Components.Common
         /// </summary>
         private static byte[] FromHex(string value)
         {
-            if (string.IsNullOrEmpty(value)) throw new ArgumentNullException("val");
+            if (string.IsNullOrEmpty(value)) throw new ArgumentNullException("value");
             if (value.Length != 24) throw new ArgumentException(string.Format("ObjectId strings should be 24 hex characters, got {0} : \"{1}\"", value.Length, value));
 
             var bytes = new byte[12];
@@ -134,11 +134,13 @@ namespace Satrabel.OpenContent.Components.Common
         /// </summary>
         public bool Equals(ObjectId other)
         {
-            return
-                this.Timestamp == other.Timestamp &&
-                this.Machine == other.Machine &&
-                this.Pid == other.Pid &&
-                this.Increment == other.Increment;
+            if (other != null)
+                return
+                    this.Timestamp == other.Timestamp &&
+                    this.Machine == other.Machine &&
+                    this.Pid == other.Pid &&
+                    this.Increment == other.Increment;
+            return false;
         }
 
         /// <summary>
