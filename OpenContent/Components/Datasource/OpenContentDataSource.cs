@@ -263,7 +263,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         public virtual JObject GetAlpaca(DataSourceContext context, bool schema, bool options, bool view)
         {
             var fb = new FormBuilder(new FolderUri(context.TemplateFolder));
-            return fb.BuildForm(context.Collection, context.CurrentCultureCode);
+            return fb.BuildForm(context.Collection, context.CurrentCultureCode, schema, options, view);
         }
 
         // Additional Data

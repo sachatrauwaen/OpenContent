@@ -65,7 +65,7 @@ namespace Satrabel.OpenContent.Components.Render
                 }
             }
         }
-        public override JToken GetModelAsJson(bool onlyData = false)
+        public override JToken GetModelAsJson(bool onlyData = false, bool onlyMainData = false)
         {
             if (_portalSettings == null) onlyData = true;
             JObject model = new JObject();
@@ -77,7 +77,7 @@ namespace Satrabel.OpenContent.Components.Render
                 model[_collection] = itemsModel;
             }
             */
-            if (!onlyData)
+            if (!onlyData && !onlyMainData)
             {
                 ExtendModel(model, onlyData);
                 ExtendSchemaOptions(itemsModel, onlyData);
@@ -166,13 +166,14 @@ namespace Satrabel.OpenContent.Components.Render
                     if (colManifest.CreateByUser && model["Context"] != null)
                     {
                         var dnnUser = UserController.GetUserById(_portalId, createdByUserId);
-                        if (dnnUser != null) { 
-                        var user = new JObject();
-                        user["DisplayName"] = dnnUser.DisplayName;
-                        user["FirstName"] = dnnUser.FirstName;
-                        user["LastName"] = dnnUser.LastName;
-                        user["Email"] = dnnUser.Email;
-                        model["Context"]["CreatedByUser"] = user;
+                        if (dnnUser != null)
+                        {
+                            var user = new JObject();
+                            user["DisplayName"] = dnnUser.DisplayName;
+                            user["FirstName"] = dnnUser.FirstName;
+                            user["LastName"] = dnnUser.LastName;
+                            user["Email"] = dnnUser.Email;
+                            model["Context"]["CreatedByUser"] = user;
                         }
                     }
                 }

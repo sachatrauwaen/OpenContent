@@ -25,6 +25,13 @@ namespace Satrabel.OpenContent.Components.Render
         protected readonly int _portalId;
         private readonly string _cultureCode;
         protected readonly string _collection;
+
+        protected JObject _optionsJson = null;
+        private JObject _additionalData = null;
+
+        protected IDataSource _ds;
+        protected DataSourceContext _dsContext;
+
         // only multiple
         protected readonly Manifest.Manifest _manifest;
         protected readonly TemplateManifest _templateManifest;
@@ -35,7 +42,6 @@ namespace Satrabel.OpenContent.Components.Render
         public ModelFactoryBase(string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleInfo module, PortalSettings portalSettings)
 
         {
-            //this._dataJson = dataJson;
             this._settingsJson = settingsJson;
             this._physicalTemplateFolder = physicalTemplateFolder;
             this._manifest = manifest;
@@ -46,12 +52,14 @@ namespace Satrabel.OpenContent.Components.Render
             this._templateManifest = templateManifest;
             this._collection = templateManifest.Collection;
             this._detailTabId = DnnUtils.GetTabByCurrentCulture(this._portalId, module.GetDetailTabId(), GetCurrentCultureCode());
+
+            _ds = DataSourceManager.GetDataSource(_manifest.DataSource);
+            _dsContext = OpenContentUtils.CreateDataContext(_module);
         }
 
         public ModelFactoryBase(string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleInfo module, int portalId, string cultureCode)
 
         {
-            //this._dataJson = dataJson;
             this._settingsJson = settingsJson;
             this._physicalTemplateFolder = physicalTemplateFolder;
             this._manifest = manifest;
@@ -62,6 +70,8 @@ namespace Satrabel.OpenContent.Components.Render
             this._templateManifest = templateManifest;
             this._collection = templateManifest.Collection;
             this._detailTabId = DnnUtils.GetTabByCurrentCulture(this._portalId, module.GetDetailTabId(), GetCurrentCultureCode());
+            _ds = DataSourceManager.GetDataSource(_manifest.DataSource);
+            _dsContext = OpenContentUtils.CreateDataContext(_module);
         }
 
         public ModelFactoryBase(OpenContentModuleInfo module, PortalSettings portalSettings)
@@ -77,6 +87,8 @@ namespace Satrabel.OpenContent.Components.Render
             this._templateManifest = settings.Template;
             this._collection = _templateManifest.Collection;
             this._detailTabId = DnnUtils.GetTabByCurrentCulture(this._portalId, module.GetDetailTabId(), GetCurrentCultureCode());
+            _ds = DataSourceManager.GetDataSource(_manifest.DataSource);
+            _dsContext = OpenContentUtils.CreateDataContext(_module);
         }
         public ModelFactoryBase(OpenContentModuleInfo module, PortalSettings portalSettings, string collection)
         {
@@ -91,6 +103,8 @@ namespace Satrabel.OpenContent.Components.Render
             this._templateManifest = settings.Template;
             this._collection = collection;
             this._detailTabId = DnnUtils.GetTabByCurrentCulture(this._portalId, module.GetDetailTabId(), GetCurrentCultureCode());
+            _ds = DataSourceManager.GetDataSource(_manifest.DataSource);
+            _dsContext = OpenContentUtils.CreateDataContext(_module);
         }
 
         public JObject Options { get; set; } // alpaca options.json format
@@ -119,28 +133,41 @@ namespace Satrabel.OpenContent.Components.Render
             }
         }
         */
-        public abstract JToken GetModelAsJson(bool onlyData = false);
+        public abstract JToken GetModelAsJson(bool onlyData = false, bool onlyMainData = false);
 
         protected void EnhanceSelect2(JObject model, JObject enhancedModel)
         {
             string colName = string.IsNullOrEmpty(_collection) ? "Items" : _collection;
-            bool enhance = (_manifest.AdditionalDataDefined() && enhancedModel["AdditionalData"] != null && enhancedModel["Options"] != null) ||
-                            (_templateFiles.Model != null && _templateFiles.Model.ContainsKey(colName) && enhancedModel["Options"] != null);
-
-            /*
-            if (_manifest.AdditionalDataDefined() && enhancedModel["AdditionalData"] != null && enhancedModel["Options"] != null)
+            bool addDataEnhance = _manifest.AdditionalDataDefined();
+            if (addDataEnhance && _additionalData == null)
             {
-                JsonUtils.LookupJson(model, enhancedModel["AdditionalData"] as JObject, enhancedModel["Options"] as JObject);
+                GetAdditionalData();
             }
-            */
+            bool collectonEnhance = _templateFiles.Model != null && _templateFiles.Model.ContainsKey(colName);
+            if (collectonEnhance && _optionsJson == null)
+            {
+                var alpaca = _ds.GetAlpaca(_dsContext, false, true, false);
+                {
+                    _optionsJson = alpaca["options"] as JObject; // cache
+                }
+            }
+            bool enhance = addDataEnhance || collectonEnhance;
+            if (enhance && _optionsJson == null)
+            {
+                var alpaca = _ds.GetAlpaca(_dsContext, false, true, false);
+                {
+                    _optionsJson = alpaca["options"] as JObject; // cache
+                }
+            }
             if (enhance)
             {
                 var colManifest = _templateFiles.Model == null ? null : _templateFiles.Model[colName];
                 var includes = colManifest == null ? null : colManifest.Includes;
                 var ds = DataSourceManager.GetDataSource(_manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(_module);
-                JsonUtils.LookupJson(model, enhancedModel["AdditionalData"] as JObject, enhancedModel["Options"] as JObject, includes, (col, id) =>
+                JsonUtils.LookupJson(model, _additionalData, _optionsJson, includes, (col, id) =>
                 {
+                    // collection enhancement
                     dsContext.Collection = col;
                     var dsItem = ds.Get(dsContext, id);
                     if (dsItem != null && dsItem.Data is JObject)
@@ -157,43 +184,24 @@ namespace Satrabel.OpenContent.Components.Render
                     }
                 });
             }
-            if (enhancedModel["Options"] != null)
+            if (_optionsJson != null)
             {
-                JsonUtils.LookupSelect2InOtherModule(model, enhancedModel["Options"] as JObject);
+                JsonUtils.LookupSelect2InOtherModule(model, _optionsJson);
             }
-
         }
 
         protected void ExtendModel(JObject model, bool onlyData)
         {
             if (_portalSettings == null) onlyData = true;
-            var ds = DataSourceManager.GetDataSource(_manifest.DataSource);
-            var dsContext = OpenContentUtils.CreateDataContext(_module);
+
             if (_templateFiles != null)
             {
                 // include additional data in the Model
                 if (_templateFiles.AdditionalDataInTemplate && _manifest.AdditionalDataDefined())
                 {
-                    var additionalData = model["AdditionalData"] = new JObject();
-                    foreach (var item in _manifest.AdditionalDataDefinition)
-                    {
-                        var dataManifest = item.Value;
-                        IDataItem dataItem = ds.GetData(dsContext, dataManifest.ScopeType, dataManifest.StorageKey ?? item.Key);
-                        JToken additionalDataJson = new JObject();
-                        var json = dataItem?.Data;
-                        if (json != null)
-                        {
-                            if (LocaleController.Instance.GetLocales(_portalId).Count > 1)
-                            {
-                                JsonUtils.SimplifyJson(json, GetCurrentCultureCode());
-                            }
-                            additionalDataJson = json;
-                        }
-                        additionalData[(item.Value.ModelKey ?? item.Key).ToLowerInvariant()] = additionalDataJson;
-                    }
+                    model["AdditionalData"] = GetAdditionalData();
                 }
                 // include collections
-
                 if (_templateFiles.Model != null)
                 {
                     var additionalCollections = _templateFiles.Model.Where(c => c.Key != _collection);
@@ -214,7 +222,7 @@ namespace Satrabel.OpenContent.Components.Render
                                 queryBuilder.Build(item.Value.Query, true, u.UserID, DnnLanguageUtils.GetCurrentCultureCode(), u.Social.Roles);
                                 select = queryBuilder.Select;
                             }
-                            IDataItems dataItems = ds.GetAll(dsColContext, select);
+                            IDataItems dataItems = _ds.GetAll(dsColContext, select);
                             var colDataJson = new JArray();
                             foreach (var dataItem in dataItems.Items)
                             {
@@ -291,19 +299,42 @@ namespace Satrabel.OpenContent.Components.Render
             }
         }
 
+        private JObject GetAdditionalData()
+        {
+            if (_additionalData == null && _manifest.AdditionalDataDefined())
+            {
+                _additionalData = new JObject();
+                foreach (var item in _manifest.AdditionalDataDefinition)
+                {
+                    var dataManifest = item.Value;
+                    IDataItem dataItem = _ds.GetData(_dsContext, dataManifest.ScopeType, dataManifest.StorageKey ?? item.Key);
+                    JToken additionalDataJson = new JObject();
+                    var json = dataItem?.Data;
+                    if (json != null)
+                    {
+                        if (LocaleController.Instance.GetLocales(_portalId).Count > 1)
+                        {
+                            JsonUtils.SimplifyJson(json, GetCurrentCultureCode());
+                        }
+                        additionalDataJson = json;
+                    }
+                    _additionalData[(item.Value.ModelKey ?? item.Key).ToLowerInvariant()] = additionalDataJson;
+                }
+            }
+            return _additionalData;
+        }
+
         protected void ExtendSchemaOptions(JObject model, bool onlyData)
         {
             if (_portalSettings == null) onlyData = true;
 
-            var ds = DataSourceManager.GetDataSource(_manifest.DataSource);
-            var dsContext = OpenContentUtils.CreateDataContext(_module);
             if (_templateFiles != null)
             {
                 bool includeSchema = !onlyData && _templateFiles.SchemaInTemplate;
                 bool includeOptions = _templateFiles.OptionsInTemplate;
                 if (includeSchema || includeOptions)
                 {
-                    var alpaca = ds.GetAlpaca(dsContext, includeSchema, includeOptions, false);
+                    var alpaca = _ds.GetAlpaca(_dsContext, includeSchema, includeOptions, false);
                     // include SCHEMA info in the Model
                     if (includeSchema)
                     {
@@ -313,12 +344,11 @@ namespace Satrabel.OpenContent.Components.Render
                     if (includeOptions)
                     {
                         model["Options"] = alpaca["options"];
+                        _optionsJson = alpaca["options"] as JObject; // cache
                     }
                 }
             }
         }
-
-
 
         protected bool IsEditAllowed(int createdByUser)
         {

@@ -54,7 +54,7 @@ namespace Satrabel.OpenContent.Components.Render
             this._detailTabId = DnnUtils.GetTabByCurrentCulture(this._portalId, module.GetDetailTabId(), GetCurrentCultureCode());
         }
         */
-        public override JToken GetModelAsJson(bool onlyData = false)
+        public override JToken GetModelAsJson(bool onlyData = false, bool onlyMainData = false)
         {
             var model = _dataJson as JObject;
             if (LocaleController.Instance.GetLocales(_portalId).Count > 1)

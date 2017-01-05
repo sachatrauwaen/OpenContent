@@ -465,11 +465,11 @@ namespace Satrabel.OpenContent.Components
             if (portalSettings.UserInfo.IsInRole(editrole) && (createdByUserId == -1 || createdByUserId == portalSettings.UserId)) return true;
             return false;
         }
-        internal static FieldConfig GetIndexConfig(TemplateManifest template)
+        public static FieldConfig GetIndexConfig(TemplateManifest template)
         {
             return GetIndexConfig(template.Key.TemplateDir, template.Collection);
         }
-        internal static FieldConfig GetIndexConfig(FolderUri folder, string collection)
+        public static FieldConfig GetIndexConfig(FolderUri folder, string collection)
         {
             try
             {
