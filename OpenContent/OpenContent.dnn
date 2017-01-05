@@ -73,7 +73,7 @@
                     <controlTitle />
                     <controlType>View</controlType>
                     <iconFile />
-                    <helpUrl />
+                    <helpUrl >https://opencontent.readme.io</helpUrl>
                     <viewOrder>0</viewOrder>
                   </moduleControl>
                   <moduleControl>

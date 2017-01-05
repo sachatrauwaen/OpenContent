@@ -186,4 +186,32 @@
   <data name="FormSettings.Action" xml:space="preserve">
     <value>Form Settings</value>
   </data>
+  <data name="ModuleHelp.Text" xml:space="preserve">
+    <value>&lt;p&gt;
+&lt;br&gt;
+&lt;a href="https://opencontent.readme.io/docs/getting-started" &gt;Get started documentation&lt;/a&gt;
+&lt;br&gt;
+&lt;/p&gt;
+
+
+&lt;h2&gt;More info &lt;/h2&gt;
+
+&lt;p&gt;
+
+&lt;span style="color: #253340;"&gt;Documentation :&amp;nbsp;&lt;/span&gt;&lt;a href="https://opencontent.readme.io/" style="color: #2e8bcc; background: transparent;"&gt;https://opencontent.readme.io&lt;/a&gt;
+&lt;br&gt;
+&lt;/p&gt;
+&lt;p&gt;
+&lt;span style="color: #253340;"&gt;Demos :&amp;nbsp;&lt;/span&gt;&lt;a href="http://www.openextensions.net/dnn-modules/opencontent/bootstrap" style="color: #2e8bcc; background: transparent;"&gt;http://www.openextensions.net/dnn-modules/opencontent/bootstrap&lt;/a&gt;
+&lt;br&gt;
+&lt;/p&gt;
+&lt;p&gt;
+&lt;span style="color: #253340;"&gt;Templates download :&amp;nbsp;&lt;/span&gt;&lt;a href="http://www.openextensions.net/templates/open-content" style="color: #2e8bcc; background: transparent;"&gt;http://www.openextensions.net/templates/open-content&lt;/a&gt;
+&lt;br&gt;
+&lt;/p&gt;
+&lt;p&gt;
+&lt;span style="color: #253340;"&gt;Support :&amp;nbsp;&lt;/span&gt;&lt;a href="http://https://opencontent.codeplex.com/discussions" style="color: #2e8bcc; background: transparent;"&gt;http://https://opencontent.codeplex.com/discussions&lt;/a&gt;
+&lt;br&gt;
+&lt;/p&gt;</value>
+  </data>
 </root>
