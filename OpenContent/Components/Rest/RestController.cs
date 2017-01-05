@@ -33,7 +33,8 @@ namespace Satrabel.OpenContent.Components.Rest
         {
             try
             {
-                if (entity == "items") entity = "Items";
+                var collection = entity;
+                if (entity == "items") collection = "Items"; // backward compatibility
                 OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
                 var manifest = module.Settings.Template.Manifest;
                 var templateManifest = module.Settings.Template;
@@ -46,13 +47,13 @@ namespace Satrabel.OpenContent.Components.Rest
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 if (listMode)
                 {
-                    var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.TemplateDir, entity);
+                    var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.TemplateDir, collection);
                     bool isEditable = ActiveModule.CheckIfEditable(PortalSettings);//portalSettings.UserMode != PortalSettings.Mode.Edit;
                     IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                     var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID, false, reqOptions);
-                    dsContext.Collection = entity;
+                    dsContext.Collection = collection;
                     var dsItem = ds.Get(dsContext, id);
-                    var mf = new ModelFactorySingle(dsItem, module, PortalSettings, entity);
+                    var mf = new ModelFactorySingle(dsItem, module, PortalSettings, collection);
 
                     string raison = "";
                     if (!OpenContentUtils.HaveViewPermissions(dsItem, PortalSettings.UserInfo, indexConfig, out raison))
@@ -100,7 +101,8 @@ namespace Satrabel.OpenContent.Components.Rest
         {
             try
             {
-                if (entity == "items") entity = "Items";
+                var collection = entity;
+                if (entity == "items") collection = "Items"; // backward compatibility
                 RestSelect restSelect = new RestSelect()
                 {
                     PageIndex = pageIndex,
@@ -125,7 +127,7 @@ namespace Satrabel.OpenContent.Components.Rest
                 bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 if (listMode)
                 {
-                    var indexConfig = OpenContentUtils.GetIndexConfig(settings.TemplateDir, entity);
+                    var indexConfig = OpenContentUtils.GetIndexConfig(settings.TemplateDir, collection);
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
                     bool isEditable = ActiveModule.CheckIfEditable(PortalSettings);//portalSettings.UserMode != PortalSettings.Mode.Edit;
                     queryBuilder.Build(settings.Query, !isEditable, UserInfo.UserID, DnnLanguageUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
@@ -144,10 +146,10 @@ namespace Satrabel.OpenContent.Components.Rest
                     {
                         IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                         var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID, false, reqOptions);
-                        dsContext.Collection = entity;
+                        dsContext.Collection = collection;
                         dsItems = ds.GetAll(dsContext, queryBuilder.Select);
                     }
-                    var mf = new ModelFactoryMultiple(dsItems.Items, module, PortalSettings, entity);
+                    var mf = new ModelFactoryMultiple(dsItems.Items, module, PortalSettings, collection);
                     mf.Options = reqOptions;
                     var model = mf.GetModelAsJson(false);
                     var res = new JObject();
@@ -170,7 +172,7 @@ namespace Satrabel.OpenContent.Components.Rest
                         item["id"] = item["Context"]["Id"];
                         JsonUtils.IdJson(item);
                     }
-                    res[entity] = model[entity];
+                    res[entity] = model[collection];
                     res["meta"]["total"] = dsItems.Total;
                     return Request.CreateResponse(HttpStatusCode.OK, res);
                 }
