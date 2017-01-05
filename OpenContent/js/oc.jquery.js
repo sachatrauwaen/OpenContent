@@ -136,15 +136,11 @@
                 var control = elem.alpaca("get");
                 return control.getControlByPath(fieldPath);
             }
-        };
+        };        
         this.destroy = function () {
             if (elem.alpaca("exists")) {
                 elem.alpaca("destroy");
             }
-        };
-        this.show = function () {
-            elem.show();
-            elem.parent().find('.ResultMessage').remove();
         };
         // Private method - can only be called from within this object
         var showForm = function () {
@@ -209,8 +205,6 @@
                         eventLabel: window.location.href
                     });
                 }
-                elem.hide();
-                elem.parent().append("<div class='ResultMessage'>" + data.message + "</div>");
                 if (settings.onSubmited) {
                     settings.onSubmited(data);
                 }
@@ -296,8 +290,6 @@
                 elem.alpaca("destroy");
             }
             showForm();
-            elem.show();
-            elem.parent().find('.ResultMessage').remove();
         };
         // Private method - can only be called from within this object
         var showForm = function () {
@@ -368,10 +360,6 @@
                         eventAction: 'Submit',
                         eventLabel: window.location.href
                     });
-                }
-                elem.hide();
-                if (data.Message) {
-                    elem.parent().append("<div class='ResultMessage'>" + data.Message + "</div>");
                 }
                 if (settings.onSubmited) {
                     settings.onSubmited(data);

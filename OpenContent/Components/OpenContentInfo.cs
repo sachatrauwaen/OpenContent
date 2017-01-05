@@ -52,7 +52,7 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
-        public string Collection { get; internal set; }
+        public string Collection { get; set; }
         public string Title { get; set; }
         public string Json
         {

@@ -1,4 +1,5 @@
 ﻿// need a sf in the root app
+
 Vue.component('opencontent-form', {
     template: '<div></div>',
     props: ['form', 'action'],
@@ -40,9 +41,6 @@ Vue.component('opencontent-form', {
         },
         setData: function (data) {
             return $(this.$el).openContentForm().setData(data);
-        },
-        show: function () {
-            $(this.$el).openContentForm().show();
         }
     }
 })

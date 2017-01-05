@@ -45,6 +45,9 @@ using System.Web;
 using DotNetNuke.Common;
 using DotNetNuke.Web.UI.WebControls;
 using Satrabel.OpenContent.Components.Dnn;
+using DotNetNuke.Entities.Tabs;
+using DotNetNuke.Services.Personalization;
+using DotNetNuke.Framework.JavaScriptLibraries;
 
 #endregion
 
@@ -120,6 +123,7 @@ namespace Satrabel.OpenContent
             if (!Page.IsPostBack)
             {
                 AddEditorRole();
+                AutoEditMode();
             }
             try
             {
@@ -137,6 +141,71 @@ namespace Satrabel.OpenContent
             {
                 LoggingUtils.ProcessModuleLoadException(this, ex);
             }
+            if (_renderinfo.Template != null && !string.IsNullOrEmpty(_renderinfo.OutputString))
+            {
+                try
+                {
+                    engine.IncludeResourses(Page, this);
+                }
+                catch (Exception ex)
+                {
+                    DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, ex.Message, DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
+                }
+            }
+        }
+
+        private void AutoEditMode()
+        {
+            if (!Page.IsPostBack)
+            {
+                if (HttpContext.Current != null && HttpContext.Current.Request.IsAuthenticated)
+                {
+                    var defaultMode = ModuleContext.PortalSettings.DefaultControlPanelMode;
+                    if (defaultMode == PortalSettings.Mode.Edit)
+                    {
+                        string setting = Convert.ToString(DotNetNuke.Services.Personalization.Personalization.GetProfile("Usability", "UserMode" + PortalSettings.Current.PortalId));
+                        if (!IsPageAdmin() & IsModuleAdmin())
+                        {
+                            if (setting != "EDIT")
+                            {
+                                Personalization.SetProfile("Usability", "UserMode" + PortalSettings.Current.PortalId, "EDIT");
+                                //Page.Response.AppendHeader("X-UserMode", setting + "/" + IsPageAdmin() + "/" + IsModuleAdmin());
+                            }
+                            JavaScript.RequestRegistration(CommonJs.DnnPlugins); // avoid js error 
+                        }
+                    }
+                }
+                //string  usermode = "" + DotNetNuke.Services.Personalization.Personalization.GetProfile("Usability", "UserMode" + PortalSettings.Current.PortalId);
+            }
+        }
+
+        protected bool IsModuleAdmin()
+        {
+            bool _IsModuleAdmin = Null.NullBoolean;
+            foreach (ModuleInfo objModule in TabController.CurrentPage.Modules)
+            {
+                if (!objModule.IsDeleted)
+                {
+                    bool blnHasModuleEditPermissions = ModulePermissionController.HasModuleAccess(SecurityAccessLevel.Edit, Null.NullString, objModule);
+                    if (blnHasModuleEditPermissions && objModule.ModuleDefinition.DefaultCacheTime != -1)
+                    {
+                        _IsModuleAdmin = true;
+                        break;
+                    }
+                }
+            }
+            return PortalSettings.Current.ControlPanelSecurity == PortalSettings.ControlPanelPermission.TabEditor && _IsModuleAdmin;
+        }
+
+        protected bool IsPageAdmin()
+        {
+            bool _IsPageAdmin = Null.NullBoolean;
+            if (TabPermissionController.CanAddContentToPage() || TabPermissionController.CanAddPage() || TabPermissionController.CanAdminPage() || TabPermissionController.CanCopyPage() ||
+                TabPermissionController.CanDeletePage() || TabPermissionController.CanExportPage() || TabPermissionController.CanImportPage() || TabPermissionController.CanManagePage())
+            {
+                _IsPageAdmin = true;
+            }
+            return _IsPageAdmin;
         }
 
         private void AddEditorRole()
@@ -216,14 +285,7 @@ namespace Satrabel.OpenContent
                 {
                     AJAX.WrapUpdatePanelControl(lit, true);
                 }
-                try
-                {
-                    engine.IncludeResourses(Page, this);
-                }
-                catch (Exception ex)
-                {
-                    DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, ex.Message, DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
-                }
+                
                 //if (DemoData) pDemo.Visible = true;
             }
             if (LogContext.IsLogActive && !Debugger.IsAttached)
