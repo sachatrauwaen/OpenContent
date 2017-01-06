@@ -36,12 +36,12 @@ namespace Satrabel.OpenContent.Components.Alpaca
 
         private string Prefix { get; set; }
 
-        public Page Page { get; private set; }
-        public int PortalId { get; private set; }
+        private Page Page { get; set; }
+        private int PortalId { get; set; }
 
-        public AlpacaEngine(Page Page, int portalId, string virtualDir, string filePrefix)
+        public AlpacaEngine(Page page, int portalId, string virtualDir, string filePrefix)
         {
-            this.Page = Page;
+            this.Page = page;
             this.PortalId = portalId;
             VirtualDirectory = virtualDir;
             Prefix = filePrefix;
