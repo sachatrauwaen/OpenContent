@@ -33,15 +33,10 @@ namespace Satrabel.OpenContent.Components.Rest
         {
             try
             {
-                var collection = entity;
                 //if (entity == "items")
-                    collection = AppConfig.DEFAULT_COLLECTION; // backward compatibility
+                var collection = AppConfig.DEFAULT_COLLECTION;
                 OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
-<<<<<<< HEAD
-                var manifest = module.Settings.Template.Manifest;
-                var templateManifest = module.Settings.Template;
-=======
->>>>>>> develop
+
                 JObject reqOptions = null;
                 //if (!string.IsNullOrEmpty(req.options))
                 //{
@@ -51,7 +46,7 @@ namespace Satrabel.OpenContent.Components.Rest
                 if (module.IsListMode())
                 {
                     var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.TemplateDir, collection);
-                    bool isEditable = ActiveModule.CheckIfEditable(PortalSettings);//portalSettings.UserMode != PortalSettings.Mode.Edit;
+                    //bool isEditable = ActiveModule.CheckIfEditable(PortalSettings);
                     IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                     var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID, false, reqOptions);
                     dsContext.Collection = collection;
@@ -106,7 +101,7 @@ namespace Satrabel.OpenContent.Components.Rest
             {
                 var collection = entity;
                 //if (entity == "items")
-                    collection = AppConfig.DEFAULT_COLLECTION; // backward compatibility
+                collection = AppConfig.DEFAULT_COLLECTION; // backward compatibility
                 RestSelect restSelect = new RestSelect()
                 {
                     PageIndex = pageIndex,
@@ -120,13 +115,8 @@ namespace Satrabel.OpenContent.Components.Rest
                 {
                     restSelect.Sort = JsonConvert.DeserializeObject<List<RestSort>>(sort);
                 }
-<<<<<<< HEAD
-                ModuleController mc = new ModuleController();
-                ModuleInfo activeModule = ActiveModule; //mc.GetModule(ModuleId, TabId, false);
-=======
 
-                ModuleInfo activeModule = ActiveModule; 
->>>>>>> develop
+                ModuleInfo activeModule = ActiveModule;
 
                 OpenContentSettings settings = activeModule.OpenContentSettings();
                 OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
