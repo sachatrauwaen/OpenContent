@@ -34,7 +34,8 @@ namespace Satrabel.OpenContent.Components.Rest
             try
             {
                 var collection = entity;
-                if (entity == "items") collection = "Items"; // backward compatibility
+                //if (entity == "items")
+                    collection = AppConfig.DEFAULT_COLLECTION; // backward compatibility
                 OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
                 var manifest = module.Settings.Template.Manifest;
                 var templateManifest = module.Settings.Template;
@@ -102,7 +103,8 @@ namespace Satrabel.OpenContent.Components.Rest
             try
             {
                 var collection = entity;
-                if (entity == "items") collection = "Items"; // backward compatibility
+                //if (entity == "items")
+                    collection = AppConfig.DEFAULT_COLLECTION; // backward compatibility
                 RestSelect restSelect = new RestSelect()
                 {
                     PageIndex = pageIndex,

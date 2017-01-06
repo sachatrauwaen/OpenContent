@@ -161,7 +161,7 @@ namespace Satrabel.OpenContent.Components.Render
             }
             if (enhance)
             {
-                var colManifest = _templateFiles.Model == null ? null : _templateFiles.Model[colName];
+                var colManifest = collectonEnhance ? _templateFiles.Model[colName] : null;
                 var includes = colManifest == null ? null : colManifest.Includes;
                 var ds = DataSourceManager.GetDataSource(_manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(_module);
