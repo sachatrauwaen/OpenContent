@@ -22,15 +22,11 @@ namespace Satrabel.OpenContent.Components
             try
             {
                 var module = new OpenContentModuleInfo(req.ModuleId, req.TabId);
-                var manifest2 = module.Settings.Manifest;
-                var manifest = module.Settings.Template.Manifest;
-                TemplateManifest templateManifest = module.Settings.Template;
-                string editRole = manifest.GetEditRole();
+                string editRole = module.Settings.Template.Manifest.GetEditRole();
 
-                bool listMode = templateManifest != null && templateManifest.IsListTemplate;
                 OpenContentController ctrl = new OpenContentController();
 
-                if (listMode)
+                if (module.IsListMode())
                 {
                     if (!OpenContentUtils.HasEditPermissions(PortalSettings, module.ViewModule, editRole, -1))
                     {

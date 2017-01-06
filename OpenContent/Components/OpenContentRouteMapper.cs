@@ -21,8 +21,28 @@ namespace Satrabel.OpenContent.Components
     {
         public void RegisterRoutes(IMapRoute mapRouteManager)
         {
-            mapRouteManager.MapHttpRoute("OpenContent", "default", "{controller}/{action}", new[] { "Satrabel.OpenContent.Components", "Satrabel.OpenContent.Components.JpList", "Satrabel.OpenContent.Components.Rss", "Satrabel.OpenContent.Components.Rest.Swagger" });
-            mapRouteManager.MapHttpRoute("OpenContent", "rest", "{controller}/v1/{entity}/{id}/{memberAction}", new { id = RouteParameter.Optional, memberAction = RouteParameter.Optional }, new[] { "Satrabel.OpenContent.Components.Rest" });
+
+            //  /desktopmodules/OpenContent/api/{controller}/{action}
+            mapRouteManager.MapHttpRoute(
+                moduleFolderName: "OpenContent",
+                routeName: "default",
+                url: "{controller}/{action}",
+                namespaces: new[] {
+                    "Satrabel.OpenContent.Components",
+                    "Satrabel.OpenContent.Components.JpList",
+                    "Satrabel.OpenContent.Components.Rss",
+                    "Satrabel.OpenContent.Components.Rest.Swagger" }
+                );
+
+            //  /desktopmodules/OpenContent/api/{controller}/v1/{entity}/{id}/{memberAction}
+            mapRouteManager.MapHttpRoute(
+                moduleFolderName: "OpenContent",
+                routeName: "rest",
+                url: "{controller}/v1/{entity}/{id}/{memberAction}",
+                defaults: new { id = RouteParameter.Optional, memberAction = RouteParameter.Optional },
+                namespaces: new[] { "Satrabel.OpenContent.Components.Rest" }
+                );
+
             DataSourceManager.RegisterDataSources();
         }
     }

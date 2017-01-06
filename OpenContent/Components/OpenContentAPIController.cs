@@ -43,6 +43,13 @@ namespace Satrabel.OpenContent.Components
         {
             return Edit(null);
         }
+
+        /// <summary>
+        /// Edits the specified identifier.
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         [HttpGet]
@@ -51,16 +58,13 @@ namespace Satrabel.OpenContent.Components
             try
             {
                 var module = new OpenContentModuleInfo(ActiveModule);
-                var manifest = module.Settings.Manifest;
-                TemplateManifest templateManifest = module.Settings.Template;
-                string editRole = manifest.GetEditRole();
-                bool listMode = templateManifest != null && templateManifest.IsListTemplate;
+                string editRole = module.Settings.Manifest.GetEditRole();
 
                 IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(module);
 
                 IDataItem dsItem = null;
-                if (listMode)
+                if (module.IsListMode())
                 {
                     if (!string.IsNullOrEmpty(id)) // not a new item
                     {
@@ -287,18 +291,14 @@ namespace Satrabel.OpenContent.Components
             try
             {
                 var module = new OpenContentModuleInfo(ActiveModule);
-                var manifest = module.Settings.Template.Manifest;
-                TemplateManifest templateManifest = module.Settings.Template;
-                string editRole = manifest.GetEditRole();
-
-                bool listMode = templateManifest != null && templateManifest.IsListTemplate;
+                string editRole = module.Settings.Template.Manifest.GetEditRole();
                 int createdByUserid = -1;
 
                 IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
 
                 IDataItem dsItem = null;
-                if (listMode)
+                if (module.IsListMode())
                 {
                     if (json["id"] != null)
                     {
@@ -360,17 +360,14 @@ namespace Satrabel.OpenContent.Components
             try
             {
                 var module = new OpenContentModuleInfo(ActiveModule);
-                var manifest = module.Settings.Template.Manifest;
-                TemplateManifest templateManifest = module.Settings.Template;
-                string editRole = manifest.GetEditRole();
-                bool listMode = templateManifest != null && templateManifest.IsListTemplate;
+                string editRole = module.Settings.Template.Manifest.GetEditRole();
                 int createdByUserid = -1;
 
                 IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
 
                 IDataItem content = null;
-                if (listMode)
+                if (module.IsListMode())
                 {
                     content = ds.Get(dsContext, json["id"].ToString());
                     if (content != null)
@@ -572,16 +569,13 @@ namespace Satrabel.OpenContent.Components
             var module = new OpenContentModuleInfo(req.moduleid, req.tabid);
             if (module == null) throw new Exception($"Can not find ModuleInfo (tabid:{req.tabid}, moduleid:{req.moduleid})");
 
-            Manifest.Manifest manifest = module.Settings.Manifest;
-            TemplateManifest templateManifest = module.Settings.Template;
-            bool listMode = templateManifest != null && templateManifest.IsListTemplate;
             List<LookupResultDTO> res = new List<LookupResultDTO>();
             try
             {
                 IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
 
-                if (listMode)
+                if (module.IsListMode())
                 {
                     var items = ds.GetAll(dsContext, null).Items;
                     if (items != null)
@@ -691,14 +685,11 @@ namespace Satrabel.OpenContent.Components
                 ModuleController mc = new ModuleController();
                 module = mc.GetModule(settings.ModuleId, settings.TabId, false);
             }
-            var manifest = settings.Template.Manifest;
-            TemplateManifest templateManifest = settings.Template;
             string editRole = manifest.GetEditRole();
-            bool listMode = templateManifest != null && templateManifest.IsListTemplate;
             JArray json = new JArray();
             try
             {
-                if (listMode)
+                if (module.IsListMode())
                 {
                     var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
 
