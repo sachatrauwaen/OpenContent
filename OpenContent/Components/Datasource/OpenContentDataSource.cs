@@ -14,13 +14,7 @@ namespace Satrabel.OpenContent.Components.Datasource
 {
     public class OpenContentDataSource : IDataSource
     {
-        public virtual string Name
-        {
-            get
-            {
-                return AppConfig.OPENCONTENT;
-            }
-        }
+        public virtual string Name => AppConfig.OPENCONTENT;
 
         #region Queries
         public virtual bool Any(DataSourceContext context)
@@ -149,7 +143,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             {
                 if (LogContext.IsLogActive)
                 {
-                    LogContext.Log(context.ActiveModuleId, "Get DataItem", "Result", string.Format("no item returned as incompatible module ids {0}-{1}", content.ModuleId, GetModuleId(context)));
+                    LogContext.Log(context.ActiveModuleId, "Get DataItem", "Result", $"no item returned as incompatible module ids {content.ModuleId}-{GetModuleId(context)}");
                 }
             }
             return null;
