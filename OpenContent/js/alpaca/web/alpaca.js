@@ -22854,6 +22854,7 @@ this["HandlebarsPrecompiled"]["web-edit"]["wizard"] = Handlebars.template({"1":f
             this.base();
 
             // set up default spectrum settings
+            if (self.spectrumAvailable){
             if (typeof(this.options.spectrum) === "undefined")
             {
                 this.options.spectrum = {};
@@ -22873,6 +22874,7 @@ this["HandlebarsPrecompiled"]["web-edit"]["wizard"] = Handlebars.template({"1":f
             if (typeof(this.options.spectrum.clickoutFiresChange) === "undefined")
             {
                 this.options.spectrum.clickoutFiresChange = true;
+            }
             }
         },
 
