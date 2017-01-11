@@ -2,3 +2,4 @@
 packages/
 .vs/
 custom.targets
+obj/

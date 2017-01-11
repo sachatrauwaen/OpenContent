@@ -1,4 +1,5 @@
-﻿using DotNetNuke.Web.Client;
+﻿using System;
+using DotNetNuke.Web.Client;
 using DotNetNuke.Web.Client.ClientResourceManagement;
 using System.Collections.Generic;
 using System.IO;
@@ -36,13 +37,22 @@ namespace Satrabel.OpenContent.Components.Alpaca
 
         private string Prefix { get; set; }
 
-        public Page Page { get; private set; }
-        public int PortalId { get; private set; }
+        private Page Page { get; set; }
+        private int PortalId { get; set; }
 
-        public AlpacaEngine(Page Page, int portalId, string virtualDir, string filePrefix)
+        public AlpacaEngine(Page page, int portalId, string virtualDir, string filePrefix)
         {
-            this.Page = Page;
+            this.Page = page;
             this.PortalId = portalId;
+            VirtualDirectory = virtualDir;
+            Prefix = filePrefix;
+        }
+
+        [Obsolete("This method is obsolete since v3.2.0 (jan 2017); use AlpacaEngine(Page page, int portalId, string virtualDir, string filePrefix) instead")]
+        public AlpacaEngine(Page page, ModuleInstanceContext moduleContext, string virtualDir, string filePrefix)
+        {
+            this.Page = page;
+            this.PortalId = moduleContext.PortalId;
             VirtualDirectory = virtualDir;
             Prefix = filePrefix;
         }

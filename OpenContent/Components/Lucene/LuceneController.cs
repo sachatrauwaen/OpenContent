@@ -148,7 +148,7 @@ namespace Satrabel.OpenContent.Components.Lucene
         {
             OpenContentUtils.CheckOpenContentSettings(module);
 
-            if (module.IsListTemplate() && !module.Settings.IsOtherModule)
+            if (module.IsListMode() && !module.Settings.IsOtherModule)
             {
                 IndexModuleData(lc, module.ViewModule.ModuleID, module.Settings);
             }
