@@ -408,38 +408,9 @@ namespace Satrabel.OpenContent
                     }
                 }
 
-                if (templateDefined /*&& template.Manifest.AdditionalDataDefined()*/ && !settings.Manifest.DisableEdit)
+                if (templateDefined && OpenContentUtils.FormExist(settings.Template.ManifestFolderUri))
                 {
-                    /*
-                    foreach (var addData in template.Manifest.AdditionalDataDefinition)
-                    {
-                        if (addData.Value.SourceRelatedDataSource == RelatedDataSourceType.AdditionalData)
-                        {
-                            actions.Add(ModuleContext.GetNextActionID(),
-                                addData.Value.Title,
-                                ModuleActionType.EditContent,
-                                "",
-                                "~/DesktopModules/OpenContent/images/editcontent2.png",
-                                ModuleContext.EditUrl("key", addData.Key, "EditAddData"),
-                                false,
-                                SecurityAccessLevel.Edit,
-                                true,
-                                false);
-                        }
-                        else
-                        {
-                            actions.Add(ModuleContext.GetNextActionID(),
-                              addData.Value.Title,
-                              ModuleActionType.EditContent,
-                              "",
-                              "~/DesktopModules/OpenContent/images/editcontent2.png",
-                              DnnUrlUtils.NavigateUrl(addData.Value.DataTabId),
-                              false,
-                              SecurityAccessLevel.Edit,
-                              true,
-                              false);
-                        }
-                    }*/
+                    
                     actions.Add(ModuleContext.GetNextActionID(),
                                 "Submissions",
                                 ModuleActionType.EditContent,
