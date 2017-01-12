@@ -41,6 +41,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 RegisterArrayTranslateHelper(hbs);
                 RegisterIfAndHelper(hbs);
                 RegisterConvertHtmlToTextHelper(hbs);
+                RegisterConvertToJsonHelper(hbs);
                 RegisterTruncateWordsHelper(hbs);
                 _template = hbs.Compile(source);
             }
@@ -97,6 +98,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterIfInHelper(hbs);
             RegisterEachPublishedHelper(hbs);
             RegisterConvertHtmlToTextHelper(hbs);
+            RegisterConvertToJsonHelper(hbs);
             RegisterTruncateWordsHelper(hbs);
         }
 
@@ -722,7 +724,21 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 }
             });
         }
-        
+        private void RegisterConvertToJsonHelper(HandlebarsDotNet.IHandlebars hbs)
+        {
+            hbs.RegisterHelper("convertToJson", (writer, context, parameters) =>
+            {
+                try
+                {
+                    var res = System.Web.Helpers.Json.Encode(parameters[0]);
+                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, res);
+                }
+                catch (Exception)
+                {
+                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "");
+                }
+            });
+        }
 
     }
 }
