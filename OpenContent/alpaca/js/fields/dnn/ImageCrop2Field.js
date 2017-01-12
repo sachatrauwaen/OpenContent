@@ -74,7 +74,9 @@
                     value = {};
 
                 value.url = $(this.control).find('select').val();
-                value.cropUrl = $(self.getControlEl()).attr('data-cropurl');
+                if (value.url)
+                    value.cropUrl = $(self.getControlEl()).attr('data-cropurl');
+
                 return value;
             }
         },
