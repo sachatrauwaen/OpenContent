@@ -20,7 +20,7 @@ using Satrabel.OpenContent.Components.Render;
 using DotNetNuke.Services.Exceptions;
 using System.Web;
 
-namespace Satrabel.OpenContent.Components.Rest
+namespace Satrabel.OpenContent.Components.Rest.V2
 {
 
     public class RestController : DnnApiController
@@ -33,8 +33,7 @@ namespace Satrabel.OpenContent.Components.Rest
         {
             try
             {
-                //if (entity == "items")
-                var collection = AppConfig.DEFAULT_COLLECTION;
+                var collection = entity;
                 OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
 
                 JObject reqOptions = null;
@@ -53,7 +52,6 @@ namespace Satrabel.OpenContent.Components.Rest
                     var dsItem = ds.Get(dsContext, id);
                     var res = new JObject();
                     res["meta"] = new JObject();
-                    var items = new JArray();
                     if (dsItem != null)
                     {
                         var mf = new ModelFactorySingle(dsItem, module, PortalSettings, collection);
@@ -67,18 +65,19 @@ namespace Satrabel.OpenContent.Components.Rest
 
                         mf.Options = reqOptions;
                         var model = mf.GetModelAsJson(false);
-                        items.Add(model);
+                        
                         model["id"] = model["Context"]["Id"];
                         res["meta"]["total"] = dsItem == null ? 0 : 1;
-                        JsonUtils.IdJson(model);
+                        //JsonUtils.IdJson(model);
                         if (LogContext.IsLogActive)
                         {
                             var logKey = "Query";
                             LogContext.Log(module.ViewModule.ModuleID, logKey, "model", model);
                             res["meta"]["logs"] = JToken.FromObject(LogContext.Current.ModuleLogs(module.ViewModule.ModuleID));
                         }
+                        res[entity] = model;
                     }
-                    res[entity] = items;
+                    
                     return Request.CreateResponse(HttpStatusCode.OK, res);
                 }
                 else
@@ -100,8 +99,6 @@ namespace Satrabel.OpenContent.Components.Rest
             try
             {
                 var collection = entity;
-                //if (entity == "items")
-                collection = AppConfig.DEFAULT_COLLECTION; // backward compatibility
                 RestSelect restSelect = new RestSelect()
                 {
                     PageIndex = pageIndex,
@@ -191,6 +188,7 @@ namespace Satrabel.OpenContent.Components.Rest
         {
             try
             {
+                var collection = entity;
                 OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
 
                 var manifest = module.Settings.Manifest;
@@ -207,12 +205,12 @@ namespace Satrabel.OpenContent.Components.Rest
 
                     IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                     var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
-
+                    dsContext.Collection = collection;
                     var dsItem = ds.GetData(dsContext, dataManifest.ScopeType, dataManifest.StorageKey ?? entity);
                     if (dsItem != null)
                     {
                         var json = dsItem.Data;
-                        JsonUtils.IdJson(json);
+                        //JsonUtils.IdJson(json);
                         res[entity] = json;
                     }
                     return Request.CreateResponse(HttpStatusCode.OK, res);
@@ -237,6 +235,7 @@ namespace Satrabel.OpenContent.Components.Rest
             // update
             try
             {
+                var collection = entity;
                 OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
 
                 string editRole = module.Settings.Template.Manifest.GetEditRole();
@@ -244,7 +243,7 @@ namespace Satrabel.OpenContent.Components.Rest
 
                 IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
-
+                dsContext.Collection = collection;
                 IDataItem dsItem = null;
                 if (module.IsListMode())
                 {
@@ -313,13 +312,14 @@ namespace Satrabel.OpenContent.Components.Rest
             // action
             try
             {
+                var collection = entity;
                 OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
                 string editRole = module.Settings.Template.Manifest.GetEditRole();
                 int createdByUserid = -1;
 
                 IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
-
+                dsContext.Collection = collection;
                 IDataItem dsItem = null;
                 if (module.IsListMode())
                 {
@@ -366,6 +366,7 @@ namespace Satrabel.OpenContent.Components.Rest
             // Add
             try
             {
+                var collection = entity;
                 OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
 
                 var manifest = module.Settings.Template.Manifest;
@@ -373,7 +374,7 @@ namespace Satrabel.OpenContent.Components.Rest
 
                 IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
-
+                dsContext.Collection = collection;
                 if (!OpenContentUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, -1))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
@@ -396,13 +397,14 @@ namespace Satrabel.OpenContent.Components.Rest
 
             try
             {
+                var collection = entity;
                 OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
                 string editRole = module.Settings.Template.Manifest.GetEditRole();
                 int createdByUserid = -1;
 
                 IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
-
+                dsContext.Collection = collection;
                 IDataItem dsItem = null;
                 if (module.IsListMode())
                 {

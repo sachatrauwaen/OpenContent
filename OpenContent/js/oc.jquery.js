@@ -84,6 +84,90 @@
 
     }
 
+    $.openContentRestApiV2 = function (sf) {
+        var self = this;
+        this.sf = sf;
+        this.get = function (entity, id, success, fail) {
+            $.ajax({
+                type: "GET",
+                url: self.sf.getServiceRoot('OpenContent') + "Rest/v2/" + entity + "/" + id,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                beforeSend: self.sf.setModuleHeaders
+            }).done(function (data) {
+                if (success) success(data);
+            }).fail(function (xhr, result, status) {
+                if (fail) fail(xhr, result, status);
+                else console.error("Uh-oh, something broke: " + status);
+            });
+        }
+
+        this.getAll = function (entity, pageIndex, pageSize, filter, sort, success, fail) {
+            $.ajax({
+                type: "GET",
+                url: self.sf.getServiceRoot('OpenContent') + "Rest/v2/" + entity,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: { pageIndex: pageIndex, pageSize: pageSize, filter: JSON.stringify(filter), sort: JSON.stringify(sort) },
+                beforeSend: self.sf.setModuleHeaders
+            }).done(function (data) {
+                if (success) success(data);
+            }).fail(function (xhr, result, status) {
+                if (fail) fail(xhr, result, status);
+                else console.error("Uh-oh, something broke: " + status);
+            });
+        }
+
+        self.add = function (entity, item, success, fail) {
+            $.ajax({
+                type: "POST",
+                url: self.sf.getServiceRoot('OpenContent') + "Rest/v2/" + entity,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify({ item: item }),
+                beforeSend: self.sf.setModuleHeaders
+            }).done(function (data) {
+                if (success) success(data);
+            }).fail(function (xhr, result, status) {
+                if (fail) fail(xhr, result, status);
+                else console.error("Uh-oh, something broke: " + status);
+            });
+        }
+
+        self.update = function (entity, id, item, success, fail) {
+            $.ajax({
+                type: "PUT",
+                url: self.sf.getServiceRoot('OpenContent') + "Rest/v2/" + entity + "/" + id,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify({ item: item }),
+                beforeSend: self.sf.setModuleHeaders
+            }).done(function (data) {
+                if (success) success(data);
+            }).fail(function (xhr, result, status) {
+                if (fail) fail(xhr, result, status);
+                else console.error("Uh-oh, something broke: " + status);
+            });
+        }
+
+        self.delete = function (entity, id, callback) {
+            $.ajax({
+                type: "DELETE",
+                url: self.sf.getServiceRoot('OpenContent') + "Rest/v2/" + entity + "/" + id,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: {},
+                beforeSend: self.sf.setModuleHeaders
+            }).done(function (data) {
+                if (success) success(data);
+            }).fail(function (xhr, result, status) {
+                if (fail) fail(xhr, result, status);
+                else console.error("Uh-oh, something broke: " + status);
+            });
+        }
+
+    }
+
     var OpenContentForm = function (element, options) {
         var elem = $(element);
         var obj = this;

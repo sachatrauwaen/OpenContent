@@ -43,6 +43,14 @@ namespace Satrabel.OpenContent.Components
                 namespaces: new[] { "Satrabel.OpenContent.Components.Rest" }
                 );
 
+            mapRouteManager.MapHttpRoute(
+               moduleFolderName: "OpenContent",
+               routeName: "restv2",
+               url: "{controller}/v2/{entity}/{id}/{memberAction}",
+               defaults: new { id = RouteParameter.Optional, memberAction = RouteParameter.Optional },
+               namespaces: new[] { "Satrabel.OpenContent.Components.Rest.V2" }
+               );
+
             DataSourceManager.RegisterDataSources();
         }
     }
