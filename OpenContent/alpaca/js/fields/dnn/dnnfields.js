@@ -4585,7 +4585,12 @@
                 if (!tConfig) {
                     tConfig = {};
                 }
-                var tDatasets = tDatasets = {};
+                
+                var tDatasets = self.options.typeahead.datasets;
+                if (!tDatasets) {
+                    tDatasets = {};
+                }
+
                 if (!tDatasets.name) {
                     tDatasets.name = self.getId();
                 }
