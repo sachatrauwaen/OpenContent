@@ -287,13 +287,13 @@ namespace Satrabel.OpenContent.Components.Render
                     //Log.Logger.DebugFormat("Query returned [{0}] results.", total);
                     if (!resultList.Any())
                     {
-                       /*
-                        if (ds.Any(dsContext) && settings.Query.IsEmpty())
-                        {
-                            //there seems to be data in de database, but we did not find it in Lucene, so probably the data isn't indexed anymore/yet
-                            Components.Lucene.LuceneController.Instance.ReIndexModuleData(_module.ViewModule.ModuleID, settings);
-                        }
-                         */
+                        /*
+                         if (ds.Any(dsContext) && settings.Query.IsEmpty())
+                         {
+                             //there seems to be data in de database, but we did not find it in Lucene, so probably the data isn't indexed anymore/yet
+                             Components.Lucene.LuceneController.Instance.ReIndexModuleData(_module.ViewModule.ModuleID, settings);
+                         }
+                          */
                         //Log.Logger.DebugFormat("Query did not return any results. API request: [{0}], Lucene Filter: [{1}], Lucene Query:[{2}]", settings.Query, queryDef.Filter == null ? "" : queryDef.Filter.ToString(), queryDef.Query == null ? "" : queryDef.Query.ToString());
                         if (ds.Any(dsContext))
                         {
@@ -523,50 +523,41 @@ namespace Satrabel.OpenContent.Components.Render
 
         private string GenerateOutput(Page page, FileUri template, JToken dataJson, string settingsJson, TemplateFiles files)
         {
+            //some basic checks
+            if (template == null) return "";
+            if (dataJson == null) return "";
+
+
+            ModelFactory mf;
             var ps = PortalSettings.Current;
-            if (template != null)
+            string templateVirtualFolder = template.UrlFolder;
+            string physicalTemplateFolder = HostingEnvironment.MapPath(templateVirtualFolder);
+            
+            if (_renderinfo.Data == null)
             {
-                string templateVirtualFolder = template.UrlFolder;
-                string physicalTemplateFolder = HostingEnvironment.MapPath(templateVirtualFolder);
-                if (dataJson != null)
-                {
-                    ModelFactory mf;
-
-                    if (_renderinfo.Data == null)
-                    {
-                        // demo data
-                        mf = new ModelFactory(_renderinfo.DataJson, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, ps);
-                    }
-                    else
-                    {
-                        mf = new ModelFactory(_renderinfo.Data, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, ps);
-                    }
-                    dynamic model = mf.GetModelAsDynamic();
-                    if (LogContext.IsLogActive)
-                    {
-                        var logKey = "Render single item template";
-                        LogContext.Log(_module.ViewModule.ModuleID, logKey, "template", template.FilePath);
-                        LogContext.Log(_module.ViewModule.ModuleID, logKey, "model", model);
-                    }
-
-                    if (template.Extension != ".hbs")
-                    {
-                        return ExecuteRazor(template, model);
-                    }
-                    else
-                    {
-                        HandlebarsEngine hbEngine = new HandlebarsEngine();
-                        return hbEngine.Execute(page, template, model);
-                    }
-                }
-                else
-                {
-                    return "";
-                }
+                // demo data
+                mf = new ModelFactory(_renderinfo.DataJson, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, ps);
             }
             else
             {
-                return "";
+                mf = new ModelFactory(_renderinfo.Data, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, ps);
+            }
+            dynamic model = mf.GetModelAsDynamic();
+            if (LogContext.IsLogActive)
+            {
+                var logKey = "Render single item template";
+                LogContext.Log(_module.ViewModule.ModuleID, logKey, "template", template.FilePath);
+                LogContext.Log(_module.ViewModule.ModuleID, logKey, "model", model);
+            }
+
+            if (template.Extension == ".hbs")
+            {
+                var hbEngine = new HandlebarsEngine();
+                return hbEngine.Execute(page, template, model);
+            }
+            else
+            {
+                return ExecuteRazor(template, model);
             }
         }
 
@@ -586,8 +577,6 @@ namespace Satrabel.OpenContent.Components.Render
             }
             return "";
         }
-
-
 
         private FileUri CheckFiles(TemplateManifest templateManifest, TemplateFiles files)
         {
