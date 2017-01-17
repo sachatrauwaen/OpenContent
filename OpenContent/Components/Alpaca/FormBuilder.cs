@@ -11,14 +11,14 @@ namespace Satrabel.OpenContent.Components.Alpaca
 {
     public class FormBuilder
     {
-        private readonly FolderUri templateUri;
+        private readonly FolderUri _templateUri;
         public FormBuilder(FolderUri templateUri)
         {
-            this.templateUri = templateUri;
+            this._templateUri = templateUri;
         }
         public JObject BuildQuerySettings(string collection)
         {
-            var indexConfig = OpenContentUtils.GetIndexConfig(templateUri, collection);
+            var indexConfig = OpenContentUtils.GetIndexConfig(_templateUri, collection);
             var jsonEdit = Build(collection, DnnLanguageUtils.GetCurrentCultureCode(), true, true, false, false);
             SchemaConfig newSchema = new SchemaConfig(true);
             // max results
@@ -239,21 +239,21 @@ namespace Satrabel.OpenContent.Components.Alpaca
             // schema
             if (schema)
             {
-                var schemaJson = JsonUtils.LoadJsonFromFile(templateUri.UrlFolder + prefix + "schema.json");
+                var schemaJson = JsonUtils.LoadJsonFromFile(_templateUri.UrlFolder + prefix + "schema.json");
                 if (schemaJson != null)
                     json["schema"] = schemaJson;
             }
             // default options
             if (options)
             {
-                var optionsJson = JsonUtils.LoadJsonFromFile(templateUri.UrlFolder + prefix + "options.json");
+                var optionsJson = JsonUtils.LoadJsonFromFile(_templateUri.UrlFolder + prefix + "options.json");
                 if (optionsJson != null)
                 {
                     json["options"] = optionsJson;
                     if (translations)
                     {
                         // language options
-                        optionsJson = JsonUtils.LoadJsonFromFile(templateUri.UrlFolder + prefix + "options." + currentCultureCode + ".json");
+                        optionsJson = JsonUtils.LoadJsonFromFile(_templateUri.UrlFolder + prefix + "options." + currentCultureCode + ".json");
                         if (optionsJson != null)
                             json["options"] = json["options"].JsonMerge(optionsJson);
                     }
@@ -262,7 +262,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
             // view
             if (view)
             {
-                var viewJson = JsonUtils.LoadJsonFromFile(templateUri.UrlFolder + prefix + "view.json");
+                var viewJson = JsonUtils.LoadJsonFromFile(_templateUri.UrlFolder + prefix + "view.json");
                 if (viewJson != null)
                     json["view"] = viewJson;
             }
@@ -271,11 +271,11 @@ namespace Satrabel.OpenContent.Components.Alpaca
         public FieldConfig BuildIndex(string key)
         {
             string prefix = string.IsNullOrEmpty(key) || key == "Items" ? "" : key + "-";
-            string cacheKey = templateUri.UrlFolder + prefix + "index.json";
+            string cacheKey = _templateUri.UrlFolder + prefix + "index.json";
             FieldConfig newConfig = (FieldConfig)DataCache.GetCache(cacheKey);
             if (newConfig == null)
             {
-                var file = new FileUri(templateUri.UrlFolder, prefix + "index.json");
+                var file = new FileUri(_templateUri.UrlFolder, prefix + "index.json");
                 if (file.FileExists)
                 {
                     string content = File.ReadAllText(file.PhysicalFilePath);
@@ -428,8 +428,8 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     //var json = JObject.FromObject(newConfig);
                     //File.WriteAllText(templateUri.PhysicalFullDirectory + "\\test.json", json.ToString());
 
-                    var schemaFile = new FileUri(templateUri.UrlFolder, prefix + "schema.json");
-                    var optionsFile = new FileUri(templateUri.UrlFolder, prefix + "options.json");
+                    var schemaFile = new FileUri(_templateUri.UrlFolder, prefix + "schema.json");
+                    var optionsFile = new FileUri(_templateUri.UrlFolder, prefix + "options.json");
                     DataCache.SetCache(cacheKey, newConfig, new DNNCacheDependency(new[] { schemaFile.PhysicalFilePath, optionsFile.PhysicalFilePath }));
                 }
             }

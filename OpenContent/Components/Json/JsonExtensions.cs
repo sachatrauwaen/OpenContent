@@ -70,7 +70,7 @@ namespace Satrabel.OpenContent.Components.Json
             }
             catch (Exception ex)
             {
-                string mess = string.Format("Error while parsing file [{0}]", file.FilePath);
+                string mess = $"Error while parsing file [{file.FilePath}]";
                 Log.Logger.Error(mess, ex);
                 throw new Exception(mess, ex);
             }
