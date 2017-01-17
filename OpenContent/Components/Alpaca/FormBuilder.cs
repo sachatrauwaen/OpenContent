@@ -9,14 +9,14 @@ namespace Satrabel.OpenContent.Components.Alpaca
 {
     public class FormBuilder
     {
-        private readonly FolderUri templateUri;
+        private readonly FolderUri _templateUri;
         public FormBuilder(FolderUri templateUri)
         {
-            this.templateUri = templateUri;
+            this._templateUri = templateUri;
         }
         public JObject BuildQuerySettings()
         {
-            var indexConfig = OpenContentUtils.GetIndexConfig(templateUri);
+            var indexConfig = OpenContentUtils.GetIndexConfig(_templateUri);
             var jsonEdit = Build();
             SchemaConfig newSchema = new SchemaConfig(true);
             // max results
@@ -158,7 +158,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
 
                     var newField = new OptionsConfig();
                     newOptionsFilter.Fields.Add(propKey, newField);
-                    
+
                     fieldLst.Add(propKey);
                 }
                 else if (optType == "text" || optType == "mltext" || optType == "checkbox" || optType == "select" || optType == "select2")
@@ -249,30 +249,30 @@ namespace Satrabel.OpenContent.Components.Alpaca
             string prefix = string.IsNullOrEmpty(key) ? "" : key + "-";
             JObject json = new JObject();
             // schema
-            var schemaJson = JsonUtils.LoadJsonFromFile(templateUri.UrlFolder + prefix + "schema.json");
+            var schemaJson = JsonUtils.LoadJsonFromFile(_templateUri.UrlFolder + prefix + "schema.json");
             if (schemaJson != null)
                 json["schema"] = schemaJson;
 
             // default options
-            var optionsJson = JsonUtils.LoadJsonFromFile(templateUri.UrlFolder + prefix + "options.json");
+            var optionsJson = JsonUtils.LoadJsonFromFile(_templateUri.UrlFolder + prefix + "options.json");
             if (optionsJson != null)
                 json["options"] = optionsJson;
 
             // language options
-            optionsJson = JsonUtils.LoadJsonFromFile(templateUri.UrlFolder + prefix + "options." + currentCultureCode + ".json");
+            optionsJson = JsonUtils.LoadJsonFromFile(_templateUri.UrlFolder + prefix + "options." + currentCultureCode + ".json");
             if (optionsJson != null)
                 json["options"] = json["options"].JsonMerge(optionsJson);
 
             // view
-            optionsJson = JsonUtils.LoadJsonFromFile(templateUri.UrlFolder + prefix + "view.json");
-            if (optionsJson != null)
-                json["view"] = optionsJson;
+            var viewJson = JsonUtils.LoadJsonFromFile(_templateUri.UrlFolder + prefix + "view.json");
+            if (viewJson != null)
+                json["view"] = viewJson;
 
             return json;
         }
         public FieldConfig BuildIndex()
         {
-            var file = new FileUri(templateUri.UrlFolder, "index.json");
+            var file = new FileUri(_templateUri.UrlFolder, "index.json");
             if (file.FileExists)
             {
                 string content = File.ReadAllText(file.PhysicalFilePath);
