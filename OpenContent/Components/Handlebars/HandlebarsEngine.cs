@@ -304,7 +304,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                         try
                         {
                             DateTime publishstartdate = DateTime.Parse(item.publishstartdate, null, System.Globalization.DateTimeStyles.RoundtripKind);
-                            if (publishstartdate > DateTime.Today)
+                            if (publishstartdate.Date >= DateTime.Today)
                             {
                                 show = false;
                             }
@@ -315,7 +315,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                         try
                         {
                             DateTime publishenddate = DateTime.Parse(item.publishenddate, null, System.Globalization.DateTimeStyles.RoundtripKind);
-                            if (publishenddate < DateTime.Today)
+                            if (publishenddate.Date <= DateTime.Today)
                             {
                                 show = false;
                             }
