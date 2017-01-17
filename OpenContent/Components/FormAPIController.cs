@@ -28,7 +28,8 @@ namespace Satrabel.OpenContent.Components
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         public HttpResponseMessage Form(string key)
         {
-            string template = (string)ActiveModule.ModuleSettings["template"];
+            //string template = (string)ActiveModule.ModuleSettings["template"];
+
             JObject json = new JObject();
             try
             {

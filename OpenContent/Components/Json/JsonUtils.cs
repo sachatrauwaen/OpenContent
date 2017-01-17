@@ -37,6 +37,20 @@ namespace Satrabel.OpenContent.Components.Json
             return json;
         }
 
+        public static JObject GetJsonFromFile(string filename)
+        {
+            JObject retval;
+            try
+            {
+                retval = JObject.Parse(File.ReadAllText(filename));
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidJsonFileException($"Invalid json in file {filename}", ex, filename);
+            }
+            return retval;
+        }
+
         public static dynamic JsonToDynamic(string json)
         {
             var dynamicObject = System.Web.Helpers.Json.Decode(json);
@@ -477,20 +491,6 @@ namespace Satrabel.OpenContent.Components.Json
             {
                 model[prop.Name] = prop.Value;
             }
-        }
-
-        public static JObject GetJsonFromFile(string filename)
-        {
-            JObject retval;
-            try
-            {
-                retval = JObject.Parse(File.ReadAllText(filename));
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidJsonFileException(string.Format("Invalid json in file {0}", filename), ex, filename);
-            }
-            return retval;
         }
 
         internal static void IdJson(JToken o)

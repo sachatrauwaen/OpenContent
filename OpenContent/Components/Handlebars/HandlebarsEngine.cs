@@ -306,7 +306,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                         try
                         {
                             DateTime publishstartdate = DateTime.Parse(item.publishstartdate, null, System.Globalization.DateTimeStyles.RoundtripKind);
-                            if (publishstartdate > DateTime.Today)
+                            if (publishstartdate.Date >= DateTime.Today)
                             {
                                 show = false;
                             }
@@ -317,7 +317,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                         try
                         {
                             DateTime publishenddate = DateTime.Parse(item.publishenddate, null, System.Globalization.DateTimeStyles.RoundtripKind);
-                            if (publishenddate < DateTime.Today)
+                            if (publishenddate.Date <= DateTime.Today)
                             {
                                 show = false;
                             }
@@ -492,6 +492,13 @@ namespace Satrabel.OpenContent.Components.Handlebars
 
         }
 
+        /// <summary>
+        /// Translate an enum value
+        /// parameters[0] = enum array (eg from schema)
+        /// parameters[1] = label option array (from option file)
+        /// parameters[2] = selected enum value
+        /// </summary>
+        /// <param name="hbs">The HBS.</param>
         private void RegisterArrayTranslateHelper(HandlebarsDotNet.IHandlebars hbs)
         {
             hbs.RegisterHelper("arraytranslate", (writer, context, parameters) =>
@@ -532,6 +539,13 @@ namespace Satrabel.OpenContent.Components.Handlebars
 
         }
 
+        /// <summary>
+        /// Registers the array lookup helper.
+        /// arguments[0] = 
+        /// arguments[1] =
+        /// arguments[2] =
+        /// </summary>
+        /// <param name="hbs">The HBS.</param>
         private void RegisterArrayLookupHelper(HandlebarsDotNet.IHandlebars hbs)
         {
             hbs.RegisterHelper("lookup", (writer, options, context, arguments) =>
@@ -549,12 +563,12 @@ namespace Satrabel.OpenContent.Components.Handlebars
 
                 var field = arguments[1].ToString();
                 var value = arguments[2].ToString();
-                foreach (var obj in arr)
+                foreach (var arrayItem in arr)
                 {
-                    object member = DynamicUtils.GetMemberValue(obj, field);
+                    object member = DynamicUtils.GetMemberValue(arrayItem, field);
                     if (value.Equals(member))
                     {
-                        options.Template(writer, (object)obj);
+                        options.Template(writer, (object)arrayItem);
                     }
                 }
                 options.Inverse(writer, (object)context);
