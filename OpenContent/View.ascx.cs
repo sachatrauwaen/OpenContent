@@ -63,7 +63,7 @@ namespace Satrabel.OpenContent
         private string _itemId = null;
         private RenderInfo _renderinfo;
         private OpenContentSettings _settings;
-        RenderEngine engine;
+        private RenderEngine _engine;
 
         #region Event Handlers
 
@@ -97,9 +97,9 @@ namespace Satrabel.OpenContent
                     }
                 }
             }
-            engine = new RenderEngine(module);
-            _renderinfo = engine.Info;
-            _settings = engine.Settings;
+            _engine = new RenderEngine(module);
+            _renderinfo = _engine.Info;
+            _settings = _engine.Settings;
 
             OpenContent.TemplateInit ti = (TemplateInit)TemplateInitControl;
             ti.ModuleContext = ModuleContext;
@@ -113,13 +113,13 @@ namespace Satrabel.OpenContent
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-            engine.QueryString = Page.Request.QueryString;
+            _engine.QueryString = Page.Request.QueryString;
             if (Page.Request.QueryString["id"] != null)
             {
-                engine.ItemId = Page.Request.QueryString["id"];
+                _engine.ItemId = Page.Request.QueryString["id"];
             }
-            engine.LocalResourceFile = LocalResourceFile;
-            engine.ModuleContext = ModuleContext;
+            _engine.LocalResourceFile = LocalResourceFile;
+            _engine.ModuleContext = ModuleContext;
             if (!Page.IsPostBack)
             {
                 AddEditorRole();
@@ -127,7 +127,7 @@ namespace Satrabel.OpenContent
             }
             try
             {
-                engine.Render(Page);
+                _engine.Render(Page);
             }
             catch (TemplateException ex)
             {
@@ -145,7 +145,7 @@ namespace Satrabel.OpenContent
             {
                 try
                 {
-                    engine.IncludeResourses(Page, this);
+                    _engine.IncludeResourses(Page, this);
                 }
                 catch (Exception ex)
                 {
@@ -181,7 +181,7 @@ namespace Satrabel.OpenContent
 
         protected bool IsModuleAdmin()
         {
-            bool _IsModuleAdmin = Null.NullBoolean;
+            bool isModuleAdmin = Null.NullBoolean;
             foreach (ModuleInfo objModule in TabController.CurrentPage.Modules)
             {
                 if (!objModule.IsDeleted)
@@ -189,23 +189,23 @@ namespace Satrabel.OpenContent
                     bool blnHasModuleEditPermissions = ModulePermissionController.HasModuleAccess(SecurityAccessLevel.Edit, Null.NullString, objModule);
                     if (blnHasModuleEditPermissions && objModule.ModuleDefinition.DefaultCacheTime != -1)
                     {
-                        _IsModuleAdmin = true;
+                        isModuleAdmin = true;
                         break;
                     }
                 }
             }
-            return PortalSettings.Current.ControlPanelSecurity == PortalSettings.ControlPanelPermission.TabEditor && _IsModuleAdmin;
+            return PortalSettings.Current.ControlPanelSecurity == PortalSettings.ControlPanelPermission.TabEditor && isModuleAdmin;
         }
 
         protected bool IsPageAdmin()
         {
-            bool _IsPageAdmin = Null.NullBoolean;
+            bool isPageAdmin = Null.NullBoolean;
             if (TabPermissionController.CanAddContentToPage() || TabPermissionController.CanAddPage() || TabPermissionController.CanAdminPage() || TabPermissionController.CanCopyPage() ||
                 TabPermissionController.CanDeletePage() || TabPermissionController.CanExportPage() || TabPermissionController.CanImportPage() || TabPermissionController.CanManagePage())
             {
-                _IsPageAdmin = true;
+                isPageAdmin = true;
             }
-            return _IsPageAdmin;
+            return isPageAdmin;
         }
 
         private void AddEditorRole()
@@ -323,17 +323,17 @@ namespace Satrabel.OpenContent
                         RenderInitForm();
                         if (_renderinfo.ShowDemoData)
                         {
-                            engine.RenderDemoData(Page);
+                            _engine.RenderDemoData(Page);
                         }
                     }
                     else if (_renderinfo.Template != null)
                     {
-                        engine.RenderDemoData(Page);
+                        _engine.RenderDemoData(Page);
                     }
                 }
                 else if (_renderinfo.Template != null)
                 {
-                    engine.RenderDemoData(Page);
+                    _engine.RenderDemoData(Page);
                 }
             }
         }
@@ -357,6 +357,8 @@ namespace Satrabel.OpenContent
                 {
                     _itemId = Page.Request.QueryString["id"];
                 }
+
+                //Add item / Edit Item
                 if (templateDefined && template.DataNeeded() && !settings.Manifest.DisableEdit)
                 {
                     string title = Localization.GetString((listMode && string.IsNullOrEmpty(_itemId) ? ModuleActionType.AddContent : ModuleActionType.EditContent), LocalResourceFile);
@@ -375,6 +377,8 @@ namespace Satrabel.OpenContent
                         true,
                         false);
                 }
+
+                //Add AdditionalData manage actions
                 if (templateDefined && template.Manifest.AdditionalDataDefined() && !settings.Manifest.DisableEdit)
                 {
                     foreach (var addData in template.Manifest.AdditionalDataDefinition)
@@ -408,6 +412,7 @@ namespace Satrabel.OpenContent
                     }
                 }
 
+                //Manage Form Submissions
                 if (templateDefined && OpenContentUtils.FormExist(settings.Template.ManifestFolderUri))
                 {
                     
@@ -440,7 +445,7 @@ namespace Satrabel.OpenContent
                 }
                 */
 
-
+                //Edit Template Settings
                 if (templateDefined && settings.Template.SettingsNeeded())
                 {
                     actions.Add(ModuleContext.GetNextActionID(),
@@ -455,6 +460,7 @@ namespace Satrabel.OpenContent
                         false);
                 }
 
+                //Edit Form Settings
                 if (templateDefined && OpenContentUtils.FormExist(settings.Template.ManifestFolderUri))
                 {
                     actions.Add(ModuleContext.GetNextActionID(),
@@ -469,6 +475,7 @@ namespace Satrabel.OpenContent
                         false);
                 }
 
+                //Switch Template
                 actions.Add(ModuleContext.GetNextActionID(),
                     Localization.GetString("EditInit.Action", LocalResourceFile),
                     ModuleActionType.ContentOptions,
@@ -479,9 +486,10 @@ namespace Satrabel.OpenContent
                     SecurityAccessLevel.Admin,
                     true,
                     false);
+
+                //Edit Filter Settings
                 if (templateDefined && listMode)
                 {
-                    //bool queryAvailable = settings.Template.QueryAvailable();
                     if (settings.Manifest.Index)
                     {
                         actions.Add(ModuleContext.GetNextActionID(),
