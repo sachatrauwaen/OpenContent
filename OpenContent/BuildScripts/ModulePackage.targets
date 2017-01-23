@@ -25,8 +25,9 @@
       <InstallInclude Include="**\*.resx" Exclude="packages\**" />
       <InstallInclude Include="**\*.aspx" Exclude="packages\**" />
       <InstallInclude Include="**\*.js" Exclude="packages\**;**\_*.js" />
+      <InstallInclude Include="**\formsettings-*.json" Exclude="packages\**" />
       <InstallInclude Include="**\*.txt"  Exclude="**\obj\**;**\_ReSharper*\**;packages\**;**\.git\**;" />
-      <InstallInclude Include="**\images\**" Exclude="packages\**" />
+      <InstallInclude Include="**\images\**" Exclude="packages\**;**\*.cs" />
       <InstallInclude Include="**\web.config" Exclude="packages\**" />
       <InstallInclude Include="**\css\**" Exclude="packages\**" />
       <InstallInclude Include="**\fonts\**" Exclude="packages\**" />
@@ -44,10 +45,11 @@
       <SourceInclude Include="**\*.xml" Exclude="**\obj\**;**\_ReSharper*\**;**\.git\**;" />
       <SourceInclude Include="**\*.aspx" />
       <SourceInclude Include="**\*.js" />
+      <SourceInclude Include="**\*.json" />
       <SourceInclude Include="**\*.txt" Exclude="**\obj\**;**\_ReSharper*\**;**\.git\**;" />
       <SourceInclude Include="**\images\**" />
       <SourceInclude Include="**\*.cs" />
-	    <SourceInclude Include="**\Packages\**" />
+	  <SourceInclude Include="**\Packages\**" />
       <SourceInclude Include="**\*.cs.designer" />
       <SourceInclude Include="**\*.csproj" />
       <SourceInclude Include="**\*.targets" />
