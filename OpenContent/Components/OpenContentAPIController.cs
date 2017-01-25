@@ -318,14 +318,14 @@ namespace Satrabel.OpenContent.Components
         [HttpPost]
         public HttpResponseMessage LookupData(LookupDataRequestDTO req)
         {
-            var module = new OpenContentModuleInfo(ActiveModule);
-
-            string key = req.dataKey;
-            var additionalDataManifest = module.Settings.Template.Manifest.GetAdditionalData(key);
-
             List<LookupResultDTO> res = new List<LookupResultDTO>();
             try
             {
+                var module = new OpenContentModuleInfo(ActiveModule);
+
+                string key = req.dataKey;
+                var additionalDataManifest = module.Settings.Template.Manifest.GetAdditionalData(key);
+
                 IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
 

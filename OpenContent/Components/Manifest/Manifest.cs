@@ -58,7 +58,7 @@ namespace Satrabel.OpenContent.Components.Manifest
         [JsonProperty(PropertyName = "disableEdit")]
         public bool DisableEdit { get; set; }
 
-       
+
 
         public bool HasTemplates { get { return (Templates != null); } }
         public FolderUri ManifestDir { get; set; }
@@ -89,6 +89,12 @@ namespace Satrabel.OpenContent.Components.Manifest
         }
         public AdditionalDataManifest GetAdditionalData(string key)
         {
+            if (string.IsNullOrEmpty(key))
+                throw new ArgumentNullException(nameof(key));
+
+            if (!AdditionalDataDefinition.ContainsKey(key.ToLowerInvariant()))
+                throw new Exception($"Manifest in {this.ManifestDir.UrlFolder} does not contain a AdditionalData definition with key [{key}]");
+
             return AdditionalDataDefinition[key.ToLowerInvariant()];
         }
 
