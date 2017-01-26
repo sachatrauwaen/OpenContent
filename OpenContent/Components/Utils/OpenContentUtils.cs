@@ -439,7 +439,7 @@ namespace Satrabel.OpenContent.Components
                 Index = module.Settings.Template.Manifest.Index,
                 Options = options,
                 Single = single,
-                Collection = string.IsNullOrEmpty(module.Settings.Template.Collection) ? "Items" : module.Settings.Template.Collection
+                Collection = module.Settings.Template.Collection
             };
             if (PortalSettings.Current != null)
             {

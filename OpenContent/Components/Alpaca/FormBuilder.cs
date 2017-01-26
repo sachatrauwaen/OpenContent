@@ -234,7 +234,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
 
         private JObject Build(string key, string currentCultureCode, bool schema, bool options, bool view, bool translations)
         {
-            string prefix = string.IsNullOrEmpty(key) || key == "Items" ? "" : key + "-";
+            string prefix = (key == "Items") ? "" : key + "-";
             JObject json = new JObject();
             // schema
             if (schema)
@@ -270,7 +270,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
         }
         public FieldConfig BuildIndex(string key)
         {
-            string prefix = string.IsNullOrEmpty(key) || key == "Items" ? "" : key + "-";
+            string prefix =  (key == "Items") ? "" : key + "-";
             string cacheKey = _templateUri.UrlFolder + prefix + "index.json";
             FieldConfig newConfig = (FieldConfig)DataCache.GetCache(cacheKey);
             if (newConfig == null)
