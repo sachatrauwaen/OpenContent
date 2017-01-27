@@ -87,7 +87,9 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                     }
                     else
                     {
-                        q.Add(new TermQuery(new Term(fieldName, QueryParser.Escape(rule.Value.AsString))), cond);
+                        string searchstring = QueryParser.Escape(rule.Value.AsString).Replace("\\-", "-");
+                        searchstring = searchstring.Replace("\\-", "-"); //Added to fix issue with OpenFiles where folders with dash were not found when searching
+                        q.Add(new TermQuery(new Term(fieldName, searchstring)), cond);
                     }
                 }
                 else if (rule.FieldOperator == OperatorEnum.NOT_EQUAL)
