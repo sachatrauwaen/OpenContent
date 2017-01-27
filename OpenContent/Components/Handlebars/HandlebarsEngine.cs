@@ -47,7 +47,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             }
             catch (Exception ex)
             {
-                Log.Logger.Error(string.Format("Failed to render Handlebar template source:[{0}]", source), ex);
+                Log.Logger.Error($"Failed to render Handlebar template source:[{source}]", ex);
                 throw new TemplateException("Failed to render Handlebar template " + source, ex, null, source);
             }
         }

@@ -76,6 +76,10 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             return null;
         }
 
+        /// <summary>
+        /// Gets the image URL.
+        /// If OpenFiles has been installed, some extra logic is applied.
+        /// </summary>
         public static string GetImageUrl(IFileInfo file, Ratio requestedCropRatio)
         {
             if (file == null)
@@ -92,7 +96,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             if (file.ContentItemID > 0)
             {
                 var contentItem = Util.GetContentController().GetContentItem(file.ContentItemID);
-                if (contentItem != null && !string.IsNullOrEmpty(contentItem.Content))
+                if (!string.IsNullOrEmpty(contentItem?.Content))
                 {
                     JObject content = JObject.Parse(contentItem.Content);
                     var crop = content["crop"];
@@ -112,12 +116,12 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
                                 if (Math.Abs(definedCropRatio.AsFloat - requestedCropRatio.AsFloat) < 0.02) //allow 2% margin
                                 {
                                     //crop first then resize (order defined by the processors definition order in the config file)
-                                    return url + string.Format("?crop={0},{1},{2},{3}&width={4}&height={5}", left, top, w, h, requestedCropRatio.Width, requestedCropRatio.Height);
+                                    return url + $"?crop={left},{top},{w},{h}&width={requestedCropRatio.Width}&height={requestedCropRatio.Height}";
                                 }
                             }
                             catch (Exception ex)
                             {
-                                Log.Logger.Warn(string.Format("Warning for page {0}. Error processing croppers in {1}. {2}", HttpContext.Current.Request.RawUrl, contentItem.Content, ex.Message));
+                                Log.Logger.Warn($"Warning for page {HttpContext.Current.Request.RawUrl}. Error processing croppers in {contentItem.Content}. {ex.Message}");
                             }
                         }
                     }
@@ -128,7 +132,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
                 }
             }
 
-            return url + string.Format("?width={0}&height={1}&mode=crop", requestedCropRatio.Width, requestedCropRatio.Height);
+            return url + $"?width={requestedCropRatio.Width}&height={requestedCropRatio.Height}&mode=crop";
         }
 
 

@@ -103,10 +103,8 @@ namespace Satrabel.OpenContent.Components.Render
                     }
                     EnhanceSelect2(dyn, itemsModel);
                     EnhanceUser(dyn, item.CreatedByUserId);
-                    if (Options != null && itemsModel["Options"] != null)
-                    {
-                        JsonUtils.ImagesJson(dyn, Options, itemsModel["Options"] as JObject, IsEditMode);
-                    }
+                    EnhanceImages(dyn, itemsModel);
+
                     if (onlyData)
                     {
                         RemoveNoData(itemsModel);
@@ -177,6 +175,13 @@ namespace Satrabel.OpenContent.Components.Render
                         }
                     }
                 }
+            }
+        }
+        private void EnhanceImages(JObject model, JObject itemsModel)
+        {
+            if (Options != null && itemsModel["Options"] != null)
+            {
+                JsonUtils.ImagesJson(model, Options, itemsModel["Options"] as JObject, IsEditMode);
             }
         }
 

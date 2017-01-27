@@ -340,8 +340,9 @@ namespace Satrabel.OpenContent.Components.Json
             }
         }
 
-
-
+        /// <summary>
+        /// Enhance data for all alpaca fields of type 'image2'
+        /// </summary>
         public static void ImagesJson(JObject o, JObject requestOptions, JObject options, bool isEditable)
         {
             foreach (var child in o.Children<JProperty>().ToList())
@@ -406,7 +407,6 @@ namespace Satrabel.OpenContent.Components.Json
                         string val = childProperty.Value.ToString();
                         try
                         {
-                            //o[childProperty.Name] = GenerateObject(additionalData, dataKey, val, dataMember, valueField);
                             o[childProperty.Name] = GenerateImage(reqOpt, val, isEditable);
                         }
                         catch (System.Exception)
@@ -420,7 +420,7 @@ namespace Satrabel.OpenContent.Components.Json
         private static JToken GenerateImage(JObject reqOpt, string p, bool isEditable)
         {
             var ratio = new Ratio(100, 100);
-            if (reqOpt != null && reqOpt["ratio"] != null)
+            if (reqOpt?["ratio"] != null)
             {
                 ratio = new Ratio(reqOpt["ratio"].ToString());
             }
