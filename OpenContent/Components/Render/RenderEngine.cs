@@ -148,7 +148,8 @@ namespace Satrabel.OpenContent.Components.Render
                     // single item template
                     GetSingleData(_renderinfo, Settings);
                     bool settingsNeeded = _renderinfo.Template.SettingsNeeded();
-                    if (!_renderinfo.ShowInitControl && (!settingsNeeded || !string.IsNullOrEmpty(_renderinfo.SettingsJson)))
+                    //if (!_renderinfo.ShowInitControl && (!settingsNeeded || !string.IsNullOrEmpty(_renderinfo.SettingsJson)))
+                    if (!_renderinfo.ShowInitControl)
                     {
                         _renderinfo.OutputString = GenerateOutput(page, _renderinfo.Template.MainTemplateUri(), _renderinfo.DataJson, _renderinfo.SettingsJson, _renderinfo.Template.Main);
                     }
