@@ -29,12 +29,20 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
 
         #region Private Methods
 
-        private static string GenerateCacheKeyHash(int tabId, int moduleId, string cacheKey)
+        private static string GenerateModuleCacheKeyHash(int tabId, int moduleId, string cacheKey)
         {
             byte[] hash = Encoding.ASCII.GetBytes(cacheKey);
             var sha256 = new SHA256CryptoServiceProvider();
             hash = sha256.ComputeHash(hash);
             return moduleId + "_" + tabId + "_" + ByteArrayToString(hash);
+        }
+
+        private static string GeneratePortalCacheKeyHash(int portalId, string cacheKey)
+        {
+            byte[] hash = Encoding.ASCII.GetBytes(cacheKey);
+            var sha256 = new SHA256CryptoServiceProvider();
+            hash = sha256.ComputeHash(hash);
+            return portalId + "_" + ByteArrayToString(hash);
         }
 
         private static string ByteArrayToString(byte[] arrInput)
@@ -154,7 +162,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
 
         #region Abstract Method Implementation
 
-        public static string GenerateCacheKey(int tabId, int moduleId, SortedDictionary<string, string> varyBy)
+        public static string GenerateModuleCacheKey(int tabId, int moduleId, SortedDictionary<string, string> varyBy)
         {
             var cacheKey = new StringBuilder();
             if (varyBy != null)
@@ -168,10 +176,27 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
 
                 varyByParms.Dispose();
             }
-            return GenerateCacheKeyHash(tabId, moduleId, cacheKey.ToString());
+            return GenerateModuleCacheKeyHash(tabId, moduleId, cacheKey.ToString());
         }
 
-        public static List<OpenContentUrlRule> GetModule(int portalId, string cacheKey)
+        public static string GeneratePortalCacheKey(int portalId, SortedDictionary<string, string> varyBy)
+        {
+            var cacheKey = new StringBuilder();
+            if (varyBy != null)
+            {
+                SortedDictionary<string, string>.Enumerator varyByParms = varyBy.GetEnumerator();
+                while ((varyByParms.MoveNext()))
+                {
+                    string key = varyByParms.Current.Key.ToLower();
+                    cacheKey.Append(string.Concat(key, "=", varyByParms.Current.Value, "|"));
+                }
+
+                varyByParms.Dispose();
+            }
+            return GeneratePortalCacheKeyHash(portalId, cacheKey.ToString());
+        }
+
+        public static List<OpenContentUrlRule> GetCache(int portalId, string cacheKey)
         {
 
             string cacheFileName = GetCachedOutputFileName(portalId, cacheKey);
@@ -193,7 +218,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
             }
         }
 
-        public static List<OpenContentUrlRule> GetModule(int portalId, string cacheKey, List<string> validCacheItems)
+        public static List<OpenContentUrlRule> GetCache(int portalId, string cacheKey, List<string> validCacheItems)
         {
             string dataCacheFileName = GetCachedOutputFileName(portalId, cacheKey);
             try
@@ -252,7 +277,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
             return pr;
         }
 
-        public static void SetModule(int portalId, int tabId, int moduleId, string cacheKey, TimeSpan duration, List<OpenContentUrlRule> rules)
+        public static void SetCache(int portalId, string cacheKey, TimeSpan duration, List<OpenContentUrlRule> rules)
         {
             try
             {
@@ -288,10 +313,23 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                     i += 1;
                 }
             }
+
+            var portalCacheKey = UrlRulesCaching.GeneratePortalCacheKey(portalId, null);
+            string dataCacheFileName = GetCachedOutputFileName(portalId, portalCacheKey);
+            if (!FileSystemUtils.DeleteFileWithWait(dataCacheFileName, 100, 200))
+            {
+                filesNotDeleted.Append(dataCacheFileName + ";");
+            }
+            else
+            {
+                i += 1;
+            }
+
             if (filesNotDeleted.Length > 0)
             {
                 throw new IOException("Deleted " + i + " files, however, some files are locked.  Could not delete the following files: " + filesNotDeleted);
             }
+
             DataCache.ClearCache(string.Format(UrlRuleConfigCacheKey, portalId));
         }
 

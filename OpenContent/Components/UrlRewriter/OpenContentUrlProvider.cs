@@ -20,8 +20,18 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
             stopwatch.Start();
 #endif
             var purgeResult = UrlRulesCaching.PurgeExpiredItems(portalId);
-            Dictionary<string, Locale> dicLocales = LocaleController.Instance.GetLocales(portalId);
+
+            
             List<OpenContentUrlRule> rules = new List<OpenContentUrlRule>();
+
+            var portalCacheKey = UrlRulesCaching.GeneratePortalCacheKey(portalId, null);
+            var portalRules = UrlRulesCaching.GetCache(portalId, portalCacheKey, purgeResult.ValidCacheItems);
+            if (portalRules != null)
+            {
+                return portalRules;
+            }
+
+            Dictionary<string, Locale> dicLocales = LocaleController.Instance.GetLocales(portalId);
             var modules = DnnUtils.GetDnnOpenContentModules(portalId).ToList();
 
             var cachedModules = 0;
@@ -29,8 +39,8 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
 
             foreach (var module in modules)
             {
-                var cacheKey = UrlRulesCaching.GenerateCacheKey(module.TabId, module.ModuleId, null);
-                List<OpenContentUrlRule> moduleRules = UrlRulesCaching.GetModule(portalId, cacheKey, purgeResult.ValidCacheItems);
+                var cacheKey = UrlRulesCaching.GenerateModuleCacheKey(module.TabId, module.ModuleId, null);
+                List<OpenContentUrlRule> moduleRules = UrlRulesCaching.GetCache(portalId, cacheKey, purgeResult.ValidCacheItems);
                 if (moduleRules != null)
                 {
                     rules.AddRange(moduleRules);
@@ -117,7 +127,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                                 }
                             }
                         }
-                        UrlRulesCaching.SetModule(portalId, module.TabId, module.ModuleId, UrlRulesCaching.GenerateCacheKey(module.TabId, module.ModuleId, null), new TimeSpan(1, 0, 0, 0), moduleRules);
+                        UrlRulesCaching.SetCache(portalId,  UrlRulesCaching.GenerateModuleCacheKey(module.TabId, module.ModuleId, null), new TimeSpan(1, 0, 0, 0), moduleRules);
                     }
                 }
                 catch (Exception ex)
@@ -126,6 +136,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                 }
 
             }
+            UrlRulesCaching.SetCache(portalId, portalCacheKey, new TimeSpan(1, 0, 0, 0), rules);
 #if DEBUG
             stopwatch.Stop();
             decimal speed = (cachedModules + nonCached) == 0 ? -1 : stopwatch.Elapsed.Milliseconds / (cachedModules + nonCached);
