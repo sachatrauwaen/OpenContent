@@ -45,7 +45,7 @@ namespace Satrabel.OpenContent.Components.Manifest
                 manifest.ManifestDir = templateKey.TemplateDir;
                 foreach (KeyValuePair<string, TemplateManifest> keyValuePair in manifest.Templates)
                 {
-                    keyValuePair.Value.SetSource(templateKey);
+                    keyValuePair.Value.SetSource(new TemplateKey(templateKey, keyValuePair.Key));
                 }
                 //get the requested template by Key
                 templateManifest = manifest.GetTemplateManifest(templateKey);
