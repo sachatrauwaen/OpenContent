@@ -80,7 +80,6 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
             else if (token is JValue)
             {
                 JValue value = token as JValue;
-                IConvertible convertible = value as IConvertible;
                 bool index = false;
                 bool sort = false;
                 if (fieldconfig != null)
