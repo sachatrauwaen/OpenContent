@@ -87,8 +87,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                     }
                     else
                     {
-                        string searchstring = QueryParser.Escape(rule.Value.AsString).Replace("\\-", "-");
-                        searchstring = searchstring.Replace("\\-", "-"); //Added to fix issue with OpenFiles where folders with dash were not found when searching
+                        string searchstring = QueryParser.Escape(rule.Value.AsString);                        
                         q.Add(new TermQuery(new Term(fieldName, searchstring)), cond);
                     }
                 }
@@ -113,7 +112,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                     BooleanQuery arrQ = new BooleanQuery();
                     foreach (var arrItem in rule.MultiValue)
                     {
-                        arrQ.Add(new TermQuery(new Term(fieldName, arrItem.AsString)), Occur.SHOULD); // OR                        
+                        arrQ.Add(new TermQuery(new Term(fieldName, QueryParser.Escape(arrItem.AsString))), Occur.SHOULD); // OR                        
                         /*
                         var phraseQ = new PhraseQuery();
                         phraseQ.Add(new Term(fieldName, arrItem.AsString));
