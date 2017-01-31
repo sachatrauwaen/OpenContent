@@ -373,20 +373,9 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 {
                     view = parameters[0].ToString();
                 }
-                string min = ".min";
-                if (DotNetNuke.Common.HttpContextSource.Current.IsDebuggingEnabled)
-                {
-                    min = "";
-                }
-                DotNetNuke.Framework.ServicesFramework.Instance.RequestAjaxScriptSupport();
 
-                DnnUtils.RegisterScript(page, sourceFolder, "/DesktopModules/OpenContent/js/lib/handlebars/handlebars" + min + ".js", _jsOrder);
-                _jsOrder++;
-                DnnUtils.RegisterScript(page, sourceFolder, "/DesktopModules/OpenContent/js/alpaca/bootstrap/alpaca" + min + ".js", _jsOrder);
-                _jsOrder++;
-                ClientResourceManager.RegisterStyleSheet(page, page.ResolveUrl("/DesktopModules/OpenContent/js/alpaca/bootstrap/alpaca" + min + ".css"), FileOrder.Css.PortalCss);
-                DnnUtils.RegisterScript(page, sourceFolder, "/DesktopModules/OpenContent/js/oc.jquery.js", _jsOrder);
-                _jsOrder++;
+                FormHelpers.RegisterForm(page, sourceFolder, view, ref _jsOrder);
+                
             });
             
             hbs.RegisterHelper("registereditform", (writer, context, parameters) =>
@@ -396,13 +385,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 {
                     prefix = parameters[0].ToString();
                 }
-                bool bootstrap = true;
-                bool loadBootstrap = false;
-                DotNetNuke.Framework.ServicesFramework.Instance.RequestAjaxScriptSupport();
-                AlpacaEngine alpaca = new AlpacaEngine(page, PortalSettings.Current.PortalId, sourceFolder, prefix);
-                alpaca.RegisterAll(bootstrap, loadBootstrap);
-                DnnUtils.RegisterScript(page, sourceFolder, "/DesktopModules/OpenContent/js/oc.jquery.js", _jsOrder);
-                _jsOrder++;
+                FormHelpers.RegisterEditForm(page, sourceFolder, PortalSettings.Current.PortalId, prefix, ref _jsOrder);
             });
             
         }
