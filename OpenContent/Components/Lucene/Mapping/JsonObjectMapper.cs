@@ -75,7 +75,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
             }
             else if (token is JArray)
             {
-                AddArray(doc, prefix, token as JArray, fieldconfig == null ? null : fieldconfig.Items);
+                AddArray(doc, prefix, token as JArray, fieldconfig?.Items);
             }
             else if (token is JValue)
             {
@@ -237,7 +237,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
             foreach (JProperty property in obj.Properties())
             {
                 FieldConfig f = null;
-                if (field != null && field.Fields != null && field.Fields.ContainsKey(property.Name))
+                if (field?.Fields != null && field.Fields.ContainsKey(property.Name))
                 {
                     f = field.Fields[property.Name];
                 }
@@ -286,14 +286,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
         /// </returns>
         private static string MakePrefix<TAdd>(string prefix, TAdd add)
         {
-            if (!string.IsNullOrEmpty(prefix))
-            {
-                return string.Format("{0}.{1}", prefix, add);
-            }
-            else
-            {
-                return add.ToString();
-            }
+            return !string.IsNullOrEmpty(prefix) ? $"{prefix}.{add}" : add.ToString();
         }
 
         #endregion
