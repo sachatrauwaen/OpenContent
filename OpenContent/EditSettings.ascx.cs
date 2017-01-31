@@ -30,7 +30,7 @@ namespace Satrabel.OpenContent
         {
             base.OnInit(e);
             hlCancel.NavigateUrl = Globals.NavigateURL();
-            cmdSave.NavigateUrl = Globals.NavigateURL();
+            cmdSaveClose.NavigateUrl = Globals.NavigateURL();
 
             var settings = ModuleContext.OpenContentSettings();
             if (settings.TemplateAvailable)

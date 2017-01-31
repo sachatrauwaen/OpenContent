@@ -8,6 +8,9 @@
             <asp:HyperLink ID="cmdSave" runat="server" class="dnnPrimaryAction" resourcekey="cmdSave" />
         </li>
         <li>
+            <asp:HyperLink ID="cmdSaveClose" runat="server" class="dnnSecondaryAction" resourcekey="cmdSaveClose" />
+        </li>
+        <li>
             <asp:HyperLink ID="hlCancel" runat="server" class="dnnSecondaryAction" resourcekey="cmdCancel" />
         </li>
     </ul>
@@ -60,40 +63,20 @@
                     beforeSend: sf.setModuleHeaders
                 }).done(function (config) {
                     if (config.schema) {
-                        var jsmodules = [];
-
-                        /*
-                        oc_loadmodules(config.options, function () {
-                            self.FormEdit(config);
-
-                        });
-                        */
                         self.FormEdit(config);
-
-                        /*
-                        if (config.options) {
-                            var types = self.GetFieldTypes(config.options);
-                            if ($.inArray("address", types) != -1) {
-                                jsmodules.push('addressfield');
-                            }
-                        }
-                        if (jsmodules.length > 0) {
-                            require(jsmodules, function () {
-                                self.FormEdit(config);
-                            });
-                        }
-                        else {
-                            self.FormEdit(config);
-                        }
-                        */
                     }
                     else {
                         $("#<%=cmdSave.ClientID%>").click(function () {
-                        var href = $(this).attr('href');
-                        self.FormSubmit("", href);
-                        return false;
-                    });
-                }
+                            self.FormSubmit("", "");
+                            return false;
+                        });
+                        $("#<%=cmdSaveClose.ClientID%>").click(function () {
+                            var href = $(this).attr('href');
+                            self.FormSubmit("", href);
+                            return false;
+
+                        });
+                    }
                 }).fail(function (xhr, result, status) {
                     alert("Uh-oh, something broke: " + status);
                 });
@@ -115,7 +98,7 @@
                 "connector": connector,
                 "postRender": function (control) {
                     var selfControl = control;
-                    $("#<%=cmdSave.ClientID%>").click(function () {
+                    $("#<%=cmdSaveClose.ClientID%>").click(function () {
                         selfControl.refreshValidationState(true);
                         if (selfControl.isValid(true)) {
                             var value = selfControl.getValue();
@@ -125,13 +108,22 @@
                         }
                         return false;
                     });
+                    $("#<%=cmdSave.ClientID%>").click(function () {
+                        selfControl.refreshValidationState(true);
+                        if (selfControl.isValid(true)) {
+                            var value = selfControl.getValue();
+                            //alert(JSON.stringify(value, null, "  "));
+                            self.FormSubmit(value, "");
+                        }
+                        return false;
+                    });
                 }
             });
-            };
+        };
 
         self.FormSubmit = function (data, href) {
             //var postData = { 'data': data, 'template': Template };
-            var postData = JSON.stringify({ 'data': data});
+            var postData = JSON.stringify({ 'data': data });
             var action = "UpdateSettings";
             $.ajax({
                 type: "POST",
@@ -145,16 +137,18 @@
                 var windowTop = parent; //needs to be assign to a varaible for Opera compatibility issues.
                 var popup = windowTop.jQuery("#iPopUp");
                 if (popup.length > 0) {
-                    windowTop.__doPostBack('dnn_ctr<%=ModuleId %>_View__UP', '');
+                    if (href) {
+                        windowTop.__doPostBack('dnn_ctr<%=ModuleId %>_View__UP', '');
                         dnnModal.closePopUp(false, href);
                     }
-                    else {
-                        window.location.href = href;
-                    }
+                }
+                else {
+                    window.location.href = href;
+                }
 
-                }).fail(function (xhr, result, status) {
-                    alert("Uh-oh, something broke: " + status + " " + xhr.responseText);
-                });
+            }).fail(function (xhr, result, status) {
+                alert("Uh-oh, something broke: " + status + " " + xhr.responseText);
+            });
         };
             /*
                
@@ -174,8 +168,8 @@
                     return types;
                 }
             */
-            self.CreateForm();
-        }
+        self.CreateForm();
+    }
 
         $(document).ready(function () {
 
@@ -191,9 +185,9 @@
 
     }(jQuery, window.Sys));
 
-    var gminitializecallback;
-    function gminitialize() {
-        if (gminitializecallback)
-            gminitializecallback();
-    }
+var gminitializecallback;
+function gminitialize() {
+    if (gminitializecallback)
+        gminitializecallback();
+}
 </script>
