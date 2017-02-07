@@ -14,7 +14,7 @@
         {
             _folder = templateKey.Folder;
             ShortKey = shortKey;
-            Extention = extension == "" ? "manifest" : extension;
+            Extention = extension == "" ? templateKey.Extention : extension;
         }
         public FolderUri TemplateDir { get { return new FolderUri(_folder); } }
         public string ShortKey { get; private set; }
