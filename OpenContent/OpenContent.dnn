@@ -166,7 +166,7 @@
                   </moduleControl>
                   <moduleControl>
                     <controlKey>FormSettings</controlKey>
-                    <controlSrc>DesktopModules/OpenContent/FormSettings.ascx</controlSrc>
+                    <controlSrc>DesktopModules/OpenContent/EditFormSettings.ascx</controlSrc>
                     <supportsPartialRendering>False</supportsPartialRendering>
                     <controlTitle>Form Settings</controlTitle>
                     <controlType>Admin</controlType>
