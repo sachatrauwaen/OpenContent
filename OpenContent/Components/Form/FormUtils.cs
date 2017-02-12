@@ -133,44 +133,48 @@ namespace Satrabel.OpenContent.Components.Form
             }
             return data;
         }
-        public static void InitFields(JObject schemaJson, UserInfo userInfo)
+
+        public static JObject InitFields(JObject sourceJson, UserInfo userInfo)
         {
-            if (schemaJson["properties"] != null && schemaJson["properties"]["Username"] != null)
+            var schemaJson = sourceJson.DeepClone() as JObject;  //make sure we do not modify the cached object
+
+            if (schemaJson["properties"]?["Username"] != null)
             {
                 schemaJson["properties"]["Username"]["default"] = userInfo.Username;
             }
-            if (schemaJson["properties"] != null && schemaJson["properties"]["FirstName"] != null)
+            if (schemaJson["properties"]?["FirstName"] != null)
             {
                 schemaJson["properties"]["FirstName"]["default"] = userInfo.FirstName;
             }
-            if (schemaJson["properties"] != null && schemaJson["properties"]["LastName"] != null)
+            if (schemaJson["properties"]?["LastName"] != null)
             {
                 schemaJson["properties"]["LastName"]["default"] = userInfo.LastName;
             }
-            if (schemaJson["properties"] != null && schemaJson["properties"]["Email"] != null)
+            if (schemaJson["properties"]?["Email"] != null)
             {
                 schemaJson["properties"]["Email"]["default"] = userInfo.Email;
             }
-            if (schemaJson["properties"] != null && schemaJson["properties"]["DisplayName"] != null)
+            if (schemaJson["properties"]?["DisplayName"] != null)
             {
                 schemaJson["properties"]["DisplayName"]["default"] = userInfo.DisplayName;
             }
-            if (schemaJson["properties"] != null && schemaJson["properties"]["Telephone"] != null)
+            if (schemaJson["properties"]?["Telephone"] != null)
             {
                 schemaJson["properties"]["Telephone"]["default"] = userInfo.Profile.Telephone;
             }
-            if (schemaJson["properties"] != null && schemaJson["properties"]["Street"] != null)
+            if (schemaJson["properties"]?["Street"] != null)
             {
                 schemaJson["properties"]["Street"]["default"] = userInfo.Profile.Street;
             }
-            if (schemaJson["properties"] != null && schemaJson["properties"]["City"] != null)
+            if (schemaJson["properties"]?["City"] != null)
             {
                 schemaJson["properties"]["City"]["default"] = userInfo.Profile.City;
             }
-            if (schemaJson["properties"] != null && schemaJson["properties"]["Country"] != null)
+            if (schemaJson["properties"]?["Country"] != null)
             {
                 schemaJson["properties"]["Country"]["default"] = userInfo.Profile.Country;
             }
+            return schemaJson;
         }
 
         public static JObject FormSubmit(JObject formInfo)

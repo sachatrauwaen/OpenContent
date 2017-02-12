@@ -41,7 +41,7 @@ namespace Satrabel.OpenContent.Components
 
                     if (UserInfo.UserID > 0 && json["schema"] is JObject)
                     {
-                        FormUtils.InitFields((JObject)json["schema"], UserInfo);
+                        json["schema"] = FormUtils.InitFields(json["schema"] as JObject, UserInfo);
                     }
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, json);
