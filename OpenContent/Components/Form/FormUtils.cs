@@ -114,6 +114,7 @@ namespace Satrabel.OpenContent.Components.Form
             //Mail.SendEmail(replyTo, mailFrom, mailTo, subject, body);
             return res;
         }
+
         public static dynamic GenerateFormData(string form, out string formData)
         {
             dynamic data = null;

@@ -98,15 +98,15 @@ namespace Satrabel.OpenContent.Components.Datasource
             var tab = (TabInfo)item.Item;
             if (HasProperty(schema, "", "TabName"))
             {
-                tab.TabName = data["TabName"] == null ? "" : data["TabName"].ToString();
+                tab.TabName = data["TabName"]?.ToString() ?? "";
             }
             if (HasProperty(schema, "", "Title"))
             {
-                tab.Title = data["Title"] == null ? "" : data["Title"].ToString();
+                tab.Title = data["Title"]?.ToString() ?? "";
             }
             if (HasProperty(schema, "", "Description"))
             {
-                tab.Description = data["Description"] == null ? "" : data["Description"].ToString();
+                tab.Description = data["Description"]?.ToString() ?? "";
             }
             if (HasProperty(schema, "", "Settings"))
             {
@@ -139,7 +139,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                     {
                         tc.DeleteTabSetting(tab.TabID, prop.Name);
                     }
-                    head += string.Format("<meta property=\"{0}\" content=\"{1}\" />", prop.Name, prop.Value.ToString());
+                    head += $"<meta property=\"{prop.Name}\" content=\"{prop.Value.ToString()}\" />";
                 }
                 tab.PageHeadText = head;
             }
