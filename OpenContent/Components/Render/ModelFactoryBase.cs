@@ -81,7 +81,7 @@ namespace Satrabel.OpenContent.Components.Render
             this._settingsJson = settings.Data;
             this._physicalTemplateFolder = settings.Template.ManifestFolderUri.PhysicalFullDirectory + "\\";
             this._manifest = settings.Template.Manifest;
-            this._templateFiles = settings.Template != null ? settings.Template.Main : null;
+            this._templateFiles = settings.Template?.Main;
             this._module = module;
             this._portalSettings = portalSettings;
             this._portalId = portalSettings.PortalId;
