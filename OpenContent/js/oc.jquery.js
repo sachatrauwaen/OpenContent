@@ -200,6 +200,28 @@
                 });
             }
         };
+        this.validate = function (callback) {
+            if (elem.alpaca("exists")) {
+                var control = elem.alpaca("get");
+                control.refreshValidationState(true, function () {
+                    var recaptcha = typeof (grecaptcha) != "undefined";
+                    if (recaptcha) {
+                        var recap = grecaptcha.getResponse();
+                    }
+                    if (control.isValid(true) && (!recaptcha || recap.length > 0)) {
+                        if (callback) callback(true);
+                    } else {
+                        if (callback) callback(false);
+                    }
+                });
+            }
+        };
+         this.getData = function (data) {
+            if (elem.alpaca("exists")) {
+                var control = elem.alpaca("get");
+                control.getValue();
+            }
+        };
         this.setData = function (data) {
             if (elem.alpaca("exists")) {
                 var control = elem.alpaca("get");
