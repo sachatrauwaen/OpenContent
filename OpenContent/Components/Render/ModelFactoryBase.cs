@@ -97,7 +97,7 @@ namespace Satrabel.OpenContent.Components.Render
             this._settingsJson = settings.Data;
             this._physicalTemplateFolder = settings.Template.ManifestFolderUri.PhysicalFullDirectory + "\\";
             this._manifest = settings.Template.Manifest;
-            this._templateFiles = settings.Template != null ? settings.Template.Main : null;
+            this._templateFiles = settings.Template?.Main;
             this._module = module;
             this._portalSettings = portalSettings;
             this._portalId = portalSettings.PortalId;
@@ -157,7 +157,7 @@ namespace Satrabel.OpenContent.Components.Render
             if (enhance)
             {
                 var colManifest = collectonEnhance ? _templateFiles.Model[colName] : null;
-                var includes = colManifest == null ? null : colManifest.Includes;
+                var includes = colManifest?.Includes;
                 var includelabels = _templateFiles.LabelsInTemplate;
                 var ds = DataSourceManager.GetDataSource(_manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(_module);
