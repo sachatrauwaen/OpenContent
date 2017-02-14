@@ -179,10 +179,15 @@ namespace Satrabel.OpenContent.Components.Render
         }
         private void EnhanceImages(JObject model, JObject itemsModel)
         {
-            if (Options != null && itemsModel["Options"] != null)
+            if (_optionsJson == null)
             {
-                JsonUtils.ImagesJson(model, Options, itemsModel["Options"] as JObject, IsEditMode);
+                var alpaca = _ds.GetAlpaca(_dsContext, true, true, false);
+                {
+                    _schemaJson = alpaca["schema"] as JObject; // cache
+                    _optionsJson = alpaca["options"] as JObject; // cache
+                }
             }
+            JsonUtils.ImagesJson(model, Options, _optionsJson, IsEditMode);
         }
 
         private static void RemoveNoData(JObject model)
