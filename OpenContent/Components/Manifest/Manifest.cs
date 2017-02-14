@@ -58,8 +58,6 @@ namespace Satrabel.OpenContent.Components.Manifest
         [JsonProperty(PropertyName = "disableEdit")]
         public bool DisableEdit { get; set; }
 
-
-
         public bool HasTemplates { get { return (Templates != null); } }
         public FolderUri ManifestDir { get; set; }
 

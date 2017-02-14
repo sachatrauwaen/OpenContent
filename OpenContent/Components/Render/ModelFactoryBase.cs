@@ -26,6 +26,7 @@ namespace Satrabel.OpenContent.Components.Render
         private readonly string _cultureCode;
         protected readonly string _collection;
 
+        protected JObject _schemaJson = null;
         protected JObject _optionsJson = null;
         private JObject _additionalData = null;
 
@@ -143,19 +144,13 @@ namespace Satrabel.OpenContent.Components.Render
             {
                 GetAdditionalData();
             }
-            bool collectonEnhance = _templateFiles.Model != null && _templateFiles.Model.ContainsKey(colName);
-            if (collectonEnhance && _optionsJson == null)
+            bool collectonEnhance = _templateFiles.Model != null && _templateFiles.Model.ContainsKey(colName);            
+            bool enhance = addDataEnhance || collectonEnhance || _templateFiles.LabelsInTemplate;
+            if (enhance && (_optionsJson == null || _schemaJson == null))
             {
-                var alpaca = _ds.GetAlpaca(_dsContext, false, true, false);
+                var alpaca = _ds.GetAlpaca(_dsContext, true, true, false);
                 {
-                    _optionsJson = alpaca["options"] as JObject; // cache
-                }
-            }
-            bool enhance = addDataEnhance || collectonEnhance;
-            if (enhance && _optionsJson == null)
-            {
-                var alpaca = _ds.GetAlpaca(_dsContext, false, true, false);
-                {
+                    _schemaJson = alpaca["schema"] as JObject; // cache
                     _optionsJson = alpaca["options"] as JObject; // cache
                 }
             }
@@ -163,9 +158,10 @@ namespace Satrabel.OpenContent.Components.Render
             {
                 var colManifest = collectonEnhance ? _templateFiles.Model[colName] : null;
                 var includes = colManifest == null ? null : colManifest.Includes;
+                var includelabels = _templateFiles.LabelsInTemplate;
                 var ds = DataSourceManager.GetDataSource(_manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(_module);
-                JsonUtils.LookupJson(model, _additionalData, _optionsJson, includes, (col, id) =>
+                JsonUtils.LookupJson(model, _additionalData, _schemaJson, _optionsJson, includelabels, includes, (col, id) =>
                 {
                     // collection enhancement
                     dsContext.Collection = col;
@@ -339,6 +335,7 @@ namespace Satrabel.OpenContent.Components.Render
                     if (includeSchema)
                     {
                         model["Schema"] = alpaca["schema"];
+                        _schemaJson = alpaca["schema"] as JObject; // cache
                     }
                     // include OPTIONS info in the Model
                     if (includeOptions)
