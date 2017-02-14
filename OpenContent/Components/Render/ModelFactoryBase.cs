@@ -136,7 +136,7 @@ namespace Satrabel.OpenContent.Components.Render
         */
         public abstract JToken GetModelAsJson(bool onlyData = false, bool onlyMainData = false);
 
-        protected void EnhanceSelect2(JObject model, JObject enhancedModel)
+        protected void EnhanceSelect2(JObject model)
         {
             string colName = string.IsNullOrEmpty(_collection) ? "Items" : _collection;
             bool addDataEnhance = _manifest.AdditionalDataDefined();
@@ -233,7 +233,7 @@ namespace Satrabel.OpenContent.Components.Render
                                     JObject context = new JObject();
                                     json["Context"] = context;
                                     context["Id"] = dataItem.Id;
-                                    EnhanceSelect2(json as JObject, model);
+                                    EnhanceSelect2(json as JObject);
                                 }
                                 colDataJson.Add(json);
                             }
