@@ -138,7 +138,13 @@ namespace Satrabel.OpenContent.Components.Json
             {
                 JObject sch = null;
                 JObject opt = null;
-                sch = schema["properties"][child.Name] as JObject;
+
+                if (schema?["properties"] != null)
+                {
+                    sch = schema["properties"][child.Name] as JObject;
+                }
+                if (sch == null) continue;
+                
                 if (options?["fields"] != null)
                 {
                     opt = options["fields"][child.Name] as JObject;

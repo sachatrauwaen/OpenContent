@@ -90,7 +90,7 @@ namespace Satrabel.OpenContent.Components.Render
                 }
                 else if (_renderinfo.Template.IsListTemplate)
                 {
-                    
+
                     // Multi items template
                     if (string.IsNullOrEmpty(ItemId))
                     {
@@ -290,13 +290,13 @@ namespace Satrabel.OpenContent.Components.Render
                     //Log.Logger.DebugFormat("Query returned [{0}] results.", total);
                     if (!resultList.Any())
                     {
-                       /*
-                        if (ds.Any(dsContext) && settings.Query.IsEmpty())
-                        {
-                            //there seems to be data in de database, but we did not find it in Lucene, so probably the data isn't indexed anymore/yet
-                            //Components.Lucene.LuceneController.Instance.ReIndexModuleData(_module.ViewModule.ModuleID, settings);
-                        }
-                         */
+                        /*
+                         if (ds.Any(dsContext) && settings.Query.IsEmpty())
+                         {
+                             //there seems to be data in de database, but we did not find it in Lucene, so probably the data isn't indexed anymore/yet
+                             //Components.Lucene.LuceneController.Instance.ReIndexModuleData(_module.ViewModule.ModuleID, settings);
+                         }
+                          */
                         //Log.Logger.DebugFormat("Query did not return any results. API request: [{0}], Lucene Filter: [{1}], Lucene Query:[{2}]", settings.Query, queryDef.Filter == null ? "" : queryDef.Filter.ToString(), queryDef.Query == null ? "" : queryDef.Query.ToString());
                         if (ds.Any(dsContext))
                         {
@@ -327,7 +327,7 @@ namespace Satrabel.OpenContent.Components.Render
             info.ResetData();
             var ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
             var dsContext = OpenContentUtils.CreateDataContext(module);
-            
+
             var dsItem = ds.Get(dsContext, info.DetailItemId);
             if (LogContext.IsLogActive)
             {
@@ -346,7 +346,10 @@ namespace Satrabel.OpenContent.Components.Render
                     string raison;
                     if (!OpenContentUtils.HaveViewPermissions(dsItem, portalSettings.UserInfo, indexConfig, out raison))
                     {
-                        Exceptions.ProcessHttpException(new HttpException(404, "No detail view permissions for id=" + info.DetailItemId + " (" + raison + ")"));
+                        if (module.ViewModule.HasEditRightsOnModule())
+                            Exceptions.ProcessHttpException(new NotAuthorizedException(404, $"No detail view permissions for id={info.DetailItemId}  (due to {raison}) \nGo into Edit Mode to view/change the item"));
+                        else
+                            Exceptions.ProcessHttpException(new NotAuthorizedException(404, "Access denied. You might want to contact your administrator for more information."));
                         //throw new UnauthorizedAccessException("No detail view permissions for id " + info.DetailItemId);
                     }
                 }

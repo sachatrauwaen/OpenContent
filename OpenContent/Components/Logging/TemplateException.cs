@@ -2,7 +2,7 @@
 
 namespace Satrabel.OpenContent.Components.Logging
 {
-    public class TemplateException : OpenContentException
+    public class TemplateException : Exception
     {
 
         public TemplateException(string message, Exception innerException, dynamic templateModel, string templateSource)

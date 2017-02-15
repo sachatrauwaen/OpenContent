@@ -121,7 +121,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
                             }
                             catch (Exception ex)
                             {
-                                Log.Logger.Warn($"Warning for page {HttpContext.Current.Request.RawUrl}. Error processing croppers in {contentItem.Content}. {ex.Message}");
+                                Log.Logger.Warn($"Warning for page {HttpContext.Current.Request.RawUrl}. Error processing croppers for {url} in {contentItem.Content}. Error: {ex.Message}");
                             }
                         }
                     }

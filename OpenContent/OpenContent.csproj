@@ -182,6 +182,8 @@
     <Compile Include="Components\Form\GenSettingsDTO.cs" />
     <Compile Include="Components\Form\NotificationDTO.cs" />
     <Compile Include="Components\Form\SettingsDTO.cs" />
+    <Compile Include="Components\Json\NotAuthorizedException.cs" />
+    <Compile Include="Components\Logging\ExceptionExtentions.cs" />
     <Compile Include="Components\Lucene\Index\IIndexableItem.cs" />
     <Compile Include="Components\Manifest\CollectionManifest.cs" />
     <Compile Include="Components\Manifest\OpenContentModuleInfo.cs" />
@@ -198,7 +200,6 @@
     <Compile Include="Components\Json\InvalidJsonFileException.cs" />
     <Compile Include="Components\Logging\LoggingUtils.cs" />
     <Compile Include="Components\Logging\LogContext.cs" />
-    <Compile Include="Components\Logging\OpenContentException.cs" />
     <Compile Include="Components\Logging\TemplateException.cs" />
     <Compile Include="AlpacaFormBuilder.ascx.cs">
       <DependentUpon>AlpacaFormBuilder.ascx</DependentUpon>

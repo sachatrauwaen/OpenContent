@@ -456,7 +456,7 @@ namespace Satrabel.OpenContent.Components
 
         public static bool HasEditPermissions(PortalSettings portalSettings, ModuleInfo module, string editrole, int createdByUserId)
         {
-            return module.HasEditRights() || HasEditRole(portalSettings, editrole, createdByUserId);
+            return module.HasEditRightsOnModule() || HasEditRole(portalSettings, editrole, createdByUserId);
         }
         public static bool HasEditRole(PortalSettings portalSettings, string editrole, int createdByUserId)
         {
@@ -517,39 +517,39 @@ namespace Satrabel.OpenContent.Components
         internal static bool HaveViewPermissions(Datasource.IDataItem dsItem, DotNetNuke.Entities.Users.UserInfo userInfo, FieldConfig IndexConfig, out string raison)
         {
             raison = "";
-            if (dsItem == null || dsItem.Data == null) return true;
+            if (dsItem?.Data == null) return true;
 
             bool permissions = true;
             //publish status , dates
-            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishStatus))
+            if (IndexConfig?.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishStatus))
             {
                 permissions = dsItem.Data[AppConfig.FieldNamePublishStatus] != null &&
                     dsItem.Data[AppConfig.FieldNamePublishStatus].ToString() == "published";
-                if (!permissions) raison = AppConfig.FieldNamePublishStatus;
+                if (!permissions) raison = AppConfig.FieldNamePublishStatus + $" being {dsItem.Data[AppConfig.FieldNamePublishStatus]}";
             }
-            if (permissions && IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishStartDate))
+            if (permissions && IndexConfig?.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishStartDate))
             {
                 permissions = dsItem.Data[AppConfig.FieldNamePublishStartDate] != null &&
                                 dsItem.Data[AppConfig.FieldNamePublishStartDate].Type == JTokenType.Date &&
                                 ((DateTime)dsItem.Data[AppConfig.FieldNamePublishStartDate]) <= DateTime.Today;
-                if (!permissions) raison = AppConfig.FieldNamePublishStartDate;
+                if (!permissions) raison = AppConfig.FieldNamePublishStartDate + $" being {dsItem.Data[AppConfig.FieldNamePublishStartDate]}";
             }
-            if (permissions && IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishEndDate))
+            if (permissions && IndexConfig?.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishEndDate))
             {
                 permissions = dsItem.Data[AppConfig.FieldNamePublishEndDate] != null &&
                                 dsItem.Data[AppConfig.FieldNamePublishEndDate].Type == JTokenType.Date &&
                                 ((DateTime)dsItem.Data[AppConfig.FieldNamePublishEndDate]) >= DateTime.Today;
-                if (!permissions) raison = AppConfig.FieldNamePublishEndDate;
+                if (!permissions) raison = AppConfig.FieldNamePublishEndDate + $" being {dsItem.Data[AppConfig.FieldNamePublishEndDate]}";
             }
             if (permissions)
             {
                 // Roles                
                 string fieldName = "";
-                if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey("userrole"))
+                if (IndexConfig?.Fields != null && IndexConfig.Fields.ContainsKey("userrole"))
                 {
                     fieldName = "userrole";
                 }
-                else if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey("userroles"))
+                else if (IndexConfig?.Fields != null && IndexConfig.Fields.ContainsKey("userroles"))
                 {
                     fieldName = "userroles";
                 }
