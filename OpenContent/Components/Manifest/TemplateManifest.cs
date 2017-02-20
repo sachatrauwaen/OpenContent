@@ -25,6 +25,9 @@ namespace Satrabel.OpenContent.Components.Manifest
         [JsonProperty(PropertyName = "views")]
         public Dictionary<string, TemplateFiles> Views { get; set; }
 
+        /// <summary>
+        /// Indicated that WEBAPI calls will be executed to fetch the data.
+        /// </summary>
         [JsonProperty(PropertyName = "clientSideData")]
         public bool ClientSideData { get; set; }
 
