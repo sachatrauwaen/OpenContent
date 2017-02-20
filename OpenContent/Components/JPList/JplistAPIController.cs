@@ -58,7 +58,7 @@ namespace Satrabel.OpenContent.Components.JPList
                     }
                     var mf = new ModelFactoryMultiple(dsItems.Items, module, PortalSettings);
                     mf.Options = reqOptions;
-                    var model = mf.GetModelAsJson(false, true);
+                    var model = mf.GetModelAsJson(false, req.onlyItems);
 
                     //model["luceneQuery"] = dsItems.DebugInfo;
                     if (LogContext.IsLogActive)

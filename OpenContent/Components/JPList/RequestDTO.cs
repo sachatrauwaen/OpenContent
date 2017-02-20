@@ -9,6 +9,7 @@ namespace Satrabel.OpenContent.Components.JPList
     {
         public string statuses { get; set; }
         public string options { get; set; }
+        public bool onlyItems { get; set; }
 
         public List<StatusDTO> StatusLst
         {
