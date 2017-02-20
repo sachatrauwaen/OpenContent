@@ -53,21 +53,16 @@ namespace Satrabel.OpenContent.Components.Manifest
         public IEnumerable<IDataItem> DataList { get; private set; }
         public bool DataExist { get; set; }
         public bool ShowDemoData { get; set; }
-        public bool ShowInitControl
-        {
-            get
-            {
-                return Template == null  || (!DataExist && Template.DataNeeded()) || (string.IsNullOrEmpty(SettingsJson) && Template.SettingsNeeded()) ;
-            }
-        }
+        public TemplateManifest Template { get; set; }
+        public TemplateFiles Files { get; set; }
 
-        public bool SettingsMissing
-        {
-            get
-            {
-                return string.IsNullOrEmpty(SettingsJson) && Template.SettingsNeeded();
-            }
-        }
+        #endregion
+
+        #region ReadOnly
+
+        public bool IsOtherModule { get { return TabId > 0 && ModuleId > 0; } }
+        public bool SettingsMissing => string.IsNullOrEmpty(SettingsJson) && Template.SettingsNeeded();
+        public bool ShowInitControl => Template == null || (!DataExist && Template.DataNeeded()) || (string.IsNullOrEmpty(SettingsJson) && Template.SettingsNeeded());
 
         #endregion
 
@@ -89,20 +84,5 @@ namespace Satrabel.OpenContent.Components.Manifest
         public string OtherModuleSettingsJson { get; private set; }
 
         #endregion
-
-
-
-        public TemplateManifest Template { get; set; }
-
-        #region ReadOnly
-
-        public bool IsOtherModule { get { return TabId > 0 && ModuleId > 0; } }
-
-        #endregion
-
-        public TemplateFiles Files { get; set; }
-
-        //public FileUri Template { get;private set; }
-        //public Manifest Manifest { get; private set; }
     }
 }

@@ -7,7 +7,7 @@ namespace Satrabel.OpenContent.Components
     {
         private ModuleInfo _dataModule;
         private OpenContentSettings _settings;
-        private IDictionary _moduleSettings;
+        private readonly IDictionary _moduleSettings;
 
         public OpenContentModuleInfo(ModuleInfo viewModule, IDictionary moduleSettings = null)
         {

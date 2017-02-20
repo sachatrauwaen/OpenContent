@@ -37,21 +37,10 @@ namespace Satrabel.OpenContent.Components.Render
             _module = new OpenContentModuleInfo(viewmodule, moduleSettings);
         }
 
-        public RenderInfo Info
-        {
-            get
-            {
-                return _renderinfo;
-            }
-        }
+        public RenderInfo Info => _renderinfo;
 
-        public OpenContentSettings Settings
-        {
-            get
-            {
-                return _module.Settings;
-            }
-        }
+        public OpenContentSettings Settings => _module.Settings;
+
         public string ItemId // For detail view
         {
             get
@@ -147,8 +136,6 @@ namespace Satrabel.OpenContent.Components.Render
                 {
                     // single item template
                     GetSingleData(_renderinfo, Settings);
-                    bool settingsNeeded = _renderinfo.Template.SettingsNeeded();
-                    //if (!_renderinfo.ShowInitControl && (!settingsNeeded || !string.IsNullOrEmpty(_renderinfo.SettingsJson)))
                     if (!_renderinfo.ShowInitControl)
                     {
                         _renderinfo.OutputString = GenerateOutput(page, _renderinfo.Template.MainTemplateUri(), _renderinfo.DataJson, _renderinfo.SettingsJson, _renderinfo.Template.Main);
