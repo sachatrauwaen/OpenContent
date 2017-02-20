@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using DotNetNuke.Entities.Modules;
 using Satrabel.OpenContent.Components.Datasource;
 using Newtonsoft.Json.Linq;
 
@@ -60,29 +59,12 @@ namespace Satrabel.OpenContent.Components.Manifest
 
         #region ReadOnly
 
-        public bool IsOtherModule { get { return TabId > 0 && ModuleId > 0; } }
-        public bool SettingsMissing => string.IsNullOrEmpty(SettingsJson) && Template.SettingsNeeded();
+        public bool IsOtherModule { get; set; }
+
+        //public bool SettingsMissing => string.IsNullOrEmpty(SettingsJson) && Template.SettingsNeeded();
         public bool ShowInitControl => Template == null || (!DataExist && Template.DataNeeded()) || (string.IsNullOrEmpty(SettingsJson) && Template.SettingsNeeded());
 
         #endregion
 
-        #region DataSource Module information
-
-        public void SetDataSourceModule(int tabId, int moduleId, ModuleInfo viewModule, TemplateManifest template, string data)
-        {
-            TabId = tabId;
-            ModuleId = moduleId;
-            Module = viewModule;
-            OtherModuleTemplate = template;
-            OtherModuleSettingsJson = data;
-        }
-
-        public int TabId { get; private set; }
-        public int ModuleId { get; private set; }
-        public ModuleInfo Module { get; private set; }
-        public TemplateManifest OtherModuleTemplate { get; private set; }
-        public string OtherModuleSettingsJson { get; private set; }
-
-        #endregion
     }
 }

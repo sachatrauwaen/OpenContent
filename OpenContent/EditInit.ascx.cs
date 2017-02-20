@@ -26,16 +26,8 @@ namespace Satrabel.OpenContent
             var settings = ModuleContext.OpenContentSettings();
             RenderInfo renderinfo = new RenderInfo();
             renderinfo.Template = settings.Template;
+            renderinfo.IsOtherModule = (settings.TabId > 0 && settings.ModuleId>0);
 
-            if (settings.TabId > 0 && settings.ModuleId > 0) // other module
-            {
-                ModuleController mc = new ModuleController();
-                renderinfo.SetDataSourceModule(settings.TabId, settings.ModuleId, mc.GetModule(renderinfo.ModuleId, renderinfo.TabId, false), null, "");
-            }
-            else // this module
-            {
-                renderinfo.SetDataSourceModule(settings.TabId, ModuleContext.ModuleId, ModuleContext.Configuration, null, "");
-            }
 
             OpenContent.TemplateInit ti = (TemplateInit)TemplateInitControl;
             ti.ModuleContext = ModuleContext;

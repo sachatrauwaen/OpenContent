@@ -58,15 +58,7 @@ namespace Satrabel.OpenContent.Components.Render
         public void Render(Page page)
         {
             _renderinfo.Template = Settings.Template;
-            if (Settings.TabId > 0 && Settings.ModuleId > 0) // other module
-            {
-                ModuleController mc = new ModuleController();
-                _renderinfo.SetDataSourceModule(Settings.TabId, Settings.ModuleId, mc.GetModule(_renderinfo.ModuleId, _renderinfo.TabId, false), null, "");
-            }
-            else // this module
-            {
-                _renderinfo.SetDataSourceModule(Settings.TabId, Settings.ModuleId, _module.ViewModule, null, "");
-            }
+            _renderinfo.IsOtherModule=(Settings.TabId > 0 && Settings.ModuleId>0) ;
             //start rendering           
             if (Settings.Template != null)
             {
