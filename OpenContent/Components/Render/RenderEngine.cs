@@ -76,7 +76,7 @@ namespace Satrabel.OpenContent.Components.Render
             }
             else // this module
             {
-                _renderinfo.SetDataSourceModule(_module.DataModule.TabID, _module.DataModule.ModuleID, _module.ViewModule, null, "");
+                _renderinfo.SetDataSourceModule(Settings.TabId, Settings.ModuleId, _module.ViewModule, null, "");
             }
             //start rendering           
             if (Settings.Template != null)
