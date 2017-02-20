@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Lucene.Config;
+using Lucene.Net.QueryParsers;
 
 namespace Satrabel.OpenContent.Components.Lucene.Mapping
 {
@@ -74,12 +75,11 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
             }
             else if (token is JArray)
             {
-                AddArray(doc, prefix, token as JArray, fieldconfig == null ? null : fieldconfig.Items);
+                AddArray(doc, prefix, token as JArray, fieldconfig?.Items);
             }
             else if (token is JValue)
             {
                 JValue value = token as JValue;
-                IConvertible convertible = value as IConvertible;
                 bool index = false;
                 bool sort = false;
                 if (fieldconfig != null)
@@ -164,7 +164,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
 
                         if (fieldconfig != null && fieldconfig.IndexType == "key")
                         {
-                            doc.Add(new Field(prefix, value.Value.ToString(), Field.Store.NO, Field.Index.NOT_ANALYZED));
+                            doc.Add(new Field(prefix, QueryParser.Escape(value.Value.ToString()), Field.Store.NO, Field.Index.NOT_ANALYZED));
                         }
                         else if (fieldconfig != null && fieldconfig.IndexType == "html")
                         {
@@ -237,7 +237,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
             foreach (JProperty property in obj.Properties())
             {
                 FieldConfig f = null;
-                if (field != null && field.Fields != null && field.Fields.ContainsKey(property.Name))
+                if (field?.Fields != null && field.Fields.ContainsKey(property.Name))
                 {
                     f = field.Fields[property.Name];
                 }
@@ -286,14 +286,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
         /// </returns>
         private static string MakePrefix<TAdd>(string prefix, TAdd add)
         {
-            if (!string.IsNullOrEmpty(prefix))
-            {
-                return string.Format("{0}.{1}", prefix, add);
-            }
-            else
-            {
-                return add.ToString();
-            }
+            return !string.IsNullOrEmpty(prefix) ? $"{prefix}.{add}" : add.ToString();
         }
 
         #endregion

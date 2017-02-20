@@ -4585,7 +4585,12 @@
                 if (!tConfig) {
                     tConfig = {};
                 }
-                var tDatasets = tDatasets = {};
+                
+                var tDatasets = self.options.typeahead.datasets;
+                if (!tDatasets) {
+                    tDatasets = {};
+                }
+
                 if (!tDatasets.name) {
                     tDatasets.name = self.getId();
                 }
@@ -5352,7 +5357,12 @@
                     value = {};
 
                 value.url = $(this.control).find('select').val();
-                value.cropUrl = $(self.getControlEl()).attr('data-cropurl');
+                if (value.url) {
+                    if (this.dataSource && this.dataSource[value.url]) {
+                        value.id = this.dataSource[value.url].id;
+                    }
+                    value.cropUrl = $(self.getControlEl()).attr('data-cropurl');
+                }
                 return value;
             }
         },
@@ -6494,7 +6504,7 @@
                 var cropperButton = $('<a id="' + id + '" data-id="' + i + '" href="#" class="alpaca-form-tab" >' + i + '</a>').appendTo($(el).parent());
                 cropperButton.data('cropopt', cropper);
                 cropperButton.click(function () {
-                    $image.off('change.cropper');
+                    $image.off('crop.cropper');
 
                     var cropdata = $(this).data('cropdata');
                     var cropopt = $(this).data('cropopt');
@@ -6510,7 +6520,7 @@
                     $(this).parent().find('.alpaca-form-tab').removeClass('active');
                     $(this).addClass('active');
 
-                    $image.on('change.cropper', self, self.cropChange);
+                    $image.on('crop.cropper', self, self.cropChange);
 
                     return false;
                 });
@@ -6534,7 +6544,7 @@
                     $(this).cropper('setData', cropdata.cropper);
                 }
                 var $image = $(parentel).find('.alpaca-image-display img.image');
-                $image.on('change.cropper', self, self.cropChange);
+                $image.on('crop.cropper', self, self.cropChange);
             });
 
             if (self.options.uploadhidden) {

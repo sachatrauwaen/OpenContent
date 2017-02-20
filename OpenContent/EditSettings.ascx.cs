@@ -30,12 +30,12 @@ namespace Satrabel.OpenContent
         {
             base.OnInit(e);
             hlCancel.NavigateUrl = Globals.NavigateURL();
-            cmdSave.NavigateUrl = Globals.NavigateURL();
+            cmdSaveClose.NavigateUrl = Globals.NavigateURL();
 
             var settings = ModuleContext.OpenContentSettings();
             if (settings.TemplateAvailable)
             {
-                AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, settings.TemplateDir.FolderPath, settings.TemplateKey.ShortKey);
+                AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext.PortalId, settings.TemplateDir.FolderPath, settings.TemplateKey.ShortKey);
                 alpaca.RegisterAll(false, false);
             }
         }

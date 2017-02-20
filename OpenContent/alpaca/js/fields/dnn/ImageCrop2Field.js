@@ -74,7 +74,12 @@
                     value = {};
 
                 value.url = $(this.control).find('select').val();
-                value.cropUrl = $(self.getControlEl()).attr('data-cropurl');
+                if (value.url) {
+                    if (this.dataSource && this.dataSource[value.url]) {
+                        value.id = this.dataSource[value.url].id;
+                    }
+                    value.cropUrl = $(self.getControlEl()).attr('data-cropurl');
+                }
                 return value;
             }
         },

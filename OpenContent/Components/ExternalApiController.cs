@@ -34,18 +34,17 @@ namespace Satrabel.OpenContent.Components
                         return Request.CreateResponse(HttpStatusCode.Unauthorized, "Failed the HasEditPermissions() check");
                     }
                     var index = module.Settings.Template.Manifest.Index;
-                    var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template.Key.TemplateDir);
+                    var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template.Key.TemplateDir, "Items");
                     OpenContentInfo content = new OpenContentInfo()
                     {
                         ModuleId = module.DataModule.ModuleID,
+                        Collection= req.Collection,
                         Title = ActiveModule.ModuleTitle,
                         Json = req.json.ToString(),
-                        JsonAsJToken = req.json,
                         CreatedByUserId = UserInfo.UserID,
                         CreatedOnDate = DateTime.Now,
                         LastModifiedByUserId = UserInfo.UserID,
-                        LastModifiedOnDate = DateTime.Now,
-                        Html = "",
+                        LastModifiedOnDate = DateTime.Now
                     };
                     ctrl.AddContent(content, index, indexConfig);
                     return Request.CreateResponse(HttpStatusCode.OK, "");
@@ -64,6 +63,7 @@ namespace Satrabel.OpenContent.Components
         public class UpdateRequest
         {
             public int ModuleId { get; set; }
+            public string Collection { get; set; }
             public int TabId { get; set; }
             public JObject json { get; set; }
         }

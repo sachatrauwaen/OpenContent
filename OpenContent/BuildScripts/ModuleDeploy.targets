@@ -28,7 +28,8 @@
       <DeployInclude Include="**\*.resx" Exclude="packages\**" />
       <DeployInclude Include="**\*.aspx" Exclude="packages\**" />
       <DeployInclude Include="**\*.js" Exclude="packages\**;**\_*.js" />
-      <DeployInclude Include="**\images\**" Exclude="packages\**" />
+      <DeployInclude Include="**\formsettings-*.json" Exclude="packages\**" />
+      <DeployInclude Include="**\images\**" Exclude="packages\**;**\*.cs" />
       <DeployInclude Include="**\web.config" Exclude="packages\**" />
       <DeployInclude Include="**\css\**" Exclude="packages\**" />
       <DeployInclude Include="**\fonts\**" Exclude="packages\**" />

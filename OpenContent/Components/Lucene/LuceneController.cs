@@ -11,6 +11,7 @@ using Satrabel.OpenContent.Components.Lucene.Config;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Entities.Modules;
 using Version = Lucene.Net.Util.Version;
+using Satrabel.OpenContent.Components.Lucene.Index;
 
 #endregion
 
@@ -163,7 +164,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             FieldConfig indexConfig = null;
             if (index)
             {
-                indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
+                indexConfig = OpenContentUtils.GetIndexConfig(settings.Template);
             }
 
             if (settings.IsOtherModule)
@@ -171,9 +172,9 @@ namespace Satrabel.OpenContent.Components.Lucene
                 moduleId = settings.ModuleId;
             }
 
-            lc.Store.Delete(new TermQuery(new Term("$type", moduleId.ToString())));
+            lc.Store.Delete(new TermQuery(new Term("$type", OpenContentInfo.GetScope(moduleId, settings.Template.Collection))));
             OpenContentController occ = new OpenContentController();
-            foreach (var item in occ.GetContents(moduleId))
+            foreach (var item in occ.GetContents(moduleId, settings.Template.Collection))
             {
                 lc.Add(item, indexConfig);
             }
@@ -183,16 +184,16 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         #region Operations
 
-        public void Add(OpenContentInfo data, FieldConfig config)
+        public void Add(IIndexableItem data, FieldConfig config)
         {
             if (null == data)
             {
                 throw new ArgumentNullException("data");
             }
-            Store.Add(JsonMappingUtils.JsonToDocument(data.ModuleId.ToString(), data.ContentId.ToString(), data.CreatedByUserId.ToString(), data.CreatedOnDate, data.JsonAsJToken, data.Json, config));
+            Store.Add(JsonMappingUtils.JsonToDocument(data.GetScope(), data.GetId(), data.GetCreatedByUserId(), data.GetCreatedOnDate(), data.GetData(), data.GetSource(), config));
         }
 
-        public void Update(OpenContentInfo data, FieldConfig config)
+        public void Update(IIndexableItem data, FieldConfig config)
         {
             if (null == data)
             {
@@ -206,16 +207,14 @@ namespace Satrabel.OpenContent.Components.Lucene
         /// Deletes the matching objects in the IndexWriter.
         /// </summary>
         /// <param name="data"></param>
-        public void Delete(OpenContentInfo data)
+        public void Delete(IIndexableItem data)
         {
             if (null == data)
             {
                 throw new ArgumentNullException("data");
             }
-
-            var selection = new TermQuery(new Term(JsonMappingUtils.FieldId, data.ContentId.ToString()));
-
-            Query deleteQuery = new FilteredQuery(selection, JsonMappingUtils.GetTypeFilter(data.ModuleId.ToString()));
+            var selection = new TermQuery(new Term(JsonMappingUtils.FieldId, data.GetId()));
+            Query deleteQuery = new FilteredQuery(selection, JsonMappingUtils.GetTypeFilter(data.GetScope()));
             Store.Delete(deleteQuery);
         }
 

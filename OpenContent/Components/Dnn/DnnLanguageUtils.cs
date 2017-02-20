@@ -17,6 +17,10 @@ namespace Satrabel.OpenContent.Components
 {
     public static class DnnLanguageUtils
     {
+        /// <summary>
+        /// Gets the current culture code.
+        /// This code is based on long expierence of how hard it is to get the correct value.
+        /// </summary>
         public static string GetCurrentCultureCode()
         {
             if (PortalSettings.Current == null)
@@ -36,10 +40,17 @@ namespace Satrabel.OpenContent.Components
             }
             return LocaleController.Instance.GetCurrentLocale(PortalSettings.Current.PortalId).Code;
         }
+
         public static CultureInfo GetCurrentCulture()
         {
             return new CultureInfo(GetCurrentCultureCode());
         }
+
+        public static Locale GetCurrentLocale(int portalId)
+        {
+            return LocaleController.Instance.GetCurrentLocale(portalId);
+        }
+
         internal static string GetCultureCode(int tabId, bool isSuperTab, PortalSettings settings)
         {
             string cultureCode = Null.NullString;
@@ -83,6 +94,5 @@ namespace Satrabel.OpenContent.Components
                 return tabId;
             }
         }
-
     }
 }

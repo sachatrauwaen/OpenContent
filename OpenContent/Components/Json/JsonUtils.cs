@@ -6,7 +6,10 @@ using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.TemplateHelpers;
 using DotNetNuke.Services.FileSystem;
 using Satrabel.OpenContent.Components.Datasource;
-
+using System.Collections;
+using System.Collections.Generic;
+using DotNetNuke.Common.Utilities;
+using DotNetNuke.Services.Cache;
 
 namespace Satrabel.OpenContent.Components.Json
 {
@@ -20,7 +23,18 @@ namespace Satrabel.OpenContent.Components.Json
 
         public static JToken LoadJsonFromFile(string filename)
         {
-            return new FileUri(filename).ToJObject();
+            string cacheKey = filename;
+            var json = (JObject)DataCache.GetCache(cacheKey);
+            if (json == null)
+            {
+                var fileUri = new FileUri(filename);
+                json = fileUri.ToJObject() as JObject;
+                if (json != null)
+                {
+                    DataCache.SetCache(cacheKey, json, new DNNCacheDependency(fileUri.PhysicalFilePath));
+                }
+            }
+            return json;
         }
 
         public static JObject GetJsonFromFile(string filename)
@@ -51,6 +65,7 @@ namespace Satrabel.OpenContent.Components.Json
         }
         public static void SimplifyJson(JObject o, string culture)
         {
+
             foreach (var child in o.Children<JProperty>().ToList())
             {
                 var childProperty = child;
@@ -117,16 +132,26 @@ namespace Satrabel.OpenContent.Components.Json
             }
         }
 
-        public static void LookupJson(JObject o, JObject additionalData, JObject options)
+        public static void LookupJson(JObject o, JObject additionalData, JObject schema, JObject options, bool includelabels,  List<string> includes, Func<string, string, JObject> objFromCollection, string prefix = "")
         {
             foreach (var child in o.Children<JProperty>().ToList())
             {
+                JObject sch = null;
                 JObject opt = null;
+
+                if (schema?["properties"] != null)
+                {
+                    sch = schema["properties"][child.Name] as JObject;
+                }
+                if (sch == null) continue;
+                
                 if (options?["fields"] != null)
                 {
                     opt = options["fields"][child.Name] as JObject;
                 }
                 if (opt == null) continue;
+
+                // additionalData enhancement
                 bool lookup =
                     opt["type"] != null &&
                     opt["type"].ToString() == "select2" &&
@@ -142,8 +167,16 @@ namespace Satrabel.OpenContent.Components.Json
                     valueField = opt["dataService"]["data"]["valueField"]?.ToString() ?? "Id";
                 }
 
-                var childProperty = child;
+                // collections enhancement
+                string field = (string.IsNullOrEmpty(prefix) ? child.Name : prefix + "." + child.Name);
+                bool include = includes != null && includes.Contains(field);
+                string collection = opt["dataService"]?["data"]?["collection"] != null ? opt["dataService"]?["data"]?["collection"].ToString() : "";
 
+                // enum enhancement
+                var enums = sch["enum"] is JArray ? (sch["enum"] as JArray).Select(l => l.ToString()).ToArray() : null;
+                var labels = opt["optionLabels"] is JArray ?  (opt["optionLabels"] as JArray).Select(l=> l.ToString()).ToArray() : null;
+
+                var childProperty = child;
                 if (childProperty.Value is JArray)
                 {
                     var array = childProperty.Value as JArray;
@@ -153,7 +186,7 @@ namespace Satrabel.OpenContent.Components.Json
                         var obj = value as JObject;
                         if (obj != null)
                         {
-                            LookupJson(obj, additionalData, opt["items"] as JObject);
+                            LookupJson(obj, additionalData, sch["items"] as JObject, opt["items"] as JObject, includelabels,  includes, objFromCollection, field);
                         }
                         else if (lookup)
                         {
@@ -169,8 +202,43 @@ namespace Satrabel.OpenContent.Components.Json
                                 }
                             }
                         }
+                        else if (include && !string.IsNullOrEmpty(collection))
+                        {
+                            var val = value as JValue;
+                            if (val != null)
+                            {
+                                try
+                                {
+                                    newArray.Add(objFromCollection(collection, val.ToString()));
+                                }
+                                catch (System.Exception)
+                                {
+                                    Debugger.Break();
+                                }
+                            }
+                        }
+                        else if (includelabels && enums != null && labels != null)
+                        {
+                            var val = value as JValue;
+                            if (val != null)
+                            {
+                                try
+                                {
+                                    int idx = Array.IndexOf(enums, val.ToString());
+                                    var enumObj = new JObject();
+                                    enumObj["value"] = val.ToString();
+                                    enumObj["label"] = labels[idx];
+                                    newArray.Add(enumObj);
+                                }
+                                catch (System.Exception)
+                                {
+                                    Debugger.Break();
+                                }
+                            }
+                        }
                     }
-                    if (lookup)
+
+                    if (lookup || (include && !string.IsNullOrEmpty(collection)) || (includelabels && enums != null && labels != null) )
                     {
                         childProperty.Value = newArray;
                     }
@@ -178,7 +246,7 @@ namespace Satrabel.OpenContent.Components.Json
                 else if (childProperty.Value is JObject)
                 {
                     var obj = childProperty.Value as JObject;
-                    LookupJson(obj, additionalData, opt);
+                    LookupJson(obj, additionalData, sch, opt, includelabels, includes, objFromCollection, field);
                 }
                 else if (childProperty.Value is JValue)
                 {
@@ -189,7 +257,35 @@ namespace Satrabel.OpenContent.Components.Json
                         {
                             o[childProperty.Name] = GenerateObject(additionalData, dataKey, val, dataMember, valueField);
                         }
-                        catch (System.Exception ex)
+                        catch (System.Exception)
+                        {
+                            Debugger.Break();
+                        }
+                    }
+                    else if (include && !string.IsNullOrEmpty(collection))
+                    {
+                        string val = childProperty.Value.ToString();
+                        try
+                        {
+                            o[childProperty.Name] = objFromCollection(collection, val);
+                        }
+                        catch (System.Exception)
+                        {
+                            Debugger.Break();
+                        }
+                    }
+                    else if (includelabels && enums != null && labels != null)
+                    {
+                        string val = childProperty.Value.ToString();
+                        try
+                        {
+                            int idx = Array.IndexOf(enums, val);
+                            var enumObj = new JObject();
+                            enumObj["value"] = val;
+                            enumObj["label"] = labels[idx];
+                            o[childProperty.Name] = enumObj;
+                        }
+                        catch (System.Exception)
                         {
                             Debugger.Break();
                         }
@@ -291,8 +387,9 @@ namespace Satrabel.OpenContent.Components.Json
             }
         }
 
-
-
+        /// <summary>
+        /// Enhance data for all alpaca fields of type 'image2'
+        /// </summary>
         public static void ImagesJson(JObject o, JObject requestOptions, JObject options, bool isEditable)
         {
             foreach (var child in o.Children<JProperty>().ToList())
@@ -357,7 +454,6 @@ namespace Satrabel.OpenContent.Components.Json
                         string val = childProperty.Value.ToString();
                         try
                         {
-                            //o[childProperty.Name] = GenerateObject(additionalData, dataKey, val, dataMember, valueField);
                             o[childProperty.Name] = GenerateImage(reqOpt, val, isEditable);
                         }
                         catch (System.Exception)
@@ -371,7 +467,7 @@ namespace Satrabel.OpenContent.Components.Json
         private static JToken GenerateImage(JObject reqOpt, string p, bool isEditable)
         {
             var ratio = new Ratio(100, 100);
-            if (reqOpt != null && reqOpt["ratio"] != null)
+            if (reqOpt?["ratio"] != null)
             {
                 ratio = new Ratio(reqOpt["ratio"].ToString());
             }

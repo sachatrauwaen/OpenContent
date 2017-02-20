@@ -23,6 +23,7 @@ using DotNetNuke.Services.Exceptions;
 using DotNetNuke.UI.Modules;
 using Newtonsoft.Json.Linq;
 using IDataSource = Satrabel.OpenContent.Components.Datasource.IDataSource;
+using System.Collections;
 
 namespace Satrabel.OpenContent.Components.Render
 {
@@ -31,9 +32,9 @@ namespace Satrabel.OpenContent.Components.Render
         private readonly RenderInfo _renderinfo = new RenderInfo();
         private readonly OpenContentModuleInfo _module; // active module (not datasource module)
 
-        public RenderEngine(ModuleInfo viewmodule)
+        public RenderEngine(ModuleInfo viewmodule, IDictionary moduleSettings = null)
         {
-            _module = new OpenContentModuleInfo(viewmodule);
+            _module = new OpenContentModuleInfo(viewmodule, moduleSettings);
         }
 
         public RenderInfo Info
@@ -89,7 +90,7 @@ namespace Satrabel.OpenContent.Components.Render
                 }
                 else if (_renderinfo.Template.IsListTemplate)
                 {
-                    LogContext.Log(_module.ViewModule.ModuleID, "RequestContext", "QueryParam Id", ItemId);
+
                     // Multi items template
                     if (string.IsNullOrEmpty(ItemId))
                     {
@@ -111,10 +112,11 @@ namespace Satrabel.OpenContent.Components.Render
                     }
                     else
                     {
+                        LogContext.Log(_module.ViewModule.ModuleID, "RequestContext", "QueryParam Id", ItemId);
                         // detail template
                         if (_renderinfo.Template.Detail != null)
                         {
-                            GetDetailData(_renderinfo, Settings);
+                            GetDetailData(_renderinfo, _module);
                         }
                         if (_renderinfo.Template.Detail != null && !_renderinfo.ShowInitControl)
                         {
@@ -146,7 +148,8 @@ namespace Satrabel.OpenContent.Components.Render
                     // single item template
                     GetSingleData(_renderinfo, Settings);
                     bool settingsNeeded = _renderinfo.Template.SettingsNeeded();
-                    if (!_renderinfo.ShowInitControl && (!settingsNeeded || !string.IsNullOrEmpty(_renderinfo.SettingsJson)))
+                    //if (!_renderinfo.ShowInitControl && (!settingsNeeded || !string.IsNullOrEmpty(_renderinfo.SettingsJson)))
+                    if (!_renderinfo.ShowInitControl)
                     {
                         _renderinfo.OutputString = GenerateOutput(page, _renderinfo.Template.MainTemplateUri(), _renderinfo.DataJson, _renderinfo.SettingsJson, _renderinfo.Template.Main);
                     }
@@ -253,7 +256,7 @@ namespace Satrabel.OpenContent.Components.Render
 
                 if (info.Template.Views != null)
                 {
-                    var indexConfig = OpenContentUtils.GetIndexConfig(info.Template.Key.TemplateDir);
+                    var indexConfig = OpenContentUtils.GetIndexConfig(info.Template);
                     templateKey = GetTemplateKey(indexConfig);
                 }
             }
@@ -264,7 +267,7 @@ namespace Satrabel.OpenContent.Components.Render
                 if (useLucene)
                 {
                     PortalSettings portalSettings = PortalSettings.Current;
-                    var indexConfig = OpenContentUtils.GetIndexConfig(info.Template.Key.TemplateDir);
+                    var indexConfig = OpenContentUtils.GetIndexConfig(info.Template);
                     if (info.Template.Views != null)
                     {
                         templateKey = GetTemplateKey(indexConfig);
@@ -291,7 +294,7 @@ namespace Satrabel.OpenContent.Components.Render
                          if (ds.Any(dsContext) && settings.Query.IsEmpty())
                          {
                              //there seems to be data in de database, but we did not find it in Lucene, so probably the data isn't indexed anymore/yet
-                             Components.Lucene.LuceneController.Instance.ReIndexModuleData(_module.ViewModule.ModuleID, settings);
+                             //Components.Lucene.LuceneController.Instance.ReIndexModuleData(_module.ViewModule.ModuleID, settings);
                          }
                           */
                         //Log.Logger.DebugFormat("Query did not return any results. API request: [{0}], Lucene Filter: [{1}], Lucene Query:[{2}]", settings.Query, queryDef.Filter == null ? "" : queryDef.Filter.ToString(), queryDef.Query == null ? "" : queryDef.Query.ToString());
@@ -319,19 +322,12 @@ namespace Satrabel.OpenContent.Components.Render
             return templateKey;
         }
 
-        public void GetDetailData(RenderInfo info, OpenContentSettings settings)
+        public void GetDetailData(RenderInfo info, OpenContentModuleInfo module)
         {
             info.ResetData();
-            var ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
-            var dsContext = new DataSourceContext()
-            {
-                PortalId = _module.DataModule.PortalID,
-                CurrentCultureCode = DnnLanguageUtils.GetCurrentCultureCode(),
-                ModuleId = info.ModuleId,
-                ActiveModuleId = _module.ViewModule.ModuleID,
-                TemplateFolder = settings.TemplateDir.FolderPath,
-                Config = settings.Manifest.DataSourceConfig
-            };
+            var ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
+            var dsContext = OpenContentUtils.CreateDataContext(module);
+
             var dsItem = ds.Get(dsContext, info.DetailItemId);
             if (LogContext.IsLogActive)
             {
@@ -346,15 +342,18 @@ namespace Satrabel.OpenContent.Components.Render
                 bool isEditable = _module.ViewModule.CheckIfEditable(portalSettings);
                 if (!isEditable)
                 {
-                    var indexConfig = OpenContentUtils.GetIndexConfig(info.Template.Key.TemplateDir);
+                    var indexConfig = OpenContentUtils.GetIndexConfig(info.Template);
                     string raison;
                     if (!OpenContentUtils.HaveViewPermissions(dsItem, portalSettings.UserInfo, indexConfig, out raison))
                     {
-                        Exceptions.ProcessHttpException(new HttpException(404, "No detail view permissions for id=" + info.DetailItemId + " (" + raison + ")"));
+                        if (module.ViewModule.HasEditRightsOnModule())
+                            Exceptions.ProcessHttpException(new NotAuthorizedException(404, $"No detail view permissions for id={info.DetailItemId}  (due to {raison}) \nGo into Edit Mode to view/change the item"));
+                        else
+                            Exceptions.ProcessHttpException(new NotAuthorizedException(404, "Access denied. You might want to contact your administrator for more information."));
                         //throw new UnauthorizedAccessException("No detail view permissions for id " + info.DetailItemId);
                     }
                 }
-                info.SetData(dsItem, dsItem.Data, settings.Data);
+                info.SetData(dsItem, dsItem.Data, module.Settings.Data);
             }
         }
 
@@ -491,7 +490,7 @@ namespace Satrabel.OpenContent.Components.Render
 
                 if (dataJson != null)
                 {
-                    ModelFactory mf = new ModelFactory(_renderinfo.Data, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, PortalSettings.Current);
+                    var mf = new ModelFactorySingle(_renderinfo.Data, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, PortalSettings.Current);
                     dynamic model = mf.GetModelAsDynamic();
                     if (!string.IsNullOrEmpty(_renderinfo.Template.Manifest.DetailMetaTitle))
                     {
@@ -523,41 +522,50 @@ namespace Satrabel.OpenContent.Components.Render
 
         private string GenerateOutput(Page page, FileUri template, JToken dataJson, string settingsJson, TemplateFiles files)
         {
-            //some basic checks
-            if (template == null) return "";
-            if (dataJson == null) return "";
-
-
-            ModelFactory mf;
             var ps = PortalSettings.Current;
-            string templateVirtualFolder = template.UrlFolder;
-            string physicalTemplateFolder = HostingEnvironment.MapPath(templateVirtualFolder);
-            
-            if (_renderinfo.Data == null)
+            if (template != null)
             {
-                // demo data
-                mf = new ModelFactory(_renderinfo.DataJson, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, ps);
-            }
-            else
-            {
-                mf = new ModelFactory(_renderinfo.Data, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, ps);
-            }
-            dynamic model = mf.GetModelAsDynamic();
-            if (LogContext.IsLogActive)
-            {
-                var logKey = "Render single item template";
-                LogContext.Log(_module.ViewModule.ModuleID, logKey, "template", template.FilePath);
-                LogContext.Log(_module.ViewModule.ModuleID, logKey, "model", model);
-            }
+                string templateVirtualFolder = template.UrlFolder;
+                string physicalTemplateFolder = HostingEnvironment.MapPath(templateVirtualFolder);
+                if (dataJson != null)
+                {
+                    ModelFactorySingle mf;
 
-            if (template.Extension == ".hbs")
-            {
-                var hbEngine = new HandlebarsEngine();
-                return hbEngine.Execute(page, template, model);
+                    if (_renderinfo.Data == null)
+                    {
+                        // demo data
+                        mf = new ModelFactorySingle(_renderinfo.DataJson, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, ps);
+                    }
+                    else
+                    {
+                        mf = new ModelFactorySingle(_renderinfo.Data, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, ps);
+                    }
+                    dynamic model = mf.GetModelAsDynamic();
+                    if (LogContext.IsLogActive)
+                    {
+                        var logKey = "Render single item template";
+                        LogContext.Log(_module.ViewModule.ModuleID, logKey, "template", template.FilePath);
+                        LogContext.Log(_module.ViewModule.ModuleID, logKey, "model", model);
+                    }
+
+                    if (template.Extension != ".hbs")
+                    {
+                        return ExecuteRazor(template, model);
+                    }
+                    else
+                    {
+                        HandlebarsEngine hbEngine = new HandlebarsEngine();
+                        return hbEngine.Execute(page, template, model);
+                    }
+                }
+                else
+                {
+                    return "";
+                }
             }
             else
             {
-                return ExecuteRazor(template, model);
+                return "";
             }
         }
 
@@ -570,13 +578,15 @@ namespace Satrabel.OpenContent.Components.Render
                 FileUri templateUri = CheckFiles(templateManifest, files);
                 if (dataList != null)
                 {
-                    ModelFactory mf = new ModelFactory(dataList, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, PortalSettings.Current);
+                    ModelFactoryMultiple mf = new ModelFactoryMultiple(dataList, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, PortalSettings.Current);
                     dynamic model = mf.GetModelAsDynamic();
                     return ExecuteTemplate(page, templateManifest, files, templateUri, model);
                 }
             }
             return "";
         }
+
+
 
         private FileUri CheckFiles(TemplateManifest templateManifest, TemplateFiles files)
         {

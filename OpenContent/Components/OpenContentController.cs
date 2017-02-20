@@ -18,6 +18,7 @@ using DotNetNuke.Data;
 using DotNetNuke.Entities.Modules;
 using Satrabel.OpenContent.Components.Lucene;
 using Satrabel.OpenContent.Components.Lucene.Config;
+using Satrabel.OpenContent.Components.Common;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -31,10 +32,27 @@ namespace Satrabel.OpenContent.Components
         public void AddContent(OpenContentInfo content, bool index, FieldConfig indexConfig)
         {
             ClearCache(content);
-
+            var json = content.JsonAsJToken;
+            if (string.IsNullOrEmpty(content.Key))
+            {
+                if (json["_id"] != null)
+                {
+                    content.Key = json["_id"].ToString();
+                }
+                else
+                {
+                    content.Key = ObjectId.NewObjectId().ToString();
+                    //json["_id"] = content.Id;
+                    //content.Json = json.ToString();
+                }
+            }
+            if (string.IsNullOrEmpty(content.Collection))
+            {
+                content.Collection = AppConfig.DEFAULT_COLLECTION;
+            }
             OpenContentVersion ver = new OpenContentVersion()
             {
-                Json = content.JsonAsJToken,
+                Json = json,
                 CreatedByUserId = content.CreatedByUserId,
                 CreatedOnDate = content.CreatedOnDate,
                 LastModifiedByUserId = content.LastModifiedByUserId,
@@ -82,10 +100,12 @@ namespace Satrabel.OpenContent.Components
         public void UpdateContent(OpenContentInfo content, bool index, FieldConfig indexConfig)
         {
             ClearCache(content);
-
+            var json = content.JsonAsJToken;
+            //json["_id"] = content.Id;
+            //content.Json = json.ToString();
             OpenContentVersion ver = new OpenContentVersion()
             {
-                Json = content.JsonAsJToken,
+                Json = json,
                 CreatedByUserId = content.CreatedByUserId,
                 CreatedOnDate = content.CreatedOnDate,
                 LastModifiedByUserId = content.LastModifiedByUserId,
@@ -109,9 +129,7 @@ namespace Satrabel.OpenContent.Components
             }
             if (index)
             {
-
                 content.HydrateDefaultFields(indexConfig);
-
                 LuceneController.Instance.Update(content, indexConfig);
                 LuceneController.Instance.Store.Commit();
             }
@@ -174,6 +192,53 @@ namespace Satrabel.OpenContent.Components
                     }
                     return content;
                 });
+        }
+
+        public OpenContentInfo GetContent(int moduleId, string collection, string id)
+        {
+            if (collection == AppConfig.DEFAULT_COLLECTION)
+            {
+                int intid = 0;
+                if (int.TryParse(id, out intid))
+                    return GetContent(intid);
+                else
+                    return null;
+            }
+            else
+            {
+                return GetContentByKey(moduleId, collection, id);
+            }
+        }
+        private OpenContentInfo GetContentByKey(int moduleId, string collection, string key)
+        {
+            IEnumerable<OpenContentInfo> documents;
+            using (IDataContext ctx = DataContext.Instance())
+            {
+                var rep = ctx.GetRepository<OpenContentInfo>();
+                documents = rep.Find("WHERE ModuleId = @0 AND Collection = @1 AND DocumentKey = @2", moduleId, collection, key);
+            }
+            return documents.SingleOrDefault();
+        }
+        public IEnumerable<OpenContentInfo> GetContents(int moduleId, string collection)
+        {
+            IEnumerable<OpenContentInfo> documents;
+            using (IDataContext ctx = DataContext.Instance())
+            {
+                var rep = ctx.GetRepository<OpenContentInfo>();
+                documents = rep.Find("WHERE ModuleId = @0 AND Collection = @1", moduleId, collection);
+            }
+            return documents;
+        }
+
+        public IEnumerable<OpenContentInfo> GetContents(int[] contentIds)
+        {
+            IEnumerable<OpenContentInfo> documents;
+            using (IDataContext ctx = DataContext.Instance())
+            {
+                var rep = ctx.GetRepository<OpenContentInfo>();
+                documents = rep.Find("WHERE ContentId IN (" + string.Join(",", contentIds) + ")");
+            }
+            return documents;
         }
 
         #endregion

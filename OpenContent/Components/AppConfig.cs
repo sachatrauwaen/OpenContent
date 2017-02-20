@@ -47,6 +47,9 @@ namespace Satrabel.OpenContent.Components
         }
 
         public const string OPENCONTENT = "OpenContent";
+
+        public const string DEFAULT_COLLECTION = "Items";
+
         #endregion
     }
 }

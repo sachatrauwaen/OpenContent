@@ -543,7 +543,6 @@ namespace Satrabel.OpenContent.Components
         [HttpPost]
         public HttpResponseMessage CropImages(CroppersDTO cropData)
         {
-            FilesStatus fs = null;
             try
             {
                 var res = new CroppersResultDTO();

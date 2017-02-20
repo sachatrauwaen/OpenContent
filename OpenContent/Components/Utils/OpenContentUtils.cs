@@ -121,14 +121,18 @@ namespace Satrabel.OpenContent.Components
             if (otherModuleTemplate != null)
             {
                 var selDir = otherModuleTemplate.PhysicalFullDirectory;
+                if (!dirs.Contains(selDir))
+                {
+                    selDir = Path.GetDirectoryName(selDir);
+                }
                 dirs = new string[] { selDir };
             }
-
             List<ListItem> lst = new List<ListItem>();
             foreach (var dir in dirs)
             {
                 string templateCat = "Site";
-                string dirName = Path.GetFileNameWithoutExtension(dir);
+                //string dirName = Path.GetFileNameWithoutExtension(dir);
+                string dirName = dir.Substring(basePath.Length);
                 int modId = -1;
                 if (int.TryParse(dirName, out modId))
                 {
@@ -160,7 +164,7 @@ namespace Satrabel.OpenContent.Components
                             foreach (var template in manifest.Templates)
                             {
                                 FileUri templateUri = new FileUri(manifestFileUri.FolderPath, template.Key);
-                                string templateName = dirName;
+                                string templateName = Path.GetDirectoryName(manifestFile).Substring(basePath.Length).Replace("\\"," / ");
                                 if (!string.IsNullOrEmpty(template.Value.Title))
                                 {
                                     templateName = templateName + " - " + template.Value.Title;
@@ -435,6 +439,7 @@ namespace Satrabel.OpenContent.Components
                 Index = module.Settings.Template.Manifest.Index,
                 Options = options,
                 Single = single,
+                Collection = module.Settings.Template.Collection
             };
             if (PortalSettings.Current != null)
             {
@@ -451,7 +456,7 @@ namespace Satrabel.OpenContent.Components
 
         public static bool HasEditPermissions(PortalSettings portalSettings, ModuleInfo module, string editrole, int createdByUserId)
         {
-            return module.HasEditRights() || HasEditRole(portalSettings, editrole, createdByUserId);
+            return module.HasEditRightsOnModule() || HasEditRole(portalSettings, editrole, createdByUserId);
         }
         public static bool HasEditRole(PortalSettings portalSettings, string editrole, int createdByUserId)
         {
@@ -460,13 +465,16 @@ namespace Satrabel.OpenContent.Components
             if (portalSettings.UserInfo.IsInRole(editrole) && (createdByUserId == -1 || createdByUserId == portalSettings.UserId)) return true;
             return false;
         }
-
-        internal static FieldConfig GetIndexConfig(FolderUri folder)
+        public static FieldConfig GetIndexConfig(TemplateManifest template)
+        {
+            return GetIndexConfig(template.Key.TemplateDir, template.Collection);
+        }
+        public static FieldConfig GetIndexConfig(FolderUri folder, string collection)
         {
             try
             {
                 var fb = new FormBuilder(folder);
-                FieldConfig indexConfig = fb.BuildIndex();
+                FieldConfig indexConfig = fb.BuildIndex(collection);
                 return indexConfig;
             }
             catch (Exception ex)
@@ -509,39 +517,39 @@ namespace Satrabel.OpenContent.Components
         internal static bool HaveViewPermissions(Datasource.IDataItem dsItem, DotNetNuke.Entities.Users.UserInfo userInfo, FieldConfig IndexConfig, out string raison)
         {
             raison = "";
-            if (dsItem == null || dsItem.Data == null) return true;
+            if (dsItem?.Data == null) return true;
 
             bool permissions = true;
             //publish status , dates
-            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishStatus))
+            if (IndexConfig?.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishStatus))
             {
                 permissions = dsItem.Data[AppConfig.FieldNamePublishStatus] != null &&
                     dsItem.Data[AppConfig.FieldNamePublishStatus].ToString() == "published";
-                if (!permissions) raison = AppConfig.FieldNamePublishStatus;
+                if (!permissions) raison = AppConfig.FieldNamePublishStatus + $" being {dsItem.Data[AppConfig.FieldNamePublishStatus]}";
             }
-            if (permissions && IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishStartDate))
+            if (permissions && IndexConfig?.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishStartDate))
             {
                 permissions = dsItem.Data[AppConfig.FieldNamePublishStartDate] != null &&
                                 dsItem.Data[AppConfig.FieldNamePublishStartDate].Type == JTokenType.Date &&
                                 ((DateTime)dsItem.Data[AppConfig.FieldNamePublishStartDate]) <= DateTime.Today;
-                if (!permissions) raison = AppConfig.FieldNamePublishStartDate;
+                if (!permissions) raison = AppConfig.FieldNamePublishStartDate + $" being {dsItem.Data[AppConfig.FieldNamePublishStartDate]}";
             }
-            if (permissions && IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishEndDate))
+            if (permissions && IndexConfig?.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishEndDate))
             {
                 permissions = dsItem.Data[AppConfig.FieldNamePublishEndDate] != null &&
                                 dsItem.Data[AppConfig.FieldNamePublishEndDate].Type == JTokenType.Date &&
                                 ((DateTime)dsItem.Data[AppConfig.FieldNamePublishEndDate]) >= DateTime.Today;
-                if (!permissions) raison = AppConfig.FieldNamePublishEndDate;
+                if (!permissions) raison = AppConfig.FieldNamePublishEndDate + $" being {dsItem.Data[AppConfig.FieldNamePublishEndDate]}";
             }
             if (permissions)
             {
                 // Roles                
                 string fieldName = "";
-                if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey("userrole"))
+                if (IndexConfig?.Fields != null && IndexConfig.Fields.ContainsKey("userrole"))
                 {
                     fieldName = "userrole";
                 }
-                else if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey("userroles"))
+                else if (IndexConfig?.Fields != null && IndexConfig.Fields.ContainsKey("userroles"))
                 {
                     fieldName = "userroles";
                 }

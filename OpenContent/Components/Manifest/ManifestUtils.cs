@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
+using Satrabel.OpenContent.Components.Json;
+using DotNetNuke.Common.Utilities;
+using DotNetNuke.Services.Cache;
 
 namespace Satrabel.OpenContent.Components.Manifest
 {
@@ -42,7 +45,7 @@ namespace Satrabel.OpenContent.Components.Manifest
                 manifest.ManifestDir = templateKey.TemplateDir;
                 foreach (KeyValuePair<string, TemplateManifest> keyValuePair in manifest.Templates)
                 {
-                    keyValuePair.Value.SetSource(templateKey);
+                    keyValuePair.Value.SetSource(new TemplateKey(templateKey, keyValuePair.Key));
                 }
                 //get the requested template by Key
                 templateManifest = manifest.GetTemplateManifest(templateKey);
@@ -58,8 +61,14 @@ namespace Satrabel.OpenContent.Components.Manifest
                 var file = new FileUri(folder.UrlFolder, "manifest.json");
                 if (file.FileExists)
                 {
-                    string content = File.ReadAllText(file.PhysicalFilePath);
-                    manifest = JsonConvert.DeserializeObject<Manifest>(content);
+                    string cacheKey = folder.UrlFolder + "manifest.json";
+                    manifest = (Manifest)DataCache.GetCache(cacheKey);
+                    if (manifest == null)
+                    {
+                        string content = File.ReadAllText(file.PhysicalFilePath);
+                        manifest = JsonConvert.DeserializeObject<Manifest>(content);
+                        DataCache.SetCache(cacheKey, manifest, new DNNCacheDependency(file.PhysicalFilePath));
+                    }
                 }
                 return manifest;
             }
@@ -85,12 +94,13 @@ namespace Satrabel.OpenContent.Components.Manifest
 
         private static Manifest GetVirtualManifest(TemplateKey templeteKey)
         {
+            /*
             string content = @"
                                     {
                                         ""editWitoutPostback"": false,
                                         ""templates"": {
                                             ""{{templatekey}}"": {
-                                                ""type"": ""single"", /* single or multiple*/
+                                                ""type"": ""single"",
                                                 ""title"": ""{{templatekey}}"",
                                                 ""main"": {
                                                     ""template"": ""{{templatekey}}{{templateextention}}"",
@@ -106,6 +116,22 @@ namespace Satrabel.OpenContent.Components.Manifest
             content = content.Replace("{{templatekey}}", templeteKey.ShortKey);
             content = content.Replace("{{templateextention}}", templeteKey.Extention);
             var manifest = JsonConvert.DeserializeObject<Manifest>(content);
+            */
+            var manifest = new Manifest();
+            manifest.EditWitoutPostback = false;
+            manifest.Templates = new Dictionary<string, TemplateManifest>();
+            manifest.Templates.Add(templeteKey.ShortKey, new TemplateManifest()
+            {
+                Type = "single",
+                Title = templeteKey.ShortKey,
+                ClientSideData = false,
+                Main = new TemplateFiles()
+                {
+                    Template = templeteKey.ShortKey + templeteKey.Extention,
+                    SchemaInTemplate = false,
+                    OptionsInTemplate = false
+                }
+            });
             return manifest;
         }
 

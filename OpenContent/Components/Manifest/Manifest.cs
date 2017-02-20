@@ -1,4 +1,4 @@
- using System;
+using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -87,6 +87,12 @@ namespace Satrabel.OpenContent.Components.Manifest
         }
         public AdditionalDataManifest GetAdditionalData(string key)
         {
+            if (string.IsNullOrEmpty(key))
+                throw new ArgumentNullException(nameof(key));
+
+            if (!AdditionalDataDefinition.ContainsKey(key.ToLowerInvariant()))
+                throw new Exception($"Manifest in {this.ManifestDir.UrlFolder} does not contain a AdditionalData definition with key [{key}]");
+
             return AdditionalDataDefinition[key.ToLowerInvariant()];
         }
 

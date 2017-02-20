@@ -4,16 +4,23 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
 {
     public static class ImageFactory
     {
-        public static ImageUri CreateImage(dynamic imageId)
+        public static ImageUri CreateImage(dynamic imageInfo)
         {
             ImageUri retval = null;
             try
             {
-                retval = CreateImage(Convert.ToString(imageId));
+                if (imageInfo?["ImageId"] != null)
+                {
+                    retval = CreateImage(Convert.ToString(imageInfo["ImageId"])); //it might be an enhanced image object
+                }
+                else
+                {
+                    retval = CreateImage(Convert.ToString(imageInfo)); //it might be just the image Id
+                }
             }
             catch (Exception ex)
             {
-                Log.Logger.ErrorFormat("Error while trying to create ImageUri: ", ex);
+                Log.Logger.ErrorFormat("Error while trying to create ImageUri from dynamic: ", ex);
             }
             return retval;
         }

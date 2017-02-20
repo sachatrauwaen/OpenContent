@@ -27,9 +27,8 @@
     $(document).ready(function () {
         var config = <%=JsonConvert.SerializeObject(AlpacaContext)%>;
 
-        config.editAction = "EditSettings";
-        config.updateAction = "UpdateSettings";
-        config.data = { "key": "query"};
+        config.editAction = "EditQuerySettings";
+        config.updateAction = "UpdateQuerySettings";
         var engine = new alpacaEngine.engine(config);
         engine.init();
     });

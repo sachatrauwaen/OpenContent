@@ -4,6 +4,7 @@ using System.Linq;
 using Lucene.Net.Search;
 using Lucene.Net.Index;
 using Satrabel.OpenContent.Components.Datasource.Search;
+using Lucene.Net.QueryParsers;
 
 namespace Satrabel.OpenContent.Components.Lucene.Config
 {
@@ -86,7 +87,8 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                     }
                     else
                     {
-                        q.Add(new TermQuery(new Term(fieldName, rule.Value.AsString)), cond);
+                        string searchstring = QueryParser.Escape(rule.Value.AsString);                        
+                        q.Add(new TermQuery(new Term(fieldName, searchstring)), cond);
                     }
                 }
                 else if (rule.FieldOperator == OperatorEnum.NOT_EQUAL)
@@ -110,7 +112,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                     BooleanQuery arrQ = new BooleanQuery();
                     foreach (var arrItem in rule.MultiValue)
                     {
-                        arrQ.Add(new TermQuery(new Term(fieldName, arrItem.AsString)), Occur.SHOULD); // OR                        
+                        arrQ.Add(new TermQuery(new Term(fieldName, QueryParser.Escape(arrItem.AsString))), Occur.SHOULD); // OR                        
                         /*
                         var phraseQ = new PhraseQuery();
                         phraseQ.Add(new Term(fieldName, arrItem.AsString));

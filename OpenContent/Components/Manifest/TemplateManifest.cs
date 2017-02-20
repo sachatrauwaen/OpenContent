@@ -1,5 +1,7 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 
 namespace Satrabel.OpenContent.Components.Manifest
 {
@@ -25,6 +27,9 @@ namespace Satrabel.OpenContent.Components.Manifest
 
         [JsonProperty(PropertyName = "clientSideData")]
         public bool ClientSideData { get; set; }
+
+        [JsonProperty(PropertyName = "collection")]
+        public string Collection { get; set; } = "Items";
 
         public bool IsListTemplate
         {
@@ -53,6 +58,6 @@ namespace Satrabel.OpenContent.Components.Manifest
         {
             ManifestFolderUri = templateKey.TemplateDir;
             Key = templateKey;
-        }       
+        }
     }
 }

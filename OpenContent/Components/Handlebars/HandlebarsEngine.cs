@@ -15,7 +15,7 @@ using Satrabel.OpenContent.Components.Dynamic;
 using System.Collections;
 using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components.Logging;
-
+using Satrabel.OpenContent.Components.Alpaca;
 
 namespace Satrabel.OpenContent.Components.Handlebars
 {
@@ -41,12 +41,13 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 RegisterArrayTranslateHelper(hbs);
                 RegisterIfAndHelper(hbs);
                 RegisterConvertHtmlToTextHelper(hbs);
+                RegisterConvertToJsonHelper(hbs);
                 RegisterTruncateWordsHelper(hbs);
                 _template = hbs.Compile(source);
             }
             catch (Exception ex)
             {
-                Log.Logger.Error(string.Format("Failed to render Handlebar template source:[{0}]", source), ex);
+                Log.Logger.Error($"Failed to render Handlebar template source:[{source}]", ex);
                 throw new TemplateException("Failed to render Handlebar template " + source, ex, null, source);
             }
         }
@@ -97,6 +98,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterIfInHelper(hbs);
             RegisterEachPublishedHelper(hbs);
             RegisterConvertHtmlToTextHelper(hbs);
+            RegisterConvertToJsonHelper(hbs);
             RegisterTruncateWordsHelper(hbs);
         }
 
@@ -371,18 +373,21 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 {
                     view = parameters[0].ToString();
                 }
-                string min = ".min";
-                if (DotNetNuke.Common.HttpContextSource.Current.IsDebuggingEnabled)
-                {
-                    min = "";
-                }
-                DotNetNuke.Framework.ServicesFramework.Instance.RequestAjaxScriptSupport();
-                DnnUtils.RegisterScript(page, sourceFolder, "/DesktopModules/OpenContent/js/lib/handlebars/handlebars" + min + ".js", _jsOrder);
-                _jsOrder++;
-                DnnUtils.RegisterScript(page, sourceFolder, "/DesktopModules/OpenContent/js/alpaca/bootstrap/alpaca" + min + ".js", _jsOrder);
-                _jsOrder++;
-                ClientResourceManager.RegisterStyleSheet(page, page.ResolveUrl("/DesktopModules/OpenContent/js/alpaca/bootstrap/alpaca" + min + ".css"), FileOrder.Css.PortalCss);
+
+                FormHelpers.RegisterForm(page, sourceFolder, view, ref _jsOrder);
+                
             });
+            
+            hbs.RegisterHelper("registereditform", (writer, context, parameters) =>
+            {
+                string prefix = "";
+                if (parameters.Length == 1)
+                {
+                    prefix = parameters[0].ToString();
+                }
+                FormHelpers.RegisterEditForm(page, sourceFolder, PortalSettings.Current.PortalId, prefix, ref _jsOrder);
+            });
+            
         }
         private void RegisterRegisterStylesheetHelper(HandlebarsDotNet.IHandlebars hbs, Page page, string sourceFolder)
         {
@@ -718,5 +723,21 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 }
             });
         }
+        private void RegisterConvertToJsonHelper(HandlebarsDotNet.IHandlebars hbs)
+        {
+            hbs.RegisterHelper("convertToJson", (writer, context, parameters) =>
+            {
+                try
+                {
+                    var res = System.Web.Helpers.Json.Encode(parameters[0]);
+                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, res);
+                }
+                catch (Exception)
+                {
+                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "");
+                }
+            });
+        }
+
     }
 }

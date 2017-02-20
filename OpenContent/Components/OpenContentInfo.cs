@@ -15,6 +15,8 @@ using DotNetNuke.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using Satrabel.OpenContent.Components.Lucene.Index;
+using Satrabel.OpenContent.Components.Lucene.Config;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -22,9 +24,10 @@ namespace Satrabel.OpenContent.Components
     [PrimaryKey("ContentId", AutoIncrement = true)]
     //[Cacheable("OpenContentItems", CacheItemPriority.Default, 20)]
     [Scope("ModuleId")]
-    public class OpenContentInfo
+    public class OpenContentInfo : IIndexableItem
     {
         private JToken _jsonAsJToken = null;
+        private string _json;
         public OpenContentInfo()
         {
 
@@ -33,10 +36,36 @@ namespace Satrabel.OpenContent.Components
         {
             Json = json;
         }
+
         public int ContentId { get; set; }
+        [ColumnName("DocumentKey")]
+        public string Key { get; internal set; }
+        [IgnoreColumn]
+        public string Id
+        {
+            get
+            {
+                if (Collection == AppConfig.DEFAULT_COLLECTION)
+                    return ContentId.ToString();
+                else
+                    return Key;
+            }
+        }
+
+        public string Collection { get; set; }
         public string Title { get; set; }
-        public string Html { get; set; }
-        public string Json { get; set; }
+        public string Json
+        {
+            get
+            {
+                return _json;
+            }
+            set
+            {
+                _json = value;
+                _jsonAsJToken = null;
+            }
+        }
 
         [IgnoreColumn]
         public JToken JsonAsJToken
@@ -53,6 +82,7 @@ namespace Satrabel.OpenContent.Components
             set
             {
                 _jsonAsJToken = value;
+                _json = _jsonAsJToken.ToString();
             }
         }
         public int ModuleId { get; set; }
@@ -83,5 +113,44 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
+        #region IIndexableItem
+        public string GetId()
+        {
+            return ContentId.ToString();
+        }
+
+        public string GetScope()
+        {
+            return OpenContentInfo.GetScope(ModuleId, Collection);
+        }
+
+        public string GetCreatedByUserId()
+        {
+            return CreatedByUserId.ToString();
+        }
+
+        public DateTime GetCreatedOnDate()
+        {
+            return CreatedOnDate;
+        }
+
+        public JToken GetData()
+        {
+            return JsonAsJToken;
+        }
+
+        public string GetSource()
+        {
+            return Json;
+        }
+
+        public static string GetScope(int moduleId, string collection)
+        {
+            if (collection == "Items")
+                return moduleId.ToString();
+            else
+                return moduleId.ToString() + "/" + collection;
+        }
+        #endregion
     }
 }

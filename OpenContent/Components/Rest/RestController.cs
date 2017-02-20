@@ -16,6 +16,9 @@ using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Manifest;
 using Newtonsoft.Json;
 using Satrabel.OpenContent.Components.Datasource.Search;
+using Satrabel.OpenContent.Components.Render;
+using DotNetNuke.Services.Exceptions;
+using System.Web;
 
 namespace Satrabel.OpenContent.Components.Rest
 {
@@ -30,7 +33,10 @@ namespace Satrabel.OpenContent.Components.Rest
         {
             try
             {
+                //if (entity == "items")
+                var collection = AppConfig.DEFAULT_COLLECTION;
                 OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
+
                 JObject reqOptions = null;
                 //if (!string.IsNullOrEmpty(req.options))
                 //{
@@ -39,58 +45,40 @@ namespace Satrabel.OpenContent.Components.Rest
                 //string editRole = manifest.GetEditRole();
                 if (module.IsListMode())
                 {
-                    var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template.Key.TemplateDir);
-                    QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
-                    bool isEditable = ActiveModule.CheckIfEditable(PortalSettings);//portalSettings.UserMode != PortalSettings.Mode.Edit;
-                    queryBuilder.Build(module.Settings.Query, !isEditable, UserInfo.UserID, DnnLanguageUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
-                    //if (restSelect != null)
-                    //{
-                    //    RestQueryBuilder.MergeJpListQuery(indexConfig, queryBuilder.Select, restSelect);
-                    //}
-                    queryBuilder.Select.Query.AddRule(new FilterRule()
-                    {
-                        Field = "$id",
-                        Value = new StringRuleValue(id)
-                    });
-                    IDataItems dsItems;
-                    if (queryBuilder.DefaultNoResults && queryBuilder.Select.IsQueryEmpty)
-                    {
-                        dsItems = new DefaultDataItems()
-                        {
-                            Items = new List<DefaultDataItem>(),
-                            Total = 0
-                        };
-                    }
-                    else
-                    {
-                        IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
-                        var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID,false, reqOptions);
-                        dsItems = ds.GetAll(dsContext, queryBuilder.Select);
-                    }
-                    ModelFactory mf = new ModelFactory(dsItems.Items, module, PortalSettings);
-                    mf.Options = reqOptions;
-                    var model = mf.GetModelAsJson(false);
+                    var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.TemplateDir, collection);
+                    //bool isEditable = ActiveModule.CheckIfEditable(PortalSettings);
+                    IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
+                    var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID, false, reqOptions);
+                    dsContext.Collection = collection;
+                    var dsItem = ds.Get(dsContext, id);
                     var res = new JObject();
                     res["meta"] = new JObject();
-                    res["meta"]["total"] = dsItems.Total;
-                    //model["luceneQuery"] = dsItems.DebugInfo;
-                    if (LogContext.IsLogActive)
+                    var items = new JArray();
+                    if (dsItem != null)
                     {
-                        var logKey = "Query";
-                        LogContext.Log(module.ViewModule.ModuleID, logKey, "select", queryBuilder.Select);
-                        LogContext.Log(module.ViewModule.ModuleID, logKey, "debuginfo", dsItems.DebugInfo);
-                        LogContext.Log(module.ViewModule.ModuleID, logKey, "model", model);
-                        res["meta"]["logs"] = JToken.FromObject(LogContext.Current.ModuleLogs(module.ViewModule.ModuleID));
-                    }
-                    if (model["Items"] is JArray)
-                    {
-                        foreach (var item in (JArray)model["Items"])
+                        var mf = new ModelFactorySingle(dsItem, module, PortalSettings, collection);
+
+                        string raison = "";
+                        if (!OpenContentUtils.HaveViewPermissions(dsItem, PortalSettings.UserInfo, indexConfig, out raison))
                         {
-                            item["id"] = item["Context"]["Id"];
-                            JsonUtils.IdJson(item);
+                            Exceptions.ProcessHttpException(new HttpException(404, "No detail view permissions for id=" + id + " (" + raison + ")"));
+                            //throw new UnauthorizedAccessException("No detail view permissions for id " + info.DetailItemId);
+                        }
+
+                        mf.Options = reqOptions;
+                        var model = mf.GetModelAsJson(false);
+                        items.Add(model);
+                        model["id"] = model["Context"]["Id"];
+                        res["meta"]["total"] = dsItem == null ? 0 : 1;
+                        JsonUtils.IdJson(model);
+                        if (LogContext.IsLogActive)
+                        {
+                            var logKey = "Query";
+                            LogContext.Log(module.ViewModule.ModuleID, logKey, "model", model);
+                            res["meta"]["logs"] = JToken.FromObject(LogContext.Current.ModuleLogs(module.ViewModule.ModuleID));
                         }
                     }
-                    res[entity] = model["Items"];
+                    res[entity] = items;
                     return Request.CreateResponse(HttpStatusCode.OK, res);
                 }
                 else
@@ -111,6 +99,9 @@ namespace Satrabel.OpenContent.Components.Rest
         {
             try
             {
+                var collection = entity;
+                //if (entity == "items")
+                collection = AppConfig.DEFAULT_COLLECTION; // backward compatibility
                 RestSelect restSelect = new RestSelect()
                 {
                     PageIndex = pageIndex,
@@ -125,7 +116,7 @@ namespace Satrabel.OpenContent.Components.Rest
                     restSelect.Sort = JsonConvert.DeserializeObject<List<RestSort>>(sort);
                 }
 
-                ModuleInfo activeModule = ActiveModule; 
+                ModuleInfo activeModule = ActiveModule;
 
                 OpenContentSettings settings = activeModule.OpenContentSettings();
                 OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
@@ -133,7 +124,7 @@ namespace Satrabel.OpenContent.Components.Rest
 
                 if (module.IsListMode())
                 {
-                    var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
+                    var indexConfig = OpenContentUtils.GetIndexConfig(settings.TemplateDir, collection);
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
                     bool isEditable = ActiveModule.CheckIfEditable(PortalSettings);
                     queryBuilder.Build(settings.Query, !isEditable, UserInfo.UserID, DnnLanguageUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
@@ -152,10 +143,10 @@ namespace Satrabel.OpenContent.Components.Rest
                     {
                         IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                         var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID, false, reqOptions);
-
+                        dsContext.Collection = collection;
                         dsItems = ds.GetAll(dsContext, queryBuilder.Select);
                     }
-                    ModelFactory mf = new ModelFactory(dsItems.Items, module, PortalSettings);
+                    var mf = new ModelFactoryMultiple(dsItems.Items, module, PortalSettings, collection);
                     mf.Options = reqOptions;
                     var model = mf.GetModelAsJson(false);
                     var res = new JObject();
@@ -178,9 +169,8 @@ namespace Satrabel.OpenContent.Components.Rest
                         item["id"] = item["Context"]["Id"];
                         JsonUtils.IdJson(item);
                     }
-                    res[entity] = model["Items"];
+                    res[entity] = model[collection];
                     res["meta"]["total"] = dsItems.Total;
-
                     return Request.CreateResponse(HttpStatusCode.OK, res);
                 }
                 else

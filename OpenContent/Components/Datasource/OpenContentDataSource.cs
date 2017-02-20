@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.Logging;
-using Satrabel.OpenContent.Components.Manifest;
+using Satrabel.OpenContent.Components.Form;
 
 namespace Satrabel.OpenContent.Components.Datasource
 {
@@ -107,22 +107,22 @@ namespace Satrabel.OpenContent.Components.Datasource
 
             if (!string.IsNullOrEmpty(id) && id != "-1")
             {
+                /*
                 if (LogContext.IsLogActive)
                 {
                     LogContext.Log(context.ActiveModuleId, "Get DataItem", "Request", string.Format("{0}.Get() with id {1}", Name, id));
                 }
-                int idint;
-                if (int.TryParse(id, out idint))
-                {
-                    content = ctrl.GetContent(idint);
-                }
+                */
+                content = ctrl.GetContent(GetModuleId(context), context.Collection, id);
             }
             else
             {
+                /*
                 if (LogContext.IsLogActive)
                 {
                     LogContext.Log(context.ActiveModuleId, "Get DataItem", "Request", string.Format("{0}.Get() with id {1}. Returning first item of module.", Name, id));
                 }
+                */
                 content = ctrl.GetFirstContent(GetModuleId(context)); // single item
             }
             if (content == null)
@@ -130,7 +130,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 Log.Logger.WarnFormat("Item not shown because no content item found. Id [{0}]. Context TabId: [{1}], ModuleId: [{2}]", id, GetTabId(context), GetModuleId(context));
                 LogContext.Log(context.ActiveModuleId, "Get DataItem", "Result", "not item found with id " + id);
             }
-            else if (content.ModuleId == GetModuleId(context))
+            else if (content.ModuleId == GetModuleId(context) && content.Collection == context.Collection)
             {
                 var dataItem = CreateDefaultDataItem(content);
                 if (LogContext.IsLogActive)
@@ -169,7 +169,8 @@ namespace Satrabel.OpenContent.Components.Datasource
                     CreatedByUserId = json.CreatedByUserId,
                     Item = json
                 };
-                if (LogContext.IsLogActive) { 
+                if (LogContext.IsLogActive)
+                {
                     LogContext.Log(context.ActiveModuleId, "Get Data", key, dataItem.Data);
                 }
                 return dataItem;
@@ -181,7 +182,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         {
             OpenContentController ctrl = new OpenContentController();
 
-            var dataList = ctrl.GetContents(GetModuleId(context))
+            var dataList = ctrl.GetContents(GetModuleId(context), context.Collection)
                 .OrderBy(i => i.CreatedOnDate)
                 .Select(content => CreateDefaultDataItem(content));
 
@@ -192,28 +193,24 @@ namespace Satrabel.OpenContent.Components.Datasource
             };
         }
 
+
         public virtual IDataItems GetAll(DataSourceContext context, Select selectQuery)
         {
+            /*
+            if (LogContext.IsLogActive)
+            {
+                LogContext.Log(context.ActiveModuleId, "Datasource", "Context", context);
+            }
+            */
             if (selectQuery == null)
             {
                 return GetAll(context);
             }
             else
             {
+                SelectQueryDefinition def = BuildQuery(context, selectQuery);
                 OpenContentController ctrl = new OpenContentController();
-                SelectQueryDefinition def = new SelectQueryDefinition();
-                def.Build(selectQuery);
-                if (LogContext.IsLogActive)
-                {
-                    var logKey = "Lucene query";
-                    LogContext.Log(context.ActiveModuleId, logKey, "Filter", def.Filter.ToString());
-                    LogContext.Log(context.ActiveModuleId, logKey, "Query", def.Query.ToString());
-                    LogContext.Log(context.ActiveModuleId, logKey, "Sort", def.Sort.ToString());
-                    LogContext.Log(context.ActiveModuleId, logKey, "PageIndex", def.PageIndex);
-                    LogContext.Log(context.ActiveModuleId, logKey, "PageSize", def.PageSize);
-                }
-
-                SearchResults docs = LuceneController.Instance.Search(GetModuleId(context).ToString(), def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
+                SearchResults docs = LuceneController.Instance.Search(OpenContentInfo.GetScope(GetModuleId(context), context.Collection), def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
                 int total = docs.TotalResults;
                 var dataList = new List<IDataItem>();
                 foreach (string item in docs.ids)
@@ -237,12 +234,30 @@ namespace Satrabel.OpenContent.Components.Datasource
             }
         }
 
+
+        private static SelectQueryDefinition BuildQuery(DataSourceContext context, Select selectQuery)
+        {
+            SelectQueryDefinition def = new SelectQueryDefinition();
+            def.Build(selectQuery);
+            if (LogContext.IsLogActive)
+            {
+                var logKey = "Lucene query";
+                LogContext.Log(context.ActiveModuleId, logKey, "Filter", def.Filter.ToString());
+                LogContext.Log(context.ActiveModuleId, logKey, "Query", def.Query.ToString());
+                LogContext.Log(context.ActiveModuleId, logKey, "Sort", def.Sort.ToString());
+                LogContext.Log(context.ActiveModuleId, logKey, "PageIndex", def.PageIndex);
+                LogContext.Log(context.ActiveModuleId, logKey, "PageSize", def.PageSize);
+            }
+
+            return def;
+        }
+
         #region Query Alpaca info for Edit
 
         public virtual JObject GetAlpaca(DataSourceContext context, bool schema, bool options, bool view)
         {
             var fb = new FormBuilder(new FolderUri(context.TemplateFolder));
-            return fb.BuildForm("", context.CurrentCultureCode);
+            return fb.BuildForm(context.Collection, context.CurrentCultureCode, schema, options, view);
         }
 
         // Additional Data
@@ -261,29 +276,27 @@ namespace Satrabel.OpenContent.Components.Datasource
         public virtual void Add(DataSourceContext context, JToken data)
         {
             OpenContentController ctrl = new OpenContentController();
-            var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder));
+            var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection);
             var content = new OpenContentInfo()
             {
                 ModuleId = GetModuleId(context),
+                Collection = context.Collection,
                 Title = data["Title"] == null ? "" : data["Title"].ToString(),
                 Json = data.ToString(),
-                JsonAsJToken = data,
                 CreatedByUserId = context.UserId,
                 CreatedOnDate = DateTime.Now,
                 LastModifiedByUserId = context.UserId,
-                LastModifiedOnDate = DateTime.Now,
-                Html = "",
+                LastModifiedOnDate = DateTime.Now
             };
             ctrl.AddContent(content, context.Index, indexConfig);
         }
         public virtual void Update(DataSourceContext context, IDataItem item, JToken data)
         {
             OpenContentController ctrl = new OpenContentController();
-            var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder));
+            var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection);
             var content = (OpenContentInfo)item.Item;
             content.Title = data["Title"] == null ? "" : data["Title"].ToString();
             content.Json = data.ToString();
-            content.JsonAsJToken = data;
             content.LastModifiedByUserId = context.UserId;
             content.LastModifiedOnDate = DateTime.Now;
             ctrl.UpdateContent(content, context.Index, indexConfig);
@@ -308,7 +321,11 @@ namespace Satrabel.OpenContent.Components.Datasource
         /// <exception cref="System.NotImplementedException"></exception>
         public virtual JToken Action(DataSourceContext context, string action, IDataItem item, JToken data)
         {
-            throw new NotImplementedException();
+            if (action == "FormSubmit")
+            {
+                return FormUtils.FormSubmit(data as JObject);                
+            }
+            return null;
         }
 
         /// <summary>
@@ -358,7 +375,7 @@ namespace Satrabel.OpenContent.Components.Datasource
 
         #region Private Methods
 
-        private static int GetModuleId(DataSourceContext context)
+        protected static int GetModuleId(DataSourceContext context)
         {
             return context.Config?["ModuleId"]?.Value<int>() ?? context.ModuleId;
         }
@@ -370,7 +387,8 @@ namespace Satrabel.OpenContent.Components.Datasource
         {
             return new DefaultDataItem
             {
-                Id = content.ContentId.ToString(),
+                Id = content.Id,
+                Collection = content.Collection,
                 Title = content.Title,
                 Data = content.JsonAsJToken,
                 CreatedByUserId = content.CreatedByUserId,
@@ -380,6 +398,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 Item = content
             };
         }
+
 
         private static void ClearCache(DataSourceContext context)
         {

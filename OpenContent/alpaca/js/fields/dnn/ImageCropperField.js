@@ -310,7 +310,7 @@
                 var cropperButton = $('<a id="' + id + '" data-id="' + i + '" href="#" class="alpaca-form-tab" >' + i + '</a>').appendTo($(el).parent());
                 cropperButton.data('cropopt', cropper);
                 cropperButton.click(function () {
-                    $image.off('change.cropper');
+                    $image.off('crop.cropper');
 
                     var cropdata = $(this).data('cropdata');
                     var cropopt = $(this).data('cropopt');
@@ -326,7 +326,7 @@
                     $(this).parent().find('.alpaca-form-tab').removeClass('active');
                     $(this).addClass('active');
 
-                    $image.on('change.cropper', self, self.cropChange);
+                    $image.on('crop.cropper', self, self.cropChange);
 
                     return false;
                 });
@@ -350,7 +350,7 @@
                     $(this).cropper('setData', cropdata.cropper);
                 }
                 var $image = $(parentel).find('.alpaca-image-display img.image');
-                $image.on('change.cropper', self, self.cropChange);
+                $image.on('crop.cropper', self, self.cropChange);
             });
 
             if (self.options.uploadhidden) {

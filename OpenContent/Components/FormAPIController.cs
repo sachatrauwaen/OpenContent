@@ -3,6 +3,7 @@ using DotNetNuke.Web.Api;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Alpaca;
+using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Form;
 using Satrabel.OpenContent.Components.Handlebars;
 using Satrabel.OpenContent.Components.Json;
@@ -25,7 +26,7 @@ namespace Satrabel.OpenContent.Components
     {
         [HttpGet]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
-        public HttpResponseMessage Form()
+        public HttpResponseMessage Form(string key)
         {
             //string template = (string)ActiveModule.ModuleSettings["template"];
 
@@ -36,13 +37,12 @@ namespace Satrabel.OpenContent.Components
                 if (settings.TemplateAvailable)
                 {
                     var formBuilder = new FormBuilder(settings.TemplateDir);
-                    json = formBuilder.BuildForm("form");
-                    
+                    json = formBuilder.BuildForm(key);
+
                     if (UserInfo.UserID > 0 && json["schema"] is JObject)
                     {
-                        FormUtils.InitFields((JObject)json["schema"], UserInfo);
+                        json["schema"] = FormUtils.InitFields(json["schema"] as JObject, UserInfo);
                     }
-                    
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, json);
             }
@@ -52,112 +52,28 @@ namespace Satrabel.OpenContent.Components
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
+
         [HttpPost]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
-        public HttpResponseMessage Submit(JObject form)
+        public HttpResponseMessage Submit(SubmitDTO req)
         {
             try
             {
-                int moduleId = ActiveModule.ModuleID;
-                /*
-                OpenFormController ctrl = new OpenFormController();
-                var content = new OpenFormInfo()
-                {
-                    ModuleId = moduleId,
-                    Json = form.ToString(),
-                    CreatedByUserId = UserInfo.UserID,
-                    CreatedOnDate = DateTime.Now,
-                    LastModifiedByUserId = UserInfo.UserID,
-                    LastModifiedOnDate = DateTime.Now,
-                    Html = "",
-                    Title = "Form submitted - " + DateTime.Now.ToString()
-                };
-                ctrl.AddContent(content);
-                 */
-
-                string Message = "Form submitted.";
-                var Errors = new List<string>();
-
+                var data = new JObject();
+                data["form"] = req.form;
                 string jsonSettings = ActiveModule.ModuleSettings["formsettings"] as string;
                 if (!string.IsNullOrEmpty(jsonSettings))
                 {
-                    SettingsDTO settings = JsonConvert.DeserializeObject<SettingsDTO>(jsonSettings);
-                    HandlebarsEngine hbs = new HandlebarsEngine();
-                    dynamic data = null;
-                    string formData = "";
-                    if (form != null)
-                    {
-                        /*
-                        if (!string.IsNullOrEmpty(settings.Settings.SiteKey))
-                        {
-                            Recaptcha recaptcha = new Recaptcha(settings.Settings.SiteKey, settings.Settings.SecretKey);
-                            RecaptchaValidationResult validationResult = recaptcha.Validate(form["recaptcha"].ToString());
-                            if (!validationResult.Succeeded)
-                            {
-                                return Request.CreateResponse(HttpStatusCode.Forbidden);
-                            }
-                            form.Remove("recaptcha");
-                        }
-                         */
-                        data = FormUtils.GenerateFormData(form.ToString(), out formData);
-                        
-                    }
-
-
-                    if (settings != null && settings.Notifications != null)
-                    {
-                        foreach (var notification in settings.Notifications)
-                        {
-                            try
-                            {
-                                MailAddress from = FormUtils.GenerateMailAddress(notification.From, notification.FromEmail, notification.FromName, notification.FromEmailField, notification.FromNameField, form);
-                                MailAddress to = FormUtils.GenerateMailAddress(notification.To, notification.ToEmail, notification.ToName, notification.ToEmailField, notification.ToNameField, form);
-                                MailAddress reply = null;
-                                if (!string.IsNullOrEmpty(notification.ReplyTo))
-                                {
-                                    reply = FormUtils.GenerateMailAddress(notification.ReplyTo, notification.ReplyToEmail, notification.ReplyToName, notification.ReplyToEmailField, notification.ReplyToNameField, form);
-                                }
-                                string body = formData;
-                                if (!string.IsNullOrEmpty(notification.EmailBody))
-                                {
-                                    body = hbs.Execute(notification.EmailBody, data);
-                                }
-
-                                string send = FormUtils.SendMail(from.ToString(), to.ToString(), (reply == null ? "" : reply.ToString()), notification.EmailSubject, body);
-                                if (!string.IsNullOrEmpty(send))
-                                {
-                                    Errors.Add("From:" + from.ToString() + " - To:" + to.ToString() + " - " + send);
-                                }
-                            }
-                            catch (Exception exc)
-                            {
-                                Errors.Add("Notification " + (settings.Notifications.IndexOf(notification) + 1) + " : " + exc.Message + " - " + (UserInfo.IsSuperUser ? exc.StackTrace : ""));
-                                Log.Logger.Error(exc);
-                            }
-                        }
-                    }
-                    if (settings != null && settings.Settings != null)
-                    {
-                        if (!string.IsNullOrEmpty(settings.Settings.Message))
-                        {
-                            Message = hbs.Execute(settings.Settings.Message, data);
-                        }
-                        else
-                        {
-                            Message = "Message sended.";
-                        }
-                        //Tracking = settings.Settings.Tracking;
-                        if (!string.IsNullOrEmpty(settings.Settings.Tracking))
-                        {
-                            //res.RedirectUrl = Globals.NavigateURL(ActiveModule.TabID, "", "result=" + content.ContentId);
-                        }
-                    }
+                    data["formSettings"] = JObject.Parse(jsonSettings);
                 }
-                return Request.CreateResponse(HttpStatusCode.OK, new
-                {
-                    Message = Message,
-                    Errors = Errors
-                });
+                var module = new OpenContentModuleInfo(ActiveModule);
+                Manifest.Manifest manifest = module.Settings.Manifest;
+                IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
+                var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
+                //var source = req.form["Source"].ToString();
+                var dsItem = ds.Get(dsContext, req.id);
+                var res = ds.Action(dsContext, string.IsNullOrEmpty(req.action) ? "FormSubmit" : req.action, dsItem, data);
+                return Request.CreateResponse(HttpStatusCode.OK, res);
             }
             catch (Exception exc)
             {
@@ -165,5 +81,13 @@ namespace Satrabel.OpenContent.Components
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
+
+    }
+
+    public class SubmitDTO
+    {
+        public JObject form { get; set; }
+        public string id { get; set; }
+        public string action { get; set; }
     }
 }

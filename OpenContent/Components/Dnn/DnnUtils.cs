@@ -142,7 +142,7 @@ namespace Satrabel.OpenContent.Components
                 blnPreview = false;
             }
 
-            bool blnHasModuleEditPermissions = HasEditRights(activeModule);
+            bool blnHasModuleEditPermissions = HasEditRightsOnModule(activeModule);
 
 
             if (blnPreview == false && blnHasModuleEditPermissions)
@@ -156,7 +156,7 @@ namespace Satrabel.OpenContent.Components
             return isEditable;
         }
 
-        public static bool HasEditRights(this ModuleInfo activeModule)
+        public static bool HasEditRightsOnModule(this ModuleInfo activeModule)
         {
             bool blnHasModuleEditPermissions = false;
             if (activeModule != null)

@@ -12,6 +12,7 @@ using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Logging;
+using Satrabel.OpenContent.Components.Render;
 
 namespace Satrabel.OpenContent.Components.JPList
 {
@@ -34,7 +35,7 @@ namespace Satrabel.OpenContent.Components.JPList
                 //string editRole = manifest.GetEditRole();
                 if (module.IsListMode())
                 {
-                    var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template.Key.TemplateDir);
+                    var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template);
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
                     bool isEditable = ActiveModule.CheckIfEditable(PortalSettings);//portalSettings.UserMode != PortalSettings.Mode.Edit;
                     queryBuilder.Build(module.Settings.Query, !isEditable, UserInfo.UserID, DnnLanguageUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
@@ -55,9 +56,9 @@ namespace Satrabel.OpenContent.Components.JPList
                         var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID, false, reqOptions);
                         dsItems = ds.GetAll(dsContext, queryBuilder.Select);
                     }
-                    ModelFactory mf = new ModelFactory(dsItems.Items, module, PortalSettings);
+                    var mf = new ModelFactoryMultiple(dsItems.Items, module, PortalSettings);
                     mf.Options = reqOptions;
-                    var model = mf.GetModelAsJson(false);
+                    var model = mf.GetModelAsJson(false, true);
 
                     //model["luceneQuery"] = dsItems.DebugInfo;
                     if (LogContext.IsLogActive)

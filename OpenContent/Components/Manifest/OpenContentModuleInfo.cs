@@ -1,4 +1,5 @@
 ﻿using DotNetNuke.Entities.Modules;
+using System.Collections;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -6,12 +7,17 @@ namespace Satrabel.OpenContent.Components
     {
         private ModuleInfo _dataModule;
         private OpenContentSettings _settings;
+        private IDictionary _moduleSettings;
 
-        public OpenContentModuleInfo(ModuleInfo viewModule)
+        public OpenContentModuleInfo(ModuleInfo viewModule, IDictionary moduleSettings = null)
         {
             ViewModule = viewModule;
             TabId = ViewModule.TabID;
             ModuleId = ViewModule.ModuleID;
+            if (moduleSettings == null)
+                _moduleSettings = viewModule.ModuleSettings;
+            else
+                _moduleSettings = moduleSettings;
         }
 
         public OpenContentModuleInfo(int moduleId, int tabId)
@@ -20,6 +26,7 @@ namespace Satrabel.OpenContent.Components
             ViewModule = mc.GetModule(moduleId, tabId, false);
             TabId = ViewModule.TabID;
             ModuleId = ViewModule.ModuleID;
+            _moduleSettings = ViewModule.ModuleSettings;
         }
 
         public ModuleInfo ViewModule { get; }
@@ -48,7 +55,7 @@ namespace Satrabel.OpenContent.Components
             get
             {
                 if (_settings == null)
-                    _settings = ViewModule.OpenContentSettings();
+                    _settings = new OpenContentSettings(_moduleSettings);
                 return _settings;
             }
         }

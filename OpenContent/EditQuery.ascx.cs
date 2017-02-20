@@ -30,7 +30,7 @@ namespace Satrabel.OpenContent
             cmdSave.NavigateUrl = Globals.NavigateURL();
             //OpenContentSettings settings = this.OpenContentSettings();
             //AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, settings.Template.Uri().FolderPath, "query");
-            AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, "", "");
+            AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext.PortalId, "", "");
             alpaca.RegisterAll(false, false);
             string itemId = null;//Request.QueryString["id"] == null ? -1 : int.Parse(Request.QueryString["id"]);
             AlpacaContext = new AlpacaContext(PortalId, ModuleId, itemId, ScopeWrapper.ClientID, hlCancel.ClientID, cmdSave.ClientID, null, null);

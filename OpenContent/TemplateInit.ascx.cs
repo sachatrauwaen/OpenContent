@@ -437,7 +437,7 @@ namespace Satrabel.OpenContent
             {
                 var template = new FileUri(ddlTemplate.SelectedValue);
                 var manifest = template.ToTemplateManifest();
-                if (manifest.IsListTemplate && manifest.Detail != null)
+                if (manifest.IsListTemplate && manifest.Manifest.Templates.Any(t=> t.Value.Detail != null))
                 {
                     phDetailPage.Visible = true;
                 }

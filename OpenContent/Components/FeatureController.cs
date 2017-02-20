@@ -41,7 +41,11 @@ namespace Satrabel.OpenContent.Components
             xml += "<opencontent>";
             foreach (var item in items)
             {
+                xml += "<item>";
                 xml += "<json>" + XmlUtils.XMLEncode(item.Json) + "</json>";
+                xml += "<collection>" + XmlUtils.XMLEncode(item.Collection) + "</collection>";
+                xml += "<key>" + XmlUtils.XMLEncode(item.Id) + "</key>";
+                xml += "</item>";
             }
             xml += "</opencontent>";
             return xml;
@@ -50,21 +54,25 @@ namespace Satrabel.OpenContent.Components
         {
             var module = new OpenContentModuleInfo(moduleId, Null.NullInteger);
             var index = module.Settings.Template.Manifest.Index;
-            var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template.Key.TemplateDir);
+            var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template);
             OpenContentController ctrl = new OpenContentController();
             XmlNode xml = Globals.GetContent(Content, "opencontent");
-            foreach (XmlNode item in xml.SelectNodes("json"))
+            foreach (XmlNode item in xml.SelectNodes("item"))
             {
+                XmlNode json = item.SelectSingleNode("json");
+                XmlNode collection = item.SelectSingleNode("collection");
+                XmlNode key = item.SelectSingleNode("key");
                 var contentInfo = new OpenContentInfo()
                 {
                     ModuleId = moduleId,
+                    Collection= collection== null ? "" : collection.InnerText,
+                    Key = key == null ? "" :  key.InnerText,
                     Json = item.InnerText,
                     CreatedByUserId = userId,
                     CreatedOnDate = DateTime.Now,
                     LastModifiedByUserId = userId,
                     LastModifiedOnDate = DateTime.Now,
-                    Title = "",
-                    Html = ""
+                    Title = ""
                 };
                 ctrl.AddContent(contentInfo, index, indexConfig);
             }
