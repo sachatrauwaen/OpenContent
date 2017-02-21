@@ -328,7 +328,6 @@ namespace Satrabel.OpenContent.Components.Render
                             Exceptions.ProcessHttpException(new NotAuthorizedException(404, $"No detail view permissions for id={info.DetailItemId}  (due to {raison}) \nGo into Edit Mode to view/change the item"));
                         else
                             Exceptions.ProcessHttpException(new NotAuthorizedException(404, "Access denied. You might want to contact your administrator for more information."));
-                        //throw new UnauthorizedAccessException("No detail view permissions for id " + info.DetailItemId);
                     }
                 }
                 info.SetData(dsItem, dsItem.Data, module.Settings.Data);
