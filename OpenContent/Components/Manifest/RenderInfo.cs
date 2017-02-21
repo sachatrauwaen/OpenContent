@@ -16,6 +16,18 @@ namespace Satrabel.OpenContent.Components.Manifest
             Files = null;
         }
 
+        public RenderInfo(OpenContentSettings settings)
+        {
+            SettingsJson = "";
+            DataJson = "";
+            OutputString = "";
+            Template = null;
+            Files = null;
+
+            Template = settings.Template;
+            IsOtherModule = (settings.TabId > 0 && settings.ModuleId > 0);
+        }
+
         #region Public Properties
 
         public string DetailItemId { get; set; }

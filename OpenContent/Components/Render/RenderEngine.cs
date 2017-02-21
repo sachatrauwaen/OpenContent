@@ -29,12 +29,13 @@ namespace Satrabel.OpenContent.Components.Render
 {
     public class RenderEngine
     {
-        private readonly RenderInfo _renderinfo = new RenderInfo();
+        private readonly RenderInfo _renderinfo ;
         private readonly OpenContentModuleInfo _module; // active module (not datasource module)
 
         public RenderEngine(ModuleInfo viewmodule, IDictionary moduleSettings = null)
         {
             _module = new OpenContentModuleInfo(viewmodule, moduleSettings);
+            _renderinfo = new RenderInfo(_module.Settings);
         }
 
         public RenderInfo Info => _renderinfo;
@@ -57,8 +58,6 @@ namespace Satrabel.OpenContent.Components.Render
         public string LocalResourceFile { get; set; } // Only for Dnn Razor helpers
         public void Render(Page page)
         {
-            _renderinfo.Template = Settings.Template;
-            _renderinfo.IsOtherModule=(Settings.TabId > 0 && Settings.ModuleId>0) ;
             //start rendering           
             if (Settings.Template != null)
             {
@@ -183,7 +182,7 @@ namespace Satrabel.OpenContent.Components.Render
                 DotNetNuke.Framework.ServicesFramework.Instance.RequestAjaxScriptSupport();
                 DotNetNuke.Framework.ServicesFramework.Instance.RequestAjaxAntiForgerySupport();
             }
-            if (_renderinfo.Files != null && _renderinfo.Files.PartialTemplates != null)
+            if (_renderinfo.Files?.PartialTemplates != null)
             {
                 foreach (var item in _renderinfo.Files.PartialTemplates.Where(p => p.Value.ClientSide))
                 {

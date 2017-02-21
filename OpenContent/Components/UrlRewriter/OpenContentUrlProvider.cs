@@ -17,18 +17,25 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
         public static List<OpenContentUrlRule> GetRules(int portalId)
         {
 #if DEBUG
+            decimal speed;
+            string mess;
             var stopwatch = new System.Diagnostics.Stopwatch();
             stopwatch.Start();
 #endif
             var purgeResult = UrlRulesCaching.PurgeExpiredItems(portalId);
 
-            
             List<OpenContentUrlRule> rules = new List<OpenContentUrlRule>();
 
             var portalCacheKey = UrlRulesCaching.GeneratePortalCacheKey(portalId, null);
             var portalRules = UrlRulesCaching.GetCache(portalId, portalCacheKey, purgeResult.ValidCacheItems);
             if (portalRules != null)
             {
+#if DEBUG
+                stopwatch.Stop();
+                speed =  stopwatch.Elapsed.Milliseconds;
+                mess = $"PortalId: {portalId}. Time elapsed: {stopwatch.Elapsed.Milliseconds}ms. All Cached. PurgedItems: {purgeResult.PurgedItemCount}. Speed: {speed}";
+                Log.Logger.Error(mess);
+#endif
                 return portalRules;
             }
 
@@ -127,7 +134,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                                 }
                             }
                         }
-                        UrlRulesCaching.SetCache(portalId,  UrlRulesCaching.GenerateModuleCacheKey(module.TabId, module.ModuleId, null), new TimeSpan(1, 0, 0, 0), moduleRules);
+                        UrlRulesCaching.SetCache(portalId, UrlRulesCaching.GenerateModuleCacheKey(module.TabId, module.ModuleId, null), new TimeSpan(1, 0, 0, 0), moduleRules);
                     }
                 }
                 catch (Exception ex)
@@ -139,8 +146,8 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
             UrlRulesCaching.SetCache(portalId, portalCacheKey, new TimeSpan(1, 0, 0, 0), rules);
 #if DEBUG
             stopwatch.Stop();
-            decimal speed = (cachedModules + nonCached) == 0 ? -1 : stopwatch.Elapsed.Milliseconds / (cachedModules + nonCached);
-            var mess = $"PortalId: {portalId}. Time elapsed: {stopwatch.Elapsed.Milliseconds}ms. Module Count: {modules.Count()}. Relevant Modules: {cachedModules + nonCached}. CachedModules: {cachedModules}. PurgedItems: {purgeResult.PurgedItemCount}. Speed: {speed}";
+            speed = (cachedModules + nonCached) == 0 ? -1 : stopwatch.Elapsed.Milliseconds / (cachedModules + nonCached);
+            mess = $"PortalId: {portalId}. Time elapsed: {stopwatch.Elapsed.Milliseconds}ms. Module Count: {modules.Count()}. Relevant Modules: {cachedModules + nonCached}. CachedModules: {cachedModules}. PurgedItems: {purgeResult.PurgedItemCount}. Speed: {speed}";
             Log.Logger.Error(mess);
             Console.WriteLine(mess);
 #endif
