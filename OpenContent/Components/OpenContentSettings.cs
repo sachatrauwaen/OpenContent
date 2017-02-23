@@ -89,23 +89,11 @@ namespace Satrabel.OpenContent.Components
 
         public string Data { get; private set; }
 
-        public JObject Query
-        {
-            get
-            {
-                return !string.IsNullOrEmpty(_query) ? JObject.Parse(_query) : new JObject();
-            }
-        }
+        public JObject Query => !string.IsNullOrEmpty(_query) ? JObject.Parse(_query) : new JObject();
 
-        public bool IsOtherModule
-        {
-            get
-            {
-                return TabId > 0 && ModuleId > 0;
-            }
-        }
+        public bool IsOtherModule => TabId > 0 && ModuleId > 0;
 
-        public bool TemplateAvailable { get { return TemplateKey != null; } }
+        public bool TemplateAvailable => TemplateKey != null;
 
         public int DetailTabId { get; private set; }
         public bool FirstTimeInitialisation { get; private set; }

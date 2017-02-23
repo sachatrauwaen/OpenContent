@@ -7,16 +7,7 @@ namespace Satrabel.OpenContent.Components.Manifest
 {
     public class RenderInfo
     {
-        public RenderInfo()
-        {
-            SettingsJson = "";
-            DataJson = "";
-            OutputString = "";
-            Template = null;
-            Files = null;
-        }
-
-        public RenderInfo(OpenContentSettings settings)
+        public RenderInfo(TemplateManifest template, bool isOtherModule)
         {
             SettingsJson = "";
             DataJson = "";
@@ -24,8 +15,8 @@ namespace Satrabel.OpenContent.Components.Manifest
             Template = null;
             Files = null;
 
-            Template = settings.Template;
-            IsOtherModule = (settings.TabId > 0 && settings.ModuleId > 0);
+            Template = template;
+            IsOtherModule = isOtherModule;
         }
 
         #region Public Properties

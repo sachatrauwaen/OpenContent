@@ -24,7 +24,7 @@ namespace Satrabel.OpenContent
         {
             base.OnInit(e);
             var settings = ModuleContext.OpenContentSettings();
-            RenderInfo renderinfo = new RenderInfo(settings);
+            RenderInfo renderinfo = new RenderInfo(settings.Template, settings.IsOtherModule);
 
             OpenContent.TemplateInit ti = (TemplateInit)TemplateInitControl;
             ti.ModuleContext = ModuleContext;

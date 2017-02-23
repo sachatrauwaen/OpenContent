@@ -247,7 +247,7 @@ namespace Satrabel.OpenContent
             pHelp.Visible = true;
             if (!Page.IsPostBack || ddlTemplate.Items.Count == 0)
             {
-                rblDataSource.SelectedIndex = (Settings.TabId > 0 && Settings.ModuleId > 0 ? 1 : 0);
+                rblDataSource.SelectedIndex = (Settings.IsOtherModule ? 1 : 0);
                 BindOtherModules(Settings.TabId, Settings.ModuleId);
                 BindTemplates(Settings.Template, (Renderinfo.IsOtherModule ? Renderinfo.Template.MainTemplateUri() : null));
                 BindDetailPage(Settings.DetailTabId, Settings.TabId, Settings.GetModuleId(ModuleContext.ModuleId));

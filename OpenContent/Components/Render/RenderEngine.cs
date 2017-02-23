@@ -29,13 +29,13 @@ namespace Satrabel.OpenContent.Components.Render
 {
     public class RenderEngine
     {
-        private readonly RenderInfo _renderinfo ;
+        private readonly RenderInfo _renderinfo;
         private readonly OpenContentModuleInfo _module; // active module (not datasource module)
 
         public RenderEngine(ModuleInfo viewmodule, IDictionary moduleSettings = null)
         {
             _module = new OpenContentModuleInfo(viewmodule, moduleSettings);
-            _renderinfo = new RenderInfo(_module.Settings);
+            _renderinfo = new RenderInfo(_module.Settings.Template, _module.Settings.IsOtherModule);
         }
 
         public RenderInfo Info => _renderinfo;
