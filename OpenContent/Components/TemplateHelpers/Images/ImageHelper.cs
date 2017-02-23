@@ -40,8 +40,6 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             return Convert.ToInt32(2 * 1200 * columnWidth);
         }
 
-
-
         /// <summary>
         /// Gets an optimial image for facebook.
         /// Based on the Facebook best practices https://developers.facebook.com/docs/sharing/best-practices#images
@@ -93,46 +91,62 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             if (url.Contains("LinkClick.aspx")) return url;
             url = url.RemoveQueryParams();
 
+            JObject content = GetContentAsJObject(file);
+            if (content != null)
+            {
+                var crop = content["crop"];
+                if (crop is JObject && crop["croppers"] != null)
+                {
+                    foreach (var cropperobj in crop["croppers"].Children())
+                    {
+                        try
+                        {
+                            var cropper = cropperobj.Children().First();
+                            int w = int.Parse(cropper["width"].ToString());
+                            int h = int.Parse(cropper["height"].ToString());
+                            var definedCropRatio = new Ratio(w, h);
+
+                            if (Math.Abs(definedCropRatio.AsFloat - requestedCropRatio.AsFloat) < 0.02) //allow 2% margin
+                            {
+                                if (cropper["x"] == null)
+                                    cropper["x"] = 0;
+                                if (cropper["y"] == null)
+                                    cropper["y"] = 0;
+                                int left = int.Parse(cropper["x"].ToString());
+                                int top = int.Parse(cropper["y"].ToString());
+
+                                //crop first then resize (order defined by the processors definition order in the config file)
+                                return url + $"?crop={left},{top},{w},{h}&width={requestedCropRatio.Width}&height={requestedCropRatio.Height}";
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Logger.Warn($"Warning for page {HttpContext.Current.Request.RawUrl}. Error processing croppers for {url} in {content}. Error: {ex.Message}");
+                        }
+                    }
+                }
+                else
+                {
+                    //Log.Logger.Debug(string.Format("Warning for page {0}. Can't find croppers in {1}. ", HttpContext.Current.Request.RawUrl, contentItem.Content));
+                }
+
+            }
+
+            return url + $"?width={requestedCropRatio.Width}&height={requestedCropRatio.Height}&mode=crop";
+        }
+
+        private static JObject GetContentAsJObject(IFileInfo file)
+        {
             if (file.ContentItemID > 0)
             {
                 var contentItem = Util.GetContentController().GetContentItem(file.ContentItemID);
                 if (!string.IsNullOrEmpty(contentItem?.Content))
                 {
                     JObject content = JObject.Parse(contentItem.Content);
-                    var crop = content["crop"];
-                    if (crop is JObject && crop["croppers"] != null)
-                    {
-                        foreach (var cropperobj in crop["croppers"].Children())
-                        {
-                            try
-                            {
-                                var cropper = cropperobj.Children().First();
-                                int left = int.Parse(cropper["x"].ToString());
-                                int top = int.Parse(cropper["y"].ToString());
-                                int w = int.Parse(cropper["width"].ToString());
-                                int h = int.Parse(cropper["height"].ToString());
-                                var definedCropRatio = new Ratio(w, h);
-
-                                if (Math.Abs(definedCropRatio.AsFloat - requestedCropRatio.AsFloat) < 0.02) //allow 2% margin
-                                {
-                                    //crop first then resize (order defined by the processors definition order in the config file)
-                                    return url + $"?crop={left},{top},{w},{h}&width={requestedCropRatio.Width}&height={requestedCropRatio.Height}";
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                Log.Logger.Warn($"Warning for page {HttpContext.Current.Request.RawUrl}. Error processing croppers for {url} in {contentItem.Content}. Error: {ex.Message}");
-                            }
-                        }
-                    }
-                    else
-                    {
-                        //Log.Logger.Debug(string.Format("Warning for page {0}. Can't find croppers in {1}. ", HttpContext.Current.Request.RawUrl, contentItem.Content));
-                    }
+                    return content;
                 }
             }
-
-            return url + $"?width={requestedCropRatio.Width}&height={requestedCropRatio.Height}&mode=crop";
+            return null;
         }
 
 

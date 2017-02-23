@@ -247,7 +247,7 @@ namespace Satrabel.OpenContent
             pHelp.Visible = true;
             if (!Page.IsPostBack || ddlTemplate.Items.Count == 0)
             {
-                rblDataSource.SelectedIndex = (Settings.TabId > 0 && Settings.ModuleId > 0 ? 1 : 0);
+                rblDataSource.SelectedIndex = (Settings.IsOtherModule ? 1 : 0);
                 BindOtherModules(Settings.TabId, Settings.ModuleId);
                 BindTemplates(Settings.Template, (Renderinfo.IsOtherModule ? Renderinfo.Template.MainTemplateUri() : null));
                 BindDetailPage(Settings.DetailTabId, Settings.TabId, Settings.GetModuleId(ModuleContext.ModuleId));
@@ -255,8 +255,7 @@ namespace Satrabel.OpenContent
             if (rblDataSource.SelectedIndex == 1) // other module
             {
                 var dsModule = (new ModuleController()).GetTabModule(int.Parse(ddlDataSource.SelectedValue));
-                var dsSettings = dsModule.OpenContentSettings();
-                Renderinfo.SetDataSourceModule(dsModule.TabID, dsModule.ModuleID, dsModule, dsSettings.Template, dsSettings.Data);
+                Renderinfo.IsOtherModule = (dsModule.TabID > 0 && dsModule.ModuleID > 0);
             }
             BindButtons(Settings, Renderinfo);
             if (rblUseTemplate.SelectedIndex == 0) // existing template
@@ -437,7 +436,7 @@ namespace Satrabel.OpenContent
             {
                 var template = new FileUri(ddlTemplate.SelectedValue);
                 var manifest = template.ToTemplateManifest();
-                if (manifest.IsListTemplate && manifest.Manifest.Templates.Any(t=> t.Value.Detail != null))
+                if (manifest.IsListTemplate && manifest.Manifest.Templates.Any(t => t.Value.Detail != null))
                 {
                     phDetailPage.Visible = true;
                 }

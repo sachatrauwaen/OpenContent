@@ -453,13 +453,13 @@ namespace Satrabel.OpenContent.Components
                 };
                 var folderManager = FolderManager.Instance;
                 var fileManager = FileManager.Instance;
-                string RawImageUrl = cropData.url;
-                if (RawImageUrl.IndexOf('?') > 0)
+                string rawImageUrl = cropData.url;
+                if (rawImageUrl.IndexOf('?') > 0)
                 {
-                    RawImageUrl = RawImageUrl.Substring(0, RawImageUrl.IndexOf('?'));
+                    rawImageUrl = rawImageUrl.Substring(0, rawImageUrl.IndexOf('?'));
                 }
-                RawImageUrl = RawImageUrl.Replace(PortalSettings.HomeDirectory, "");
-                var file = fileManager.GetFile(ActiveModule.PortalID, RawImageUrl);
+                rawImageUrl = rawImageUrl.Replace(PortalSettings.HomeDirectory, "");
+                var file = fileManager.GetFile(ActiveModule.PortalID, rawImageUrl);
                 string cropfolder = "OpenContent/Files/" + ActiveModule.ModuleID;
                 if (!string.IsNullOrEmpty(cropData.cropfolder))
                 {
@@ -473,7 +473,7 @@ namespace Satrabel.OpenContent.Components
                 string newFilename = Path.GetFileNameWithoutExtension(file.FileName) + "-" + cropData.id + Path.GetExtension(file.FileName);
                 if (file != null)
                 {
-                    var folder = folderManager.GetFolder(file.FolderId);
+                    //var folder = folderManager.GetFolder(file.FolderId);
                     var image = Image.FromFile(file.PhysicalPath);
                     Image imageCropped;
                     //int x = cropData.crop.x;

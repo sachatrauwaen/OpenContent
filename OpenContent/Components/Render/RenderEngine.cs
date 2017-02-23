@@ -29,29 +29,19 @@ namespace Satrabel.OpenContent.Components.Render
 {
     public class RenderEngine
     {
-        private readonly RenderInfo _renderinfo = new RenderInfo();
+        private readonly RenderInfo _renderinfo;
         private readonly OpenContentModuleInfo _module; // active module (not datasource module)
 
         public RenderEngine(ModuleInfo viewmodule, IDictionary moduleSettings = null)
         {
             _module = new OpenContentModuleInfo(viewmodule, moduleSettings);
+            _renderinfo = new RenderInfo(_module.Settings.Template, _module.Settings.IsOtherModule);
         }
 
-        public RenderInfo Info
-        {
-            get
-            {
-                return _renderinfo;
-            }
-        }
+        public RenderInfo Info => _renderinfo;
 
-        public OpenContentSettings Settings
-        {
-            get
-            {
-                return _module.Settings;
-            }
-        }
+        public OpenContentSettings Settings => _module.Settings;
+
         public string ItemId // For detail view
         {
             get
@@ -68,16 +58,6 @@ namespace Satrabel.OpenContent.Components.Render
         public string LocalResourceFile { get; set; } // Only for Dnn Razor helpers
         public void Render(Page page)
         {
-            _renderinfo.Template = Settings.Template;
-            if (Settings.TabId > 0 && Settings.ModuleId > 0) // other module
-            {
-                ModuleController mc = new ModuleController();
-                _renderinfo.SetDataSourceModule(Settings.TabId, Settings.ModuleId, mc.GetModule(_renderinfo.ModuleId, _renderinfo.TabId, false), null, "");
-            }
-            else // this module
-            {
-                _renderinfo.SetDataSourceModule(Settings.TabId, Settings.ModuleId, _module.ViewModule, null, "");
-            }
             //start rendering           
             if (Settings.Template != null)
             {
@@ -147,8 +127,6 @@ namespace Satrabel.OpenContent.Components.Render
                 {
                     // single item template
                     GetSingleData(_renderinfo, Settings);
-                    bool settingsNeeded = _renderinfo.Template.SettingsNeeded();
-                    //if (!_renderinfo.ShowInitControl && (!settingsNeeded || !string.IsNullOrEmpty(_renderinfo.SettingsJson)))
                     if (!_renderinfo.ShowInitControl)
                     {
                         _renderinfo.OutputString = GenerateOutput(page, _renderinfo.Template.MainTemplateUri(), _renderinfo.DataJson, _renderinfo.SettingsJson, _renderinfo.Template.Main);
@@ -204,7 +182,7 @@ namespace Satrabel.OpenContent.Components.Render
                 DotNetNuke.Framework.ServicesFramework.Instance.RequestAjaxScriptSupport();
                 DotNetNuke.Framework.ServicesFramework.Instance.RequestAjaxAntiForgerySupport();
             }
-            if (_renderinfo.Files != null && _renderinfo.Files.PartialTemplates != null)
+            if (_renderinfo.Files?.PartialTemplates != null)
             {
                 foreach (var item in _renderinfo.Files.PartialTemplates.Where(p => p.Value.ClientSide))
                 {
@@ -350,7 +328,6 @@ namespace Satrabel.OpenContent.Components.Render
                             Exceptions.ProcessHttpException(new NotAuthorizedException(404, $"No detail view permissions for id={info.DetailItemId}  (due to {raison}) \nGo into Edit Mode to view/change the item"));
                         else
                             Exceptions.ProcessHttpException(new NotAuthorizedException(404, "Access denied. You might want to contact your administrator for more information."));
-                        //throw new UnauthorizedAccessException("No detail view permissions for id " + info.DetailItemId);
                     }
                 }
                 info.SetData(dsItem, dsItem.Data, module.Settings.Data);

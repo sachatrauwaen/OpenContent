@@ -65,8 +65,8 @@ namespace Satrabel.OpenContent.Components
                 var contentInfo = new OpenContentInfo()
                 {
                     ModuleId = moduleId,
-                    Collection= collection== null ? "" : collection.InnerText,
-                    Key = key == null ? "" :  key.InnerText,
+                    Collection= collection?.InnerText ?? "",
+                    Key = key?.InnerText ?? "",
                     Json = item.InnerText,
                     CreatedByUserId = userId,
                     CreatedOnDate = DateTime.Now,
