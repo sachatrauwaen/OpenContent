@@ -292,6 +292,8 @@ namespace Satrabel.OpenContent.Components.Render
                 context["IsEditMode"] = IsEditMode;
                 context["PortalId"] = _portalId;
                 context["MainUrl"] = Globals.NavigateURL(_detailTabId, false, _portalSettings, "", GetCurrentCultureCode());
+                context["HomeDirectory"] = _portalSettings.HomeDirectory;
+                context["HTTPAlias"] = _portalSettings.PortalAlias.HTTPAlias;
             }
         }
 
