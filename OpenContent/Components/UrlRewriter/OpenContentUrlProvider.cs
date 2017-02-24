@@ -39,28 +39,35 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
 
             foreach (var module in modules)
             {
-                var cacheKey = UrlRulesCaching.GenerateModuleCacheKey(module.TabId, module.ModuleId, null);
-                List<OpenContentUrlRule> moduleRules = UrlRulesCaching.GetCache(portalId, cacheKey, purgeResult.ValidCacheItems);
-                if (moduleRules != null)
-                {
-                    rules.AddRange(moduleRules);
-                    cachedModules += 1;
-                    continue;
-                }
+                
                 try
                 {
                     if (module.IsListMode() && module.Settings.Template.Detail != null &&
-                            ((!module.Settings.IsOtherModule && module.Settings.DetailTabId <= 0) ||
+
+                            (
+                                (!module.Settings.IsOtherModule && module.Settings.DetailTabId <= 0) ||
                                 (module.Settings.DetailTabId == module.TabId)
                             )
+
                         )
                     {
+                        var dsContext = OpenContentUtils.CreateDataContext(module);
+                        dsContext.Agent = "OpenContentUrlProvider.GetRules()";
+
+                        var cacheKey = UrlRulesCaching.GenerateModuleCacheKey(module.TabId, module.ModuleId, dsContext.ModuleId, null);
+                        List<OpenContentUrlRule> moduleRules = UrlRulesCaching.GetCache(portalId, cacheKey, purgeResult.ValidCacheItems);
+                        if (moduleRules != null)
+                        {
+                            rules.AddRange(moduleRules);
+                            cachedModules += 1;
+                            continue;
+                        }
+
                         nonCached += 1;
 
                         moduleRules = new List<OpenContentUrlRule>();
                         IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
-                        var dsContext = OpenContentUtils.CreateDataContext(module);
-                        dsContext.Agent = "OpenContentUrlProvider.GetRules()";
+                        
 
                         var dataList = ds.GetAll(dsContext, null).Items.ToList();
                         if (dataList.Count() > 1000)
@@ -127,7 +134,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                                 }
                             }
                         }
-                        UrlRulesCaching.SetCache(portalId,  UrlRulesCaching.GenerateModuleCacheKey(module.TabId, module.ModuleId, null), new TimeSpan(1, 0, 0, 0), moduleRules);
+                        UrlRulesCaching.SetCache(portalId,  UrlRulesCaching.GenerateModuleCacheKey(module.TabId, module.ModuleId, dsContext.ModuleId,  null), new TimeSpan(1, 0, 0, 0), moduleRules);
                     }
                 }
                 catch (Exception ex)
