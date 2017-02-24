@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Data;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Portals;
+using DotNetNuke.Services.FileSystem;
 
 
 namespace Satrabel.OpenContent.Components.TemplateHelpers
@@ -30,6 +32,26 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         {
         }
         #endregion
+
+        public bool? IsPortrait()
+        {
+            var w = this.FileInfo.Width;
+            var h = this.FileInfo.Height;
+            if (w > 0 && h > 0)
+            {
+                return h >= w;
+            }
+
+            return null;
+        }
+        public bool? IsLandScape()
+        {
+            var isPortrait = IsPortrait();
+            if (isPortrait.HasValue)
+                return !isPortrait.Value;
+            else
+                return null;
+        }
 
         public string GetImageUrl(int width, int height)
         {
