@@ -277,6 +277,26 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     options.Inverse(writer, (object)context);
                 }
             });
+            hbs.RegisterHelper("equaldate", (writer, options, context, arguments) =>
+            {                
+                try
+                {
+                    DateTime datetime1 = DateTime.Parse(arguments[0].ToString(), null, System.Globalization.DateTimeStyles.RoundtripKind);
+                    DateTime datetime2 = DateTime.Parse(arguments[1].ToString(), null, System.Globalization.DateTimeStyles.RoundtripKind);
+                    if (datetime1.Date == datetime2.Date)
+                    {
+                        options.Template(writer, (object)context);
+                    }
+                    else
+                    {
+                        options.Inverse(writer, (object)context);
+                    }
+                }
+                catch (Exception)
+                {
+                    options.Inverse(writer, (object)context);
+                }
+            });
         }
         private void RegisterEachPublishedHelper(HandlebarsDotNet.IHandlebars hbs)
         {
@@ -664,6 +684,8 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "");
                 }
             });
+
+            /*
             hbs.RegisterHelper("format2DateTime", (writer, context, parameters) =>
             {
                 // parameters : start datetime iso string, end datetime iso string, date time separator, dates separator, dateformat, time format, culture
@@ -682,7 +704,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     }
                     if (parameters.Count() > 3)
                     {
-                        datesSeparator = parameters[1].ToString();
+                        datesSeparator = parameters[3].ToString();
                     }
                     if (parameters.Count() > 4)
                     {
@@ -696,7 +718,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     {
                         if (parameters.Count() > 6 && !string.IsNullOrWhiteSpace(parameters[6].ToString()))
                         {
-                            string provider = parameters[2].ToString();
+                            string provider = parameters[6].ToString();
                             IFormatProvider formatprovider = null;
                             if (provider.ToLower() == "invariant")
                             {
@@ -740,6 +762,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "");
                 }
             });
+            */
         }
         private void RegisterIfAndHelper(IHandlebars hbs)
         {
