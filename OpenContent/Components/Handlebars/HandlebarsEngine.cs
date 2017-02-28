@@ -375,9 +375,9 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 }
 
                 FormHelpers.RegisterForm(page, sourceFolder, view, ref _jsOrder);
-                
+
             });
-            
+
             hbs.RegisterHelper("registereditform", (writer, context, parameters) =>
             {
                 string prefix = "";
@@ -387,7 +387,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 }
                 FormHelpers.RegisterEditForm(page, sourceFolder, PortalSettings.Current.PortalId, prefix, ref _jsOrder);
             });
-            
+
         }
         private void RegisterRegisterStylesheetHelper(HandlebarsDotNet.IHandlebars hbs, Page page, string sourceFolder)
         {
@@ -628,11 +628,10 @@ namespace Satrabel.OpenContent.Components.Handlebars
         {
             hbs.RegisterHelper("formatDateTime", (writer, context, parameters) =>
             {
+                // parameters : datetime iso string, format, culture
                 try
                 {
                     string res;
-                    //DateTime? datetime = parameters[0] as DateTime?;
-
                     DateTime datetime = DateTime.Parse(parameters[0].ToString(), null, System.Globalization.DateTimeStyles.RoundtripKind);
                     string format = "dd/MM/yyyy";
                     if (parameters.Count() > 1)
@@ -658,6 +657,82 @@ namespace Satrabel.OpenContent.Components.Handlebars
                         res = datetime.ToString(format);
                     }
 
+                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, res);
+                }
+                catch (Exception)
+                {
+                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "");
+                }
+            });
+            hbs.RegisterHelper("format2DateTime", (writer, context, parameters) =>
+            {
+                // parameters : start datetime iso string, end datetime iso string, date time separator, dates separator, dateformat, time format, culture
+                try
+                {
+                    string res;
+                    DateTime datetime1 = DateTime.Parse(parameters[0].ToString(), null, System.Globalization.DateTimeStyles.RoundtripKind);
+                    
+                    string datetimeSeparator = " ";
+                    string datesSeparator = " ";
+                    string dateformat = "dd/MM/yyyy";
+                    string timeformat = "hh:mm";
+                    if (parameters.Count() > 2)
+                    {
+                        datetimeSeparator = parameters[2].ToString();
+                    }
+                    if (parameters.Count() > 3)
+                    {
+                        datesSeparator = parameters[1].ToString();
+                    }
+                    if (parameters.Count() > 4)
+                    {
+                        dateformat = parameters[4].ToString();
+                    }
+                    if (parameters.Count() > 5)
+                    {
+                        timeformat = parameters[5].ToString();
+                    }
+                    Func< DateTime, string, string> formatDT = (datetime, format) =>
+                    {
+                        if (parameters.Count() > 6 && !string.IsNullOrWhiteSpace(parameters[6].ToString()))
+                        {
+                            string provider = parameters[2].ToString();
+                            IFormatProvider formatprovider = null;
+                            if (provider.ToLower() == "invariant")
+                            {
+                                formatprovider = CultureInfo.InvariantCulture;
+                            }
+                            else
+                            {
+                                formatprovider = CultureInfo.CreateSpecificCulture(provider);
+                            }
+                            return datetime.ToString(format, formatprovider);
+                        }
+                        else
+                        {
+                            return datetime.ToString(format);
+                        }
+                    };
+                    res = formatDT(datetime1, dateformat);
+                    if (datetime1.TimeOfDay.Ticks > 0)
+                    {
+                        res += datetimeSeparator;
+                        res += formatDT(datetime1, timeformat);
+                    }
+                    if (!string.IsNullOrEmpty(parameters[1].ToString()))
+                    {
+                        DateTime datetime2 = DateTime.Parse(parameters[1].ToString(), null, System.Globalization.DateTimeStyles.RoundtripKind);
+                        res += datesSeparator;
+                        if (datetime1.Date != datetime2.Date)
+                        {
+                            res += formatDT(datetime2, dateformat);
+                        }
+                        if (datetime2.TimeOfDay.Ticks > 0)
+                        {
+                            res += datetimeSeparator;
+                            res += formatDT(datetime2, timeformat);
+                        }
+                    }
                     HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, res);
                 }
                 catch (Exception)
