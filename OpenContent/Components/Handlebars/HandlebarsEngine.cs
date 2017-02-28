@@ -152,6 +152,12 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 string source = File.ReadAllText(sourceFileUri.PhysicalFilePath);
                 string sourceFolder = sourceFileUri.UrlFolder;
                 var hbs = HandlebarsDotNet.Handlebars.Create();
+                
+                RegisterHelpers(hbs);
+                RegisterScriptHelper(hbs);
+                RegisterHandlebarsHelper(hbs);
+                RegisterRegisterStylesheetHelper(hbs, page, sourceFolder);
+                RegisterRegisterScriptHelper(hbs, page, sourceFolder);
                 if (files.PartialTemplates != null)
                 {
                     foreach (var part in files.PartialTemplates.Where(t => t.Value.ClientSide == false))
@@ -159,11 +165,6 @@ namespace Satrabel.OpenContent.Components.Handlebars
                         RegisterTemplate(hbs, part.Key, templateVirtualFolder + "/" + part.Value.Template);
                     }
                 }
-                RegisterHelpers(hbs);
-                RegisterScriptHelper(hbs);
-                RegisterHandlebarsHelper(hbs);
-                RegisterRegisterStylesheetHelper(hbs, page, sourceFolder);
-                RegisterRegisterScriptHelper(hbs, page, sourceFolder);
                 return CompileTemplate(hbs, source, model);
             }
             catch (Exception ex)
