@@ -29,11 +29,12 @@ namespace Satrabel.OpenContent
             bool loadBootstrap = bootstrap && OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetLoadBootstrap();
             hlCancel.NavigateUrl = Globals.NavigateURL();
             cmdSave.NavigateUrl = Globals.NavigateURL();
+            cmdCopy.NavigateUrl = Globals.NavigateURL();
             OpenContentSettings settings = this.OpenContentSettings();
             AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext.PortalId, settings.Template.ManifestFolderUri.FolderPath, "");
             alpaca.RegisterAll(bootstrap, loadBootstrap);
             string itemId = Request.QueryString["id"];
-            AlpacaContext = new AlpacaContext(PortalId, ModuleId, itemId, ScopeWrapper.ClientID, hlCancel.ClientID, cmdSave.ClientID, hlDelete.ClientID, ddlVersions.ClientID);
+            AlpacaContext = new AlpacaContext(PortalId, ModuleId, itemId, ScopeWrapper.ClientID, hlCancel.ClientID, cmdSave.ClientID, cmdCopy.ClientID, hlDelete.ClientID, ddlVersions.ClientID);
             AlpacaContext.Bootstrap = bootstrap;
             AlpacaContext.Horizontal = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetEditLayout() == AlpacaLayoutEnum.BootstrapHorizontal;
         }

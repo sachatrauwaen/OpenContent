@@ -13,6 +13,7 @@ alpacaEngine.engine = function(config) {
     self.cancelButton = config.cancelButtonID;
     self.saveButton = config.saveButtonID;
     self.deleteButton = config.deleteButtonID;
+    self.copyButton = config.copyButtonID;
     self.scopeWrapper = config.scopeWrapperID;
     self.ddlVersions = config.versionsID;
     self.editAction = "Edit";
@@ -75,7 +76,8 @@ alpacaEngine.engine = function(config) {
             });
         }
         if (!self.itemId) {
-            $("#"+self.deleteButton).hide();
+            $("#" + self.deleteButton).hide();
+            $("#" + self.copyButton).hide();
         }
 
         $("#"+self.deleteButton).click(function () {
@@ -185,6 +187,16 @@ alpacaEngine.engine = function(config) {
                     });
                     return false;
                 });
+                $("#" + self.copyButton).click(function () {
+                    selfControl.refreshValidationState(true, function () {
+                        if (selfControl.isValid(true)) {
+                            var value = selfControl.getValue();                            
+                            var href = $(this).attr('href');
+                            self.FormSubmit(value, href, true);
+                        }
+                    });
+                    return false;
+                });
 
                 $("#"+self.ddlVersions).change(function () {
                     //var versions = config.versions;
@@ -202,17 +214,20 @@ alpacaEngine.engine = function(config) {
 
     };
 
-    self.FormSubmit = function (data, href) {
-        var postData = JSON.stringify($.extend({ form: data }, self.data));
+    self.FormSubmit = function (data, href, copy) {
+        var postData = $.extend({ form: data }, self.data);
         //var postData = JSON.stringify({ form: data, id: self.itemId });
         //var action = "Update"; //self.getUpdateAction();
+        if (copy) {
+            delete postData.id;
+        }
 
         $.ajax({
             type: "POST",
             url: self.sf.getServiceRoot('OpenContent') + "OpenContentAPI/" + self.updateAction,
             contentType: "application/json; charset=utf-8",
             dataType: "json",
-            data: postData,
+            data: JSON.stringify(postData),
             beforeSend: self.sf.setModuleHeaders
         }).done(function (data) {
             //alert('ok:' + data);

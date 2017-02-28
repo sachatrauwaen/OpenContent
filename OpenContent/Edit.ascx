@@ -8,6 +8,9 @@
             <asp:HyperLink ID="cmdSave" runat="server" class="dnnPrimaryAction" resourcekey="cmdSave" />
         </li>
         <li>
+            <asp:HyperLink ID="cmdCopy" runat="server" class="dnnSecondaryAction" resourcekey="cmdCopy" />
+        </li>
+        <li>
             <asp:HyperLink ID="hlCancel" runat="server" class="dnnSecondaryAction" resourcekey="cmdCancel" />
         </li>
         <li>

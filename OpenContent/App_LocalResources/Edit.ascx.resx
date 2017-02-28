@@ -126,4 +126,7 @@
   <data name="cmdDelete.Text" xml:space="preserve">
     <value>Delete</value>
   </data>
+  <data name="cmdCopy.Text" xml:space="preserve">
+    <value>Copy</value>
+  </data>
 </root>

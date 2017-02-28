@@ -8,7 +8,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
 
         public AlpacaContext(int PortalId, int ModuleId, string ItemId,
                             string ScopeWrapperID,
-                            string CancelButtonID, string SaveButtonID, string DeleteButtonID, string VersionsID)
+                            string CancelButtonID, string SaveButtonID, string CopyButtonID, string DeleteButtonID, string VersionsID)
         {
             this.PortalId = PortalId;
             this.ModuleId = ModuleId;
@@ -16,6 +16,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
             this.ScopeWrapperID = ScopeWrapperID;
             this.CancelButtonID = CancelButtonID;
             this.SaveButtonID = SaveButtonID;
+            this.CopyButtonID = CopyButtonID;
             this.DeleteButtonID = DeleteButtonID;
             this.VersionsID = VersionsID;
         }
@@ -25,6 +26,8 @@ namespace Satrabel.OpenContent.Components.Alpaca
         public string CancelButtonID { get; set; }
         [JsonProperty(PropertyName = "saveButtonID")]
         public string SaveButtonID { get; set; }
+        [JsonProperty(PropertyName = "copyButtonID")]
+        public string CopyButtonID { get; set; }
         [JsonProperty(PropertyName = "deleteButtonID")]
         public string DeleteButtonID { get; set; }
         [JsonProperty(PropertyName = "versionsID")]
