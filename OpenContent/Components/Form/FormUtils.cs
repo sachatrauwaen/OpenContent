@@ -187,7 +187,12 @@ namespace Satrabel.OpenContent.Components.Form
                 var form = formInfo["form"] as JObject;
                 return FormSubmit(form, settings);
             }
-            return null;
+            else
+            {
+                var res = new JObject();
+                res["message"] = "Form submited";
+                return res;
+            }
         }
         public static JObject FormSubmit(JObject form, SettingsDTO settings)
         {

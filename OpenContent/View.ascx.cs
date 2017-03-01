@@ -429,7 +429,7 @@ namespace Satrabel.OpenContent
                                 ModuleActionType.EditContent,
                                 "",
                                 "~/DesktopModules/OpenContent/images/editcontent2.png",
-                                ModuleContext.EditUrl("collection", "Submissions", "EditCollection"),
+                                ModuleContext.EditUrl("Submissions"),
                                 false,
                                 SecurityAccessLevel.Edit,
                                 true,

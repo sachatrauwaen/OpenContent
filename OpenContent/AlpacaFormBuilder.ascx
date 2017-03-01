@@ -122,11 +122,7 @@
                 data: postData,
                 beforeSend: sf.setModuleHeaders
             }).done(function (data) {
-
-
                 window.location.href = href;
-
-
             }).fail(function (xhr, result, status) {
                 alert("Uh-oh, something broke: " + status + " " + xhr.responseText);
             });

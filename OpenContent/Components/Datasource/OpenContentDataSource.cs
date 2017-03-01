@@ -323,6 +323,20 @@ namespace Satrabel.OpenContent.Components.Datasource
         {
             if (action == "FormSubmit")
             {
+                OpenContentController ctrl = new OpenContentController();
+                var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), "Submissions");
+                var content = new OpenContentInfo()
+                {
+                    ModuleId = GetModuleId(context),
+                    Collection = "Submissions",
+                    Title = "Form",
+                    Json = data["form"].ToString(),
+                    CreatedByUserId = context.UserId,
+                    CreatedOnDate = DateTime.Now,
+                    LastModifiedByUserId = context.UserId,
+                    LastModifiedOnDate = DateTime.Now
+                };
+                ctrl.AddContent(content, context.Index, indexConfig);
                 return FormUtils.FormSubmit(data as JObject);                
             }
             return null;

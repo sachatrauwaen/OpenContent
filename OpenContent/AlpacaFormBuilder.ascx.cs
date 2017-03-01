@@ -59,6 +59,10 @@ namespace Satrabel.OpenContent
                     }
                 }
             }
+            if (OpenContentUtils.BuilderExist(settings.Template.ManifestFolderUri, "form"))
+            {
+                ddlForms.Items.Add(new ListItem("Form", "form"));
+            }
 
         }
         //public AlpacaContext AlpacaContext { get; private set ; }

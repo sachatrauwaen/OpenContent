@@ -45,7 +45,7 @@ namespace Satrabel.OpenContent
             AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext.PortalId, settings.Template.ManifestFolderUri.FolderPath, "");
             alpaca.RegisterAll(bootstrap, loadBootstrap);
             string itemId = Request.QueryString["id"];
-            AlpacaContext = new AlpacaContext(ModuleContext.PortalId, ModuleContext.ModuleId, itemId, ScopeWrapper.ClientID, hlCancel.ClientID, cmdSave.ClientID, hlDelete.ClientID, ddlVersions.ClientID);
+            AlpacaContext = new AlpacaContext(ModuleContext.PortalId, ModuleContext.ModuleId, itemId, ScopeWrapper.ClientID, hlCancel.ClientID, cmdSave.ClientID, null, hlDelete.ClientID, ddlVersions.ClientID);
             AlpacaContext.Bootstrap = bootstrap;
             AlpacaContext.Horizontal = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetEditLayout() == AlpacaLayoutEnum.BootstrapHorizontal;
 
@@ -135,7 +135,7 @@ namespace Satrabel.OpenContent
         #region Exceptions
         private void RenderTemplateException(TemplateException ex)
         {
-            DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "<p><b>Template error</b></p>" + ex.MessageAsHtml, DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
+            DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "<p><b>Template error</b></p>" + ex.MessageAsHtml(), DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
             //DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "<p><b>Template source</b></p>" + Server.HtmlEncode(ex.TemplateSource).Replace("\n", "<br/>"), DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.BlueInfo);
             //DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "<p><b>Template model</b></p> <pre>" + JsonConvert.SerializeObject(ex.TemplateModel, Formatting.Indented)/*.Replace("\n", "<br/>")*/+"</pre>", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.BlueInfo);
             //lErrorMessage.Text = ex.HtmlMessage;
@@ -143,7 +143,7 @@ namespace Satrabel.OpenContent
             if (LogContext.IsLogActive)
             {
                 var logKey = "Error in tempate";
-                LogContext.Log(ModuleContext.ModuleId, logKey, "Error", ex.MessageAsList);
+                LogContext.Log(ModuleContext.ModuleId, logKey, "Error", ex.MessageAsList());
                 LogContext.Log(ModuleContext.ModuleId, logKey, "Model", ex.TemplateModel);
                 LogContext.Log(ModuleContext.ModuleId, logKey, "Source", ex.TemplateSource);
                 //LogContext.Log(logKey, "StackTrace", ex.StackTrace);
@@ -153,11 +153,11 @@ namespace Satrabel.OpenContent
         }
         private void RenderJsonException(InvalidJsonFileException ex)
         {
-            DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "<p><b>Json error</b></p>" + ex.MessageAsHtml, DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
+            DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "<p><b>Json error</b></p>" + ex.MessageAsHtml(), DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
             if (LogContext.IsLogActive)
             {
                 var logKey = "Error in json";
-                LogContext.Log(ModuleContext.ModuleId, logKey, "Error", ex.MessageAsList);
+                LogContext.Log(ModuleContext.ModuleId, logKey, "Error", ex.MessageAsList());
                 LogContext.Log(ModuleContext.ModuleId, logKey, "Filename", ex.Filename);
                 //LogContext.Log(logKey, "StackTrace", ex.StackTrace);
                 //DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "<p>More info is availale on de browser console (F12)</p>", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.BlueInfo);
