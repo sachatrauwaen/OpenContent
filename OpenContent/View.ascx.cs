@@ -478,7 +478,7 @@ namespace Satrabel.OpenContent
                         "~/DesktopModules/OpenContent/images/editsettings2.png",
                         ModuleContext.EditUrl("formsettings"),
                         false,
-                        SecurityAccessLevel.Edit,
+                        SecurityAccessLevel.Admin,
                         true,
                         false);
                 }
