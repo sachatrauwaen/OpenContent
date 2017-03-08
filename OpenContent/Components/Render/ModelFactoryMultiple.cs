@@ -91,6 +91,7 @@ namespace Satrabel.OpenContent.Components.Render
             //string editRole = Manifest.GetEditRole();
             if (_dataList != null && _dataList.Any())
             {
+                var MainUrl = Globals.NavigateURL(_detailTabId, false, _portalSettings, "", GetCurrentCultureCode(), "");
                 foreach (var item in _dataList)
                 {
                     JObject dyn = item.Data as JObject;
@@ -121,9 +122,12 @@ namespace Satrabel.OpenContent.Components.Render
                         }
                         var editStatus = !_manifest.DisableEdit && IsEditAllowed(item.CreatedByUserId);
                         context["IsEditable"] = editStatus;
-                        context["EditUrl"] = DnnUrlUtils.EditUrl("id", item.Id, _module.ViewModule.ModuleID, _portalSettings);
+                        if (editStatus)
+                        {
+                            context["EditUrl"] = DnnUrlUtils.EditUrl("id", item.Id, _module.ViewModule.ModuleID, _portalSettings);
+                        }
                         context["DetailUrl"] = Globals.NavigateURL(_detailTabId, false, _portalSettings, "", GetCurrentCultureCode(), UrlHelpers.CleanupUrl(url), "id=" + item.Id);
-                        context["MainUrl"] = Globals.NavigateURL(_detailTabId, false, _portalSettings, "", GetCurrentCultureCode(), "");
+                        context["MainUrl"] = MainUrl;
                     }
                     items.Add(dyn);
                 }
