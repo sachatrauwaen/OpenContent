@@ -808,6 +808,41 @@
                     self.options.picker.extraFormats = extraFormats;
                 }
             }
+
+            if (typeof (self.options.manualEntry) === "undefined") {
+                self.options.manualEntry = false;
+            }
+            if (typeof (self.options.icon) === "undefined") {
+                self.options.icon = false;
+            }
+        },
+
+        onKeyPress: function (e) {
+            if (this.options.manualEntry) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+            }
+            else {
+                this.base(e);
+                return;
+            }
+        },
+
+        onKeyDown: function (e) {
+            if (this.options.manualEntry) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+            }
+            else {
+                this.base(e);
+                return;
+            }
+        },
+
+        beforeRenderControl: function (model, callback) {
+            this.field.css("position", "relative");
+
+            callback();
         },
 
         /**
@@ -820,14 +855,35 @@
             this.base(model, function () {
 
                 if (self.view.type !== "display") {
+                    $component = self.getControlEl();
+                    if (self.options.icon) {
+                        self.getControlEl().wrap('<div class="input-group date"></div>');
+                        self.getControlEl().after('<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>');
+                        var $component = self.getControlEl().parent();
+                    }
+
                     if ($.fn.datetimepicker) {
-                        self.getControlEl().datetimepicker(self.options.picker);
-                        self.picker = self.getControlEl().data("DateTimePicker");
+                        
+                        $component.datetimepicker(self.options.picker);
+                        self.picker = $component.data("DateTimePicker");
+
+                        $component.on("dp.change", function (e) {
+
+                            // we use a timeout here because we want this to run AFTER control click handlers
+                            setTimeout(function () {
+                                self.onChange.call(self, e);
+                                self.triggerWithPropagation("change", e);
+                            }, 250);
+
+                        });
+
+                        // set value if provided
+                        if (self.data) {
+                            self.picker.date(self.data);
+                        }
                     }
                 }
-
                 callback();
-
             });
         },
 
