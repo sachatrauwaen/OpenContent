@@ -22,6 +22,7 @@ using Newtonsoft.Json.Linq;
 using DotNetNuke.Entities.Portals;
 using System.IO;
 using System.Web.Hosting;
+using DotNetNuke.Common.Internal;
 using DotNetNuke.Services.Search.Controllers;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Dnn;
@@ -134,18 +135,18 @@ namespace Satrabel.OpenContent.Components
                     SearchDocument searchDoc;
                     if (DnnLanguageUtils.IsMultiLingualPortal(modInfo.PortalID))
                     {
-                        searchDoc = GetLocalizedItem(modInfo, content);
+                        searchDoc = GetLocalizedItem(modInfo, settings, content);
                         searchDocuments.Add(searchDoc);
                         if (modInfo.LocalizedModules != null)
                             foreach (var localizedModule in modInfo.LocalizedModules)
                             {
-                                SearchDocument localizedSearchDoc = GetLocalizedItem(localizedModule.Value, content);
+                                SearchDocument localizedSearchDoc = GetLocalizedItem(localizedModule.Value, settings, content);
                                 searchDocuments.Add(localizedSearchDoc);
                             }
                     }
                     else
                     {
-                        searchDoc = CreateSearchDocument(modInfo, content.Id, "", content.Title, JsonToSearchableString(content.Data), content.LastModifiedOnDate.ToUniversalTime());
+                        searchDoc = CreateSearchDocument(modInfo, settings, content.Data, content.Id, "", content.Title, JsonToSearchableString(content.Data), content.LastModifiedOnDate.ToUniversalTime());
                         searchDocuments.Add(searchDoc);
                         Log.Logger.TraceFormat("Indexing content {0}|{5} -  OK!  {1} ({2}) of {3}", modInfo.ModuleID, searchDoc.Title, modInfo.TabID,  content.LastModifiedOnDate.ToUniversalTime(), modInfo.CultureCode);
                     }
@@ -158,7 +159,7 @@ namespace Satrabel.OpenContent.Components
             return searchDocuments;
         }
 
-        private static SearchDocument GetLocalizedItem(ModuleInfo moduleInfo, IDataItem content)
+        private static SearchDocument GetLocalizedItem(ModuleInfo moduleInfo, OpenContentSettings settings, IDataItem content)
         {
             string culture = moduleInfo.CultureCode;
             JToken title;
@@ -176,18 +177,39 @@ namespace Satrabel.OpenContent.Components
                 title = content.Title;
                 description = JsonToSearchableString(singleLanguage);
             }
-            var searchDoc = CreateSearchDocument(moduleInfo, content.Id, culture, title.ToString(), description.ToString(), content.LastModifiedOnDate.ToUniversalTime());
+            var searchDoc = CreateSearchDocument(moduleInfo, settings, singleLanguage, content.Id, culture, title.ToString(), description.ToString(), content.LastModifiedOnDate.ToUniversalTime());
             Log.Logger.DebugFormat("Indexing content {0}|{5} -  OK!  {1} ({2})  {4}", moduleInfo.ModuleID, searchDoc.Title, moduleInfo.TabID, "", content.LastModifiedOnDate.ToUniversalTime(), culture);
             return searchDoc;
         }
 
-        private static SearchDocument CreateSearchDocument(ModuleInfo modInfo, string itemId, string culture, string title, string body, DateTime time)
+        private static SearchDocument CreateSearchDocument(ModuleInfo modInfo, OpenContentSettings settings, JToken content, string itemId, string culture, string title, string body, DateTime time)
         {
-            return new SearchDocument
+            // existance of settings.Template.Main has already been checked: we wouldn't be here if it doesn't exist
+            // but still, we don't want to count on that too much
+            string url = "";
+            if (settings.Template != null && settings.Template.Main != null && settings.Template.Main.UseDetailUrlInDnnSearchResults)
+            {
+                var ps = new PortalSettings(modInfo.PortalID);
+                ps.PortalAlias = PortalAliasController.Instance.GetPortalAlias(ps.DefaultPortalAlias);
+
+                url = TestableGlobals.Instance.NavigateURL(modInfo.TabID, ps, "", $"id={itemId}");
+            }
+
+            string docTitle = modInfo.ModuleTitle.StripHtml(); // SK: this is the behaviour before introduction of TitleFieldForDnnSearch
+            if (settings.Template != null && settings.Template.Main != null && !String.IsNullOrEmpty(settings.Template.Main.TitleFieldForDnnSearch))
+            {
+                if (!content[settings.Template.Main.TitleFieldForDnnSearch].IsEmpty())
+                {
+                    docTitle = content[settings.Template.Main.TitleFieldForDnnSearch].ToString();
+                }
+
+            }
+
+            var retval = new SearchDocument
             {
                 UniqueKey = modInfo.ModuleID + "-" + itemId + "-" + culture, //Guid.NewGuid().ToString(),
                 PortalId = modInfo.PortalID,
-                Title = modInfo.ModuleTitle.StripHtml(),
+                Title = docTitle.StripHtml(),
                 Description = title.StripHtml(),
                 Body = body.StripHtml(),
                 ModifiedTimeUtc = time,
@@ -195,8 +217,10 @@ namespace Satrabel.OpenContent.Components
                 TabId = modInfo.TabID,
                 ModuleId = modInfo.ModuleID,
                 ModuleDefId = modInfo.ModuleDefID,
-                Url = "", //we don't set url here because we don't have httpcontext and getting portalsettings is expensive. See GetDocUrl() for alternative
+                Url = url
             };
+
+            return retval;
         }
 
         //protected static string JsonToSearchableString(string json)

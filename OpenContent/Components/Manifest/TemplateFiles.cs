@@ -36,6 +36,24 @@ namespace Satrabel.OpenContent.Components.Manifest
         [JsonProperty(PropertyName = "dnnsearch")]
         public bool DnnSearch { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether the Detail URL to an item is used in [DNN search] results.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [DNN search]; otherwise, <c>false</c>.
+        /// </value>
+        [JsonProperty(PropertyName = "useDetailUrlInDnnSearchResults")]
+        public bool UseDetailUrlInDnnSearchResults { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value specifying the field to use for document Title in [DNN search] results.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [DNN search]; otherwise, <c>false</c>.
+        /// </value>
+        [JsonProperty(PropertyName = "titleFieldForDnnSearch")]
+        public string TitleFieldForDnnSearch { get; set; }
+
         [JsonProperty(PropertyName = "model")]
         public Dictionary<string, CollectionManifest> Model { get; set; }
     }
