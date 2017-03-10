@@ -18,6 +18,7 @@ namespace Satrabel.OpenContent
 {
     public partial class TemplateInit : System.Web.UI.UserControl
     {
+        public bool PageRefresh { get; set; }
         public ModuleInstanceContext ModuleContext { get; set; }
         public OpenContentSettings Settings { get; set; }
         public RenderInfo Renderinfo { get; set; }
@@ -126,7 +127,8 @@ namespace Satrabel.OpenContent
                 mc.UpdateModuleSetting(ModuleContext.ModuleId, "detailtabid", ddlDetailPage.SelectedValue);
                 //don't reset settings. Sure they might be invalid, but maybe not. And you can't ever revert.
                 //mc.DeleteModuleSetting(ModuleContext.ModuleId, "data");
-                Response.Redirect(Globals.NavigateURL(), true);
+                if (PageRefresh)
+                    Response.Redirect(Globals.NavigateURL(), true);
             }
             catch (Exception exc)
             {
