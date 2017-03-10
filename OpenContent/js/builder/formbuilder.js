@@ -411,7 +411,13 @@ function getOptions(formdef) {
     return options;
 }
 
+var ContactForm = false;
+
 function showForm(value) {
+    if (ContactForm) {
+        fieldSchema.properties.fieldtype.enum.splice(9);
+        fieldOptions.fieldtype.optionLabels.splice(9);
+    }
 
     var ConnectorClass = Alpaca.getConnectorClass("default");
     var connector = new ConnectorClass("default");
@@ -443,10 +449,6 @@ function showForm(value) {
     }
     config.options.focus = "";
     $("#form2").alpaca(config);
-
-    
-
-
 }
 
 var fieldSchema =
@@ -696,6 +698,8 @@ var fieldSchema =
     }
 };
 
+
+
 fieldSchema.properties.subfields.items = fieldSchema;
 
 var fieldOptions =
@@ -840,6 +844,9 @@ var fieldOptions =
 };
 
 fieldOptions.subfields.items.fields = fieldOptions;
+
+
+
 
 var formbuilderConfig = {
     "schema": {

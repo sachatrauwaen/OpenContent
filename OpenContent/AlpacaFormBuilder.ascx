@@ -88,6 +88,9 @@
                 sf = $.ServicesFramework(<%=ModuleId %>);
 
         var getData = { key: $("#<%=ddlForms.ClientID %>").val() };
+        if (getData.key == "form") {
+            ContactForm = true;
+        }
 
         $.ajax({
             type: "GET",
