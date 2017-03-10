@@ -92,6 +92,12 @@
             ContactForm = true;
         }
 
+        BootstrapForm = <%= AlpacaContext.Bootstrap ? "true" : "false"%>;
+
+        if (BootstrapForm){
+            formbuilderConfig.view = "dnnbootstrap-edit-horizontal";
+        }
+
         $.ajax({
             type: "GET",
             url: sf.getServiceRoot('OpenContent') + "OpenContentAPI/LoadBuilder",

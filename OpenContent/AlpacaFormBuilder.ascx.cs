@@ -29,9 +29,13 @@ namespace Satrabel.OpenContent
             base.OnInit(e);
             hlCancel.NavigateUrl = Globals.NavigateURL();
             cmdSave.NavigateUrl = Globals.NavigateURL();
+            var editLayout = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetEditLayout();
+            var bootstrap = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetEditLayout() != AlpacaLayoutEnum.DNN;
+            bool loadBootstrap = bootstrap && OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetLoadBootstrap();
+
             OpenContentSettings settings = this.OpenContentSettings();
             AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext.PortalId, "" /*settings.Template.Uri().FolderPath*/, "builder");
-            alpaca.RegisterAll(false, false);
+            alpaca.RegisterAll(bootstrap, loadBootstrap);
             //string ItemId = Request.QueryString["id"];
             //AlpacaContext = new AlpacaContext(PortalId, ModuleId, ItemId, ScopeWrapper.ClientID, null, cmdSave.ClientID, null, null);
             ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/builder/formbuilder.js", FileOrder.Js.DefaultPriority);
@@ -64,8 +68,11 @@ namespace Satrabel.OpenContent
                 ddlForms.Items.Add(new ListItem("Form", "form"));
             }
 
+            AlpacaContext = new AlpacaContext(PortalId, ModuleId, null, ScopeWrapper.ClientID, hlCancel.ClientID, cmdSave.ClientID, null, null, null);
+            AlpacaContext.Bootstrap = bootstrap;
+            AlpacaContext.Horizontal = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetEditLayout() == AlpacaLayoutEnum.BootstrapHorizontal;
         }
-        //public AlpacaContext AlpacaContext { get; private set ; }
+        public AlpacaContext AlpacaContext { get; private set; }
 
 
     }

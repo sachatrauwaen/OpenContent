@@ -100,6 +100,7 @@ function getSchema(formdef) {
         "icon": "string",
         "guid": "string",
         "wysihtml": "string",
+        "summernote": "string",
         "ckeditor": "string",
         "address": "object",
         "relation": "string",
@@ -412,11 +413,15 @@ function getOptions(formdef) {
 }
 
 var ContactForm = false;
+var BootstrapForm = false;
 
 function showForm(value) {
     if (ContactForm) {
         fieldSchema.properties.fieldtype.enum.splice(9);
         fieldOptions.fieldtype.optionLabels.splice(9);
+    }    
+    if (BootstrapForm && $.fn.select2) {
+        $.fn.select2.defaults.set("theme", "bootstrap");
     }
 
     var ConnectorClass = Alpaca.getConnectorClass("default");
@@ -440,6 +445,9 @@ function showForm(value) {
             $('#form2 .dnnTooltip').dnnTooltip();
         }
     };
+    if (BootstrapForm) {
+        config.view = "dnnbootstrap-edit-horizontal";
+    }
     //alert(JSON.stringify(value, null, "  "));
     $("#schema").val(JSON.stringify(schema, null, "  "));
     $("#options").val(JSON.stringify(options, null, "  "));
@@ -475,7 +483,7 @@ var fieldSchema =
                         "array", "table", "relation",
                         "folder2", "file2", "url2","role2", "image2",
                         "imagecrop",
-                        "wysihtml", "ckeditor", "gallery", "documents", "object" /*,
+                        "wysihtml", "summernote", "ckeditor", "gallery", "documents", "object" /*,
                         "publishstatus", "publishstartdate", "publishenddate"*/]
         },
         "vertical": {
@@ -708,7 +716,7 @@ var fieldOptions =
         "label": "Multi language",
         "dependencies": {
             "advanced": [true],
-            "fieldtype": ["text", "textarea", "ckeditor", "file", "image", "url", "wysihtml", "file2", "url2", "role2", "image2"]
+            "fieldtype": ["text", "textarea", "ckeditor", "file", "image", "url", "wysihtml", "summernote", "file2", "url2", "role2", "image2"]
         }
     },
     "placeholder": {
@@ -727,7 +735,7 @@ var fieldOptions =
                             "List (array)", "Table (array)", "Relation (Additional Data)",
                             "Folder2 (folderID)", "File2 (fileID)", "Url2 (tabID)", "Role2 (roleID)", "Image2 (fileID)",
                             "Image (with croppper)",
-                            "Wysihtml", "CK Editor", "Image Gallery", "Documents", "Group (object)" /*,
+                            "Wysihtml", "Summernote", "CK Editor", "Image Gallery", "Documents", "Group (object)" /*,
                             "Publish status", "Publish start date", "Publish end date"*/]
     },
     "fieldoptions": {
@@ -769,13 +777,13 @@ var fieldOptions =
         },
         "fields": {
             "datakey": {
-                "helper": "datakey..."
+                
             },
             "valuefield": {
-                "helper": "value of ..."
+                
             },
             "textfield": {
-                "helper": "text of ..."
+                
             }
         }
     },
@@ -786,13 +794,13 @@ var fieldOptions =
         },
         "fields": {
             "format": {
-                "helper": "..."
+                
             },
             "minDate": {
-                "helper": " ..."
+                
             },
             "maxDate": {
-                "helper": " ..."
+                
             }
         }
     },
