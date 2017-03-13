@@ -194,7 +194,7 @@ namespace Satrabel.OpenContent.Components
 
             var url = TestableGlobals.Instance.NavigateURL(modInfo.TabID, ps, "", $"id={itemId}");
 
-            string docTitle = modInfo.ModuleTitle.StripHtml(); // SK: this is the behaviour before introduction of TitleFieldForDnnSearch
+            string docTitle = modInfo.ModuleTitle; // SK: this is the behaviour before introduction of DnnSearchTitle
             if (!string.IsNullOrEmpty(settings.Template?.Main?.DnnSearchTitle))
             {
                 HandlebarsEngine hbEngine = new HandlebarsEngine();
