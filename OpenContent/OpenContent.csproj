@@ -1075,6 +1075,7 @@
     <Content Include="js\summernote\font\summernote.woff" />
     <Content Include="formsettings-options.json" />
     <Content Include="formsettings-schema.json" />
+    <Content Include="Providers\DataProviders\SqlDataProvider\03.02.00.SqlDataProvider" />
     <None Include="Scripts\_references.js" />
     <Content Include="js\select2\i18n\az.js" />
     <Content Include="js\select2\i18n\bg.js" />
