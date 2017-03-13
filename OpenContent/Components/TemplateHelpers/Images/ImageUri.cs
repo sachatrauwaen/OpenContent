@@ -33,8 +33,29 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         }
         #endregion
 
-        public int Width => this.FileInfo.Width;
-        public int Height => this.FileInfo.Height;
+        public int Width
+        {
+            get
+            {
+                if (FileInfo != null)
+                {
+                    return FileInfo.Width;
+                }
+                return -1;
+            }
+        }
+
+        public int Height
+        {
+            get
+            {
+                if (FileInfo != null)
+                {
+                    return FileInfo.Height;
+                }
+                return -1;
+            }
+        }
 
         public bool IsSquare()
         {
@@ -43,7 +64,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             if (w <= 0 || h <= 0) return false;
 
             var ratio = Math.Round((decimal)h / (decimal)w, 1);
-            return Math.Abs(1-ratio) <= (decimal)0.1;
+            return Math.Abs(1 - ratio) <= (decimal)0.1;
         }
 
         public bool IsPortrait()
