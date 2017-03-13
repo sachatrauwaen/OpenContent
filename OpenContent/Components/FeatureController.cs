@@ -26,6 +26,7 @@ using DotNetNuke.Common.Internal;
 using DotNetNuke.Services.Search.Controllers;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Dnn;
+using Satrabel.OpenContent.Components.Handlebars;
 using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.TemplateHelpers;
 
@@ -66,7 +67,7 @@ namespace Satrabel.OpenContent.Components
                 var contentInfo = new OpenContentInfo()
                 {
                     ModuleId = moduleId,
-                    Collection= collection?.InnerText ?? "",
+                    Collection = collection?.InnerText ?? "",
                     Key = key?.InnerText ?? "",
                     Json = item.InnerText,
                     CreatedByUserId = userId,
@@ -148,7 +149,7 @@ namespace Satrabel.OpenContent.Components
                     {
                         searchDoc = CreateSearchDocument(modInfo, settings, content.Data, content.Id, "", content.Title, JsonToSearchableString(content.Data), content.LastModifiedOnDate.ToUniversalTime());
                         searchDocuments.Add(searchDoc);
-                        Log.Logger.TraceFormat("Indexing content {0}|{5} -  OK!  {1} ({2}) of {3}", modInfo.ModuleID, searchDoc.Title, modInfo.TabID,  content.LastModifiedOnDate.ToUniversalTime(), modInfo.CultureCode);
+                        Log.Logger.TraceFormat("Indexing content {0}|{5} -  OK!  {1} ({2}) of {3}", modInfo.ModuleID, searchDoc.Title, modInfo.TabID, content.LastModifiedOnDate.ToUniversalTime(), modInfo.CultureCode);
                     }
                 }
                 else
@@ -187,22 +188,16 @@ namespace Satrabel.OpenContent.Components
             // existance of settings.Template.Main has already been checked: we wouldn't be here if it doesn't exist
             // but still, we don't want to count on that too much
             string url = "";
-            if (settings.Template != null && settings.Template.Main != null && settings.Template.Main.UseDetailUrlInDnnSearchResults)
-            {
-                var ps = new PortalSettings(modInfo.PortalID);
-                ps.PortalAlias = PortalAliasController.Instance.GetPortalAlias(ps.DefaultPortalAlias);
+            var ps = new PortalSettings(modInfo.PortalID);
+            ps.PortalAlias = PortalAliasController.Instance.GetPortalAlias(ps.DefaultPortalAlias);
 
-                url = TestableGlobals.Instance.NavigateURL(modInfo.TabID, ps, "", $"id={itemId}");
-            }
+            url = TestableGlobals.Instance.NavigateURL(modInfo.TabID, ps, "", $"id={itemId}");
 
             string docTitle = modInfo.ModuleTitle.StripHtml(); // SK: this is the behaviour before introduction of TitleFieldForDnnSearch
-            if (settings.Template != null && settings.Template.Main != null && !String.IsNullOrEmpty(settings.Template.Main.TitleFieldForDnnSearch))
+            if (settings.Template != null && settings.Template.Main != null && !String.IsNullOrEmpty(settings.Template.Main.DnnSearchTitle))
             {
-                if (!content[settings.Template.Main.TitleFieldForDnnSearch].IsEmpty())
-                {
-                    docTitle = content[settings.Template.Main.TitleFieldForDnnSearch].ToString();
-                }
-
+                HandlebarsEngine hbEngine = new HandlebarsEngine();
+                docTitle = hbEngine.Execute(settings.Template.Main.DnnSearchTitle, content);
             }
 
             var retval = new SearchDocument
