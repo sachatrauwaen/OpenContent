@@ -33,24 +33,36 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         }
         #endregion
 
-        public bool? IsPortrait()
+        public int Width => this.FileInfo.Width;
+        public int Height => this.FileInfo.Height;
+
+        public bool IsSquare()
         {
             var w = this.FileInfo.Width;
             var h = this.FileInfo.Height;
-            if (w > 0 && h > 0)
-            {
-                return h >= w;
-            }
+            if (w <= 0 || h <= 0) return false;
 
-            return null;
+            var ratio = Math.Round((decimal)h / (decimal)w, 1);
+            return Math.Abs(1-ratio) <= (decimal)0.1;
         }
-        public bool? IsLandScape()
+
+        public bool IsPortrait()
         {
-            var isPortrait = IsPortrait();
-            if (isPortrait.HasValue)
-                return !isPortrait.Value;
-            else
-                return null;
+            var w = this.FileInfo.Width;
+            var h = this.FileInfo.Height;
+            if (w <= 0 || h <= 0) return false;
+            if (IsSquare()) return false;
+
+            return h > w;
+        }
+        public bool IsLandScape()
+        {
+            var w = this.FileInfo.Width;
+            var h = this.FileInfo.Height;
+            if (w <= 0 || h <= 0) return false;
+            if (IsSquare()) return false;
+
+            return h < w;
         }
 
         public string GetImageUrl(int width, int height)
