@@ -79,6 +79,7 @@ namespace Satrabel.OpenContent.Components
                 ctrl.AddContent(contentInfo, index, indexConfig);
             }
         }
+
         #region ModuleSearchBase
         public override IList<SearchDocument> GetModifiedSearchDocuments(ModuleInfo modInfo, DateTime beginDateUtc)
         {
@@ -108,7 +109,7 @@ namespace Satrabel.OpenContent.Components
 
             var module = new OpenContentModuleInfo(modInfo);
             OpenContentSettings settings = modInfo.OpenContentSettings();
-            if (settings.Template == null || settings.Template.Main == null || !settings.Template.Main.DnnSearch)
+            if (settings.Template?.Main == null || !settings.Template.Main.DnnSearch)
             {
                 return searchDocuments;
             }
@@ -131,7 +132,8 @@ namespace Satrabel.OpenContent.Components
                 {
                     Log.Logger.TraceFormat("Indexing content {0}|{1} - NOT - Content is Null", modInfo.ModuleID, modInfo.CultureCode);
                 }
-                else if ((content.LastModifiedOnDate.ToUniversalTime() > beginDateUtc && content.LastModifiedOnDate.ToUniversalTime() < DateTime.UtcNow))
+                else if (content.LastModifiedOnDate.ToUniversalTime() > beginDateUtc 
+                      && content.LastModifiedOnDate.ToUniversalTime() < DateTime.UtcNow)
                 {
                     SearchDocument searchDoc;
                     if (DnnLanguageUtils.IsMultiLingualPortal(modInfo.PortalID))
@@ -187,14 +189,13 @@ namespace Satrabel.OpenContent.Components
         {
             // existance of settings.Template.Main has already been checked: we wouldn't be here if it doesn't exist
             // but still, we don't want to count on that too much
-            string url = "";
             var ps = new PortalSettings(modInfo.PortalID);
             ps.PortalAlias = PortalAliasController.Instance.GetPortalAlias(ps.DefaultPortalAlias);
 
-            url = TestableGlobals.Instance.NavigateURL(modInfo.TabID, ps, "", $"id={itemId}");
+            var url = TestableGlobals.Instance.NavigateURL(modInfo.TabID, ps, "", $"id={itemId}");
 
             string docTitle = modInfo.ModuleTitle.StripHtml(); // SK: this is the behaviour before introduction of TitleFieldForDnnSearch
-            if (settings.Template != null && settings.Template.Main != null && !String.IsNullOrEmpty(settings.Template.Main.DnnSearchTitle))
+            if (!string.IsNullOrEmpty(settings.Template?.Main?.DnnSearchTitle))
             {
                 HandlebarsEngine hbEngine = new HandlebarsEngine();
                 docTitle = hbEngine.Execute(settings.Template.Main.DnnSearchTitle, content);
@@ -217,13 +218,6 @@ namespace Satrabel.OpenContent.Components
 
             return retval;
         }
-
-        //protected static string JsonToSearchableString(string json)
-        //{
-        //    dynamic data = JToken.Parse(json);
-        //    string result = JsonToSearchableString(data);
-        //    return result;
-        //}
 
         private static string JsonToSearchableString(JToken data)
         {
@@ -321,18 +315,8 @@ namespace Satrabel.OpenContent.Components
 
         public string GetDocUrl(SearchResult searchResult)
         {
-            return GetTabUrl(searchResult.PortalId, searchResult.TabId, searchResult.QueryString);
+            return DnnUrlUtils.NavigateUrl(searchResult.TabId);
         }
         #endregion
-
-        private string GetTabUrl(int portalId, int moduleTabId, string queryString)
-        {
-            var url = DnnUrlUtils.NavigateUrl(moduleTabId);
-            return url;
-            //var portalSettings = new PortalSettings(portalId);
-            //portalSettings.PortalAlias = PortalAliasController.Instance.GetPortalAlias(portalSettings.DefaultPortalAlias);
-            //var url = TestableGlobals.Instance.NavigateURL(moduleTabId, portalSettings, string.Empty, queryString);
-            //return url;
-        }
     }
 }
