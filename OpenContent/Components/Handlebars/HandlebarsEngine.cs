@@ -80,6 +80,20 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 throw new TemplateException("Failed to render Handlebar template ", ex, model, source);
             }
         }
+        public string ExecuteWithoutFaillure(string source, dynamic model, string defaultValue)
+        {
+            try
+            {
+                var hbs = HandlebarsDotNet.Handlebars.Create();
+                RegisterHelpers(hbs);
+                return CompileTemplate(hbs, source, model);
+            }
+            catch (Exception ex)
+            {
+                Log.Logger.Error(string.Format("Failed to render Handlebar template source:[{0}], model:[{1}]", source, model), ex);
+            }
+            return defaultValue;
+        }
 
         private void RegisterHelpers(IHandlebars hbs)
         {
