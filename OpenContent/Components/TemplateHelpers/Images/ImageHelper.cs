@@ -188,7 +188,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
          */
         internal static Image SaveCroppedImage(Image image, int targetWidth, int targetHeight, out int left, out int top, out int srcWidth, out int srcHeight)
         {
-            ImageCodecInfo jpgInfo = ImageCodecInfo.GetImageEncoders().Where(codecInfo => codecInfo.MimeType == "image/jpeg").First();
+            //ImageCodecInfo jpgInfo = ImageCodecInfo.GetImageEncoders().First(codecInfo => codecInfo.MimeType == "image/jpeg");
             Image finalImage = image;
             System.Drawing.Bitmap bitmap = null;
             left = 0;
