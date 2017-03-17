@@ -119,21 +119,6 @@ namespace Satrabel.OpenContent.Components.Render
             return JsonUtils.JsonToDynamic(model.ToString());
         }
 
-        /*
-        public JToken GetModelAsJson(bool onlyData = false)
-        {
-            if (_portalSettings == null) onlyData = true;
-
-            if (_dataList == null)
-            {
-                return GetModelAsJsonFromJson(onlyData);
-            }
-            else
-            {
-                return GetModelAsJsonFromList(onlyData);
-            }
-        }
-        */
         public abstract JToken GetModelAsJson(bool onlyData = false, bool onlyMainData = false);
 
         protected void EnhanceSelect2(JObject model)
