@@ -2,35 +2,41 @@
 
 namespace Satrabel.OpenContent.Components.TemplateHelpers
 {
-    public static class ImageFactory
+    public static class ImageUriFactory
     {
-        public static ImageUri CreateImage(dynamic imageInfo)
+        public static ImageUri CreateImageUri(string path, string filename)
         {
+            return new ImageUri(path, filename);
+        }
+
+        public static ImageUri CreateImageUri(dynamic imageInfo)
+        {
+            if (imageInfo == null) return null;
             ImageUri retval = null;
             try
             {
                 if (imageInfo?["ImageId"] != null)
                 {
-                    retval = CreateImage(Convert.ToString(imageInfo["ImageId"])); //it might be an enhanced image object
+                    retval = CreateImageUri(Convert.ToString(imageInfo["ImageId"])); //it might be an enhanced image object
                 }
                 else
                 {
-                    retval = CreateImage(Convert.ToString(imageInfo)); //it might be just the image Id
+                    retval = CreateImageUri(Convert.ToString(imageInfo)); //it might be just the image Id
                 }
             }
             catch (Exception ex)
             {
-                Log.Logger.ErrorFormat("Error while trying to create ImageUri from dynamic: ", ex);
+                Log.Logger.ErrorFormat($"Error while trying to create ImageUri from dynamic string [{Convert.ToString(imageInfo) }].  Error: {ex}" );
             }
             return retval;
         }
 
-        public static ImageUri CreateImage(string imageId)
+        public static ImageUri CreateImageUri(string imageId)
         {
             ImageUri retval = null;
             int imgId;
             if (int.TryParse(imageId, out imgId) && imgId > 0)
-                retval = CreateImage(imgId);
+                retval = CreateImageUri(imgId);
             else if (!string.IsNullOrWhiteSpace(imageId))
             {
                 try
@@ -39,13 +45,13 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
                 }
                 catch (Exception)
                 {
-                    Log.Logger.ErrorFormat("Failed to create ImageUri with parameter {0}", imageId);
+                    Log.Logger.ErrorFormat($"Failed to create ImageUri with parameter {imageId}" );
                 }
             }
             return retval;
         }
 
-        public static ImageUri CreateImage(int imageId)
+        public static ImageUri CreateImageUri(int imageId)
         {
             ImageUri retval = null;
             try
@@ -54,7 +60,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             }
             catch (Exception ex)
             {
-                Log.Logger.ErrorFormat("Error while trying to create ImageUri: ", ex);
+                Log.Logger.ErrorFormat($"Error while trying to create ImageUri with id {imageId}: ", ex);
             }
             return retval;
         }

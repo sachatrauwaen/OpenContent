@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using DotNetNuke.Common;
 using DotNetNuke.Entities.Content.Common;
 using DotNetNuke.Entities.Modules;
@@ -30,6 +31,11 @@ namespace Satrabel.OpenContent.Components
         }
         public PortalFileUri(IFileInfo fileInfo) : base(GetFilePath(fileInfo))
         {
+            if (fileInfo == null)
+            {
+                throw new ArgumentNullException(nameof(fileInfo));
+            }
+
             FileInfo = fileInfo;
         }
         public PortalFileUri(int fileId) : base(GetFilePath(fileId))
@@ -51,13 +57,17 @@ namespace Satrabel.OpenContent.Components
             {
                 fileRequested = FileManager.Instance.GetFile(portalid, FilePath.Substring(pos + pf.Length + 1));
             }
+            if (fileRequested == null)
+                throw new ArgumentNullException($"iFileInfo not found for path [{FilePath}]");
+
             return fileRequested;
         }
         private static string GetFilePath(int fileId)
         {
             IFileInfo fileInfo = FileManager.Instance.GetFile(fileId);
             if (fileInfo == null)
-                throw new ArgumentNullException(string.Format("iFileInfo not found for id [{0}]", fileId));
+                throw new ArgumentNullException($"iFileInfo not found for id [{fileId}]");
+
             return NormalizePath(fileInfo.ToUrlWithoutLinkClick());
         }
         private static string GetFilePath(IFileInfo fileInfo)
@@ -76,7 +86,7 @@ namespace Satrabel.OpenContent.Components
         /// The Dnn file information object.
         /// </value>
         /// <remarks>This is only available for files under the Dnn Portal Directory</remarks>
-        protected IFileInfo FileInfo { get; set; }
+        protected IFileInfo FileInfo { get; }
 
         private JObject _fileMetaData;
 

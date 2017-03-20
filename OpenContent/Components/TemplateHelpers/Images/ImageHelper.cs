@@ -10,6 +10,7 @@ using DotNetNuke.Entities.Modules.Definitions;
 using DotNetNuke.Services.FileSystem;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Dnn;
+using Satrabel.OpenContent.Components.Json;
 
 namespace Satrabel.OpenContent.Components.TemplateHelpers
 {
@@ -108,9 +109,9 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
 
                             if (Math.Abs(definedCropRatio.AsFloat - requestedCropRatio.AsFloat) < 0.02) //allow 2% margin
                             {
-                                if (cropper["x"] == null)
+                                if (cropper["x"] == null || cropper["x"].IsEmpty())
                                     cropper["x"] = 0;
-                                if (cropper["y"] == null)
+                                if (cropper["y"] == null || cropper["y"].IsEmpty())
                                     cropper["y"] = 0;
                                 int left = int.Parse(cropper["x"].ToString());
                                 int top = int.Parse(cropper["y"].ToString());
