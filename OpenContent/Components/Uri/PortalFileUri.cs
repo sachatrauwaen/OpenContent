@@ -36,7 +36,7 @@ namespace Satrabel.OpenContent.Components
         {
             var fileInfo = FileManager.Instance.GetFile(fileId);
             if (fileInfo == null)
-                throw new ArgumentNullException(string.Format("iFileInfo not found for id [{0}]", fileId));
+                throw new ArgumentNullException($"iFileInfo not found for id [{fileId}]");
 
             FileInfo = fileInfo;
         }
@@ -63,7 +63,8 @@ namespace Satrabel.OpenContent.Components
         private static string GetFilePath(IFileInfo fileInfo)
         {
             if (fileInfo == null)
-                throw new ArgumentNullException("fileInfo");
+                throw new ArgumentNullException(nameof(fileInfo));
+
             return NormalizePath(fileInfo.ToUrlWithoutLinkClick());
         }
         #endregion
@@ -158,7 +159,7 @@ namespace Satrabel.OpenContent.Components
             var modId = dnnFileManagerModule.ModuleID;
             //var modId = 1420; 
             var url = Globals.NavigateURL(dnnFileManagerModule.TabID, "FileProperties", "mid=" + modId, "popUp=true", "fileId=" + FileInfo.FileId);
-            return string.Format("javascript:dnnModal.show('{0}',/*showReturn*/false,550,950,true,'')", url);
+            return $"javascript:dnnModal.show('{url}',/*showReturn*/false,550,950,true,'')";
             //javascript:dnnModal.show('http://localhost:54068/en-us/OpenFiles/ctl/Module/ModuleId/487/view/gridview/pageSize/10?ReturnURL=/en-us/OpenFiles?folderId=42&popUp=true',/*showReturn*/false,550,950,true,'')
             //return string.Format("javascript:dnnModal.show('{0}/ctl/FileProperties/mid/{2}?popUp=true&fileId={1}')", url, FileInfo.FileId, modId);
         }
