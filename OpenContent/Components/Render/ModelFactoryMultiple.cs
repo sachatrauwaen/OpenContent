@@ -70,28 +70,22 @@ namespace Satrabel.OpenContent.Components.Render
             if (_portalSettings == null) onlyData = true;
             JObject model = new JObject();
             var itemsModel = model;
-            /*
-            if (!string.IsNullOrEmpty(_collection))
-            {
-                itemsModel = new JObject();
-                model[_collection] = itemsModel;
-            }
-            */
+
+            ExtendModel(model, onlyData || onlyMainData);
+            ExtendSchemaOptions(itemsModel, onlyData || onlyMainData);
+            ExtendItemsModel(itemsModel, onlyData || onlyMainData);
+
             if (!onlyData && !onlyMainData)
             {
-                ExtendModel(model, onlyData);
-                ExtendSchemaOptions(itemsModel, onlyData);
-                ExtendItemsModel(itemsModel, onlyData);
                 itemsModel["Context"]["RssUrl"] = _portalSettings.PortalAlias.HTTPAlias +
                        "/DesktopModules/OpenContent/API/RssAPI/GetFeed?moduleId=" + _module.ViewModule.ModuleID + "&tabId=" + _detailTabId;
             }
-            //string collectionName = string.IsNullOrEmpty(_templateManifest.Collection) ? "Items" : _templateManifest.Collection;
             JArray items = new JArray(); ;
             itemsModel["Items"] = items;
             //string editRole = Manifest.GetEditRole();
             if (_dataList != null && _dataList.Any())
             {
-                var MainUrl = Globals.NavigateURL(_detailTabId, false, _portalSettings, "", GetCurrentCultureCode(), "");
+                var mainUrl = Globals.NavigateURL(_detailTabId, false, _portalSettings, "", GetCurrentCultureCode(), "");
                 foreach (var item in _dataList)
                 {
                     JObject dyn = item.Data as JObject;
@@ -127,7 +121,7 @@ namespace Satrabel.OpenContent.Components.Render
                             context["EditUrl"] = DnnUrlUtils.EditUrl("id", item.Id, _module.ViewModule.ModuleID, _portalSettings);
                         }
                         context["DetailUrl"] = Globals.NavigateURL(_detailTabId, false, _portalSettings, "", GetCurrentCultureCode(), UrlHelpers.CleanupUrl(url), "id=" + item.Id);
-                        context["MainUrl"] = MainUrl;
+                        context["MainUrl"] = mainUrl;
                     }
                     items.Add(dyn);
                 }

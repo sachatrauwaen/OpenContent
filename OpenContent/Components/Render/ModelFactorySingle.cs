@@ -17,7 +17,7 @@ namespace Satrabel.OpenContent.Components.Render
 {
     public class ModelFactorySingle :ModelFactoryBase
     {
-        private JToken _dataJson;
+        private readonly JToken _dataJson;
         private readonly IDataItem _data;
 
         public ModelFactorySingle(JToken dataJson, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleInfo module, PortalSettings portalSettings) :
@@ -38,22 +38,7 @@ namespace Satrabel.OpenContent.Components.Render
             this._dataJson = data.Data;
             this._data = data;
         }
-        /*
-        public ModelFactory(IDataItem data, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleInfo module, int portalId, string cultureCode, int mainTabId, int mainModuleId)
-        {
-            this._dataJson = data.Data;
-            this._data = data;
-            this._settingsJson = settingsJson;
-            this._physicalTemplateFolder = physicalTemplateFolder;
-            this._manifest = manifest;
-            this._templateFiles = templateFiles;
-            this._module = module;
-            this._portalId = portalId;
-            this._cultureCode = cultureCode;
-            this._templateManifest = templateManifest;
-            this._detailTabId = DnnUtils.GetTabByCurrentCulture(this._portalId, module.GetDetailTabId(), GetCurrentCultureCode());
-        }
-        */
+
         public override JToken GetModelAsJson(bool onlyData = false, bool onlyMainData = false)
         {
             var model = _dataJson as JObject;
@@ -62,15 +47,15 @@ namespace Satrabel.OpenContent.Components.Render
                 JsonUtils.SimplifyJson(model, GetCurrentCultureCode());
             }
             var enhancedModel = new JObject();
-            ExtendSchemaOptions(enhancedModel, onlyData);
-            ExtendModel(enhancedModel, onlyData);
-            ExtendModelSingle(enhancedModel, onlyData);
+            ExtendSchemaOptions(enhancedModel, onlyData || onlyMainData);
+            ExtendModel(enhancedModel, onlyData || onlyMainData);
+            ExtendModelSingle(enhancedModel);
             EnhanceSelect2(model);
             JsonUtils.Merge(model, enhancedModel);
             return model;
         }
 
-        private void ExtendModelSingle(JObject model, bool onlyDataa)
+        private void ExtendModelSingle(JObject model)
         {
             if (_data != null)
             {
@@ -83,7 +68,7 @@ namespace Satrabel.OpenContent.Components.Render
                     url = hbEngine.Execute(_manifest.DetailUrl, dynForHBS);
                     url = HttpUtility.HtmlDecode(url);
                 }
-                context["DetailUrl"] = Globals.NavigateURL(_detailTabId, false, _portalSettings, "", GetCurrentCultureCode(), UrlHelpers.CleanupUrl(url), "id=" + _data.Id);
+                context["DetailUrl"] = Globals.NavigateURL(_detailTabId, false, _portalSettings, "", GetCurrentCultureCode(), url.CleanupUrl(), "id=" + _data.Id);
                 context["Id"] = _data.Id;
                 var editIsAllowed = !_manifest.DisableEdit && IsEditAllowed(_data.CreatedByUserId);
                 context["EditUrl"] = editIsAllowed ? DnnUrlUtils.EditUrl("id", _data.Id, _module.ViewModule.ModuleID, _portalSettings) : "";

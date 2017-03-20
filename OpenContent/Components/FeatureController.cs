@@ -203,7 +203,7 @@ namespace Satrabel.OpenContent.Components
 
             var retval = new SearchDocument
             {
-                UniqueKey = modInfo.ModuleID + "-" + itemId + "-" + culture, //Guid.NewGuid().ToString(),
+                UniqueKey = modInfo.ModuleID + "-" + itemId + "-" + culture,
                 PortalId = modInfo.PortalID,
                 Title = docTitle.StripHtml(),
                 Description = title.StripHtml(),
