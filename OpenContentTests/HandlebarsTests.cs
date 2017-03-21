@@ -22,6 +22,10 @@ namespace OpenContentTests
             HandlebarsEngine hbEngine = new HandlebarsEngine();
             string res = hbEngine.Execute(source, model);
             Assert.AreEqual(expected, res);
+
+            var modelDic = JsonUtils.JsonToDictionary(dataJson);
+            res = hbEngine.Execute(source, model);
+            Assert.AreEqual(expected, res);
         }
 
         [TestMethod]
@@ -87,8 +91,7 @@ namespace OpenContentTests
             data.Append("] }");
 
             dynamic expectedModel = JsonUtils.JsonToDynamic(data.ToString());
-            var jsSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
-            Dictionary<string, object> model = (Dictionary<string, object>)jsSerializer.DeserializeObject(data.ToString());
+            Dictionary<string, object> model = JsonUtils.JsonToDictionary(data.ToString());
             string source = "{{#each Items}}\r\n    <!-- item {{@index}} -->\r\n        <div class=\"row article\">\r\n            <div class=\"col-sm-12 col-md-12\">\r\n                <div class=\"row\">\r\n                    <div class=\"col-md-4\">\r\n                        <a href=\"{{Context.DetailUrl}}\"><img src=\"{{Image}}\" alt=\"\" title=\"\" class=\"img-thumbnail img-responsive\" /></a>\r\n                    </div>\r\n                    <div class=\"caption col-md-8\">\r\n                        <h3 class=\"title\"><a href=\"{{Context.DetailUrl}}\">{{Title}}</a></h3>\r\n                        <p class=\"desc\">{{{Summary}}}</p>\r\n                        <p><a href=\"{{Context.DetailUrl}}\" class=\"btn btn-default\" role=\"button\">Read more</a></p>\r\n                        <p class=\"theme\">\r\n                            <span class=\"fa fa-calendar\" aria-hidden=\"true\"></span>\r\n                            {{formatDateTime publishstartdate \"DD/MM/YYYY\"}}\r\n                            <span class=\"fa fa-tags\" aria-hidden=\"true\"></span>\r\n                            {{#if Category}}\r\n                            <span>{{Category.Title}}</span>\r\n                            {{/if}}\r\n                        </p>\r\n                    </div>\r\n                </div>\r\n               \r\n            </div>\r\n        </div>\r\n    </div>\r\n    {{/each}}";
             HandlebarsEngine hbEngine = new HandlebarsEngine();
             string expectedRes = hbEngine.Execute(source, expectedModel);
@@ -118,8 +121,7 @@ namespace OpenContentTests
             //var model = deserializeToDictionary(data.ToString());
             if (optimized)
             {
-                var jsSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
-                Dictionary<string, object> model = (Dictionary<string, object>)jsSerializer.DeserializeObject(data.ToString());
+                Dictionary<string, object> model = JsonUtils.JsonToDictionary(data.ToString());
                 string res = hbEngine.Execute(source, model);
             }
             else

@@ -67,7 +67,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             }
         }
 
-        public string Execute(string source, dynamic model)
+        public string Execute(string source, object model)
         {
             try
             {
@@ -189,7 +189,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             }
         }
 
-        private string CompileTemplate(IHandlebars hbs, string source, dynamic model)
+        private string CompileTemplate(IHandlebars hbs, string source, object model)
         {
             var compiledTemplate = hbs.Compile(source);
             return compiledTemplate(model);

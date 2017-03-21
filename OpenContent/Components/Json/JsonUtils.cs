@@ -57,6 +57,13 @@ namespace Satrabel.OpenContent.Components.Json
             return dynamicObject;
         }
 
+        public static dynamic JsonToDictionary(string json)
+        {
+            var jsSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+            Dictionary<string, object> model = (Dictionary<string, object>)jsSerializer.DeserializeObject(json);
+            return model;
+        }
+
         public static string SimplifyJson(string json, string culture)
         {
             JObject obj = JObject.Parse(json);
