@@ -215,23 +215,58 @@ namespace Satrabel.OpenContent.Components
                 foreach (var dir in Directory.GetDirectories(basePath))
                 {
                     string templateCat = "Skin";
-                    var files = Directory.EnumerateFiles(dir, "*.*", SearchOption.AllDirectories)
-                                .Where(s => s.EndsWith(".cshtml") || s.EndsWith(".vbhtml") || s.EndsWith(".hbs"));
-                    foreach (string script in files)
-                    {
-                        string scriptName = script.Remove(script.LastIndexOf(".")).Replace(basePath, "");
-                        if (scriptName.ToLower().EndsWith("template"))
-                            scriptName = scriptName.Remove(scriptName.LastIndexOf("\\"));
-                        else
-                            scriptName = scriptName.Replace("\\", " - ");
 
-                        string scriptPath = FolderUri.ReverseMapPath(script);
-                        var item = new ListItem(templateCat + " : " + scriptName, scriptPath);
-                        if (selectedTemplate != null && scriptPath.ToLowerInvariant() == selectedTemplate.Key.ToString().ToLowerInvariant())
+                    IEnumerable<string> files = Directory.EnumerateFiles(dir, "*.*", SearchOption.AllDirectories);
+                    IEnumerable<string> manifestfiles = files.Where(s => s.EndsWith("manifest.json"));
+                    var manifestTemplateFound = false;
+
+                    if (manifestfiles.Any())
+                    {
+                        foreach (string manifestFile in manifestfiles)
                         {
-                            item.Selected = true;
+                            FileUri manifestFileUri = FileUri.FromPath(manifestFile);
+                            var manifest = ManifestUtils.GetFileManifest(manifestFileUri);
+                            if (manifest != null && manifest.HasTemplates)
+                            {
+                                manifestTemplateFound = true;
+                                foreach (var template in manifest.Templates)
+                                {
+                                    FileUri templateUri = new FileUri(manifestFileUri.FolderPath, template.Key);
+                                    string templateName = Path.GetDirectoryName(manifestFile).Substring(basePath.Length).Replace("\\", " / ");
+                                    if (!string.IsNullOrEmpty(template.Value.Title))
+                                    {
+                                        templateName = templateName + " - " + template.Value.Title;
+                                    }
+                                    var item = new ListItem((templateCat == "Site" ? "" : templateCat + " : ") + templateName, templateUri.FilePath);
+                                    if (selectedTemplate != null && templateUri.FilePath.ToLowerInvariant() == selectedTemplate.Key.ToString().ToLowerInvariant())
+                                    {
+                                        item.Selected = true;
+                                    }
+                                    lst.Add(item);
+                                }
+                            }
                         }
-                        lst.Add(item);
+                    }
+                    if (!manifestTemplateFound)
+                    {
+                        var scriptfiles =
+                            Directory.EnumerateFiles(dir, "*.*", SearchOption.AllDirectories)
+                                .Where(s => s.EndsWith(".cshtml") || s.EndsWith(".vbhtml") || s.EndsWith(".hbs"));
+                        foreach (string script in scriptfiles)
+                        {
+                            string scriptName = script.Remove(script.LastIndexOf(".")).Replace(basePath, "");
+                            if (scriptName.ToLower().EndsWith("template")) scriptName = scriptName.Remove(scriptName.LastIndexOf("\\"));
+                            else scriptName = scriptName.Replace("\\", " - ");
+
+                            string scriptPath = FolderUri.ReverseMapPath(script);
+                            var item = new ListItem(templateCat + " : " + scriptName, scriptPath);
+                            if (selectedTemplate != null
+                                && scriptPath.ToLowerInvariant() == selectedTemplate.Key.ToString().ToLowerInvariant())
+                            {
+                                item.Selected = true;
+                            }
+                            lst.Add(item);
+                        }
                     }
                 }
             }
