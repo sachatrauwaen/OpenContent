@@ -390,8 +390,8 @@ namespace Satrabel.OpenContent.Components
                                 res.AddRange(array.Select(childItem => 
                                     new LookupResultDTO
                                         {
-                                            value = childItem[req.valueField] == null ? "" : childItem[req.valueField].ToString(),
-                                            text = childItem[req.textField] == null ? "" : childItem[req.textField].ToString()
+                                            value = string.IsNullOrEmpty(req.valueField) || childItem[req.valueField] == null ? "" : childItem[req.valueField].ToString(),
+                                            text = string.IsNullOrEmpty(req.textField) || childItem[req.textField] == null ? "" : childItem[req.textField].ToString()
                                         }
                                     )
                                 );
@@ -400,8 +400,8 @@ namespace Satrabel.OpenContent.Components
                             {
                                 res.Add(new LookupResultDTO
                                 {
-                                    value = json[req.valueField] == null ? item.Id : json[req.valueField].ToString(),
-                                    text = json[req.textField] == null ? item.Title : json[req.textField].ToString()
+                                    value = string.IsNullOrEmpty(req.valueField) || json[req.valueField] == null ? item.Id : json[req.valueField].ToString(),
+                                    text = string.IsNullOrEmpty(req.textField) || json[req.textField] == null ? item.Title : json[req.textField].ToString()
                                 });
                             }
                         }
