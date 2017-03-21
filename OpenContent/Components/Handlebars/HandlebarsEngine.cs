@@ -69,7 +69,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             }
         }
 
-        public string Execute(string source, Dictionary<string, object> model)
+        public string Execute(string source, dynamic model)
         {
             try
             {
