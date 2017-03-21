@@ -10,6 +10,7 @@ using DotNetNuke.Entities.Modules.Definitions;
 using DotNetNuke.Services.FileSystem;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Dnn;
+using Satrabel.OpenContent.Components.Json;
 
 namespace Satrabel.OpenContent.Components.TemplateHelpers
 {
@@ -108,9 +109,9 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
 
                             if (Math.Abs(definedCropRatio.AsFloat - requestedCropRatio.AsFloat) < 0.02) //allow 2% margin
                             {
-                                if (cropper["x"] == null)
+                                if (cropper["x"] == null || cropper["x"].IsEmpty())
                                     cropper["x"] = 0;
-                                if (cropper["y"] == null)
+                                if (cropper["y"] == null || cropper["y"].IsEmpty())
                                     cropper["y"] = 0;
                                 int left = int.Parse(cropper["x"].ToString());
                                 int top = int.Parse(cropper["y"].ToString());
@@ -188,7 +189,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
          */
         internal static Image SaveCroppedImage(Image image, int targetWidth, int targetHeight, out int left, out int top, out int srcWidth, out int srcHeight)
         {
-            ImageCodecInfo jpgInfo = ImageCodecInfo.GetImageEncoders().Where(codecInfo => codecInfo.MimeType == "image/jpeg").First();
+            //ImageCodecInfo jpgInfo = ImageCodecInfo.GetImageEncoders().First(codecInfo => codecInfo.MimeType == "image/jpeg");
             Image finalImage = image;
             System.Drawing.Bitmap bitmap = null;
             left = 0;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using DotNetNuke.Common;
 using DotNetNuke.Entities.Content.Common;
 using DotNetNuke.Entities.Modules;
@@ -30,13 +31,18 @@ namespace Satrabel.OpenContent.Components
         }
         public PortalFileUri(IFileInfo fileInfo) : base(GetFilePath(fileInfo))
         {
+            if (fileInfo == null)
+            {
+                throw new ArgumentNullException(nameof(fileInfo));
+            }
+
             FileInfo = fileInfo;
         }
         public PortalFileUri(int fileId) : base(GetFilePath(fileId))
         {
             var fileInfo = FileManager.Instance.GetFile(fileId);
             if (fileInfo == null)
-                throw new ArgumentNullException(string.Format("iFileInfo not found for id [{0}]", fileId));
+                throw new ArgumentNullException($"iFileInfo not found for id [{fileId}]");
 
             FileInfo = fileInfo;
         }
@@ -51,19 +57,24 @@ namespace Satrabel.OpenContent.Components
             {
                 fileRequested = FileManager.Instance.GetFile(portalid, FilePath.Substring(pos + pf.Length + 1));
             }
+            if (fileRequested == null)
+                throw new ArgumentNullException($"iFileInfo not found for path [{FilePath}]");
+
             return fileRequested;
         }
         private static string GetFilePath(int fileId)
         {
             IFileInfo fileInfo = FileManager.Instance.GetFile(fileId);
             if (fileInfo == null)
-                throw new ArgumentNullException(string.Format("iFileInfo not found for id [{0}]", fileId));
+                throw new ArgumentNullException($"iFileInfo not found for id [{fileId}]");
+
             return NormalizePath(fileInfo.ToUrlWithoutLinkClick());
         }
         private static string GetFilePath(IFileInfo fileInfo)
         {
             if (fileInfo == null)
-                throw new ArgumentNullException("fileInfo");
+                throw new ArgumentNullException(nameof(fileInfo));
+
             return NormalizePath(fileInfo.ToUrlWithoutLinkClick());
         }
         #endregion
@@ -75,7 +86,7 @@ namespace Satrabel.OpenContent.Components
         /// The Dnn file information object.
         /// </value>
         /// <remarks>This is only available for files under the Dnn Portal Directory</remarks>
-        protected IFileInfo FileInfo { get; set; }
+        protected IFileInfo FileInfo { get; }
 
         private JObject _fileMetaData;
 
@@ -158,7 +169,7 @@ namespace Satrabel.OpenContent.Components
             var modId = dnnFileManagerModule.ModuleID;
             //var modId = 1420; 
             var url = Globals.NavigateURL(dnnFileManagerModule.TabID, "FileProperties", "mid=" + modId, "popUp=true", "fileId=" + FileInfo.FileId);
-            return string.Format("javascript:dnnModal.show('{0}',/*showReturn*/false,550,950,true,'')", url);
+            return $"javascript:dnnModal.show('{url}',/*showReturn*/false,550,950,true,'')";
             //javascript:dnnModal.show('http://localhost:54068/en-us/OpenFiles/ctl/Module/ModuleId/487/view/gridview/pageSize/10?ReturnURL=/en-us/OpenFiles?folderId=42&popUp=true',/*showReturn*/false,550,950,true,'')
             //return string.Format("javascript:dnnModal.show('{0}/ctl/FileProperties/mid/{2}?popUp=true&fileId={1}')", url, FileInfo.FileId, modId);
         }

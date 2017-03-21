@@ -11,23 +11,23 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
     {
         #region Constructors
 
-        public ImageUri(int fileId)
+        internal ImageUri(int fileId)
             : base(fileId)
         {
         }
-        public ImageUri(string fileFullPath)
+        internal ImageUri(string fileFullPath)
             : base(PortalSettings.Current.PortalId, fileFullPath)
         {
         }
-        public ImageUri(string path, string filename)
+        internal ImageUri(string path, string filename)
             : base(PortalSettings.Current.PortalId, path, filename)
         {
         }
-        public ImageUri(int portalid, string fileFullPath)
+        internal ImageUri(int portalid, string fileFullPath)
             : base(portalid, fileFullPath)
         {
         }
-        public ImageUri(int portalid, string path, string filename)
+        internal ImageUri(int portalid, string path, string filename)
             : base(portalid, path, filename)
         {
         }
@@ -37,11 +37,9 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         {
             get
             {
-                if (FileInfo != null)
-                {
-                    return FileInfo.Width;
-                }
-                return -1;
+                if (FileInfo == null) return -1;
+
+                return FileInfo.Width;
             }
         }
 
@@ -49,41 +47,44 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         {
             get
             {
-                if (FileInfo != null)
-                {
-                    return FileInfo.Height;
-                }
-                return -1;
+                if (FileInfo == null) return -1;
+
+                return FileInfo.Height;
+            }
+        }
+
+        public string RawRatio
+        {
+            get
+            {
+                if (FileInfo == null) return "";
+
+                return FileInfo.Width + "x" + FileInfo.Height;
             }
         }
 
         public bool IsSquare()
         {
-            var w = this.FileInfo.Width;
-            var h = this.FileInfo.Height;
-            if (w <= 0 || h <= 0) return false;
+            if (Width <= 0 || Height <= 0) return false;
 
-            var ratio = Math.Round((decimal)h / (decimal)w, 1);
+            var ratio = Math.Round((decimal)Height / (decimal)Width, 1);
             return Math.Abs(1 - ratio) <= (decimal)0.1;
         }
 
         public bool IsPortrait()
         {
-            var w = this.FileInfo.Width;
-            var h = this.FileInfo.Height;
-            if (w <= 0 || h <= 0) return false;
+            if (Width <= 0 || Height <= 0) return false;
             if (IsSquare()) return false;
 
-            return h > w;
+            return Height > Width;
         }
+
         public bool IsLandScape()
         {
-            var w = this.FileInfo.Width;
-            var h = this.FileInfo.Height;
-            if (w <= 0 || h <= 0) return false;
+            if (Width <= 0 || Height <= 0) return false;
             if (IsSquare()) return false;
 
-            return h < w;
+            return Height < Width;
         }
 
         public string GetImageUrl(int width, int height)

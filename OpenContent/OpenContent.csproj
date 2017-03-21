@@ -298,7 +298,7 @@
     <Compile Include="Components\Rest\Swagger\SwaggerSecurityScheme.cs" />
     <Compile Include="Components\Rest\Swagger\Tag.cs" />
     <Compile Include="Components\Rss\RssApiController.cs" />
-    <Compile Include="Components\TemplateHelpers\Images\ImageFactory.cs" />
+    <Compile Include="Components\TemplateHelpers\Images\ImageUriFactory.cs" />
     <Compile Include="Components\TemplateHelpers\OpenGraph.cs" />
     <Compile Include="Components\TemplateHelpers\OtherExtentions.cs" />
     <Compile Include="Components\Manifest\TemplateManifest.cs" />

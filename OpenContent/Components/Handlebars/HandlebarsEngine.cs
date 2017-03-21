@@ -28,6 +28,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
         {
             try
             {
+                //register server side helpers
                 var hbs = HandlebarsDotNet.Handlebars.Create();
                 RegisterDivideHelper(hbs);
                 RegisterMultiplyHelper(hbs);
@@ -455,7 +456,9 @@ namespace Satrabel.OpenContent.Components.Handlebars
 
         /// <summary>
         /// Retrieves image URL.
-        /// Param1 is imageId, Param2 is Size of the image (in Bootstrap 12th), Param3 is ratio string (eg '1x1'), 
+        /// Param1 is imageId, 
+        /// Param2 is Size of the image (in Bootstrap 12th), 
+        /// Param3 is ratio string (eg '1x1'), 
         /// </summary>
         /// <param name="hbs">The HBS.</param>
         private void RegisterImageUrlHelper(HandlebarsDotNet.IHandlebars hbs)
@@ -469,12 +472,24 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     string ratiostring = parameters[2] as string;
                     bool isMobile = HttpContext.Current.Request.Browser.IsMobileDevice;
 
-                    ImageUri imageObject = ImageFactory.CreateImage(imageId);
+                    ImageUri imageObject = ImageUriFactory.CreateImageUri(imageId);
                     var imageUrl = imageObject == null ? string.Empty : imageObject.GetImageUrl(width, ratiostring, isMobile);
 
                     writer.WriteSafeString(imageUrl);
                 }
+                if (parameters.Length == 2)
+                {
+                    string imageId = parameters[0] as string;
+                    int width = Normalize.DynamicValue(parameters[1], -1);
+                    bool isMobile = HttpContext.Current.Request.Browser.IsMobileDevice;
+
+                    ImageUri imageObject = ImageUriFactory.CreateImageUri(imageId);
+                    var imageUrl = imageObject == null ? string.Empty : imageObject.GetImageUrl(width, imageObject.RawRatio, isMobile);
+
+                    writer.WriteSafeString(imageUrl);
+                }
             });
+           
         }
 
         /// <summary>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace Satrabel.OpenContent.Components.TemplateHelpers
 {
@@ -124,6 +125,19 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             return retval;
         }
         #endregion
+        #region NormalizeDynamic
 
+        public static JObject JsonExtract(JObject value, string key, JObject defaultValue)
+        {
+            if (value == null) return defaultValue;
+            if (string.IsNullOrEmpty(key)) return defaultValue;
+
+            var extract = value[key] as JObject;
+            if (extract == null) return defaultValue;
+
+            return extract;
+        }
+
+        #endregion
     }
 }
