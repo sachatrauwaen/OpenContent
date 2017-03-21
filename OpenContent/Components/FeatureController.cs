@@ -197,8 +197,9 @@ namespace Satrabel.OpenContent.Components
             string docTitle = modInfo.ModuleTitle; // SK: this is the behaviour before introduction of DnnSearchTitle
             if (!string.IsNullOrEmpty(settings.Template?.Main?.DnnSearchTitle))
             {
+                var dynForHBS = JsonUtils.JsonToDictionary(content.ToString());
                 var hbEngine = new HandlebarsEngine();
-                docTitle = hbEngine.ExecuteWithoutFaillure(settings.Template.Main.DnnSearchTitle, content, modInfo.ModuleTitle);
+                docTitle = hbEngine.ExecuteWithoutFaillure(settings.Template.Main.DnnSearchTitle, dynForHBS, modInfo.ModuleTitle);
             }
 
             var retval = new SearchDocument
