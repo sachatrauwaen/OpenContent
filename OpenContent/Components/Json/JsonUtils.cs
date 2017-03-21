@@ -57,7 +57,7 @@ namespace Satrabel.OpenContent.Components.Json
             return dynamicObject;
         }
 
-        public static dynamic JsonToDictionary(string json)
+        public static Dictionary<string, object> JsonToDictionary(string json)
         {
             var jsSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
             Dictionary<string, object> model = (Dictionary<string, object>)jsSerializer.DeserializeObject(json);
@@ -353,7 +353,7 @@ namespace Satrabel.OpenContent.Components.Json
                                     var ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                                     var dsContext = OpenContentUtils.CreateDataContext(module);
                                     IDataItem dataItem = ds.Get(dsContext, val.ToString());
-                                    newArray.Add(GenerateObject(dataItem, val.ToString(), dataMember, valueField));
+                                    newArray.Add(GenerateObject(dataItem, val.ToString()));
                                 }
                                 catch (System.Exception)
                                 {
@@ -383,7 +383,7 @@ namespace Satrabel.OpenContent.Components.Json
                             var ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                             var dsContext = OpenContentUtils.CreateDataContext(module);
                             IDataItem dataItem = ds.Get(dsContext, val);
-                            o[childProperty.Name] = GenerateObject(dataItem, val, dataMember, valueField);
+                            o[childProperty.Name] = GenerateObject(dataItem, val);
                         }
                         catch (System.Exception ex)
                         {
@@ -497,7 +497,7 @@ namespace Satrabel.OpenContent.Components.Json
             var portalFileUri = new PortalFileUri(f);
             return portalFileUri.EditUrl();
         }
-        private static JObject GenerateObject(IDataItem additionalData, string id, string dataMember, string valueField)
+        private static JObject GenerateObject(IDataItem additionalData, string id)
         {
             var json = additionalData?.Data;
             //if (!string.IsNullOrEmpty(dataMember))

@@ -489,7 +489,7 @@ namespace Satrabel.OpenContent.Components.Render
                 if (dataJson != null)
                 {
                     var mf = new ModelFactorySingle(_renderinfo.Data, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, PortalSettings.Current);
-                    object model;
+                    Dictionary<string, object> model;
                     if (templateUri.Extension != ".hbs") // razor
                     {
                         model = mf.GetModelAsDynamic();
