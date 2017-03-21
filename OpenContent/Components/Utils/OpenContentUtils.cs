@@ -118,7 +118,7 @@ namespace Satrabel.OpenContent.Components
                 Directory.CreateDirectory(basePath);
             }
             var dirs = Directory.GetDirectories(basePath);
-            if (otherModuleTemplate != null)
+            if (otherModuleTemplate != null && !otherModuleTemplate.PhysicalFilePath.Contains(HostingEnvironment.MapPath(GetSkinTemplateFolder(portalSettings, moduleSubDir))))
             {
                 var selDir = otherModuleTemplate.PhysicalFullDirectory;
                 if (!dirs.Contains(selDir))
