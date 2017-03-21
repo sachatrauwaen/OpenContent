@@ -10,6 +10,7 @@
 #region Using Statements
 
 using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
@@ -376,11 +377,33 @@ namespace Satrabel.OpenContent.Components
                     {
                         foreach (var item in items)
                         {
-                            res.Add(new LookupResultDTO()
+                            var json = item.Data;
+
+                            if (!string.IsNullOrEmpty(req.dataMember) && json[req.dataMember] != null)
                             {
-                                value = item.Id, //todo user valuefield
-                                text = item.Title //todo user textfield
-                            });
+                                json = json[req.dataMember];
+                            }
+
+                            var array = json as JArray;
+                            if (array != null)
+                            {
+                                res.AddRange(array.Select(childItem => 
+                                    new LookupResultDTO
+                                        {
+                                            value = childItem[req.valueField] == null ? "" : childItem[req.valueField].ToString(),
+                                            text = childItem[req.textField] == null ? "" : childItem[req.textField].ToString()
+                                        }
+                                    )
+                                );
+                            }
+                            else
+                            {
+                                res.Add(new LookupResultDTO
+                                {
+                                    value = json[req.valueField] == null ? item.Id : json[req.valueField].ToString(),
+                                    text = json[req.textField] == null ? item.Title : json[req.textField].ToString()
+                                });
+                            }
                         }
                     }
                 }
