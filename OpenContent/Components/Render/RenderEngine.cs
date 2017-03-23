@@ -454,7 +454,7 @@ namespace Satrabel.OpenContent.Components.Render
             }
             return writer.ToString();
         }
-        private string ExecuteTemplate(Page page, TemplateManifest templateManifest, TemplateFiles files, FileUri templateUri, dynamic model)
+        private string ExecuteTemplate(Page page, TemplateManifest templateManifest, TemplateFiles files, FileUri templateUri, object model)
         {
             var templateVirtualFolder = templateManifest.ManifestFolderUri.UrlFolder;
             if (LogContext.IsLogActive)
@@ -489,7 +489,7 @@ namespace Satrabel.OpenContent.Components.Render
                 if (dataJson != null)
                 {
                     var mf = new ModelFactorySingle(_renderinfo.Data, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, PortalSettings.Current);
-                    dynamic model;
+                    object model;
                     if (templateUri.Extension != ".hbs") // razor
                     {
                         model = mf.GetModelAsDynamic();
