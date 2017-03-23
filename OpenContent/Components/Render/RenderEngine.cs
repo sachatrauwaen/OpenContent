@@ -307,11 +307,11 @@ namespace Satrabel.OpenContent.Components.Render
                 else
                 {
                     resultList = ds.GetAll(dsContext, null).Items;
-                    if (LogContext.IsLogActive)
-                    {
-                        var logKey = "Get all data of module";
-                        //LogContext.Log(_module.ModuleID, logKey, "result", resultList);
-                    }
+                    //if (LogContext.IsLogActive)
+                    //{
+                    //    var logKey = "Get all data of module";
+                    //    LogContext.Log(_module.ModuleID, logKey, "result", resultList);
+                    //}
                 }
                 if (resultList.Any())
                 {
@@ -328,11 +328,11 @@ namespace Satrabel.OpenContent.Components.Render
             var dsContext = OpenContentUtils.CreateDataContext(module);
 
             var dsItem = ds.Get(dsContext, info.DetailItemId);
-            if (LogContext.IsLogActive)
-            {
-                var logKey = "Get detail data";
-                //LogContext.Log(_module.ModuleID, logKey, "debuginfo", dsItems.DebugInfo);
-            }
+            //if (LogContext.IsLogActive)
+            //{
+            //    var logKey = "Get detail data";
+            //    LogContext.Log(_module.ModuleID, logKey, "debuginfo", dsItems.DebugInfo);
+            //}
 
             if (dsItem != null)
             {
