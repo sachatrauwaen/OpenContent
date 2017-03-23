@@ -69,7 +69,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             }
         }
 
-        public string Execute(string source, dynamic model)
+        public string Execute(string source, object model)
         {
             try
             {
@@ -141,7 +141,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 }
             });
         }
-        public string Execute(Page page, FileUri sourceFileUri, dynamic model)
+        public string Execute(Page page, FileUri sourceFileUri, object model)
         {
             try
             {
@@ -161,7 +161,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 throw new TemplateException("Failed to render Handlebar template " + sourceFileUri.FilePath, ex, model, sourceFileUri.FilePath);
             }
         }
-        public string Execute(Page page, TemplateFiles files, string templateVirtualFolder, dynamic model)
+        public string Execute(Page page, TemplateFiles files, string templateVirtualFolder, object model)
         {
             var sourceFileUri = new FileUri(templateVirtualFolder + "/" + files.Template);
             try
