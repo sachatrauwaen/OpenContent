@@ -53,10 +53,18 @@ namespace Satrabel.OpenContent.Components
             IFileInfo fileRequested = null;
             var pf = (new PortalController()).GetPortal(portalid).HomeDirectory;
             var pos = FilePath.IndexOf(pf, StringComparison.InvariantCultureIgnoreCase);
-            if (pos > -1)
+            if (pos < 0)
             {
-                fileRequested = FileManager.Instance.GetFile(portalid, FilePath.Substring(pos + pf.Length + 1));
+                //maybe we are looking for _default file?
+                pf = "portals/_default";
+                pos = FilePath.IndexOf(pf, StringComparison.InvariantCultureIgnoreCase);
+                if (pos < 0)
+                    throw new ArgumentNullException($"iFileInfo not found for path [{FilePath}]. Incorrect Homedirectory.");
+                else
+                    portalid = -1;
             }
+
+            fileRequested = FileManager.Instance.GetFile(portalid, FilePath.Substring(pos + pf.Length + 1));
             if (fileRequested == null)
                 throw new ArgumentNullException($"iFileInfo not found for path [{FilePath}]");
 

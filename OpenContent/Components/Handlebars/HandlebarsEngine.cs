@@ -14,8 +14,10 @@ using Satrabel.OpenContent.Components.TemplateHelpers;
 using Satrabel.OpenContent.Components.Dynamic;
 using System.Collections;
 using DotNetNuke.Entities.Portals;
+using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Logging;
 using Satrabel.OpenContent.Components.Alpaca;
+using Satrabel.OpenContent.Components.Json;
 
 namespace Satrabel.OpenContent.Components.Handlebars
 {
@@ -53,7 +55,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             }
         }
 
-        public string Execute(dynamic model)
+        public string Execute(Dictionary<string, object> model)
         {
             try
             {
@@ -67,7 +69,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             }
         }
 
-        public string Execute(string source, dynamic model)
+        public string Execute(string source, object model)
         {
             try
             {
@@ -77,11 +79,11 @@ namespace Satrabel.OpenContent.Components.Handlebars
             }
             catch (Exception ex)
             {
-                Log.Logger.Error(string.Format("Failed to render Handlebar template source:[{0}], model:[{1}]", source, model), ex);
+                Log.Logger.Error($"Failed to render Handlebar template source:[{source}], model:[{model}]", ex);
                 throw new TemplateException("Failed to render Handlebar template ", ex, model, source);
             }
         }
-        public string ExecuteWithoutFaillure(string source, dynamic model, string defaultValue)
+        public string ExecuteWithoutFaillure(string source, Dictionary<string, object> model, string defaultValue)
         {
             try
             {
@@ -91,7 +93,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             }
             catch (Exception ex)
             {
-                Log.Logger.Error(string.Format("Failed to render Handlebar template source:[{0}], model:[{1}]", source, model), ex);
+                Log.Logger.Error($"Failed to render Handlebar template source:[{source}], model:[{model}]", ex);
             }
             return defaultValue;
         }
@@ -139,7 +141,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 }
             });
         }
-        public string Execute(Page page, FileUri sourceFileUri, dynamic model)
+        public string Execute(Page page, FileUri sourceFileUri, object model)
         {
             try
             {
@@ -159,7 +161,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 throw new TemplateException("Failed to render Handlebar template " + sourceFileUri.FilePath, ex, model, sourceFileUri.FilePath);
             }
         }
-        public string Execute(Page page, TemplateFiles files, string templateVirtualFolder, dynamic model)
+        public string Execute(Page page, TemplateFiles files, string templateVirtualFolder, object model)
         {
             var sourceFileUri = new FileUri(templateVirtualFolder + "/" + files.Template);
             try
@@ -189,7 +191,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             }
         }
 
-        private string CompileTemplate(IHandlebars hbs, string source, dynamic model)
+        private string CompileTemplate(IHandlebars hbs, string source, object model)
         {
             var compiledTemplate = hbs.Compile(source);
             return compiledTemplate(model);

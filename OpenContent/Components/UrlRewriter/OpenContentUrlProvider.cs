@@ -96,12 +96,12 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                                 ModelFactoryMultiple mf = new ModelFactoryMultiple(dataList, module.Settings.Data, physicalTemplateFolder, module.Settings.Template.Manifest, module.Settings.Template, module.Settings.Template.Main, module, portalId, cultureCode);
                                 //dynamic model = mf.GetModelAsDynamic(true);
                                 //dynamic items = model.Items;
-                                IEnumerable<dynamic> items = mf.GetModelAsDynamicList();
+                                IEnumerable<Dictionary<string, object>> items = mf.GetModelAsDictionaryList();
                                 //Log.Logger.Debug("OCUR/" + PortalId + "/" + module.TabID + "/" + MainTabId + "/" + module.ModuleID + "/" + MainModuleId + "/" + CultureCode + "/" + dataList.Count() + "/" + module.ModuleTitle);
                                 //foreach (IDataItem content in dataList)
-                                foreach (dynamic content in items)
+                                foreach (Dictionary<string, object> content in items)
                                 {
-                                    string id = content.Context.Id;
+                                    string id = (content["Context"] as Dictionary<string, object>)["Id"].ToString();
                                     string url = "content-" + id;
                                     if (!string.IsNullOrEmpty(module.Settings.Manifest.DetailUrl))
                                     {
@@ -114,7 +114,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                                         }
                                         catch (Exception ex)
                                         {
-                                            Log.Logger.Error("Failed to generate url for opencontent item " + content.Id, ex);
+                                            Log.Logger.Error("Failed to generate url for opencontent item " + id, ex);
                                         }
                                     }
 

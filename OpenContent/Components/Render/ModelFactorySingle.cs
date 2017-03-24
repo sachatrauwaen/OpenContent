@@ -64,7 +64,7 @@ namespace Satrabel.OpenContent.Components.Render
                 if (!string.IsNullOrEmpty(_manifest?.DetailUrl))
                 {
                     HandlebarsEngine hbEngine = new HandlebarsEngine();
-                    dynamic dynForHBS = JsonUtils.JsonToDynamic(model.ToString());
+                    var dynForHBS = JsonUtils.JsonToDictionary(model.ToString());
                     url = hbEngine.Execute(_manifest.DetailUrl, dynForHBS);
                     url = HttpUtility.HtmlDecode(url);
                 }

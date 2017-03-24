@@ -41,10 +41,10 @@ namespace Satrabel.OpenContent.Components.Render
             this._dataList = dataList;
         }
         /// <summary>
-        /// Gets the model as dynamic list, used by Url Rewriter
+        /// Gets the model as dictionary list, used by Url Rewriter
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<dynamic> GetModelAsDynamicList()
+        public IEnumerable<Dictionary<string, object>> GetModelAsDictionaryList()
         {
             var completeModel = new JObject();
             ExtendModel(completeModel, true);
@@ -61,7 +61,7 @@ namespace Satrabel.OpenContent.Components.Render
                         JsonUtils.SimplifyJson(model, GetCurrentCultureCode());
                     }
                     EnhanceSelect2(model);
-                    yield return JsonUtils.JsonToDynamic(model.ToString());
+                    yield return JsonUtils.JsonToDictionary(model.ToString());
                 }
             }
         }
@@ -110,7 +110,7 @@ namespace Satrabel.OpenContent.Components.Render
                         if (!string.IsNullOrEmpty(_manifest.DetailUrl))
                         {
                             HandlebarsEngine hbEngine = new HandlebarsEngine();
-                            dynamic dynForHBS = JsonUtils.JsonToDynamic(dyn.ToString());
+                            var dynForHBS = JsonUtils.JsonToDictionary(dyn.ToString());
                             url = hbEngine.Execute(_manifest.DetailUrl, dynForHBS);
                             url = HttpUtility.HtmlDecode(url);
                         }

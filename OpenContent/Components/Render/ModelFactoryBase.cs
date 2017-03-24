@@ -118,6 +118,13 @@ namespace Satrabel.OpenContent.Components.Render
             JToken model = GetModelAsJson(onlyData);
             return JsonUtils.JsonToDynamic(model.ToString());
         }
+        public Dictionary<string, object> GetModelAsDictionary(bool onlyData = false)
+        {
+            if (_portalSettings == null) onlyData = true;
+
+            JToken model = GetModelAsJson(onlyData);
+            return JsonUtils.JsonToDictionary(model.ToString());
+        }
 
         public abstract JToken GetModelAsJson(bool onlyData = false, bool onlyMainData = false);
 

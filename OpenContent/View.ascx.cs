@@ -154,6 +154,7 @@ namespace Satrabel.OpenContent
                 try
                 {
                     _engine.IncludeResourses(Page, this);
+
                 }
                 catch (Exception ex)
                 {
@@ -293,7 +294,7 @@ namespace Satrabel.OpenContent
                 {
                     AJAX.WrapUpdatePanelControl(lit, true);
                 }
-
+                _engine.IncludeMeta(Page);
                 //if (DemoData) pDemo.Visible = true;
             }
             if (LogContext.IsLogActive && !Debugger.IsAttached)

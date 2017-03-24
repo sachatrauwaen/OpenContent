@@ -56,6 +56,11 @@ namespace Satrabel.OpenContent.Components.Render
         public NameValueCollection QueryString { get; set; } // Only for filtering
         public ModuleInstanceContext ModuleContext { get; set; } // Only for Dnn Razor helpers
         public string LocalResourceFile { get; set; } // Only for Dnn Razor helpers
+
+        public string MetaTitle { get; set; }
+        public string MetaDescription { get; set; }
+        public string MetaOther { get; set; }
+
         public void Render(Page page)
         {
             //start rendering           
@@ -213,6 +218,22 @@ namespace Satrabel.OpenContent.Components.Render
             }
         }
 
+        public void IncludeMeta(Page page)
+        {
+            if (!string.IsNullOrEmpty(MetaTitle))
+            {
+                page.Title = MetaTitle;                
+            }
+            if (!string.IsNullOrEmpty(MetaDescription))
+            {
+                PageUtils.SetPageDescription(page, MetaDescription);
+            }
+            if (!string.IsNullOrEmpty(MetaOther))
+            {
+                PageUtils.SetPageMeta(page, MetaOther);
+            }
+        }
+
         #region Data
 
         public string GetDataList(RenderInfo info, OpenContentSettings settings, bool clientSide)
@@ -286,11 +307,11 @@ namespace Satrabel.OpenContent.Components.Render
                 else
                 {
                     resultList = ds.GetAll(dsContext, null).Items;
-                    if (LogContext.IsLogActive)
-                    {
-                        var logKey = "Get all data of module";
-                        //LogContext.Log(_module.ModuleID, logKey, "result", resultList);
-                    }
+                    //if (LogContext.IsLogActive)
+                    //{
+                    //    var logKey = "Get all data of module";
+                    //    LogContext.Log(_module.ModuleID, logKey, "result", resultList);
+                    //}
                 }
                 if (resultList.Any())
                 {
@@ -307,11 +328,11 @@ namespace Satrabel.OpenContent.Components.Render
             var dsContext = OpenContentUtils.CreateDataContext(module);
 
             var dsItem = ds.Get(dsContext, info.DetailItemId);
-            if (LogContext.IsLogActive)
-            {
-                var logKey = "Get detail data";
-                //LogContext.Log(_module.ModuleID, logKey, "debuginfo", dsItems.DebugInfo);
-            }
+            //if (LogContext.IsLogActive)
+            //{
+            //    var logKey = "Get detail data";
+            //    LogContext.Log(_module.ModuleID, logKey, "debuginfo", dsItems.DebugInfo);
+            //}
 
             if (dsItem != null)
             {
@@ -433,7 +454,7 @@ namespace Satrabel.OpenContent.Components.Render
             }
             return writer.ToString();
         }
-        private string ExecuteTemplate(Page page, TemplateManifest templateManifest, TemplateFiles files, FileUri templateUri, dynamic model)
+        private string ExecuteTemplate(Page page, TemplateManifest templateManifest, TemplateFiles files, FileUri templateUri, object model)
         {
             var templateVirtualFolder = templateManifest.ManifestFolderUri.UrlFolder;
             if (LogContext.IsLogActive)
@@ -468,21 +489,32 @@ namespace Satrabel.OpenContent.Components.Render
                 if (dataJson != null)
                 {
                     var mf = new ModelFactorySingle(_renderinfo.Data, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, PortalSettings.Current);
-                    dynamic model = mf.GetModelAsDynamic();
+                    object model;
+                    if (templateUri.Extension != ".hbs") // razor
+                    {
+                        model = mf.GetModelAsDynamic();
+                    }
+                    else // handlebars
+                    {
+                        model = mf.GetModelAsDictionary();
+                    }
                     if (!string.IsNullOrEmpty(_renderinfo.Template.Manifest.DetailMetaTitle))
                     {
                         HandlebarsEngine hbEngine = new HandlebarsEngine();
-                        page.Title = hbEngine.Execute(_renderinfo.Template.Manifest.DetailMetaTitle, model);
+                        //page.Title
+                        MetaTitle = hbEngine.Execute(_renderinfo.Template.Manifest.DetailMetaTitle, model);
                     }
                     if (!string.IsNullOrEmpty(_renderinfo.Template.Manifest.DetailMetaDescription))
                     {
                         HandlebarsEngine hbEngine = new HandlebarsEngine();
-                        PageUtils.SetPageDescription(page, hbEngine.Execute(_renderinfo.Template.Manifest.DetailMetaDescription, model));
+                        //PageUtils.SetPageDescription(page, hbEngine.Execute(_renderinfo.Template.Manifest.DetailMetaDescription, model));
+                        MetaDescription = hbEngine.Execute(_renderinfo.Template.Manifest.DetailMetaDescription, model);
                     }
                     if (!string.IsNullOrEmpty(_renderinfo.Template.Manifest.DetailMeta))
                     {
                         HandlebarsEngine hbEngine = new HandlebarsEngine();
-                        PageUtils.SetPageMeta(page, hbEngine.Execute(_renderinfo.Template.Manifest.DetailMeta, model));
+                        //PageUtils.SetPageMeta(page, hbEngine.Execute(_renderinfo.Template.Manifest.DetailMeta, model));
+                        MetaOther = hbEngine.Execute(_renderinfo.Template.Manifest.DetailMeta, model);
                     }
                     return ExecuteTemplate(page, templateManifest, files, templateUri, model);
                 }
@@ -517,20 +549,26 @@ namespace Satrabel.OpenContent.Components.Render
                     {
                         mf = new ModelFactorySingle(_renderinfo.Data, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, ps);
                     }
-                    dynamic model = mf.GetModelAsDynamic();
-                    if (LogContext.IsLogActive)
+                    if (template.Extension != ".hbs") // razor
                     {
-                        var logKey = "Render single item template";
-                        LogContext.Log(_module.ViewModule.ModuleID, logKey, "template", template.FilePath);
-                        LogContext.Log(_module.ViewModule.ModuleID, logKey, "model", model);
-                    }
-
-                    if (template.Extension != ".hbs")
-                    {
+                        dynamic model = mf.GetModelAsDynamic();
+                        if (LogContext.IsLogActive)
+                        {
+                            var logKey = "Render single item template";
+                            LogContext.Log(_module.ViewModule.ModuleID, logKey, "template", template.FilePath);
+                            LogContext.Log(_module.ViewModule.ModuleID, logKey, "model", model);
+                        }
                         return ExecuteRazor(template, model);
                     }
-                    else
+                    else // handlebars
                     {
+                        var model = mf.GetModelAsDictionary();
+                        if (LogContext.IsLogActive)
+                        {
+                            var logKey = "Render single item template";
+                            LogContext.Log(_module.ViewModule.ModuleID, logKey, "template", template.FilePath);
+                            LogContext.Log(_module.ViewModule.ModuleID, logKey, "model", model);
+                        }
                         HandlebarsEngine hbEngine = new HandlebarsEngine();
                         return hbEngine.Execute(page, template, model);
                     }
@@ -556,7 +594,15 @@ namespace Satrabel.OpenContent.Components.Render
                 if (dataList != null)
                 {
                     ModelFactoryMultiple mf = new ModelFactoryMultiple(dataList, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, PortalSettings.Current);
-                    dynamic model = mf.GetModelAsDynamic();
+                    object model;
+                    if (templateUri.Extension != ".hbs") // razor
+                    {
+                        model = mf.GetModelAsDynamic();
+                    }
+                    else // handlebars
+                    {
+                        model = mf.GetModelAsDictionary();
+                    }
                     return ExecuteTemplate(page, templateManifest, files, templateUri, model);
                 }
             }
