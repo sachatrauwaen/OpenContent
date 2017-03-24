@@ -112,20 +112,24 @@ namespace Satrabel.OpenContent.Components
 
         public static List<ListItem> GetTemplatesFiles(PortalSettings portalSettings, int moduleId, TemplateManifest selectedTemplate, string moduleSubDir, FileUri otherModuleTemplate)
         {
+            //bool otherModuleSkinTemplate = otherModuleTemplate != null && otherModuleTemplate.PhysicalFilePath.Contains(HostingEnvironment.MapPath(GetSkinTemplateFolder(portalSettings, moduleSubDir)));
             string basePath = HostingEnvironment.MapPath(GetSiteTemplateFolder(portalSettings, moduleSubDir));
             if (!Directory.Exists(basePath))
             {
                 Directory.CreateDirectory(basePath);
             }
             var dirs = Directory.GetDirectories(basePath);
-            if (otherModuleTemplate != null && !otherModuleTemplate.PhysicalFilePath.Contains(HostingEnvironment.MapPath(GetSkinTemplateFolder(portalSettings, moduleSubDir))))
+            if (otherModuleTemplate != null)
             {
                 var selDir = otherModuleTemplate.PhysicalFullDirectory;
                 if (!dirs.Contains(selDir))
                 {
                     selDir = Path.GetDirectoryName(selDir);
                 }
-                dirs = new string[] { selDir };
+                if (dirs.Contains(selDir))
+                    dirs = new string[] { selDir };
+                else
+                    dirs = new string[] { };
             }
             List<ListItem> lst = new List<ListItem>();
             foreach (var dir in dirs)
@@ -164,7 +168,7 @@ namespace Satrabel.OpenContent.Components
                             foreach (var template in manifest.Templates)
                             {
                                 FileUri templateUri = new FileUri(manifestFileUri.FolderPath, template.Key);
-                                string templateName = Path.GetDirectoryName(manifestFile).Substring(basePath.Length).Replace("\\"," / ");
+                                string templateName = Path.GetDirectoryName(manifestFile).Substring(basePath.Length).Replace("\\", " / ");
                                 if (!string.IsNullOrEmpty(template.Value.Title))
                                 {
                                     templateName = templateName + " - " + template.Value.Title;
@@ -212,7 +216,21 @@ namespace Satrabel.OpenContent.Components
             basePath = HostingEnvironment.MapPath(GetSkinTemplateFolder(portalSettings, moduleSubDir));
             if (Directory.Exists(basePath))
             {
-                foreach (var dir in Directory.GetDirectories(basePath))
+                dirs = Directory.GetDirectories(basePath);
+                if (otherModuleTemplate != null /*&& */ )
+                {
+                    var selDir = otherModuleTemplate.PhysicalFullDirectory;
+                    if (!dirs.Contains(selDir))
+                    {
+                        selDir = Path.GetDirectoryName(selDir);
+                    }
+                    if (dirs.Contains(selDir))
+                        dirs = new string[] { selDir };
+                    else
+                        dirs = new string[] { };
+                }
+
+                foreach (var dir in dirs)
                 {
                     string templateCat = "Skin";
 
@@ -258,10 +276,10 @@ namespace Satrabel.OpenContent.Components
                             if (scriptName.ToLower().EndsWith("template")) scriptName = scriptName.Remove(scriptName.LastIndexOf("\\"));
                             else scriptName = scriptName.Replace("\\", " - ");
 
-                            string scriptPath = FolderUri.ReverseMapPath(script);
-                            var item = new ListItem(templateCat + " : " + scriptName, scriptPath);
+                            FileUri templateUri = FileUri.FromPath(script);
+                            var item = new ListItem(templateCat + " : " + scriptName, templateUri.FilePath);
                             if (selectedTemplate != null
-                                && scriptPath.ToLowerInvariant() == selectedTemplate.Key.ToString().ToLowerInvariant())
+                                && templateUri.FilePath.ToLowerInvariant() == selectedTemplate.Key.ToString().ToLowerInvariant())
                             {
                                 item.Selected = true;
                             }
@@ -269,6 +287,7 @@ namespace Satrabel.OpenContent.Components
                         }
                     }
                 }
+
             }
             return lst;
         }
