@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("OpenContent")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Structured content for DNN")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Satrabel")]
 [assembly: AssemblyProduct("OpenContent")]
