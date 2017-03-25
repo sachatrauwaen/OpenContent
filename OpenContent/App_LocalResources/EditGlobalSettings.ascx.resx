@@ -144,4 +144,7 @@
   <data name="lGoogleApiKey.Text" xml:space="preserve">
     <value>Google Api Key</value>
   </data>
+  <data name="lFastHandlebars.Text" xml:space="preserve">
+    <value>Fast Handlebars. Case sensitive variables ! (Beta)</value>
+  </data>
 </root>

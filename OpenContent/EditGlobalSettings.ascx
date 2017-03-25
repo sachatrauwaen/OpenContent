@@ -22,6 +22,7 @@
             <asp:ListItem Value="allways" Text="Always"></asp:ListItem>
         </asp:DropDownList>
     </div>
+
     <div class="dnnFormItem">
         <dnn:Label ID="lGoogleApiKey" ControlName="tbGoogleApiKey" runat="server" />
         <asp:TextBox ID="tbGoogleApiKey" runat="server"></asp:TextBox>
@@ -38,6 +39,11 @@
         <dnn:Label ID="lLoadBootstrap" ControlName="cbLoadBootstrap" runat="server" />
         <asp:CheckBox ID="cbLoadBootstrap" runat="server" />
     </div>
+    <div class="dnnFormItem">
+        <dnn:Label ID="lFastHandlebars" ControlName="cbFastHandlebars" runat="server" />
+        <asp:CheckBox ID="cbFastHandlebars" runat="server" />
+    </div>
+
     <ul class="dnnActions dnnClear" style="display: block; padding-left: 35%">
         <li>
             <asp:LinkButton ID="cmdSave" runat="server" class="dnnPrimaryAction" resourcekey="cmdSave" />

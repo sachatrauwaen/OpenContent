@@ -24,6 +24,7 @@ using DotNetNuke.UI.Modules;
 using Newtonsoft.Json.Linq;
 using IDataSource = Satrabel.OpenContent.Components.Datasource.IDataSource;
 using System.Collections;
+using System.Diagnostics;
 
 namespace Satrabel.OpenContent.Components.Render
 {
@@ -222,7 +223,7 @@ namespace Satrabel.OpenContent.Components.Render
         {
             if (!string.IsNullOrEmpty(MetaTitle))
             {
-                page.Title = MetaTitle;                
+                page.Title = MetaTitle;
             }
             if (!string.IsNullOrEmpty(MetaDescription))
             {
@@ -457,21 +458,33 @@ namespace Satrabel.OpenContent.Components.Render
         private string ExecuteTemplate(Page page, TemplateManifest templateManifest, TemplateFiles files, FileUri templateUri, object model)
         {
             var templateVirtualFolder = templateManifest.ManifestFolderUri.UrlFolder;
+            string output;
+            Stopwatch stopwatch = null;
             if (LogContext.IsLogActive)
             {
                 var logKey = "Render template";
                 LogContext.Log(_module.ViewModule.ModuleID, logKey, "template", templateUri.FilePath);
                 LogContext.Log(_module.ViewModule.ModuleID, logKey, "model", model);
+                stopwatch = new Stopwatch();
+                stopwatch.Start();
             }
             if (templateUri.Extension != ".hbs")
             {
-                return ExecuteRazor(templateUri, model);
+                output = ExecuteRazor(templateUri, model);
             }
             else
             {
                 HandlebarsEngine hbEngine = new HandlebarsEngine();
-                return hbEngine.Execute(page, files, templateVirtualFolder, model);
+                output = hbEngine.Execute(page, files, templateVirtualFolder, model);
             }
+            if (stopwatch != null)
+            {
+                stopwatch.Stop();
+                var logKey = "Render template";
+                LogContext.Log(_module.ViewModule.ModuleID, logKey, "render time (ms)", stopwatch.ElapsedMilliseconds);
+                stopwatch.Stop();
+            }
+            return output;
         }
 
         #endregion
@@ -496,7 +509,11 @@ namespace Satrabel.OpenContent.Components.Render
                     }
                     else // handlebars
                     {
-                        model = mf.GetModelAsDictionary();
+                        if (OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetFastHandlebars())
+                            model = mf.GetModelAsDictionary();
+                        else
+                            model = mf.GetModelAsDynamic();
+
                     }
                     if (!string.IsNullOrEmpty(_renderinfo.Template.Manifest.DetailMetaTitle))
                     {
@@ -562,7 +579,11 @@ namespace Satrabel.OpenContent.Components.Render
                     }
                     else // handlebars
                     {
-                        var model = mf.GetModelAsDictionary();
+                        object model;
+                        if (OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetFastHandlebars())
+                            model = mf.GetModelAsDictionary();
+                        else
+                            model = mf.GetModelAsDynamic();
                         if (LogContext.IsLogActive)
                         {
                             var logKey = "Render single item template";
@@ -601,7 +622,10 @@ namespace Satrabel.OpenContent.Components.Render
                     }
                     else // handlebars
                     {
-                        model = mf.GetModelAsDictionary();
+                        if (OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetFastHandlebars())
+                            model = mf.GetModelAsDictionary();
+                        else
+                            model = mf.GetModelAsDynamic();
                     }
                     return ExecuteTemplate(page, templateManifest, files, templateUri, model);
                 }

@@ -10,6 +10,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DotNetNuke.Common.Utilities;
 using DotNetNuke.Services.Cache;
+using System.Web.Script.Serialization;
 
 namespace Satrabel.OpenContent.Components.Json
 {
@@ -56,12 +57,46 @@ namespace Satrabel.OpenContent.Components.Json
             var dynamicObject = System.Web.Helpers.Json.Decode(json);
             return dynamicObject;
         }
-
         public static Dictionary<string, object> JsonToDictionary(string json)
         {
             var jsSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
             Dictionary<string, object> model = (Dictionary<string, object>)jsSerializer.DeserializeObject(json);
             return model;
+            //return ToDictionaryNoCase(model);
+        }
+        private static DictionaryNoCase ToDictionaryNoCase(Dictionary<string, object> dic)
+        {
+            var newDic = new DictionaryNoCase();
+            foreach (KeyValuePair<string, object> entry in dic)
+            {
+                newDic.Add(entry.Key, convertObject(entry.Value));
+            }
+            return newDic;
+        }
+        private static object convertObject(object obj)
+        {
+            if (obj is string)
+            {
+                return obj;
+            }
+            else if (obj is Dictionary<string, object>)
+            {
+                return ToDictionaryNoCase((Dictionary<string, object>)obj);
+            }
+            else if (obj is IEnumerable)
+            {
+                var arr = (IEnumerable)obj;
+                var newArr = new List<object>();
+                foreach (var item in arr)
+                {
+                    newArr.Add(convertObject(item));
+                }
+                return newArr.ToArray();
+            }
+            else
+            {
+                return obj;
+            }
         }
 
         public static string SimplifyJson(string json, string culture)
@@ -139,7 +174,7 @@ namespace Satrabel.OpenContent.Components.Json
             }
         }
 
-        public static void LookupJson(JObject o, JObject additionalData, JObject schema, JObject options, bool includelabels,  List<string> includes, Func<string, string, JObject> objFromCollection, string prefix = "")
+        public static void LookupJson(JObject o, JObject additionalData, JObject schema, JObject options, bool includelabels, List<string> includes, Func<string, string, JObject> objFromCollection, string prefix = "")
         {
             foreach (var child in o.Children<JProperty>().ToList())
             {
@@ -151,7 +186,7 @@ namespace Satrabel.OpenContent.Components.Json
                     sch = schema["properties"][child.Name] as JObject;
                 }
                 if (sch == null) continue;
-                
+
                 if (options?["fields"] != null)
                 {
                     opt = options["fields"][child.Name] as JObject;
@@ -181,7 +216,7 @@ namespace Satrabel.OpenContent.Components.Json
 
                 // enum enhancement
                 var enums = sch["enum"] is JArray ? (sch["enum"] as JArray).Select(l => l.ToString()).ToArray() : null;
-                var labels = opt["optionLabels"] is JArray ?  (opt["optionLabels"] as JArray).Select(l=> l.ToString()).ToArray() : null;
+                var labels = opt["optionLabels"] is JArray ? (opt["optionLabels"] as JArray).Select(l => l.ToString()).ToArray() : null;
 
                 var childProperty = child;
                 if (childProperty.Value is JArray)
@@ -193,7 +228,7 @@ namespace Satrabel.OpenContent.Components.Json
                         var obj = value as JObject;
                         if (obj != null)
                         {
-                            LookupJson(obj, additionalData, sch["items"] as JObject, opt["items"] as JObject, includelabels,  includes, objFromCollection, field);
+                            LookupJson(obj, additionalData, sch["items"] as JObject, opt["items"] as JObject, includelabels, includes, objFromCollection, field);
                         }
                         else if (lookup)
                         {
@@ -245,7 +280,7 @@ namespace Satrabel.OpenContent.Components.Json
                         }
                     }
 
-                    if (lookup || (include && !string.IsNullOrEmpty(collection)) || (includelabels && enums != null && labels != null) )
+                    if (lookup || (include && !string.IsNullOrEmpty(collection)) || (includelabels && enums != null && labels != null))
                     {
                         childProperty.Value = newArray;
                     }
@@ -615,6 +650,17 @@ namespace Satrabel.OpenContent.Components.Json
                     }
                 }
             }
+        }
+    }
+    class DictionaryNoCase : Dictionary<string, object>
+    {
+        public DictionaryNoCase() : base(StringComparer.OrdinalIgnoreCase)
+        {
+
+        }
+        public DictionaryNoCase(IDictionary<string, object> dic) : base(dic, StringComparer.OrdinalIgnoreCase)
+        {
+
         }
     }
 }

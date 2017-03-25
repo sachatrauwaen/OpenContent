@@ -16,9 +16,9 @@ namespace OpenContentTests
         public void EachFromJson()
         {
             string expected = "123";
-            string dataJson = "{\"lst\":[{\"data\":1},{\"data\":2},{\"data\":3}]}";
+            string dataJson = "{\"lst\":[{\"Data\":1},{\"Data\":2},{\"Data\":3}]}";
             dynamic model = JsonUtils.JsonToDynamic(dataJson);
-            string source = "{{#each lst}}{{data}}{{/each}}";
+            string source = "{{#each lst}}{{Data}}{{/each}}";
             HandlebarsEngine hbEngine = new HandlebarsEngine();
             string res = hbEngine.Execute(source, model);
             Assert.AreEqual(expected, res);
@@ -26,6 +26,20 @@ namespace OpenContentTests
             var modelDic = JsonUtils.JsonToDictionary(dataJson);
             res = hbEngine.Execute(source, model);
             Assert.AreEqual(expected, res);
+        }
+
+        [TestMethod]
+        public void CaseInsensitive()
+        {
+            string dataJson1 = "{\"Lst\":[{\"Data\":1},{\"Data\":2},{\"Data\":3}]}";
+            string dataJson2 = "{\"lst\":[{\"data\":1},{\"data\":2},{\"data\":3}]}";
+            dynamic model1 = JsonUtils.JsonToDynamic(dataJson1);
+            dynamic model2 = JsonUtils.JsonToDynamic(dataJson2);
+            string source = "{{#each lst}}{{data}}{{/each}}";
+            HandlebarsEngine hbEngine = new HandlebarsEngine();
+            string res1= hbEngine.Execute(source, model1);
+            string res2 = hbEngine.Execute(source, model2);
+            Assert.AreEqual(res1, res2);
         }
 
         [TestMethod]

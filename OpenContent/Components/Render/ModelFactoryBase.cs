@@ -136,7 +136,7 @@ namespace Satrabel.OpenContent.Components.Render
             {
                 GetAdditionalData();
             }
-            bool collectonEnhance = _templateFiles.Model != null && _templateFiles.Model.ContainsKey(colName);            
+            bool collectonEnhance = _templateFiles.Model != null && _templateFiles.Model.ContainsKey(colName);
             bool enhance = addDataEnhance || collectonEnhance || _templateFiles.LabelsInTemplate;
             if (enhance && (_optionsJson == null || _schemaJson == null))
             {
@@ -308,7 +308,11 @@ namespace Satrabel.OpenContent.Components.Render
                         }
                         additionalDataJson = json;
                     }
-                    _additionalData[(item.Value.ModelKey ?? item.Key).ToLowerInvariant()] = additionalDataJson;
+                    if (OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetFastHandlebars())
+                        _additionalData[(item.Value.ModelKey ?? item.Key)] = additionalDataJson;
+                    else
+                        _additionalData[(item.Value.ModelKey ?? item.Key).ToLowerInvariant()] = additionalDataJson;
+
                 }
             }
             return _additionalData;
