@@ -1,0 +1,47 @@
+﻿/************************************************************/
+/*****              SqlDataProvider                     *****/
+/*****                                                  *****/
+/*****                                                  *****/
+/***** Note: To manually execute this script you must   *****/
+/*****       perform a search and replace operation     *****/
+/*****       for {databaseOwner} and {objectQualifier}  *****/
+/*****                                                  *****/
+/************************************************************/
+
+ALTER TABLE {databaseOwner}{objectQualifier}OpenContent_Items 
+DROP COLUMN HTML
+GO
+
+ALTER TABLE {databaseOwner}{objectQualifier}OpenContent_Items ADD
+	Collection varchar(120) NULL,
+	DocumentKey varchar(120) NULL
+GO
+
+update {databaseOwner}{objectQualifier}OpenContent_Items
+	set Collection = 'Items',
+	DocumentKey = ContentId
+GO
+
+ALTER TABLE {databaseOwner}{objectQualifier}OpenContent_Items 
+	ALTER COLUMN Collection varchar(120) NOT NULL
+GO
+
+ALTER TABLE {databaseOwner}{objectQualifier}OpenContent_Items 
+	ALTER COLUMN DocumentKey varchar(120) NOT NULL
+GO
+
+IF EXISTS(SELECT * FROM sys.indexes WHERE name = 'IX_{objectQualifier}OpenContent_Items_ModIdColKey' AND object_id = OBJECT_ID('{objectQualifier}OpenContent_Items'))
+DROP INDEX IX_{objectQualifier}OpenContent_Items_ScopeColId ON {objectQualifier}OpenContent_Items
+GO
+
+CREATE UNIQUE NONCLUSTERED INDEX [IX_{objectQualifier}OpenContent_Items_ModIdColKey] ON {databaseOwner}[{objectQualifier}OpenContent_Items] 
+	(
+		[ModuleId],
+		[Collection],
+		[DocumentKey]
+	)
+GO
+
+/************************************************************/
+/*****              SqlDataProvider                     *****/
+/************************************************************/
