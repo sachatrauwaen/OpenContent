@@ -72,7 +72,7 @@ namespace Satrabel.OpenContent.Components.Render
                     // template without schema & options
                     // render the template with no data
                     _renderinfo.SetData(null, new JObject(), Settings.Data);
-                    _renderinfo.OutputString = GenerateOutput(page, _renderinfo.Template.MainTemplateUri(), _renderinfo.DataJson, _renderinfo.SettingsJson, _renderinfo.Template.Main);
+                    _renderinfo.OutputString = GenerateOutputSingle(page, _renderinfo.Template.MainTemplateUri(), _renderinfo.DataJson, _renderinfo.SettingsJson, _renderinfo.Template.Main);
                 }
                 else if (_renderinfo.Template.IsListTemplate)
                 {
@@ -107,7 +107,7 @@ namespace Satrabel.OpenContent.Components.Render
                         if (_renderinfo.Template.Detail != null && !_renderinfo.ShowInitControl)
                         {
                             _renderinfo.Files = _renderinfo.Template.Detail;
-                            _renderinfo.OutputString = GenerateOutput(page, Settings.Template, _renderinfo.Template.Detail, _renderinfo.DataJson, _renderinfo.SettingsJson);
+                            _renderinfo.OutputString = GenerateOutputDetail(page, Settings.Template, _renderinfo.Template.Detail, _renderinfo.DataJson, _renderinfo.SettingsJson);
                         }
                         else // if itemid not corresponding to this module or no DetailTemplate present, show list template
                         {
@@ -135,7 +135,7 @@ namespace Satrabel.OpenContent.Components.Render
                     GetSingleData(_renderinfo, Settings);
                     if (!_renderinfo.ShowInitControl)
                     {
-                        _renderinfo.OutputString = GenerateOutput(page, _renderinfo.Template.MainTemplateUri(), _renderinfo.DataJson, _renderinfo.SettingsJson, _renderinfo.Template.Main);
+                        _renderinfo.OutputString = GenerateOutputSingle(page, _renderinfo.Template.MainTemplateUri(), _renderinfo.DataJson, _renderinfo.SettingsJson, _renderinfo.Template.Main);
                     }
                 }
             }
@@ -171,7 +171,7 @@ namespace Satrabel.OpenContent.Components.Render
 
                 if (demoExist && _renderinfo.DataExist && (!settingsNeeded || !string.IsNullOrEmpty(_renderinfo.SettingsJson)))
                 {
-                    _renderinfo.OutputString = GenerateOutput(page, _renderinfo.Template.MainTemplateUri(), _renderinfo.DataJson, _renderinfo.SettingsJson, _renderinfo.Template.Main);
+                    _renderinfo.OutputString = GenerateOutputSingle(page, _renderinfo.Template.MainTemplateUri(), _renderinfo.DataJson, _renderinfo.SettingsJson, _renderinfo.Template.Main);
                 }
                 //too many rendering issues 
                 //bool dsDataExist = _datasource.GetOtherModuleDemoData(_info, _info, _viewmodule.Settings);
@@ -491,8 +491,9 @@ namespace Satrabel.OpenContent.Components.Render
 
         #region Generate output
 
-        private string GenerateOutput(Page page, TemplateManifest templateManifest, TemplateFiles files, JToken dataJson, string settingsJson)
+        private string GenerateOutputDetail(Page page, TemplateManifest templateManifest, TemplateFiles files, JToken dataJson, string settingsJson)
         {
+            // detail template
             var templateVirtualFolder = templateManifest.ManifestFolderUri.UrlFolder;
             if (!string.IsNullOrEmpty(files.Template))
             {
@@ -502,6 +503,7 @@ namespace Satrabel.OpenContent.Components.Render
                 if (dataJson != null)
                 {
                     var mf = new ModelFactorySingle(_renderinfo.Data, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, PortalSettings.Current);
+                    mf.Detail = true;
                     object model;
                     if (templateUri.Extension != ".hbs") // razor
                     {
@@ -546,7 +548,7 @@ namespace Satrabel.OpenContent.Components.Render
             }
         }
 
-        private string GenerateOutput(Page page, FileUri template, JToken dataJson, string settingsJson, TemplateFiles files)
+        private string GenerateOutputSingle(Page page, FileUri template, JToken dataJson, string settingsJson, TemplateFiles files)
         {
             var ps = PortalSettings.Current;
             if (template != null)

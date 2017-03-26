@@ -15,7 +15,7 @@ using System.Web;
 
 namespace Satrabel.OpenContent.Components.Render
 {
-    public class ModelFactorySingle :ModelFactoryBase
+    public class ModelFactorySingle : ModelFactoryBase
     {
         private readonly JToken _dataJson;
         private readonly IDataItem _data;
@@ -38,6 +38,7 @@ namespace Satrabel.OpenContent.Components.Render
             this._dataJson = data.Data;
             this._data = data;
         }
+        public bool Detail { get; set; }
 
         public override JToken GetModelAsJson(bool onlyData = false, bool onlyMainData = false)
         {
@@ -60,18 +61,21 @@ namespace Satrabel.OpenContent.Components.Render
             if (_data != null)
             {
                 var context = model["Context"];
-                string url = "";
-                if (!string.IsNullOrEmpty(_manifest?.DetailUrl))
+                if (Detail)
                 {
-                    HandlebarsEngine hbEngine = new HandlebarsEngine();
-                    var dynForHBS = JsonUtils.JsonToDictionary(model.ToString());
-                    url = hbEngine.Execute(_manifest.DetailUrl, dynForHBS);
-                    url = HttpUtility.HtmlDecode(url);
+                    string url = "";
+                    if (!string.IsNullOrEmpty(_manifest?.DetailUrl))
+                    {
+                        HandlebarsEngine hbEngine = new HandlebarsEngine();
+                        var dynForHBS = JsonUtils.JsonToDictionary(model.ToString());
+                        url = hbEngine.Execute(_manifest.DetailUrl, dynForHBS);
+                        url = HttpUtility.HtmlDecode(url);
+                    }
+                    context["DetailUrl"] = Globals.NavigateURL(_detailTabId, false, _portalSettings, "", GetCurrentCultureCode(), url.CleanupUrl(), "id=" + _data.Id);
+                    context["Id"] = _data.Id;
+                    var editIsAllowed = !_manifest.DisableEdit && IsEditAllowed(_data.CreatedByUserId);
+                    context["EditUrl"] = editIsAllowed ? DnnUrlUtils.EditUrl("id", _data.Id, _module.ViewModule.ModuleID, _portalSettings) : "";
                 }
-                context["DetailUrl"] = Globals.NavigateURL(_detailTabId, false, _portalSettings, "", GetCurrentCultureCode(), url.CleanupUrl(), "id=" + _data.Id);
-                context["Id"] = _data.Id;
-                var editIsAllowed = !_manifest.DisableEdit && IsEditAllowed(_data.CreatedByUserId);
-                context["EditUrl"] = editIsAllowed ? DnnUrlUtils.EditUrl("id", _data.Id, _module.ViewModule.ModuleID, _portalSettings) : "";
             }
         }
     }
