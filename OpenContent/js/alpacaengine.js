@@ -167,12 +167,17 @@ alpacaEngine.engine = function(config) {
     };
 
     self.CreateForm = function (connector, config, data) {
+         
+        var view = self.view;
+        if (config.view) {
+            view.parent = self.view
+        }  
 
         $("#field1").alpaca({
             "schema": config.schema,
             "options": config.options,
             "data": data,
-            "view": config.view ? config.view : self.view,
+            "view": view,
             "connector": connector,
             "postRender": function (control) {
                 var selfControl = control;

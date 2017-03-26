@@ -412,8 +412,50 @@ function getOptions(formdef) {
     return options;
 }
 
+
+function getViewTemplate(row, cols) {
+    var t = '<div class="row">';
+    for (var i = 1; i <= cols; i++) {
+        t += '<div class="col-md-' + (12 / cols) + '" id="pos_' + row + '_' + i + '"></div>';
+    }
+    t += '</div>';
+    return t;
+}   
+
+function getView(formdef) {
+    
+    var view = {
+        "parent": BootstrapForm ? (BootstrapHorizontal ? "dnnbootstrap-edit-horizontal" : "dnnbootstrap-edit") : "dnn-edit",
+        "layout": {
+            "template": "<div><div class='row'><div class='col-md-12' id='pos_1_1'></div></div>",
+            "bindings": {
+            }
+        }
+    };
+    if (formdef.formfields) {
+        var row = 0;
+        var lastCols = 0;
+        var template = "<div>";
+        $.each(formdef.formfields, function (index, value) {
+            var cols = value.position ? parseInt(value.position[0]) : 1;
+            if (cols != lastCols) {
+                row++;
+                template += getViewTemplate(row, cols);
+                lastCols = cols;
+                
+            }
+            var col = value.position ? value.position[4] : 1;
+            view.layout.bindings[value.fieldname] = "#pos_" + row + "_" + col;
+        });
+        template += "</div>";
+        view.layout.template = template;
+    }
+    return view;
+}
+
 var ContactForm = false;
 var BootstrapForm = false;
+var BootstrapHorizontal = false;
 
 function showForm(value) {
     if (ContactForm) {
@@ -435,19 +477,22 @@ function showForm(value) {
 
     var schema = getSchema(value);
     var options = getOptions(value);
+    var view = getView(value);
     var config = {
         "schema": schema,
         "options": options,
-        "view": "dnn-edit",
+        "view": view,
         "connector": connector,
         "postRender": function (control) {
             var self = control;
             $('#form2 .dnnTooltip').dnnTooltip();
         }
     };
+    /*
     if (BootstrapForm) {
         config.view = "dnnbootstrap-edit-horizontal";
     }
+    */
     //alert(JSON.stringify(value, null, "  "));
     $("#schema").val(JSON.stringify(schema, null, "  "));
     $("#options").val(JSON.stringify(options, null, "  "));
@@ -685,6 +730,12 @@ var fieldSchema =
             "type": "boolean",
             "dependencies": ["fieldtype", "advanced"]
         },
+        "position": {
+            "type": "string",
+            "title": "Position",
+            "dependencies": ["advanced"],
+            "enum": ["1col1", "2col1", "2col2", "3col1", "3col2", "3col3"]
+        },
         "dependencies": {
             "type": "array",
             "title": "Dependencies",
@@ -748,6 +799,11 @@ var fieldOptions =
         "dependencies": {            
             "fieldtype": ["role2"]
         }
+    },
+    "position": {        
+        "optionLabels": ["1 column", "2 columns - left", "2 columns - right", "3 columns - left", "3 columns - middle", "3 columns - right"],
+        "vertical": false,
+        "removeDefaultNone": true
     },
     "required": {
         "label": "Required"

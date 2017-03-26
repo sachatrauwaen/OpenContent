@@ -93,6 +93,7 @@
         }
 
         BootstrapForm = <%= AlpacaContext.Bootstrap ? "true" : "false"%>;
+        BootstrapHorizontal = <%= AlpacaContext.Horizontal ? "true" : "false"%>;
 
         if (BootstrapForm){
             formbuilderConfig.view = "dnnbootstrap-edit-horizontal";
@@ -121,7 +122,8 @@
             var data = form.getValue();
             var schema = getSchema(data);
             var options = getOptions(data);
-            var postData = JSON.stringify({ 'data': data, 'schema': schema, 'options': options, 'key': $("#<%=ddlForms.ClientID %>").val() });
+            var view = getView(data);
+            var postData = JSON.stringify({ 'data': data, 'schema': schema, 'options': options, 'view': view, 'key': $("#<%=ddlForms.ClientID %>").val() });
             var action = "UpdateBuilder";
             $.ajax({
                 type: "POST",

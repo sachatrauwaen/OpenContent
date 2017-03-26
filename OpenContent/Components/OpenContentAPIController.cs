@@ -717,15 +717,18 @@ namespace Satrabel.OpenContent.Components
                     string prefix = string.IsNullOrEmpty(key) ? "" : key + "-";
                     var schema = json["schema"].ToString();
                     var options = json["options"].ToString();
+                    var view = json["view"].ToString();
                     var data = json["data"].ToString();
                     var datafile = new FileUri(settings.TemplateDir.UrlFolder + prefix + "builder.json");
                     var schemafile = new FileUri(settings.TemplateDir.UrlFolder + prefix + "schema.json");
                     var optionsfile = new FileUri(settings.TemplateDir.UrlFolder + prefix + "options.json");
+                    var viewfile = new FileUri(settings.TemplateDir.UrlFolder + prefix + "view.json");
                     try
                     {
                         File.WriteAllText(datafile.PhysicalFilePath, data);
                         File.WriteAllText(schemafile.PhysicalFilePath, schema);
                         File.WriteAllText(optionsfile.PhysicalFilePath, options);
+                        File.WriteAllText(viewfile.PhysicalFilePath, view);
                     }
                     catch (Exception ex)
                     {
