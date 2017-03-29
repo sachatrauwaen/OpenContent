@@ -1,5 +1,4 @@
-﻿using Satrabel.OpenContent.Components.Logging;
-using System;
+﻿using System;
 
 namespace Satrabel.OpenContent.Components.Json
 {

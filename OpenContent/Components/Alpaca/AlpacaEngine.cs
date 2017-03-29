@@ -8,13 +8,10 @@ using System.Text;
 using System.Web.Hosting;
 using System.Web.UI;
 using DotNetNuke.UI.Modules;
-using System.Web.UI.WebControls;
 using DotNetNuke.Framework;
 using DotNetNuke.Framework.JavaScriptLibraries;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Json;
-using System.Web.UI.HtmlControls;
-using DotNetNuke.Entities.Portals;
 
 
 namespace Satrabel.OpenContent.Components.Alpaca

@@ -7,17 +7,13 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using HandlebarsDotNet;
-using DotNetNuke.UI.Modules;
 using System.Globalization;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.TemplateHelpers;
 using Satrabel.OpenContent.Components.Dynamic;
 using System.Collections;
 using DotNetNuke.Entities.Portals;
-using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Logging;
-using Satrabel.OpenContent.Components.Alpaca;
-using Satrabel.OpenContent.Components.Json;
 
 namespace Satrabel.OpenContent.Components.Handlebars
 {

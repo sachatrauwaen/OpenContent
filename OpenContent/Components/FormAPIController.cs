@@ -1,22 +1,13 @@
 ﻿using DotNetNuke.Security;
 using DotNetNuke.Web.Api;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Form;
-using Satrabel.OpenContent.Components.Handlebars;
-using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Logging;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Mail;
-using System.Web;
-using System.Web.Hosting;
 using System.Web.Http;
 
 namespace Satrabel.OpenContent.Components

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace Satrabel.OpenContent.Components.Form
+﻿namespace Satrabel.OpenContent.Components.Form
 {
     public class GenSettingsDTO
     {

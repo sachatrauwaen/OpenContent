@@ -1,7 +1,6 @@
 ﻿using DotNetNuke.Entities.Modules;
 using DotNetNuke.Security;
 using DotNetNuke.Web.Api;
-using DotNetNuke.Entities.Portals;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Datasource;
@@ -15,7 +14,6 @@ using System.Web.Http;
 using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Manifest;
 using Newtonsoft.Json;
-using Satrabel.OpenContent.Components.Datasource.Search;
 using Satrabel.OpenContent.Components.Render;
 using DotNetNuke.Services.Exceptions;
 using System.Web;

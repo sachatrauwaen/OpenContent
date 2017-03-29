@@ -1,8 +1,4 @@
 ﻿using System;
-using DotNetNuke.Services.Localization;
-using Newtonsoft.Json.Linq;
-using Satrabel.OpenContent.Components.Datasource;
-using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Manifest;
 
 
