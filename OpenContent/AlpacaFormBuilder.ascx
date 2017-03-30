@@ -80,7 +80,7 @@
                 resizable: false,
             });
 
-            $(".form-builder .fb-wrap").height('100%').width('50%').css('overflow-y', 'auto').css('position', 'fixed');
+            $(".form-builder .fb-wrap").height('100%').width('50%').css('overflow-y', 'auto').css('overflow-x', 'hidden').css('position', 'fixed');
         }
 
         var moduleScope = $('#<%=ScopeWrapper.ClientID %>'),
