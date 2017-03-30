@@ -2,14 +2,19 @@
     color: #ccc !important;
 }
 
+.dnnFormPopup {
+    z-index: 10000000;
+}
+
 .dnnFormPopup .ui-dialog-titlebar {
     position: relative;
-    
-    border-bottom: none; 
-    
+    border-bottom: none;
     font-size: 14px;
     font-weight: bold;
-    color:#585858;
+    color: #585858;
     /*margin-bottom: 5px;*/
 }
-.nomargin{margin:0 !important;}
+
+.nomargin {
+    margin: 0 !important;
+}
