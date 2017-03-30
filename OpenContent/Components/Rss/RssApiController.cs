@@ -7,7 +7,6 @@ using System.Net.Http.Headers;
 using Satrabel.OpenContent.Components.Handlebars;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Portals;
-using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Render;

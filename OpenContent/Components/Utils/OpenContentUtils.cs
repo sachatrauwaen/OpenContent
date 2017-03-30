@@ -13,8 +13,6 @@ using System.Linq;
 using System.Net;
 using System.Web.Hosting;
 using System.Web.UI.WebControls;
-using DotNetNuke.Security.Permissions;
-using DotNetNuke.Security;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Dnn;
 using Satrabel.OpenContent.Components.Manifest;

@@ -2,7 +2,6 @@
 using Satrabel.OpenContent.Components.Alpaca;
 using System;
 using System.Linq;
-using Satrabel.OpenContent.Components.Manifest;
 
 namespace Satrabel.OpenContent.Components.Datasource
 {

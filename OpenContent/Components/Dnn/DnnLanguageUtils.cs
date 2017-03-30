@@ -1,17 +1,11 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
-using System.Web.UI;
 using DotNetNuke.Common.Utilities;
-using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Entities.Tabs;
-using DotNetNuke.Services.FileSystem;
 using DotNetNuke.Services.Localization;
-using DotNetNuke.UI.Modules;
-using DotNetNuke.Web.Client.ClientResourceManagement;
 
 namespace Satrabel.OpenContent.Components
 {
