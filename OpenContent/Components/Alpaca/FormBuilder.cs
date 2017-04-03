@@ -234,7 +234,8 @@ namespace Satrabel.OpenContent.Components.Alpaca
 
         private JObject Build(string key, string currentCultureCode, bool schema, bool options, bool view, bool translations)
         {
-            string prefix = (key == "Items") ? "" : key + "-";
+            string prefix = (string.IsNullOrEmpty(key) || key == "Items") ? "" : key + "-";
+
             JObject json = new JObject();
             // schema
             if (schema)
