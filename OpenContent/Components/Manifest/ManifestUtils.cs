@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
-using Satrabel.OpenContent.Components.Json;
 using DotNetNuke.Common.Utilities;
 using DotNetNuke.Services.Cache;
 

@@ -1,13 +1,10 @@
-﻿
-using DotNetNuke.Entities.Modules;
-using DotNetNuke.Security;
+﻿using DotNetNuke.Security;
 using DotNetNuke.Web.Api;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Manifest;
 using System;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Web.Http;
 
 namespace Satrabel.OpenContent.Components

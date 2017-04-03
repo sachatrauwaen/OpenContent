@@ -1,7 +1,6 @@
 ﻿#region Usings
 
 using System;
-using System.Collections;
 using System.Linq;
 using Lucene.Net.Index;
 using Lucene.Net.Search;

@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json.Linq;
-using Satrabel.OpenContent.Components.Manifest;
 
 namespace Satrabel.OpenContent.Components.Datasource
 {

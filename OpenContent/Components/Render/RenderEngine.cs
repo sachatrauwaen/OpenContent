@@ -1,10 +1,8 @@
 ﻿using DotNetNuke.Entities.Modules;
 using Satrabel.OpenContent.Components.Manifest;
-using Satrabel.OpenContent.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Collections.Specialized;
 using Satrabel.OpenContent.Components.Logging;
 using Satrabel.OpenContent.Components.Json;
@@ -550,7 +548,6 @@ namespace Satrabel.OpenContent.Components.Render
 
         private string GenerateOutputSingle(Page page, FileUri template, JToken dataJson, string settingsJson, TemplateFiles files)
         {
-            var ps = PortalSettings.Current;
             if (template != null)
             {
                 string templateVirtualFolder = template.UrlFolder;
@@ -562,11 +559,11 @@ namespace Satrabel.OpenContent.Components.Render
                     if (_renderinfo.Data == null)
                     {
                         // demo data
-                        mf = new ModelFactorySingle(_renderinfo.DataJson, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, ps);
+                        mf = new ModelFactorySingle(_renderinfo.DataJson, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, PortalSettings.Current);
                     }
                     else
                     {
-                        mf = new ModelFactorySingle(_renderinfo.Data, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, ps);
+                        mf = new ModelFactorySingle(_renderinfo.Data, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, PortalSettings.Current);
                     }
                     if (template.Extension != ".hbs") // razor
                     {

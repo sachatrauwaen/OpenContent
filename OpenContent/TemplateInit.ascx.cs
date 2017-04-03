@@ -107,6 +107,7 @@ namespace Satrabel.OpenContent
                 if (rblUseTemplate.SelectedIndex == 0) // existing
                 {
                     mc.UpdateModuleSetting(ModuleContext.ModuleId, "template", ddlTemplate.SelectedValue);
+                    ModuleContext.Settings["template"] = ddlTemplate.SelectedValue;
                 }
                 else if (rblUseTemplate.SelectedIndex == 1) // new
                 {
@@ -116,19 +117,38 @@ namespace Satrabel.OpenContent
                         string oldFolder = Server.MapPath(ddlTemplate.SelectedValue);
                         string template = OpenContentUtils.CopyTemplate(ModuleContext.PortalId, oldFolder, tbTemplateName.Text);
                         mc.UpdateModuleSetting(ModuleContext.ModuleId, "template", template);
+                        ModuleContext.Settings["template"] = template;
                     }
                     else if (rblFrom.SelectedIndex == 1) // web
                     {
                         string fileName = ddlTemplate.SelectedValue;
                         string template = OpenContentUtils.ImportFromWeb(ModuleContext.PortalId, fileName, tbTemplateName.Text);
                         mc.UpdateModuleSetting(ModuleContext.ModuleId, "template", template);
+                        ModuleContext.Settings["template"] = template;
                     }
                 }
                 mc.UpdateModuleSetting(ModuleContext.ModuleId, "detailtabid", ddlDetailPage.SelectedValue);
+
+                
                 //don't reset settings. Sure they might be invalid, but maybe not. And you can't ever revert.
                 //mc.DeleteModuleSetting(ModuleContext.ModuleId, "data");
                 if (PageRefresh)
+                {
                     Response.Redirect(Globals.NavigateURL(), true);
+                }
+                else
+                {
+                    Settings = ModuleContext.OpenContentSettings();
+                    rblUseTemplate.SelectedIndex = 0;
+                    phTemplateName.Visible = rblUseTemplate.SelectedIndex == 1;
+                    phFrom.Visible = rblUseTemplate.SelectedIndex == 1;
+                    rblFrom.SelectedIndex = 0;                    
+                    BindTemplates(Settings.Template, null);
+                    Renderinfo.Template = Settings.Template;
+                    BindButtons(Settings, Renderinfo);
+                    ActivateDetailPage();
+                }
+
             }
             catch (Exception exc)
             {

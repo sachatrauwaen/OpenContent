@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Data;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Portals;
-using DotNetNuke.Services.FileSystem;
 
 
 namespace Satrabel.OpenContent.Components.TemplateHelpers

@@ -1,10 +1,8 @@
-﻿using DotNetNuke.Entities.Modules;
-using DotNetNuke.Services.Localization;
+﻿using DotNetNuke.Services.Localization;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Handlebars;
 using Satrabel.OpenContent.Components.Render;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;

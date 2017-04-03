@@ -1,8 +1,6 @@
-﻿using DotNetNuke.Entities.Modules;
-using DotNetNuke.Web.Api;
+﻿using DotNetNuke.Web.Api;
 using Newtonsoft.Json;
 using Satrabel.OpenContent.Components.Json;
-using Satrabel.OpenContent.Components.Manifest;
 using System;
 using System.Collections.Generic;
 using System.Net;

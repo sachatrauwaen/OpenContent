@@ -10,7 +10,6 @@ using System.Collections;
 using System.Collections.Generic;
 using DotNetNuke.Common.Utilities;
 using DotNetNuke.Services.Cache;
-using System.Web.Script.Serialization;
 
 namespace Satrabel.OpenContent.Components.Json
 {

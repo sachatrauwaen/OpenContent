@@ -8,9 +8,6 @@ using Satrabel.OpenContent.Components.Handlebars;
 using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.TemplateHelpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Web;
 
 namespace Satrabel.OpenContent.Components.Render

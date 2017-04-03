@@ -1,5 +1,4 @@
-﻿using System;
-using DotNetNuke.Entities.Portals;
+﻿using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components.Alpaca;
 
 namespace Satrabel.OpenContent.Components
