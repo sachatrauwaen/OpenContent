@@ -550,7 +550,11 @@ namespace Satrabel.OpenContent.Components.Json
 
         private static JObject GenerateObject(JObject additionalData, string key, string id, string dataMember, string valueField)
         {
-            var json = additionalData[key.ToLowerInvariant()];
+            var json = additionalData[key];
+            if (json == null)
+            {
+                json = additionalData[key.ToLowerInvariant()];
+            }
             if (!string.IsNullOrEmpty(dataMember))
             {
                 json = json[dataMember];
