@@ -70,7 +70,7 @@ namespace Satrabel.OpenContent.Components
                 var folderManager = FolderManager.Instance;
                 var portalFolder = folderManager.GetFolder(PortalSettings.PortalId, d ?? "");
                 var files = folderManager.GetFiles(portalFolder, true);
-                files = files.Where(f => IsImageFile(f));
+                files = files.Where(f => f.IsImageFile());
                 if (q != "*")
                 {
                     files = files.Where(f => f.FileName.ToLower().Contains(q.ToLower()));
@@ -113,7 +113,7 @@ namespace Satrabel.OpenContent.Components
                     return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
                 }
                 var files = folderManager.GetFiles(portalFolder, true);
-                files = files.Where(f => IsImageFile(f));
+                files = files.Where(f => f.IsImageFile());
                 if (q != "*" && !string.IsNullOrEmpty(q))
                 {
                     files = files.Where(f => f.FileName.ToLower().Contains(q.ToLower()));
@@ -164,7 +164,7 @@ namespace Satrabel.OpenContent.Components
                 }
 
                 var files = folderManager.GetFiles(dnnFolder, true);
-                files = files.Where(f => IsImageFile(f));
+                files = files.Where(f => f.IsImageFile());
                 if (q != "*" && !string.IsNullOrEmpty(q))
                 {
                     files = files.Where(f => f.FileName.ToLower().Contains(q.ToLower()));
@@ -427,11 +427,6 @@ namespace Satrabel.OpenContent.Components
                 Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
-        }
-
-        private bool IsImageFile(IFileInfo file)
-        {
-            return (Globals.glbImageFileTypes + ",").IndexOf(file.Extension.ToLower().Replace(".", "") + ",") > -1;
         }
 
         [ValidateAntiForgeryToken]

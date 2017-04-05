@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Web;
+using DotNetNuke.Common;
 using DotNetNuke.Entities.Content.Common;
 using DotNetNuke.Entities.Modules.Definitions;
 using DotNetNuke.Services.FileSystem;
@@ -15,6 +16,11 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
 {
     public static class ImageHelper
     {
+        public static bool IsImageFile(this IFileInfo file)
+        {
+            return (Globals.glbImageFileTypes + ",").IndexOf(file.Extension.ToLower().Replace(".", "") + ",") > -1;
+        }
+
         /// <summary>
         /// Gets the image URL.
         /// </summary>
