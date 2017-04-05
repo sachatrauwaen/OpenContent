@@ -93,9 +93,10 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             {
                 return file.ToUrl();
             }
-            var url = file.ToUrlWithoutLinkClick();
-            if (url.Contains("LinkClick.aspx")) return url;
-            url = url.RemoveQueryParams();
+            var url = file.ToUrl();
+            //var url = file.ToUrlWithoutLinkClick();
+            //if (url.Contains("LinkClick.aspx")) return url;
+            //url = url.RemoveQueryParams();
 
             JObject content = GetContentAsJObject(file);
             if (content != null)
@@ -122,7 +123,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
                                 int top = int.Parse(cropper["y"].ToString());
 
                                 //crop first then resize (order defined by the processors definition order in the config file)
-                                return url + $"?crop={left},{top},{w},{h}&width={requestedCropRatio.Width}&height={requestedCropRatio.Height}";
+                                return url.AppendQueryParams($"crop={left},{top},{w},{h}&width={requestedCropRatio.Width}&height={requestedCropRatio.Height}");
                             }
                         }
                         catch (Exception ex)
@@ -137,8 +138,12 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
                 }
 
             }
+            return url.AppendQueryParams($"width={requestedCropRatio.Width}&height={requestedCropRatio.Height}&mode=crop");
+        }
 
-            return url + $"?width={requestedCropRatio.Width}&height={requestedCropRatio.Height}&mode=crop";
+        private static string AppendQueryParams(this string url, string queryparams)
+        {
+            return url.Contains("?") ? url + "&" + queryparams : url + "?" + queryparams;
         }
 
         private static JObject GetContentAsJObject(IFileInfo file)
