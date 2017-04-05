@@ -23,5 +23,18 @@ namespace Satrabel.OpenContent.Components.Dnn
             }
             return url;
         }
+
+        internal static string RemoveCachbuster(string url)
+        {
+            if (!string.IsNullOrEmpty(url))
+            {
+                int idx = url.IndexOf("?ver=");
+                if (idx > 0)
+                {
+                    return url.Substring(0, idx);
+                }
+            }
+            return url;
+        }
     }
 }
