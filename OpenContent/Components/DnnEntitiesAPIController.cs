@@ -169,13 +169,12 @@ namespace Satrabel.OpenContent.Components
                 {
                     files = files.Where(f => f.FileName.ToLower().Contains(q.ToLower()));
                 }
-                int folderLength = imageFolder.Length;
-
+                int folderLength = imageFolder.Length;                
                 var res = files.Select(f => new
                 {
                     id = f.FileId.ToString(),
                     thumbUrl = ImageHelper.GetImageUrl(f, new Ratio(40, 40)),  //todo for install in application folder is dat niet voldoende ???
-                    url = FileManager.Instance.GetUrl(f),
+                    url = FileManager.Instance.GetUrl(f).RemoveCachebuster(),  
                     text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName
                 }).Take(1000);
 

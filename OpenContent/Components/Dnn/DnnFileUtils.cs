@@ -26,6 +26,7 @@ namespace Satrabel.OpenContent.Components.Dnn
             }
             return url;
         }
+
         /// <summary>
         /// Returns the Url of the file. In case OpenImageProcessor is installed, Linkclick urls are transformed into ImgClick urls.
         /// </summary>
@@ -46,6 +47,19 @@ namespace Satrabel.OpenContent.Components.Dnn
                 {
                     var hash = url.SubstringBetween("fileticket=", "&portalid");
                     url = $"/imgclick/{fileInfo.PortalId}/{hash}.axd";
+                }
+            }
+            return url;
+        }
+
+        internal static string RemoveCachebuster(this string url)
+        {
+            if (!string.IsNullOrEmpty(url))
+            {
+                int idx = url.IndexOf("?ver=");
+                if (idx > 0)
+                {
+                    return url.Substring(0, idx);
                 }
             }
             return url;
