@@ -39,15 +39,8 @@ namespace Satrabel.OpenContent.Components.Dnn
             var url = FileManager.Instance.GetUrl(fileInfo);
             if (url.ToLower().Contains("linkclick"))
             {
-                if (ModuleDefinitionController.GetModuleDefinitionByFriendlyName("OpenImageProcessor") == null)
-                {
-                    Log.Logger.Warn($"Linkclick image detected. Consider installing OpenImageProcessor");
-                }
-                else
-                {
-                    var hash = url.SubstringBetween("fileticket=", "&portalid");
-                    url = $"/imgclick/{fileInfo.PortalId}/{hash}.axd";
-                }
+                var hash = url.SubstringBetween("fileticket=", "&portalid");
+                url = $"/imgclick/{fileInfo.PortalId}/{hash}.axd";
             }
             return url;
         }

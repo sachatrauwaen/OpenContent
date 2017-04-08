@@ -94,8 +94,6 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
                 return file.ToUrl();
             }
             var url = file.ToLinkClickSafeUrl();
-            if (url.ToLower().Contains("linkclick.a")) return url;
-
             url = url.RemoveQueryParams(); //imageprocessor does not tolerate unknow querystrings (for security reasons). Remove them
 
             JObject content = GetContentAsJObject(file);
