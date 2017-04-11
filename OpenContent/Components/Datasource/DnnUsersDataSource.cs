@@ -20,14 +20,10 @@ namespace Satrabel.OpenContent.Components.Datasource
 {
     public class DnnUsersDataSource : DefaultDataSource, IDataActions
     {
-        const string Registered_Users = "Registered Users";
-        public override string Name
-        {
-            get
-            {
-                return "Satrabel.DnnUsers";
-            }
-        }
+        const string RegisteredUsers = "Registered Users";
+
+        public override string Name => "Satrabel.DnnUsers";
+
         public override IDataItem Get(DataSourceContext context, string id)
         {
             //return GetAll(context, null).Items.SingleOrDefault(i => i.Id == id);
@@ -80,7 +76,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             item.Data["Roles"] = roles;
             foreach (var role in user.Roles)
             {
-                if (role != Registered_Users)
+                if (role != RegisteredUsers)
                 {
                     roles.Add(role);
                 }
@@ -143,14 +139,16 @@ namespace Satrabel.OpenContent.Components.Datasource
         public override void Add(DataSourceContext context, Newtonsoft.Json.Linq.JToken data)
         {
             var schema = GetAlpaca(context, true, false, false)["schema"] as JObject;
-            var user = new UserInfo();
-            user.AffiliateID = Null.NullInteger;
-            user.PortalID = context.PortalId;
+            var user = new UserInfo
+            {
+                AffiliateID = Null.NullInteger,
+                PortalID = context.PortalId,
+                IsDeleted = false,
+                IsSuperUser = false,
+                Profile = new UserProfile()
+            };
 
-            user.IsDeleted = false;
-            user.IsSuperUser = false;
             //user.LastIPAddress = Request.UserHostAddress
-            user.Profile = new UserProfile();
             var ps = PortalSettings.Current;
             user.Profile.InitialiseProfile(ps.PortalId, true);
             user.Profile.PreferredLocale = ps.DefaultLanguage;
@@ -175,9 +173,9 @@ namespace Satrabel.OpenContent.Components.Datasource
             bool notify = true;
             if (createStatus == UserCreateStatus.Success)
             {
+                string strMessage = "";
                 if (notify)
                 {
-                    string strMessage = "";
                     //Send Notification to User
                     if (ps.UserRegistration == (int)Globals.PortalRegistrationType.VerifiedRegistration)
                     {
@@ -187,6 +185,11 @@ namespace Satrabel.OpenContent.Components.Datasource
                     {
                         strMessage += Mail.SendMail(newUser, MessageType.UserRegistrationPublic, ps);
                     }
+                }
+                if (string.IsNullOrEmpty(strMessage))
+                {
+                    throw new Exception("Error sending notification email: " + strMessage);
+
                 }
                 FillProfile(data, schema, user);
                 UpdateRoles(context, data, schema, user);
@@ -242,7 +245,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                     }
                     catch (Exception exc)
                     {
-                        throw new DataNotValidException(Localization.GetString("Username not valid"));
+                        throw new DataNotValidException(Localization.GetString("Username not valid"), exc);
                         //var args = new UserUpdateErrorArgs(User.UserID, User.Username, "EmailError");
                     }
                 }
@@ -269,7 +272,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 }
                 foreach (var roleName in rolesToRemove)
                 {
-                    if (roleName != Registered_Users)
+                    if (roleName != RegisteredUsers)
                     {
                         var roleInfo = RoleController.Instance.GetRoleByName(context.PortalId, roleName);
                         RoleController.DeleteUserRole(user, roleInfo, PortalSettings.Current, false);
@@ -277,7 +280,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 }
             }
         }
-        private void ChangePassword(UserInfo user, string password)
+        private static void ChangePassword(UserInfo user, string password)
         {
             // Check New Password is Valid
             if (!UserController.ValidatePassword(password))
@@ -296,6 +299,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             }
             UserController.ResetAndChangePassword(user, password);
         }
+
         private void FillProfile(JToken data, JObject schema, UserInfo user)
         {
             if (HasProperty(schema, "", "Profile"))
@@ -362,7 +366,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             var user = (UserInfo)item.Item;
             UserController.DeleteUser(ref user, true, false);
         }
-        private bool HasProperty(JObject schema, string subobject, string property)
+        private static bool HasProperty(JObject schema, string subobject, string property)
         {
             if (!string.IsNullOrEmpty(subobject))
             {
@@ -384,17 +388,16 @@ namespace Satrabel.OpenContent.Components.Datasource
         public List<IDataAction> GetActions(DataSourceContext context, IDataItem item)
         {
             var actions = new List<IDataAction>();
-            if (item != null)
+            if (item == null) return actions;
+
+            var user = (UserInfo)item.Item;
+            if (user.Membership.LockedOut)
             {
-                var user = (UserInfo)item.Item;
-                if (user.Membership.LockedOut)
+                actions.Add(new DefaultDataAction()
                 {
-                    actions.Add(new DefaultDataAction()
-                    {
-                        Name = "unlock",
-                        AfterExecute = "disable"
-                    });
-                }
+                    Name = "unlock",
+                    AfterExecute = "disable"
+                });
             }
             return actions;
         }

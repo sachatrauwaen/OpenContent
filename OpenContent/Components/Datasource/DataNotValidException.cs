@@ -10,5 +10,8 @@ namespace Satrabel.OpenContent.Components.Datasource
         public DataNotValidException(string message) : base(message)
         {
         }
+        public DataNotValidException(string message, Exception innerexception) : base(message, innerexception)
+        {
+        }
     }
 }
