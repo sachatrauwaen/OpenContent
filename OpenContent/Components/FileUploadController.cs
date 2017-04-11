@@ -134,7 +134,7 @@ namespace Satrabel.OpenContent.Components
                         type = fileInfo.ContentType,
                         size = file.ContentLength,
                         progress = "1.0",
-                        url = DnnFileUtils.RemoveCachbuster(fileInfo.ToUrl()),
+                        url = fileInfo.ToUrl().RemoveCachebuster(),
                         thumbnail_url = fileIcon,
                         message = "success",
                         id = fileInfo.FileId,

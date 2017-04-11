@@ -12,22 +12,35 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         internal ImageUri(int fileId)
             : base(fileId)
         {
+            if (!this.FileInfo.IsImageFile())
+                throw new ApplicationException($"File with {fileId} is not an image");
+
         }
         internal ImageUri(string fileFullPath)
             : base(PortalSettings.Current.PortalId, fileFullPath)
         {
+            if (!this.FileInfo.IsImageFile())
+                throw new ApplicationException($"File with path {fileFullPath} is not an image");
+
         }
         internal ImageUri(string path, string filename)
             : base(PortalSettings.Current.PortalId, path, filename)
         {
+            if (!this.FileInfo.IsImageFile())
+                throw new ApplicationException($"File with path {path} and name {filename} is not an image");
+
         }
         internal ImageUri(int portalid, string fileFullPath)
             : base(portalid, fileFullPath)
         {
+            if (!this.FileInfo.IsImageFile())
+                throw new ApplicationException($"File of portal {portalid} and path {fileFullPath} is not an image");
         }
         internal ImageUri(int portalid, string path, string filename)
             : base(portalid, path, filename)
         {
+            if (!this.FileInfo.IsImageFile())
+                throw new ApplicationException($"File of portal {portalid} and path {path} and name {filename} is not an image");
         }
         #endregion
 
