@@ -32,3 +32,14 @@ border-top-right-radius: 0px;
 -moz-border-radius-bottomright: 0px;
 border-bottom-right-radius: 0px;
 }
+
+
+a.dnnSecondaryAction,
+a.dnnSecondaryAction:link,
+a.dnnSecondaryAction:visited,
+a.dnnSecondaryAction:hover,
+a.dnnSecondaryAction:visited:hover {
+    text-decoration: none;
+    color: #999;
+    cursor: default;
+}

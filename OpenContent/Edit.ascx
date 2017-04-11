@@ -4,6 +4,7 @@
 <asp:Panel ID="ScopeWrapper" runat="server">
     <div id="field1" class="alpaca"></div>
     <ul class="dnnActions dnnClear" style="display: block; padding-left: 35%">
+        <li id="field1validation" style="display: none; color: #ff0000"></li>
         <li>
             <asp:HyperLink ID="cmdSave" runat="server" class="dnnPrimaryAction" resourcekey="cmdSave" />
         </li>
@@ -23,7 +24,7 @@
 </asp:Panel>
 
 <script type="text/javascript">
-    $(document).ready(function() {
+    $(document).ready(function () {
         var engine = new alpacaEngine.engine(<%=JsonConvert.SerializeObject(AlpacaContext)%>);
         engine.init();
     });

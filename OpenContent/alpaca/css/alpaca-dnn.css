@@ -30,7 +30,6 @@
 .alpaca-field-table .actionbar {
     white-space: nowrap;
     text-align: left;
-
     position: relative;
     right: auto;
     top: auto;
@@ -61,7 +60,6 @@
     position: relative;
     right: auto;
     top: auto;
-
 }
 
 
@@ -177,8 +175,7 @@
 
 .dnnFormItem.alpaca-field.alpaca-field-file input[type=text],
 .dnnFormItem.alpaca-field.alpaca-field-file2 input[type=text],
-.dnnFormItem.alpaca-field.alpaca-field-file .twitter-typeahead
-{
+.dnnFormItem.alpaca-field.alpaca-field-file .twitter-typeahead {
     /*
     padding-left:32%;
     margin-left:38px;
@@ -232,7 +229,7 @@
     /*width: 47%;
     max-width: 461px;*/
     width: 55%;
-    max-width:initial;
+    max-width: initial;
     display: inline-block;
     margin-bottom: 18px;
     background: #ffffff;
@@ -397,12 +394,12 @@ h2.dnnFormSectionHead a {
 /** ************************************** **/
 
 .twitter-typeahead {
- /*float: left;*/	
+    /*float: left;*/
     width: 45%;
     max-width: 462px;
     display: inline-block !important;
     margin: 0 !important;
-	height:34px;
+    height: 34px;
 }
 
     .twitter-typeahead .tt-dropdown-menu {
@@ -443,7 +440,7 @@ h2.dnnFormSectionHead a {
         background-color: #0097cf;
     }
 
-.alpaca-field-table .select2-container, .alpaca-control-container.alpaca-control .select2-container{
+.alpaca-field-table .select2-container, .alpaca-control-container.alpaca-control .select2-container {
     width: 100% !important;
     max-width: 461px;
     /*margin-bottom: 0 !important;*/
@@ -492,6 +489,7 @@ select.oc-ddl-versions {
     color: #333;
     font-size: 12px;
 }
+
 @media screen and (max-width: 767px) {
     select.oc-ddl-versions {
         display: none;
@@ -679,11 +677,17 @@ div.progress {
 }
 
 .cropper-container {
- margin-top:5px;
- 
+    margin-top: 5px;
 }
 
 .alpaca-control-buttons-container {
-     padding-left: 32%;
+    padding-left: 32%;
     margin-left: 40px;
+}
+
+
+.alpaca-disabled {
+    cursor: not-allowed;
+    box-shadow: none;
+    opacity: 0.65;
 }

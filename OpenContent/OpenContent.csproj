@@ -177,6 +177,11 @@
     <Compile Include="Components\Alpaca\AlpacaLayoutEnum.cs" />
     <Compile Include="Components\AppConfig.cs" />
     <Compile Include="Components\Common\ObjectId.cs" />
+    <Compile Include="Components\Datasource\DataNotValidException.cs" />
+    <Compile Include="Components\Datasource\DefaultDataAction.cs" />
+    <Compile Include="Components\Datasource\DnnUsersDataSource.cs" />
+    <Compile Include="Components\Datasource\IDataAction.cs" />
+    <Compile Include="Components\Datasource\IDataActions.cs" />
     <Compile Include="Components\FormAPIController.cs" />
     <Compile Include="Components\Form\FormUtils.cs" />
     <Compile Include="Components\Form\GenSettingsDTO.cs" />

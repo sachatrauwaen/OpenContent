@@ -2,7 +2,7 @@
     alpacaEngine = {};
 };
 
-alpacaEngine.engine = function(config) {
+alpacaEngine.engine = function (config) {
     var self = this;
     self.defaultCulture = config.defaultCulture;
     self.currentCulture = config.currentCulture;
@@ -19,12 +19,14 @@ alpacaEngine.engine = function(config) {
     self.editAction = "Edit";
     self.updateAction = "Update";
     self.deleteAction = "Delete";
+    self.actionAction = "Action";
     self.data = {};
     self.rootUrl = config.appPath;
-    self.bootstrap = config.bootstrap;
-    self.view = "dnn-edit";
+    self.bootstrap = config.bootstrap;    
+    var createEdit = self.itemId ? "edit" : "create";
+    self.view = "dnn-"+createEdit;
     if (config.bootstrap) {
-        self.view = config.horizontal ? "dnnbootstrap-edit-horizontal" : "dnnbootstrap-edit";
+        self.view = config.horizontal ? "dnnbootstrap-"+createEdit+"-horizontal" : "dnnbootstrap-"+createEdit;
     }
     if (config.bootstrap && $.fn.select2) {
         $.fn.select2.defaults.set("theme", "bootstrap");
@@ -68,9 +70,9 @@ alpacaEngine.engine = function(config) {
             });
 
             $("div.alpaca").parent().addClass('popup');
-            
 
-            $("#"+self.cancelButton).click(function () {
+
+            $("#" + self.cancelButton).click(function () {
                 dnnModal.closePopUp(false, "");
                 return false;
             });
@@ -80,7 +82,7 @@ alpacaEngine.engine = function(config) {
             $("#" + self.copyButton).hide();
         }
 
-        $("#"+self.deleteButton).click(function () {
+        $("#" + self.deleteButton).click(function () {
 
             var postData = JSON.stringify({ id: self.itemId });
             //var action = "Delete";
@@ -92,12 +94,12 @@ alpacaEngine.engine = function(config) {
                 data: postData,
                 beforeSend: self.sf.setModuleHeaders
             }).done(function (data) {
-                
-                var href = $("#"+self.saveButton).attr('href');
+
+                var href = $("#" + self.saveButton).attr('href');
                 var windowTop = parent; //needs to be assign to a varaible for Opera compatibility issues.
                 var popup = windowTop.jQuery("#iPopUp");
                 if (popup.length > 0) {
-                    windowTop.__doPostBack('dnn_ctr'+self.moduleId+'_View__UP', '');
+                    windowTop.__doPostBack('dnn_ctr' + self.moduleId + '_View__UP', '');
                     //dnnModal.closePopUp(false, href);
                     dnnModal.closePopUp(false, "");
                 }
@@ -109,10 +111,10 @@ alpacaEngine.engine = function(config) {
             });
             return false;
         });
-        
+
 
         //var moduleScope = $('#'+self.scopeWrapper),
-            //self = moduleScope,
+        //self = moduleScope,
         //sf = $.ServicesFramework(self.moduleId);
 
         self.sf = $.ServicesFramework(self.moduleId);
@@ -121,7 +123,7 @@ alpacaEngine.engine = function(config) {
         var getData = "";
         //var action = "Edit";
         if (self.itemId) getData = "id=" + self.itemId;
-        
+
         $.ajax({
             type: "GET",
             url: self.sf.getServiceRoot('OpenContent') + "OpenContentAPI/" + self.editAction,
@@ -140,7 +142,7 @@ alpacaEngine.engine = function(config) {
             alert("Uh-oh, something broke: " + status);
         });
     }
-   
+
     self.FormEdit = function (config) {
         var ConnectorClass = Alpaca.getConnectorClass("default");
         var connector = new ConnectorClass("default");
@@ -151,14 +153,14 @@ alpacaEngine.engine = function(config) {
         connector.rootUrl = self.rootUrl;
         if (config.versions) {
             $.each(config.versions, function (i, item) {
-                $("#"+self.ddlVersions).append($('<option>', {
+                $("#" + self.ddlVersions).append($('<option>', {
                     value: item.ticks,
                     text: item.text
                 }));
                 //$("#<%=ddlVersions.ClientID%>").data(item.CreatedOnDate, item.Json);
             });
         } else {
-            $("#"+self.ddlVersions).hide();
+            $("#" + self.ddlVersions).hide();
         }
 
         $.alpaca.setDefaultLocale(self.alpacaCulture);
@@ -167,11 +169,37 @@ alpacaEngine.engine = function(config) {
     };
 
     self.CreateForm = function (connector, config, data) {
-         
+
         var view = self.view;
         if (config.view) {
-            view.parent = self.view
-        }  
+            view.parent = self.view;
+        }
+        var selfControl = null;
+        if (config.options && config.options.form) {
+            if (config.options.form.buttons) {
+                var $actions = $('.dnnActions');
+                var buttons = config.options.form.buttons;
+                for (var i in buttons) {
+                    $actions.append('<li><a id="action-' + i + '" data-action="' + i + '" data-after="' + buttons[i].after + '" class="dnnSecondaryAction">' + (buttons[i].title ? buttons[i].title : i) + '</a></li>');
+                    $('#action-' + i, $actions).click(function () {
+                        var action = $(this).attr('data-action');
+                        var after = $(this).attr('data-after');
+                        var button = this;
+                        selfControl.refreshValidationState(true, function () {
+                            if (selfControl.isValid(true)) {
+                                var value = selfControl.getValue();
+                                //alert(JSON.stringify(value, null, "  "));
+                                var href = $(button).attr('href');
+                                self.FormAction(value, action, selfControl, button, buttons[i].after);
+                            }
+                        });
+                        return false;
+                        
+                    });
+                }
+            }
+            delete config.options.form;
+        }
 
         $("#field1").alpaca({
             "schema": config.schema,
@@ -180,7 +208,7 @@ alpacaEngine.engine = function(config) {
             "view": view,
             "connector": connector,
             "postRender": function (control) {
-                var selfControl = control;
+                selfControl = control;
                 $("#" + self.saveButton).click(function () {
                     var button = this;
                     selfControl.refreshValidationState(true, function () {
@@ -197,7 +225,7 @@ alpacaEngine.engine = function(config) {
                     var button = this;
                     selfControl.refreshValidationState(true, function () {
                         if (selfControl.isValid(true)) {
-                            var value = selfControl.getValue();                            
+                            var value = selfControl.getValue();
                             var href = $(button).attr('href');
                             self.FormSubmit(value, href, true);
                         }
@@ -205,7 +233,7 @@ alpacaEngine.engine = function(config) {
                     return false;
                 });
 
-                $("#"+self.ddlVersions).change(function () {
+                $("#" + self.ddlVersions).change(function () {
                     //var versions = config.versions;
                     //var ver = $("#<%=ddlVersions.ClientID%>").data($(this).val());
                     //$("#field1").empty();
@@ -240,15 +268,53 @@ alpacaEngine.engine = function(config) {
             //alert('ok:' + data);
             //self.loadSettings();
             //window.location.href = href;
-
-            var windowTop = parent; //needs to be assign to a varaible for Opera compatibility issues.
-            var popup = windowTop.jQuery("#iPopUp");
-            if (popup.length > 0) {
-                windowTop.__doPostBack('dnn_ctr'+self.moduleId+'_View__UP', '');
-                dnnModal.closePopUp(false, href);
+            if (data.isValid) {
+                var windowTop = parent; //needs to be assign to a varaible for Opera compatibility issues.
+                var popup = windowTop.jQuery("#iPopUp");
+                if (popup.length > 0) {
+                    windowTop.__doPostBack('dnn_ctr' + self.moduleId + '_View__UP', '');
+                    dnnModal.closePopUp(false, href);
+                }
+                else {
+                    window.location.href = href;
+                }
+                $('#field1validation').hide();
+            } else {
+                $('#field1validation').text(data.validMessage);
+                $('#field1validation').show();
             }
-            else {
-                window.location.href = href;
+
+        }).fail(function (xhr, result, status) {
+            alert("Uh-oh, something broke: " + status);
+        });
+    };
+
+    self.FormAction = function (data, action, alpacaControl, button, after) {
+        var postData = $.extend({ form: data }, self.data);
+        postData.action = action;
+        $.ajax({
+            type: "POST",
+            url: self.sf.getServiceRoot('OpenContent') + "OpenContentAPI/" + self.actionAction,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify(postData),
+            beforeSend: self.sf.setModuleHeaders
+        }).done(function (data) {
+            //alert('ok:' + data);
+            //self.loadSettings();
+            //window.location.href = href;
+            if (data.isValid) {
+                if (data.result) {
+                    //alpacaControl.setValue(data.result);
+                }
+                if (after == "disable") {
+                    $(button).off();
+                    $(button).addClass('alpaca-disabled');
+                }
+                $('#field1validation').hide();
+            } else {
+                $('#field1validation').text(data.validMessage);
+                $('#field1validation').show();
             }
         }).fail(function (xhr, result, status) {
             alert("Uh-oh, something broke: " + status);
