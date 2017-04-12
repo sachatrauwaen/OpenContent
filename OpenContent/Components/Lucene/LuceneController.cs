@@ -23,10 +23,7 @@ namespace Satrabel.OpenContent.Components.Lucene
         private static LuceneController _instance = new LuceneController();
         private LuceneService _serviceInstance;
 
-        public static LuceneController Instance
-        {
-            get { return _instance; }
-        }
+        public static LuceneController Instance => _instance;
 
         public LuceneService Store
         {
@@ -93,23 +90,6 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         #region Index
 
-        //public void ReIndexModuleData(int moduleId, OpenContentSettings settings)
-        //{
-        //    try
-        //    {
-        //        using (LuceneController lc = LuceneController.Instance)
-        //        {
-        //            IndexModuleData(lc, moduleId, settings);
-        //            lc.Store.Commit();
-        //            lc.Store.OptimizeSearchIndex(true);
-        //        }
-        //    }
-        //    finally
-        //    {
-        //        LuceneController.ClearInstance();
-        //    }
-        //}
-
         /// <summary>
         /// Use this to 
         /// </summary>
@@ -137,12 +117,10 @@ namespace Satrabel.OpenContent.Components.Lucene
             }
         }
 
-
-
         /// <summary>
         /// Reindex all OpenContent modules of all portals.
         /// </summary>
-        internal void IndexAll()
+        internal void IndexAll() //todo: this should only be called from DataSourceProviders
         {
             Log.Logger.Info("Reindexing all OpenContent data, from all portals");
             LuceneController.ClearInstance();
