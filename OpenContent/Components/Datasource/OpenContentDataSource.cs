@@ -12,7 +12,7 @@ using Satrabel.OpenContent.Components.Form;
 
 namespace Satrabel.OpenContent.Components.Datasource
 {
-    public class OpenContentDataSource : IDataSource
+    public class OpenContentDataSource : IDataSource, IDataIndex
     {
         public virtual string Name => AppConfig.OPENCONTENT;
 
@@ -417,6 +417,14 @@ namespace Satrabel.OpenContent.Components.Datasource
         private static void ClearCache(DataSourceContext context)
         {
             UrlRewriter.UrlRulesCaching.Remove(context.PortalId, context.ModuleId);
+        }
+
+        public void Reindex(DataSourceContext context)
+        {
+            string scope = OpenContentInfo.GetScope(context.ModuleId, context.Collection);
+            var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection);
+            OpenContentController occ = new OpenContentController();
+            LuceneController.Instance.ReIndexModuleData(occ.GetContents(context.ModuleId, context.Collection), indexConfig, scope);
         }
 
         #endregion

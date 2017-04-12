@@ -182,6 +182,7 @@
     <Compile Include="Components\Datasource\DnnUsersDataSource.cs" />
     <Compile Include="Components\Datasource\IDataAction.cs" />
     <Compile Include="Components\Datasource\IDataActions.cs" />
+    <Compile Include="Components\Datasource\IDataIndex.cs" />
     <Compile Include="Components\FormAPIController.cs" />
     <Compile Include="Components\Form\FormUtils.cs" />
     <Compile Include="Components\Form\GenSettingsDTO.cs" />

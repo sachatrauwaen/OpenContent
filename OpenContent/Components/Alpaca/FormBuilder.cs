@@ -351,7 +351,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                             };
                             newConfig.Fields.Add(prop.Key, newField);
                         }
-                        else if (optType == "text")
+                        else if (optType == "text" || optType == "textarea" || optType == "email")
                         {
                             var newField = new FieldConfig()
                             {
