@@ -327,7 +327,55 @@ namespace Satrabel.OpenContent.Components.Datasource
             }
         }
 
-        private void UpdateRoles(DataSourceContext context, JToken data, JObject schema, UserInfo user)
+        public override void Delete(DataSourceContext context, IDataItem item)
+        {
+            var user = (UserInfo)item.Item;
+            UserController.DeleteUser(ref user, true, false);
+
+        }
+
+        public List<IDataAction> GetActions(DataSourceContext context, IDataItem item)
+        {
+            var actions = new List<IDataAction>();
+            if (item == null) return actions;
+
+            var user = (UserInfo)item.Item;
+            if (user.Membership.LockedOut)
+            {
+                actions.Add(new DefaultDataAction()
+                {
+                    Name = "unlock",
+                    AfterExecute = "disable"
+                });
+            }
+            return actions;
+        }
+
+        public override JToken Action(DataSourceContext context, string action, IDataItem item, JToken data)
+        {
+            if (action == "unlock")
+            {
+                var user = (UserInfo)item.Item;
+                UserController.UnLockUser(user);
+            }
+            return null;
+        }
+
+        public void Reindex(DataSourceContext context)
+        {
+            string scope = Lucene_Scope;
+            var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection); //todo index is being build from schema & options. But they should be provided by the provider, not directly from the files
+            LuceneController.Instance.ReIndexModuleData(UserController.GetUsers(true, false, context.PortalId).Cast<UserInfo>().
+                Where(u => !u.IsInRole("Administrators")).Select(u => new IndexableItemUser()
+                {
+                    Data = ToData(u).Data,
+                    User = u
+                }), indexConfig, scope);
+        }
+
+        #region private methods
+
+        private static void UpdateRoles(DataSourceContext context, JToken data, JObject schema, UserInfo user)
         {
             if (HasProperty(schema, "", "Roles"))
             {
@@ -353,6 +401,8 @@ namespace Satrabel.OpenContent.Components.Datasource
                 }
             }
         }
+
+
         private static void ChangePassword(UserInfo user, string password)
         {
             // Check New Password is Valid
@@ -373,7 +423,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             UserController.ResetAndChangePassword(user, password);
         }
 
-        private void FillProfile(JToken data, JObject schema, UserInfo user)
+        private static void FillProfile(JToken data, JObject schema, UserInfo user)
         {
             if (HasProperty(schema, "", "Profile"))
             {
@@ -405,7 +455,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             }
         }
 
-        private void FillUser(JToken data, JObject schema, UserInfo user)
+        private static void FillUser(JToken data, JObject schema, UserInfo user)
         {
             if (HasProperty(schema, "", "DisplayName"))
             {
@@ -425,7 +475,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             }
         }
 
-        private void UpdateDisplayName(DataSourceContext context, UserInfo user)
+        private static void UpdateDisplayName(DataSourceContext context, UserInfo user)
         {
             //Update DisplayName to conform to Format
             object setting = UserModuleBase.GetSetting(context.PortalId, "Security_DisplayNameFormat");
@@ -434,12 +484,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 user.UpdateDisplayName(Convert.ToString(setting));
             }
         }
-        public override void Delete(DataSourceContext context, IDataItem item)
-        {
-            var user = (UserInfo)item.Item;
-            UserController.DeleteUser(ref user, true, false);
 
-        }
         private static bool HasProperty(JObject schema, string subobject, string property)
         {
             if (!string.IsNullOrEmpty(subobject))
@@ -450,43 +495,8 @@ namespace Satrabel.OpenContent.Components.Datasource
 
             return ((JObject)schema["properties"]).Properties().Any(p => p.Name == property);
         }
-        public override JToken Action(DataSourceContext context, string action, IDataItem item, JToken data)
-        {
-            if (action == "unlock")
-            {
-                var user = (UserInfo)item.Item;
-                UserController.UnLockUser(user);
-            }
-            return null;
-        }
-        public List<IDataAction> GetActions(DataSourceContext context, IDataItem item)
-        {
-            var actions = new List<IDataAction>();
-            if (item == null) return actions;
 
-            var user = (UserInfo)item.Item;
-            if (user.Membership.LockedOut)
-            {
-                actions.Add(new DefaultDataAction()
-                {
-                    Name = "unlock",
-                    AfterExecute = "disable"
-                });
-            }
-            return actions;
-        }
-
-        public void Reindex(DataSourceContext context)
-        {
-            string scope = Lucene_Scope;
-            var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection); //todo index is being build from schema & options. But they should be provided by the provider, not directly from the files
-            LuceneController.Instance.ReIndexModuleData(UserController.GetUsers(true, false, context.PortalId).Cast<UserInfo>().
-                Where(u => !u.IsInRole("Administrators")).Select(u => new IndexableItemUser()
-                {
-                    Data = ToData(u).Data,
-                    User = u
-                }), indexConfig, scope);
-        }
+        #endregion
     }
 
     class IndexableItemUser : IIndexableItem
