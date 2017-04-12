@@ -14,7 +14,6 @@ using Satrabel.OpenContent.Components.Lucene;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DotNetNuke.Web.Components;
 using Satrabel.OpenContent.Components.Lucene.Index;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.Logging;
@@ -25,9 +24,9 @@ namespace Satrabel.OpenContent.Components.Datasource
 {
     public class DnnUsersDataSource : DefaultDataSource, IDataActions, IDataIndex
     {
+        private const string REGISTERED_USERS = "Registered Users";
+        private const string LUCENE_SCOPE = "DnnUsers";
 
-        const string Registered_Users = "Registered Users";
-        const string Lucene_Scope = "DnnUsers";
         public override string Name => "Satrabel.DnnUsers";
 
         public override IDataItem Get(DataSourceContext context, string id)
@@ -82,7 +81,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             item.Data["Roles"] = roles;
             foreach (var role in user.Roles)
             {
-                if (role != Registered_Users)
+                if (role != REGISTERED_USERS)
                 {
                     roles.Add(role);
                 }
@@ -95,7 +94,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             if (context.Index && selectQuery != null)
             {
                 SelectQueryDefinition def = BuildQuery(context, selectQuery);
-                SearchResults docs = LuceneController.Instance.Search(Lucene_Scope, def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
+                SearchResults docs = LuceneController.Instance.Search(LUCENE_SCOPE, def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
                 int total = docs.TotalResults;
                 var dataList = new List<IDataItem>();
                 foreach (string item in docs.ids)
@@ -248,7 +247,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             else
             {
                 Log.Logger.Error($"Creation of user failed with createStatus: {createStatus}");
-                throw new DataNotValidException(Localization.Localization.GetString(createStatus.ToString()) + " (1)");
+                throw new DataNotValidException(Localizer.Instance.GetString(createStatus.ToString()) + " (1)");
             }
             var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection);
             if (context.Index)
@@ -309,7 +308,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                     catch (Exception exc)
                     {
                         Log.Logger.Error($"Update of user {user.Username} failed with 'Username not valid' error");
-                        throw new DataNotValidException(Localization.Localization.GetString("Username not valid") + " (2)", exc);
+                        throw new DataNotValidException(Localizer.Instance.GetString("Username not valid") + " (2)", exc);
                     }
                 }
             }
@@ -364,7 +363,7 @@ namespace Satrabel.OpenContent.Components.Datasource
 
         public void Reindex(DataSourceContext context)
         {
-            string scope = Lucene_Scope;
+            string scope = LUCENE_SCOPE;
             var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection); //todo index is being build from schema & options. But they should be provided by the provider, not directly from the files
             LuceneController.Instance.ReIndexModuleData(UserController.GetUsers(true, false, context.PortalId).Cast<UserInfo>().
                 Where(u => !u.IsInRole("Administrators")).Select(u => new IndexableItemUser()
@@ -394,7 +393,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 }
                 foreach (var roleName in rolesToRemove)
                 {
-                    if (roleName != Registered_Users)
+                    if (roleName != REGISTERED_USERS)
                     {
                         var roleInfo = RoleController.Instance.GetRoleByName(context.PortalId, roleName);
                         RoleController.DeleteUserRole(user, roleInfo, PortalSettings.Current, false);
@@ -410,7 +409,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             if (!UserController.ValidatePassword(password))
             {
                 Log.Logger.Error($"Changing password of user {user.Username} failed with PasswordInvalid error");
-                throw new DataNotValidException(Localization.Localization.GetString("PasswordInvalid"));
+                throw new DataNotValidException(Localizer.Instance.GetString("PasswordInvalid"));
             }
             // Check New Password is not same as username or banned
             var settings = new MembershipPasswordSettings(user.PortalID);
@@ -420,7 +419,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 if (m.FoundBannedPassword(password) || user.Username == password)
                 {
                     Log.Logger.Error($"Changing password of user {user.Username} failed with BannedPasswordUsed error");
-                    throw new DataNotValidException(Localization.Localization.GetString("BannedPasswordUsed"));
+                    throw new DataNotValidException(Localizer.Instance.GetString("BannedPasswordUsed"));
                 }
             }
             UserController.ResetAndChangePassword(user, password);
@@ -502,7 +501,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         #endregion
     }
 
-    class IndexableItemUser : IIndexableItem
+    internal class IndexableItemUser : IIndexableItem
     {
         public JToken Data { get; set; }
         public UserInfo User { get; set; }
