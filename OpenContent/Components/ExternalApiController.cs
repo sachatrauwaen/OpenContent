@@ -6,6 +6,7 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using Satrabel.OpenContent.Components.Datasource;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -21,7 +22,7 @@ namespace Satrabel.OpenContent.Components
                 var module = new OpenContentModuleInfo(req.ModuleId, req.TabId);
                 string editRole = module.Settings.Template.Manifest.GetEditRole();
 
-                OpenContentController ctrl = new OpenContentController();
+                var dataSource = new OpenContentDataSource();
 
                 if (module.IsListMode())
                 {
@@ -30,20 +31,13 @@ namespace Satrabel.OpenContent.Components
                         Log.Logger.WarnFormat("Failed the HasEditPermissions() check for ");
                         return Request.CreateResponse(HttpStatusCode.Unauthorized, "Failed the HasEditPermissions() check");
                     }
-                    var index = module.Settings.Template.Manifest.Index;
-                    var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template.Key.TemplateDir, "Items");
-                    OpenContentInfo content = new OpenContentInfo()
-                    {
-                        ModuleId = module.DataModule.ModuleID,
-                        Collection= req.Collection,
-                        Title = ActiveModule.ModuleTitle,
-                        Json = req.json.ToString(),
-                        CreatedByUserId = UserInfo.UserID,
-                        CreatedOnDate = DateTime.Now,
-                        LastModifiedByUserId = UserInfo.UserID,
-                        LastModifiedOnDate = DateTime.Now
-                    };
-                    ctrl.AddContent(content, index, indexConfig);
+                    var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
+                    dsContext.Collection = req.Collection;
+
+                    JToken data = req.json;
+                    data["Title"] = ActiveModule.ModuleTitle;
+                    dataSource.Add(dsContext, data);
+
                     return Request.CreateResponse(HttpStatusCode.OK, "");
                 }
                 else

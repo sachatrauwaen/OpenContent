@@ -29,22 +29,13 @@ namespace Satrabel.OpenContent.Components
 
         #region Commands
 
-        public void AddContent(OpenContentInfo content, bool index, FieldConfig indexConfig)
+        internal void AddContent(OpenContentInfo content, bool index, FieldConfig indexConfig)
         {
             ClearCache(content);
             var json = content.JsonAsJToken;
             if (string.IsNullOrEmpty(content.Key))
             {
-                if (json["_id"] != null)
-                {
-                    content.Key = json["_id"].ToString();
-                }
-                else
-                {
-                    content.Key = ObjectId.NewObjectId().ToString();
-                    //json["_id"] = content.Id;
-                    //content.Json = json.ToString();
-                }
+                content.Key = json["_id"]?.ToString() ?? ObjectId.NewObjectId().ToString();
             }
             if (string.IsNullOrEmpty(content.Collection))
             {
@@ -74,13 +65,7 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
-        [Obsolete("This method is obsolete since dec 2015; use AddContent(OpenContentInfo content, bool index) instead")]
-        public void AddContent(OpenContentInfo content)
-        {
-            AddContent(content, false, null);
-        }
-
-        public void DeleteContent(OpenContentInfo content, bool index)
+        internal void DeleteContent(OpenContentInfo content, bool index)
         {
             ClearCache(content);
 
@@ -97,7 +82,7 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
-        public void UpdateContent(OpenContentInfo content, bool index, FieldConfig indexConfig)
+        internal void UpdateContent(OpenContentInfo content, bool index, FieldConfig indexConfig)
         {
             ClearCache(content);
             var json = content.JsonAsJToken;
@@ -135,18 +120,11 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
-        [Obsolete("This method is obsolete since dec 2015; use UpdateContent(OpenContentInfo content, bool index) instead")]
-        public void UpdateContent(OpenContentInfo content)
-        {
-            UpdateContent(content, false, null);
-        }
-
-
         #endregion
 
         #region Queries
 
-        public IEnumerable<OpenContentInfo> GetContents(int moduleId)
+        internal IEnumerable<OpenContentInfo> GetContents(int moduleId)
         {
             var cacheArgs = new CacheItemArgs(GetModuleIdCacheKey(moduleId, "GetContents"), CacheTime);
             return DataCache.GetCachedData<IEnumerable<OpenContentInfo>>(cacheArgs, args =>
@@ -162,7 +140,7 @@ namespace Satrabel.OpenContent.Components
                 });
         }
 
-        public OpenContentInfo GetContent(int contentId)
+        internal OpenContentInfo GetContent(int contentId)
         {
             var cacheArgs = new CacheItemArgs(GetContentIdCacheKey(contentId), CacheTime);
             return DataCache.GetCachedData<OpenContentInfo>(cacheArgs, args =>
@@ -178,7 +156,7 @@ namespace Satrabel.OpenContent.Components
                 });
         }
 
-        public OpenContentInfo GetFirstContent(int moduleId)
+        internal OpenContentInfo GetFirstContent(int moduleId)
         {
             var cacheArgs = new CacheItemArgs(GetModuleIdCacheKey(moduleId) + "GetFirstContent", CacheTime);
             return DataCache.GetCachedData<OpenContentInfo>(cacheArgs, args =>
@@ -194,7 +172,7 @@ namespace Satrabel.OpenContent.Components
                 });
         }
 
-        public OpenContentInfo GetContent(int moduleId, string collection, string id)
+        internal OpenContentInfo GetContent(int moduleId, string collection, string id)
         {
             if (collection == AppConfig.DEFAULT_COLLECTION)
             {
@@ -209,7 +187,7 @@ namespace Satrabel.OpenContent.Components
                 return GetContentByKey(moduleId, collection, id);
             }
         }
-        private OpenContentInfo GetContentByKey(int moduleId, string collection, string key)
+        internal OpenContentInfo GetContentByKey(int moduleId, string collection, string key)
         {
             IEnumerable<OpenContentInfo> documents;
             using (IDataContext ctx = DataContext.Instance())
@@ -219,7 +197,7 @@ namespace Satrabel.OpenContent.Components
             }
             return documents.SingleOrDefault();
         }
-        public IEnumerable<OpenContentInfo> GetContents(int moduleId, string collection)
+        internal IEnumerable<OpenContentInfo> GetContents(int moduleId, string collection)
         {
             IEnumerable<OpenContentInfo> documents;
             using (IDataContext ctx = DataContext.Instance())
@@ -230,7 +208,7 @@ namespace Satrabel.OpenContent.Components
             return documents;
         }
 
-        public IEnumerable<OpenContentInfo> GetContents(int[] contentIds)
+        internal IEnumerable<OpenContentInfo> GetContents(int[] contentIds)
         {
             IEnumerable<OpenContentInfo> documents;
             using (IDataContext ctx = DataContext.Instance())
@@ -263,5 +241,20 @@ namespace Satrabel.OpenContent.Components
 
         #endregion
 
+        #region Obsolete
+
+        [Obsolete("This method is obsolete since dec 2015; use AddContent(OpenContentInfo content, bool index) instead")]
+        public void AddContent(OpenContentInfo content)
+        {
+            AddContent(content, false, null);
+        }
+
+        [Obsolete("This method is obsolete since dec 2015; use UpdateContent(OpenContentInfo content, bool index) instead")]
+        public void UpdateContent(OpenContentInfo content)
+        {
+            UpdateContent(content, false, null);
+        }
+
+        #endregion
     }
 }

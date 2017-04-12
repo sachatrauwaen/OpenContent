@@ -6,6 +6,7 @@ using Satrabel.OpenContent.Components.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DotNetNuke.Services.Journal;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.Logging;
 using Satrabel.OpenContent.Components.Form;
@@ -275,13 +276,26 @@ namespace Satrabel.OpenContent.Components.Datasource
 
         public virtual void Add(DataSourceContext context, JToken data)
         {
+            //var contentInfo = new OpenContentInfo()
+            //{
+            //    ModuleId = moduleId,
+            //    Collection = collection?.InnerText ?? "",
+            //    Key = key?.InnerText ?? "",
+            //    Json = item.InnerText,
+            //    CreatedByUserId = userId,
+            //    CreatedOnDate = DateTime.Now,
+            //    LastModifiedByUserId = userId,
+            //    LastModifiedOnDate = DateTime.Now,
+            //    Title = ""
+            //};
+            
             OpenContentController ctrl = new OpenContentController();
             var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection);
             var content = new OpenContentInfo()
             {
                 ModuleId = GetModuleId(context),
                 Collection = context.Collection,
-                Title = data["Title"] == null ? "" : data["Title"].ToString(),
+                Title = data["Title"]?.ToString() ?? "",
                 Json = data.ToString(),
                 CreatedByUserId = context.UserId,
                 CreatedOnDate = DateTime.Now,
@@ -295,7 +309,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             OpenContentController ctrl = new OpenContentController();
             var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection);
             var content = (OpenContentInfo)item.Item;
-            content.Title = data["Title"] == null ? "" : data["Title"].ToString();
+            content.Title = data["Title"]?.ToString() ?? "";
             content.Json = data.ToString();
             content.LastModifiedByUserId = context.UserId;
             content.LastModifiedOnDate = DateTime.Now;

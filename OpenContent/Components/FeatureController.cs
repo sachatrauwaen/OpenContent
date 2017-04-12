@@ -23,6 +23,7 @@ using DotNetNuke.Entities.Portals;
 using System.IO;
 using System.Web.Hosting;
 using DotNetNuke.Common.Internal;
+using DotNetNuke.Entities.Users;
 using DotNetNuke.Services.Search.Controllers;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Dnn;
@@ -52,31 +53,28 @@ namespace Satrabel.OpenContent.Components
             xml += "</opencontent>";
             return xml;
         }
-        public void ImportModule(int moduleId, string Content, string version, int userId)
+        public void ImportModule(int moduleId, string content, string version, int userId)
         {
             var module = new OpenContentModuleInfo(moduleId, Null.NullInteger);
-            var index = module.Settings.Template.Manifest.Index;
-            var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template);
-            OpenContentController ctrl = new OpenContentController();
-            XmlNode xml = Globals.GetContent(Content, "opencontent");
+            //var index = module.Settings.Template.Manifest.Index;
+            //var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template);
+            var dataSource = new OpenContentDataSource();
+            XmlNode xml = Globals.GetContent(content, "opencontent");
             foreach (XmlNode item in xml.SelectNodes("item"))
             {
                 XmlNode json = item.SelectSingleNode("json");
                 XmlNode collection = item.SelectSingleNode("collection");
                 XmlNode key = item.SelectSingleNode("key");
-                var contentInfo = new OpenContentInfo()
-                {
-                    ModuleId = moduleId,
-                    Collection = collection?.InnerText ?? "",
-                    Key = key?.InnerText ?? "",
-                    Json = item.InnerText,
-                    CreatedByUserId = userId,
-                    CreatedOnDate = DateTime.Now,
-                    LastModifiedByUserId = userId,
-                    LastModifiedOnDate = DateTime.Now,
-                    Title = ""
-                };
-                ctrl.AddContent(contentInfo, index, indexConfig);
+
+                var dsContext = OpenContentUtils.CreateDataContext(module, userId);
+                dsContext.Collection = collection?.InnerText ?? "";
+                //dsContext.Key = key?.InnerText ?? "";
+
+                JToken data = item.InnerText;
+                data["_id"]= key?.InnerText ?? "";
+
+                dataSource.Add(dsContext, data);
+                //dataSource.Add(contentInfo, index, indexConfig);
             }
         }
 
