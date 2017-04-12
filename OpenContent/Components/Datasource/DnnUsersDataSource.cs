@@ -7,19 +7,19 @@ using DotNetNuke.Entities.Users;
 using DotNetNuke.Entities.Users.Membership;
 using DotNetNuke.Security.Membership;
 using DotNetNuke.Security.Roles;
-using DotNetNuke.Services.Localization;
 using DotNetNuke.Services.Mail;
-using DotNetNuke.UI;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Lucene;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DotNetNuke.Web.Components;
 using Satrabel.OpenContent.Components.Lucene.Index;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.Logging;
 using Satrabel.OpenContent.Components.Datasource.Search;
+using Satrabel.OpenContent.Components.Localization;
 
 namespace Satrabel.OpenContent.Components.Datasource
 {
@@ -247,7 +247,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             }
             else
             {
-                throw new DataNotValidException(Localization.GetString(createStatus.ToString()));
+                throw new DataNotValidException(Localization.Localization.GetString(createStatus.ToString()) + " (1)");
             }
             var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection);
             if (context.Index)
@@ -307,7 +307,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                     }
                     catch (Exception exc)
                     {
-                        throw new DataNotValidException(Localization.GetString("Username not valid"), exc);
+                        throw new DataNotValidException(Localization.Localization.GetString("Username not valid") + " (2)", exc);
                         //var args = new UserUpdateErrorArgs(User.UserID, User.Username, "EmailError");
                     }
                 }
@@ -408,7 +408,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             // Check New Password is Valid
             if (!UserController.ValidatePassword(password))
             {
-                throw new DataNotValidException(Localization.GetString("PasswordInvalid"));
+                throw new DataNotValidException(Localization.Localization.GetString("PasswordInvalid") + " (3)");
             }
             // Check New Password is not same as username or banned
             var settings = new MembershipPasswordSettings(user.PortalID);
@@ -417,7 +417,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 var m = new MembershipPasswordController();
                 if (m.FoundBannedPassword(password) || user.Username == password)
                 {
-                    throw new DataNotValidException(Localization.GetString("BannedPasswordUsed"));
+                    throw new DataNotValidException(Localization.Localization.GetString("BannedPasswordUsed") + " (4)");
                 }
             }
             UserController.ResetAndChangePassword(user, password);

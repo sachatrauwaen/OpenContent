@@ -21,6 +21,7 @@ using Satrabel.OpenContent.Components.Lucene.Index;
 using Satrabel.OpenContent.Components.TemplateHelpers;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Datasource;
+using Satrabel.OpenContent.Components.Localization;
 
 
 namespace Satrabel.OpenContent.Components
@@ -399,22 +400,22 @@ namespace Satrabel.OpenContent.Components
             catch (PermissionsNotMetException)
             {
                 //Logger.Warn(exc);
-                strMessage = string.Format(Localization.GetString("InsufficientFolderPermission"), "OpenContent/Templates");
+                strMessage = string.Format(Localization.Localization.GetString("InsufficientFolderPermission"), "OpenContent/Templates");
             }
             catch (NoSpaceAvailableException)
             {
                 //Logger.Warn(exc);
-                strMessage = string.Format(Localization.GetString("DiskSpaceExceeded"), fileName);
+                strMessage = string.Format(Localization.Localization.GetString("DiskSpaceExceeded"), fileName);
             }
             catch (InvalidFileExtensionException)
             {
                 //Logger.Warn(exc);
-                strMessage = string.Format(Localization.GetString("RestrictedFileType"), fileName, Host.AllowedExtensionWhitelist.ToDisplayString());
+                strMessage = string.Format(Localization.Localization.GetString("RestrictedFileType"), fileName, Host.AllowedExtensionWhitelist.ToDisplayString());
             }
             catch (Exception exc)
             {
                 //Logger.Error(exc);
-                strMessage = string.Format(Localization.GetString("SaveFileError") + " - " + exc.Message, fileName);
+                strMessage = string.Format(Localization.Localization.GetString("SaveFileError") + " - " + exc.Message, fileName);
             }
             if (!string.IsNullOrEmpty(strMessage))
             {

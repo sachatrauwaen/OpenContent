@@ -8,7 +8,6 @@ using System.Web;
 using System.Web.Compilation;
 using System.Web.WebPages;
 using DotNetNuke.Services.Exceptions;
-using DotNetNuke.Services.Localization;
 using DotNetNuke.UI.Modules;
 using DotNetNuke.Web.Razor.Helpers;
 
@@ -22,7 +21,7 @@ namespace Satrabel.OpenContent.Components.Razor
         {
             RazorScriptFile = razorScriptFile;
             ModuleContext = moduleContext;
-            LocalResourceFile = localResourceFile ?? Path.Combine(Path.GetDirectoryName(razorScriptFile), Localization.LocalResourceDirectory, Path.GetFileName(razorScriptFile) + ".resx");
+            LocalResourceFile = localResourceFile ?? Path.Combine(Path.GetDirectoryName(razorScriptFile), DotNetNuke.Services.Localization.Localization.LocalResourceDirectory, Path.GetFileName(razorScriptFile) + ".resx");
 
             try
             {

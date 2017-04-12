@@ -21,10 +21,10 @@ using DotNetNuke.Security;
 using Satrabel.OpenContent.Components.Json;
 using DotNetNuke.Entities.Modules;
 using System.Collections.Generic;
+using DotNetNuke.Services.Localization;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.Datasource;
-using DotNetNuke.Services.Localization;
 
 #endregion
 
@@ -684,12 +684,6 @@ namespace Satrabel.OpenContent.Components
                         validMessage = ex.Message
                     });
                 }
-
-                return Request.CreateResponse(HttpStatusCode.OK, new
-                {
-                    isValid = true
-                });
-
             }
             catch (Exception exc)
             {

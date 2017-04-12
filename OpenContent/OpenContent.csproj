@@ -189,6 +189,7 @@
     <Compile Include="Components\Form\NotificationDTO.cs" />
     <Compile Include="Components\Form\SettingsDTO.cs" />
     <Compile Include="Components\Json\NotAuthorizedException.cs" />
+    <Compile Include="Components\Localization\Localization.cs" />
     <Compile Include="Components\Logging\ExceptionExtentions.cs" />
     <Compile Include="Components\Lucene\Index\IIndexableItem.cs" />
     <Compile Include="Components\Manifest\CollectionManifest.cs" />
