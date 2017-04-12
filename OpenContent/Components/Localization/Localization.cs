@@ -13,7 +13,7 @@ namespace Satrabel.OpenContent.Components.Localization
         {
             public string GetString(string value)
             {
-                return DotNetNuke.Services.Localization.Localization.GetString("InsufficientFolderPermission");
+                return DotNetNuke.Services.Localization.Localization.GetString(value);
             }
         }
 

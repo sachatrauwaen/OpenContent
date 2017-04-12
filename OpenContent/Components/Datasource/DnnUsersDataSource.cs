@@ -247,6 +247,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             }
             else
             {
+                Log.Logger.Error($"Creation of user failed with createStatus: {createStatus}");
                 throw new DataNotValidException(Localization.Localization.GetString(createStatus.ToString()) + " (1)");
             }
             var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection);
@@ -294,7 +295,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 string password = data["Password"].ToString();
                 ChangePassword(user, password);
             }
-            if (HasProperty(schema, "", "Username") && data["Username"] != null && !string.IsNullOrEmpty(data["Username"].ToString()))
+            if (HasProperty(schema, "", "Username") && !string.IsNullOrEmpty(data["Username"]?.ToString()))
             {
                 var userName = data["Username"].ToString();
                 if (userName != user.Username)
@@ -307,8 +308,8 @@ namespace Satrabel.OpenContent.Components.Datasource
                     }
                     catch (Exception exc)
                     {
+                        Log.Logger.Error($"Update of user {user.Username} failed with 'Username not valid' error");
                         throw new DataNotValidException(Localization.Localization.GetString("Username not valid") + " (2)", exc);
-                        //var args = new UserUpdateErrorArgs(User.UserID, User.Username, "EmailError");
                     }
                 }
             }
@@ -408,7 +409,8 @@ namespace Satrabel.OpenContent.Components.Datasource
             // Check New Password is Valid
             if (!UserController.ValidatePassword(password))
             {
-                throw new DataNotValidException(Localization.Localization.GetString("PasswordInvalid") + " (3)");
+                Log.Logger.Error($"Changing password of user {user.Username} failed with PasswordInvalid error");
+                throw new DataNotValidException(Localization.Localization.GetString("PasswordInvalid"));
             }
             // Check New Password is not same as username or banned
             var settings = new MembershipPasswordSettings(user.PortalID);
@@ -417,7 +419,8 @@ namespace Satrabel.OpenContent.Components.Datasource
                 var m = new MembershipPasswordController();
                 if (m.FoundBannedPassword(password) || user.Username == password)
                 {
-                    throw new DataNotValidException(Localization.Localization.GetString("BannedPasswordUsed") + " (4)");
+                    Log.Logger.Error($"Changing password of user {user.Username} failed with BannedPasswordUsed error");
+                    throw new DataNotValidException(Localization.Localization.GetString("BannedPasswordUsed"));
                 }
             }
             UserController.ResetAndChangePassword(user, password);
