@@ -12,16 +12,22 @@ using DotNetNuke.Services.Mail;
 using DotNetNuke.UI;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Alpaca;
+using Satrabel.OpenContent.Components.Lucene;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Satrabel.OpenContent.Components.Lucene.Index;
+using Satrabel.OpenContent.Components.Lucene.Config;
+using Satrabel.OpenContent.Components.Logging;
+using Satrabel.OpenContent.Components.Datasource.Search;
 
 namespace Satrabel.OpenContent.Components.Datasource
 {
-    public class DnnUsersDataSource : DefaultDataSource, IDataActions
+    public class DnnUsersDataSource : DefaultDataSource, IDataActions, IDataIndex
     {
-        const string RegisteredUsers = "Registered Users";
 
+        const string Registered_Users = "Registered Users";
+        const string Lucene_Scope = "DnnUsers";
         public override string Name => "Satrabel.DnnUsers";
 
         public override IDataItem Get(DataSourceContext context, string id)
@@ -76,7 +82,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             item.Data["Roles"] = roles;
             foreach (var role in user.Roles)
             {
-                if (role != RegisteredUsers)
+                if (role != Registered_Users)
                 {
                     roles.Add(role);
                 }
@@ -84,52 +90,97 @@ namespace Satrabel.OpenContent.Components.Datasource
             return item;
         }
 
-        public override IDataItems GetAll(DataSourceContext context, Search.Select selectQuery)
+        public override IDataItems GetAll(DataSourceContext context, Select selectQuery)
         {
-            int pageIndex = 0;
-            int pageSize = 1000;
-            int total = 0;
-            IEnumerable<UserInfo> users;
-            if (selectQuery != null)
+            if (context.Index && selectQuery != null)
             {
-                pageIndex = selectQuery.PageIndex;
-                pageSize = selectQuery.PageSize;
-                var ruleDisplayName = selectQuery.Query.FilterRules.FirstOrDefault(f => f.Field == "DisplayName");
-                var ruleRoles = selectQuery.Query.FilterRules.FirstOrDefault(f => f.Field == "Roles");
-                if (ruleDisplayName != null)
+                SelectQueryDefinition def = BuildQuery(context, selectQuery);
+                SearchResults docs = LuceneController.Instance.Search(Lucene_Scope, def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
+                int total = docs.TotalResults;
+                var dataList = new List<IDataItem>();
+                foreach (string item in docs.ids)
                 {
-                    string displayName = ruleDisplayName.Value.AsString + "%";
-                    users = UserController.GetUsersByDisplayName(context.PortalId, displayName, pageIndex, pageSize, ref total, true, false).Cast<UserInfo>();
+                    var user = UserController.GetUserById(context.PortalId, int.Parse(item));
+                    if (user != null)
+                    {
+                        dataList.Add(ToData(user));
+                    }
+                    else
+                    {
+                        Log.Logger.DebugFormat("DnnUsersDataSource.GetAll() ContentItem not found [{0}]", item);
+                    }
+                }
+                return new DefaultDataItems()
+                {
+                    Items = dataList,
+                    Total = total,
+                    DebugInfo = def.Filter + " - " + def.Query + " - " + def.Sort
+                };
+            }
+            else
+            {
+                int pageIndex = 0;
+                int pageSize = 1000;
+                int total = 0;
+                IEnumerable<UserInfo> users;
+                if (selectQuery != null)
+                {
+                    pageIndex = selectQuery.PageIndex;
+                    pageSize = selectQuery.PageSize;
+                    var ruleDisplayName = selectQuery.Query.FilterRules.FirstOrDefault(f => f.Field == "DisplayName");
+                    var ruleRoles = selectQuery.Query.FilterRules.FirstOrDefault(f => f.Field == "Roles");
+                    if (ruleDisplayName != null)
+                    {
+                        string displayName = ruleDisplayName.Value.AsString + "%";
+                        users = UserController.GetUsersByDisplayName(context.PortalId, displayName, pageIndex, pageSize, ref total, true, false).Cast<UserInfo>();
+                    }
+                    else
+                    {
+                        users = UserController.GetUsers(context.PortalId, pageIndex, pageSize, ref total, true, false).Cast<UserInfo>();
+                        total = users.Count();
+                    }
+                    if (ruleRoles != null)
+                    {
+                        var roleNames = ruleRoles.MultiValue.Select(r => r.AsString).ToList();
+                        users = users.Where(u => u.Roles.Intersect(roleNames).Any());
+                    }
                 }
                 else
                 {
                     users = UserController.GetUsers(context.PortalId, pageIndex, pageSize, ref total, true, false).Cast<UserInfo>();
-                    total = users.Count();
                 }
-                if (ruleRoles != null)
+                users = users.Where(u => !u.IsInRole("Administrators"));
+                //users = users.Skip(pageIndex * pageSize).Take(pageSize);
+                var dataList = new List<IDataItem>();
+                foreach (var user in users)
                 {
-                    var roleNames = ruleRoles.MultiValue.Select(r => r.AsString).ToList();
-                    users = users.Where(u => u.Roles.Intersect(roleNames).Any());
+                    dataList.Add(ToData(user));
                 }
+                return new DefaultDataItems()
+                {
+                    Items = dataList,
+                    Total = total,
+                    //DebugInfo = 
+                };
             }
-            else
-            {
-                users = UserController.GetUsers(context.PortalId, pageIndex, pageSize, ref total, true, false).Cast<UserInfo>();
-            }
-            users = users.Where(u => !u.IsInRole("Administrators"));
-            //users = users.Skip(pageIndex * pageSize).Take(pageSize);
-            var dataList = new List<IDataItem>();
-            foreach (var user in users)
-            {
-                dataList.Add(ToData(user));
-            }
-            return new DefaultDataItems()
-            {
-                Items = dataList,
-                Total = total,
-                //DebugInfo = 
-            };
         }
+        private static SelectQueryDefinition BuildQuery(DataSourceContext context, Select selectQuery)
+        {
+            SelectQueryDefinition def = new SelectQueryDefinition();
+            def.Build(selectQuery);
+            if (LogContext.IsLogActive)
+            {
+                var logKey = "Lucene query";
+                LogContext.Log(context.ActiveModuleId, logKey, "Filter", def.Filter.ToString());
+                LogContext.Log(context.ActiveModuleId, logKey, "Query", def.Query.ToString());
+                LogContext.Log(context.ActiveModuleId, logKey, "Sort", def.Sort.ToString());
+                LogContext.Log(context.ActiveModuleId, logKey, "PageIndex", def.PageIndex);
+                LogContext.Log(context.ActiveModuleId, logKey, "PageSize", def.PageSize);
+            }
+
+            return def;
+        }
+
         public override JObject GetAlpaca(DataSourceContext context, bool schema, bool options, bool view)
         {
             var fb = new FormBuilder(new FolderUri(context.TemplateFolder));
@@ -198,7 +249,18 @@ namespace Satrabel.OpenContent.Components.Datasource
             {
                 throw new DataNotValidException(Localization.GetString(createStatus.ToString()));
             }
+            var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection);
+            if (context.Index)
+            {
+                LuceneController.Instance.Add(new IndexableItemUser()
+                {
+                    Data = data,
+                    User = user
+                }, indexConfig);
+                LuceneController.Instance.Store.Commit();
+            }
         }
+
         public override void Update(DataSourceContext context, IDataItem item, Newtonsoft.Json.Linq.JToken data)
         {
             var schema = GetAlpaca(context, true, false, false)["schema"] as JObject;
@@ -252,6 +314,17 @@ namespace Satrabel.OpenContent.Components.Datasource
             }
             FillProfile(data, schema, user);
             UpdateRoles(context, data, schema, user);
+
+            var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection);
+            if (context.Index)
+            {
+                LuceneController.Instance.Update(new IndexableItemUser()
+                {
+                    Data = data,
+                    User = user
+                }, indexConfig);
+                LuceneController.Instance.Store.Commit();
+            }
         }
 
         private void UpdateRoles(DataSourceContext context, JToken data, JObject schema, UserInfo user)
@@ -272,7 +345,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 }
                 foreach (var roleName in rolesToRemove)
                 {
-                    if (roleName != RegisteredUsers)
+                    if (roleName != Registered_Users)
                     {
                         var roleInfo = RoleController.Instance.GetRoleByName(context.PortalId, roleName);
                         RoleController.DeleteUserRole(user, roleInfo, PortalSettings.Current, false);
@@ -365,6 +438,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         {
             var user = (UserInfo)item.Item;
             UserController.DeleteUser(ref user, true, false);
+
         }
         private static bool HasProperty(JObject schema, string subobject, string property)
         {
@@ -400,6 +474,59 @@ namespace Satrabel.OpenContent.Components.Datasource
                 });
             }
             return actions;
+        }
+
+        public void Reindex(DataSourceContext context)
+        {
+            string scope = Lucene_Scope;
+            var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection); //todo index is being build from schema & options. But they should be provided by the provider, not directly from the files
+            LuceneController.Instance.ReIndexModuleData(UserController.GetUsers(true, false, context.PortalId).Cast<UserInfo>().
+                Where(u => !u.IsInRole("Administrators")).Select(u => new IndexableItemUser()
+                {
+                    Data = ToData(u).Data,
+                    User = u
+                }), indexConfig, scope);
+        }
+    }
+
+    class IndexableItemUser : IIndexableItem
+    {
+        public JToken Data { get; set; }
+        public UserInfo User { get; set; }
+
+        public IndexableItemUser()
+        {
+
+        }
+
+        public string GetCreatedByUserId()
+        {
+            return User.CreatedByUserID.ToString();
+        }
+
+        public DateTime GetCreatedOnDate()
+        {
+            return User.CreatedOnDate;
+        }
+
+        public JToken GetData()
+        {
+            return Data;
+        }
+
+        public string GetId()
+        {
+            return User.UserID.ToString();
+        }
+
+        public string GetScope()
+        {
+            return "DnnUsers";
+        }
+
+        public string GetSource()
+        {
+            return Data.ToString();
         }
     }
 }

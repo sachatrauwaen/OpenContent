@@ -12,7 +12,7 @@ using Satrabel.OpenContent.Components.Form;
 
 namespace Satrabel.OpenContent.Components.Datasource
 {
-    public class OpenContentDataSource : IDataSource
+    public class OpenContentDataSource : IDataSource, IDataIndex
     {
         public virtual string Name => AppConfig.OPENCONTENT;
 
@@ -337,7 +337,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                     LastModifiedOnDate = DateTime.Now
                 };
                 ctrl.AddContent(content, context.Index, indexConfig);
-                return FormUtils.FormSubmit(data as JObject);                
+                return FormUtils.FormSubmit(data as JObject);
             }
             return null;
         }
@@ -419,6 +419,13 @@ namespace Satrabel.OpenContent.Components.Datasource
             UrlRewriter.UrlRulesCaching.Remove(context.PortalId, context.ModuleId);
         }
 
+        public void Reindex(DataSourceContext context)
+        {
+            string scope = OpenContentInfo.GetScope(context.ModuleId, context.Collection);
+            var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection);
+            OpenContentController occ = new OpenContentController();
+            LuceneController.Instance.ReIndexModuleData(occ.GetContents(context.ModuleId, context.Collection), indexConfig, scope);
+        }
         #endregion
     }
 }

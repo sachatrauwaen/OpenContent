@@ -11,6 +11,8 @@ using DotNetNuke.Entities.Portals;
 using DotNetNuke.Entities.Modules;
 using Version = Lucene.Net.Util.Version;
 using Satrabel.OpenContent.Components.Lucene.Index;
+using Satrabel.OpenContent.Components.Datasource;
+using System.Collections.Generic;
 
 #endregion
 
@@ -91,13 +93,40 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         #region Index
 
-        public void ReIndexModuleData(int moduleId, OpenContentSettings settings)
+        //public void ReIndexModuleData(int moduleId, OpenContentSettings settings)
+        //{
+        //    try
+        //    {
+        //        using (LuceneController lc = LuceneController.Instance)
+        //        {
+        //            IndexModuleData(lc, moduleId, settings);
+        //            lc.Store.Commit();
+        //            lc.Store.OptimizeSearchIndex(true);
+        //        }
+        //    }
+        //    finally
+        //    {
+        //        LuceneController.ClearInstance();
+        //    }
+        //}
+
+        /// <summary>
+        /// Use this to 
+        /// </summary>
+        /// <param name="list">The list.</param>
+        /// <param name="indexConfig">The index configuration.</param>
+        /// <param name="scope">The scope.</param>
+        public void ReIndexModuleData(IEnumerable<IIndexableItem> list, FieldConfig indexConfig, string scope)
         {
             try
             {
                 using (LuceneController lc = LuceneController.Instance)
                 {
-                    IndexModuleData(lc, moduleId, settings);
+                    lc.Store.Delete(new TermQuery(new Term("$type", scope)));
+                    foreach (var item in list)
+                    {
+                        lc.Add(item, indexConfig);
+                    }
                     lc.Store.Commit();
                     lc.Store.OptimizeSearchIndex(true);
                 }
@@ -107,6 +136,8 @@ namespace Satrabel.OpenContent.Components.Lucene
                 LuceneController.ClearInstance();
             }
         }
+
+
 
         /// <summary>
         /// Reindex all OpenContent modules of all portals.
@@ -169,8 +200,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             if (settings.IsOtherModule)
             {
                 moduleId = settings.ModuleId;
-            }
-
+            }            
             lc.Store.Delete(new TermQuery(new Term("$type", OpenContentInfo.GetScope(moduleId, settings.Template.Collection))));
             OpenContentController occ = new OpenContentController();
             foreach (var item in occ.GetContents(moduleId, settings.Template.Collection))
