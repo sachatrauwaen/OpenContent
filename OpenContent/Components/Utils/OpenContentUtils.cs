@@ -3,7 +3,6 @@ using DotNetNuke.Entities.Host;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Services.FileSystem;
-using DotNetNuke.Services.Localization;
 using ICSharpCode.SharpZipLib.Zip;
 using System;
 using System.Collections.Generic;
@@ -15,13 +14,13 @@ using System.Web.Hosting;
 using System.Web.UI.WebControls;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Dnn;
+using Satrabel.OpenContent.Components.Localization;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.Lucene.Index;
 using Satrabel.OpenContent.Components.TemplateHelpers;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Datasource;
-using Satrabel.OpenContent.Components.Localization;
 
 
 namespace Satrabel.OpenContent.Components
@@ -400,22 +399,22 @@ namespace Satrabel.OpenContent.Components
             catch (PermissionsNotMetException)
             {
                 //Logger.Warn(exc);
-                strMessage = string.Format(Localization.Localization.GetString("InsufficientFolderPermission"), "OpenContent/Templates");
+                strMessage = string.Format(Localizer.Instance.GetString("InsufficientFolderPermission"), "OpenContent/Templates");
             }
             catch (NoSpaceAvailableException)
             {
                 //Logger.Warn(exc);
-                strMessage = string.Format(Localization.Localization.GetString("DiskSpaceExceeded"), fileName);
+                strMessage = string.Format(Localizer.Instance.GetString("DiskSpaceExceeded"), fileName);
             }
             catch (InvalidFileExtensionException)
             {
                 //Logger.Warn(exc);
-                strMessage = string.Format(Localization.Localization.GetString("RestrictedFileType"), fileName, Host.AllowedExtensionWhitelist.ToDisplayString());
+                strMessage = string.Format(Localizer.Instance.GetString("RestrictedFileType"), fileName, Host.AllowedExtensionWhitelist.ToDisplayString());
             }
             catch (Exception exc)
             {
                 //Logger.Error(exc);
-                strMessage = string.Format(Localization.Localization.GetString("SaveFileError") + " - " + exc.Message, fileName);
+                strMessage = string.Format(Localizer.Instance.GetString("SaveFileError") + " - " + exc.Message, fileName);
             }
             if (!string.IsNullOrEmpty(strMessage))
             {

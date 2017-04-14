@@ -35,6 +35,7 @@ using Satrabel.OpenContent.Components.Dnn;
 using DotNetNuke.Entities.Tabs;
 using DotNetNuke.Services.Personalization;
 using DotNetNuke.Framework.JavaScriptLibraries;
+using Localization = DotNetNuke.Services.Localization.Localization;
 
 #endregion
 
