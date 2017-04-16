@@ -128,7 +128,6 @@ namespace Satrabel.OpenContent.Components.Lucene
             {
                 using (var lc = LuceneController.Instance)
                 {
-                    ModuleController mc = new ModuleController();
                     foreach (PortalInfo portal in PortalController.Instance.GetPortals())
                     {
                         var modules = DnnUtils.GetDnnOpenContentModules(portal.PortalID);

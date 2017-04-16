@@ -68,11 +68,11 @@ namespace Satrabel.OpenContent.Components.Json
             var newDic = new DictionaryNoCase();
             foreach (KeyValuePair<string, object> entry in dic)
             {
-                newDic.Add(entry.Key, convertObject(entry.Value));
+                newDic.Add(entry.Key, ConvertObject(entry.Value));
             }
             return newDic;
         }
-        private static object convertObject(object obj)
+        private static object ConvertObject(object obj)
         {
             if (obj is string)
             {
@@ -88,7 +88,7 @@ namespace Satrabel.OpenContent.Components.Json
                 var newArr = new List<object>();
                 foreach (var item in arr)
                 {
-                    newArr.Add(convertObject(item));
+                    newArr.Add(ConvertObject(item));
                 }
                 return newArr.ToArray();
             }
