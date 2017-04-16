@@ -1,6 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Net.Http;
-using DotNetNuke.Instrumentation;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -9,13 +9,7 @@ namespace Satrabel.OpenContent.Components
     /// </summary>
     public static class Log
     {
-        public static ILog Logger
-        {
-            get
-            {
-                return LoggerSource.Instance.GetLogger(AppConfig.OPENCONTENT);
-            }
-        }
+        public static ILogAdapter Logger => AppConfig.Instance.LogAdapter;
 
         public static void LogServiceResult(HttpResponseMessage response, string responsemessage = "")
         {
@@ -27,7 +21,8 @@ namespace Satrabel.OpenContent.Components
                     ? st.GetFrame(2).GetMethod().Name
                     : st.GetFrame(1).GetMethod().Name;
 
-                Logger.DebugFormat("Result from '{0}' with status '{1}': {2} \r\n", method, response.StatusCode.ToString(), string.IsNullOrEmpty(responsemessage) ? "<empty>" : responsemessage);
+                var emp = string.IsNullOrEmpty(responsemessage) ? "<empty>" : responsemessage;
+                Logger.Debug($"Result from '{method}' with status '{response.StatusCode}': {emp} \r\n");
             }
         }
     }

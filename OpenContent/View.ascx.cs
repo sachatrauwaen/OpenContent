@@ -258,7 +258,7 @@ namespace Satrabel.OpenContent
                         }
                         catch (Exception ex)
                         {
-                            //Log.Logger.ErrorFormat("Failed to automaticly set the permission. It already exists? tab={0}, moduletitle={1} ", objModule.TabID ,objModule.ModuleTitle);
+                            //Log.Logger.Error($"Failed to automaticly set the permission. It already exists? tab={0}, moduletitle={1} ", objModule.TabID ,objModule.ModuleTitle);
                         }
                     }
                 }

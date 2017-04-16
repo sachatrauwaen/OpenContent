@@ -1,6 +1,7 @@
 ﻿using System;
 using Satrabel.OpenContent.Components.Dnn;
 using Satrabel.OpenContent.Components.Localization;
+using Satrabel.OpenContent.Components.Logging;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -57,7 +58,9 @@ namespace Satrabel.OpenContent.Components
         #region Adapters config
 
         public ILocalizationAdapter LocalizationAdapter => new DnnLocalizationAdapter();
+        public ILogAdapter LogAdapter => DnnLogAdapter.GetLogAdapter(OPENCONTENT);
 
         #endregion
     }
+
 }

@@ -285,7 +285,7 @@ namespace Satrabel.OpenContent.Components.Render
                         LogContext.Log(_module.ViewModule.ModuleID, logKey, "select", queryBuilder.Select);
                         //LogContext.Log(_module.ModuleID, logKey, "result", resultList);
                     }
-                    //Log.Logger.DebugFormat("Query returned [{0}] results.", total);
+                    //Log.Logger.Debug($"Query returned [{0}] results.", total);
                     if (!resultList.Any())
                     {
                         /*
@@ -295,7 +295,7 @@ namespace Satrabel.OpenContent.Components.Render
                              //Components.Lucene.LuceneController.Instance.ReIndexModuleData(_module.ViewModule.ModuleID, settings);
                          }
                           */
-                        //Log.Logger.DebugFormat("Query did not return any results. API request: [{0}], Lucene Filter: [{1}], Lucene Query:[{2}]", settings.Query, queryDef.Filter == null ? "" : queryDef.Filter.ToString(), queryDef.Query == null ? "" : queryDef.Query.ToString());
+                        //Log.Logger.Debug($"Query did not return any results. API request: [{0}], Lucene Filter: [{1}], Lucene Query:[{2}]", settings.Query, queryDef.Filter == null ? "" : queryDef.Filter.ToString(), queryDef.Query == null ? "" : queryDef.Query.ToString());
                         if (ds.Any(dsContext))
                         {
                             info.SetData(resultList, settings.Data);

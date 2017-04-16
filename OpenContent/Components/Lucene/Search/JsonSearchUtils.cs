@@ -35,8 +35,8 @@ namespace Lucene.Net.Search
             }
             catch (Exception ex)
             {
-                Log.Logger.ErrorFormat("Error while searching {0}, {1}", type, query.ToString());
-                throw ex;
+                Log.Logger.Error($"Error while searching {type}, {query}");
+                throw;
             }
         }
         #endregion

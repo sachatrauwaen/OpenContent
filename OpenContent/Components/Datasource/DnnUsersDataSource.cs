@@ -106,7 +106,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                     }
                     else
                     {
-                        Log.Logger.DebugFormat("DnnUsersDataSource.GetAll() ContentItem not found [{0}]", item);
+                        Log.Logger.Debug($"DnnUsersDataSource.GetAll() ContentItem not found [{item}]");
                     }
                 }
                 return new DefaultDataItems()

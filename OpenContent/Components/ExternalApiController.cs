@@ -28,7 +28,7 @@ namespace Satrabel.OpenContent.Components
                 {
                     if (!OpenContentUtils.HasEditPermissions(PortalSettings, module.ViewModule, editRole, -1))
                     {
-                        Log.Logger.WarnFormat("Failed the HasEditPermissions() check for ");
+                        Log.Logger.Warn($"Failed the HasEditPermissions() check");
                         return Request.CreateResponse(HttpStatusCode.Unauthorized, "Failed the HasEditPermissions() check");
                     }
                     var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
