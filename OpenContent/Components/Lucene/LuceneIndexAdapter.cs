@@ -4,10 +4,8 @@ using System;
 using System.Linq;
 using Lucene.Net.Index;
 using Lucene.Net.Search;
-using Lucene.Net.QueryParsers;
 using Satrabel.OpenContent.Components.Lucene.Mapping;
 using DotNetNuke.Entities.Portals;
-using Version = Lucene.Net.Util.Version;
 using System.Collections.Generic;
 using Satrabel.OpenContent.Components.Datasource.Search;
 using Satrabel.OpenContent.Components.Indexing;
@@ -237,32 +235,6 @@ namespace Satrabel.OpenContent.Components.Lucene
             var selection = new TermQuery(new Term(JsonMappingUtils.FieldId, data.GetId()));
             Query deleteQuery = new FilteredQuery(selection, JsonMappingUtils.GetTypeFilter(data.GetScope()));
             Store.Delete(deleteQuery);
-        }
-
-        #endregion
-
-        #region Private
-
-        public Query ParseQuery(string searchQuery, string defaultFieldName)
-        {
-            var parser = new QueryParser(Version.LUCENE_30, defaultFieldName, JsonMappingUtils.GetAnalyser());
-            Query query;
-            try
-            {
-                if (string.IsNullOrEmpty(searchQuery))
-                {
-                    query = new MatchAllDocsQuery();
-                }
-                else
-                {
-                    query = parser.Parse(searchQuery.Trim());
-                }
-            }
-            catch (ParseException)
-            {
-                query = parser.Parse(QueryParser.Escape(searchQuery.Trim()));
-            }
-            return query;
         }
 
         #endregion

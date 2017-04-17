@@ -5,7 +5,8 @@ using Lucene.Net.Index;
 using Lucene.Net.QueryParsers;
 using Lucene.Net.Search;
 using Satrabel.OpenContent.Components.Datasource.Search;
-using Satrabel.OpenContent.Components.Indexing;
+using Satrabel.OpenContent.Components.Lucene.Mapping;
+using Version = Lucene.Net.Util.Version;
 
 namespace Satrabel.OpenContent.Components.Lucene
 {
@@ -89,7 +90,7 @@ namespace Satrabel.OpenContent.Components.Lucene
                     }
                     else if (rule.FieldType == FieldTypeEnum.STRING || rule.FieldType == FieldTypeEnum.TEXT || rule.FieldType == FieldTypeEnum.HTML)
                     {
-                        q.Add(Indexer.Instance.ParseQuery(rule.Value.AsString + "*", fieldName), cond);
+                        q.Add(ParseQuery(rule.Value.AsString + "*", fieldName), cond);
                     }
                     else
                     {
@@ -105,7 +106,7 @@ namespace Satrabel.OpenContent.Components.Lucene
                 {
                     if (rule.FieldType == FieldTypeEnum.STRING || rule.FieldType == FieldTypeEnum.TEXT || rule.FieldType == FieldTypeEnum.HTML)
                     {
-                        q.Add(Indexer.Instance.ParseQuery(rule.Value.AsString + "*", fieldName), cond);
+                        q.Add(ParseQuery(rule.Value.AsString + "*", fieldName), cond);
                     }
                     else
                     {
@@ -158,6 +159,28 @@ namespace Satrabel.OpenContent.Components.Lucene
                 {
                 }
             }
+        }
+
+        public static Query ParseQuery(string searchQuery, string defaultFieldName)
+        {
+            var parser = new QueryParser(Version.LUCENE_30, defaultFieldName, JsonMappingUtils.GetAnalyser());
+            Query query;
+            try
+            {
+                if (string.IsNullOrEmpty(searchQuery))
+                {
+                    query = new MatchAllDocsQuery();
+                }
+                else
+                {
+                    query = parser.Parse(searchQuery.Trim());
+                }
+            }
+            catch (ParseException)
+            {
+                query = searchQuery != null ? parser.Parse(QueryParser.Escape(searchQuery.Trim())) : new MatchAllDocsQuery();
+            }
+            return query;
         }
 
         private SelectQueryDefinition BuildSort(Select select)

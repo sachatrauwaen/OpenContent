@@ -1,5 +1,6 @@
 ﻿using System;
 using Satrabel.OpenContent.Components.Dnn;
+using Satrabel.OpenContent.Components.Indexing;
 using Satrabel.OpenContent.Components.Localization;
 using Satrabel.OpenContent.Components.Logging;
 using Satrabel.OpenContent.Components.Lucene;
