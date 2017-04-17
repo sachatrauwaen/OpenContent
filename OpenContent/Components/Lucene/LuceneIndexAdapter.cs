@@ -57,11 +57,6 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         #region Search
 
-        public SearchResults Search(string type, QueryDefinition def)
-        {
-            return Search(type, def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
-        }
-
         public SearchResults Search(string type, Query filter, Query query, Sort sort, int pageSize, int pageIndex)
         {
             var luceneResults = new SearchResults();

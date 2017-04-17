@@ -190,7 +190,6 @@
     <Compile Include="Components\Form\SettingsDTO.cs" />
     <Compile Include="Components\Indexing\FieldConfig.cs" />
     <Compile Include="Components\Indexing\FieldConfigUtils.cs" />
-    <Compile Include="Components\Lucene\Query\QueryDefinition.cs" />
     <Compile Include="Components\Lucene\Query\SelectQueryDefinition.cs" />
     <Compile Include="Components\Indexing\IIndexableItem.cs" />
     <Compile Include="Components\Indexing\IndexExtentions.cs" />
