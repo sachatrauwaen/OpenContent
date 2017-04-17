@@ -6,11 +6,10 @@ using Lucene.Net.Index;
 using Lucene.Net.Search;
 using Lucene.Net.QueryParsers;
 using Satrabel.OpenContent.Components.Lucene.Mapping;
-using Satrabel.OpenContent.Components.Lucene.Config;
 using DotNetNuke.Entities.Portals;
 using Version = Lucene.Net.Util.Version;
-using Satrabel.OpenContent.Components.Lucene.Index;
 using System.Collections.Generic;
+using Satrabel.OpenContent.Components.Indexing;
 
 #endregion
 

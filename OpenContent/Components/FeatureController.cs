@@ -27,6 +27,7 @@ using DotNetNuke.Services.Search.Controllers;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Dnn;
 using Satrabel.OpenContent.Components.Handlebars;
+using Satrabel.OpenContent.Components.Indexing;
 using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.TemplateHelpers;
 

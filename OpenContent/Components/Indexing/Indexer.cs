@@ -1,6 +1,6 @@
 using System;
 
-namespace Satrabel.OpenContent.Components
+namespace Satrabel.OpenContent.Components.Indexing
 {
     public class Indexer
     {

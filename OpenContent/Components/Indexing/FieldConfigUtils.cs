@@ -1,13 +1,13 @@
-﻿using Satrabel.OpenContent.Components.Datasource.Search;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Satrabel.OpenContent.Components.Datasource.Search;
 
-namespace Satrabel.OpenContent.Components.Lucene.Config
+namespace Satrabel.OpenContent.Components.Indexing
 {
     public class FieldConfigUtils
     {
         public static FieldConfig GetField(FieldConfig config, string field)
         {
-            if (config != null && config.Fields != null && config.Fields.ContainsKey(field))
+            if (config?.Fields != null && config.Fields.ContainsKey(field))
             {
                 return config.Fields[field].Items == null ? config.Fields[field] : config.Fields[field].Items;
             }

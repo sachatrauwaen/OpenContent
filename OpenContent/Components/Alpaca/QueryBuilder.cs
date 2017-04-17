@@ -1,25 +1,25 @@
 ﻿using DotNetNuke.Entities.Users;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Datasource.Search;
-using Satrabel.OpenContent.Components.Lucene.Config;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using Satrabel.OpenContent.Components.Indexing;
 using Satrabel.OpenContent.Components.Json;
 
 namespace Satrabel.OpenContent.Components.Alpaca
 {
     public class QueryBuilder
     {
-        private readonly FieldConfig IndexConfig;
+        private readonly FieldConfig _indexConfig;
 
         public bool DefaultNoResults { get; private set; }
         public Select Select { get; private set; }
 
         public QueryBuilder(FieldConfig config)
         {
-            this.IndexConfig = config;
+            this._indexConfig = config;
             Select = new Select();
             Select.PageSize = 100;
         }
@@ -93,7 +93,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
             {
                 foreach (var item in filter.Properties())
                 {
-                    var fieldConfig = FieldConfigUtils.GetField(IndexConfig, item.Name);
+                    var fieldConfig = FieldConfigUtils.GetField(_indexConfig, item.Name);
                     if (item.Value is JValue) // text, int
                     {
                         var val = item.Value.ToString();
@@ -125,7 +125,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                         }
                         else if (!string.IsNullOrEmpty(val))
                         {
-                            workFlowFilter.AddRule(FieldConfigUtils.CreateFilterRule(IndexConfig, cultureCode,
+                            workFlowFilter.AddRule(FieldConfigUtils.CreateFilterRule(_indexConfig, cultureCode,
                                 item.Name,
                                 OperatorEnum.START_WITH,
                                 new StringRuleValue(val)
@@ -144,7 +144,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                                 if (arrItem is JValue)
                                 {
                                     var val = (JValue)arrItem;
-                                    arrGroup.AddRule(FieldConfigUtils.CreateFilterRule(IndexConfig, cultureCode,
+                                    arrGroup.AddRule(FieldConfigUtils.CreateFilterRule(_indexConfig, cultureCode,
                                         item.Name,
                                         OperatorEnum.EQUAL,
                                         new StringRuleValue(val.ToString())
@@ -155,7 +155,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                         }
                         else if (queryString?[item.Name] != null)
                         {
-                            workFlowFilter.AddRule(FieldConfigUtils.CreateFilterRule(IndexConfig, cultureCode,
+                            workFlowFilter.AddRule(FieldConfigUtils.CreateFilterRule(_indexConfig, cultureCode,
 
                                 item.Name,
                                 OperatorEnum.EQUAL,
@@ -214,9 +214,9 @@ namespace Satrabel.OpenContent.Components.Alpaca
             {
                 foreach (string key in queryString)
                 {
-                    if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.Any(f => f.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase)))
+                    if (_indexConfig != null && _indexConfig.Fields != null && _indexConfig.Fields.Any(f => f.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase)))
                     {
-                        var indexConfig = IndexConfig.Fields.Single(f => f.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase));
+                        var indexConfig = _indexConfig.Fields.Single(f => f.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase));
                         string val = queryString[key];
                         workFlowFilter.AddRule(new FilterRule()
                         {
@@ -244,7 +244,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
         private void AddWorkflowFilter(FilterGroup filter)
         {
 
-            if (IndexConfig?.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishStatus))
+            if (_indexConfig?.Fields != null && _indexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishStatus))
             {
                 filter.AddRule(new FilterRule()
                 {
@@ -253,7 +253,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     FieldType = FieldTypeEnum.KEY
                 });
             }
-            if (IndexConfig?.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishStartDate))
+            if (_indexConfig?.Fields != null && _indexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishStartDate))
             {
                 //DateTime startDate = DateTime.MinValue;
                 //DateTime endDate = DateTime.Today;
@@ -265,7 +265,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     FieldType = FieldTypeEnum.DATETIME
                 });
             }
-            if (IndexConfig?.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishEndDate))
+            if (_indexConfig?.Fields != null && _indexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishEndDate))
             {
                 //DateTime startDate = DateTime.Today;
                 //DateTime endDate = DateTime.MaxValue;
@@ -282,11 +282,11 @@ namespace Satrabel.OpenContent.Components.Alpaca
         private void AddRolesFilter(FilterGroup filter, IList<UserRoleInfo> roles)
         {
             string fieldName = "";
-            if (IndexConfig?.Fields != null && IndexConfig.Fields.ContainsKey("userrole"))
+            if (_indexConfig?.Fields != null && _indexConfig.Fields.ContainsKey("userrole"))
             {
                 fieldName = "userrole";
             }
-            else if (IndexConfig?.Fields != null && IndexConfig.Fields.ContainsKey("userroles"))
+            else if (_indexConfig?.Fields != null && _indexConfig.Fields.ContainsKey("userroles"))
             {
                 fieldName = "userroles";
             }
@@ -323,14 +323,14 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 {
                     string fieldName = item["Field"].ToString();
                     string fieldOrder = item["Order"].ToString();
-                    Sort.Add(FieldConfigUtils.CreateSortRule(IndexConfig, cultureCode, fieldName, fieldOrder == "desc"));
+                    Sort.Add(FieldConfigUtils.CreateSortRule(_indexConfig, cultureCode, fieldName, fieldOrder == "desc"));
                 }
             }
             else
             {
                 string fieldName = "createdondate";
                 string fieldOrder = "desc";
-                Sort.Add(FieldConfigUtils.CreateSortRule(IndexConfig, cultureCode, fieldName, fieldOrder == "desc"));
+                Sort.Add(FieldConfigUtils.CreateSortRule(_indexConfig, cultureCode, fieldName, fieldOrder == "desc"));
             }
             return this;
         }
@@ -350,7 +350,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     {
                         reverse = true;
                     }
-                    Sort.Add(FieldConfigUtils.CreateSortRule(IndexConfig, cultureCode,
+                    Sort.Add(FieldConfigUtils.CreateSortRule(_indexConfig, cultureCode,
                         fieldName,
                         reverse
                     ));
@@ -362,9 +362,9 @@ namespace Satrabel.OpenContent.Components.Alpaca
         private bool SortfieldMultiLanguage(string fieldName)
         {
 
-            if (IndexConfig?.Fields != null && IndexConfig.Fields.ContainsKey(fieldName))
+            if (_indexConfig?.Fields != null && _indexConfig.Fields.ContainsKey(fieldName))
             {
-                var config = IndexConfig.Fields[fieldName].Items == null ? IndexConfig.Fields[fieldName] : IndexConfig.Fields[fieldName].Items;
+                var config = _indexConfig.Fields[fieldName].Items == null ? _indexConfig.Fields[fieldName] : _indexConfig.Fields[fieldName].Items;
                 return config.MultiLanguage;
             }
             return false;

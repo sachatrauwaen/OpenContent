@@ -14,10 +14,9 @@ using Satrabel.OpenContent.Components.Lucene;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Satrabel.OpenContent.Components.Lucene.Index;
-using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.Logging;
 using Satrabel.OpenContent.Components.Datasource.Search;
+using Satrabel.OpenContent.Components.Indexing;
 using Satrabel.OpenContent.Components.Localization;
 
 namespace Satrabel.OpenContent.Components.Datasource
@@ -39,7 +38,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             }
             return ToData(user);
         }
-        private IDataItem ToData(UserInfo user)
+        private static IDataItem ToData(UserInfo user)
         {
             var item = new DefaultDataItem()
             {

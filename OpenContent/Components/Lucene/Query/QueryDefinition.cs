@@ -2,23 +2,23 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using DotNetNuke.Entities.Users;
+using Lucene.Net.Index;
 using Lucene.Net.Search;
 using Newtonsoft.Json.Linq;
-using Lucene.Net.Index;
-using DotNetNuke.Entities.Users;
+using Satrabel.OpenContent.Components.Indexing;
 
-namespace Satrabel.OpenContent.Components.Lucene.Config
+namespace Satrabel.OpenContent.Components.Lucene
 {
     public class QueryDefinition
     {
-        private readonly FieldConfig IndexConfig;
-
-        private bool DefaultNoResults;
-        private Query _Query;
+        private readonly FieldConfig _indexConfig;
+        private bool _defaultNoResults;
+        private Query _query;
 
         public QueryDefinition(FieldConfig config)
         {
-            this.IndexConfig = config;
+            this._indexConfig = config;
             Query = new MatchAllDocsQuery();
             Sort = Sort.RELEVANCE;
             PageSize = 100;
@@ -29,26 +29,26 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
         {
             get
             {
-                return _Query;
+                return _query;
             }
             set
             {
-                if (DefaultNoResults && value != null && (new MatchAllDocsQuery()).ToString() == value.ToString())
+                if (_defaultNoResults && value != null && (new MatchAllDocsQuery()).ToString() == value.ToString())
                 {
-                    _Query = new BooleanQuery();
+                    _query = new BooleanQuery();
                 }
                 else
                 {
-                    _Query = value;
+                    _query = value;
                 }
             }
         }
         public int PageSize { get; set; }
         public int PageIndex { get; set; }
-        public QueryDefinition Build(JObject query, bool addWorkflowFilter, IList<UserRoleInfo> roles, NameValueCollection QueryString = null)
+        public QueryDefinition Build(JObject query, bool addWorkflowFilter, IList<UserRoleInfo> roles, NameValueCollection queryString = null)
         {
             BuildPage(query);
-            BuildFilter(query, addWorkflowFilter, roles, QueryString);
+            BuildFilter(query, addWorkflowFilter, roles, queryString);
             BuildSort(query);
             return this;
         }
@@ -65,34 +65,34 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
             var sDefaultNoResults = query["DefaultNoResults"] as JValue;
             if (sDefaultNoResults != null && sDefaultNoResults.Type == JTokenType.Boolean)
             {
-                DefaultNoResults = (bool)sDefaultNoResults.Value;
+                _defaultNoResults = (bool)sDefaultNoResults.Value;
             }
 
             return this;
         }
-        public QueryDefinition BuildFilter(JObject query, bool addWorkflowFilter, IList<UserRoleInfo> roles, NameValueCollection QueryString = null)
+        public QueryDefinition BuildFilter(JObject query, bool addWorkflowFilter, IList<UserRoleInfo> roles, NameValueCollection queryString = null)
         {
             BooleanQuery q = new BooleanQuery();
 
             var vExcludeCurrentItem = query["ExcludeCurrentItem"] as JValue;
-            bool ExcludeCurrentItem = false;
+            bool excludeCurrentItem = false;
             if (vExcludeCurrentItem != null && vExcludeCurrentItem.Type == JTokenType.Boolean)
             {
-                ExcludeCurrentItem = (bool)vExcludeCurrentItem.Value;
+                excludeCurrentItem = (bool)vExcludeCurrentItem.Value;
             }
-            if (ExcludeCurrentItem && QueryString != null && QueryString["id"] != null)
+            if (excludeCurrentItem && queryString != null && queryString["id"] != null)
             {
                 q.Add(new MatchAllDocsQuery(), Occur.MUST);
-                q.Add(new TermQuery(new Term("$id", QueryString["id"])), Occur.MUST_NOT);
+                q.Add(new TermQuery(new Term("$id", queryString["id"])), Occur.MUST_NOT);
             }
             var filter = query["Filter"] as JObject;
             if (filter != null)
             {
                 foreach (var item in filter.Properties())
                 {
-                    var indexConfig = IndexConfig != null && IndexConfig.Fields != null &&
-                                      IndexConfig.Fields.ContainsKey(item.Name)
-                        ? IndexConfig.Fields[item.Name]
+                    var indexConfig = _indexConfig != null && _indexConfig.Fields != null &&
+                                      _indexConfig.Fields.ContainsKey(item.Name)
+                        ? _indexConfig.Fields[item.Name]
                         : null;
                     if (item.Value is JValue) // text
                     {
@@ -127,9 +127,9 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                             }
                             q.Add(arrQ, Occur.MUST);
                         }
-                        else if (QueryString != null && QueryString[item.Name] != null)
+                        else if (queryString?[item.Name] != null)
                         {
-                            q.Add(new TermQuery(new Term(item.Name, QueryString[item.Name])), Occur.MUST);
+                            q.Add(new TermQuery(new Term(item.Name, queryString[item.Name])), Occur.MUST);
                         }
                     }
                     else if (item.Value is JObject) // range
@@ -137,7 +137,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                         var valObj = (JObject)item.Value;
                         var startDays = valObj["StartDays"] as JValue;
                         var endDays = valObj["EndDays"] as JValue;
-                        if ((startDays != null && startDays.Value != null) || (endDays != null && endDays.Value != null))
+                        if ((startDays?.Value != null) || (endDays?.Value != null))
                         {
                             var startDate = DateTime.MinValue;
                             var endDate = DateTime.MaxValue;
@@ -172,7 +172,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
             return this;
         }
 
-        public QueryDefinition BuildFilter(bool addWorkflowFilter, IList<UserRoleInfo> roles, NameValueCollection QueryString = null)
+        public QueryDefinition BuildFilter(bool addWorkflowFilter, IList<UserRoleInfo> roles, NameValueCollection queryString = null)
         {
             BooleanQuery q = new BooleanQuery();
             if (addWorkflowFilter)
@@ -187,17 +187,17 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
         private void AddWorkflowFilter(BooleanQuery q)
         {
 
-            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishStatus))
+            if (_indexConfig?.Fields != null && _indexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishStatus))
             {
                 q.Add(new TermQuery(new Term(AppConfig.FieldNamePublishStatus, "published")), Occur.MUST); // and
             }
-            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishStartDate))
+            if (_indexConfig?.Fields != null && _indexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishStartDate))
             {
                 DateTime startDate = DateTime.MinValue;
                 DateTime endDate = DateTime.Today;
                 q.Add(NumericRangeQuery.NewLongRange(AppConfig.FieldNamePublishStartDate, startDate.Ticks, endDate.Ticks, true, true), Occur.MUST);
             }
-            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishEndDate))
+            if (_indexConfig?.Fields != null && _indexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishEndDate))
             {
                 DateTime startDate = DateTime.Today;
                 DateTime endDate = DateTime.MaxValue;
@@ -208,7 +208,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
         private void AddRoleFilter(BooleanQuery q, IList<UserRoleInfo> roles)
         {
 
-            if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.ContainsKey("userRole"))
+            if (_indexConfig?.Fields != null && _indexConfig.Fields.ContainsKey("userRole"))
             {
                 if (roles.Any())
                 {
@@ -255,13 +255,13 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
 
         private void Sortfieldtype(string fieldName, ref int sortfieldtype, ref string sortFieldPrefix)
         {
-            if (IndexConfig != null && IndexConfig.Fields.ContainsKey(fieldName))
+            if (_indexConfig?.Fields != null && _indexConfig.Fields.ContainsKey(fieldName))
             {
                 //var config = IndexConfig.Items == null ? IndexConfig.Fields[fieldName] : IndexConfig.Items;
                 FieldConfig config;
-                if (IndexConfig.Items == null)
+                if (_indexConfig.Items == null)
                 {
-                    config = IndexConfig.Fields[fieldName];
+                    config = _indexConfig.Fields[fieldName];
                     if (config.Items != null)
                     {
                         //this seems to be an array
@@ -269,7 +269,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                     }
                 }
                 else
-                    config = IndexConfig.Items;
+                    config = _indexConfig.Items;
                 if (config.IndexType == "date" || config.IndexType == "datetime" || config.IndexType == "time")
                 {
                     sortfieldtype = SortField.LONG;
@@ -311,12 +311,12 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
             }
 
         }
-        public QueryDefinition BuildSort(string Sorts)
+        public QueryDefinition BuildSort(string sorts)
         {
             var sort = Sort.RELEVANCE;
-            if (!string.IsNullOrEmpty(Sorts))
+            if (!string.IsNullOrEmpty(sorts))
             {
-                var sortArray = Sorts.Split(',');
+                var sortArray = sorts.Split(',');
                 var sortFields = new List<SortField>();
                 foreach (var item in sortArray)
                 {

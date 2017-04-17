@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Lucene.Net.Search;
 using Lucene.Net.Index;
-using Satrabel.OpenContent.Components.Datasource.Search;
 using Lucene.Net.QueryParsers;
+using Lucene.Net.Search;
+using Satrabel.OpenContent.Components.Datasource.Search;
+using Satrabel.OpenContent.Components.Indexing;
 
-namespace Satrabel.OpenContent.Components.Lucene.Config
+namespace Satrabel.OpenContent.Components.Lucene
 {
     public class SelectQueryDefinition
     {

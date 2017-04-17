@@ -16,11 +16,10 @@ using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Dnn;
 using Satrabel.OpenContent.Components.Localization;
 using Satrabel.OpenContent.Components.Manifest;
-using Satrabel.OpenContent.Components.Lucene.Config;
-using Satrabel.OpenContent.Components.Lucene.Index;
 using Satrabel.OpenContent.Components.TemplateHelpers;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Datasource;
+using Satrabel.OpenContent.Components.Indexing;
 
 
 namespace Satrabel.OpenContent.Components

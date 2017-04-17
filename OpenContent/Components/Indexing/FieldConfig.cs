@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
+using Newtonsoft.Json;
 
-namespace Satrabel.OpenContent.Components.Lucene.Config
+namespace Satrabel.OpenContent.Components.Indexing
 {
     public class FieldConfig
     {

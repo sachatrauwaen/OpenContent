@@ -4,8 +4,8 @@ using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.Search;
 using Newtonsoft.Json.Linq;
-using Satrabel.OpenContent.Components.Lucene.Config;
 using System;
+using Satrabel.OpenContent.Components.Indexing;
 
 namespace Satrabel.OpenContent.Components.Lucene.Mapping
 {

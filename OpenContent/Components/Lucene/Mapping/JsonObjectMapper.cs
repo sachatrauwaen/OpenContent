@@ -6,8 +6,8 @@ using Lucene.Net.Documents;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Json;
-using Satrabel.OpenContent.Components.Lucene.Config;
 using Lucene.Net.QueryParsers;
+using Satrabel.OpenContent.Components.Indexing;
 
 namespace Satrabel.OpenContent.Components.Lucene.Mapping
 {

@@ -6,9 +6,9 @@ using Satrabel.OpenContent.Components.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.Logging;
 using Satrabel.OpenContent.Components.Form;
+using Satrabel.OpenContent.Components.Indexing;
 
 namespace Satrabel.OpenContent.Components.Datasource
 {

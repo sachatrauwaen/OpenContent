@@ -11,7 +11,6 @@ using System.IO;
 using System.Web.UI;
 using DotNetNuke.Web.Client;
 using Satrabel.OpenContent.Components.Datasource;
-using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.Alpaca;
 using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components.Handlebars;
@@ -23,6 +22,7 @@ using Newtonsoft.Json.Linq;
 using IDataSource = Satrabel.OpenContent.Components.Datasource.IDataSource;
 using System.Collections;
 using System.Diagnostics;
+using Satrabel.OpenContent.Components.Indexing;
 
 namespace Satrabel.OpenContent.Components.Render
 {

@@ -14,8 +14,8 @@ using DotNetNuke.Entities.Modules;
 using DotNetNuke.Common;
 using Satrabel.OpenContent.Components;
 using Satrabel.OpenContent.Components.Alpaca;
-using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.Datasource;
+using Satrabel.OpenContent.Components.Indexing;
 
 #endregion
 

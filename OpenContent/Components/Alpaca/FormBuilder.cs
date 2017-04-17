@@ -2,10 +2,10 @@
 using System.IO;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Json;
-using Satrabel.OpenContent.Components.Lucene.Config;
 using Newtonsoft.Json;
 using DotNetNuke.Common.Utilities;
 using DotNetNuke.Services.Cache;
+using Satrabel.OpenContent.Components.Indexing;
 
 namespace Satrabel.OpenContent.Components.Alpaca
 {

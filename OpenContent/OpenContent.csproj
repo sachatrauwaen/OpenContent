@@ -188,6 +188,12 @@
     <Compile Include="Components\Form\GenSettingsDTO.cs" />
     <Compile Include="Components\Form\NotificationDTO.cs" />
     <Compile Include="Components\Form\SettingsDTO.cs" />
+    <Compile Include="Components\Indexing\FieldConfig.cs" />
+    <Compile Include="Components\Indexing\FieldConfigUtils.cs" />
+    <Compile Include="Components\Lucene\Query\QueryDefinition.cs" />
+    <Compile Include="Components\Lucene\Query\SelectQueryDefinition.cs" />
+    <Compile Include="Components\Indexing\IIndexableItem.cs" />
+    <Compile Include="Components\Indexing\IndexExtentions.cs" />
     <Compile Include="Components\Json\NotAuthorizedException.cs" />
     <Compile Include="Components\Dnn\DnnLocalizationAdapter.cs" />
     <Compile Include="Components\Localization\ILocalizationAdapter.cs" />
@@ -197,7 +203,6 @@
     <Compile Include="Components\Logging\ILogAdapter.cs" />
     <Compile Include="Components\Indexing\IIndexAdapter.cs" />
     <Compile Include="Components\Indexing\Indexer.cs" />
-    <Compile Include="Components\Lucene\Index\IIndexableItem.cs" />
     <Compile Include="Components\Manifest\CollectionManifest.cs" />
     <Compile Include="Components\Manifest\OpenContentModuleInfo.cs" />
     <Compile Include="Components\Datasource\DnnTabsDataSource.cs" />
@@ -262,13 +267,9 @@
     <Compile Include="Components\FilesStatus.cs" />
     <Compile Include="Components\FileUploadController.cs" />
     <Compile Include="Components\JPList\JplistQueryBuilder.cs" />
-    <Compile Include="Components\Lucene\Config\FieldConfig.cs" />
-    <Compile Include="Components\Lucene\Config\FieldConfigUtils.cs" />
-    <Compile Include="Components\Lucene\Config\SelectQueryDefinition.cs" />
-    <Compile Include="Components\Lucene\Config\QueryDefinition.cs" />
     <Compile Include="Components\Alpaca\SchemaConfig.cs" />
     <Compile Include="Components\Lucene\LuceneIndexAdapter.cs" />
-    <Compile Include="Components\Lucene\SearchResults.cs" />
+    <Compile Include="Components\Indexing\SearchResults.cs" />
     <Compile Include="Components\Manifest\AdditionalDataManifest.cs" />
     <Compile Include="Components\Manifest\Manifest.cs" />
     <Compile Include="Components\Manifest\ManifestUtils.cs" />
@@ -333,7 +334,6 @@
     <Compile Include="Components\JPList\SortDTO.cs" />
     <Compile Include="Components\JPList\StatusDataDTO.cs" />
     <Compile Include="Components\JPList\StatusDTO.cs" />
-    <Compile Include="Components\Lucene\Index\OpenContentMappingExtensions.cs" />
     <Compile Include="Components\Lucene\LuceneService.cs" />
     <Compile Include="Components\Lucene\Mapping\JsonMappingUtils.cs" />
     <Compile Include="Components\Lucene\Mapping\JsonObjectMapper.cs" />
@@ -347,7 +347,6 @@
     <Compile Include="Components\Json\JsonMergeOptions.cs" />
     <Compile Include="Components\Json\JsonUtils.cs" />
     <Compile Include="Components\DnnEntitiesAPIController.cs" />
-    <Compile Include="Components\Lucene\Index\IndexExtentions.cs" />
     <Compile Include="Components\Utils\HttpUtils.cs" />
     <Compile Include="Components\Logging\Logger.cs" />
     <Compile Include="Components\OpenContentController.cs" />
