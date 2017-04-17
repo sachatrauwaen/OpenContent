@@ -195,6 +195,8 @@
     <Compile Include="Components\Logging\DnnLogAdapter.cs" />
     <Compile Include="Components\Logging\ExceptionExtentions.cs" />
     <Compile Include="Components\Logging\ILogAdapter.cs" />
+    <Compile Include="Components\Indexing\IIndexAdapter.cs" />
+    <Compile Include="Components\Indexing\Indexer.cs" />
     <Compile Include="Components\Lucene\Index\IIndexableItem.cs" />
     <Compile Include="Components\Manifest\CollectionManifest.cs" />
     <Compile Include="Components\Manifest\OpenContentModuleInfo.cs" />
@@ -265,7 +267,7 @@
     <Compile Include="Components\Lucene\Config\SelectQueryDefinition.cs" />
     <Compile Include="Components\Lucene\Config\QueryDefinition.cs" />
     <Compile Include="Components\Alpaca\SchemaConfig.cs" />
-    <Compile Include="Components\Lucene\LuceneController.cs" />
+    <Compile Include="Components\Lucene\LuceneIndexAdapter.cs" />
     <Compile Include="Components\Lucene\SearchResults.cs" />
     <Compile Include="Components\Manifest\AdditionalDataManifest.cs" />
     <Compile Include="Components\Manifest\Manifest.cs" />

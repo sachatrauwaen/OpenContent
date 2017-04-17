@@ -94,7 +94,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             if (context.Index && selectQuery != null)
             {
                 SelectQueryDefinition def = BuildQuery(context, selectQuery);
-                SearchResults docs = LuceneController.Instance.Search(LUCENE_SCOPE, def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
+                SearchResults docs = Indexer.Instance.Search(LUCENE_SCOPE, def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
                 int total = docs.TotalResults;
                 var dataList = new List<IDataItem>();
                 foreach (string item in docs.ids)
@@ -252,12 +252,12 @@ namespace Satrabel.OpenContent.Components.Datasource
             var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection);
             if (context.Index)
             {
-                LuceneController.Instance.Add(new IndexableItemUser()
+                Indexer.Instance.Add(new IndexableItemUser()
                 {
                     Data = data,
                     User = user
                 }, indexConfig);
-                LuceneController.Instance.Store.Commit();
+                Indexer.Instance.Commit();
             }
         }
 
@@ -318,12 +318,12 @@ namespace Satrabel.OpenContent.Components.Datasource
             var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection);
             if (context.Index)
             {
-                LuceneController.Instance.Update(new IndexableItemUser()
+                Indexer.Instance.Update(new IndexableItemUser()
                 {
                     Data = data,
                     User = user
                 }, indexConfig);
-                LuceneController.Instance.Store.Commit();
+                Indexer.Instance.Commit();
             }
         }
 
@@ -365,7 +365,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         {
             string scope = LUCENE_SCOPE;
             var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection); //todo index is being build from schema & options. But they should be provided by the provider, not directly from the files
-            LuceneController.Instance.ReIndexModuleData(UserController.GetUsers(true, false, context.PortalId).Cast<UserInfo>().
+            Indexer.Instance.ReIndexModuleData(UserController.GetUsers(true, false, context.PortalId).Cast<UserInfo>().
                 Where(u => !u.IsInRole("Administrators")).Select(u => new IndexableItemUser()
                 {
                     Data = ToData(u).Data,
@@ -501,7 +501,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         #endregion
     }
 
-    internal class IndexableItemUser : IIndexableItem
+    public class IndexableItemUser : IIndexableItem
     {
         public JToken Data { get; set; }
         public UserInfo User { get; set; }

@@ -8,48 +8,50 @@ using Lucene.Net.QueryParsers;
 using Satrabel.OpenContent.Components.Lucene.Mapping;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using DotNetNuke.Entities.Portals;
-using DotNetNuke.Entities.Modules;
 using Version = Lucene.Net.Util.Version;
 using Satrabel.OpenContent.Components.Lucene.Index;
-using Satrabel.OpenContent.Components.Datasource;
 using System.Collections.Generic;
 
 #endregion
 
 namespace Satrabel.OpenContent.Components.Lucene
 {
-    public class LuceneController : IDisposable
+    public class LuceneIndexAdapter : IDisposable, IIndexAdapter
     {
-        private static LuceneController _instance = new LuceneController();
         private LuceneService _serviceInstance;
 
-        public static LuceneController Instance => _instance;
+        public static LuceneIndexAdapter Instance { get; private set; } = new LuceneIndexAdapter();
 
-        public LuceneService Store
+        public void Commit()
+        {
+            Store.Commit();
+        }
+
+        private LuceneService Store
         {
             get
             {
                 if (_serviceInstance == null)
-                    throw new Exception("LuceneController not initialized properly");
+                    throw new Exception("LuceneIndexAdapter not initialized properly");
                 return _serviceInstance;
             }
         }
 
         #region constructor
 
-        private LuceneController()
+        internal LuceneIndexAdapter()
         {
             _serviceInstance = new LuceneService(AppConfig.Instance.LuceneIndexFolder, JsonMappingUtils.GetAnalyser());
         }
 
         public static void ClearInstance()
         {
-            if (_instance != null)
+            if (Instance != null)
             {
-                _instance.Dispose();
-                _instance = null;
+                Instance.Dispose();
+                Instance = null;
             }
-            _instance = new LuceneController();
+            Instance = new LuceneIndexAdapter();
         }
 
         #endregion
@@ -91,42 +93,15 @@ namespace Satrabel.OpenContent.Components.Lucene
         #region Index
 
         /// <summary>
-        /// Use this to 
-        /// </summary>
-        /// <param name="list">The list.</param>
-        /// <param name="indexConfig">The index configuration.</param>
-        /// <param name="scope">The scope.</param>
-        public void ReIndexModuleData(IEnumerable<IIndexableItem> list, FieldConfig indexConfig, string scope)
-        {
-            try
-            {
-                using (LuceneController lc = LuceneController.Instance)
-                {
-                    lc.Store.Delete(new TermQuery(new Term("$type", scope)));
-                    foreach (var item in list)
-                    {
-                        lc.Add(item, indexConfig);
-                    }
-                    lc.Store.Commit();
-                    lc.Store.OptimizeSearchIndex(true);
-                }
-            }
-            finally
-            {
-                LuceneController.ClearInstance();
-            }
-        }
-
-        /// <summary>
         /// Reindex all OpenContent modules of all portals.
         /// </summary>
-        internal void IndexAll() //todo: this should only be called from DataSourceProviders
+        public void IndexAll() //todo: this should only be called from DataSourceProviders
         {
             Log.Logger.Info("Reindexing all OpenContent data, from all portals");
-            LuceneController.ClearInstance();
+            LuceneIndexAdapter.ClearInstance();
             try
             {
-                using (var lc = LuceneController.Instance)
+                using (var lc = LuceneIndexAdapter.Instance)
                 {
                     foreach (PortalInfo portal in PortalController.Instance.GetPortals())
                     {
@@ -146,12 +121,39 @@ namespace Satrabel.OpenContent.Components.Lucene
             }
             finally
             {
-                LuceneController.ClearInstance();
+                LuceneIndexAdapter.ClearInstance();
             }
             Log.Logger.Info("Finished Reindexing all OpenContent data, from all portals");
         }
 
-        private void IndexModule(LuceneController lc, OpenContentModuleInfo module)
+        /// <summary>
+        /// Use this to 
+        /// </summary>
+        /// <param name="list">The list.</param>
+        /// <param name="indexConfig">The index configuration.</param>
+        /// <param name="scope">The scope.</param>
+        public void ReIndexModuleData(IEnumerable<IIndexableItem> list, FieldConfig indexConfig, string scope)
+        {
+            try
+            {
+                using (LuceneIndexAdapter lc = LuceneIndexAdapter.Instance)
+                {
+                    lc.Store.Delete(new TermQuery(new Term("$type", scope)));
+                    foreach (var item in list)
+                    {
+                        lc.Add(item, indexConfig);
+                    }
+                    lc.Store.Commit();
+                    lc.Store.OptimizeSearchIndex(true);
+                }
+            }
+            finally
+            {
+                LuceneIndexAdapter.ClearInstance();
+            }
+        }
+
+        private void IndexModule(LuceneIndexAdapter lc, OpenContentModuleInfo module)
         {
             OpenContentUtils.CheckOpenContentSettings(module);
 
@@ -161,7 +163,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             }
         }
 
-        private void IndexModuleData(LuceneController lc, int moduleId, OpenContentSettings settings)
+        private void IndexModuleData(LuceneIndexAdapter lc, int moduleId, OpenContentSettings settings)
         {
             bool index = false;
             if (settings.TemplateAvailable)
@@ -177,7 +179,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             if (settings.IsOtherModule)
             {
                 moduleId = settings.ModuleId;
-            }            
+            }
             lc.Store.Delete(new TermQuery(new Term("$type", OpenContentInfo.GetScope(moduleId, settings.Template.Collection))));
             OpenContentController occ = new OpenContentController();
             foreach (var item in occ.GetContents(moduleId, settings.Template.Collection))
@@ -217,7 +219,7 @@ namespace Satrabel.OpenContent.Components.Lucene
         {
             if (null == data)
             {
-                throw new ArgumentNullException("data");
+                throw new ArgumentNullException(nameof(data));
             }
             var selection = new TermQuery(new Term(JsonMappingUtils.FieldId, data.GetId()));
             Query deleteQuery = new FilteredQuery(selection, JsonMappingUtils.GetTypeFilter(data.GetScope()));
@@ -228,7 +230,7 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         #region Private
 
-        public static Query ParseQuery(string searchQuery, string defaultFieldName)
+        public Query ParseQuery(string searchQuery, string defaultFieldName)
         {
             var parser = new QueryParser(Version.LUCENE_30, defaultFieldName, JsonMappingUtils.GetAnalyser());
             Query query;

@@ -83,7 +83,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                     }
                     else if (rule.FieldType == FieldTypeEnum.STRING || rule.FieldType == FieldTypeEnum.TEXT || rule.FieldType == FieldTypeEnum.HTML)
                     {
-                        q.Add(LuceneController.ParseQuery(rule.Value.AsString + "*", fieldName), cond);
+                        q.Add(Indexer.Instance.ParseQuery(rule.Value.AsString + "*", fieldName), cond);
                     }
                     else
                     {
@@ -99,7 +99,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                 {
                     if (rule.FieldType == FieldTypeEnum.STRING || rule.FieldType == FieldTypeEnum.TEXT || rule.FieldType == FieldTypeEnum.HTML)
                     {
-                        q.Add(LuceneController.ParseQuery(rule.Value.AsString + "*", fieldName), cond);
+                        q.Add(Indexer.Instance.ParseQuery(rule.Value.AsString + "*", fieldName), cond);
                     }
                     else
                     {

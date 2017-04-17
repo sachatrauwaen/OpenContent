@@ -2,6 +2,7 @@
 using Satrabel.OpenContent.Components.Dnn;
 using Satrabel.OpenContent.Components.Localization;
 using Satrabel.OpenContent.Components.Logging;
+using Satrabel.OpenContent.Components.Lucene;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -14,7 +15,6 @@ namespace Satrabel.OpenContent.Components
         private AppConfig()
         {
         }
-
 
         public string LuceneIndexFolder => @"App_Data\OpenContent\lucene_index";
 
@@ -59,6 +59,7 @@ namespace Satrabel.OpenContent.Components
 
         public ILocalizationAdapter LocalizationAdapter => new DnnLocalizationAdapter();
         public ILogAdapter LogAdapter => DnnLogAdapter.GetLogAdapter(OPENCONTENT);
+        public IIndexAdapter IndexAdapter => new LuceneIndexAdapter();
 
         #endregion
     }

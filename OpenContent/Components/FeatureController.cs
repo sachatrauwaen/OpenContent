@@ -295,7 +295,7 @@ namespace Satrabel.OpenContent.Components
             }
             else if (version == "03.02.00")
             {
-                Lucene.LuceneController.Instance.IndexAll();
+                Indexer.Instance.IndexAll();
             }
             return version + res;
         }

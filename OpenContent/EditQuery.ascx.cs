@@ -58,7 +58,7 @@ namespace Satrabel.OpenContent
         }
         protected void bIndexAll_Click(object sender, EventArgs e)
         {
-            LuceneController.Instance.IndexAll();
+          Indexer.Instance.IndexAll();
         }
         protected void bGenerate_Click(object sender, EventArgs e)
         {

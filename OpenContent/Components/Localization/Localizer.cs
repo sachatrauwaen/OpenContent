@@ -1,5 +1,4 @@
 ﻿using System;
-using Satrabel.OpenContent.Components.Dnn;
 
 namespace Satrabel.OpenContent.Components.Localization
 {
