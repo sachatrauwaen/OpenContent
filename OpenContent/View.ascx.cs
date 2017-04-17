@@ -14,7 +14,6 @@ using System.Linq;
 using System.Diagnostics;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Modules.Actions;
-using DotNetNuke.Services.Localization;
 using DotNetNuke.Security;
 using System.Web.UI;
 using DotNetNuke.Web.Client.ClientResourceManagement;

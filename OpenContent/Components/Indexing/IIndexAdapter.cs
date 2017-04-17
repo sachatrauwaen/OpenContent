@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Lucene.Net.Search;
-using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Lucene;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.Lucene.Index;

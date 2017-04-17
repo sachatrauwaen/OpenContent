@@ -23,7 +23,6 @@ using DotNetNuke.Entities.Portals;
 using System.IO;
 using System.Web.Hosting;
 using DotNetNuke.Common.Internal;
-using DotNetNuke.Entities.Users;
 using DotNetNuke.Services.Search.Controllers;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Dnn;

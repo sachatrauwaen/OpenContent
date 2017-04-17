@@ -10,14 +10,11 @@
 ' 
 */
 
-using System;
 using System.Linq;
 using System.Collections.Generic;
 using DotNetNuke.Common.Utilities;
 using DotNetNuke.Data;
 using DotNetNuke.Entities.Modules;
-using Satrabel.OpenContent.Components.Lucene;
-using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.Common;
 
 namespace Satrabel.OpenContent.Components
