@@ -17,11 +17,12 @@ namespace Satrabel.OpenContent.Components.Lucene
             Sort = Sort.RELEVANCE;
             PageSize = 100;
         }
-        public Query Filter { get; set; }
-        public Query Query { get; set; }
-        public Sort Sort { get; set; }
-        public int PageSize { get; set; }
-        public int PageIndex { get; set; }
+        public Query Filter { get; private set; }
+        public Query Query { get; private set; }
+        public Sort Sort { get; private set; }
+        public int PageSize { get; private set; }
+        public int PageIndex { get; private set; }
+
         public SelectQueryDefinition Build(Select select)
         {
             BuildPage(select);
@@ -30,14 +31,18 @@ namespace Satrabel.OpenContent.Components.Lucene
             BuildSort(select);
             return this;
         }
-        public SelectQueryDefinition BuildPage(Select select)
+
+        #region private methods
+
+        private SelectQueryDefinition BuildPage(Select select)
         {
             PageSize = select.PageSize == 0 ? 100 : select.PageSize;
             PageIndex = select.PageIndex;
             // ????? DefaultNoResults = ;
             return this;
         }
-        public Query BuildFilter(FilterGroup filter)
+
+        private static Query BuildFilter(FilterGroup filter)
         {
             BooleanQuery q = new BooleanQuery();
             q.Add(new MatchAllDocsQuery(), Occur.MUST);
@@ -46,7 +51,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             {
                 cond = Occur.SHOULD;
             }
-            AddRulles(q, filter.FilterRules, cond);
+            AddRules(q, filter.FilterRules, cond);
             foreach (var rule in filter.FilterGroups)
             {
                 Occur groupCond = Occur.MUST; // AND
@@ -55,14 +60,14 @@ namespace Satrabel.OpenContent.Components.Lucene
                     groupCond = Occur.SHOULD;
                 }
                 BooleanQuery groupQ = new BooleanQuery();
-                AddRulles(groupQ, rule.FilterRules, groupCond);
+                AddRules(groupQ, rule.FilterRules, groupCond);
                 q.Add(groupQ, cond);
             }
             q = q.Clauses.Count > 0 ? q : null;
             return q;
         }
 
-        private void AddRulles(BooleanQuery q, List<FilterRule> filterRules, Occur cond)
+        private static void AddRules(BooleanQuery q, List<FilterRule> filterRules, Occur cond)
         {
             foreach (var rule in filterRules)
             {
@@ -154,13 +159,14 @@ namespace Satrabel.OpenContent.Components.Lucene
                 }
             }
         }
-        public SelectQueryDefinition BuildSort(Select select)
+
+        private SelectQueryDefinition BuildSort(Select select)
         {
             var sort = Sort.RELEVANCE;
-            if (select.Sort.Any())
+            if (@select.Sort.Any())
             {
                 var sortFields = new List<SortField>();
-                foreach (var rule in select.Sort)
+                foreach (var rule in @select.Sort)
                 {
                     int sortfieldtype = SortField.STRING;
                     string sortFieldPrefix = "";
@@ -175,7 +181,8 @@ namespace Satrabel.OpenContent.Components.Lucene
             Sort = sort;
             return this;
         }
-        private void Sortfieldtype(FieldTypeEnum fieldType, ref int sortfieldtype, ref string sortFieldPrefix)
+
+        private static void Sortfieldtype(FieldTypeEnum fieldType, ref int sortfieldtype, ref string sortFieldPrefix)
         {
             if (fieldType == FieldTypeEnum.DATETIME)
             {
@@ -212,5 +219,7 @@ namespace Satrabel.OpenContent.Components.Lucene
                 sortFieldPrefix = "@";
             }
         }
+        #endregion
+
     }
 }

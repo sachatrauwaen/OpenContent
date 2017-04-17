@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Satrabel.OpenContent.Components.Indexing;
-using Lucene.Net.Search; //todo: remove Lucene dependancy
-
+using Lucene.Net.Search;//todo: remove Lucene dependancy
+using Satrabel.OpenContent.Components.Datasource.Search;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -13,8 +13,8 @@ namespace Satrabel.OpenContent.Components
         void Update(IIndexableItem indexableItem, FieldConfig indexConfig);
         void Delete(IIndexableItem content);
         void Commit();
+        SearchResults Search(string indexScope, Select selectQuery);
 
-        SearchResults Search(string luceneScope, Query defFilter, Query defQuery, Sort defSort, int defPageSize, int defPageIndex);
         Query ParseQuery(string p0, string fieldName);
     }
 }

@@ -10,7 +10,6 @@ using DotNetNuke.Security.Roles;
 using DotNetNuke.Services.Mail;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Alpaca;
-using Satrabel.OpenContent.Components.Lucene;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +23,7 @@ namespace Satrabel.OpenContent.Components.Datasource
     public class DnnUsersDataSource : DefaultDataSource, IDataActions, IDataIndex
     {
         private const string REGISTERED_USERS = "Registered Users";
-        private const string LUCENE_SCOPE = "DnnUsers";
+        private const string INDEX_SCOPE = "DnnUsers";
 
         public override string Name => "Satrabel.DnnUsers";
 
@@ -92,8 +91,16 @@ namespace Satrabel.OpenContent.Components.Datasource
         {
             if (context.Index && selectQuery != null)
             {
-                SelectQueryDefinition def = BuildQuery(context, selectQuery);
-                SearchResults docs = Indexer.Instance.Search(LUCENE_SCOPE, def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
+                SearchResults docs = Indexer.Instance.Search(INDEX_SCOPE, selectQuery);
+                if (LogContext.IsLogActive)
+                {
+                    var logKey = "Lucene query";
+                    LogContext.Log(context.ActiveModuleId, logKey, "Filter", docs.QueryDefinition.Filter);
+                    LogContext.Log(context.ActiveModuleId, logKey, "Query", docs.QueryDefinition.Query);
+                    LogContext.Log(context.ActiveModuleId, logKey, "Sort", docs.QueryDefinition.Sort);
+                    LogContext.Log(context.ActiveModuleId, logKey, "PageIndex", docs.QueryDefinition.PageIndex);
+                    LogContext.Log(context.ActiveModuleId, logKey, "PageSize", docs.QueryDefinition.PageSize);
+                }
                 int total = docs.TotalResults;
                 var dataList = new List<IDataItem>();
                 foreach (string item in docs.ids)
@@ -112,7 +119,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 {
                     Items = dataList,
                     Total = total,
-                    DebugInfo = def.Filter + " - " + def.Query + " - " + def.Sort
+                    DebugInfo = docs.QueryDefinition.Filter + " - " + docs.QueryDefinition.Query + " - " + docs.QueryDefinition.Sort
                 };
             }
             else
@@ -161,22 +168,6 @@ namespace Satrabel.OpenContent.Components.Datasource
                     //DebugInfo = 
                 };
             }
-        }
-        private static SelectQueryDefinition BuildQuery(DataSourceContext context, Select selectQuery)
-        {
-            SelectQueryDefinition def = new SelectQueryDefinition();
-            def.Build(selectQuery);
-            if (LogContext.IsLogActive)
-            {
-                var logKey = "Lucene query";
-                LogContext.Log(context.ActiveModuleId, logKey, "Filter", def.Filter.ToString());
-                LogContext.Log(context.ActiveModuleId, logKey, "Query", def.Query.ToString());
-                LogContext.Log(context.ActiveModuleId, logKey, "Sort", def.Sort.ToString());
-                LogContext.Log(context.ActiveModuleId, logKey, "PageIndex", def.PageIndex);
-                LogContext.Log(context.ActiveModuleId, logKey, "PageSize", def.PageSize);
-            }
-
-            return def;
         }
 
         public override JObject GetAlpaca(DataSourceContext context, bool schema, bool options, bool view)
@@ -362,7 +353,7 @@ namespace Satrabel.OpenContent.Components.Datasource
 
         public void Reindex(DataSourceContext context)
         {
-            string scope = LUCENE_SCOPE;
+            string scope = INDEX_SCOPE;
             var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection); //todo index is being build from schema & options. But they should be provided by the provider, not directly from the files
             Indexer.Instance.ReIndexModuleData(UserController.GetUsers(true, false, context.PortalId).Cast<UserInfo>().
                 Where(u => !u.IsInRole("Administrators")).Select(u => new IndexableItemUser()

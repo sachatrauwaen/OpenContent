@@ -9,6 +9,7 @@ using Satrabel.OpenContent.Components.Lucene.Mapping;
 using DotNetNuke.Entities.Portals;
 using Version = Lucene.Net.Util.Version;
 using System.Collections.Generic;
+using Satrabel.OpenContent.Components.Datasource.Search;
 using Satrabel.OpenContent.Components.Indexing;
 
 #endregion
@@ -24,6 +25,24 @@ namespace Satrabel.OpenContent.Components.Lucene
         public void Commit()
         {
             Store.Commit();
+        }
+
+        public SearchResults Search(string indexScope, Select selectQuery)
+        {
+            var def = new SelectQueryDefinition();
+            def.Build(selectQuery);
+
+
+            var results= this.Search(indexScope, def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
+            results.QueryDefinition = new QueryDefinition()
+            {
+                Filter= def.Filter.ToString(),
+                Query= def.Query.ToString(),
+                Sort= def.Sort.ToString(),
+                PageIndex= def.PageIndex,
+                PageSize= def.PageSize
+        };
+            return results;
         }
 
         private LuceneService Store

@@ -190,7 +190,7 @@
     <Compile Include="Components\Form\SettingsDTO.cs" />
     <Compile Include="Components\Indexing\FieldConfig.cs" />
     <Compile Include="Components\Indexing\FieldConfigUtils.cs" />
-    <Compile Include="Components\Lucene\Query\SelectQueryDefinition.cs" />
+    <Compile Include="Components\Lucene\SelectQueryDefinition.cs" />
     <Compile Include="Components\Indexing\IIndexableItem.cs" />
     <Compile Include="Components\Indexing\IndexExtentions.cs" />
     <Compile Include="Components\Json\NotAuthorizedException.cs" />
@@ -336,7 +336,7 @@
     <Compile Include="Components\Lucene\LuceneService.cs" />
     <Compile Include="Components\Lucene\Mapping\JsonMappingUtils.cs" />
     <Compile Include="Components\Lucene\Mapping\JsonObjectMapper.cs" />
-    <Compile Include="Components\Lucene\Search\JsonSearchUtils.cs" />
+    <Compile Include="Components\Lucene\LuceneSearchExtentions.cs" />
     <Compile Include="Components\TemplateHelpers\Images\ImageHelper.cs" />
     <Compile Include="Components\TemplateHelpers\Images\ImageUri.cs" />
     <Compile Include="Components\TemplateHelpers\Images\Ratio.cs" />
