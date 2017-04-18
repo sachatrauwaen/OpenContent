@@ -9,18 +9,19 @@
 ' DEALINGS IN THE SOFTWARE.
 ' 
 */
-using System;
-using System.Linq;
-using DotNetNuke.Services.Exceptions;
-using Satrabel.OpenContent.Components.Json;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Web.Helpers;
-using System.Data;
-using System.Web;
-using Satrabel.OpenContent.Components;
 
-namespace Satrabel.OpenForm
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Dynamic;
+using System.Linq;
+using System.Web;
+using System.Web.Helpers;
+using DotNetNuke.Services.Exceptions;
+using Satrabel.OpenContent.Components;
+using Satrabel.OpenContent.Components.Json;
+
+namespace Satrabel.OpenContent
 {
     public partial class Submissions : DotNetNuke.Entities.Modules.PortalModuleBase
     {
@@ -74,7 +75,7 @@ namespace Satrabel.OpenForm
             return dynData;
         }
 
-        private Dictionary<String, Object> Dyn2Dict(dynamic dynObj)
+        private static Dictionary<string, object> Dyn2Dict(dynamic dynObj)
         {
             var dictionary = new Dictionary<string, object>();
             foreach (var name in dynObj.GetDynamicMemberNames())
@@ -90,7 +91,7 @@ namespace Satrabel.OpenForm
             return site.Target(site, target);
         }
 
-        private string GetFileNameFromFormName()
+        private static string GetFileNameFromFormName()
         {
             //todo determine that current form and create a filename based on the name of the form.
             return "submissions.xlsx";
