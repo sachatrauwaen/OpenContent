@@ -22,6 +22,7 @@ using Newtonsoft.Json.Linq;
 using IDataSource = Satrabel.OpenContent.Components.Datasource.IDataSource;
 using System.Collections;
 using System.Diagnostics;
+using Satrabel.OpenContent.Components.Dnn;
 using Satrabel.OpenContent.Components.Indexing;
 
 namespace Satrabel.OpenContent.Components.Render

@@ -25,6 +25,7 @@ using DotNetNuke.Services.Localization;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.Datasource;
+using Satrabel.OpenContent.Components.Dnn;
 
 #endregion
 
@@ -126,7 +127,7 @@ namespace Satrabel.OpenContent.Components
                 json["context"] = context;
 
                 //todo: can't we do some of these checks at the beginning of this method to fail faster?
-                if (!OpenContentUtils.HasEditPermissions(PortalSettings, moduleInfo.ViewModule, moduleInfo.Settings.Manifest.GetEditRole(), createdByUserid))
+                if (!DnnPermissionsUtils.HasEditPermissions(PortalSettings, moduleInfo.ViewModule, moduleInfo.Settings.Manifest.GetEditRole(), createdByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
@@ -232,7 +233,7 @@ namespace Satrabel.OpenContent.Components
 
                 string editRole = module.Settings.Template.Manifest.GetEditRole();
                 //todo: can't we do some of these checks at the beginning of this method to fail faster?
-                if (!OpenContentUtils.HasEditPermissions(PortalSettings, module.ViewModule, editRole, createdByUserid))
+                if (!DnnPermissionsUtils.HasEditPermissions(PortalSettings, module.ViewModule, editRole, createdByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
@@ -580,7 +581,7 @@ namespace Satrabel.OpenContent.Components
                 }
 
                 //todo: can't we do some of these checks at the beginning of this method to fail faster?
-                if (!OpenContentUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, createdByUserid))
+                if (!DnnPermissionsUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, createdByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
@@ -663,7 +664,7 @@ namespace Satrabel.OpenContent.Components
                 }
 
                 //todo: can't we do some of these checks at the beginning of this method to fail faster?
-                if (!OpenContentUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, createdByUserid))
+                if (!DnnPermissionsUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, createdByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
@@ -726,7 +727,7 @@ namespace Satrabel.OpenContent.Components
                 }
 
                 //todo: can't we do some of these checks at the beginning of this method to fail faster?
-                if (!OpenContentUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, createdByUserid))
+                if (!DnnPermissionsUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, createdByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }

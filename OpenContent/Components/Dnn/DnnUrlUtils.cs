@@ -3,6 +3,7 @@ using DotNetNuke.Common;
 using DotNetNuke.Common.Utilities;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.UI;
+using Newtonsoft.Json.Linq;
 
 namespace Satrabel.OpenContent.Components.Dnn
 {
@@ -61,6 +62,12 @@ namespace Satrabel.OpenContent.Components.Dnn
         public static string NavigateUrl(int tabId)
         {
             return Globals.NavigateURL(tabId);
+        }
+
+        internal static string NavigateUrl(int tabId, PortalSettings portalSettings, string currentCultureCode)
+        {
+            var isSuperTab = Globals.IsHostTab(tabId);
+            return Globals.NavigateURL(tabId, isSuperTab, portalSettings, "", currentCultureCode);
         }
 
         private static string NavigateUrl(int tabId, int moduleId, string controlKey, bool pageRedirect, PortalSettings ps, params string[] additionalParameters)

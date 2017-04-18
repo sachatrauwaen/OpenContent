@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using Satrabel.OpenContent.Components.Datasource;
+using Satrabel.OpenContent.Components.Dnn;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -26,7 +27,7 @@ namespace Satrabel.OpenContent.Components
 
                 if (module.IsListMode())
                 {
-                    if (!OpenContentUtils.HasEditPermissions(PortalSettings, module.ViewModule, editRole, -1))
+                    if (!DnnPermissionsUtils.HasEditPermissions(PortalSettings, module.ViewModule, editRole, -1))
                     {
                         Log.Logger.Warn($"Failed the HasEditPermissions() check");
                         return Request.CreateResponse(HttpStatusCode.Unauthorized, "Failed the HasEditPermissions() check");

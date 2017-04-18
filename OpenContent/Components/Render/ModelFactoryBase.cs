@@ -1,6 +1,4 @@
-﻿using DotNetNuke.Common;
-using DotNetNuke.Entities.Portals;
-using DotNetNuke.Services.Localization;
+﻿using DotNetNuke.Entities.Portals;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Datasource;
@@ -11,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Satrabel.OpenContent.Components.Dnn;
 
 namespace Satrabel.OpenContent.Components.Render
 {
@@ -212,8 +211,7 @@ namespace Satrabel.OpenContent.Components.Render
                             foreach (var dataItem in dataItems.Items)
                             {
                                 var json = dataItem.Data;
-
-                                if (json != null && LocaleController.Instance.GetLocales(_portalId).Count > 1)
+                                if (json != null && DnnLanguageUtils.GetPortalLocales(_portalId).Count > 1)
                                 {
                                     JsonUtils.SimplifyJson(json, GetCurrentCultureCode());
                                 }
@@ -238,7 +236,7 @@ namespace Satrabel.OpenContent.Components.Render
                 try
                 {
                     var jsonSettings = JToken.Parse(_settingsJson);
-                    if (LocaleController.Instance.GetLocales(_portalId).Count > 1)
+                    if (DnnLanguageUtils.GetPortalLocales(_portalId).Count > 1)
                     {
                         JsonUtils.SimplifyJson(jsonSettings, GetCurrentCultureCode());
                     }
@@ -280,7 +278,7 @@ namespace Satrabel.OpenContent.Components.Render
                 context["IsEditable"] = editIsAllowed; //allowed to edit the item or list (meaning allow Add)
                 context["IsEditMode"] = IsEditMode;
                 context["PortalId"] = _portalId;
-                context["MainUrl"] = Globals.NavigateURL(_detailTabId, false, _portalSettings, "", GetCurrentCultureCode());
+                context["MainUrl"] = DnnUrlUtils.NavigateUrl(_detailTabId, _portalSettings, GetCurrentCultureCode());
                 context["HomeDirectory"] = _portalSettings.HomeDirectory;
                 context["HTTPAlias"] = _portalSettings.PortalAlias.HTTPAlias;
             }
@@ -299,7 +297,7 @@ namespace Satrabel.OpenContent.Components.Render
                     var json = dataItem?.Data;
                     if (json != null)
                     {
-                        if (LocaleController.Instance.GetLocales(_portalId).Count > 1)
+                        if (DnnLanguageUtils.GetPortalLocales(_portalId).Count > 1)
                         {
                             JsonUtils.SimplifyJson(json, GetCurrentCultureCode());
                         }
@@ -345,14 +343,14 @@ namespace Satrabel.OpenContent.Components.Render
         protected bool IsEditAllowed(int createdByUser)
         {
             string editRole = _manifest.GetEditRole();
-            return (IsEditMode || OpenContentUtils.HasEditRole(_portalSettings, editRole, createdByUser)) // edit Role can edit whtout be in edit mode
-                    && OpenContentUtils.HasEditPermissions(_portalSettings, _module.ViewModule, editRole, createdByUser);
+            return (IsEditMode || DnnPermissionsUtils.HasEditRole(_portalSettings, editRole, createdByUser)) // edit Role can edit without being in edit mode
+                    && DnnPermissionsUtils.HasEditPermissions(_portalSettings, _module.ViewModule, editRole, createdByUser);
         }
 
         protected bool HasEditPermissions(int createdByUser)
         {
             string editRole = _manifest.GetEditRole();
-            return OpenContentUtils.HasEditPermissions(_portalSettings, _module.ViewModule, editRole, createdByUser);
+            return DnnPermissionsUtils.HasEditPermissions(_portalSettings, _module.ViewModule, editRole, createdByUser);
         }
 
         protected string GetCurrentCultureCode()

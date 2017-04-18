@@ -17,6 +17,7 @@ using Newtonsoft.Json;
 using Satrabel.OpenContent.Components.Render;
 using DotNetNuke.Services.Exceptions;
 using System.Web;
+using Satrabel.OpenContent.Components.Dnn;
 
 namespace Satrabel.OpenContent.Components.Rest.V2
 {
@@ -260,7 +261,7 @@ namespace Satrabel.OpenContent.Components.Rest.V2
                     if (dsItem != null)
                         createdByUserid = dsItem.CreatedByUserId;
                 }
-                if (!OpenContentUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, createdByUserid))
+                if (!DnnPermissionsUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, createdByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
@@ -337,7 +338,7 @@ namespace Satrabel.OpenContent.Components.Rest.V2
                     if (dsItem != null)
                         createdByUserid = dsItem.CreatedByUserId;
                 }
-                if (!OpenContentUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, createdByUserid))
+                if (!DnnPermissionsUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, createdByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
@@ -373,7 +374,7 @@ namespace Satrabel.OpenContent.Components.Rest.V2
                 IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
                 dsContext.Collection = collection;
-                if (!OpenContentUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, -1))
+                if (!DnnPermissionsUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, -1))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
@@ -421,7 +422,7 @@ namespace Satrabel.OpenContent.Components.Rest.V2
                     if (dsItem != null)
                         createdByUserid = dsItem.CreatedByUserId;
                 }
-                if (!OpenContentUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, createdByUserid))
+                if (!DnnPermissionsUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, createdByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }

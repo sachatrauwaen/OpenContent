@@ -2,17 +2,12 @@
 using System.Collections;
 using System.Linq;
 using System.Collections.Generic;
-using System.Web;
 using System.Web.UI;
-using DotNetNuke.Common;
 using DotNetNuke.Common.Utilities;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Entities.Tabs;
-using DotNetNuke.Security;
-using DotNetNuke.Security.Permissions;
 using DotNetNuke.Services.Localization;
-using DotNetNuke.Services.Personalization;
 using DotNetNuke.UI.Modules;
 using DotNetNuke.Web.Client.ClientResourceManagement;
 
@@ -118,55 +113,11 @@ namespace Satrabel.OpenContent.Components
                 jsfilename = file.UrlFilePath;
             }
             ClientResourceManager.RegisterScript(page, jsfilename, jsOrder);
-            //ClientResourceManager.RegisterScript(page, page.ResolveUrl(jsfilename), jsOrder);
         }
-
-        public static bool CheckIfEditable(this ModuleInfo activeModule, PortalSettings portalSettings)
-        {
-            bool isEditable;
-            //first check some weird Dnn issue
-            if (HttpContext.Current != null && HttpContext.Current.Request.IsAuthenticated)
-            {
-                var personalization = (PersonalizationInfo)HttpContext.Current.Items["Personalization"];
-                if (personalization != null && personalization.UserId == -1)
-                {
-                    //this should never happen. 
-                    //Let us make sure that the wrong value is no longer cached 
-                    HttpContext.Current.Items.Remove("Personalization");
-                }
-            }
-            bool blnPreview = (portalSettings.UserMode == PortalSettings.Mode.View);
-            if (Globals.IsHostTab(portalSettings.ActiveTab.TabID))
-            {
-                blnPreview = false;
-            }
-
-            bool blnHasModuleEditPermissions = HasEditRightsOnModule(activeModule);
-
-
-            if (blnPreview == false && blnHasModuleEditPermissions)
-            {
-                isEditable = true;
-            }
-            else
-            {
-                isEditable = false;
-            }
-            return isEditable;
-        }
-
-        public static bool HasEditRightsOnModule(this ModuleInfo activeModule)
-        {
-            bool blnHasModuleEditPermissions = false;
-            if (activeModule != null)
-            {
-                //DNN already checks SuperUser and Administrator
-                blnHasModuleEditPermissions = ModulePermissionController.HasModuleAccess(SecurityAccessLevel.Edit, "CONTENT", activeModule);
-            }
-            return blnHasModuleEditPermissions;
-        }
+        
 
         // for openform compatibility
+        [Obsolete("This method is obsolete since dec 2015; use DnnLanguageUtils.GetCurrentCultureCode() instead")]
         public static string GetCurrentCultureCode()
         {
             return DnnLanguageUtils.GetCurrentCultureCode();

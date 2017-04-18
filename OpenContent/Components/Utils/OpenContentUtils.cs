@@ -505,17 +505,7 @@ namespace Satrabel.OpenContent.Components
             return FolderUri.ReverseMapPath(path);
         }
 
-        public static bool HasEditPermissions(PortalSettings portalSettings, ModuleInfo module, string editrole, int createdByUserId)
-        {
-            return module.HasEditRightsOnModule() || HasEditRole(portalSettings, editrole, createdByUserId);
-        }
-        public static bool HasEditRole(PortalSettings portalSettings, string editrole, int createdByUserId)
-        {
-            if (string.IsNullOrEmpty(editrole)) return false;
-            if (editrole.ToLower() == "all") return true;
-            if (portalSettings.UserInfo.IsInRole(editrole) && (createdByUserId == -1 || createdByUserId == portalSettings.UserId)) return true;
-            return false;
-        }
+
         public static FieldConfig GetIndexConfig(TemplateManifest template)
         {
             return GetIndexConfig(template.Key.TemplateDir, template.Collection);
