@@ -26,7 +26,8 @@ namespace Satrabel.OpenContent.Components
 
         #region Commands
 
-        internal void AddContent(OpenContentInfo content)
+        [Obsolete("Do not use this method anymore. Instead, use the OpenContentDataSource.Add().")]
+        public void AddContent(OpenContentInfo content)
         {
             ClearDataCache(content);
             var json = content.JsonAsJToken;
@@ -69,7 +70,8 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
-        internal void UpdateContent(OpenContentInfo content)
+        [Obsolete("Do not use this method anymore. Instead, use the OpenContentDataSource.Add().")]
+        public void UpdateContent(OpenContentInfo content)
         {
             ClearDataCache(content);
             var json = content.JsonAsJToken;
@@ -135,7 +137,8 @@ namespace Satrabel.OpenContent.Components
                 });
         }
 
-        internal OpenContentInfo GetFirstContent(int moduleId)
+        [Obsolete("Do not use this method anymore. Instead, use the OpenContentDataSource.Get().")]
+        public OpenContentInfo GetFirstContent(int moduleId)
         {
             var cacheArgs = new CacheItemArgs(GetModuleIdCacheKey(moduleId) + "GetFirstContent", CacheTime);
             return DataCache.GetCachedData<OpenContentInfo>(cacheArgs, args =>
