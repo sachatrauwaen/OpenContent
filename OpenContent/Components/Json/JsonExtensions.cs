@@ -13,6 +13,7 @@ namespace Satrabel.OpenContent.Components.Json
             if (json == null) return true;
             return !json.HasValues;
         }
+
         public static bool IsEmpty(this JToken jtoken)
         {
             //tried using HasValues, but string value are not detected that way.
@@ -27,6 +28,13 @@ namespace Satrabel.OpenContent.Components.Json
             if (json == "{}") return true;
             return string.IsNullOrEmpty(json);
         }
+
+        public static bool IsNotEmpty(this JToken jtoken)
+        {
+            if (jtoken == null) return true;
+            return !jtoken.IsEmpty();
+        }
+
         public static bool Exists(this JObject json)
         {
             return !json.IsEmpty();

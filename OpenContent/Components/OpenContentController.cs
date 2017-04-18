@@ -10,6 +10,7 @@
 ' 
 */
 
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using DotNetNuke.Common.Utilities;
@@ -21,8 +22,8 @@ namespace Satrabel.OpenContent.Components
 {
     public class OpenContentController
     {
-        private const string CachePrefix = "Satrabel.OpenContent.Components.OpenContentController-";
-        private const int CacheTime = 60;
+        private const string CACHE_PREFIX = "Satrabel.OpenContent.Components.OpenContentController-";
+        private const int CACHE_TIME = 60;
 
         #region Commands
 
@@ -107,7 +108,7 @@ namespace Satrabel.OpenContent.Components
 
         internal IEnumerable<OpenContentInfo> GetContents(int moduleId)
         {
-            var cacheArgs = new CacheItemArgs(GetModuleIdCacheKey(moduleId, "GetContents"), CacheTime);
+            var cacheArgs = new CacheItemArgs(GetModuleIdCacheKey(moduleId, "GetContents"), CACHE_TIME);
             return DataCache.GetCachedData<IEnumerable<OpenContentInfo>>(cacheArgs, args =>
                 {
                     IEnumerable<OpenContentInfo> content;
@@ -123,7 +124,7 @@ namespace Satrabel.OpenContent.Components
 
         internal OpenContentInfo GetContent(int contentId)
         {
-            var cacheArgs = new CacheItemArgs(GetContentIdCacheKey(contentId), CacheTime);
+            var cacheArgs = new CacheItemArgs(GetContentIdCacheKey(contentId), CACHE_TIME);
             return DataCache.GetCachedData<OpenContentInfo>(cacheArgs, args =>
                 {
                     OpenContentInfo content;
@@ -140,7 +141,7 @@ namespace Satrabel.OpenContent.Components
         [Obsolete("Do not use this method anymore. Instead, use the OpenContentDataSource.Get().")]
         public OpenContentInfo GetFirstContent(int moduleId)
         {
-            var cacheArgs = new CacheItemArgs(GetModuleIdCacheKey(moduleId) + "GetFirstContent", CacheTime);
+            var cacheArgs = new CacheItemArgs(GetModuleIdCacheKey(moduleId) + "GetFirstContent", CACHE_TIME);
             return DataCache.GetCachedData<OpenContentInfo>(cacheArgs, args =>
                 {
                     OpenContentInfo content;
@@ -207,12 +208,12 @@ namespace Satrabel.OpenContent.Components
 
         private static string GetContentIdCacheKey(int contentId)
         {
-            return string.Concat(CachePrefix, "C-", contentId);
+            return string.Concat(CACHE_PREFIX, "C-", contentId);
         }
 
         private static string GetModuleIdCacheKey(int moduleId, string suffix = null)
         {
-            return string.Concat(CachePrefix, "M-", moduleId, string.IsNullOrEmpty(suffix) ? string.Empty : string.Concat("-", suffix));
+            return string.Concat(CACHE_PREFIX, "M-", moduleId, string.IsNullOrEmpty(suffix) ? string.Empty : string.Concat("-", suffix));
         }
 
         private static void ClearDataCache(OpenContentInfo content)
