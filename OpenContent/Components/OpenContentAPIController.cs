@@ -196,7 +196,10 @@ namespace Satrabel.OpenContent.Components
                 {
                     ds.UpdateData(dsContext, dsItem, json["form"]);
                 }
-                return Request.CreateResponse(HttpStatusCode.OK, "");
+                return Request.CreateResponse(HttpStatusCode.OK, new
+                {
+                    isValid = true
+                });
             }
             catch (Exception exc)
             {
@@ -764,7 +767,10 @@ namespace Satrabel.OpenContent.Components
                     var key = json["key"].ToString();
                     if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(form)) mc.UpdateModuleSetting(moduleId, key, form);
                 }
-                return Request.CreateResponse(HttpStatusCode.OK, "");
+                return Request.CreateResponse(HttpStatusCode.OK, new
+                {
+                    isValid = true
+                });
             }
             catch (Exception exc)
             {
@@ -789,7 +795,10 @@ namespace Satrabel.OpenContent.Components
                     if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(form))
                         mc.UpdateModuleSetting(moduleId, key, form);
                 }
-                return Request.CreateResponse(HttpStatusCode.OK, "");
+                return Request.CreateResponse(HttpStatusCode.OK, new
+                {
+                    isValid = true
+                });
             }
             catch (Exception exc)
             {
@@ -833,7 +842,10 @@ namespace Satrabel.OpenContent.Components
                         throw new Exception(mess, ex);
                     }
                 }
-                return Request.CreateResponse(HttpStatusCode.OK, "");
+                return Request.CreateResponse(HttpStatusCode.OK, new
+                {
+                    isValid = true                 
+                });
             }
             catch (Exception exc)
             {
