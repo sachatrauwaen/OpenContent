@@ -179,6 +179,8 @@ namespace Satrabel.OpenContent.Components.Render
             if (_optionsJson == null)
             {
                 var alpaca = _ds.GetAlpaca(_dsContext, true, true, false);
+
+                if (alpaca != null)
                 {
                     _schemaJson = alpaca["schema"] as JObject; // cache
                     _optionsJson = alpaca["options"] as JObject; // cache

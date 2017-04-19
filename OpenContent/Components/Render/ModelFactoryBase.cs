@@ -137,6 +137,8 @@ namespace Satrabel.OpenContent.Components.Render
             if (enhance && (_optionsJson == null || _schemaJson == null))
             {
                 var alpaca = _ds.GetAlpaca(_dsContext, true, true, false);
+
+                if (alpaca != null)
                 {
                     _schemaJson = alpaca["schema"] as JObject; // cache
                     _optionsJson = alpaca["options"] as JObject; // cache
@@ -325,13 +327,13 @@ namespace Satrabel.OpenContent.Components.Render
                 {
                     var alpaca = _ds.GetAlpaca(_dsContext, includeSchema, includeOptions, false);
                     // include SCHEMA info in the Model
-                    if (includeSchema)
+                    if (alpaca != null && includeSchema)
                     {
                         model["Schema"] = alpaca["schema"];
                         _schemaJson = alpaca["schema"] as JObject; // cache
                     }
                     // include OPTIONS info in the Model
-                    if (includeOptions)
+                    if (alpaca != null && includeOptions)
                     {
                         model["Options"] = alpaca["options"];
                         _optionsJson = alpaca["options"] as JObject; // cache

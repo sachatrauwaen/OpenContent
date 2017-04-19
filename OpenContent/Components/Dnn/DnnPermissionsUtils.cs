@@ -46,7 +46,6 @@ namespace Satrabel.OpenContent.Components.Dnn
 
             bool blnHasModuleEditPermissions = HasEditRightsOnModule(activeModule);
 
-
             if (blnPreview == false && blnHasModuleEditPermissions)
             {
                 isEditable = true;

@@ -132,7 +132,8 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         public static JObject JsonObject(JObject value, string key, JObject defaultValue)
         {
             if (value == null) return defaultValue;
-            if (string.IsNullOrEmpty(key)) return defaultValue;
+            if (string.IsNullOrEmpty(key) && value.IsEmpty()) return defaultValue;
+            if (string.IsNullOrEmpty(key)) return value;
 
             var extract = value[key] as JObject;
             if (extract == null) return defaultValue;

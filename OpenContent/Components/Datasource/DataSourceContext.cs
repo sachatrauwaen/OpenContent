@@ -10,7 +10,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         public string CurrentCultureCode { get; set; }
         public bool Index { get; set; }
         /// <summary>
-        /// Datasource Config comming from the manifest
+        /// Datasource Config coming from the manifest. To initialize the DataSource.
         /// </summary>
         public JObject Config { get; set; }
 
@@ -18,8 +18,9 @@ namespace Satrabel.OpenContent.Components.Datasource
         /// Gets or sets a value indicating whether this <see cref="DataSourceContext"/> is a single item.
         /// </summary>
         public bool Single { get; set; }
+
         /// <summary>
-        /// Options comming from the requester (data on the webapi call)
+        /// Options comming from the requester (data on the webapi call). Command or Query specific config.
         /// </summary>
         public JObject Options { get; set; }
 
