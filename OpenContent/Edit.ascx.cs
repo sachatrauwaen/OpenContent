@@ -37,6 +37,7 @@ namespace Satrabel.OpenContent
             AlpacaContext = new AlpacaContext(PortalId, ModuleId, itemId, ScopeWrapper.ClientID, hlCancel.ClientID, cmdSave.ClientID, cmdCopy.ClientID, hlDelete.ClientID, ddlVersions.ClientID);
             AlpacaContext.Bootstrap = bootstrap;
             AlpacaContext.Horizontal = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetEditLayout() == AlpacaLayoutEnum.BootstrapHorizontal;
+            AlpacaContext.IsNew = string.IsNullOrEmpty(itemId);
         }
         public AlpacaContext AlpacaContext { get; private set; }
     }
