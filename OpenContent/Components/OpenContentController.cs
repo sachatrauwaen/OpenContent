@@ -38,7 +38,7 @@ namespace Satrabel.OpenContent.Components
             }
             if (string.IsNullOrEmpty(content.Collection))
             {
-                content.Collection = AppConfig.DEFAULT_COLLECTION;
+                content.Collection = App.Config.DefaultCollection;
             }
             OpenContentVersion ver = new OpenContentVersion()
             {
@@ -157,7 +157,7 @@ namespace Satrabel.OpenContent.Components
 
         internal OpenContentInfo GetContent(int moduleId, string collection, string id)
         {
-            if (collection == AppConfig.DEFAULT_COLLECTION)
+            if (collection == App.Config.DefaultCollection)
             {
                 int intid = 0;
                 if (int.TryParse(id, out intid))

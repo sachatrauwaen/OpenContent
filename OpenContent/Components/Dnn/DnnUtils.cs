@@ -44,7 +44,7 @@ namespace Satrabel.OpenContent.Components
         public static IEnumerable<OpenContentModuleInfo> GetDnnOpenContentModules(int portalId)
         {
             ModuleController mc = new ModuleController();
-            ArrayList modules = mc.GetModulesByDefinition(portalId, AppConfig.OPENCONTENT);
+            ArrayList modules = mc.GetModulesByDefinition(portalId, App.Config.Opencontent);
             return modules.OfType<ModuleInfo>().Select(module => new OpenContentModuleInfo(module));
         }
 

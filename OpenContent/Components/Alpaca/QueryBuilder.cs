@@ -244,34 +244,34 @@ namespace Satrabel.OpenContent.Components.Alpaca
         private void AddWorkflowFilter(FilterGroup filter)
         {
 
-            if (_indexConfig?.Fields != null && _indexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishStatus))
+            if (_indexConfig?.Fields != null && _indexConfig.Fields.ContainsKey(App.Config.FieldNamePublishStatus))
             {
                 filter.AddRule(new FilterRule()
                 {
-                    Field = AppConfig.FieldNamePublishStatus,
+                    Field = App.Config.FieldNamePublishStatus,
                     Value = new StringRuleValue("published"),
                     FieldType = FieldTypeEnum.KEY
                 });
             }
-            if (_indexConfig?.Fields != null && _indexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishStartDate))
+            if (_indexConfig?.Fields != null && _indexConfig.Fields.ContainsKey(App.Config.FieldNamePublishStartDate))
             {
                 //DateTime startDate = DateTime.MinValue;
                 //DateTime endDate = DateTime.Today;
                 filter.AddRule(new FilterRule()
                 {
-                    Field = AppConfig.FieldNamePublishStartDate,
+                    Field = App.Config.FieldNamePublishStartDate,
                     Value = new DateTimeRuleValue(DateTime.Today),
                     FieldOperator = OperatorEnum.LESS_THEN_OR_EQUALS,
                     FieldType = FieldTypeEnum.DATETIME
                 });
             }
-            if (_indexConfig?.Fields != null && _indexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishEndDate))
+            if (_indexConfig?.Fields != null && _indexConfig.Fields.ContainsKey(App.Config.FieldNamePublishEndDate))
             {
                 //DateTime startDate = DateTime.Today;
                 //DateTime endDate = DateTime.MaxValue;
                 filter.AddRule(new FilterRule()
                 {
-                    Field = AppConfig.FieldNamePublishEndDate,
+                    Field = App.Config.FieldNamePublishEndDate,
                     Value = new DateTimeRuleValue(DateTime.Today),
                     FieldOperator = OperatorEnum.GREATER_THEN_OR_EQUALS,
                     FieldType = FieldTypeEnum.DATETIME

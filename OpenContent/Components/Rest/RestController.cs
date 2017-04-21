@@ -33,7 +33,7 @@ namespace Satrabel.OpenContent.Components.Rest
             try
             {
                 //if (entity == "items")
-                var collection = AppConfig.DEFAULT_COLLECTION;
+                var collection = App.Config.DefaultCollection;
                 OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
 
                 JObject reqOptions = null;
@@ -100,7 +100,7 @@ namespace Satrabel.OpenContent.Components.Rest
             {
                 var collection = entity;
                 //if (entity == "items")
-                collection = AppConfig.DEFAULT_COLLECTION; // backward compatibility
+                collection = App.Config.DefaultCollection; // backward compatibility
                 RestSelect restSelect = new RestSelect()
                 {
                     PageIndex = pageIndex,

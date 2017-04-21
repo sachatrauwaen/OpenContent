@@ -8,7 +8,7 @@ namespace Satrabel.OpenContent.Components
     /// </summary>
     public static class Log
     {
-        public static ILogAdapter Logger => AppConfig.Instance.LogAdapter;
+        public static ILogAdapter Logger => App.Instance.Config.LogAdapter;
 
         public static void LogServiceResult(HttpResponseMessage response, string responsemessage = "")
         {

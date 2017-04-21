@@ -28,20 +28,20 @@ namespace Satrabel.OpenContent.Components
     {
         public static void HydrateDefaultFields(this OpenContentInfo content, FieldConfig indexConfig)
         {
-            if (indexConfig.HasField(AppConfig.FieldNamePublishStartDate)
-                   && content.JsonAsJToken != null && content.JsonAsJToken[AppConfig.FieldNamePublishStartDate] == null)
+            if (indexConfig.HasField(App.Config.FieldNamePublishStartDate)
+                   && content.JsonAsJToken != null && content.JsonAsJToken[App.Config.FieldNamePublishStartDate] == null)
             {
-                content.JsonAsJToken[AppConfig.FieldNamePublishStartDate] = DateTime.MinValue;
+                content.JsonAsJToken[App.Config.FieldNamePublishStartDate] = DateTime.MinValue;
             }
-            if (indexConfig.HasField(AppConfig.FieldNamePublishEndDate)
-                && content.JsonAsJToken != null && content.JsonAsJToken[AppConfig.FieldNamePublishEndDate] == null)
+            if (indexConfig.HasField(App.Config.FieldNamePublishEndDate)
+                && content.JsonAsJToken != null && content.JsonAsJToken[App.Config.FieldNamePublishEndDate] == null)
             {
-                content.JsonAsJToken[AppConfig.FieldNamePublishEndDate] = DateTime.MaxValue;
+                content.JsonAsJToken[App.Config.FieldNamePublishEndDate] = DateTime.MaxValue;
             }
-            if (indexConfig.HasField(AppConfig.FieldNamePublishStatus)
-                && content.JsonAsJToken != null && content.JsonAsJToken[AppConfig.FieldNamePublishStatus] == null)
+            if (indexConfig.HasField(App.Config.FieldNamePublishStatus)
+                && content.JsonAsJToken != null && content.JsonAsJToken[App.Config.FieldNamePublishStatus] == null)
             {
-                content.JsonAsJToken[AppConfig.FieldNamePublishStatus] = "published";
+                content.JsonAsJToken[App.Config.FieldNamePublishStatus] = "published";
             }
         }
 
@@ -562,25 +562,25 @@ namespace Satrabel.OpenContent.Components
 
             bool permissions = true;
             //publish status , dates
-            if (IndexConfig?.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishStatus))
+            if (IndexConfig?.Fields != null && IndexConfig.Fields.ContainsKey(App.Config.FieldNamePublishStatus))
             {
-                permissions = dsItem.Data[AppConfig.FieldNamePublishStatus] != null &&
-                    dsItem.Data[AppConfig.FieldNamePublishStatus].ToString() == "published";
-                if (!permissions) raison = AppConfig.FieldNamePublishStatus + $" being {dsItem.Data[AppConfig.FieldNamePublishStatus]}";
+                permissions = dsItem.Data[App.Config.FieldNamePublishStatus] != null &&
+                    dsItem.Data[App.Config.FieldNamePublishStatus].ToString() == "published";
+                if (!permissions) raison = App.Config.FieldNamePublishStatus + $" being {dsItem.Data[App.Config.FieldNamePublishStatus]}";
             }
-            if (permissions && IndexConfig?.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishStartDate))
+            if (permissions && IndexConfig?.Fields != null && IndexConfig.Fields.ContainsKey(App.Config.FieldNamePublishStartDate))
             {
-                permissions = dsItem.Data[AppConfig.FieldNamePublishStartDate] != null &&
-                                dsItem.Data[AppConfig.FieldNamePublishStartDate].Type == JTokenType.Date &&
-                                ((DateTime)dsItem.Data[AppConfig.FieldNamePublishStartDate]) <= DateTime.Today;
-                if (!permissions) raison = AppConfig.FieldNamePublishStartDate + $" being {dsItem.Data[AppConfig.FieldNamePublishStartDate]}";
+                permissions = dsItem.Data[App.Config.FieldNamePublishStartDate] != null &&
+                                dsItem.Data[App.Config.FieldNamePublishStartDate].Type == JTokenType.Date &&
+                                ((DateTime)dsItem.Data[App.Config.FieldNamePublishStartDate]) <= DateTime.Today;
+                if (!permissions) raison = App.Config.FieldNamePublishStartDate + $" being {dsItem.Data[App.Config.FieldNamePublishStartDate]}";
             }
-            if (permissions && IndexConfig?.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishEndDate))
+            if (permissions && IndexConfig?.Fields != null && IndexConfig.Fields.ContainsKey(App.Config.FieldNamePublishEndDate))
             {
-                permissions = dsItem.Data[AppConfig.FieldNamePublishEndDate] != null &&
-                                dsItem.Data[AppConfig.FieldNamePublishEndDate].Type == JTokenType.Date &&
-                                ((DateTime)dsItem.Data[AppConfig.FieldNamePublishEndDate]) >= DateTime.Today;
-                if (!permissions) raison = AppConfig.FieldNamePublishEndDate + $" being {dsItem.Data[AppConfig.FieldNamePublishEndDate]}";
+                permissions = dsItem.Data[App.Config.FieldNamePublishEndDate] != null &&
+                                dsItem.Data[App.Config.FieldNamePublishEndDate].Type == JTokenType.Date &&
+                                ((DateTime)dsItem.Data[App.Config.FieldNamePublishEndDate]) >= DateTime.Today;
+                if (!permissions) raison = App.Config.FieldNamePublishEndDate + $" being {dsItem.Data[App.Config.FieldNamePublishEndDate]}";
             }
             if (permissions)
             {

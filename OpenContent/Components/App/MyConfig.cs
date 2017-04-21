@@ -7,22 +7,12 @@ using Satrabel.OpenContent.Components.Lucene;
 
 namespace Satrabel.OpenContent.Components
 {
-    public class AppConfig : IAppConfig
+    public class MyConfig : IAppConfig
     {
-        private static readonly Lazy<IAppConfig> Lazy = new Lazy<IAppConfig>(() => new AppConfig());
-
-        public static IAppConfig Instance => Lazy.Value;
-
-        private AppConfig()
-        {
-        }
-
-        public string LuceneIndexFolder => @"App_Data\OpenContent\lucene_index";
-
 
         #region Constants
 
-        internal static string FieldNamePublishStartDate
+        public string FieldNamePublishStartDate
         {
             get
             {
@@ -31,7 +21,7 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
-        internal static string FieldNamePublishEndDate
+        public string FieldNamePublishEndDate
         {
             get
             {
@@ -40,7 +30,7 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
-        internal static string FieldNamePublishStatus
+        public string FieldNamePublishStatus
         {
             get
             {
@@ -49,17 +39,33 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
-        public const string OPENCONTENT = "OpenContent";
+        public string Opencontent
+        {
+            get
+            {
+                const string CONSTANT = "OpenContent";
+                return CONSTANT;
+            }
+        }
 
-        public const string DEFAULT_COLLECTION = "Items";
+        public string DefaultCollection
+        {
+            get
+            {
+                const string CONSTANT = "Items";
+                return CONSTANT;
+            }
+        }
+
 
         #endregion
 
-
         #region Adapters config
 
+        public string LuceneIndexFolder => @"App_Data\OpenContent\lucene_index";
+
         public ILocalizationAdapter LocalizationAdapter => new DnnLocalizationAdapter();
-        public ILogAdapter LogAdapter => DnnLogAdapter.GetLogAdapter(OPENCONTENT);
+        public ILogAdapter LogAdapter => DnnLogAdapter.GetLogAdapter(Opencontent);
         public IIndexAdapter IndexAdapter => new LuceneIndexAdapter();
 
         #endregion

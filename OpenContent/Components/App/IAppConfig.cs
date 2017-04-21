@@ -1,4 +1,5 @@
-﻿using Satrabel.OpenContent.Components.Indexing;
+﻿using System.Drawing.Printing;
+using Satrabel.OpenContent.Components.Indexing;
 using Satrabel.OpenContent.Components.Localization;
 
 namespace Satrabel.OpenContent.Components
@@ -9,5 +10,10 @@ namespace Satrabel.OpenContent.Components
         IIndexAdapter IndexAdapter { get; }
         ILocalizationAdapter LocalizationAdapter { get; }
         string LuceneIndexFolder { get; }
+        string FieldNamePublishStartDate { get; }
+        string FieldNamePublishEndDate { get; }
+        string FieldNamePublishStatus { get; }
+        string Opencontent { get; }
+        string DefaultCollection { get; }
     }
 }

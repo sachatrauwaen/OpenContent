@@ -13,7 +13,7 @@ namespace Satrabel.OpenContent.Components.Datasource
 {
     public class OpenContentDataSource : IDataSource, IDataIndex
     {
-        public virtual string Name => AppConfig.OPENCONTENT;
+        public virtual string Name => App.Config.Opencontent;
 
         #region Queries
         public virtual bool Any(DataSourceContext context)

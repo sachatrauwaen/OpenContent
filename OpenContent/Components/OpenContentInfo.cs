@@ -44,7 +44,7 @@ namespace Satrabel.OpenContent.Components
         {
             get
             {
-                if (Collection == AppConfig.DEFAULT_COLLECTION)
+                if (Collection == App.Config.DefaultCollection)
                     return ContentId.ToString();
                 else
                     return Key;

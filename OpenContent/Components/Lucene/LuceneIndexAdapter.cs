@@ -57,7 +57,7 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         internal LuceneIndexAdapter()
         {
-            _serviceInstance = new LuceneService(AppConfig.Instance.LuceneIndexFolder, JsonMappingUtils.GetAnalyser());
+            _serviceInstance = new LuceneService(App.Instance.Config.LuceneIndexFolder, JsonMappingUtils.GetAnalyser());
         }
 
         public static void ClearInstance()
