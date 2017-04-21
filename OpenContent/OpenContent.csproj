@@ -365,13 +365,6 @@
     <Compile Include="Components\Common\Utils.cs" />
     <Compile Include="Components\UrlRewriter\OpenContentUrlRule.cs" />
     <Compile Include="Components\UrlRewriter\OpenContentUrlProvider.cs" />
-    <Compile Include="EditCollection.ascx.cs">
-      <DependentUpon>EditCollection.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EditCollection.ascx.designer.cs">
-      <DependentUpon>EditCollection.ascx</DependentUpon>
-    </Compile>
     <Compile Include="EditFormSettings.ascx.cs">
       <DependentUpon>EditFormSettings.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -563,7 +556,6 @@
     <Content Include="css\glyphicons\fonts\glyphicons-regular.svg" />
     <Content Include="css\glyphicons\fonts\glyphicons-social-regular.svg" />
     <Content Include="css\glyphicons\glyphicons.css" />
-    <Content Include="EditCollection.ascx" />
     <Content Include="EditFormSettings.ascx" />
     <Content Include="js\bootstrap\css\bootstrap-theme.css" />
     <Content Include="js\bootstrap\css\bootstrap-theme.min.css" />
