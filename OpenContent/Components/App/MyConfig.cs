@@ -67,6 +67,7 @@ namespace Satrabel.OpenContent.Components
         public ILocalizationAdapter LocalizationAdapter => new DnnLocalizationAdapter();
         public ILogAdapter LogAdapter => DnnLogAdapter.GetLogAdapter(Opencontent);
         public IIndexAdapter IndexAdapter => new LuceneIndexAdapter();
+        public ICacheAdapter CacheAdapter => new DnnCacheAdapter();
 
         #endregion
     }

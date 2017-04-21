@@ -9,7 +9,7 @@ namespace Satrabel.OpenContent.Components.Datasource
     public class DataSourceManager
     {
 
-        private static readonly ILogAdapter Logger = App.Instance.Config.LogAdapter.GetLogAdapter(typeof(DataSourceManager));
+        private static readonly ILogAdapter Logger = App.Config.LogAdapter.GetLogAdapter(typeof(DataSourceManager));
         private static NaiveLockingList<IDataSource> _dataSources;
 
         public static void RegisterDataSources()

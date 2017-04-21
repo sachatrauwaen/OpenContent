@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
-using DotNetNuke.Common.Utilities;
-using DotNetNuke.Services.Cache;
 
 namespace Satrabel.OpenContent.Components.Manifest
 {
@@ -61,12 +59,13 @@ namespace Satrabel.OpenContent.Components.Manifest
                 if (file.FileExists)
                 {
                     string cacheKey = folder.UrlFolder + "manifest.json";
-                    manifest = (Manifest)DataCache.GetCache(cacheKey);
+                    
+                    manifest = (Manifest)App.Config.CacheAdapter.GetCache(cacheKey);
                     if (manifest == null)
                     {
                         string content = File.ReadAllText(file.PhysicalFilePath);
                         manifest = JsonConvert.DeserializeObject<Manifest>(content);
-                        DataCache.SetCache(cacheKey, manifest, new DNNCacheDependency(file.PhysicalFilePath));
+                        App.Config.CacheAdapter.SetCache(cacheKey, manifest, file.PhysicalFilePath);
                     }
                 }
                 return manifest;

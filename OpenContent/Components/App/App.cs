@@ -8,14 +8,12 @@ namespace Satrabel.OpenContent.Components
     public class App : AppBase
     {
         private static readonly Lazy<AppBase> Lazy = new Lazy<AppBase>(() => new App());
-
-        public static AppBase Instance => Lazy.Value;
+        public new static IAppConfig Config => Lazy.Value.Config;
 
         private App()
         {
             AppBase.Init(new MyConfig());
         }
 
-        public new static IAppConfig Config => App.Instance.Config;
     }
 }

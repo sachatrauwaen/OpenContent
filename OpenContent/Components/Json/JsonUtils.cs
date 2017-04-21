@@ -9,7 +9,6 @@ using Satrabel.OpenContent.Components.Datasource;
 using System.Collections;
 using System.Collections.Generic;
 using DotNetNuke.Common.Utilities;
-using DotNetNuke.Services.Cache;
 
 namespace Satrabel.OpenContent.Components.Json
 {
@@ -31,7 +30,7 @@ namespace Satrabel.OpenContent.Components.Json
                 json = fileUri.ToJObject() as JObject;
                 if (json != null)
                 {
-                    DataCache.SetCache(cacheKey, json, new DNNCacheDependency(fileUri.PhysicalFilePath));
+                 App.Config.CacheAdapter.SetCache(cacheKey, json, fileUri.PhysicalFilePath);
                 }
             }
             return json;

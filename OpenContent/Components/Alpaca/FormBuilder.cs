@@ -3,8 +3,6 @@ using System.IO;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Json;
 using Newtonsoft.Json;
-using DotNetNuke.Common.Utilities;
-using DotNetNuke.Services.Cache;
 using Satrabel.OpenContent.Components.Indexing;
 
 namespace Satrabel.OpenContent.Components.Alpaca
@@ -271,9 +269,9 @@ namespace Satrabel.OpenContent.Components.Alpaca
         }
         public FieldConfig BuildIndex(string key)
         {
-            string prefix =  (string.IsNullOrEmpty(key) || key == "Items") ? "" : key + "-";
+            string prefix = (string.IsNullOrEmpty(key) || key == "Items") ? "" : key + "-";
             string cacheKey = _templateUri.UrlFolder + prefix + "index.json";
-            FieldConfig newConfig = (FieldConfig)DataCache.GetCache(cacheKey);
+            FieldConfig newConfig = (FieldConfig)App.Config.CacheAdapter.GetCache(cacheKey);
             if (newConfig == null)
             {
                 var file = new FileUri(_templateUri.UrlFolder, prefix + "index.json");
@@ -281,7 +279,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 {
                     string content = File.ReadAllText(file.PhysicalFilePath);
                     newConfig = JsonConvert.DeserializeObject<FieldConfig>(content);
-                    DataCache.SetCache(cacheKey, newConfig, new DNNCacheDependency(file.PhysicalFilePath));
+                    App.Config.CacheAdapter.SetCache(cacheKey, newConfig, file.PhysicalFilePath);
                     return newConfig;
                 }
                 else
@@ -431,7 +429,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
 
                     var schemaFile = new FileUri(_templateUri.UrlFolder, prefix + "schema.json");
                     var optionsFile = new FileUri(_templateUri.UrlFolder, prefix + "options.json");
-                    DataCache.SetCache(cacheKey, newConfig, new DNNCacheDependency(new[] { schemaFile.PhysicalFilePath, optionsFile.PhysicalFilePath }));
+                    App.Config.CacheAdapter.SetCache(cacheKey, newConfig, new[] { schemaFile.PhysicalFilePath, optionsFile.PhysicalFilePath });
                 }
             }
 
