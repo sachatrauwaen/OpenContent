@@ -411,7 +411,6 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 FormHelpers.RegisterForm(page, sourceFolder, view, ref _jsOrder);
 
             });
-
             hbs.RegisterHelper("registereditform", (writer, context, parameters) =>
             {
                 string prefix = "";
@@ -420,6 +419,10 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     prefix = parameters[0].ToString();
                 }
                 FormHelpers.RegisterEditForm(page, sourceFolder, PortalSettings.Current.PortalId, prefix, ref _jsOrder);
+            });
+            hbs.RegisterHelper("registerservicesframework", (writer, context, parameters) =>
+            {
+                DotNetNuke.Framework.ServicesFramework.Instance.RequestAjaxScriptSupport();
             });
 
         }
