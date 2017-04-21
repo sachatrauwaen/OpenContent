@@ -6,13 +6,14 @@ using Satrabel.OpenContent.Components.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DotNetNuke.Services.Journal;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.Logging;
 using Satrabel.OpenContent.Components.Form;
 
 namespace Satrabel.OpenContent.Components.Datasource
 {
-    public class OpenContentDataSource : IDataSource
+    public class OpenContentDataSource : IDataSource, IDataIndex
     {
         public virtual string Name => AppConfig.OPENCONTENT;
 
@@ -127,7 +128,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             }
             if (content == null)
             {
-                Log.Logger.WarnFormat("Item not shown because no content item found. Id [{0}]. Context TabId: [{1}], ModuleId: [{2}]", id, GetTabId(context), GetModuleId(context));
+                Log.Logger.Warn($"Item not shown because no content item found. Id [{id}]. Context TabId: [{GetTabId(context)}], ModuleId: [{GetModuleId(context)}]");
                 LogContext.Log(context.ActiveModuleId, "Get DataItem", "Result", "not item found with id " + id);
             }
             else if (content.ModuleId == GetModuleId(context) && content.Collection == context.Collection)
@@ -222,7 +223,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                     }
                     else
                     {
-                        Log.Logger.DebugFormat("OpenContentDataSource.GetAll() ContentItem not found [{0}]", item);
+                        Log.Logger.Debug($"OpenContentDataSource.GetAll() ContentItem not found [{item}]");
                     }
                 }
                 return new DefaultDataItems()
@@ -281,33 +282,51 @@ namespace Satrabel.OpenContent.Components.Datasource
             {
                 ModuleId = GetModuleId(context),
                 Collection = context.Collection,
-                Title = data["Title"] == null ? "" : data["Title"].ToString(),
+                Title = data["Title"]?.ToString() ?? "",
                 Json = data.ToString(),
                 CreatedByUserId = context.UserId,
                 CreatedOnDate = DateTime.Now,
                 LastModifiedByUserId = context.UserId,
                 LastModifiedOnDate = DateTime.Now
             };
-            ctrl.AddContent(content, context.Index, indexConfig);
+            ctrl.AddContent(content); 
+
+            //Index the content item
+            if (context.Index)
+            {
+                LuceneController.Instance.Add(content, indexConfig);
+                LuceneController.Instance.Store.Commit();
+            }
         }
         public virtual void Update(DataSourceContext context, IDataItem item, JToken data)
         {
             OpenContentController ctrl = new OpenContentController();
             var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection);
             var content = (OpenContentInfo)item.Item;
-            content.Title = data["Title"] == null ? "" : data["Title"].ToString();
+            content.Title = data["Title"]?.ToString() ?? "";
             content.Json = data.ToString();
             content.LastModifiedByUserId = context.UserId;
             content.LastModifiedOnDate = DateTime.Now;
-            ctrl.UpdateContent(content, context.Index, indexConfig);
-            ClearCache(context);
+            ctrl.UpdateContent(content);
+            if (context.Index)
+            {
+                content.HydrateDefaultFields(indexConfig);
+                LuceneController.Instance.Update(content, indexConfig);
+                LuceneController.Instance.Store.Commit();
+            }
+            ClearUrlRewriterCache(context);
         }
         public virtual void Delete(DataSourceContext context, IDataItem item)
         {
             OpenContentController ctrl = new OpenContentController();
             var content = (OpenContentInfo)item.Item;
-            ctrl.DeleteContent(content, context.Index);
-            ClearCache(context);
+            ctrl.DeleteContent(content);
+            if (context.Index)
+            {
+                LuceneController.Instance.Delete(content);
+                LuceneController.Instance.Store.Commit();
+            }
+            ClearUrlRewriterCache(context);
         }
 
         /// <summary>
@@ -336,8 +355,16 @@ namespace Satrabel.OpenContent.Components.Datasource
                     LastModifiedByUserId = context.UserId,
                     LastModifiedOnDate = DateTime.Now
                 };
-                ctrl.AddContent(content, context.Index, indexConfig);
-                return FormUtils.FormSubmit(data as JObject);                
+                ctrl.AddContent(content);
+
+                //Index the content item
+                if (context.Index)
+                {
+                    LuceneController.Instance.Add(content, indexConfig);
+                    LuceneController.Instance.Store.Commit();
+                }
+
+                return FormUtils.FormSubmit(data as JObject);
             }
             return null;
         }
@@ -376,13 +403,21 @@ namespace Satrabel.OpenContent.Components.Datasource
         /// <param name="data">The data.</param>
         public virtual void UpdateData(DataSourceContext context, IDataItem item, JToken data)
         {
-            AdditionalDataController ctrl = new AdditionalDataController();
+            var ctrl = new AdditionalDataController();
             var additionalData = (AdditionalDataInfo)item.Item;
             additionalData.Json = data.ToString();
             additionalData.LastModifiedByUserId = context.UserId;
             additionalData.LastModifiedOnDate = DateTime.Now;
             ctrl.UpdateData(additionalData);
-            ClearCache(context);
+            ClearUrlRewriterCache(context);
+        }
+
+        public void Reindex(DataSourceContext context)
+        {
+            string scope = OpenContentInfo.GetScope(context.ModuleId, context.Collection);
+            var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection); //todo index is being build from schema & options. But they should be provided by the provider, not directly from the files
+            OpenContentController occ = new OpenContentController();
+            LuceneController.Instance.ReIndexModuleData(occ.GetContents(context.ModuleId, context.Collection), indexConfig, scope);
         }
 
         #endregion
@@ -413,8 +448,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             };
         }
 
-
-        private static void ClearCache(DataSourceContext context)
+        private static void ClearUrlRewriterCache(DataSourceContext context)
         {
             UrlRewriter.UrlRulesCaching.Remove(context.PortalId, context.ModuleId);
         }

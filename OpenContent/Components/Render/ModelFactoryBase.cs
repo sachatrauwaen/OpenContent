@@ -349,6 +349,12 @@ namespace Satrabel.OpenContent.Components.Render
                     && OpenContentUtils.HasEditPermissions(_portalSettings, _module.ViewModule, editRole, createdByUser);
         }
 
+        protected bool HasEditPermissions(int createdByUser)
+        {
+            string editRole = _manifest.GetEditRole();
+            return OpenContentUtils.HasEditPermissions(_portalSettings, _module.ViewModule, editRole, createdByUser);
+        }
+
         protected string GetCurrentCultureCode()
         {
             if (string.IsNullOrEmpty(_cultureCode))

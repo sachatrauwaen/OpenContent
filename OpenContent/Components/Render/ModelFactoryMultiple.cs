@@ -115,7 +115,7 @@ namespace Satrabel.OpenContent.Components.Render
                         }
                         var editStatus = !_manifest.DisableEdit && IsEditAllowed(item.CreatedByUserId);
                         context["IsEditable"] = editStatus;
-                        if (editStatus)
+                        if (HasEditPermissions(item.CreatedByUserId))
                         {
                             context["EditUrl"] = DnnUrlUtils.EditUrl("id", item.Id, _module.ViewModule.ModuleID, _portalSettings);
                         }

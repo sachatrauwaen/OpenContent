@@ -29,22 +29,13 @@ namespace Satrabel.OpenContent.Components
 
         #region Commands
 
-        public void AddContent(OpenContentInfo content, bool index, FieldConfig indexConfig)
+        internal void AddContent(OpenContentInfo content)
         {
-            ClearCache(content);
+            ClearDataCache(content);
             var json = content.JsonAsJToken;
             if (string.IsNullOrEmpty(content.Key))
             {
-                if (json["_id"] != null)
-                {
-                    content.Key = json["_id"].ToString();
-                }
-                else
-                {
-                    content.Key = ObjectId.NewObjectId().ToString();
-                    //json["_id"] = content.Id;
-                    //content.Json = json.ToString();
-                }
+                content.Key = json["_id"]?.ToString() ?? ObjectId.NewObjectId().ToString();
             }
             if (string.IsNullOrEmpty(content.Collection))
             {
@@ -67,22 +58,11 @@ namespace Satrabel.OpenContent.Components
                 rep.Insert(content);
                 ModuleController.SynchronizeModule(content.ModuleId);
             }
-            if (index)
-            {
-                LuceneController.Instance.Add(content, indexConfig);
-                LuceneController.Instance.Store.Commit();
-            }
         }
 
-        [Obsolete("This method is obsolete since dec 2015; use AddContent(OpenContentInfo content, bool index) instead")]
-        public void AddContent(OpenContentInfo content)
+        internal void DeleteContent(OpenContentInfo content)
         {
-            AddContent(content, false, null);
-        }
-
-        public void DeleteContent(OpenContentInfo content, bool index)
-        {
-            ClearCache(content);
+            ClearDataCache(content);
 
             using (IDataContext ctx = DataContext.Instance())
             {
@@ -90,19 +70,12 @@ namespace Satrabel.OpenContent.Components
                 rep.Delete(content);
                 ModuleController.SynchronizeModule(content.ModuleId);
             }
-            if (index)
-            {
-                LuceneController.Instance.Delete(content);
-                LuceneController.Instance.Store.Commit();
-            }
         }
 
-        public void UpdateContent(OpenContentInfo content, bool index, FieldConfig indexConfig)
+        internal void UpdateContent(OpenContentInfo content)
         {
-            ClearCache(content);
+            ClearDataCache(content);
             var json = content.JsonAsJToken;
-            //json["_id"] = content.Id;
-            //content.Json = json.ToString();
             OpenContentVersion ver = new OpenContentVersion()
             {
                 Json = json,
@@ -127,26 +100,13 @@ namespace Satrabel.OpenContent.Components
                 rep.Update(content);
                 ModuleController.SynchronizeModule(content.ModuleId);
             }
-            if (index)
-            {
-                content.HydrateDefaultFields(indexConfig);
-                LuceneController.Instance.Update(content, indexConfig);
-                LuceneController.Instance.Store.Commit();
-            }
         }
-
-        [Obsolete("This method is obsolete since dec 2015; use UpdateContent(OpenContentInfo content, bool index) instead")]
-        public void UpdateContent(OpenContentInfo content)
-        {
-            UpdateContent(content, false, null);
-        }
-
 
         #endregion
 
         #region Queries
 
-        public IEnumerable<OpenContentInfo> GetContents(int moduleId)
+        internal IEnumerable<OpenContentInfo> GetContents(int moduleId)
         {
             var cacheArgs = new CacheItemArgs(GetModuleIdCacheKey(moduleId, "GetContents"), CacheTime);
             return DataCache.GetCachedData<IEnumerable<OpenContentInfo>>(cacheArgs, args =>
@@ -162,7 +122,7 @@ namespace Satrabel.OpenContent.Components
                 });
         }
 
-        public OpenContentInfo GetContent(int contentId)
+        internal OpenContentInfo GetContent(int contentId)
         {
             var cacheArgs = new CacheItemArgs(GetContentIdCacheKey(contentId), CacheTime);
             return DataCache.GetCachedData<OpenContentInfo>(cacheArgs, args =>
@@ -178,7 +138,7 @@ namespace Satrabel.OpenContent.Components
                 });
         }
 
-        public OpenContentInfo GetFirstContent(int moduleId)
+        internal OpenContentInfo GetFirstContent(int moduleId)
         {
             var cacheArgs = new CacheItemArgs(GetModuleIdCacheKey(moduleId) + "GetFirstContent", CacheTime);
             return DataCache.GetCachedData<OpenContentInfo>(cacheArgs, args =>
@@ -194,7 +154,7 @@ namespace Satrabel.OpenContent.Components
                 });
         }
 
-        public OpenContentInfo GetContent(int moduleId, string collection, string id)
+        internal OpenContentInfo GetContent(int moduleId, string collection, string id)
         {
             if (collection == AppConfig.DEFAULT_COLLECTION)
             {
@@ -209,7 +169,7 @@ namespace Satrabel.OpenContent.Components
                 return GetContentByKey(moduleId, collection, id);
             }
         }
-        private OpenContentInfo GetContentByKey(int moduleId, string collection, string key)
+        internal OpenContentInfo GetContentByKey(int moduleId, string collection, string key)
         {
             IEnumerable<OpenContentInfo> documents;
             using (IDataContext ctx = DataContext.Instance())
@@ -219,7 +179,7 @@ namespace Satrabel.OpenContent.Components
             }
             return documents.SingleOrDefault();
         }
-        public IEnumerable<OpenContentInfo> GetContents(int moduleId, string collection)
+        internal IEnumerable<OpenContentInfo> GetContents(int moduleId, string collection)
         {
             IEnumerable<OpenContentInfo> documents;
             using (IDataContext ctx = DataContext.Instance())
@@ -230,7 +190,7 @@ namespace Satrabel.OpenContent.Components
             return documents;
         }
 
-        public IEnumerable<OpenContentInfo> GetContents(int[] contentIds)
+        internal IEnumerable<OpenContentInfo> GetContents(int[] contentIds)
         {
             IEnumerable<OpenContentInfo> documents;
             using (IDataContext ctx = DataContext.Instance())
@@ -255,7 +215,7 @@ namespace Satrabel.OpenContent.Components
             return string.Concat(CachePrefix, "M-", moduleId, string.IsNullOrEmpty(suffix) ? string.Empty : string.Concat("-", suffix));
         }
 
-        private static void ClearCache(OpenContentInfo content)
+        private static void ClearDataCache(OpenContentInfo content)
         {
             if (content.ContentId > 0) DataCache.ClearCache(GetContentIdCacheKey(content.ContentId));
             if (content.ModuleId > 0) DataCache.ClearCache(GetModuleIdCacheKey(content.ModuleId));

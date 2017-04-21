@@ -265,7 +265,6 @@ namespace Satrabel.OpenContent.Components.Rest
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
-                //var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
                 if (dsItem == null)
                 {
                     ds.Add(dsContext, value.Properties().First().Value as JObject);
@@ -274,19 +273,7 @@ namespace Satrabel.OpenContent.Components.Rest
                 {
                     ds.Update(dsContext, dsItem, value.Properties().First().Value as JObject);
                 }
-                //if (json["form"]["ModuleTitle"] != null && json["form"]["ModuleTitle"].Type == JTokenType.String)
-                //{
-                //    string moduleTitle = json["form"]["ModuleTitle"].ToString();
-                //    OpenContentUtils.UpdateModuleTitle(ActiveModule, moduleTitle);
-                //}
-                //else if (json["form"]["ModuleTitle"] != null && json["form"]["ModuleTitle"].Type == JTokenType.Object)
-                //{
-                //    if (json["form"]["ModuleTitle"][DnnUtils.GetCurrentCultureCode()] != null)
-                //    {
-                //        string moduleTitle = json["form"]["ModuleTitle"][DnnUtils.GetCurrentCultureCode()].ToString();
-                //        OpenContentUtils.UpdateModuleTitle(ActiveModule, moduleTitle);
-                //    }
-                //}
+
                 return Request.CreateResponse(HttpStatusCode.OK, "");
             }
             catch (Exception exc)

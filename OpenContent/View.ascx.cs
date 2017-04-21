@@ -11,44 +11,31 @@
 
 using System;
 using System.Linq;
-using System.Collections.Generic;
 using System.Diagnostics;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Modules.Actions;
 using DotNetNuke.Services.Localization;
 using DotNetNuke.Security;
-using Satrabel.OpenContent.Components.Razor;
-using System.IO;
-using DotNetNuke.Services.Exceptions;
 using System.Web.UI;
-using System.Web.Hosting;
-using Newtonsoft.Json.Linq;
 using DotNetNuke.Web.Client.ClientResourceManagement;
 using DotNetNuke.Web.Client;
 using Satrabel.OpenContent.Components;
 using Satrabel.OpenContent.Components.Json;
-using Satrabel.OpenContent.Components.Handlebars;
 using DotNetNuke.Framework;
 using DotNetNuke.Common.Utilities;
 using DotNetNuke.Entities.Portals;
-using Satrabel.OpenContent.Components.Dynamic;
 using DotNetNuke.Security.Permissions;
 using Satrabel.OpenContent.Components.Manifest;
-using Satrabel.OpenContent.Components.Datasource;
-using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Logging;
 using Newtonsoft.Json;
 using System.Text;
-using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.Render;
 using System.Web;
-using System.Web.UI.WebControls;
-using DotNetNuke.Common;
-using DotNetNuke.Web.UI.WebControls;
 using Satrabel.OpenContent.Components.Dnn;
 using DotNetNuke.Entities.Tabs;
 using DotNetNuke.Services.Personalization;
 using DotNetNuke.Framework.JavaScriptLibraries;
+using Localization = DotNetNuke.Services.Localization.Localization;
 
 #endregion
 
@@ -271,7 +258,7 @@ namespace Satrabel.OpenContent
                         }
                         catch (Exception ex)
                         {
-                            //Log.Logger.ErrorFormat("Failed to automaticly set the permission. It already exists? tab={0}, moduletitle={1} ", objModule.TabID ,objModule.ModuleTitle);
+                            //Log.Logger.Error($"Failed to automaticly set the permission. It already exists? tab={0}, moduletitle={1} ", objModule.TabID ,objModule.ModuleTitle);
                         }
                     }
                 }
@@ -442,7 +429,7 @@ namespace Satrabel.OpenContent
                 if (TemplateDefined && !string.IsNullOrEmpty(AddEditControl))
                 {
                     Actions.Add(ModuleContext.GetNextActionID(),
-                                Localization.GetString("AddEntity.Action", LocalResourceFile),
+                                LocalizationHelpers.GetString("AddEntity.Action", LocalResourceFile),
                                 ModuleActionType.EditContent,
                                 "",
                                 "",
@@ -579,7 +566,7 @@ namespace Satrabel.OpenContent
                     false);
                 /*
                 Actions.Add(ModuleContext.GetNextActionID(),
-                           Localization.GetString("EditGlobalSettings.Action", LocalResourceFile),
+                           LocalizationHelpers.GetString("EditGlobalSettings.Action", LocalResourceFile),
                            ModuleActionType.ContentOptions,
                            "",
                            "~/DesktopModules/OpenContent/images/settings.png",

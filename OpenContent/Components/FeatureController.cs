@@ -23,6 +23,7 @@ using DotNetNuke.Entities.Portals;
 using System.IO;
 using System.Web.Hosting;
 using DotNetNuke.Common.Internal;
+using DotNetNuke.Entities.Users;
 using DotNetNuke.Services.Search.Controllers;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Dnn;
@@ -52,58 +53,55 @@ namespace Satrabel.OpenContent.Components
             xml += "</opencontent>";
             return xml;
         }
-        public void ImportModule(int moduleId, string Content, string version, int userId)
+        public void ImportModule(int moduleId, string content, string version, int userId)
         {
             var module = new OpenContentModuleInfo(moduleId, Null.NullInteger);
-            var index = module.Settings.Template.Manifest.Index;
-            var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template);
-            OpenContentController ctrl = new OpenContentController();
-            XmlNode xml = Globals.GetContent(Content, "opencontent");
+            //var index = module.Settings.Template.Manifest.Index;
+            //var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template);
+            var dataSource = new OpenContentDataSource();
+            XmlNode xml = Globals.GetContent(content, "opencontent");
             foreach (XmlNode item in xml.SelectNodes("item"))
             {
                 XmlNode json = item.SelectSingleNode("json");
                 XmlNode collection = item.SelectSingleNode("collection");
                 XmlNode key = item.SelectSingleNode("key");
-                var contentInfo = new OpenContentInfo()
-                {
-                    ModuleId = moduleId,
-                    Collection = collection?.InnerText ?? "",
-                    Key = key?.InnerText ?? "",
-                    Json = item.InnerText,
-                    CreatedByUserId = userId,
-                    CreatedOnDate = DateTime.Now,
-                    LastModifiedByUserId = userId,
-                    LastModifiedOnDate = DateTime.Now,
-                    Title = ""
-                };
-                ctrl.AddContent(contentInfo, index, indexConfig);
+
+                var dsContext = OpenContentUtils.CreateDataContext(module, userId);
+                dsContext.Collection = collection?.InnerText ?? "";
+                //dsContext.Key = key?.InnerText ?? "";
+
+                JToken data = item.InnerText;
+                data["_id"]= key?.InnerText ?? "";
+
+                dataSource.Add(dsContext, data);
+                //dataSource.Add(contentInfo, index, indexConfig);
             }
         }
 
         #region ModuleSearchBase
         public override IList<SearchDocument> GetModifiedSearchDocuments(ModuleInfo modInfo, DateTime beginDateUtc)
         {
-            Log.Logger.TraceFormat("Indexing content Module {0} - Tab {1} - indexing from {3}", modInfo.ModuleID, modInfo.TabID, modInfo.CultureCode, beginDateUtc);
+            Log.Logger.Trace($"Indexing content Module {modInfo.ModuleID} - Tab {modInfo.TabID} - Culture {modInfo.CultureCode}- indexing from {beginDateUtc}");
             var searchDocuments = new List<SearchDocument>();
 
             //If module is marked as "don't index" then return no results
             if (modInfo.ModuleSettings.GetValue("AllowIndex", "True") == "False")
             {
-                Log.Logger.TraceFormat("Indexing content {0}|{1} - NOT - MODULE Indexing disabled", modInfo.ModuleID, modInfo.CultureCode);
+                Log.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} - NOT - MODULE Indexing disabled");
                 return searchDocuments;
             }
 
             //If tab of the module is marked as "don't index" then return no results
             if (modInfo.ParentTab.TabSettings.GetValue("AllowIndex", "True") == "False")
             {
-                Log.Logger.TraceFormat("Indexing content {0}|{1} - NOT - TAB Indexing disabled", modInfo.ModuleID, modInfo.CultureCode);
+                Log.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} - NOT - TAB Indexing disabled");
                 return searchDocuments;
             }
 
             //If tab is marked as "inactive" then return no results
             if (modInfo.ParentTab.DisableLink)
             {
-                Log.Logger.TraceFormat("Indexing content {0}|{1} - NOT - TAB is inactive", modInfo.ModuleID, modInfo.CultureCode);
+                Log.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} - NOT - TAB is inactive");
                 return searchDocuments;
             }
 
@@ -124,13 +122,13 @@ namespace Satrabel.OpenContent.Components
             IDataItems contentList = ds.GetAll(dsContext, null);
             if (!contentList.Items.Any())
             {
-                Log.Logger.TraceFormat("Indexing content {0}|{1} - NOT - No content found", modInfo.ModuleID, modInfo.CultureCode);
+                Log.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} - NOT - No content found");
             }
             foreach (IDataItem content in contentList.Items)
             {
                 if (content == null)
                 {
-                    Log.Logger.TraceFormat("Indexing content {0}|{1} - NOT - Content is Null", modInfo.ModuleID, modInfo.CultureCode);
+                    Log.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} - NOT - Content is Null");
                 }
                 else if (content.LastModifiedOnDate.ToUniversalTime() > beginDateUtc 
                       && content.LastModifiedOnDate.ToUniversalTime() < DateTime.UtcNow)
@@ -151,12 +149,12 @@ namespace Satrabel.OpenContent.Components
                     {
                         searchDoc = CreateSearchDocument(modInfo, settings, content.Data, content.Id, "", content.Title, JsonToSearchableString(content.Data), content.LastModifiedOnDate.ToUniversalTime());
                         searchDocuments.Add(searchDoc);
-                        Log.Logger.TraceFormat("Indexing content {0}|{5} -  OK!  {1} ({2}) of {3}", modInfo.ModuleID, searchDoc.Title, modInfo.TabID, content.LastModifiedOnDate.ToUniversalTime(), modInfo.CultureCode);
+                        Log.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} -  OK!  {searchDoc.Title} ({modInfo.TabID}) of {content.LastModifiedOnDate.ToUniversalTime()}");
                     }
                 }
                 else
                 {
-                    Log.Logger.TraceFormat("Indexing content {0}|{1} - NOT - No need to index: lastmod {2} ", modInfo.ModuleID, modInfo.CultureCode, content.LastModifiedOnDate.ToUniversalTime());
+                    Log.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} - NOT - No need to index: lastmod {content.LastModifiedOnDate.ToUniversalTime()} ");
                 }
             }
             return searchDocuments;
@@ -181,7 +179,7 @@ namespace Satrabel.OpenContent.Components
                 description = JsonToSearchableString(singleLanguage);
             }
             var searchDoc = CreateSearchDocument(moduleInfo, settings, singleLanguage, content.Id, culture, title.ToString(), description.ToString(), content.LastModifiedOnDate.ToUniversalTime());
-            Log.Logger.DebugFormat("Indexing content {0}|{5} -  OK!  {1} ({2})  {4}", moduleInfo.ModuleID, searchDoc.Title, moduleInfo.TabID, "", content.LastModifiedOnDate.ToUniversalTime(), culture);
+            Log.Logger.Debug($"Indexing content {moduleInfo.ModuleID}|{culture} -  OK!  {searchDoc.Title} ({ moduleInfo.TabID})  {content.LastModifiedOnDate.ToUniversalTime()}");
             return searchDoc;
         }
 

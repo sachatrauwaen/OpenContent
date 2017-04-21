@@ -28,7 +28,6 @@ using System.Web;
 using System.Web.Http;
 using DotNetNuke.Common;
 using DotNetNuke.Entities.Host;
-using DotNetNuke.Instrumentation;
 using DotNetNuke.Services.FileSystem;
 using DotNetNuke.Web.Api;
 using DotNetNuke.Web.Api.Internal;
@@ -42,7 +41,7 @@ namespace Satrabel.OpenContent.Components
 {
     public class FileUploadController : DnnApiController
     {
-        private static readonly ILog Logger = LoggerSource.Instance.GetLogger(typeof(FileUploadController));
+        private static readonly ILogAdapter Logger = AppConfig.Instance.LogAdapter.GetLogAdapter(typeof(FileUploadController));
         private readonly IFileManager _fileManager = FileManager.Instance;
         private readonly IFolderManager _folderManager = FolderManager.Instance;
 

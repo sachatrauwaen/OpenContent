@@ -21,10 +21,10 @@ using DotNetNuke.Security;
 using Satrabel.OpenContent.Components.Json;
 using DotNetNuke.Entities.Modules;
 using System.Collections.Generic;
+using DotNetNuke.Services.Localization;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.Datasource;
-using DotNetNuke.Services.Localization;
 
 #endregion
 
@@ -54,10 +54,8 @@ namespace Satrabel.OpenContent.Components
             try
             {
                 var moduleInfo = new OpenContentModuleInfo(ActiveModule);
-
                 IDataSource ds = DataSourceManager.GetDataSource(moduleInfo.Settings.Manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(moduleInfo);
-
                 IDataItem dsItem = null;
                 if (moduleInfo.IsListMode())
                 {
@@ -73,6 +71,27 @@ namespace Satrabel.OpenContent.Components
                 }
                 int createdByUserid = -1;
                 var json = ds.GetAlpaca(dsContext, true, true, true);
+                if (ds is IDataActions)
+                {
+                    var actions = ((IDataActions)ds).GetActions(dsContext, dsItem);
+                    if (json["options"] == null) json["options"] = new JObject();
+                    if (json["options"]["form"] == null) json["options"]["form"] = new JObject();
+                    if (json["options"]["form"]["buttons"] == null) json["options"]["form"]["buttons"] = new JObject();
+                    var buttons = json["options"]["form"]["buttons"] as JObject;
+                    var newButtons = new JObject();
+                    foreach (var act in actions)
+                    {
+                        var but = buttons[act.Name];
+                        if (but == null)
+                        {
+                            but = new JObject();
+                        }
+                        but["after"] = act.AfterExecute;
+                        newButtons[act.Name] = but;
+
+                    }
+                    json["options"]["form"]["buttons"] = newButtons;
+                }
                 if (dsItem != null)
                 {
                     json["data"] = dsItem.Data;
@@ -96,7 +115,7 @@ namespace Satrabel.OpenContent.Components
                 }
 
                 var context = new JObject();
-                var currentLocale = DnnLanguageUtils.GetCurrentLocale(PortalSettings.PortalId);  
+                var currentLocale = DnnLanguageUtils.GetCurrentLocale(PortalSettings.PortalId);
                 context["culture"] = currentLocale.Code;  //todo why not use  DnnLanguageUtils.GetCurrentCultureCode() ???
                 context["defaultCulture"] = LocaleController.Instance.GetDefaultLocale(PortalSettings.PortalId).Code;
                 context["numberDecimalSeparator"] = currentLocale.Culture.NumberFormat.NumberDecimalSeparator;
@@ -177,7 +196,10 @@ namespace Satrabel.OpenContent.Components
                 {
                     ds.UpdateData(dsContext, dsItem, json["form"]);
                 }
-                return Request.CreateResponse(HttpStatusCode.OK, "");
+                return Request.CreateResponse(HttpStatusCode.OK, new
+                {
+                    isValid = true
+                });
             }
             catch (Exception exc)
             {
@@ -387,12 +409,12 @@ namespace Satrabel.OpenContent.Components
                             var array = json as JArray;
                             if (array != null)
                             {
-                                res.AddRange(array.Select(childItem => 
+                                res.AddRange(array.Select(childItem =>
                                     new LookupResultDTO
-                                        {
-                                            value = string.IsNullOrEmpty(req.valueField) || childItem[req.valueField] == null ? "" : childItem[req.valueField].ToString(),
-                                            text = string.IsNullOrEmpty(req.textField) || childItem[req.textField] == null ? "" : childItem[req.textField].ToString()
-                                        }
+                                    {
+                                        value = string.IsNullOrEmpty(req.valueField) || childItem[req.valueField] == null ? "" : childItem[req.valueField].ToString(),
+                                        text = string.IsNullOrEmpty(req.textField) || childItem[req.textField] == null ? "" : childItem[req.textField].ToString()
+                                    }
                                     )
                                 );
                             }
@@ -565,15 +587,26 @@ namespace Satrabel.OpenContent.Components
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
+                try
+                {
+                    if (dsItem == null)
+                    {
+                        ds.Add(dsContext, json["form"] as JObject);
+                    }
+                    else
+                    {
+                        ds.Update(dsContext, dsItem, json["form"] as JObject);
+                    }
+                }
+                catch (DataNotValidException ex)
+                {
+                    return Request.CreateResponse(HttpStatusCode.OK, new
+                    {
+                        isValid = false,
+                        validMessage = ex.Message
+                    });
+                }
 
-                if (dsItem == null)
-                {
-                    ds.Add(dsContext, json["form"] as JObject);
-                }
-                else
-                {
-                    ds.Update(dsContext, dsItem, json["form"] as JObject);
-                }
                 if (json["form"]["ModuleTitle"] != null && json["form"]["ModuleTitle"].Type == JTokenType.String)
                 {
                     string moduleTitle = json["form"]["ModuleTitle"].ToString();
@@ -587,7 +620,73 @@ namespace Satrabel.OpenContent.Components
                         OpenContentUtils.UpdateModuleTitle(ActiveModule, moduleTitle);
                     }
                 }
-                return Request.CreateResponse(HttpStatusCode.OK, "");
+                return Request.CreateResponse(HttpStatusCode.OK, new
+                {
+                    isValid = true
+                });
+            }
+            catch (Exception exc)
+            {
+                Log.Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
+
+
+        [HttpPost]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
+        public HttpResponseMessage Action(SubmitDTO req)
+        {
+            try
+            {
+                var module = new OpenContentModuleInfo(ActiveModule);
+                string editRole = module.Settings.Template.Manifest.GetEditRole();
+                int createdByUserid = -1;
+
+                IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
+                var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
+
+                IDataItem dsItem = null;
+                if (module.IsListMode())
+                {
+                    if (req.id != null)
+                    {
+                        var itemId = req.id;
+                        dsItem = ds.Get(dsContext, itemId);
+                        if (dsItem != null)
+                            createdByUserid = dsItem.CreatedByUserId;
+                    }
+                }
+                else
+                {
+                    dsContext.Single = true;
+                    dsItem = ds.Get(dsContext, null);
+                    if (dsItem != null)
+                        createdByUserid = dsItem.CreatedByUserId;
+                }
+
+                //todo: can't we do some of these checks at the beginning of this method to fail faster?
+                if (!OpenContentUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, createdByUserid))
+                {
+                    return Request.CreateResponse(HttpStatusCode.Unauthorized);
+                }
+                try
+                {
+                    var res = ds.Action(dsContext, req.action, dsItem, req.form);
+                    return Request.CreateResponse(HttpStatusCode.OK, new
+                    {
+                        isValid = true,
+                        result = res
+                    });
+                }
+                catch (DataNotValidException ex)
+                {
+                    return Request.CreateResponse(HttpStatusCode.OK, new
+                    {
+                        isValid = false,
+                        validMessage = ex.Message
+                    });
+                }
             }
             catch (Exception exc)
             {
@@ -668,7 +767,10 @@ namespace Satrabel.OpenContent.Components
                     var key = json["key"].ToString();
                     if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(form)) mc.UpdateModuleSetting(moduleId, key, form);
                 }
-                return Request.CreateResponse(HttpStatusCode.OK, "");
+                return Request.CreateResponse(HttpStatusCode.OK, new
+                {
+                    isValid = true
+                });
             }
             catch (Exception exc)
             {
@@ -693,7 +795,10 @@ namespace Satrabel.OpenContent.Components
                     if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(form))
                         mc.UpdateModuleSetting(moduleId, key, form);
                 }
-                return Request.CreateResponse(HttpStatusCode.OK, "");
+                return Request.CreateResponse(HttpStatusCode.OK, new
+                {
+                    isValid = true
+                });
             }
             catch (Exception exc)
             {
@@ -737,7 +842,10 @@ namespace Satrabel.OpenContent.Components
                         throw new Exception(mess, ex);
                     }
                 }
-                return Request.CreateResponse(HttpStatusCode.OK, "");
+                return Request.CreateResponse(HttpStatusCode.OK, new
+                {
+                    isValid = true                 
+                });
             }
             catch (Exception exc)
             {

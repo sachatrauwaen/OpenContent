@@ -35,6 +35,11 @@ namespace Satrabel.OpenContent.Components
             return LocaleController.Instance.GetCurrentLocale(PortalSettings.Current.PortalId).Code;
         }
 
+        public static string GetCurrentCultureCodeDirect(int portalId)
+        {
+            return LocaleController.Instance.GetCurrentLocale(portalId).Code;
+        }
+
         public static CultureInfo GetCurrentCulture()
         {
             return new CultureInfo(GetCurrentCultureCode());

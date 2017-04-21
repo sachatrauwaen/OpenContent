@@ -73,8 +73,8 @@ namespace Satrabel.OpenContent.Components.Manifest
             }
             catch (Exception ex)
             {
-                Log.Logger.ErrorFormat("Failed to load manifest from folder {0}. Error:{1}", folder.UrlFolder, ex.ToString());
-                throw ex;
+                Log.Logger.Error($"Failed to load manifest from folder {folder.UrlFolder}. Error: {ex}");
+                throw;
             }
         }
 

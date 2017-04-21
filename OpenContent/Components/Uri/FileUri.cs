@@ -103,7 +103,7 @@ namespace Satrabel.OpenContent.Components
                 throw new ArgumentNullException(nameof(path));
             }
             string appPath = HostingEnvironment.MapPath("~");
-            string file = string.Format("{0}", path.Replace(appPath, "").Replace("\\", "/"));
+            string file = $"{path.Replace(appPath, "").Replace("\\", "/")}";
             //if (!res.StartsWith("/")) res = "/" + res;
             if (file != null)
             {

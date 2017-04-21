@@ -224,3 +224,10 @@ select.oc-ddl-versions {
  margin-top:5px;
  margin-bottom:5px;
 }
+
+
+.alpaca-disabled {
+    cursor: not-allowed;
+    box-shadow: none;
+    opacity: 0.65;
+}

@@ -17,7 +17,6 @@ using System.Net.Http;
 using System.Web.Http;
 using DotNetNuke.Web.Api;
 using System.IO;
-using DotNetNuke.Instrumentation;
 using DotNetNuke.Security;
 using DotNetNuke.Entities.Tabs;
 using DotNetNuke.Common;
@@ -36,7 +35,7 @@ namespace Satrabel.OpenContent.Components
 
     public class DnnEntitiesAPIController : DnnApiController
     {
-        private static readonly ILog Logger = LoggerSource.Instance.GetLogger(typeof(DnnEntitiesAPIController));
+        private static readonly ILogAdapter Logger = AppConfig.Instance.LogAdapter.GetLogAdapter(typeof(DnnEntitiesAPIController));
 
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]

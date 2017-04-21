@@ -13,7 +13,6 @@ using System;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Common;
 using System.Web.UI.WebControls;
-using DotNetNuke.Services.Localization;
 using System.IO;
 using Satrabel.OpenContent.Components;
 using DotNetNuke.Services.FileSystem;
@@ -21,6 +20,7 @@ using DotNetNuke.Entities.Host;
 using DotNetNuke.Common.Utilities;
 using ICSharpCode.SharpZipLib.Zip;
 using System.Web;
+using Satrabel.OpenContent.Components.Localization;
 using Satrabel.OpenContent.Components.Rss;
 using Satrabel.OpenContent.Components.Manifest;
 
@@ -136,22 +136,22 @@ namespace Satrabel.OpenContent
             catch (PermissionsNotMetException)
             {
                 //Logger.Warn(exc);
-                strMessage += "<br />" + string.Format(Localization.GetString("InsufficientFolderPermission"), GetModuleSubDir() + "/Templates");
+                strMessage += "<br />" + string.Format(Localizer.Instance.GetString("InsufficientFolderPermission"), GetModuleSubDir() + "/Templates");
             }
             catch (NoSpaceAvailableException)
             {
                 //Logger.Warn(exc);
-                strMessage += "<br />" + string.Format(Localization.GetString("DiskSpaceExceeded"), fuFile.FileName);
+                strMessage += "<br />" + string.Format(Localizer.Instance.GetString("DiskSpaceExceeded"), fuFile.FileName);
             }
             catch (InvalidFileExtensionException)
             {
                 //Logger.Warn(exc);
-                strMessage += "<br />" + string.Format(Localization.GetString("RestrictedFileType"), fuFile.FileName, Host.AllowedExtensionWhitelist.ToDisplayString());
+                strMessage += "<br />" + string.Format(Localizer.Instance.GetString("RestrictedFileType"), fuFile.FileName, Host.AllowedExtensionWhitelist.ToDisplayString());
             }
             catch (Exception)
             {
                 //Logger.Error(exc);
-                strMessage += "<br />" + string.Format(Localization.GetString("SaveFileError"), fuFile.FileName);
+                strMessage += "<br />" + string.Format(Localizer.Instance.GetString("SaveFileError"), fuFile.FileName);
             }
             if (string.IsNullOrEmpty(strMessage))
                 DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "Import Successful", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.GreenSuccess);
@@ -210,22 +210,22 @@ namespace Satrabel.OpenContent
             catch (PermissionsNotMetException)
             {
                 //Logger.Warn(exc);
-                strMessage += "<br />" + string.Format(Localization.GetString("InsufficientFolderPermission"), GetModuleSubDir() + "/Templates");
+                strMessage += "<br />" + string.Format(LocalizationHelpers.GetString("InsufficientFolderPermission"), GetModuleSubDir() + "/Templates");
             }
             catch (NoSpaceAvailableException)
             {
                 //Logger.Warn(exc);
-                strMessage += "<br />" + string.Format(Localization.GetString("DiskSpaceExceeded"), fuFile.FileName);
+                strMessage += "<br />" + string.Format(LocalizationHelpers.GetString("DiskSpaceExceeded"), fuFile.FileName);
             }
             catch (InvalidFileExtensionException)
             {
                 //Logger.Warn(exc);
-                strMessage += "<br />" + string.Format(Localization.GetString("RestrictedFileType"), fuFile.FileName, Host.AllowedExtensionWhitelist.ToDisplayString());
+                strMessage += "<br />" + string.Format(LocalizationHelpers.GetString("RestrictedFileType"), fuFile.FileName, Host.AllowedExtensionWhitelist.ToDisplayString());
             }
             catch (Exception)
             {
                 //Logger.Error(exc);
-                strMessage += "<br />" + string.Format(Localization.GetString("SaveFileError"), fuFile.FileName);
+                strMessage += "<br />" + string.Format(LocalizationHelpers.GetString("SaveFileError"), fuFile.FileName);
             }
              */
             if (string.IsNullOrEmpty(strMessage))
