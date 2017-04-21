@@ -189,6 +189,7 @@
     <Compile Include="Components\Form\GenSettingsDTO.cs" />
     <Compile Include="Components\Form\NotificationDTO.cs" />
     <Compile Include="Components\Form\SettingsDTO.cs" />
+    <Compile Include="Components\IAppConfig.cs" />
     <Compile Include="Components\Indexing\FieldConfig.cs" />
     <Compile Include="Components\Indexing\FieldConfigUtils.cs" />
     <Compile Include="Components\Lucene\SelectQueryDefinition.cs" />

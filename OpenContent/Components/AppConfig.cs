@@ -7,11 +7,11 @@ using Satrabel.OpenContent.Components.Lucene;
 
 namespace Satrabel.OpenContent.Components
 {
-    public class AppConfig
+    public class AppConfig : IAppConfig
     {
-        private static readonly Lazy<AppConfig> Lazy = new Lazy<AppConfig>(() => new AppConfig());
+        private static readonly Lazy<IAppConfig> Lazy = new Lazy<IAppConfig>(() => new AppConfig());
 
-        public static AppConfig Instance => Lazy.Value;
+        public static IAppConfig Instance => Lazy.Value;
 
         private AppConfig()
         {
@@ -64,5 +64,4 @@ namespace Satrabel.OpenContent.Components
 
         #endregion
     }
-
 }
