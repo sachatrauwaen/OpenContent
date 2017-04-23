@@ -23,7 +23,7 @@ namespace Satrabel.OpenContent.Components.Json
         public static JToken LoadJsonFromFile(string filename)
         {
             string cacheKey = filename;
-            var json = (JObject)DataCache.GetCache(cacheKey);
+            var json = App.Config.CacheAdapter.GetCache<JObject>(cacheKey);
             if (json == null)
             {
                 var fileUri = new FileUri(filename);

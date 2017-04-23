@@ -70,30 +70,6 @@ namespace Satrabel.OpenContent.Components
 
         public bool FileExists => File.Exists(PhysicalFilePath);
 
-        //private static string SanitizeFilenameKeepingTheOptionalVersion(string fileName)
-        //{
-        //    if (string.IsNullOrEmpty(fileName)) return fileName;
-        //    var version = fileName.TrimStart("?ver=");
-        //    var cleanfile = SanitizeFilename(fileName.TrimEnd("?ver="));
-
-        //    return cleanfile + version;
-        //}
-
-        //private static string SanitizeFilename(string fileName)
-        //{
-        //    if (string.IsNullOrEmpty(fileName)) return fileName;
-        //    var cleanfile = fileName;
-        //    foreach (var c in Path.GetInvalidFileNameChars())
-        //    {
-        //        cleanfile = cleanfile.Replace(c, '-');
-        //    }
-        //    if (!fileName.Equals(cleanfile, StringComparison.InvariantCultureIgnoreCase))
-        //    {
-        //        Log.Logger.InfoFormat("Original filename [{0}] was Sanitized into [{1}]", fileName, cleanfile);
-        //    }
-        //    return cleanfile;
-        //}
-
         #region Static Utils
 
         public static FileUri FromPath(string path)
@@ -102,14 +78,13 @@ namespace Satrabel.OpenContent.Components
             {
                 throw new ArgumentNullException(nameof(path));
             }
-            string appPath = HostingEnvironment.MapPath("~");
-            string file = $"{path.Replace(appPath, "").Replace("\\", "/")}";
-            //if (!res.StartsWith("/")) res = "/" + res;
-            if (file != null)
+            var appPath = HostingEnvironment.MapPath("~");
+            if (appPath == null)
             {
-                return new FileUri(file);
+                throw new Exception("Failed to create FileUri. Could not determine AppPath.");
             }
-            return null;
+            var file = $"{path.Replace(appPath, "").Replace("\\", "/")}";
+            return new FileUri(file);
         }
 
         #endregion

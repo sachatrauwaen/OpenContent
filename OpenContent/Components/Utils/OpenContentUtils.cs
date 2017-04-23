@@ -12,6 +12,7 @@ using System.Linq;
 using System.Net;
 using System.Web.Hosting;
 using System.Web.UI.WebControls;
+using DotNetNuke.Entities.Users;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Dnn;
 using Satrabel.OpenContent.Components.Localization;
@@ -64,7 +65,7 @@ namespace Satrabel.OpenContent.Components
             return portalSettings.ActiveTab.SkinPath + moduleSubDir + "/Templates/";
         }
 
-        public static List<System.Web.UI.WebControls.ListItem> GetTemplates(PortalSettings portalSettings, int moduleId, string selectedTemplate, string moduleSubDir)
+        public static List<ListItem> GetTemplates(PortalSettings portalSettings, int moduleId, string selectedTemplate, string moduleSubDir)
         {
             return GetTemplates(portalSettings, moduleId, new FileUri(selectedTemplate), moduleSubDir);
         }
@@ -79,9 +80,9 @@ namespace Satrabel.OpenContent.Components
         /// <returns></returns>
         /// <remarks>Used by OpenForms</remarks>
         [Obsolete("This method is obsolete since dec 2015; use GetTemplatesFiles(PortalSettings portalSettings, int moduleId, TemplateManifest selectedTemplate, string moduleSubDir) instead")]
-        public static List<ListItem> GetTemplatesFiles(PortalSettings portalSettings, int moduleId, string selectedTemplate, string moduleSubDir)
+        public static List<ListItem> ListOfTemplatesFiles(PortalSettings portalSettings, int moduleId, string selectedTemplate, string moduleSubDir)
         {
-            return GetTemplatesFiles(portalSettings, moduleId, new FileUri(selectedTemplate).ToTemplateManifest(), moduleSubDir);
+            return ListOfTemplatesFiles(portalSettings, moduleId, new FileUri(selectedTemplate).ToTemplateManifest(), moduleSubDir);
         }
 
         [Obsolete("This method is obsolete since dec 2015; use GetTemplatesFiles(PortalSettings portalSettings, int moduleId, TemplateManifest selectedTemplate, string moduleSubDir) instead")]
@@ -102,14 +103,13 @@ namespace Satrabel.OpenContent.Components
         /// <param name="selectedTemplate">The selected template.</param>
         /// <param name="moduleSubDir">The module sub dir.</param>
         /// <returns></returns>
-        public static List<ListItem> GetTemplatesFiles(PortalSettings portalSettings, int moduleId, TemplateManifest selectedTemplate, string moduleSubDir)
+        public static List<ListItem> ListOfTemplatesFiles(PortalSettings portalSettings, int moduleId, TemplateManifest selectedTemplate, string moduleSubDir)
         {
-            return GetTemplatesFiles(portalSettings, moduleId, selectedTemplate, moduleSubDir, null);
+            return ListOfTemplatesFiles(portalSettings, moduleId, selectedTemplate, moduleSubDir, null);
         }
 
-        public static List<ListItem> GetTemplatesFiles(PortalSettings portalSettings, int moduleId, TemplateManifest selectedTemplate, string moduleSubDir, FileUri otherModuleTemplate)
+        public static List<ListItem> ListOfTemplatesFiles(PortalSettings portalSettings, int moduleId, TemplateManifest selectedTemplate, string moduleSubDir, FileUri otherModuleTemplate)
         {
-            //bool otherModuleSkinTemplate = otherModuleTemplate != null && otherModuleTemplate.PhysicalFilePath.Contains(HostingEnvironment.MapPath(GetSkinTemplateFolder(portalSettings, moduleSubDir)));
             string basePath = HostingEnvironment.MapPath(GetSiteTemplateFolder(portalSettings, moduleSubDir));
             if (!Directory.Exists(basePath))
             {
@@ -132,10 +132,9 @@ namespace Satrabel.OpenContent.Components
             foreach (var dir in dirs)
             {
                 string templateCat = "Site";
-                //string dirName = Path.GetFileNameWithoutExtension(dir);
                 string dirName = dir.Substring(basePath.Length);
                 int modId = -1;
-                if (int.TryParse(dirName, out modId))
+                if (Int32.TryParse(dirName, out modId))
                 {
                     // if numeric directory name --> module template
                     if (modId == moduleId)
@@ -158,7 +157,7 @@ namespace Satrabel.OpenContent.Components
                     foreach (string manifestFile in manifestfiles)
                     {
                         FileUri manifestFileUri = FileUri.FromPath(manifestFile);
-                        var manifest = ManifestUtils.GetFileManifest(manifestFileUri);
+                        var manifest = ManifestUtils.LoadManifestFileFromCacheOrDisk(manifestFileUri);
                         if (manifest != null && manifest.HasTemplates)
                         {
                             manifestTemplateFound = true;
@@ -166,7 +165,7 @@ namespace Satrabel.OpenContent.Components
                             {
                                 FileUri templateUri = new FileUri(manifestFileUri.FolderPath, template.Key);
                                 string templateName = Path.GetDirectoryName(manifestFile).Substring(basePath.Length).Replace("\\", " / ");
-                                if (!string.IsNullOrEmpty(template.Value.Title))
+                                if (!String.IsNullOrEmpty(template.Value.Title))
                                 {
                                     templateName = templateName + " - " + template.Value.Title;
                                 }
@@ -240,7 +239,7 @@ namespace Satrabel.OpenContent.Components
                         foreach (string manifestFile in manifestfiles)
                         {
                             FileUri manifestFileUri = FileUri.FromPath(manifestFile);
-                            var manifest = ManifestUtils.GetFileManifest(manifestFileUri);
+                            var manifest = ManifestUtils.LoadManifestFileFromCacheOrDisk(manifestFileUri);
                             if (manifest != null && manifest.HasTemplates)
                             {
                                 manifestTemplateFound = true;
@@ -248,7 +247,7 @@ namespace Satrabel.OpenContent.Components
                                 {
                                     FileUri templateUri = new FileUri(manifestFileUri.FolderPath, template.Key);
                                     string templateName = Path.GetDirectoryName(manifestFile).Substring(basePath.Length).Replace("\\", " / ");
-                                    if (!string.IsNullOrEmpty(template.Value.Title))
+                                    if (!String.IsNullOrEmpty(template.Value.Title))
                                     {
                                         templateName = templateName + " - " + template.Value.Title;
                                     }
@@ -301,7 +300,7 @@ namespace Satrabel.OpenContent.Components
                 string templateCat = "Site";
                 string dirName = Path.GetFileNameWithoutExtension(dir);
                 int modId = -1;
-                if (int.TryParse(dirName, out modId))
+                if (Int32.TryParse(dirName, out modId))
                 {
                     if (modId == moduleId)
                     {
@@ -377,7 +376,7 @@ namespace Satrabel.OpenContent.Components
                 }
                 if (Path.GetExtension(fileName) == ".zip")
                 {
-                    if (string.IsNullOrEmpty(newTemplateName))
+                    if (String.IsNullOrEmpty(newTemplateName))
                     {
                         newTemplateName = Path.GetFileNameWithoutExtension(fileName);
                     }
@@ -398,24 +397,24 @@ namespace Satrabel.OpenContent.Components
             catch (PermissionsNotMetException)
             {
                 //Logger.Warn(exc);
-                strMessage = string.Format(Localizer.Instance.GetString("InsufficientFolderPermission"), "OpenContent/Templates");
+                strMessage = String.Format(Localizer.Instance.GetString("InsufficientFolderPermission"), "OpenContent/Templates");
             }
             catch (NoSpaceAvailableException)
             {
                 //Logger.Warn(exc);
-                strMessage = string.Format(Localizer.Instance.GetString("DiskSpaceExceeded"), fileName);
+                strMessage = String.Format(Localizer.Instance.GetString("DiskSpaceExceeded"), fileName);
             }
             catch (InvalidFileExtensionException)
             {
                 //Logger.Warn(exc);
-                strMessage = string.Format(Localizer.Instance.GetString("RestrictedFileType"), fileName, Host.AllowedExtensionWhitelist.ToDisplayString());
+                strMessage = String.Format(Localizer.Instance.GetString("RestrictedFileType"), fileName, Host.AllowedExtensionWhitelist.ToDisplayString());
             }
             catch (Exception exc)
             {
                 //Logger.Error(exc);
-                strMessage = string.Format(Localizer.Instance.GetString("SaveFileError") + " - " + exc.Message, fileName);
+                strMessage = String.Format(Localizer.Instance.GetString("SaveFileError") + " - " + exc.Message, fileName);
             }
-            if (!string.IsNullOrEmpty(strMessage))
+            if (!String.IsNullOrEmpty(strMessage))
             {
                 throw new Exception(strMessage);
             }
@@ -426,7 +425,7 @@ namespace Satrabel.OpenContent.Components
         {
             string template = "";
             FolderUri folder = new FolderUri(FolderUri.ReverseMapPath(physicalFolder));
-            var manifest = ManifestUtils.GetFileManifest(folder);
+            var manifest = ManifestUtils.LoadManifestFileFromCacheOrDisk(folder);
             if (manifest != null && manifest.HasTemplates)
             {
                 //get the requested template key
@@ -536,7 +535,7 @@ namespace Satrabel.OpenContent.Components
         internal static bool BuilderExist(FolderUri folder, string prefix = "")
         {
             if (folder.FolderExists)
-                return File.Exists(folder.PhysicalFullDirectory + "\\" + (string.IsNullOrEmpty(prefix) ? "" : prefix + "-") + "builder.json");
+                return File.Exists(folder.PhysicalFullDirectory + "\\" + (String.IsNullOrEmpty(prefix) ? "" : prefix + "-") + "builder.json");
             return false;
         }
 
@@ -554,8 +553,7 @@ namespace Satrabel.OpenContent.Components
             return false;
         }
 
-
-        internal static bool HaveViewPermissions(Datasource.IDataItem dsItem, DotNetNuke.Entities.Users.UserInfo userInfo, FieldConfig IndexConfig, out string raison)
+        internal static bool HaveViewPermissions(IDataItem dsItem, UserInfo userInfo, FieldConfig IndexConfig, out string raison)
         {
             raison = "";
             if (dsItem?.Data == null) return true;
@@ -594,7 +592,7 @@ namespace Satrabel.OpenContent.Components
                 {
                     fieldName = "userroles";
                 }
-                if (!string.IsNullOrEmpty(fieldName))
+                if (!String.IsNullOrEmpty(fieldName))
                 {
                     permissions = false;
                     string[] dataRoles = null;

@@ -30,7 +30,7 @@ namespace Satrabel.OpenContent
 
             if (settings.TemplateKey.Extention != ".manifest")
             {
-                manifest = ManifestUtils.GetFileManifest(settings.TemplateKey.TemplateDir);
+                manifest = ManifestUtils.LoadManifestFileFromCacheOrDisk(settings.TemplateKey.TemplateDir);
             }
 
             if (manifest != null)

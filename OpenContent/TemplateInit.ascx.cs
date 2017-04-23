@@ -77,7 +77,7 @@ namespace Satrabel.OpenContent
             ddlTemplate.Items.Clear();
             if (rblUseTemplate.SelectedIndex == 0) // existing
             {
-                ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplatesFiles(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, App.Config.Opencontent).ToArray());
+                ddlTemplate.Items.AddRange(OpenContentUtils.ListOfTemplatesFiles(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, App.Config.Opencontent).ToArray());
             }
             else if (rblUseTemplate.SelectedIndex == 1) // new
             {
@@ -181,11 +181,7 @@ namespace Satrabel.OpenContent
         private void BindTemplates(TemplateManifest template, FileUri otherModuleTemplate)
         {
             ddlTemplate.Items.Clear();
-
-            //var templateUri = template == null ? null : template.Uri;
-            //var otherModuleTemplateUri = otherModuleTemplate == null ? null : otherModuleTemplate.Uri;
-
-            ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplatesFiles(ModuleContext.PortalSettings, ModuleContext.ModuleId, template, App.Config.Opencontent, otherModuleTemplate).ToArray());
+            ddlTemplate.Items.AddRange(OpenContentUtils.ListOfTemplatesFiles(ModuleContext.PortalSettings, ModuleContext.ModuleId, template, App.Config.Opencontent, otherModuleTemplate).ToArray());
             if (ddlTemplate.Items.Count == 0)
             {
                 rblUseTemplate.Items[0].Enabled = false;

@@ -6,9 +6,9 @@ namespace Satrabel.OpenContent.Components
 {
     public class DnnCacheAdapter : ICacheAdapter
     {
-        public object GetCache(string cacheKey)
+        public T GetCache<T>(string cacheKey)
         {
-            return DataCache.GetCache(cacheKey);
+            return (T)DataCache.GetCache(cacheKey);
         }
 
         public void SetCache(string cacheKey, object objectToCache, string dependentFile)

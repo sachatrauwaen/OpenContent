@@ -27,9 +27,9 @@ namespace Satrabel.OpenContent
 
     public partial class EditData : PortalModuleBase
     {
-        private const string cData = "Data";
-        private const string cSettings = "Settings";
-        private const string cFilter = "Filter";
+        private const string DATATYPE_DATA = "Data";
+        private const string DATATYPE_SETTINGS = "Settings";
+        private const string DATATYPE_FILTER = "Filter";
 
         #region Event Handlers
 
@@ -59,7 +59,7 @@ namespace Satrabel.OpenContent
 
             switch (sourceList.SelectedValue)
             {
-                case cData:
+                case DATATYPE_DATA:
                     {
                         txtSource.Text = File.ReadAllText(settings.TemplateDir.PhysicalFullDirectory + "\\data.json");
                     }
@@ -101,7 +101,7 @@ namespace Satrabel.OpenContent
         private void InitEditor()
         {
             LoadFiles();
-            DisplayFile(cData);
+            DisplayFile(DATATYPE_DATA);
         }
 
         private void DisplayFile(string selectedDataType)
@@ -110,7 +110,7 @@ namespace Satrabel.OpenContent
             string json = string.Empty;
             switch (selectedDataType)
             {
-                case cData:
+                case DATATYPE_DATA:
                     {
                         TemplateManifest template = null;
                         var module = new OpenContentModuleInfo(this.ModuleConfiguration);
@@ -194,10 +194,10 @@ namespace Satrabel.OpenContent
                     }
 
                     break;
-                case cSettings:
+                case DATATYPE_SETTINGS:
                     json = ModuleContext.Settings["data"] as string;
                     break;
-                case cFilter:
+                case DATATYPE_FILTER:
                     json = ModuleContext.Settings["query"] as string;
                     break;
                 default:
@@ -225,9 +225,9 @@ namespace Satrabel.OpenContent
         {
             TemplateManifest template = ModuleContext.OpenContentSettings().Template;
             sourceList.Items.Clear();
-            sourceList.Items.Add(new ListItem(cData, cData));
-            sourceList.Items.Add(new ListItem(cSettings, cSettings));
-            sourceList.Items.Add(new ListItem(cFilter, cFilter));
+            sourceList.Items.Add(new ListItem(DATATYPE_DATA, DATATYPE_DATA));
+            sourceList.Items.Add(new ListItem(DATATYPE_SETTINGS, DATATYPE_SETTINGS));
+            sourceList.Items.Add(new ListItem(DATATYPE_FILTER, DATATYPE_FILTER));
             if (template != null && template.Manifest != null && template.Manifest.AdditionalDataDefined())
             {
                 foreach (var addData in template.Manifest.AdditionalDataDefinition)
@@ -240,15 +240,15 @@ namespace Satrabel.OpenContent
 
         protected void cmdSave_Click(object sender, EventArgs e)
         {
-            if (sourceList.SelectedValue == cData)
+            if (sourceList.SelectedValue == DATATYPE_DATA)
             {
                 SaveData();
             }
-            else if (sourceList.SelectedValue == cSettings)
+            else if (sourceList.SelectedValue == DATATYPE_SETTINGS)
             {
                 SaveSettings();
             }
-            else if (sourceList.SelectedValue == cFilter)
+            else if (sourceList.SelectedValue == DATATYPE_FILTER)
             {
                 SaveFilter();
             }
@@ -415,7 +415,7 @@ namespace Satrabel.OpenContent
         }
         private void sourceList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            phVersions.Visible = sourceList.SelectedValue == cData;
+            phVersions.Visible = sourceList.SelectedValue == DATATYPE_DATA;
             DisplayFile(sourceList.SelectedValue);
         }
         #endregion

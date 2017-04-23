@@ -271,7 +271,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
         {
             string prefix = (string.IsNullOrEmpty(key) || key == "Items") ? "" : key + "-";
             string cacheKey = _templateUri.UrlFolder + prefix + "index.json";
-            FieldConfig newConfig = (FieldConfig)App.Config.CacheAdapter.GetCache(cacheKey);
+            FieldConfig newConfig = App.Config.CacheAdapter.GetCache<FieldConfig>(cacheKey);
             if (newConfig == null)
             {
                 var file = new FileUri(_templateUri.UrlFolder, prefix + "index.json");

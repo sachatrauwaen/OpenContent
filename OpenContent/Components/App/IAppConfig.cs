@@ -1,5 +1,4 @@
-﻿using System.Drawing.Printing;
-using Satrabel.OpenContent.Components.Indexing;
+﻿using Satrabel.OpenContent.Components.Indexing;
 using Satrabel.OpenContent.Components.Localization;
 
 namespace Satrabel.OpenContent.Components
