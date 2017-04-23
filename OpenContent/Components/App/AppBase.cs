@@ -5,6 +5,7 @@ namespace Satrabel.OpenContent.Components
     public abstract class AppBase
     {
         private static IAppConfig _configuration;
+        private static IAppServices _serviceConfig;
 
         static AppBase()
         {
@@ -12,11 +13,13 @@ namespace Satrabel.OpenContent.Components
                 throw new Exception("AppBase not initialized.  Call AppConfig.Init(config) first.");
         }
 
-        internal static void Init(IAppConfig config)
+        internal static void Init(IAppConfig config, MyServices services)
         {
             _configuration = config;
+            _serviceConfig = services;
         }
 
         public IAppConfig Config => _configuration;
+        public IAppServices Services => _serviceConfig;
     }
 }

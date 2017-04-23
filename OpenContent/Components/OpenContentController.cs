@@ -87,7 +87,7 @@ namespace Satrabel.OpenContent.Components
             if (versions.Count == 0 || versions[0].Json.ToString() != content.Json)
             {
                 versions.Insert(0, ver);
-                if (versions.Count > App.Config.GlobalSettings.GetMaxVersions())
+                if (versions.Count > App.Services.GlobalSettings.GetMaxVersions())
                 {
                     versions.RemoveAt(versions.Count - 1);
                 }
@@ -107,7 +107,7 @@ namespace Satrabel.OpenContent.Components
 
         internal IEnumerable<OpenContentInfo> GetContents(int moduleId)
         {
-            return App.Config.CacheAdapter.GetCachedData<IEnumerable<OpenContentInfo>>(
+            return App.Services.CacheAdapter.GetCachedData<IEnumerable<OpenContentInfo>>(
                 GetModuleIdCacheKey(moduleId, "GetContents"), 
                 CACHE_TIME, 
                 args =>
@@ -124,7 +124,7 @@ namespace Satrabel.OpenContent.Components
 
         internal OpenContentInfo GetContent(int contentId)
         {
-            return App.Config.CacheAdapter.GetCachedData<OpenContentInfo>(
+            return App.Services.CacheAdapter.GetCachedData<OpenContentInfo>(
                 GetContentIdCacheKey(contentId), 
                 CACHE_TIME, 
                 args =>
@@ -142,7 +142,7 @@ namespace Satrabel.OpenContent.Components
         [Obsolete("Do not use this method anymore. Instead, use the OpenContentDataSource.Get().")]
         public OpenContentInfo GetFirstContent(int moduleId)
         {
-            return App.Config.CacheAdapter.GetCachedData<OpenContentInfo>(
+            return App.Services.CacheAdapter.GetCachedData<OpenContentInfo>(
                 GetModuleIdCacheKey(moduleId) + "GetFirstContent", 
                 CACHE_TIME, 
                 args =>
@@ -220,8 +220,8 @@ namespace Satrabel.OpenContent.Components
 
         private static void ClearDataCache(OpenContentInfo content)
         {
-            if (content.ContentId > 0) App.Config.CacheAdapter.ClearCache(GetContentIdCacheKey(content.ContentId));
-            if (content.ModuleId > 0) App.Config.CacheAdapter.ClearCache(GetModuleIdCacheKey(content.ModuleId));
+            if (content.ContentId > 0) App.Services.CacheAdapter.ClearCache(GetContentIdCacheKey(content.ContentId));
+            if (content.ModuleId > 0) App.Services.CacheAdapter.ClearCache(GetModuleIdCacheKey(content.ModuleId));
         }
 
         #endregion

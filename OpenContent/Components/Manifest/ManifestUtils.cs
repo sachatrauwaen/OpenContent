@@ -61,12 +61,12 @@ namespace Satrabel.OpenContent.Components.Manifest
                 {
                     string cacheKey = folder.UrlFolder + "manifest.json";
                     
-                    manifest = App.Config.CacheAdapter.GetCache<Manifest>(cacheKey);
+                    manifest = App.Services.CacheAdapter.GetCache<Manifest>(cacheKey);
                     if (manifest == null)
                     {
                         string content = File.ReadAllText(file.PhysicalFilePath);
                         manifest = JsonConvert.DeserializeObject<Manifest>(content);
-                        App.Config.CacheAdapter.SetCache(cacheKey, manifest, file.PhysicalFilePath);
+                        App.Services.CacheAdapter.SetCache(cacheKey, manifest, file.PhysicalFilePath);
                     }
                 }
                 return manifest;

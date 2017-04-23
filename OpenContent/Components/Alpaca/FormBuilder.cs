@@ -271,7 +271,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
         {
             string prefix = (string.IsNullOrEmpty(key) || key == "Items") ? "" : key + "-";
             string cacheKey = _templateUri.UrlFolder + prefix + "index.json";
-            FieldConfig newConfig = App.Config.CacheAdapter.GetCache<FieldConfig>(cacheKey);
+            FieldConfig newConfig = App.Services.CacheAdapter.GetCache<FieldConfig>(cacheKey);
             if (newConfig == null)
             {
                 var file = new FileUri(_templateUri.UrlFolder, prefix + "index.json");
@@ -279,7 +279,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 {
                     string content = File.ReadAllText(file.PhysicalFilePath);
                     newConfig = JsonConvert.DeserializeObject<FieldConfig>(content);
-                    App.Config.CacheAdapter.SetCache(cacheKey, newConfig, file.PhysicalFilePath);
+                    App.Services.CacheAdapter.SetCache(cacheKey, newConfig, file.PhysicalFilePath);
                     return newConfig;
                 }
                 else
@@ -429,7 +429,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
 
                     var schemaFile = new FileUri(_templateUri.UrlFolder, prefix + "schema.json");
                     var optionsFile = new FileUri(_templateUri.UrlFolder, prefix + "options.json");
-                    App.Config.CacheAdapter.SetCache(cacheKey, newConfig, new[] { schemaFile.PhysicalFilePath, optionsFile.PhysicalFilePath });
+                    App.Services.CacheAdapter.SetCache(cacheKey, newConfig, new[] { schemaFile.PhysicalFilePath, optionsFile.PhysicalFilePath });
                 }
             }
 
