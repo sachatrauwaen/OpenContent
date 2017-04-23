@@ -1,4 +1,5 @@
 ﻿using System;
+using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components.Dnn;
 using Satrabel.OpenContent.Components.Indexing;
 using Satrabel.OpenContent.Components.Localization;
@@ -69,6 +70,16 @@ namespace Satrabel.OpenContent.Components
         public IIndexAdapter IndexAdapter => new LuceneIndexAdapter();
         public ICacheAdapter CacheAdapter => new DnnCacheAdapter();
 
+
+        private IGlobalSettingsRepositoryAdapter _globalSettingsRepository;
+        public IGlobalSettingsRepositoryAdapter GlobalSettings
+        {
+            get
+            {
+                return _globalSettingsRepository ??
+                       (_globalSettingsRepository = new DnnGlobalSettingsRepositoryAdapter(PortalSettings.Current.PortalId));
+            }
+        }
         #endregion
     }
 }

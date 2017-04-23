@@ -497,7 +497,7 @@ namespace Satrabel.OpenContent.Components.Render
                     }
                     else // handlebars
                     {
-                        if (OpenContentControllerFactory.Instance.GlobalSettingsController.GetFastHandlebars())
+                        if (App.Config.GlobalSettings.GetFastHandlebars())
                             model = mf.GetModelAsDictionary();
                         else
                             model = mf.GetModelAsDynamic();
@@ -567,7 +567,7 @@ namespace Satrabel.OpenContent.Components.Render
                     else // handlebars
                     {
                         object model;
-                        if (OpenContentControllerFactory.Instance.GlobalSettingsController.GetFastHandlebars())
+                        if (App.Config.GlobalSettings.GetFastHandlebars())
                             model = mf.GetModelAsDictionary();
                         else
                             model = mf.GetModelAsDynamic();
@@ -609,7 +609,7 @@ namespace Satrabel.OpenContent.Components.Render
                     }
                     else // handlebars
                     {
-                        if (OpenContentControllerFactory.Instance.GlobalSettingsController.GetFastHandlebars())
+                        if (App.Config.GlobalSettings.GetFastHandlebars())
                             model = mf.GetModelAsDictionary();
                         else
                             model = mf.GetModelAsDynamic();

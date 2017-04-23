@@ -1,4 +1,5 @@
-﻿using Satrabel.OpenContent.Components.Indexing;
+﻿using Satrabel.OpenContent.Components.Dnn;
+using Satrabel.OpenContent.Components.Indexing;
 using Satrabel.OpenContent.Components.Localization;
 
 namespace Satrabel.OpenContent.Components
@@ -15,5 +16,6 @@ namespace Satrabel.OpenContent.Components
         string Opencontent { get; }
         string DefaultCollection { get; }
         ICacheAdapter CacheAdapter { get; }
+        IGlobalSettingsRepositoryAdapter GlobalSettings { get; }
     }
 }

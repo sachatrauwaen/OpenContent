@@ -1,9 +1,24 @@
 ﻿using DotNetNuke.Entities.Portals;
+using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Alpaca;
 
-namespace Satrabel.OpenContent.Components
+namespace Satrabel.OpenContent.Components.Dnn
 {
-    public class OpenContentGlobalSettingsController
+    public interface IGlobalSettingsRepositoryAdapter
+    {
+        int GetMaxVersions();
+        void SetMaxVersions(int maxVersions);
+        AlpacaLayoutEnum GetEditLayout();
+        void SetEditLayout(AlpacaLayoutEnum editLayout);
+        bool GetLoadBootstrap();
+        void SetLoadBootstrap(bool @checked);
+        string GetGoogleApiKey();
+        void SetGoogleApiKey(string text);
+        bool GetFastHandlebars();
+        void SetFastHandlebars(bool @checked);
+    }
+
+    public class DnnGlobalSettingsRepositoryAdapter : IGlobalSettingsRepositoryAdapter
     {
         private readonly int _portalId;
 
@@ -17,7 +32,7 @@ namespace Satrabel.OpenContent.Components
         private const string SETTINGS_FAST_HANDLEBARS = "OpenContent_FastHandlebars";
         private const bool SETTINGS_DEFAULT_FAST_HANDLEBARS = false;
 
-        public OpenContentGlobalSettingsController(int portalId)
+        public DnnGlobalSettingsRepositoryAdapter(int portalId)
         {
             _portalId = portalId;
         }
@@ -86,6 +101,4 @@ namespace Satrabel.OpenContent.Components
             PortalController.UpdatePortalSetting(_portalId, SETTINGS_FAST_HANDLEBARS, fastHandlebars.ToString(), true);
         }
     }
-
-    
 }
