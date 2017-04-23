@@ -20,29 +20,6 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         public static LuceneIndexAdapter Instance { get; private set; } = new LuceneIndexAdapter();
 
-        public void Commit()
-        {
-            Store.Commit();
-        }
-
-        public SearchResults Search(string indexScope, Select selectQuery)
-        {
-            var def = new SelectQueryDefinition();
-            def.Build(selectQuery);
-
-
-            var results= this.Search(indexScope, def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
-            results.QueryDefinition = new QueryDefinition()
-            {
-                Filter= def.Filter.ToString(),
-                Query= def.Query.ToString(),
-                Sort= def.Sort.ToString(),
-                PageIndex= def.PageIndex,
-                PageSize= def.PageSize
-        };
-            return results;
-        }
-
         private LuceneService Store
         {
             get
@@ -60,19 +37,27 @@ namespace Satrabel.OpenContent.Components.Lucene
             _serviceInstance = new LuceneService(App.Services.LuceneIndexFolder, JsonMappingUtils.GetAnalyser());
         }
 
-        public static void ClearInstance()
-        {
-            if (Instance != null)
-            {
-                Instance.Dispose();
-                Instance = null;
-            }
-            Instance = new LuceneIndexAdapter();
-        }
-
         #endregion
 
         #region Search
+
+        public SearchResults Search(string indexScope, Select selectQuery)
+        {
+            var def = new SelectQueryDefinition();
+            def.Build(selectQuery);
+
+
+            var results= this.Search(indexScope, def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
+            results.QueryDefinition = new QueryDefinition()
+            {
+                Filter= def.Filter.ToString(),
+                Query= def.Query.ToString(),
+                Sort= def.Sort.ToString(),
+                PageIndex= def.PageIndex,
+                PageSize= def.PageSize
+            };
+            return results;
+        }
 
         public SearchResults Search(string type, Query filter, Query query, Sort sort, int pageSize, int pageIndex)
         {
@@ -164,7 +149,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             }
         }
 
-        private void IndexModule(LuceneIndexAdapter lc, OpenContentModuleInfo module)
+        private static void IndexModule(LuceneIndexAdapter lc, OpenContentModuleInfo module)
         {
             OpenContentUtils.CheckOpenContentSettings(module);
 
@@ -174,7 +159,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             }
         }
 
-        private void IndexModuleData(LuceneIndexAdapter lc, int moduleId, OpenContentSettings settings)
+        private static void IndexModuleData(LuceneIndexAdapter lc, int moduleId, OpenContentSettings settings)
         {
             bool index = false;
             if (settings.TemplateAvailable)
@@ -207,7 +192,7 @@ namespace Satrabel.OpenContent.Components.Lucene
         {
             if (null == data)
             {
-                throw new ArgumentNullException("data");
+                throw new ArgumentNullException(nameof(data));
             }
             Store.Add(JsonMappingUtils.JsonToDocument(data.GetScope(), data.GetId(), data.GetCreatedByUserId(), data.GetCreatedOnDate(), data.GetData(), data.GetSource(), config));
         }
@@ -216,7 +201,7 @@ namespace Satrabel.OpenContent.Components.Lucene
         {
             if (null == data)
             {
-                throw new ArgumentNullException("data");
+                throw new ArgumentNullException(nameof(data));
             }
             Delete(data);
             Add(data, config);
@@ -235,6 +220,21 @@ namespace Satrabel.OpenContent.Components.Lucene
             var selection = new TermQuery(new Term(JsonMappingUtils.FieldId, data.GetId()));
             Query deleteQuery = new FilteredQuery(selection, JsonMappingUtils.GetTypeFilter(data.GetScope()));
             Store.Delete(deleteQuery);
+        }
+
+        public void Commit()
+        {
+            Store.Commit();
+        }
+
+        private static void ClearInstance()
+        {
+            if (Instance != null)
+            {
+                Instance.Dispose();
+                Instance = null;
+            }
+            Instance = new LuceneIndexAdapter();
         }
 
         #endregion
