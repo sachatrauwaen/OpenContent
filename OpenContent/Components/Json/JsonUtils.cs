@@ -8,7 +8,6 @@ using DotNetNuke.Services.FileSystem;
 using Satrabel.OpenContent.Components.Datasource;
 using System.Collections;
 using System.Collections.Generic;
-using DotNetNuke.Common.Utilities;
 
 namespace Satrabel.OpenContent.Components.Json
 {

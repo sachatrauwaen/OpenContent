@@ -107,9 +107,7 @@ namespace Satrabel.OpenContent.Components
 
         internal IEnumerable<OpenContentInfo> GetContents(int moduleId)
         {
-            return App.Services.CacheAdapter.GetCachedData<IEnumerable<OpenContentInfo>>(
-                GetModuleIdCacheKey(moduleId, "GetContents"), 
-                CACHE_TIME, 
+            return App.Services.CacheAdapter.GetCachedData<IEnumerable<OpenContentInfo>>(GetModuleIdCacheKey(moduleId, "GetContents"), CACHE_TIME,
                 args =>
                 {
                     IEnumerable<OpenContentInfo> content;
@@ -122,11 +120,9 @@ namespace Satrabel.OpenContent.Components
                 });
         }
 
-        internal OpenContentInfo GetContent(int contentId)
+        public OpenContentInfo GetContent(int contentId)
         {
-            return App.Services.CacheAdapter.GetCachedData<OpenContentInfo>(
-                GetContentIdCacheKey(contentId), 
-                CACHE_TIME, 
+            return App.Services.CacheAdapter.GetCachedData<OpenContentInfo>(GetContentIdCacheKey(contentId), CACHE_TIME,
                 args =>
                 {
                     OpenContentInfo content;
@@ -142,19 +138,17 @@ namespace Satrabel.OpenContent.Components
         [Obsolete("Do not use this method anymore. Instead, use the OpenContentDataSource.Get().")]
         public OpenContentInfo GetFirstContent(int moduleId)
         {
-            return App.Services.CacheAdapter.GetCachedData<OpenContentInfo>(
-                GetModuleIdCacheKey(moduleId) + "GetFirstContent", 
-                CACHE_TIME, 
-                args =>
-                {
-                    OpenContentInfo content;
-                    using (IDataContext ctx = DataContext.Instance())
-                    {
-                        var rep = ctx.GetRepository<OpenContentInfo>();
-                        content = rep.Get(moduleId).FirstOrDefault();
-                    }
-                    return content;
-                });
+            return App.Services.CacheAdapter.GetCachedData<OpenContentInfo>(GetModuleIdCacheKey(moduleId) + "GetFirstContent", CACHE_TIME,
+               args =>
+               {
+                   OpenContentInfo content;
+                   using (IDataContext ctx = DataContext.Instance())
+                   {
+                       var rep = ctx.GetRepository<OpenContentInfo>();
+                       content = rep.Get(moduleId).FirstOrDefault();
+                   }
+                   return content;
+               });
         }
 
         internal OpenContentInfo GetContent(int moduleId, string collection, string id)

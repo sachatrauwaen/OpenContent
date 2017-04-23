@@ -1,5 +1,4 @@
 ﻿using DotNetNuke.Entities.Portals;
-using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Alpaca;
 
 namespace Satrabel.OpenContent.Components.Dnn

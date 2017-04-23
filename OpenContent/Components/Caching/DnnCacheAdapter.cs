@@ -21,10 +21,11 @@ namespace Satrabel.OpenContent.Components
             DataCache.SetCache(cacheKey, objectToCache, new DNNCacheDependency(dependentFiles));
         }
 
-        public T GetCachedData<T>(string key, int cacheTimeInMinutes, Func<object, T> func)
+        public T GetCachedData<T>(string key, int cacheTimeInMinutes, Func<object, object> func)
         {
             var cacheArgs = new CacheItemArgs(key, cacheTimeInMinutes);
-            return DataCache.GetCachedData<T>(cacheArgs, args => func);
+            var retval = DataCache.GetCachedData<T>(cacheArgs, func.Invoke);
+            return retval;
         }
 
         public void ClearCache(string cacheKey)

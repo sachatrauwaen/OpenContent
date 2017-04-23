@@ -1,17 +1,9 @@
-﻿using System;
-using DotNetNuke.Entities.Portals;
-using Satrabel.OpenContent.Components.Dnn;
-using Satrabel.OpenContent.Components.Indexing;
-using Satrabel.OpenContent.Components.Localization;
-using Satrabel.OpenContent.Components.Logging;
-using Satrabel.OpenContent.Components.Lucene;
-
-namespace Satrabel.OpenContent.Components
+﻿namespace Satrabel.OpenContent.Components
 {
     public class MyConfig : IAppConfig
     {
 
-        #region Constants
+        #region Constants - explicitly defined to make it easier to see where they are used.
 
         public string FieldNamePublishStartDate
         {
@@ -58,28 +50,7 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
-
         #endregion
 
-        #region Adapters config
-
-        public string LuceneIndexFolder => @"App_Data\OpenContent\lucene_index";
-
-        public ILocalizationAdapter LocalizationAdapter => new DnnLocalizationAdapter();
-        public ILogAdapter LogAdapter => DnnLogAdapter.GetLogAdapter(Opencontent);
-        public IIndexAdapter IndexAdapter => new LuceneIndexAdapter();
-        public ICacheAdapter CacheAdapter => new DnnCacheAdapter();
-
-
-        private IGlobalSettingsRepositoryAdapter _globalSettingsRepository;
-        public IGlobalSettingsRepositoryAdapter GlobalSettings
-        {
-            get
-            {
-                return _globalSettingsRepository ??
-                       (_globalSettingsRepository = new DnnGlobalSettingsRepositoryAdapter(PortalSettings.Current.PortalId));
-            }
-        }
-        #endregion
     }
 }
