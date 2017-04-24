@@ -129,7 +129,7 @@ namespace Satrabel.OpenContent
                 if (ModuleContext.Configuration.HasEditRightsOnModule())
                     RenderHttpException(ex);
                 else
-                    throw ex;
+                    throw;
             }
             catch (Exception ex)
             {
@@ -365,7 +365,7 @@ namespace Satrabel.OpenContent
                         title,
                         ModuleActionType.AddContent,
                         "",
-                         (listMode && string.IsNullOrEmpty(_itemId) ? "~/DesktopModules/OpenContent/images/addcontent2.png" : "~/DesktopModules/OpenContent/images/editcontent2.png"),
+                        (listMode && string.IsNullOrEmpty(_itemId) ? "~/DesktopModules/OpenContent/images/addcontent2.png" : "~/DesktopModules/OpenContent/images/editcontent2.png"),
                         (listMode && !string.IsNullOrEmpty(_itemId) ? ModuleContext.EditUrl("id", _itemId) : ModuleContext.EditUrl()),
                         false,
                         SecurityAccessLevel.Edit,
@@ -638,7 +638,7 @@ namespace Satrabel.OpenContent
 
         private void RenderHttpException(NotAuthorizedException ex)
         {
-            DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "<p><b>Permission error</b></p>" + ex.Message.Replace("\n","<br />"), DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
+            DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "<p><b>Permission error</b></p>" + ex.Message.Replace("\n", "<br />"), DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
             if (LogContext.IsLogActive)
             {
                 var logKey = "Error accessing data";
