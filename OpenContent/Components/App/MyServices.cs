@@ -12,17 +12,12 @@ namespace Satrabel.OpenContent.Components
     /// </summary>
     public class MyServices : IAppServices
     {
-
-        private IGlobalSettingsRepositoryAdapter _globalSettingsAdapter;
-        private ICacheAdapter _cacheAdapter;
-        private ILocalizationAdapter _localizationAdapter;
-
         public string LuceneIndexFolder => @"App_Data\OpenContent\lucene_index";
 
-        public ILocalizationAdapter LocalizationAdapter => _localizationAdapter ?? (_localizationAdapter = new DnnLocalizationAdapter());
+        public ILocalizationAdapter LocalizationAdapter => new DnnLocalizationAdapter();
         public ILogAdapter LogAdapter => DnnLogAdapter.GetLogAdapter(App.Config.Opencontent);
         public IIndexAdapter IndexAdapter => new LuceneIndexAdapter();
-        public ICacheAdapter CacheAdapter => _cacheAdapter ?? (_cacheAdapter = new DnnCacheAdapter());
-        public IGlobalSettingsRepositoryAdapter GlobalSettings => _globalSettingsAdapter ?? (_globalSettingsAdapter = new DnnGlobalSettingsRepositoryAdapter(PortalSettings.Current.PortalId));
+        public ICacheAdapter CacheAdapter => new DnnCacheAdapter();
+        public IGlobalSettingsRepositoryAdapter GlobalSettings => new DnnGlobalSettingsRepositoryAdapter(PortalSettings.Current.PortalId);
     }
 }
