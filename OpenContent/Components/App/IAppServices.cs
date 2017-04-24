@@ -9,7 +9,6 @@ namespace Satrabel.OpenContent.Components
         ILogAdapter LogAdapter { get; }
         IIndexAdapter IndexAdapter { get; }
         ILocalizationAdapter LocalizationAdapter { get; }
-        string LuceneIndexFolder { get; }
         ICacheAdapter CacheAdapter { get; }
         IGlobalSettingsRepositoryAdapter GlobalSettings { get; }
     }

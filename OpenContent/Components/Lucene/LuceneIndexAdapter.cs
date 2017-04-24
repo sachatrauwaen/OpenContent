@@ -16,9 +16,11 @@ namespace Satrabel.OpenContent.Components.Lucene
 {
     public class LuceneIndexAdapter : IDisposable, IIndexAdapter
     {
+        public static LuceneIndexAdapter Instance { get; private set; }
+        private static string _luceneIndexFolder;
+
         private LuceneService _serviceInstance;
 
-        public static LuceneIndexAdapter Instance { get; private set; } = new LuceneIndexAdapter();
 
         private LuceneService Store
         {
@@ -32,9 +34,11 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         #region constructor
 
-        internal LuceneIndexAdapter()
+        internal LuceneIndexAdapter(string luceneIndexFolder)
         {
-            _serviceInstance = new LuceneService(App.Services.LuceneIndexFolder, JsonMappingUtils.GetAnalyser());
+            LuceneIndexAdapter.Instance = this;
+            _luceneIndexFolder = luceneIndexFolder;
+            _serviceInstance = new LuceneService(luceneIndexFolder, JsonMappingUtils.GetAnalyser());
         }
 
         #endregion
@@ -47,14 +51,14 @@ namespace Satrabel.OpenContent.Components.Lucene
             def.Build(selectQuery);
 
 
-            var results= this.Search(indexScope, def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
+            var results = this.Search(indexScope, def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
             results.QueryDefinition = new QueryDefinition()
             {
-                Filter= def.Filter.ToString(),
-                Query= def.Query.ToString(),
-                Sort= def.Sort.ToString(),
-                PageIndex= def.PageIndex,
-                PageSize= def.PageSize
+                Filter = def.Filter.ToString(),
+                Query = def.Query.ToString(),
+                Sort = def.Sort.ToString(),
+                PageIndex = def.PageIndex,
+                PageSize = def.PageSize
             };
             return results;
         }
@@ -234,7 +238,7 @@ namespace Satrabel.OpenContent.Components.Lucene
                 Instance.Dispose();
                 Instance = null;
             }
-            Instance = new LuceneIndexAdapter();
+            Instance = new LuceneIndexAdapter(_luceneIndexFolder);
         }
 
         #endregion
