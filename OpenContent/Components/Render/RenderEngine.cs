@@ -44,9 +44,10 @@ namespace Satrabel.OpenContent.Components.Render
 
         public string ItemId // For detail view
         {
-            private get => Info.DetailItemId;
-            set => Info.DetailItemId = value;
+            private get { return Info.DetailItemId; }
+            set { Info.DetailItemId = value; }
         }
+
         public NameValueCollection QueryString { get; set; } // Only for filtering
         public ModuleInstanceContext ModuleContext { get; set; } // Only for Dnn Razor helpers
         public string LocalResourceFile { get; set; } // Only for Dnn Razor helpers

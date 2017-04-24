@@ -45,8 +45,14 @@ namespace Satrabel.OpenContent.Components.Manifest
         [JsonProperty(PropertyName = "additionalData")]
         public Dictionary<string, AdditionalDataManifest> AdditionalDataDefinition
         {
-            get => _additionalData;
-            set => _additionalData = new Dictionary<string, AdditionalDataManifest>(value, StringComparer.OrdinalIgnoreCase);
+            get
+            {
+                return _additionalData;
+            }
+            set
+            {
+                _additionalData = new Dictionary<string, AdditionalDataManifest>(value, StringComparer.OrdinalIgnoreCase);
+            }
         }
 
         [JsonProperty(PropertyName = "dataSource")]
