@@ -13,6 +13,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using DotNetNuke.Common.Utilities;
 using DotNetNuke.Data;
 using DotNetNuke.Entities.Modules;
 using Satrabel.OpenContent.Components.Common;
@@ -21,12 +22,11 @@ namespace Satrabel.OpenContent.Components
 {
     public class OpenContentController
     {
-        private const string CACHE_PREFIX = "Satrabel.OpenContent.Components.OpenContentController-";
-        private const int CACHE_TIME = 60;
+        private const string CachePrefix = "Satrabel.OpenContent.Components.OpenContentController-";
+        private const int CacheTime = 60;
 
         #region Commands
 
-        [Obsolete("Do not use this method anymore. Instead, use the OpenContentDataSource.Add().")]
         public void AddContent(OpenContentInfo content)
         {
             ClearDataCache(content);
@@ -58,7 +58,7 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
-        internal void DeleteContent(OpenContentInfo content)
+        public void DeleteContent(OpenContentInfo content)
         {
             ClearDataCache(content);
 
@@ -70,7 +70,6 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
-        [Obsolete("Do not use this method anymore. Instead, use the OpenContentDataSource.Add().")]
         public void UpdateContent(OpenContentInfo content)
         {
             ClearDataCache(content);
@@ -107,10 +106,11 @@ namespace Satrabel.OpenContent.Components
 
         internal IEnumerable<OpenContentInfo> GetContents(int moduleId)
         {
-            return App.Services.CacheAdapter.GetCachedData<IEnumerable<OpenContentInfo>>(GetModuleIdCacheKey(moduleId, "GetContents"), CACHE_TIME,
-                args =>
+            var cacheArgs = new CacheItemArgs(GetModuleIdCacheKey(moduleId, "GetContents"), CacheTime);
+            return DataCache.GetCachedData<IEnumerable<OpenContentInfo>>(cacheArgs, args =>
                 {
                     IEnumerable<OpenContentInfo> content;
+
                     using (IDataContext ctx = DataContext.Instance())
                     {
                         var rep = ctx.GetRepository<OpenContentInfo>();
@@ -122,10 +122,11 @@ namespace Satrabel.OpenContent.Components
 
         public OpenContentInfo GetContent(int contentId)
         {
-            return App.Services.CacheAdapter.GetCachedData<OpenContentInfo>(GetContentIdCacheKey(contentId), CACHE_TIME,
-                args =>
+            var cacheArgs = new CacheItemArgs(GetContentIdCacheKey(contentId), CacheTime);
+            return DataCache.GetCachedData<OpenContentInfo>(cacheArgs, args =>
                 {
                     OpenContentInfo content;
+
                     using (IDataContext ctx = DataContext.Instance())
                     {
                         var rep = ctx.GetRepository<OpenContentInfo>();
@@ -135,27 +136,27 @@ namespace Satrabel.OpenContent.Components
                 });
         }
 
-        [Obsolete("Do not use this method anymore. Instead, use the OpenContentDataSource.Get().")]
         public OpenContentInfo GetFirstContent(int moduleId)
         {
-            return App.Services.CacheAdapter.GetCachedData<OpenContentInfo>(GetModuleIdCacheKey(moduleId) + "GetFirstContent", CACHE_TIME,
-               args =>
-               {
-                   OpenContentInfo content;
-                   using (IDataContext ctx = DataContext.Instance())
-                   {
-                       var rep = ctx.GetRepository<OpenContentInfo>();
-                       content = rep.Get(moduleId).FirstOrDefault();
-                   }
-                   return content;
-               });
+            var cacheArgs = new CacheItemArgs(GetModuleIdCacheKey(moduleId) + "GetFirstContent", CacheTime);
+            return DataCache.GetCachedData<OpenContentInfo>(cacheArgs, args =>
+                {
+                    OpenContentInfo content;
+
+                    using (IDataContext ctx = DataContext.Instance())
+                    {
+                        var rep = ctx.GetRepository<OpenContentInfo>();
+                        content = rep.Get(moduleId).FirstOrDefault();
+                    }
+                    return content;
+                });
         }
 
-        internal OpenContentInfo GetContent(int moduleId, string collection, string id)
+        public OpenContentInfo GetContent(int moduleId, string collection, string id)
         {
             if (collection == App.Config.DefaultCollection)
             {
-                int intid;
+                int intid = 0;
                 if (int.TryParse(id, out intid))
                     return GetContent(intid);
                 else
@@ -166,7 +167,7 @@ namespace Satrabel.OpenContent.Components
                 return GetContentByKey(moduleId, collection, id);
             }
         }
-        internal OpenContentInfo GetContentByKey(int moduleId, string collection, string key)
+        public OpenContentInfo GetContentByKey(int moduleId, string collection, string key)
         {
             IEnumerable<OpenContentInfo> documents;
             using (IDataContext ctx = DataContext.Instance())
@@ -176,7 +177,7 @@ namespace Satrabel.OpenContent.Components
             }
             return documents.SingleOrDefault();
         }
-        internal IEnumerable<OpenContentInfo> GetContents(int moduleId, string collection)
+        public IEnumerable<OpenContentInfo> GetContents(int moduleId, string collection)
         {
             IEnumerable<OpenContentInfo> documents;
             using (IDataContext ctx = DataContext.Instance())
@@ -187,7 +188,7 @@ namespace Satrabel.OpenContent.Components
             return documents;
         }
 
-        internal IEnumerable<OpenContentInfo> GetContents(int[] contentIds)
+        public IEnumerable<OpenContentInfo> GetContents(int[] contentIds)
         {
             IEnumerable<OpenContentInfo> documents;
             using (IDataContext ctx = DataContext.Instance())
@@ -204,18 +205,18 @@ namespace Satrabel.OpenContent.Components
 
         private static string GetContentIdCacheKey(int contentId)
         {
-            return string.Concat(CACHE_PREFIX, "C-", contentId);
+            return string.Concat(CachePrefix, "C-", contentId);
         }
 
         private static string GetModuleIdCacheKey(int moduleId, string suffix = null)
         {
-            return string.Concat(CACHE_PREFIX, "M-", moduleId, string.IsNullOrEmpty(suffix) ? string.Empty : string.Concat("-", suffix));
+            return string.Concat(CachePrefix, "M-", moduleId, string.IsNullOrEmpty(suffix) ? string.Empty : string.Concat("-", suffix));
         }
 
         private static void ClearDataCache(OpenContentInfo content)
         {
-            if (content.ContentId > 0) App.Services.CacheAdapter.ClearCache(GetContentIdCacheKey(content.ContentId));
-            if (content.ModuleId > 0) App.Services.CacheAdapter.ClearCache(GetModuleIdCacheKey(content.ModuleId));
+            if (content.ContentId > 0) DataCache.ClearCache(GetContentIdCacheKey(content.ContentId));
+            if (content.ModuleId > 0) DataCache.ClearCache(GetModuleIdCacheKey(content.ModuleId));
         }
 
         #endregion
