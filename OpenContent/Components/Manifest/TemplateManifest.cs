@@ -32,13 +32,7 @@ namespace Satrabel.OpenContent.Components.Manifest
         [JsonProperty(PropertyName = "collection")]
         public string Collection { get; set; } = "Items";
 
-        public bool IsListTemplate
-        {
-            get
-            {
-                return Type == "multiple";
-            }
-        }
+        public bool IsListTemplate => Type == "multiple";
 
         public TemplateKey Key { get; private set; }
         public FolderUri ManifestFolderUri { get; private set; }

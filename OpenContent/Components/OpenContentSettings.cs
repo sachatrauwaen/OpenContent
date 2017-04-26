@@ -7,13 +7,10 @@ namespace Satrabel.OpenContent.Components
 {
     public static class OpenContentSettingsExtentions
     {
-
         public static int GetModuleId(this OpenContentSettings settings, int defaultModuleId)
         {
             return settings.IsOtherModule ? settings.ModuleId : defaultModuleId;
         }
-
-
     }
 
     public class OpenContentSettings
@@ -80,12 +77,9 @@ namespace Satrabel.OpenContent.Components
         /// <summary>
         /// Gets the manifest. Will be Null if no template is defined yet
         /// </summary>
-        /// <value>
-        /// The manifest.
-        /// </value>
         public Manifest.Manifest Manifest { get; private set; }
 
-        public FolderUri TemplateDir { get { return TemplateKey.TemplateDir; } }
+        public FolderUri TemplateDir => TemplateKey.TemplateDir;
 
         public string Data { get; private set; }
 
