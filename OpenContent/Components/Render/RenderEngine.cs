@@ -70,6 +70,7 @@ namespace Satrabel.OpenContent.Components.Render
                     // template without schema & options
                     // render the template with no data
                     _renderinfo.SetData(null, new JObject(), Settings.Data);
+                    _renderinfo.Files = _renderinfo.Template.Main;
                     _renderinfo.OutputString = GenerateOutputSingle(page, _renderinfo.Template.MainTemplateUri(), _renderinfo.DataJson, _renderinfo.SettingsJson, _renderinfo.Template.Main);
                 }
                 else if (_renderinfo.Template.IsListTemplate)
