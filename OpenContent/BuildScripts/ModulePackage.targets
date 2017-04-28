@@ -75,6 +75,7 @@
 
     <Copy SourceFiles="bin\Release\$(AssemblyName).dll" DestinationFolder="$(MSBuildProjectDirectory)\Package\bin"/>
     <Copy SourceFiles="bin\Release\Handlebars.dll" DestinationFolder="$(MSBuildProjectDirectory)\Package\bin"/>
+    <Copy SourceFiles="bin\Release\EPPlus.dll" DestinationFolder="$(MSBuildProjectDirectory)\Package\bin"/>
     <Copy SourceFiles="@(SqlDataProviderFiles)" DestinationFolder="$(MSBuildProjectDirectory)\Package\%(RecursiveDir)" />
     <Copy SourceFiles="@(PackageManifestFiles)" DestinationFolder="$(MSBuildProjectDirectory)\Package" />
     <Copy SourceFiles="@(PackageTxtFiles)" DestinationFolder="$(MSBuildProjectDirectory)\Package" />
