@@ -55,25 +55,13 @@ namespace Satrabel.OpenContent.Components.Manifest
         {
             try
             {
-                Manifest manifest = null;
                 var file = new FileUri(folder.UrlFolder, "manifest.json");
-                if (file.FileExists)
-                {
-                    string cacheKey = folder.UrlFolder + "manifest.json";
-                    
-                    manifest = App.Services.CacheAdapter.GetCache<Manifest>(cacheKey);
-                    if (manifest == null)
-                    {
-                        string content = File.ReadAllText(file.PhysicalFilePath);
-                        manifest = JsonConvert.DeserializeObject<Manifest>(content);
-                        App.Services.CacheAdapter.SetCache(cacheKey, manifest, file.PhysicalFilePath);
-                    }
-                }
+                var manifest = App.Services.FileRepository.LoadDeserializedJsonFileFromCacheOrDisk<Manifest>(file);
                 return manifest;
             }
             catch (Exception ex)
             {
-                Log.Logger.Error($"Failed to load manifest from folder {folder.UrlFolder}. Error: {ex}");
+                App.Services.Logger.Error($"Failed to load manifest from folder {folder.UrlFolder}. Error: {ex}");
                 throw;
             }
         }
@@ -84,7 +72,6 @@ namespace Satrabel.OpenContent.Components.Manifest
             GetManifest(new TemplateKey(templateUri), out templateManifest);
             return templateManifest;
         }
-
 
         internal static FileUri MainTemplateUri(this TemplateManifest templateUri)
         {

@@ -175,7 +175,9 @@
       <DependentUpon>AddEdit.ascx</DependentUpon>
     </Compile>
     <Compile Include="Components\Alpaca\AlpacaLayoutEnum.cs" />
+    <Compile Include="Components\Files\DnnFileRepositoryAdapter.cs" />
     <Compile Include="Components\App\IAppServices.cs" />
+    <Compile Include="Components\Files\IFileRepositoryAdapter.cs" />
     <Compile Include="Components\App\MyServices.cs" />
     <Compile Include="Components\Caching\DnnCacheAdapter.cs" />
     <Compile Include="Components\Caching\ICacheAdapter.cs" />

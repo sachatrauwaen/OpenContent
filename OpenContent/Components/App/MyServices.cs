@@ -1,5 +1,6 @@
 ﻿using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components.Dnn;
+using Satrabel.OpenContent.Components.Files;
 using Satrabel.OpenContent.Components.Indexing;
 using Satrabel.OpenContent.Components.Localization;
 using Satrabel.OpenContent.Components.Logging;
@@ -16,6 +17,7 @@ namespace Satrabel.OpenContent.Components
         public ILogAdapter Logger => DnnLogAdapter.GetLogAdapter(App.Config.Opencontent);
         public IIndexAdapter IndexAdapter => new LuceneIndexAdapter(@"App_Data\OpenContent\lucene_index");
         public ICacheAdapter CacheAdapter => new DnnCacheAdapter();
+        public IFileRepositoryAdapter FileRepository => new DnnFileRepositoryAdapter();
         public IGlobalSettingsRepositoryAdapter GlobalSettings => new DnnGlobalSettingsRepositoryAdapter(PortalSettings.Current.PortalId);
     }
 }

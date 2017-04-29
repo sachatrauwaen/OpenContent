@@ -11,6 +11,7 @@ namespace Satrabel.OpenContent.Components
         IIndexAdapter IndexAdapter { get; }
         ILocalizationAdapter LocalizationAdapter { get; }
         ICacheAdapter CacheAdapter { get; }
+        IFileRepositoryAdapter FileRepository { get; }
         IGlobalSettingsRepositoryAdapter GlobalSettings { get; }
     }
 }
