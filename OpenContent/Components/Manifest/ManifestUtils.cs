@@ -56,7 +56,7 @@ namespace Satrabel.OpenContent.Components.Manifest
             try
             {
                 var file = new FileUri(folder.UrlFolder, "manifest.json");
-                var manifest = App.Services.FileRepository.LoadDeserializedJsonFileFromCacheOrDisk<Manifest>(file);
+                var manifest = App.Services.FileRepository.LoadJsonFileFromCacheOrDisk<Manifest>(file);
                 return manifest;
             }
             catch (Exception ex)

@@ -6,7 +6,7 @@ namespace Satrabel.OpenContent.Components.Files
 {
     public class DnnFileRepositoryAdapter : IFileRepositoryAdapter
     {
-        public T LoadDeserializedJsonFileFromCacheOrDisk<T>(FileUri file)
+        public T LoadJsonFileFromCacheOrDisk<T>(FileUri file)
         {
             try
             {

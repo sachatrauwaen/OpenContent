@@ -2,6 +2,6 @@
 {
     public interface IFileRepositoryAdapter
     {
-        T LoadDeserializedJsonFileFromCacheOrDisk<T>(FileUri file);
+        T LoadJsonFileFromCacheOrDisk<T>(FileUri file);
     }
 }
