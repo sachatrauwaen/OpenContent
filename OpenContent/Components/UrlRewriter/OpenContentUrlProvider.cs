@@ -36,7 +36,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
 //                    stopwatch.Stop();
 //                    speed = stopwatch.Elapsed.Milliseconds;
 //                    mess = $"PortalId: {portalId}. Time elapsed: {stopwatch.Elapsed.Milliseconds}ms. All Cached. PurgedItems: {purgeResult.PurgedItemCount}. Speed: {speed}";
-//                    Log.Logger.Error(mess);
+//                    App.Services.Logger.Error(mess);
 //#endif
                     return portalRules;
                 }
@@ -78,7 +78,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                             var dataList = ds.GetAll(dsContext, null).Items.ToList();
                             if (dataList.Count() > 1000)
                             {
-                                Log.Logger.Warn($"Module {module.DataModule.ModuleID} (portal/tab {module.DataModule.PortalID}/{module.DataModule.TabID}) has >1000 items. We are not making sluggs for them as this would be too inefficient");
+                                App.Services.Logger.Warn($"Module {module.DataModule.ModuleID} (portal/tab {module.DataModule.PortalID}/{module.DataModule.TabID}) has >1000 items. We are not making sluggs for them as this would be too inefficient");
                                 continue;
                             }
                             var physicalTemplateFolder = module.Settings.TemplateDir.PhysicalFullDirectory + "\\";
@@ -95,7 +95,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                                 //dynamic model = mf.GetModelAsDynamic(true);
                                 //dynamic items = model.Items;
                                 IEnumerable<Dictionary<string, object>> items = mf.GetModelAsDictionaryList();
-                                //Log.Logger.Debug("OCUR/" + PortalId + "/" + module.TabID + "/" + MainTabId + "/" + module.ModuleID + "/" + MainModuleId + "/" + CultureCode + "/" + dataList.Count() + "/" + module.ModuleTitle);
+                                //App.Services.Logger.Debug("OCUR/" + PortalId + "/" + module.TabID + "/" + MainTabId + "/" + module.ModuleID + "/" + MainModuleId + "/" + CultureCode + "/" + dataList.Count() + "/" + module.ModuleTitle);
                                 //foreach (IDataItem content in dataList)
                                 foreach (Dictionary<string, object> content in items)
                                 {
@@ -112,7 +112,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                                         }
                                         catch (Exception ex)
                                         {
-                                            Log.Logger.Error("Failed to generate url for opencontent item " + id, ex);
+                                            App.Services.Logger.Error("Failed to generate url for opencontent item " + id, ex);
                                         }
                                     }
 
@@ -144,7 +144,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                     }
                     catch (Exception ex)
                     {
-                        Log.Logger.Error("Failed to generate url for opencontent module " + module.ViewModule.ModuleID, ex);
+                        App.Services.Logger.Error("Failed to generate url for opencontent module " + module.ViewModule.ModuleID, ex);
                     }
 
                 }
@@ -153,7 +153,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
 //                stopwatch.Stop();
 //                speed = (cachedModules + nonCached) == 0 ? -1 : stopwatch.Elapsed.Milliseconds / (cachedModules + nonCached);
 //                mess = $"PortalId: {portalId}. Time elapsed: {stopwatch.Elapsed.Milliseconds}ms. Module Count: {modules.Count()}. Relevant Modules: {cachedModules + nonCached}. CachedModules: {cachedModules}. PurgedItems: {purgeResult.PurgedItemCount}. Speed: {speed}";
-//                Log.Logger.Error(mess);
+//                App.Services.Logger.Error(mess);
 //                Console.WriteLine(mess);
 //#endif
                 return rules;

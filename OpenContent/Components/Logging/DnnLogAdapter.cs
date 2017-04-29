@@ -1,7 +1,9 @@
 using System;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Web;
 using DotNetNuke.Instrumentation;
+using DotNetNuke.Services.Installer.Log;
 
 namespace Satrabel.OpenContent.Components.Logging
 {
@@ -77,6 +79,21 @@ namespace Satrabel.OpenContent.Components.Logging
             if (HttpContext.Current?.Request != null)
                 message = $"{message} {Environment.NewLine}Called from {HttpContext.Current.Request.RawUrl}.";
             return message;
+        }
+
+        public void LogServiceResult(HttpResponseMessage response, string responsemessage = "")
+        {
+            if (IsDebugEnabled)
+            {
+                StackTrace st = new StackTrace();
+
+                string method = st.GetFrame(1).GetMethod().Name == "CreateResponse"
+                    ? st.GetFrame(2).GetMethod().Name
+                    : st.GetFrame(1).GetMethod().Name;
+
+                var emp = string.IsNullOrEmpty(responsemessage) ? "<empty>" : responsemessage;
+                Debug($"Result from '{method}' with status '{response.StatusCode}': {emp} \r\n");
+            }
         }
     }
 }

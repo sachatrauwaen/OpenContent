@@ -97,7 +97,7 @@ namespace Satrabel.OpenContent.Components.Lucene
         /// </summary>
         public void IndexAll() //todo: this should only be called from DataSourceProviders
         {
-            Log.Logger.Info("Reindexing all OpenContent data, from all portals");
+            App.Services.Logger.Info("Reindexing all OpenContent data, from all portals");
             LuceneIndexAdapter.ClearInstance();
             try
             {
@@ -117,13 +117,13 @@ namespace Satrabel.OpenContent.Components.Lucene
             }
             catch (Exception ex)
             {
-                Log.Logger.Error("Error while Reindexing all OpenContent data, from all portals", ex);
+                App.Services.Logger.Error("Error while Reindexing all OpenContent data, from all portals", ex);
             }
             finally
             {
                 LuceneIndexAdapter.ClearInstance();
             }
-            Log.Logger.Info("Finished Reindexing all OpenContent data, from all portals");
+            App.Services.Logger.Info("Finished Reindexing all OpenContent data, from all portals");
         }
 
         /// <summary>

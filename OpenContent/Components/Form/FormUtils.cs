@@ -247,7 +247,7 @@ namespace Satrabel.OpenContent.Components.Form
                         catch (Exception exc)
                         {
                             Errors.Add("Notification " + (settings.Notifications.IndexOf(notification) + 1) + " : " + exc.Message);
-                            Log.Logger.Error(exc);
+                            App.Services.Logger.Error(exc);
                         }
                     }
                 }

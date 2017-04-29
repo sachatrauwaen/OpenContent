@@ -112,7 +112,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                     }
                     else
                     {
-                        Log.Logger.Debug($"DnnUsersDataSource.GetAll() ContentItem not found [{item}]");
+                        App.Services.Logger.Debug($"DnnUsersDataSource.GetAll() ContentItem not found [{item}]");
                     }
                 }
                 return new DefaultDataItems()
@@ -236,7 +236,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             }
             else
             {
-                Log.Logger.Error($"Creation of user failed with createStatus: {createStatus}");
+                App.Services.Logger.Error($"Creation of user failed with createStatus: {createStatus}");
                 throw new DataNotValidException(Localizer.Instance.GetString(createStatus.ToString()) + " (1)");
             }
             var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection);
@@ -297,7 +297,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                     }
                     catch (Exception exc)
                     {
-                        Log.Logger.Error($"Update of user {user.Username} failed with 'Username not valid' error");
+                        App.Services.Logger.Error($"Update of user {user.Username} failed with 'Username not valid' error");
                         throw new DataNotValidException(Localizer.Instance.GetString("Username not valid") + " (2)", exc);
                     }
                 }
@@ -398,7 +398,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             // Check New Password is Valid
             if (!UserController.ValidatePassword(password))
             {
-                Log.Logger.Error($"Changing password of user {user.Username} failed with PasswordInvalid error");
+                App.Services.Logger.Error($"Changing password of user {user.Username} failed with PasswordInvalid error");
                 throw new DataNotValidException(Localizer.Instance.GetString("PasswordInvalid"));
             }
             // Check New Password is not same as username or banned
@@ -408,7 +408,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 var m = new MembershipPasswordController();
                 if (m.FoundBannedPassword(password) || user.Username == password)
                 {
-                    Log.Logger.Error($"Changing password of user {user.Username} failed with BannedPasswordUsed error");
+                    App.Services.Logger.Error($"Changing password of user {user.Username} failed with BannedPasswordUsed error");
                     throw new DataNotValidException(Localizer.Instance.GetString("BannedPasswordUsed"));
                 }
             }

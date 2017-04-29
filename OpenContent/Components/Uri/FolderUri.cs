@@ -12,7 +12,7 @@ namespace Satrabel.OpenContent.Components
         {
             if (string.IsNullOrEmpty(pathToFolder))
             {
-                throw new ArgumentNullException("pathToFolder");
+                throw new ArgumentNullException(nameof(pathToFolder));
             }
             FolderPath = NormalizePath(pathToFolder);
         }
@@ -27,14 +27,7 @@ namespace Satrabel.OpenContent.Components
         /// </value>
         public string FolderPath { get; private set; }
 
-        protected string UrlPath
-        {
-            get
-            {
-                //if (NormalizedApplicationPath == "/" && FolderPath.StartsWith("/")) return FolderPath;
-                return NormalizedApplicationPath + FolderPath;
-            }
-        }
+        protected string UrlPath => NormalizedApplicationPath + FolderPath;
 
         /// <summary>
         /// Gets the URL directory relative to the root of the webserver. With leading / and trailing /.
@@ -42,28 +35,11 @@ namespace Satrabel.OpenContent.Components
         /// <value>
         /// The URL folder.
         /// </value>
-        public string UrlFolder
-        {
-            get
-            {
-                return UrlPath.TrimEnd('/') + "/";
-            }
-        }
-        public string PhysicalFullDirectory
-        {
-            get
-            {
-                return HostingEnvironment.MapPath("~/" + FolderPath);
-            }
-        }
+        public string UrlFolder => UrlPath.TrimEnd('/') + "/";
 
-        public bool FolderExists
-        {
-            get
-            {
-                return Directory.Exists(PhysicalFullDirectory);
-            }
-        }
+        public string PhysicalFullDirectory => HostingEnvironment.MapPath("~/" + FolderPath);
+
+        public bool FolderExists => Directory.Exists(PhysicalFullDirectory);
 
         public FolderUri ParentFolder
         {
@@ -77,7 +53,7 @@ namespace Satrabel.OpenContent.Components
                 }
                 catch (Exception ex)
                 {
-                    Log.Logger.Error($"Can't get ParentFolder from {FolderPath}");
+                   App.Services.Logger.Error($"Can't get ParentFolder from {FolderPath}", ex);
                 }
                 return null;
             }

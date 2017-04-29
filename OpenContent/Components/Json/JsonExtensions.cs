@@ -79,7 +79,7 @@ namespace Satrabel.OpenContent.Components.Json
             catch (Exception ex)
             {
                 string mess = $"Error while parsing file [{file.FilePath}]";
-                Log.Logger.Error(mess, ex);
+                App.Services.Logger.Error(mess, ex);
                 throw new Exception(mess, ex);
             }
         }
@@ -93,7 +93,7 @@ namespace Satrabel.OpenContent.Components.Json
             catch (Exception ex)
             {
                 string mess = string.Format("Error while parsing text [{0}]", desc);
-                Log.Logger.Error(mess, ex);
+                App.Services.Logger.Error(mess, ex);
                 throw new Exception(mess, ex);
             }
         }
@@ -107,7 +107,7 @@ namespace Satrabel.OpenContent.Components.Json
             catch (Exception ex)
             {
                 string mess = string.Format("Error while parsing object [{0}]", desc);
-                Log.Logger.Error(mess, ex);
+                App.Services.Logger.Error(mess, ex);
                 throw new Exception(mess, ex);
             }
         }

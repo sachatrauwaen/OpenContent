@@ -23,7 +23,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             }
             catch (Exception ex)
             {
-                Log.Logger.Error($"Error while searching {type}, {query}");
+                App.Services.Logger.Error($"Error while searching {type}, {query}");
                 throw;
             }
         }

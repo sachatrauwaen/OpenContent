@@ -353,7 +353,6 @@
     <Compile Include="Components\Json\JsonUtils.cs" />
     <Compile Include="Components\DnnEntitiesAPIController.cs" />
     <Compile Include="Components\Utils\HttpUtils.cs" />
-    <Compile Include="Components\Logging\Logger.cs" />
     <Compile Include="Components\OpenContentController.cs" />
     <Compile Include="Components\OpenContentInfo.cs" />
     <Compile Include="Components\OpenContentAPIController.cs" />

@@ -409,7 +409,7 @@ namespace Satrabel.OpenContent
             if (moduleInfo == null)
             {
                 //This should never happen
-                Log.Logger.Error($"Module {dataModuleId} not found while in GetOtherModuleDetailTabId()");
+                App.Services.Logger.Error($"Module {dataModuleId} not found while in GetOtherModuleDetailTabId()");
                 return 0;
             }
 

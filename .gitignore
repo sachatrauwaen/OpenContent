@@ -4,3 +4,5 @@ packages/
 custom.targets
 obj/
 Install/
+*.user
+OpenContentDnnHost/bin/

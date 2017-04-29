@@ -126,13 +126,13 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
                         }
                         catch (Exception ex)
                         {
-                            Log.Logger.Warn($"Warning for page {HttpContext.Current.Request.RawUrl}. Error processing croppers for {url} in {content}. Error: {ex.Message}");
+                            App.Services.Logger.Warn($"Warning for page {HttpContext.Current.Request.RawUrl}. Error processing croppers for {url} in {content}. Error: {ex.Message}");
                         }
                     }
                 }
                 else
                 {
-                    //Log.Logger.Debug(string.Format("Warning for page {0}. Can't find croppers in {1}. ", HttpContext.Current.Request.RawUrl, contentItem.Content));
+                    //App.Services.Logger.Debug(string.Format("Warning for page {0}. Can't find croppers in {1}. ", HttpContext.Current.Request.RawUrl, contentItem.Content));
                 }
 
             }

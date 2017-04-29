@@ -468,7 +468,7 @@ namespace Satrabel.OpenContent.Components
             if (settings?.TemplateKey?.TemplateDir != null && !settings.TemplateKey.TemplateDir.FolderExists)
             {
                 var url = DnnUrlUtils.NavigateUrl(module.ViewModule.TabID);
-                Log.Logger.Error($"Error loading OpenContent Template on page [{module.ViewModule.PortalID}-{module.ViewModule.TabID}-{url}] module [{module.ViewModule.ModuleID}-{module.ViewModule.ModuleTitle}]. Reason: Template not found [{settings.TemplateKey}]");
+                App.Services.Logger.Error($"Error loading OpenContent Template on page [{module.ViewModule.PortalID}-{module.ViewModule.TabID}-{url}] module [{module.ViewModule.ModuleID}-{module.ViewModule.ModuleTitle}]. Reason: Template not found [{settings.TemplateKey}]");
                 result = false;
             }
             return result;
@@ -520,7 +520,7 @@ namespace Satrabel.OpenContent.Components
             catch (Exception ex)
             {
                 //we should log this
-                Log.Logger.Error($"Error while parsing json", ex);
+                App.Services.Logger.Error($"Error while parsing json", ex);
                 if (Debugger.IsAttached) Debugger.Break();
                 return null;
             }

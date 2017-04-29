@@ -216,7 +216,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     }
                     else
                     {
-                        Log.Logger.Warn("Failed to load CKEeditor. Please install a DNN CKEditor Provider.");
+                        App.Services.Logger.Warn("Failed to load CKEeditor. Please install a DNN CKEditor Provider.");
                     }
                 }
             }

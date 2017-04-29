@@ -29,7 +29,7 @@ namespace Satrabel.OpenContent.Components
                 {
                     if (!DnnPermissionsUtils.HasEditPermissions(PortalSettings, module.ViewModule, editRole, -1))
                     {
-                        Log.Logger.Warn($"Failed the HasEditPermissions() check");
+                        App.Services.Logger.Warn($"Failed the HasEditPermissions() check");
                         return Request.CreateResponse(HttpStatusCode.Unauthorized, "Failed the HasEditPermissions() check");
                     }
                     var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
@@ -48,7 +48,7 @@ namespace Satrabel.OpenContent.Components
             }
             catch (Exception exc)
             {
-                Log.Logger.Error(exc);
+                App.Services.Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }

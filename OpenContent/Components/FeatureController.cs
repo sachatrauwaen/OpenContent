@@ -81,27 +81,27 @@ namespace Satrabel.OpenContent.Components
         #region ModuleSearchBase
         public override IList<SearchDocument> GetModifiedSearchDocuments(ModuleInfo modInfo, DateTime beginDateUtc)
         {
-            Log.Logger.Trace($"Indexing content Module {modInfo.ModuleID} - Tab {modInfo.TabID} - Culture {modInfo.CultureCode}- indexing from {beginDateUtc}");
+            App.Services.Logger.Trace($"Indexing content Module {modInfo.ModuleID} - Tab {modInfo.TabID} - Culture {modInfo.CultureCode}- indexing from {beginDateUtc}");
             var searchDocuments = new List<SearchDocument>();
 
             //If module is marked as "don't index" then return no results
             if (modInfo.ModuleSettings.GetValue("AllowIndex", "True") == "False")
             {
-                Log.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} - NOT - MODULE Indexing disabled");
+                App.Services.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} - NOT - MODULE Indexing disabled");
                 return searchDocuments;
             }
 
             //If tab of the module is marked as "don't index" then return no results
             if (modInfo.ParentTab.TabSettings.GetValue("AllowIndex", "True") == "False")
             {
-                Log.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} - NOT - TAB Indexing disabled");
+                App.Services.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} - NOT - TAB Indexing disabled");
                 return searchDocuments;
             }
 
             //If tab is marked as "inactive" then return no results
             if (modInfo.ParentTab.DisableLink)
             {
-                Log.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} - NOT - TAB is inactive");
+                App.Services.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} - NOT - TAB is inactive");
                 return searchDocuments;
             }
 
@@ -122,13 +122,13 @@ namespace Satrabel.OpenContent.Components
             IDataItems contentList = ds.GetAll(dsContext, null);
             if (!contentList.Items.Any())
             {
-                Log.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} - NOT - No content found");
+                App.Services.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} - NOT - No content found");
             }
             foreach (IDataItem content in contentList.Items)
             {
                 if (content == null)
                 {
-                    Log.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} - NOT - Content is Null");
+                    App.Services.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} - NOT - Content is Null");
                 }
                 else if (content.LastModifiedOnDate.ToUniversalTime() > beginDateUtc 
                       && content.LastModifiedOnDate.ToUniversalTime() < DateTime.UtcNow)
@@ -149,12 +149,12 @@ namespace Satrabel.OpenContent.Components
                     {
                         searchDoc = CreateSearchDocument(modInfo, settings, content.Data, content.Id, "", content.Title, JsonToSearchableString(content.Data), content.LastModifiedOnDate.ToUniversalTime());
                         searchDocuments.Add(searchDoc);
-                        Log.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} -  OK!  {searchDoc.Title} ({modInfo.TabID}) of {content.LastModifiedOnDate.ToUniversalTime()}");
+                        App.Services.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} -  OK!  {searchDoc.Title} ({modInfo.TabID}) of {content.LastModifiedOnDate.ToUniversalTime()}");
                     }
                 }
                 else
                 {
-                    Log.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} - NOT - No need to index: lastmod {content.LastModifiedOnDate.ToUniversalTime()} ");
+                    App.Services.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} - NOT - No need to index: lastmod {content.LastModifiedOnDate.ToUniversalTime()} ");
                 }
             }
             return searchDocuments;
@@ -179,7 +179,7 @@ namespace Satrabel.OpenContent.Components
                 description = JsonToSearchableString(singleLanguage);
             }
             var searchDoc = CreateSearchDocument(moduleInfo, settings, singleLanguage, content.Id, culture, title.ToString(), description.ToString(), content.LastModifiedOnDate.ToUniversalTime());
-            Log.Logger.Debug($"Indexing content {moduleInfo.ModuleID}|{culture} -  OK!  {searchDoc.Title} ({ moduleInfo.TabID})  {content.LastModifiedOnDate.ToUniversalTime()}");
+            App.Services.Logger.Debug($"Indexing content {moduleInfo.ModuleID}|{culture} -  OK!  {searchDoc.Title} ({ moduleInfo.TabID})  {content.LastModifiedOnDate.ToUniversalTime()}");
             return searchDoc;
         }
 

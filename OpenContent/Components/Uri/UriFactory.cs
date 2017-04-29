@@ -14,7 +14,7 @@ namespace Satrabel.OpenContent.Components
             }
             catch (Exception ex)
             {
-                Log.Logger.Error($"Error while trying to create PortalFileUri: portalFileId:{portalFileId}", ex);
+                App.Services.Logger.Error($"Error while trying to create PortalFileUri: portalFileId:{portalFileId}", ex);
             }
             return retval;
         }
@@ -52,7 +52,7 @@ namespace Satrabel.OpenContent.Components
             }
             catch (Exception ex)
             {
-                Log.Logger.Error($"Error while trying to create PortalFileUri: portalFileId:{portalFileId}", ex);
+                App.Services.Logger.Error($"Error while trying to create PortalFileUri: portalFileId:{portalFileId}", ex);
             }
             return retval;
         }
@@ -65,7 +65,7 @@ namespace Satrabel.OpenContent.Components
             }
             catch (Exception ex)
             {
-                Log.Logger.Error($"Error while trying to create PortalFileUri: portalid:{portalId}, filepath:{filePath}", ex);
+                App.Services.Logger.Error($"Error while trying to create PortalFileUri: portalid:{portalId}, filepath:{filePath}", ex);
             }
             return retval;
         }

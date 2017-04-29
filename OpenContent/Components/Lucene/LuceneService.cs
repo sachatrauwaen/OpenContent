@@ -251,7 +251,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             {
                 if (doWait)
                 {
-                    Log.Logger.Debug("Compacting Search Index - started");
+                    App.Services.Logger.Debug("Compacting Search Index - started");
                 }
 
                 CheckDisposed();
@@ -261,7 +261,7 @@ namespace Satrabel.OpenContent.Components.Lucene
                 if (doWait)
                 {
                     Commit();
-                    Log.Logger.Debug("Compacting Search Index - finished");
+                    App.Services.Logger.Debug("Compacting Search Index - finished");
                 }
 
                 return true;

@@ -107,23 +107,23 @@ namespace Satrabel.OpenContent.Components.Logging
         public static void ProcessLogFileException(DotNetNuke.Web.Razor.RazorModuleBase ctrl, Exception exc)
         {
             string friendlyMessage = PrepareErrorMessage(ctrl, exc);
-            Log.Logger.Error(friendlyMessage);
+            App.Services.Logger.Error(friendlyMessage);
         }
         public static void ProcessLogFileException(Control ctrl, ModuleInfo module, Exception exc)
         {
             string friendlyMessage = PrepareErrorMessage(module, exc);
-            Log.Logger.Error(friendlyMessage);
+            App.Services.Logger.Error(friendlyMessage);
         }
 
         public static void ProcessApiLoadException(DnnApiController ctrl, Exception exc)
         {
             string friendlyMessage = PrepareErrorMessage(ctrl, exc);
-            Log.Logger.Error(friendlyMessage);
+            App.Services.Logger.Error(friendlyMessage);
         }
         public static void RenderEngineException(RenderEngine ctrl, Exception exc)
         {
             string friendlyMessage = PrepareErrorMessage(ctrl, exc);
-            Log.Logger.Error(friendlyMessage);
+            App.Services.Logger.Error(friendlyMessage);
         }
 
         public static void ProcessModuleLoadException(DotNetNuke.Web.Razor.RazorModuleBase ctrl, Exception exc)

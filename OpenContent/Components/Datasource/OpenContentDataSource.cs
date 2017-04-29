@@ -126,7 +126,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             }
             if (content == null)
             {
-                Log.Logger.Warn($"Item not shown because no content item found. Id [{id}]. Context TabId: [{GetTabId(context)}], ModuleId: [{GetModuleId(context)}]");
+                App.Services.Logger.Warn($"Item not shown because no content item found. Id [{id}]. Context TabId: [{GetTabId(context)}], ModuleId: [{GetModuleId(context)}]");
                 LogContext.Log(context.ActiveModuleId, "Get DataItem", "Result", "not item found with id " + id);
             }
             else if (content.ModuleId == GetModuleId(context) && content.Collection == context.Collection)
@@ -223,7 +223,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                     }
                     else
                     {
-                        Log.Logger.Debug($"OpenContentDataSource.GetAll() ContentItem not found [{item}]");
+                        App.Services.Logger.Debug($"OpenContentDataSource.GetAll() ContentItem not found [{item}]");
                     }
                 }
                 return new DefaultDataItems()
