@@ -26,12 +26,12 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
 
         #region Private Methods
 
-        private static string GenerateModuleCacheKeyHash(int tabId, int viewModuleId, int dataModuleId,  string cacheKey)
+        private static string GenerateModuleCacheKeyHash(int tabId, int viewModuleId, int dataModuleId, string cacheKey)
         {
             byte[] hash = Encoding.ASCII.GetBytes(cacheKey);
             var sha256 = new SHA256CryptoServiceProvider();
             hash = sha256.ComputeHash(hash);
-            return viewModuleId +"_"+dataModuleId+ "_" + tabId + "_" + ByteArrayToString(hash);
+            return viewModuleId + "_" + dataModuleId + "_" + tabId + "_" + ByteArrayToString(hash);
         }
 
         private static string GeneratePortalCacheKeyHash(int portalId, string cacheKey)
@@ -159,7 +159,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
 
         #region Abstract Method Implementation
 
-        public static string GenerateModuleCacheKey(int tabId, int viewModuleId, int dataModuleId,  SortedDictionary<string, string> varyBy)
+        public static string GenerateModuleCacheKey(int tabId, int viewModuleId, int dataModuleId, SortedDictionary<string, string> varyBy)
         {
             var cacheKey = new StringBuilder();
             if (varyBy != null)
@@ -299,7 +299,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
             string cacheFolder = GetCacheFolder(portalId);
             var filesNotDeleted = new StringBuilder();
             int i = 0;
-            foreach (string file in Directory.GetFiles(cacheFolder, "*_"+dataModuleId + "_*.*"))
+            foreach (string file in Directory.GetFiles(cacheFolder, "*_" + dataModuleId + "_*.*"))
             {
                 if (!FileSystemUtils.DeleteFileWithWait(file, 100, 200))
                 {

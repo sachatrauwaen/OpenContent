@@ -845,7 +845,7 @@ namespace Satrabel.OpenContent.Components
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, new
                 {
-                    isValid = true                 
+                    isValid = true
                 });
             }
             catch (Exception exc)

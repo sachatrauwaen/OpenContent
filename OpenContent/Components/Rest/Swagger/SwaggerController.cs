@@ -97,7 +97,7 @@ namespace Satrabel.OpenContent.Components.Rest.Swagger
                     //{
                     //    Ref = "#/definitions/items"
                     //});
-                    
+
                     // Get()
                     // Get(pageIndex, pageSize, filter, sort)
                     var pi = new PathItem();

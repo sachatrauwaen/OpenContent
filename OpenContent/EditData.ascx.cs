@@ -126,7 +126,7 @@ namespace Satrabel.OpenContent
                         {
                             template = settings.Template;
                         }
-                        
+
                         if (template != null && template.IsListTemplate)
                         {
                             ddlVersions.Visible = false;
@@ -212,7 +212,7 @@ namespace Satrabel.OpenContent
                         var dsContext = OpenContentUtils.CreateDataContext(module);
                         string key = selectedDataType;
                         var dataManifest = manifest.GetAdditionalData(key);
-                        
+
                         var dsItem = ds.GetData(dsContext, dataManifest.ScopeType, dataManifest.StorageKey ?? key);
                         json = dsItem == null ? "" : dsItem.Data.ToString();
                         break;
@@ -256,7 +256,7 @@ namespace Satrabel.OpenContent
             {
                 SaveAdditionalData(sourceList.SelectedValue);
             }
-            
+
         }
 
         private void SaveAdditionalData(string key)
@@ -307,8 +307,8 @@ namespace Satrabel.OpenContent
             IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
             var dsContext = OpenContentUtils.CreateDataContext(module);
 
-     
-            
+
+
             if (template != null && template.IsListTemplate)
             {
                 string itemId = Request.QueryString["id"];

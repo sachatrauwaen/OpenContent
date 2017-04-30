@@ -185,7 +185,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 //var form = Page.FindControl("Form");
                 //if (form.FindControl("CKDNNporid") == null)
                 {
-                    if (CKEditorIngoThaWatchaIsInstalled())
+                    if (CKEditorIngoThaWatchaIsInstalled)
                     {
                         ClientResourceManager.RegisterScript(Page, "~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js", FileOrder.Js.DefaultPriority);
                         DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "PortalId", PortalId.ToString(), true);
@@ -196,10 +196,10 @@ namespace Satrabel.OpenContent.Components.Alpaca
                         form.Controls.Add(CKDNNporid);
                         CKDNNporid.Value = PortalId.ToString();
                         */
-                        RegisterStartupScript("oc-ckdnnporid", string.Format(@"<input type=""hidden"" id=""CKDNNporid"" value=""{0}"">", PortalId), false);
+                        RegisterStartupScript("oc-ckdnnporid", $@"<input type=""hidden"" id=""CKDNNporid"" value=""{PortalId}"">", false);
                         GenerateEditorLoadScript(PortalId);
                     }
-                    else if (CKEditorDnnConnectIsInstalled())
+                    else if (CKEditorDnnConnectIsInstalled)
                     {
                         ClientResourceManager.RegisterScript(Page, "~/Providers/HtmlEditorProviders/DNNConnect.CKE/js/ckeditor/4.5.3/ckeditor.js", FileOrder.Js.DefaultPriority);
                         DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "PortalId", PortalId.ToString(), true);
@@ -211,7 +211,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                         form.Controls.Add(CKDNNporid);
                         CKDNNporid.Value = PortalId.ToString();
                         */
-                        RegisterStartupScript("oc-ckdnnporid", string.Format(@"<input type=""hidden"" id=""CKDNNporid"" value=""{0}"">", PortalId), false);
+                        RegisterStartupScript("oc-ckdnnporid", $@"<input type=""hidden"" id=""CKDNNporid"" value=""{PortalId}"">", false);
                         GenerateEditorLoadScript(PortalId);
                     }
                     else
@@ -231,19 +231,12 @@ namespace Satrabel.OpenContent.Components.Alpaca
             {
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/summernote/summernote.min.js", FileOrder.Js.DefaultPriority, "DnnPageHeaderProvider");
                 ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/summernote/summernote.css", FileOrder.Css.DefaultPriority);
-
             }
         }
 
-        private bool CKEditorDnnConnectIsInstalled()
-        {
-            return File.Exists(HostingEnvironment.MapPath("~/Providers/HtmlEditorProviders/DNNConnect.CKE/js/ckeditor/4.5.3/ckeditor.js"));
-        }
+        private static bool CKEditorDnnConnectIsInstalled => File.Exists(HostingEnvironment.MapPath("~/Providers/HtmlEditorProviders/DNNConnect.CKE/js/ckeditor/4.5.3/ckeditor.js"));
 
-        private bool CKEditorIngoThaWatchaIsInstalled()
-        {
-            return File.Exists(HostingEnvironment.MapPath("~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js"));
-        }
+        private static bool CKEditorIngoThaWatchaIsInstalled => File.Exists(HostingEnvironment.MapPath("~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js"));
 
         private JToken GetOptions()
         {
@@ -275,9 +268,9 @@ namespace Satrabel.OpenContent.Components.Alpaca
             return optionsJson;
         }
 
-        private List<string> FieldTypes(JToken options)
+        private static List<string> FieldTypes(JToken options)
         {
-            List<string> types = new List<string>();
+            var types = new List<string>();
             var fields = options["fields"];
             if (fields != null)
             {
@@ -452,7 +445,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
             //editorScript.Append("}");
 
             //ClientResourceManager.RegisterScript(string.Format(@"{0}_CKE_Config", editorFixedId), editorConfigScript.ToString(), true);
-            RegisterStartupScript(string.Format(@"{0}_CKE_Startup", editorFixedId), editorScript.ToString(), true);
+            RegisterStartupScript($@"{editorFixedId}_CKE_Startup", editorScript.ToString(), true);
         }
 
         private string EnableConfigHelper()

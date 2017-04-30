@@ -96,12 +96,13 @@ namespace Satrabel.OpenContent.Components.Json
             }
         }
 
-        public static string SimplifyJson(string json, string culture)
-        {
-            JObject obj = JObject.Parse(json);
-            SimplifyJson(obj, culture);
-            return obj.ToString();
-        }
+        //public static string SimplifyJson(string json, string culture)
+        //{
+        //    JObject obj = JObject.Parse(json);
+        //    SimplifyJson(obj, culture);
+        //    return obj.ToString();
+        //}
+
         public static void SimplifyJson(JObject o, string culture)
         {
 

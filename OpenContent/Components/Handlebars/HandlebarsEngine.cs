@@ -153,7 +153,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             }
             catch (Exception ex)
             {
-                App.Services.Logger.Error(string.Format("Failed to render Handlebar template source:[{0}], model:[{1}]", sourceFileUri, model), ex);
+                App.Services.Logger.Error($"Failed to render Handlebar template source:[{sourceFileUri}], model:[{model}]", ex);
                 throw new TemplateException("Failed to render Handlebar template " + sourceFileUri.FilePath, ex, model, sourceFileUri.FilePath);
             }
         }

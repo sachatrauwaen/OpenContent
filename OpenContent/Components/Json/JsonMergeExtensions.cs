@@ -32,8 +32,7 @@ namespace Satrabel.OpenContent.Components.Json
         /// <param name="left">Token</param>
         /// <param name="right">Token to merge, overwriting the left</param>
         /// <returns>A new merged token</returns>
-        public static JToken JsonMerge(
-            this JToken left, JToken right)
+        public static JToken JsonMerge(this JToken left, JToken right)
         {
             return JsonMerge(left, right, JsonMergeOptions.Default);
         }

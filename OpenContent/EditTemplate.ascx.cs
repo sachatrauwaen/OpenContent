@@ -67,7 +67,7 @@ namespace Satrabel.OpenContent
                 if (schema != null && schema["items"] != null)
                 {
                     builder["formtype"] = "array";
-                    builder["formfields"] = GetBuilder(schema["items"] as JObject, options != null && options["items"] != null ? options["items"] as JObject : null);
+                    builder["formfields"] = GetBuilder(schema["items"] as JObject, options?["items"] != null ? options["items"] as JObject : null);
                 }
                 else
                 {
@@ -178,7 +178,7 @@ namespace Satrabel.OpenContent
                         field["file2options"] = new JObject();
                         if (opt["folder"] != null)
                         {
-                            field["file2options"]["folder"] = opt["folder"];    
+                            field["file2options"]["folder"] = opt["folder"];
                         }
                         if (opt["filter"] != null)
                         {
@@ -274,21 +274,10 @@ namespace Satrabel.OpenContent
             LoadFiles(template);
             var scriptFile = new FileUri(template.ManifestFolderUri.UrlFolder, scriptList.SelectedValue);
             DisplayFile(scriptFile);
-            /*
-            if (template.MainTemplateUri().FilePath.StartsWith(ModuleTemplateDirectory))
-            {
-                cmdCustom.Visible = false;
-            }
-             */
         }
 
         private void DisplayFile(FileUri template)
         {
-            //string TemplateFolder = template.Directory;
-            //TemplateFolder = OpenContentUtils.ReverseMapPath(TemplateFolder);
-            //string scriptFile = TemplateFolder + "/" + scriptList.SelectedValue;
-            //plSource.Text = scriptFile;
-            //string srcFile = Server.MapPath(scriptFile);
             plSource.Text = template.FilePath;
             string srcFile = template.PhysicalFilePath;
 
@@ -346,7 +335,6 @@ namespace Satrabel.OpenContent
             scriptList.Items.Clear();
             if (template != null)
             {
-                //string templateFolder = template.DirectoryName;
                 if (template.Main != null)
                 {
                     scriptList.Items.Add(new ListItem("Template", template.Main.Template));
@@ -383,7 +371,7 @@ namespace Satrabel.OpenContent
                         scriptList.Items.Add(new ListItem(title + "Options - " + item.Code, "options." + item.Code + ".json"));
                     }
                 }
-               
+
                 if (!OpenContentUtils.BuilderExist(settings.Template.ManifestFolderUri, template.Key.ShortKey))
                 {
                     scriptList.Items.Add(new ListItem("Settings Schema", template.Key.ShortKey + "-schema.json"));

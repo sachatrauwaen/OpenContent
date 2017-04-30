@@ -275,7 +275,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
             FieldConfig newConfig = App.Services.FileRepository.LoadJsonFileFromCacheOrDisk<FieldConfig>(file);
             if (newConfig == null)
             {
-                newConfig = CreateFieldConfigFromSchemaAndOptionFile(key, prefix);
+                newConfig = CreateFieldConfigFromSchemaAndOptionFile(key);
                 var schemaFile = new FileUri(_templateUri.UrlFolder, prefix + "schema.json");
                 var optionsFile = new FileUri(_templateUri.UrlFolder, prefix + "options.json");
 
@@ -284,7 +284,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
             return newConfig;
         }
 
-        private FieldConfig CreateFieldConfigFromSchemaAndOptionFile(string key, string prefix)
+        private FieldConfig CreateFieldConfigFromSchemaAndOptionFile(string key)
         {
             var newConfig = new FieldConfig(true);
             var jsonEdit = Build(key, DnnLanguageUtils.GetCurrentCultureCode(), true, true, false, false);
