@@ -19,6 +19,7 @@ using Satrabel.OpenContent.Components;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.Json;
 using Newtonsoft.Json.Linq;
+using Satrabel.OpenContent.Components.Files;
 
 #endregion
 
@@ -59,8 +60,8 @@ namespace Satrabel.OpenContent
                 string scriptFile = templateFolder + "/" + scriptList.SelectedValue.Replace("schema.json", "builder.json");
                 string srcFile = Server.MapPath(scriptFile);
 
-                var schema = JsonUtils.LoadJsonFromFile(templateFolder + "/" + scriptList.SelectedValue) as JObject;
-                var options = JsonUtils.LoadJsonFromFile(templateFolder + "/" + scriptList.SelectedValue.Replace("schema.json", "options.json")) as JObject;
+                var schema = App.Services.FileRepository.LoadJsonFromFile(new FileUri(templateFolder, scriptList.SelectedValue)) as JObject;
+                var options = App.Services.FileRepository.LoadJsonFromFile(new FileUri(templateFolder, scriptList.SelectedValue.Replace("schema.json", "options.json"))) as JObject;
 
                 JObject builder = new JObject();
 

@@ -26,6 +26,7 @@ using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Dnn;
+using Satrabel.OpenContent.Components.Files;
 
 #endregion
 
@@ -518,7 +519,7 @@ namespace Satrabel.OpenContent.Components
                 if (!string.IsNullOrEmpty(childrenField) && item[childrenField] is JArray)
                 {
                     var childJson = item[childrenField] as JArray;
-                    AddLookupItems(valueField, textField, childrenField, res, childJson, prefix + "..");
+                    AddLookupItems(valueField, textField, childrenField, res, childJson, $"{prefix}..");
                 }
             }
         }
@@ -533,7 +534,7 @@ namespace Satrabel.OpenContent.Components
                 OpenContentSettings settings = ActiveModule.OpenContentSettings();
                 string prefix = string.IsNullOrEmpty(key) ? "" : key + "-";
                 JObject json = new JObject();
-                var dataJson = JsonUtils.LoadJsonFromFile(settings.TemplateDir.UrlFolder + prefix + "builder.json");
+                var dataJson = App.Services.FileRepository.LoadJsonFromFile(new FileUri(settings.TemplateDir, $"{prefix}builder.json"));
                 if (dataJson != null)
                     json["data"] = dataJson;
 
@@ -825,10 +826,10 @@ namespace Satrabel.OpenContent.Components
                     var options = json["options"].ToString();
                     var view = json["view"].ToString();
                     var data = json["data"].ToString();
-                    var datafile = new FileUri(settings.TemplateDir.UrlFolder + prefix + "builder.json");
-                    var schemafile = new FileUri(settings.TemplateDir.UrlFolder + prefix + "schema.json");
-                    var optionsfile = new FileUri(settings.TemplateDir.UrlFolder + prefix + "options.json");
-                    var viewfile = new FileUri(settings.TemplateDir.UrlFolder + prefix + "view.json");
+                    var datafile = new FileUri(settings.TemplateDir, $"{prefix}builder.json");
+                    var schemafile = new FileUri(settings.TemplateDir, $"{prefix}schema.json");
+                    var optionsfile = new FileUri(settings.TemplateDir, $"{prefix}options.json");
+                    var viewfile = new FileUri(settings.TemplateDir, $"{prefix}view.json");
                     try
                     {
                         File.WriteAllText(datafile.PhysicalFilePath, data);

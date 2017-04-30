@@ -34,6 +34,7 @@ namespace Satrabel.OpenContent.Components.Json
         /// <returns>A new merged token</returns>
         public static JToken JsonMerge(this JToken left, JToken right)
         {
+            if (right == null) return left;
             return JsonMerge(left, right, JsonMergeOptions.Default);
         }
 

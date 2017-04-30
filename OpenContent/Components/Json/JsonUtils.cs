@@ -19,36 +19,6 @@ namespace Satrabel.OpenContent.Components.Json
             return jsonData.Trim().Substring(0, 1).IndexOfAny(new[] { '[', '{' }) == 0;
         }
 
-        public static JToken LoadJsonFromFile(string filename)
-        {
-            string cacheKey = filename;
-            var json = App.Services.CacheAdapter.GetCache<JObject>(cacheKey);
-            if (json == null)
-            {
-                var fileUri = new FileUri(filename);
-                json = fileUri.ToJObject() as JObject;
-                if (json != null)
-                {
-                 App.Services.CacheAdapter.SetCache(cacheKey, json, fileUri.PhysicalFilePath);
-                }
-            }
-            return json;
-        }
-
-        public static JObject GetJsonFromFile(string filename)
-        {
-            JObject retval;
-            try
-            {
-                retval = JObject.Parse(File.ReadAllText(filename));
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidJsonFileException($"Invalid json in file {filename}", ex, filename);
-            }
-            return retval;
-        }
-
         public static dynamic JsonToDynamic(string json)
         {
             var dynamicObject = System.Web.Helpers.Json.Decode(json);

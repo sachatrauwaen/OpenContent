@@ -63,12 +63,6 @@ namespace Satrabel.OpenContent.Components
         /// <remarks>This is only available for folders under the Dnn Portal Directory</remarks>
         public IFolderInfo FolderInfo { get; private set; }
 
-        public int DnnFolderId
-        {
-            get
-            {
-                return FolderInfo == null ? 0 : FolderInfo.FolderID;
-            }
-        }
+        public int DnnFolderId => FolderInfo == null ? 0 : FolderInfo.FolderID;
     }
 }

@@ -326,11 +326,11 @@
     <Compile Include="Components\TemplateHelpers\RazorExtensions.cs" />
     <Compile Include="Components\TemplateHelpers\StringHtmlExtensions.cs" />
     <Compile Include="Components\TemplateHelpers\UrlHelpers.cs" />
-    <Compile Include="Components\Uri\UriFactory.cs" />
-    <Compile Include="Components\Uri\PortalFolderUri.cs" />
-    <Compile Include="Components\Uri\PortalFileUri.cs" />
-    <Compile Include="Components\Uri\FolderUri.cs" />
-    <Compile Include="Components\Uri\FileUri.cs" />
+    <Compile Include="Components\Files\UriFactory.cs" />
+    <Compile Include="Components\Files\PortalFolderUri.cs" />
+    <Compile Include="Components\Files\PortalFileUri.cs" />
+    <Compile Include="Components\Files\FolderUri.cs" />
+    <Compile Include="Components\Files\FileUri.cs" />
     <Compile Include="Components\Handlebars\HandlebarsEngine.cs" />
     <Compile Include="Components\JPList\FilterDTO.cs" />
     <Compile Include="Components\JPList\JplistAPIController.cs" />

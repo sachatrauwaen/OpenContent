@@ -240,31 +240,17 @@ namespace Satrabel.OpenContent.Components.Alpaca
 
         private JToken GetOptions()
         {
+            string prefix = (string.IsNullOrEmpty(Prefix) ? "" : $"{Prefix}-");
             string physicalDirectory = HostingEnvironment.MapPath("~/" + VirtualDirectory);
-            JToken optionsJson = null;
+            string optionsFilename = physicalDirectory + "\\" + $"{prefix}options.json";
             // default options
-            string optionsFilename = physicalDirectory + "\\" + (string.IsNullOrEmpty(Prefix) ? "" : Prefix + "-") + "options.json";
-            if (File.Exists(optionsFilename))
-            {
-                string fileContent = File.ReadAllText(optionsFilename);
-                if (!string.IsNullOrWhiteSpace(fileContent))
-                {
-                    optionsJson = JObject.Parse(fileContent);
-                }
-            }
+            JToken optionsJson = App.Services.FileRepository.LoadJsonFileFromDisk(optionsFilename);
+
             // language options
-            optionsFilename = physicalDirectory + "\\" + (string.IsNullOrEmpty(Prefix) ? "" : Prefix + "-") + "options." + DnnLanguageUtils.GetCurrentCultureCode() + ".json";
-            if (File.Exists(optionsFilename))
-            {
-                string fileContent = File.ReadAllText(optionsFilename);
-                if (!string.IsNullOrWhiteSpace(fileContent))
-                {
-                    if (optionsJson == null)
-                        optionsJson = JObject.Parse(fileContent);
-                    else
-                        optionsJson = optionsJson.JsonMerge(JObject.Parse(fileContent));
-                }
-            }
+            optionsFilename = physicalDirectory + "\\" + $"{prefix}options.{DnnLanguageUtils.GetCurrentCultureCode()}.json";
+            JToken languageOptionsJson = App.Services.FileRepository.LoadJsonFileFromDisk(optionsFilename);
+            optionsJson = optionsJson.JsonMerge(languageOptionsJson);
+
             return optionsJson;
         }
 

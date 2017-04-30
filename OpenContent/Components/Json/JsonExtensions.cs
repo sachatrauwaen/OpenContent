@@ -67,22 +67,7 @@ namespace Satrabel.OpenContent.Components.Json
             if (jToken[fieldname].Type != jTokenType)
                 jToken[fieldname] = defaultvalue;
         }
-        public static JToken ToJObject(this FileUri file)
-        {
-            try
-            {
-                if (!file.FileExists) return null;
-                string fileContent = File.ReadAllText(file.PhysicalFilePath);
-                if (string.IsNullOrWhiteSpace(fileContent)) return null;
-                return JToken.Parse(fileContent);
-            }
-            catch (Exception ex)
-            {
-                string mess = $"Error while parsing file [{file.FilePath}]";
-                App.Services.Logger.Error(mess, ex);
-                throw new Exception(mess, ex);
-            }
-        }
+
         public static JToken ToJObject(this string text, string desc)
         {
             try

@@ -3,6 +3,7 @@ using System.IO;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Json;
 using Newtonsoft.Json;
+using Satrabel.OpenContent.Components.Files;
 using Satrabel.OpenContent.Components.Indexing;
 
 namespace Satrabel.OpenContent.Components.Alpaca
@@ -238,30 +239,29 @@ namespace Satrabel.OpenContent.Components.Alpaca
             // schema
             if (schema)
             {
-                var schemaJson = JsonUtils.LoadJsonFromFile(_templateUri.UrlFolder + prefix + "schema.json");
+                var schemaJson = App.Services.FileRepository.LoadJsonFromFile(new FileUri(_templateUri, $"{prefix}schema.json"));
                 if (schemaJson != null)
                     json["schema"] = schemaJson;
             }
             // default options
             if (options)
             {
-                var optionsJson = JsonUtils.LoadJsonFromFile(_templateUri.UrlFolder + prefix + "options.json");
+                var optionsJson = App.Services.FileRepository.LoadJsonFromFile(new FileUri(_templateUri, $"{prefix}options.json"));
                 if (optionsJson != null)
                 {
                     json["options"] = optionsJson;
                     if (translations)
                     {
                         // language options
-                        optionsJson = JsonUtils.LoadJsonFromFile(_templateUri.UrlFolder + prefix + "options." + currentCultureCode + ".json");
-                        if (optionsJson != null)
-                            json["options"] = json["options"].JsonMerge(optionsJson);
+                        optionsJson = App.Services.FileRepository.LoadJsonFromFile(new FileUri(_templateUri, $"{prefix}options.{currentCultureCode}.json"));
+                        json["options"] = json["options"].JsonMerge(optionsJson);
                     }
                 }
             }
             // view
             if (view)
             {
-                var viewJson = JsonUtils.LoadJsonFromFile(_templateUri.UrlFolder + prefix + "view.json");
+                var viewJson = App.Services.FileRepository.LoadJsonFromFile(new FileUri(_templateUri, $"{prefix}view.json"));
                 if (viewJson != null)
                     json["view"] = viewJson;
             }
@@ -271,13 +271,13 @@ namespace Satrabel.OpenContent.Components.Alpaca
         public FieldConfig BuildIndex(string key)
         {
             string prefix = (string.IsNullOrEmpty(key) || key == "Items") ? "" : key + "-";
-            var file = new FileUri(_templateUri.UrlFolder, prefix + "index.json");
+            var file = new FileUri(_templateUri, $"{prefix}index.json");
             FieldConfig newConfig = App.Services.FileRepository.LoadJsonFileFromCacheOrDisk<FieldConfig>(file);
             if (newConfig == null)
             {
                 newConfig = CreateFieldConfigFromSchemaAndOptionFile(key);
-                var schemaFile = new FileUri(_templateUri.UrlFolder, prefix + "schema.json");
-                var optionsFile = new FileUri(_templateUri.UrlFolder, prefix + "options.json");
+                var schemaFile = new FileUri(_templateUri, $"{prefix}schema.json");
+                var optionsFile = new FileUri(_templateUri, $"{prefix}options.json");
 
                 App.Services.CacheAdapter.SetCache(file.FilePath, newConfig, new[] { schemaFile.PhysicalFilePath, optionsFile.PhysicalFilePath });
             }
