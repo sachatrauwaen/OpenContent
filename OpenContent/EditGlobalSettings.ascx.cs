@@ -44,17 +44,15 @@ namespace Satrabel.OpenContent
                     ddlRoles.Items.Add(new ListItem(role.RoleName, role.RoleID.ToString()));
                 }
 
-                string OpenContent_EditorsRoleId = PortalController.GetPortalSetting("OpenContent_EditorsRoleId", ModuleContext.PortalId, "");
-                if (!string.IsNullOrEmpty(OpenContent_EditorsRoleId))
+                if (!string.IsNullOrEmpty(App.Services.GlobalSettings.GetEditorRoleId()))
                 {
-                    var li = ddlRoles.Items.FindByValue(OpenContent_EditorsRoleId);
+                    var li = ddlRoles.Items.FindByValue(App.Services.GlobalSettings.GetEditorRoleId());
                     if (li != null)
                     {
                         li.Selected = true;
                     }
                 }
-                string OpenContent_AutoAttach = PortalController.GetPortalSetting("OpenContent_AutoAttach", ModuleContext.PortalId, "False");
-                cbMLContent.Checked = bool.Parse(OpenContent_AutoAttach);
+                cbMLContent.Checked = App.Services.GlobalSettings.GetAutoAttach();
 
                 foreach (var item in new[] { 5, 10, 25, 50, 100 })
                 {
@@ -63,8 +61,7 @@ namespace Satrabel.OpenContent
                 var maxVersionItem = ddlMaxVersions.Items.FindByValue(App.Services.GlobalSettings.GetMaxVersions().ToString());
                 if (maxVersionItem != null) maxVersionItem.Selected = true;
 
-                string OpenContent_Logging = PortalController.GetPortalSetting("OpenContent_Logging", ModuleContext.PortalId, "none");
-                ddlLogging.SelectedValue = OpenContent_Logging;
+                ddlLogging.SelectedValue = App.Services.GlobalSettings.GetLoggingScope();
 
                 var editLayoutItem = ddlEditLayout.Items.FindByValue(((int)App.Services.GlobalSettings.GetEditLayout()).ToString());
                 if (editLayoutItem != null) editLayoutItem.Selected = true;
@@ -77,18 +74,14 @@ namespace Satrabel.OpenContent
         }
         protected void cmdSave_Click(object sender, EventArgs e)
         {
-            if (ddlRoles.SelectedIndex > 0)
-                PortalController.UpdatePortalSetting(ModuleContext.PortalId, "OpenContent_EditorsRoleId", ddlRoles.SelectedValue, true);
-            else
-                PortalController.DeletePortalSetting(ModuleContext.PortalId, "OpenContent_EditorsRoleId");
-
-            PortalController.UpdatePortalSetting(ModuleContext.PortalId, "OpenContent_AutoAttach", cbMLContent.Checked.ToString(), true);
+            App.Services.GlobalSettings.SetEditorRoleId(ddlRoles.SelectedIndex > 0 ? ddlRoles.SelectedValue : "");
+            App.Services.GlobalSettings.SetAutoAttach(cbMLContent.Checked.ToString());
             int maxVersions;
             if (int.TryParse(ddlMaxVersions.SelectedValue, out maxVersions))
             {
                 App.Services.GlobalSettings.SetMaxVersions(maxVersions);
             }
-            PortalController.UpdatePortalSetting(ModuleContext.PortalId, "OpenContent_Logging", ddlLogging.SelectedValue, true);
+            App.Services.GlobalSettings.SetLoggingScope(ddlLogging.SelectedValue);
             int editLayout;
             if (int.TryParse(ddlEditLayout.SelectedValue, out editLayout))
             {

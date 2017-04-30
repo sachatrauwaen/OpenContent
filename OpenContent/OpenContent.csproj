@@ -175,6 +175,7 @@
       <DependentUpon>AddEdit.ascx</DependentUpon>
     </Compile>
     <Compile Include="Components\Alpaca\AlpacaLayoutEnum.cs" />
+    <Compile Include="Components\Settings\IGlobalSettingsRepositoryAdapter.cs" />
     <Compile Include="Components\Files\DnnFileRepositoryAdapter.cs" />
     <Compile Include="Components\App\IAppServices.cs" />
     <Compile Include="Components\Files\IFileRepositoryAdapter.cs" />
@@ -214,7 +215,7 @@
     <Compile Include="Components\Manifest\CollectionManifest.cs" />
     <Compile Include="Components\Manifest\OpenContentModuleInfo.cs" />
     <Compile Include="Components\Datasource\DnnTabsDataSource.cs" />
-    <Compile Include="Components\Dnn\DnnGlobalSettingsRepositoryAdapter.cs" />
+    <Compile Include="Components\Settings\DnnGlobalSettingsRepositoryAdapter.cs" />
     <Compile Include="Components\Render\ModelFactoryBase.cs" />
     <Compile Include="Components\Render\ModelFactoryMultiple.cs" />
     <Compile Include="Components\Render\ModelFactorySingle.cs" />

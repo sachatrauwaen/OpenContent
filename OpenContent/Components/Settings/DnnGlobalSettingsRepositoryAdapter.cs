@@ -1,21 +1,9 @@
 ﻿using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components.Alpaca;
+using Satrabel.OpenContent.Components.Dnn;
 
-namespace Satrabel.OpenContent.Components.Dnn
+namespace Satrabel.OpenContent.Components.Settings
 {
-    public interface IGlobalSettingsRepositoryAdapter
-    {
-        int GetMaxVersions();
-        void SetMaxVersions(int maxVersions);
-        AlpacaLayoutEnum GetEditLayout();
-        void SetEditLayout(AlpacaLayoutEnum editLayout);
-        bool GetLoadBootstrap();
-        void SetLoadBootstrap(bool @checked);
-        string GetGoogleApiKey();
-        void SetGoogleApiKey(string text);
-        bool GetFastHandlebars();
-        void SetFastHandlebars(bool @checked);
-    }
 
     public class DnnGlobalSettingsRepositoryAdapter : IGlobalSettingsRepositoryAdapter
     {
@@ -98,6 +86,48 @@ namespace Satrabel.OpenContent.Components.Dnn
         public void SetFastHandlebars(bool fastHandlebars)
         {
             PortalController.UpdatePortalSetting(_portalId, SETTINGS_FAST_HANDLEBARS, fastHandlebars.ToString(), true);
+        }
+
+        private const string SETTINGS_AUTO_ATTACH = "OpenContent_AutoAttach";
+        private const bool SETTINGS_DEFAULT_AUTO_ATTACH = false;
+        public bool GetAutoAttach()
+        {
+            var setting = PortalController.GetPortalSetting(SETTINGS_AUTO_ATTACH, _portalId, string.Empty);
+            bool result;
+            if (!string.IsNullOrWhiteSpace(setting) && bool.TryParse(setting, out result))
+                return result;
+            return SETTINGS_DEFAULT_AUTO_ATTACH;
+        }
+
+        public void SetAutoAttach(string value)
+        {
+            PortalController.UpdatePortalSetting(_portalId, SETTINGS_AUTO_ATTACH, value, true);
+        }
+
+        private const string SETTINGS_LOGGING = "OpenContent_Logging";
+        public string GetLoggingScope()
+        {
+            return PortalController.GetPortalSetting(SETTINGS_LOGGING, _portalId, "none");
+        }
+
+        public void SetLoggingScope(string value)
+        {
+            PortalController.UpdatePortalSetting(_portalId, SETTINGS_LOGGING, value, true);
+        }
+
+
+        private const string SETTINGS_EDITOR_ROLE_ID = "OpenContent_EditorsRoleId";
+        public string GetEditorRoleId()
+        {
+            return PortalController.GetPortalSetting(SETTINGS_EDITOR_ROLE_ID, _portalId, "");
+        }
+
+        public void SetEditorRoleId(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+                PortalController.DeletePortalSetting(_portalId, SETTINGS_EDITOR_ROLE_ID);
+            else
+                PortalController.UpdatePortalSetting(_portalId, SETTINGS_EDITOR_ROLE_ID, value, true);
         }
     }
 }

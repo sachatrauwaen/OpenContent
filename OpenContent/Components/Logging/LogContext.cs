@@ -38,7 +38,7 @@ namespace Satrabel.OpenContent.Components.Logging
             {
                 var ps = PortalSettings.Current;
                 if (ps == null) return false;
-                string openContentLogging = PortalController.GetPortalSetting("OpenContent_Logging", ps.PortalId, "none");
+                string openContentLogging = App.Services.GlobalSettings.GetLoggingScope();
                 return openContentLogging == "allways" || (openContentLogging == "host" && ps.UserInfo.IsSuperUser);
             }
         }

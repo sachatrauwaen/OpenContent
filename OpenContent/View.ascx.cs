@@ -60,9 +60,7 @@ namespace Satrabel.OpenContent
             ModuleInfo module = ModuleContext.Configuration;
             // auto attach a ContentLocalized OpenContent module to the reference module of the default language
 
-            string openContentAutoAttach = PortalController.GetPortalSetting("OpenContent_AutoAttach", ModuleContext.PortalId, "False");
-            bool autoAttach = bool.Parse(openContentAutoAttach);
-            if (autoAttach)
+            if (App.Services.GlobalSettings.GetAutoAttach())
             {
                 AutoAttachLocalizedModule(ref module);
             }
@@ -250,10 +248,9 @@ namespace Satrabel.OpenContent
         {
             if (ModuleContext.PortalSettings.UserId > 0)
             {
-                string OpenContent_EditorsRoleId = PortalController.GetPortalSetting("OpenContent_EditorsRoleId", ModuleContext.PortalId, "");
-                if (!string.IsNullOrEmpty(OpenContent_EditorsRoleId))
+                if (!string.IsNullOrEmpty(App.Services.GlobalSettings.GetEditorRoleId()))
                 {
-                    int roleId = int.Parse(OpenContent_EditorsRoleId);
+                    int roleId = int.Parse(App.Services.GlobalSettings.GetEditorRoleId());
                     var objModule = ModuleContext.Configuration;
                     //todo: probable DNN bug.  objModule.ModulePermissions doesn't return correct permissions for attached multi-lingual modules
                     //don't alter permissions of modules that are non-default language and that are attached
@@ -455,23 +452,6 @@ namespace Satrabel.OpenContent
                         true,
                         false);
                 }
-
-                /*
-                string AddEditControl = PortalController.GetPortalSetting("OpenContent_AddEditControl", ModuleContext.PortalId, "");
-                if (TemplateDefined && !string.IsNullOrEmpty(AddEditControl))
-                {
-                    Actions.Add(ModuleContext.GetNextActionID(),
-                                LocalizationHelpers.GetString("AddEntity.Action", LocalResourceFile),
-                                ModuleActionType.EditContent,
-                                "",
-                                "",
-                                ModuleContext.EditUrl("AddEdit"),
-                                false,
-                                SecurityAccessLevel.Edit,
-                                true,
-                                false);
-                }
-                */
 
                 //Edit Template Settings
                 if (templateDefined && settings.Template.SettingsNeeded())
