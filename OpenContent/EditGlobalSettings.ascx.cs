@@ -13,7 +13,6 @@ using System;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Common;
 using Satrabel.OpenContent.Components;
-using DotNetNuke.Entities.Portals;
 using System.Web.UI.WebControls;
 using DotNetNuke.Security.Roles;
 using Satrabel.OpenContent.Components.Alpaca;

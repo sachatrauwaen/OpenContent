@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Net.Http;
 using System.Web;
 using DotNetNuke.Instrumentation;
-using DotNetNuke.Services.Installer.Log;
 
 namespace Satrabel.OpenContent.Components.Logging
 {

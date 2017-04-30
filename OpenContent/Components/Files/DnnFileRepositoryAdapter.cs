@@ -2,7 +2,6 @@
 using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Satrabel.OpenContent.Components.Json;
 
 namespace Satrabel.OpenContent.Components.Files
 {

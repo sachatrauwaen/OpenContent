@@ -26,7 +26,6 @@ using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Dnn;
-using Satrabel.OpenContent.Components.Files;
 
 #endregion
 

@@ -1,12 +1,10 @@
 ﻿using DotNetNuke.Web.Api;
 using Newtonsoft.Json;
-using Satrabel.OpenContent.Components.Json;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using Satrabel.OpenContent.Components.Files;
 
 namespace Satrabel.OpenContent.Components.Rest.Swagger
 {

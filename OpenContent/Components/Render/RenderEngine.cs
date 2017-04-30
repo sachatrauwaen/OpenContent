@@ -44,8 +44,8 @@ namespace Satrabel.OpenContent.Components.Render
 
         public string ItemId // For detail view
         {
-            private get { return Info.DetailItemId; }
-            set { Info.DetailItemId = value; }
+            private get { return _renderinfo.DetailItemId; }
+            set { _renderinfo.DetailItemId = value; }
         }
 
         public NameValueCollection QueryString { get; set; } // Only for filtering
@@ -194,7 +194,8 @@ namespace Satrabel.OpenContent.Components.Render
                 }
             }
         }
-        private void IncludeResourses(Page page, TemplateManifest template)
+
+        private static void IncludeResourses(Page page, TemplateManifest template)
         {
             if (template != null)
             {
