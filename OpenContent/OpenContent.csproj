@@ -175,6 +175,7 @@
       <DependentUpon>AddEdit.ascx</DependentUpon>
     </Compile>
     <Compile Include="Components\Alpaca\AlpacaLayoutEnum.cs" />
+    <Compile Include="Components\AppDefinitions\MenuAction.cs" />
     <Compile Include="Components\Settings\IGlobalSettingsRepositoryAdapter.cs" />
     <Compile Include="Components\Files\DnnFileRepositoryAdapter.cs" />
     <Compile Include="Components\App\IAppServices.cs" />
@@ -379,6 +380,7 @@
     <Compile Include="EditFormSettings.ascx.designer.cs">
       <DependentUpon>EditFormSettings.ascx</DependentUpon>
     </Compile>
+    <Compile Include="Components\AppDefinitions\IMenuAction.cs" />
     <Compile Include="RenderModule.ascx.cs">
       <DependentUpon>RenderModule.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

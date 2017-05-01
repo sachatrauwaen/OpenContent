@@ -5,11 +5,13 @@ using System.Collections.Generic;
 using System.Web.UI;
 using DotNetNuke.Common.Utilities;
 using DotNetNuke.Entities.Modules;
+using DotNetNuke.Entities.Modules.Actions;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Entities.Tabs;
 using DotNetNuke.Services.Localization;
 using DotNetNuke.UI.Modules;
 using DotNetNuke.Web.Client.ClientResourceManagement;
+using Satrabel.OpenContent.Components.AppDefinitions;
 
 
 namespace Satrabel.OpenContent.Components
@@ -123,5 +125,21 @@ namespace Satrabel.OpenContent.Components
             return DnnLanguageUtils.GetCurrentCultureCode();
         }
 
+        public static string ToDnnActionType(this ActionType itemActionType)
+        {
+            switch (itemActionType)
+            {
+                case ActionType.Add:
+                    return ModuleActionType.AddContent;
+                case ActionType.Edit:
+                    return ModuleActionType.EditContent;
+                case ActionType.Misc:
+                    return ModuleActionType.ContentOptions;
+                default:
+                    string msg= $"unknown ActionType {itemActionType}";
+                    App.Services.Logger.Error(msg);
+                    throw new NotImplementedException(msg);
+            }
+        }
     }
 }

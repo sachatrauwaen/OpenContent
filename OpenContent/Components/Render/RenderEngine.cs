@@ -22,6 +22,9 @@ using Newtonsoft.Json.Linq;
 using IDataSource = Satrabel.OpenContent.Components.Datasource.IDataSource;
 using System.Collections;
 using System.Diagnostics;
+using DotNetNuke.Entities.Modules.Actions;
+using DotNetNuke.Security;
+using Satrabel.OpenContent.Components.AppDefinitions;
 using Satrabel.OpenContent.Components.Dnn;
 using Satrabel.OpenContent.Components.Indexing;
 
@@ -625,9 +628,7 @@ namespace Satrabel.OpenContent.Components.Render
             return "";
         }
 
-
-
-        private FileUri CheckFiles(TemplateManifest templateManifest, TemplateFiles files)
+        private static FileUri CheckFiles(TemplateManifest templateManifest, TemplateFiles files)
         {
             if (files == null)
             {
@@ -650,6 +651,233 @@ namespace Satrabel.OpenContent.Components.Render
             return templateUri;
         }
         #endregion
+
+        public ModuleActionCollection GetMenuActions()
+        {
+
+            var actions = new ModuleActionCollection();
+
+            var actionDefinitions = new List<MenuAction>();
+
+
+
+            TemplateManifest template = _settings.Template;
+            bool templateDefined = template != null;
+            bool listMode = template != null && template.IsListTemplate;
+
+            bool isListPageRequest = listMode && string.IsNullOrEmpty(_renderinfo.DetailItemId);
+            bool isDetailPageRequest = listMode && !string.IsNullOrEmpty(_renderinfo.DetailItemId);
+
+            //Add item / Edit Item
+            if (templateDefined && template.DataNeeded() && !_settings.Manifest.DisableEdit)
+            {
+                string title = DotNetNuke.Services.Localization.Localization.GetString((isListPageRequest ? ModuleActionType.AddContent : ModuleActionType.EditContent), LocalResourceFile);
+                if (!string.IsNullOrEmpty(_settings.Manifest.Title))
+                {
+                    title = DotNetNuke.Services.Localization.Localization.GetString((isListPageRequest ? "Add.Action" : "Edit.Action"), LocalResourceFile) + " " + _settings.Manifest.Title;
+                }
+                actions.Add(ModuleContext.GetNextActionID(),
+                    title,
+                    ModuleActionType.AddContent,
+                    "",
+                    (isListPageRequest ? "~/DesktopModules/OpenContent/images/addcontent2.png" : "~/DesktopModules/OpenContent/images/editcontent2.png"),
+                    (isDetailPageRequest ? ModuleContext.EditUrl("id", _renderinfo.DetailItemId) : ModuleContext.EditUrl()),
+                    false,
+                    SecurityAccessLevel.Edit,
+                    true,
+                    false);
+            }
+
+            //Add AdditionalData manage actions
+            if (templateDefined && template.Manifest.AdditionalDataDefined() && !_settings.Manifest.DisableEdit)
+            {
+                foreach (var addData in template.Manifest.AdditionalDataDefinition)
+                {
+                    if (addData.Value.SourceRelatedDataSource == RelatedDataSourceType.AdditionalData)
+                    {
+                        actions.Add(ModuleContext.GetNextActionID(),
+                            addData.Value.Title,
+                            ModuleActionType.EditContent,
+                            "",
+                            "~/DesktopModules/OpenContent/images/editcontent2.png",
+                            ModuleContext.EditUrl("key", addData.Key, "EditAddData"),
+                            false,
+                            SecurityAccessLevel.Edit,
+                            true,
+                            false);
+                    }
+                    else
+                    {
+                        actions.Add(ModuleContext.GetNextActionID(),
+                            addData.Value.Title,
+                            ModuleActionType.EditContent,
+                            "",
+                            "~/DesktopModules/OpenContent/images/editcontent2.png",
+                            DnnUrlUtils.NavigateUrl(addData.Value.DataTabId),
+                            false,
+                            SecurityAccessLevel.Edit,
+                            true,
+                            false);
+                    }
+                }
+            }
+
+            //Manage Form Submissions
+            if (templateDefined && OpenContentUtils.FormExist(_settings.Template.ManifestFolderUri))
+            {
+
+                actions.Add(ModuleContext.GetNextActionID(),
+                    "Submissions",
+                    ModuleActionType.EditContent,
+                    "",
+                    "~/DesktopModules/OpenContent/images/editcontent2.png",
+                    ModuleContext.EditUrl("Submissions"),
+                    false,
+                    SecurityAccessLevel.Edit,
+                    true,
+                    false);
+            }
+
+            //Edit Template Settings
+            if (templateDefined && _settings.Template.SettingsNeeded())
+            {
+                actions.Add(ModuleContext.GetNextActionID(),
+                    DotNetNuke.Services.Localization.Localization.GetString("EditSettings.Action", LocalResourceFile),
+                    ModuleActionType.ContentOptions,
+                    "",
+                    "~/DesktopModules/OpenContent/images/editsettings2.png",
+                    ModuleContext.EditUrl("EditSettings"),
+                    false,
+                    SecurityAccessLevel.Admin,
+                    true,
+                    false);
+            }
+
+            //Edit Form Settings
+            if (templateDefined && OpenContentUtils.FormExist(_settings.Template.ManifestFolderUri))
+            {
+                actions.Add(ModuleContext.GetNextActionID(),
+                    DotNetNuke.Services.Localization.Localization.GetString("FormSettings.Action", LocalResourceFile),
+                    ModuleActionType.ContentOptions,
+                    "",
+                    "~/DesktopModules/OpenContent/images/editsettings2.png",
+                    ModuleContext.EditUrl("formsettings"),
+                    false,
+                    SecurityAccessLevel.Admin,
+                    true,
+                    false);
+            }
+
+            //Switch Template
+            actions.Add(ModuleContext.GetNextActionID(),
+                DotNetNuke.Services.Localization.Localization.GetString("EditInit.Action", LocalResourceFile),
+                ModuleActionType.ContentOptions,
+                "",
+                "~/DesktopModules/OpenContent/images/editinit.png",
+                ModuleContext.EditUrl("EditInit"),
+                false,
+                SecurityAccessLevel.Admin,
+                true,
+                false);
+
+            //Edit Filter Settings
+            if (templateDefined && listMode)
+            {
+                if (_settings.Manifest.Index)
+                {
+                    actions.Add(ModuleContext.GetNextActionID(),
+                        DotNetNuke.Services.Localization.Localization.GetString("EditQuery.Action", LocalResourceFile),
+                        ModuleActionType.ContentOptions,
+                        "",
+                        "~/DesktopModules/OpenContent/images/editfilter.png",
+                        ModuleContext.EditUrl("EditQuery"),
+                        false,
+                        SecurityAccessLevel.Admin,
+                        true,
+                        false);
+                }
+            }
+
+            //Form Builder
+            if (templateDefined && OpenContentUtils.BuildersExist(_settings.Template.ManifestFolderUri))
+                actions.Add(ModuleContext.GetNextActionID(),
+                    DotNetNuke.Services.Localization.Localization.GetString("Builder.Action", LocalResourceFile),
+                    ModuleActionType.ContentOptions,
+                    "",
+                    "~/DesktopModules/OpenContent/images/formbuilder.png",
+                    ModuleContext.EditUrl("FormBuilder"),
+                    false,
+                    SecurityAccessLevel.Admin,
+                    true,
+                    false);
+
+            //Edit Template Files
+            if (templateDefined)
+                actions.Add(ModuleContext.GetNextActionID(),
+                    DotNetNuke.Services.Localization.Localization.GetString("EditTemplate.Action", LocalResourceFile),
+                    ModuleActionType.ContentOptions,
+                    "",
+                    "~/DesktopModules/OpenContent/images/edittemplate.png",
+                    ModuleContext.EditUrl("EditTemplate"),
+                    false,
+                    SecurityAccessLevel.Host,
+                    true,
+                    false);
+
+            //Edit Raw Data
+            if (templateDefined && _settings.Manifest != null &&
+                (template.DataNeeded() || template.SettingsNeeded() || template.Manifest.AdditionalDataDefined()) && !_settings.Manifest.DisableEdit)
+            {
+                actions.Add(ModuleContext.GetNextActionID(),
+                    DotNetNuke.Services.Localization.Localization.GetString("EditData.Action", LocalResourceFile),
+                    ModuleActionType.EditContent,
+                    "",
+                    "~/DesktopModules/OpenContent/images/edit.png",
+                    (isDetailPageRequest ? ModuleContext.EditUrl("id", _renderinfo.DetailItemId, "EditData") : ModuleContext.EditUrl("EditData")),
+                    false,
+                    SecurityAccessLevel.Host,
+                    true,
+                    false);
+            }
+
+            //Template Exchange
+            actions.Add(ModuleContext.GetNextActionID(),
+                DotNetNuke.Services.Localization.Localization.GetString("ShareTemplate.Action", LocalResourceFile),
+                ModuleActionType.ContentOptions,
+                "",
+                "~/DesktopModules/OpenContent/images/exchange.png",
+                ModuleContext.EditUrl("ShareTemplate"),
+                false,
+                SecurityAccessLevel.Host,
+                true,
+                false);
+
+            //Edit Global Settings
+            actions.Add(ModuleContext.GetNextActionID(),
+                DotNetNuke.Services.Localization.Localization.GetString("EditGlobalSettings.Action", LocalResourceFile),
+                ModuleActionType.ContentOptions,
+                "",
+                "~/DesktopModules/OpenContent/images/settings.png",
+                ModuleContext.EditUrl("EditGlobalSettings"),
+                false,
+                SecurityAccessLevel.Host,
+                true,
+                false);
+
+            //Help
+            actions.Add(ModuleContext.GetNextActionID(),
+                DotNetNuke.Services.Localization.Localization.GetString("Help.Action", LocalResourceFile),
+                ModuleActionType.ContentOptions,
+                "",
+                "~/DesktopModules/OpenContent/images/help.png",
+                "https://opencontent.readme.io",
+                false,
+                SecurityAccessLevel.Host,
+                true,
+                true);
+
+            return actions;
+        }
 
     }
 }
