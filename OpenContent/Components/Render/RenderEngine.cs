@@ -1,32 +1,34 @@
 ﻿using DotNetNuke.Entities.Modules;
-using Satrabel.OpenContent.Components.Manifest;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Collections.Specialized;
-using Satrabel.OpenContent.Components.Logging;
-using Satrabel.OpenContent.Components.Json;
-using DotNetNuke.Web.Client.ClientResourceManagement;
-using System.IO;
-using System.Web.UI;
-using DotNetNuke.Web.Client;
-using Satrabel.OpenContent.Components.Datasource;
-using Satrabel.OpenContent.Components.Alpaca;
 using DotNetNuke.Entities.Portals;
-using Satrabel.OpenContent.Components.Handlebars;
-using Satrabel.OpenContent.Components.Razor;
-using System.Web.Hosting;
 using DotNetNuke.Services.Exceptions;
 using DotNetNuke.UI.Modules;
+using DotNetNuke.Web.Client;
+using DotNetNuke.Web.Client.ClientResourceManagement;
+
 using Newtonsoft.Json.Linq;
-using IDataSource = Satrabel.OpenContent.Components.Datasource.IDataSource;
-using System.Collections;
-using System.Diagnostics;
-using DotNetNuke.Entities.Modules.Actions;
-using DotNetNuke.Security;
+using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.AppDefinitions;
+using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Dnn;
+using Satrabel.OpenContent.Components.Handlebars;
 using Satrabel.OpenContent.Components.Indexing;
+using Satrabel.OpenContent.Components.Json;
+using Satrabel.OpenContent.Components.Logging;
+using Satrabel.OpenContent.Components.Manifest;
+using Satrabel.OpenContent.Components.Razor;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Web.Hosting;
+using System.Web.UI;
+using Satrabel.OpenContent.Components.Localization;
+using IDataSource = Satrabel.OpenContent.Components.Datasource.IDataSource;
+using SecurityAccessLevel = Satrabel.OpenContent.Components.AppDefinitions.SecurityAccessLevel;
+
 
 namespace Satrabel.OpenContent.Components.Render
 {
@@ -652,14 +654,10 @@ namespace Satrabel.OpenContent.Components.Render
         }
         #endregion
 
-        public ModuleActionCollection GetMenuActions()
+        public List<MenuAction> GetMenuActions()
         {
 
-            var actions = new ModuleActionCollection();
-
-            var actionDefinitions = new List<MenuAction>();
-
-
+            var actions = new List<MenuAction>();
 
             TemplateManifest template = _settings.Template;
             bool templateDefined = template != null;
@@ -671,21 +669,20 @@ namespace Satrabel.OpenContent.Components.Render
             //Add item / Edit Item
             if (templateDefined && template.DataNeeded() && !_settings.Manifest.DisableEdit)
             {
-                string title = DotNetNuke.Services.Localization.Localization.GetString((isListPageRequest ? ModuleActionType.AddContent : ModuleActionType.EditContent), LocalResourceFile);
+                string title = Localizer.Instance.GetString(isListPageRequest ? "Add.Action" : "Edit.Action", LocalResourceFile);
                 if (!string.IsNullOrEmpty(_settings.Manifest.Title))
                 {
-                    title = DotNetNuke.Services.Localization.Localization.GetString((isListPageRequest ? "Add.Action" : "Edit.Action"), LocalResourceFile) + " " + _settings.Manifest.Title;
+                    title = title + " " + _settings.Manifest.Title;
                 }
-                actions.Add(ModuleContext.GetNextActionID(),
-                    title,
-                    ModuleActionType.AddContent,
-                    "",
-                    (isListPageRequest ? "~/DesktopModules/OpenContent/images/addcontent2.png" : "~/DesktopModules/OpenContent/images/editcontent2.png"),
-                    (isDetailPageRequest ? ModuleContext.EditUrl("id", _renderinfo.DetailItemId) : ModuleContext.EditUrl()),
-                    false,
-                    SecurityAccessLevel.Edit,
-                    true,
-                    false);
+
+                actions.Add(
+                    new MenuAction(
+                        title,
+                        isListPageRequest ? "~/DesktopModules/OpenContent/images/addcontent2.png" : "~/DesktopModules/OpenContent/images/editcontent2.png",
+                        isDetailPageRequest ? ModuleContext.EditUrl("id", _renderinfo.DetailItemId) : ModuleContext.EditUrl(),
+                        ActionType.Add
+                        )
+                    );
             }
 
             //Add AdditionalData manage actions
@@ -695,29 +692,25 @@ namespace Satrabel.OpenContent.Components.Render
                 {
                     if (addData.Value.SourceRelatedDataSource == RelatedDataSourceType.AdditionalData)
                     {
-                        actions.Add(ModuleContext.GetNextActionID(),
-                            addData.Value.Title,
-                            ModuleActionType.EditContent,
-                            "",
-                            "~/DesktopModules/OpenContent/images/editcontent2.png",
-                            ModuleContext.EditUrl("key", addData.Key, "EditAddData"),
-                            false,
-                            SecurityAccessLevel.Edit,
-                            true,
-                            false);
+                        actions.Add(
+                            new MenuAction(
+                                addData.Value.Title,
+                                "~/DesktopModules/OpenContent/images/editcontent2.png",
+                                ModuleContext.EditUrl("key", addData.Key, "EditAddData"),
+                                ActionType.Edit
+                            )
+                        );
                     }
                     else
                     {
-                        actions.Add(ModuleContext.GetNextActionID(),
-                            addData.Value.Title,
-                            ModuleActionType.EditContent,
-                            "",
-                            "~/DesktopModules/OpenContent/images/editcontent2.png",
-                            DnnUrlUtils.NavigateUrl(addData.Value.DataTabId),
-                            false,
-                            SecurityAccessLevel.Edit,
-                            true,
-                            false);
+                        actions.Add(
+                            new MenuAction(
+                                addData.Value.Title,
+                                "~/DesktopModules/OpenContent/images/editcontent2.png",
+                                DnnUrlUtils.NavigateUrl(addData.Value.DataTabId),
+                                ActionType.Edit
+                            )
+                        );
                     }
                 }
             }
@@ -725,156 +718,144 @@ namespace Satrabel.OpenContent.Components.Render
             //Manage Form Submissions
             if (templateDefined && OpenContentUtils.FormExist(_settings.Template.ManifestFolderUri))
             {
-
-                actions.Add(ModuleContext.GetNextActionID(),
-                    "Submissions",
-                    ModuleActionType.EditContent,
-                    "",
-                    "~/DesktopModules/OpenContent/images/editcontent2.png",
-                    ModuleContext.EditUrl("Submissions"),
-                    false,
-                    SecurityAccessLevel.Edit,
-                    true,
-                    false);
+                actions.Add(
+                    new MenuAction(
+                        "Submissions",
+                        "~/DesktopModules/OpenContent/images/editcontent2.png",
+                        ModuleContext.EditUrl("Submissions"),
+                        ActionType.Edit
+                    )
+                );
             }
 
             //Edit Template Settings
             if (templateDefined && _settings.Template.SettingsNeeded())
             {
-                actions.Add(ModuleContext.GetNextActionID(),
-                    DotNetNuke.Services.Localization.Localization.GetString("EditSettings.Action", LocalResourceFile),
-                    ModuleActionType.ContentOptions,
-                    "",
-                    "~/DesktopModules/OpenContent/images/editsettings2.png",
-                    ModuleContext.EditUrl("EditSettings"),
-                    false,
-                    SecurityAccessLevel.Admin,
-                    true,
-                    false);
+                actions.Add(
+                    new MenuAction(
+                        Localizer.Instance.GetString("EditSettings.Action", LocalResourceFile),
+                        "~/DesktopModules/OpenContent/images/editsettings2.png",
+                        ModuleContext.EditUrl("EditSettings"),
+                        ActionType.Misc,
+                        SecurityAccessLevel.AdminRights
+                    )
+                );
             }
 
             //Edit Form Settings
             if (templateDefined && OpenContentUtils.FormExist(_settings.Template.ManifestFolderUri))
             {
-                actions.Add(ModuleContext.GetNextActionID(),
-                    DotNetNuke.Services.Localization.Localization.GetString("FormSettings.Action", LocalResourceFile),
-                    ModuleActionType.ContentOptions,
-                    "",
-                    "~/DesktopModules/OpenContent/images/editsettings2.png",
-                    ModuleContext.EditUrl("formsettings"),
-                    false,
-                    SecurityAccessLevel.Admin,
-                    true,
-                    false);
+                actions.Add(
+                    new MenuAction(
+                        Localizer.Instance.GetString("FormSettings.Action", LocalResourceFile),
+                        "~/DesktopModules/OpenContent/images/editsettings2.png",
+                        ModuleContext.EditUrl("formsettings"),
+                        ActionType.Misc,
+                        SecurityAccessLevel.AdminRights
+                    )
+                );
             }
 
             //Switch Template
-            actions.Add(ModuleContext.GetNextActionID(),
-                DotNetNuke.Services.Localization.Localization.GetString("EditInit.Action", LocalResourceFile),
-                ModuleActionType.ContentOptions,
-                "",
+            actions.Add(
+                new MenuAction(
+                Localizer.Instance.GetString("EditInit.Action", LocalResourceFile),
                 "~/DesktopModules/OpenContent/images/editinit.png",
                 ModuleContext.EditUrl("EditInit"),
-                false,
-                SecurityAccessLevel.Admin,
-                true,
-                false);
+                ActionType.Misc,
+                SecurityAccessLevel.AdminRights
+                )
+            );
 
             //Edit Filter Settings
             if (templateDefined && listMode)
             {
                 if (_settings.Manifest.Index)
                 {
-                    actions.Add(ModuleContext.GetNextActionID(),
-                        DotNetNuke.Services.Localization.Localization.GetString("EditQuery.Action", LocalResourceFile),
-                        ModuleActionType.ContentOptions,
-                        "",
-                        "~/DesktopModules/OpenContent/images/editfilter.png",
-                        ModuleContext.EditUrl("EditQuery"),
-                        false,
-                        SecurityAccessLevel.Admin,
-                        true,
-                        false);
+                    actions.Add(
+                        new MenuAction(
+                            Localizer.Instance.GetString("EditQuery.Action", LocalResourceFile),
+                            "~/DesktopModules/OpenContent/images/editfilter.png",
+                            ModuleContext.EditUrl("EditQuery"),
+                            ActionType.Misc,
+                            SecurityAccessLevel.AdminRights
+                        )
+                    );
                 }
             }
 
             //Form Builder
             if (templateDefined && OpenContentUtils.BuildersExist(_settings.Template.ManifestFolderUri))
-                actions.Add(ModuleContext.GetNextActionID(),
-                    DotNetNuke.Services.Localization.Localization.GetString("Builder.Action", LocalResourceFile),
-                    ModuleActionType.ContentOptions,
-                    "",
-                    "~/DesktopModules/OpenContent/images/formbuilder.png",
-                    ModuleContext.EditUrl("FormBuilder"),
-                    false,
-                    SecurityAccessLevel.Admin,
-                    true,
-                    false);
+                actions.Add(
+                    new MenuAction(
+                        Localizer.Instance.GetString("Builder.Action", LocalResourceFile),
+                        "~/DesktopModules/OpenContent/images/formbuilder.png",
+                        ModuleContext.EditUrl("FormBuilder"),
+                        ActionType.Misc,
+                        SecurityAccessLevel.AdminRights
+                    )
+                );
 
             //Edit Template Files
             if (templateDefined)
-                actions.Add(ModuleContext.GetNextActionID(),
-                    DotNetNuke.Services.Localization.Localization.GetString("EditTemplate.Action", LocalResourceFile),
-                    ModuleActionType.ContentOptions,
-                    "",
-                    "~/DesktopModules/OpenContent/images/edittemplate.png",
-                    ModuleContext.EditUrl("EditTemplate"),
-                    false,
-                    SecurityAccessLevel.Host,
-                    true,
-                    false);
+                actions.Add(
+                    new MenuAction(
+                        Localizer.Instance.GetString("EditTemplate.Action", LocalResourceFile),
+                        "~/DesktopModules/OpenContent/images/edittemplate.png",
+                        ModuleContext.EditUrl("EditTemplate"),
+                        ActionType.Misc,
+                        SecurityAccessLevel.SuperUserRights
+                    )
+                );
 
             //Edit Raw Data
             if (templateDefined && _settings.Manifest != null &&
-                (template.DataNeeded() || template.SettingsNeeded() || template.Manifest.AdditionalDataDefined()) && !_settings.Manifest.DisableEdit)
+               (template.DataNeeded() || template.SettingsNeeded() || template.Manifest.AdditionalDataDefined()) && !_settings.Manifest.DisableEdit)
             {
-                actions.Add(ModuleContext.GetNextActionID(),
-                    DotNetNuke.Services.Localization.Localization.GetString("EditData.Action", LocalResourceFile),
-                    ModuleActionType.EditContent,
-                    "",
-                    "~/DesktopModules/OpenContent/images/edit.png",
-                    (isDetailPageRequest ? ModuleContext.EditUrl("id", _renderinfo.DetailItemId, "EditData") : ModuleContext.EditUrl("EditData")),
-                    false,
-                    SecurityAccessLevel.Host,
-                    true,
-                    false);
+                actions.Add(
+                    new MenuAction(
+                        Localizer.Instance.GetString("EditData.Action", LocalResourceFile),
+                        "~/DesktopModules/OpenContent/images/edit.png",
+                        isDetailPageRequest ? ModuleContext.EditUrl("id", _renderinfo.DetailItemId, "EditData") : ModuleContext.EditUrl("EditData"),
+                        ActionType.Edit,
+                        SecurityAccessLevel.SuperUserRights
+                    )
+                );
             }
 
             //Template Exchange
-            actions.Add(ModuleContext.GetNextActionID(),
-                DotNetNuke.Services.Localization.Localization.GetString("ShareTemplate.Action", LocalResourceFile),
-                ModuleActionType.ContentOptions,
-                "",
-                "~/DesktopModules/OpenContent/images/exchange.png",
-                ModuleContext.EditUrl("ShareTemplate"),
-                false,
-                SecurityAccessLevel.Host,
-                true,
-                false);
+            actions.Add(
+                new MenuAction(
+                    Localizer.Instance.GetString("ShareTemplate.Action", LocalResourceFile),
+                    "~/DesktopModules/OpenContent/images/exchange.png",
+                    ModuleContext.EditUrl("ShareTemplate"),
+                    ActionType.Misc,
+                    SecurityAccessLevel.SuperUserRights
+                )
+            );
 
             //Edit Global Settings
-            actions.Add(ModuleContext.GetNextActionID(),
-                DotNetNuke.Services.Localization.Localization.GetString("EditGlobalSettings.Action", LocalResourceFile),
-                ModuleActionType.ContentOptions,
-                "",
-                "~/DesktopModules/OpenContent/images/settings.png",
-                ModuleContext.EditUrl("EditGlobalSettings"),
-                false,
-                SecurityAccessLevel.Host,
-                true,
-                false);
+            actions.Add(
+                new MenuAction(
+                    Localizer.Instance.GetString("EditGlobalSettings.Action", LocalResourceFile),
+                    "~/DesktopModules/OpenContent/images/settings.png",
+                    ModuleContext.EditUrl("EditGlobalSettings"),
+                    ActionType.Misc,
+                    SecurityAccessLevel.SuperUserRights
+                )
+            );
 
             //Help
-            actions.Add(ModuleContext.GetNextActionID(),
-                DotNetNuke.Services.Localization.Localization.GetString("Help.Action", LocalResourceFile),
-                ModuleActionType.ContentOptions,
-                "",
-                "~/DesktopModules/OpenContent/images/help.png",
-                "https://opencontent.readme.io",
-                false,
-                SecurityAccessLevel.Host,
-                true,
-                true);
+            actions.Add(
+                new MenuAction(
+                    Localizer.Instance.GetString("Help.Action", LocalResourceFile),
+                    "~/DesktopModules/OpenContent/images/help.png",
+                    "https://opencontent.readme.io",
+                    ActionType.Misc,
+                    SecurityAccessLevel.SuperUserRights,
+                    true
+                )
+            );
 
             return actions;
         }

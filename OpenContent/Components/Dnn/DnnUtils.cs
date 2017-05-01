@@ -124,6 +124,23 @@ namespace Satrabel.OpenContent.Components
         {
             return DnnLanguageUtils.GetCurrentCultureCode();
         }
+        
+        public static DotNetNuke.Security.SecurityAccessLevel ToDnnSecurityAccessLevel(this SecurityAccessLevel level)
+        {
+            switch (level)
+            {
+                case SecurityAccessLevel.EditRights:
+                    return DotNetNuke.Security.SecurityAccessLevel.Edit;
+                case SecurityAccessLevel.AdminRights:
+                    return DotNetNuke.Security.SecurityAccessLevel.Admin;
+                case SecurityAccessLevel.SuperUserRights:
+                    return DotNetNuke.Security.SecurityAccessLevel.Host;
+                default:
+                    string msg = $"unknown SecurityAccessLevel {level}";
+                    App.Services.Logger.Error(msg);
+                    throw new NotImplementedException(msg);
+            }
+        }
 
         public static string ToDnnActionType(this ActionType itemActionType)
         {

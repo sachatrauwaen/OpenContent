@@ -1,12 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Web.UI;
-using DotNetNuke.Entities.Modules.Actions;
-using DotNetNuke.Security;
 using Satrabel.OpenContent.Components.Datasource;
 using Newtonsoft.Json.Linq;
-using Satrabel.OpenContent.Components.AppDefinitions;
-using Satrabel.OpenContent.Components.Dnn;
 
 namespace Satrabel.OpenContent.Components.Manifest
 {

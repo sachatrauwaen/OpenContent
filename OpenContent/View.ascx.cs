@@ -10,12 +10,10 @@
 #region Using Statements
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Modules.Actions;
-using DotNetNuke.Security;
 using System.Web.UI;
 using DotNetNuke.Web.Client.ClientResourceManagement;
 using DotNetNuke.Web.Client;
@@ -35,8 +33,7 @@ using Satrabel.OpenContent.Components.Dnn;
 using DotNetNuke.Entities.Tabs;
 using DotNetNuke.Services.Personalization;
 using DotNetNuke.Framework.JavaScriptLibraries;
-using Satrabel.OpenContent.Components.AppDefinitions;
-using Localization = DotNetNuke.Services.Localization.Localization;
+using SecurityAccessLevel = DotNetNuke.Security.SecurityAccessLevel;
 
 #endregion
 
@@ -68,6 +65,13 @@ namespace Satrabel.OpenContent
             _engine = new RenderEngine(module);
             _renderinfo = _engine.Info;
             _settings = _engine.Settings;
+            _engine.LocalResourceFile = LocalResourceFile;
+            _engine.ModuleContext = ModuleContext;
+            _engine.QueryString = Page.Request.QueryString;
+            if (Page.Request.QueryString["id"] != null)
+            {
+                _engine.ItemId = Page.Request.QueryString["id"];
+            }
 
             //initialize TemplateInitControl
             TemplateInit ti = (TemplateInit)TemplateInitControl;
@@ -79,13 +83,8 @@ namespace Satrabel.OpenContent
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-            _engine.QueryString = Page.Request.QueryString;
-            if (Page.Request.QueryString["id"] != null)
-            {
-                _engine.ItemId = Page.Request.QueryString["id"];
-            }
-            _engine.LocalResourceFile = LocalResourceFile;
-            _engine.ModuleContext = ModuleContext;
+
+
             if (!Page.IsPostBack)
             {
                 AddEditorRole();
@@ -358,24 +357,23 @@ namespace Satrabel.OpenContent
             get
             {
                 var actions = new ModuleActionCollection();
-
                 var actionDefinitions = _engine.GetMenuActions();
 
-                //foreach (var item in actionDefinitions)
-                //{
-                //    actions.Add(ModuleContext.GetNextActionID(),
-                //        item.Title,
-                //        item.ActionType.ToDnnActionType(),
-                //        "",
-                //        item.Image,
-                //        item.Url,
-                //        false,
-                //        SecurityAccessLevel.Edit,
-                //        true,
-                //        false);
-                //}
+                foreach (var item in actionDefinitions)
+                {
+                    actions.Add(ModuleContext.GetNextActionID(),
+                        item.Title,
+                        item.ActionType.ToDnnActionType(),
+                        "",
+                        item.Image,
+                        item.Url,
+                        false,
+                        item.AccessLevel.ToDnnSecurityAccessLevel(),
+                        true,
+                        item.NewWindow);
+                }
 
-                return actionDefinitions;
+                return actions;
             }
         }
 
