@@ -31,16 +31,18 @@ namespace Satrabel.OpenContent.Components.Render
     {
         private readonly RenderInfo _renderinfo;
         private readonly OpenContentModuleInfo _module; // active module (not datasource module)
+        private readonly OpenContentSettings _settings;
 
         public RenderEngine(ModuleInfo viewmodule, IDictionary moduleSettings = null)
         {
             _module = new OpenContentModuleInfo(viewmodule, moduleSettings);
             _renderinfo = new RenderInfo(_module.Settings.Template, _module.Settings.IsOtherModule);
+            _settings = _module.Settings;
         }
 
         public RenderInfo Info => _renderinfo;
 
-        public OpenContentSettings Settings => _module.Settings;
+        public OpenContentSettings Settings => _settings;
 
         public string ItemId // For detail view
         {
@@ -59,13 +61,13 @@ namespace Satrabel.OpenContent.Components.Render
         public void Render(Page page)
         {
             //start rendering           
-            if (Settings.Template != null)
+            if (_module.Settings.Template != null)
             {
-                if (!Settings.Template.DataNeeded())
+                if (!_module.Settings.Template.DataNeeded())
                 {
                     // template without schema & options
                     // render the template with no data
-                    _renderinfo.SetData(null, new JObject(), Settings.Data);
+                    _renderinfo.SetData(null, new JObject(), _module.Settings.Data);
                     _renderinfo.Files = _renderinfo.Template.Main;
                     _renderinfo.OutputString = GenerateOutputSingle(page, _renderinfo.Template.MainTemplateUri(), _renderinfo.DataJson, _renderinfo.SettingsJson, _renderinfo.Template.Main);
                 }
@@ -80,14 +82,14 @@ namespace Satrabel.OpenContent.Components.Render
                         {
                             // for list templates a main template need to be defined
                             _renderinfo.Files = _renderinfo.Template.Main;
-                            string templateKey = GetDataList(_renderinfo, Settings, _renderinfo.Template.ClientSideData);
+                            string templateKey = GetDataList(_renderinfo, _module.Settings, _renderinfo.Template.ClientSideData);
                             if (!string.IsNullOrEmpty(templateKey) && _renderinfo.Template.Views != null && _renderinfo.Template.Views.ContainsKey(templateKey))
                             {
                                 _renderinfo.Files = _renderinfo.Template.Views[templateKey];
                             }
                             if (!_renderinfo.ShowInitControl)
                             {
-                                _renderinfo.OutputString = GenerateListOutput(page, Settings.Template, _renderinfo.Files, _renderinfo.DataList, _renderinfo.SettingsJson);
+                                _renderinfo.OutputString = GenerateListOutput(page, _module.Settings.Template, _renderinfo.Files, _renderinfo.DataList, _renderinfo.SettingsJson);
                             }
                         }
                     }
@@ -102,7 +104,7 @@ namespace Satrabel.OpenContent.Components.Render
                         if (_renderinfo.Template.Detail != null && !_renderinfo.ShowInitControl)
                         {
                             _renderinfo.Files = _renderinfo.Template.Detail;
-                            _renderinfo.OutputString = GenerateOutputDetail(page, Settings.Template, _renderinfo.Template.Detail, _renderinfo.DataJson, _renderinfo.SettingsJson);
+                            _renderinfo.OutputString = GenerateOutputDetail(page, _module.Settings.Template, _renderinfo.Template.Detail, _renderinfo.DataJson, _renderinfo.SettingsJson);
                         }
                         else // if itemid not corresponding to this module or no DetailTemplate present, show list template
                         {
@@ -111,14 +113,14 @@ namespace Satrabel.OpenContent.Components.Render
                             {
                                 // for list templates a main template need to be defined
                                 _renderinfo.Files = _renderinfo.Template.Main;
-                                string templateKey = GetDataList(_renderinfo, Settings, _renderinfo.Template.ClientSideData);
+                                string templateKey = GetDataList(_renderinfo, _settings, _renderinfo.Template.ClientSideData);
                                 if (!string.IsNullOrEmpty(templateKey) && _renderinfo.Template.Views != null && _renderinfo.Template.Views.ContainsKey(templateKey))
                                 {
                                     _renderinfo.Files = _renderinfo.Template.Views[templateKey];
                                 }
                                 if (!_renderinfo.ShowInitControl)
                                 {
-                                    _renderinfo.OutputString = GenerateListOutput(page, Settings.Template, _renderinfo.Files, _renderinfo.DataList, _renderinfo.SettingsJson);
+                                    _renderinfo.OutputString = GenerateListOutput(page, _settings.Template, _renderinfo.Files, _renderinfo.DataList, _renderinfo.SettingsJson);
                                 }
                             }
                         }
@@ -127,7 +129,7 @@ namespace Satrabel.OpenContent.Components.Render
                 else
                 {
                     // single item template
-                    GetSingleData(_renderinfo, Settings);
+                    GetSingleData(_renderinfo, _settings);
                     if (!_renderinfo.ShowInitControl)
                     {
                         _renderinfo.OutputString = GenerateOutputSingle(page, _renderinfo.Template.MainTemplateUri(), _renderinfo.DataJson, _renderinfo.SettingsJson, _renderinfo.Template.Main);
@@ -161,7 +163,7 @@ namespace Satrabel.OpenContent.Components.Render
             }
             else
             {
-                bool demoExist = GetDemoData(_renderinfo, Settings);
+                bool demoExist = GetDemoData(_renderinfo, _settings);
                 bool settingsNeeded = _renderinfo.Template.SettingsNeeded();
 
                 if (demoExist && _renderinfo.DataExist && (!settingsNeeded || !string.IsNullOrEmpty(_renderinfo.SettingsJson)))
@@ -238,7 +240,7 @@ namespace Satrabel.OpenContent.Components.Render
             string templateKey = "";
             info.ResetData();
 
-            IDataSource ds = DataSourceManager.GetDataSource(Settings.Manifest.DataSource);
+            IDataSource ds = DataSourceManager.GetDataSource(_settings.Manifest.DataSource);
             var dsContext = OpenContentUtils.CreateDataContext(_module);
 
             IEnumerable<IDataItem> resultList = new List<IDataItem>();
@@ -349,7 +351,7 @@ namespace Satrabel.OpenContent.Components.Render
         {
             info.ResetData();
 
-            IDataSource ds = DataSourceManager.GetDataSource(Settings.Manifest.DataSource);
+            IDataSource ds = DataSourceManager.GetDataSource(_settings.Manifest.DataSource);
             var dsContext = OpenContentUtils.CreateDataContext(_module, -1, true);
 
             var dsItem = ds.Get(dsContext, null);

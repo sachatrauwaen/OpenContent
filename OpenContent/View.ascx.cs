@@ -58,24 +58,21 @@ namespace Satrabel.OpenContent
         {
             base.OnInit(e);
             ModuleInfo module = ModuleContext.Configuration;
-            // auto attach a ContentLocalized OpenContent module to the reference module of the default language
 
             if (App.Services.GlobalSettings.GetAutoAttach())
             {
+                // auto attach a ContentLocalized OpenContent module to the reference module of the default language
                 AutoAttachLocalizedModule(ref module);
             }
             _engine = new RenderEngine(module);
             _renderinfo = _engine.Info;
             _settings = _engine.Settings;
 
-            OpenContent.TemplateInit ti = (TemplateInit)TemplateInitControl;
+            //initialize TemplateInitControl
+            TemplateInit ti = (TemplateInit)TemplateInitControl;
             ti.ModuleContext = ModuleContext;
             ti.Settings = _settings;
             ti.Renderinfo = _renderinfo;
-            /*
-            AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext.PortalId, _settings.Template.ManifestFolderUri.FolderPath, "Submissions");
-            alpaca.RegisterAll(true, false);
-            */
         }
 
         protected override void OnLoad(EventArgs e)
@@ -228,7 +225,7 @@ namespace Satrabel.OpenContent
                     var defaultMode = ModuleContext.PortalSettings.DefaultControlPanelMode;
                     if (defaultMode == PortalSettings.Mode.Edit)
                     {
-                        string setting = Convert.ToString(DotNetNuke.Services.Personalization.Personalization.GetProfile("Usability", "UserMode" + PortalSettings.Current.PortalId));
+                        string setting = Convert.ToString(Personalization.GetProfile("Usability", "UserMode" + PortalSettings.Current.PortalId));
                         if (!IsPageAdmin() & IsModuleAdmin())
                         {
                             if (setting != "EDIT")
@@ -347,34 +344,21 @@ namespace Satrabel.OpenContent
 
         private void RenderInitForm()
         {
-            OpenContent.TemplateInit ti = (TemplateInit)TemplateInitControl;
+            TemplateInit ti = (TemplateInit)TemplateInitControl;
             ti.RenderInitForm();
-        }
-
-        private string RemoveHost(string editUrl)
-        {
-            //Dnn sometimes adds an incorrect alias.
-            //To fix this just remove the host. Give the browser a relative url
-
-            if (string.IsNullOrEmpty(editUrl)) return editUrl;
-            editUrl = editUrl.Replace("//", "");
-            var pos = editUrl.IndexOf("/");
-            if (pos == -1) return editUrl;
-            return editUrl.Remove(0, pos);
         }
 
         #endregion
 
         #region IActionable
 
-        public DotNetNuke.Entities.Modules.Actions.ModuleActionCollection ModuleActions
+        public ModuleActionCollection ModuleActions
         {
             get
             {
                 var actions = new ModuleActionCollection();
 
-                var settings = ModuleContext.OpenContentSettings();
-                TemplateManifest template = settings.Template;
+                TemplateManifest template = _settings.Template;
                 bool templateDefined = template != null;
                 bool listMode = template != null && template.IsListTemplate;
 
@@ -384,12 +368,12 @@ namespace Satrabel.OpenContent
                 }
 
                 //Add item / Edit Item
-                if (templateDefined && template.DataNeeded() && !settings.Manifest.DisableEdit)
+                if (templateDefined && template.DataNeeded() && !_settings.Manifest.DisableEdit)
                 {
                     string title = Localization.GetString((listMode && string.IsNullOrEmpty(_itemId) ? ModuleActionType.AddContent : ModuleActionType.EditContent), LocalResourceFile);
-                    if (!string.IsNullOrEmpty(settings.Manifest.Title))
+                    if (!string.IsNullOrEmpty(_settings.Manifest.Title))
                     {
-                        title = Localization.GetString((listMode && string.IsNullOrEmpty(_itemId) ? "Add.Action" : "Edit.Action"), LocalResourceFile) + " " + settings.Manifest.Title;
+                        title = Localization.GetString((listMode && string.IsNullOrEmpty(_itemId) ? "Add.Action" : "Edit.Action"), LocalResourceFile) + " " + _settings.Manifest.Title;
                     }
                     actions.Add(ModuleContext.GetNextActionID(),
                         title,
@@ -404,7 +388,7 @@ namespace Satrabel.OpenContent
                 }
 
                 //Add AdditionalData manage actions
-                if (templateDefined && template.Manifest.AdditionalDataDefined() && !settings.Manifest.DisableEdit)
+                if (templateDefined && template.Manifest.AdditionalDataDefined() && !_settings.Manifest.DisableEdit)
                 {
                     foreach (var addData in template.Manifest.AdditionalDataDefinition)
                     {
@@ -438,7 +422,7 @@ namespace Satrabel.OpenContent
                 }
 
                 //Manage Form Submissions
-                if (templateDefined && OpenContentUtils.FormExist(settings.Template.ManifestFolderUri))
+                if (templateDefined && OpenContentUtils.FormExist(_settings.Template.ManifestFolderUri))
                 {
 
                     actions.Add(ModuleContext.GetNextActionID(),
@@ -454,7 +438,7 @@ namespace Satrabel.OpenContent
                 }
 
                 //Edit Template Settings
-                if (templateDefined && settings.Template.SettingsNeeded())
+                if (templateDefined && _settings.Template.SettingsNeeded())
                 {
                     actions.Add(ModuleContext.GetNextActionID(),
                         Localization.GetString("EditSettings.Action", LocalResourceFile),
@@ -469,7 +453,7 @@ namespace Satrabel.OpenContent
                 }
 
                 //Edit Form Settings
-                if (templateDefined && OpenContentUtils.FormExist(settings.Template.ManifestFolderUri))
+                if (templateDefined && OpenContentUtils.FormExist(_settings.Template.ManifestFolderUri))
                 {
                     actions.Add(ModuleContext.GetNextActionID(),
                         Localization.GetString("FormSettings.Action", LocalResourceFile),
@@ -498,7 +482,7 @@ namespace Satrabel.OpenContent
                 //Edit Filter Settings
                 if (templateDefined && listMode)
                 {
-                    if (settings.Manifest.Index)
+                    if (_settings.Manifest.Index)
                     {
                         actions.Add(ModuleContext.GetNextActionID(),
                             Localization.GetString("EditQuery.Action", LocalResourceFile),
@@ -513,8 +497,8 @@ namespace Satrabel.OpenContent
                     }
                 }
 
-
-                if (templateDefined && OpenContentUtils.BuildersExist(settings.Template.ManifestFolderUri))
+                //Form Builder
+                if (templateDefined && OpenContentUtils.BuildersExist(_settings.Template.ManifestFolderUri))
                     actions.Add(ModuleContext.GetNextActionID(),
                         Localization.GetString("Builder.Action", LocalResourceFile),
                         ModuleActionType.ContentOptions,
@@ -526,6 +510,7 @@ namespace Satrabel.OpenContent
                         true,
                         false);
 
+                //Edit Template Files
                 if (templateDefined)
                     actions.Add(ModuleContext.GetNextActionID(),
                         Localization.GetString("EditTemplate.Action", LocalResourceFile),
@@ -537,24 +522,24 @@ namespace Satrabel.OpenContent
                         SecurityAccessLevel.Host,
                         true,
                         false);
-
-
+                
                 //Edit Raw Data
-                if (templateDefined && settings.Manifest != null &&
-                    (template.DataNeeded() || template.SettingsNeeded() || template.Manifest.AdditionalDataDefined()) && !settings.Manifest.DisableEdit)
+                if (templateDefined && _settings.Manifest != null &&
+                    (template.DataNeeded() || template.SettingsNeeded() || template.Manifest.AdditionalDataDefined()) && !_settings.Manifest.DisableEdit)
                 {
                     actions.Add(ModuleContext.GetNextActionID(),
                         Localization.GetString("EditData.Action", LocalResourceFile),
                         ModuleActionType.EditContent,
                         "",
                         "~/DesktopModules/OpenContent/images/edit.png",
-                        //ModuleContext.EditUrl("EditData"),
                         (listMode && !string.IsNullOrEmpty(_itemId) ? ModuleContext.EditUrl("id", _itemId.ToString(), "EditData") : ModuleContext.EditUrl("EditData")),
                         false,
                         SecurityAccessLevel.Host,
                         true,
                         false);
                 }
+
+                //Template Exchange
                 actions.Add(ModuleContext.GetNextActionID(),
                     Localization.GetString("ShareTemplate.Action", LocalResourceFile),
                     ModuleActionType.ContentOptions,
@@ -566,6 +551,7 @@ namespace Satrabel.OpenContent
                     true,
                     false);
 
+                //Edit Global Settings
                 actions.Add(ModuleContext.GetNextActionID(),
                     Localization.GetString("EditGlobalSettings.Action", LocalResourceFile),
                     ModuleActionType.ContentOptions,
@@ -576,18 +562,8 @@ namespace Satrabel.OpenContent
                     SecurityAccessLevel.Host,
                     true,
                     false);
-                /*
-                Actions.Add(ModuleContext.GetNextActionID(),
-                           LocalizationHelpers.GetString("EditGlobalSettings.Action", LocalResourceFile),
-                           ModuleActionType.ContentOptions,
-                           "",
-                           "~/DesktopModules/OpenContent/images/settings.png",
-                           ModuleContext.EditUrl("EditGlobalSettings"),
-                           false,
-                           SecurityAccessLevel.Host,
-                           true,
-                           false);
-                */
+
+                //Help
                 actions.Add(ModuleContext.GetNextActionID(),
                     Localization.GetString("Help.Action", LocalResourceFile),
                     ModuleActionType.ContentOptions,
@@ -653,4 +629,5 @@ namespace Satrabel.OpenContent
         }
         #endregion
     }
+
 }

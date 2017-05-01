@@ -1,6 +1,4 @@
-﻿using Satrabel.OpenContent.Components.Localization;
-
-namespace Satrabel.OpenContent.Components.Dnn
+﻿namespace Satrabel.OpenContent.Components.Localization
 {
 
     internal class DnnLocalizationAdapter : ILocalizationAdapter
