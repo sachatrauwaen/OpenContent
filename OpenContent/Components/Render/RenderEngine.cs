@@ -1,8 +1,6 @@
 ﻿using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.UI.Modules;
-using DotNetNuke.Web.Client;
-using DotNetNuke.Web.Client.ClientResourceManagement;
 
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Alpaca;
@@ -205,19 +203,17 @@ namespace Satrabel.OpenContent.Components.Render
         {
             if (template != null)
             {
-                //JavaScript.RequestRegistration() 
-                //string templateBase = template.FilePath.Replace("$.hbs", ".hbs");
                 var cssfilename = new FileUri(Path.ChangeExtension(template.MainTemplateUri().FilePath, "css"));
                 if (cssfilename.FileExists)
                 {
-                    ClientResourceManager.RegisterStyleSheet(page, page.ResolveUrl(cssfilename.UrlFilePath), FileOrder.Css.PortalCss);
+                    App.Services.ClientResourceManager.RegisterStyleSheet(page, cssfilename.UrlFilePath);
                 }
                 var jsfilename = new FileUri(Path.ChangeExtension(template.MainTemplateUri().FilePath, "js"));
                 if (jsfilename.FileExists)
                 {
-                    ClientResourceManager.RegisterScript(page, page.ResolveUrl(jsfilename.UrlFilePath), FileOrder.Js.DefaultPriority + 100);
+                    App.Services.ClientResourceManager.RegisterScript(page, jsfilename.UrlFilePath, 100);
                 }
-                ClientResourceManager.RegisterScript(page, page.ResolveUrl("~/DesktopModules/OpenContent/js/opencontent.js"), FileOrder.Js.DefaultPriority);
+                App.Services.ClientResourceManager.RegisterScript(page, "~/DesktopModules/OpenContent/js/opencontent.js");
             }
         }
 

@@ -20,5 +20,6 @@ namespace Satrabel.OpenContent.Components
         public ICacheAdapter CacheAdapter => new DnnCacheAdapter();
         public IFileRepositoryAdapter FileRepository => new DnnFileRepositoryAdapter();
         public IGlobalSettingsRepositoryAdapter GlobalSettings => new DnnGlobalSettingsRepositoryAdapter(PortalSettings.Current.PortalId);
+        public IClientResourceManager ClientResourceManager => new DnnClientResourceManager();
     }
 }

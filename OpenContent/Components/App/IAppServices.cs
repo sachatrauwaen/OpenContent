@@ -13,5 +13,6 @@ namespace Satrabel.OpenContent.Components
         ICacheAdapter CacheAdapter { get; }
         IFileRepositoryAdapter FileRepository { get; }
         IGlobalSettingsRepositoryAdapter GlobalSettings { get; }
+        IClientResourceManager ClientResourceManager { get; }
     }
 }
