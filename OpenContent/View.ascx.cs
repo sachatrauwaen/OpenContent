@@ -62,11 +62,9 @@ namespace Satrabel.OpenContent
                 // auto attach a ContentLocalized OpenContent module to the reference module of the default language
                 AutoAttachLocalizedModule(ref module);
             }
-            _engine = new RenderEngine(module);
+            _engine = new RenderEngine(module, App.Config.RenderCanvas(ModuleContext), LocalResourceFile);
             _renderinfo = _engine.Info;
             _settings = _engine.Settings;
-            _engine.ResourceFile = LocalResourceFile;
-            _engine.RenderCanvas = App.Config.RenderCanvas(ModuleContext);
             _engine.QueryString = Page.Request.QueryString;
             if (Page.Request.QueryString["id"] != null)
             {

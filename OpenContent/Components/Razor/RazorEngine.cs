@@ -98,6 +98,7 @@ namespace Satrabel.OpenContent.Components.Razor
 
         private void InitWebpage()
         {
+
             if (!string.IsNullOrEmpty(RazorScriptFile))
             {
                 var objectValue = RuntimeHelpers.GetObjectValue(CreateWebPageInstance());
@@ -112,7 +113,8 @@ namespace Satrabel.OpenContent.Components.Razor
                 }
                 Webpage.Context = HttpContextBase;
                 Webpage.VirtualPath = VirtualPathUtility.GetDirectory(RazorScriptFile);
-                RenderCanvas.InitHelpers(Webpage, LocalResourceFile);
+                if (RenderCanvas != null) //called from a skin object?  todo: can we improve this? Inithelpers not initialized now.
+                    RenderCanvas.InitHelpers(Webpage, LocalResourceFile);
             }
         }
     }

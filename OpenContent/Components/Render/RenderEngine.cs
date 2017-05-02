@@ -41,6 +41,15 @@ namespace Satrabel.OpenContent.Components.Render
             _settings = _module.Settings;
         }
 
+        public RenderEngine(ModuleInfo viewmodule, IRenderCanvas renderCanvas, string localResourceFile) 
+        {
+            _module = new OpenContentModuleInfo(viewmodule, null);
+            _renderinfo = new RenderInfo(_module.Settings.Template, _module.Settings.IsOtherModule);
+            _settings = _module.Settings;
+            RenderCanvas = renderCanvas;
+            ResourceFile = localResourceFile;
+        }
+
         public RenderInfo Info => _renderinfo;
 
         public OpenContentSettings Settings => _settings;
