@@ -1,4 +1,5 @@
-﻿namespace Satrabel.OpenContent.Components
+﻿
+namespace Satrabel.OpenContent.Components
 {
     public interface IAppConfig
     {
@@ -7,5 +8,6 @@
         string FieldNamePublishStatus { get; }
         string Opencontent { get; }
         string DefaultCollection { get; }
+        IRenderCanvas RenderCanvas(object context);
     }
 }

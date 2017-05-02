@@ -11,25 +11,25 @@ namespace Satrabel.OpenContent.Components.Logging
 {
     public static class LoggingUtils
     {
-        private static string PrepareErrorMessage(RenderEngine module, Exception exc)
+        private static string PrepareErrorMessage(RenderEngine renderEngine, Exception exc)
         {
             var ps = PortalSettings.Current;
             string friendlyMessage;
             if (ps == null)
             {
                 friendlyMessage = string.Format("Alias: {3} \nTab: {4} - {5} \nModule: {0} \nContext: {2} \nError: {1}",
-                    module.ModuleContext.ModuleId,
+                    renderEngine.RenderCanvas.ModuleId,
                     exc.Message,
                     LoggingUtils.HttpRequestLogInfo(HttpContext.Current),
                     "unknown",
                     "unknown",
-                    DnnUrlUtils.NavigateUrl(module.ModuleContext.TabId)
+                    renderEngine.RenderCanvas.PageUrl
                 );
             }
             else
             {
                 friendlyMessage = string.Format("Alias: {3} \nTab: {4} - {5} \nModule: {0} \nContext: {2} \nError: {1}",
-                   module?.ModuleContext?.ModuleId,
+                   renderEngine.RenderCanvas.ModuleId,
                    exc.Message,
                    LoggingUtils.HttpRequestLogInfo(HttpContext.Current),
                    ps.PortalAlias.HTTPAlias,

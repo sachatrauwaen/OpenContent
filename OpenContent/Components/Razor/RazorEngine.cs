@@ -17,10 +17,10 @@ namespace Satrabel.OpenContent.Components.Razor
 {
     public class RazorEngine
     {
-        public RazorEngine(string razorScriptFile, ModuleInstanceContext moduleContext, string localResourceFile)
+        public RazorEngine(string razorScriptFile, IRenderCanvas renderCanvas, string localResourceFile)
         {
             RazorScriptFile = razorScriptFile;
-            ModuleContext = moduleContext;
+            RenderCanvas = renderCanvas;
             LocalResourceFile = localResourceFile ?? Path.Combine(Path.GetDirectoryName(razorScriptFile), DotNetNuke.Services.Localization.Localization.LocalResourceDirectory, Path.GetFileName(razorScriptFile) + ".resx");
 
             try
@@ -42,7 +42,7 @@ namespace Satrabel.OpenContent.Components.Razor
         }
 
         protected string RazorScriptFile { get; set; }
-        protected ModuleInstanceContext ModuleContext { get; set; }
+        protected IRenderCanvas RenderCanvas { get; set; }
         protected string LocalResourceFile { get; set; }
         public OpenContentWebPage Webpage { get; set; }
 
@@ -99,16 +99,6 @@ namespace Satrabel.OpenContent.Components.Razor
             return objectValue;
         }
 
-        private void InitHelpers(OpenContentWebPage webPage)
-        {
-            if (ModuleContext != null)
-            {
-                webPage.Dnn = new DnnHelper(ModuleContext);
-                webPage.Html = new HtmlHelper(ModuleContext, LocalResourceFile);
-                webPage.Url = new UrlHelper(ModuleContext);
-            }
-        }
-
         private void InitWebpage()
         {
             if (!string.IsNullOrEmpty(RazorScriptFile))
@@ -125,7 +115,7 @@ namespace Satrabel.OpenContent.Components.Razor
                 }
                 Webpage.Context = HttpContextBase;
                 Webpage.VirtualPath = VirtualPathUtility.GetDirectory(RazorScriptFile);
-                InitHelpers(Webpage);
+                RenderCanvas.InitHelpers(Webpage, LocalResourceFile);
             }
         }
     }

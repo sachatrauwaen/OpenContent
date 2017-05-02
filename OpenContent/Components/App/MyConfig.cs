@@ -1,4 +1,5 @@
-﻿namespace Satrabel.OpenContent.Components
+﻿
+namespace Satrabel.OpenContent.Components
 {
     public class MyConfig : IAppConfig
     {
@@ -50,7 +51,11 @@
             }
         }
 
-        #endregion
+        public IRenderCanvas RenderCanvas(object context)
+        {
+            return new DnnRenderCanvas(context);
+        }
 
+        #endregion
     }
 }

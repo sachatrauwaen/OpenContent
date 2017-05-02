@@ -66,7 +66,7 @@ namespace Satrabel.OpenContent
             _renderinfo = _engine.Info;
             _settings = _engine.Settings;
             _engine.LocalResourceFile = LocalResourceFile;
-            _engine.ModuleContext = ModuleContext;
+            _engine.RenderCanvas = App.Config.RenderCanvas(ModuleContext);
             _engine.QueryString = Page.Request.QueryString;
             if (Page.Request.QueryString["id"] != null)
             {

@@ -1,6 +1,5 @@
 ﻿using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Portals;
-using DotNetNuke.UI.Modules;
 
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Alpaca;
@@ -53,12 +52,12 @@ namespace Satrabel.OpenContent.Components.Render
         }
 
         public NameValueCollection QueryString { get; set; } // Only for filtering
-        public ModuleInstanceContext ModuleContext { get; set; } // Only for Dnn Razor helpers
         public string LocalResourceFile { get; set; } // Only for Dnn Razor helpers
 
         public string MetaTitle { get; set; }
         public string MetaDescription { get; set; }
         public string MetaOther { get; set; }
+        public IRenderCanvas RenderCanvas { get; set; }
 
         public void Render(Page page)
         {
@@ -435,7 +434,7 @@ namespace Satrabel.OpenContent.Components.Render
             var writer = new StringWriter();
             try
             {
-                var razorEngine = new RazorEngine("~/" + template.FilePath, ModuleContext, LocalResourceFile);
+                var razorEngine = new RazorEngine("~/" + template.FilePath, RenderCanvas, LocalResourceFile);
                 razorEngine.Render(writer, model);
             }
             catch (Exception ex)
@@ -674,7 +673,7 @@ namespace Satrabel.OpenContent.Components.Render
                     new MenuAction(
                         title,
                         isListPageRequest ? "~/DesktopModules/OpenContent/images/addcontent2.png" : "~/DesktopModules/OpenContent/images/editcontent2.png",
-                        isDetailPageRequest ? ModuleContext.EditUrl("id", _renderinfo.DetailItemId) : ModuleContext.EditUrl(),
+                        isDetailPageRequest ? RenderCanvas.EditUrl("id", _renderinfo.DetailItemId) : RenderCanvas.EditUrl(),
                         ActionType.Add
                         )
                     );
@@ -691,7 +690,7 @@ namespace Satrabel.OpenContent.Components.Render
                             new MenuAction(
                                 addData.Value.Title,
                                 "~/DesktopModules/OpenContent/images/editcontent2.png",
-                                ModuleContext.EditUrl("key", addData.Key, "EditAddData"),
+                                RenderCanvas.EditUrl("key", addData.Key, "EditAddData"),
                                 ActionType.Edit
                             )
                         );
@@ -717,7 +716,7 @@ namespace Satrabel.OpenContent.Components.Render
                     new MenuAction(
                         "Submissions",
                         "~/DesktopModules/OpenContent/images/editcontent2.png",
-                        ModuleContext.EditUrl("Submissions"),
+                        RenderCanvas.EditUrl("Submissions"),
                         ActionType.Edit
                     )
                 );
@@ -730,7 +729,7 @@ namespace Satrabel.OpenContent.Components.Render
                     new MenuAction(
                         Localizer.Instance.GetString("EditSettings.Action", LocalResourceFile),
                         "~/DesktopModules/OpenContent/images/editsettings2.png",
-                        ModuleContext.EditUrl("EditSettings"),
+                        RenderCanvas.EditUrl("EditSettings"),
                         ActionType.Misc,
                         SecurityAccessLevel.AdminRights
                     )
@@ -744,7 +743,7 @@ namespace Satrabel.OpenContent.Components.Render
                     new MenuAction(
                         Localizer.Instance.GetString("FormSettings.Action", LocalResourceFile),
                         "~/DesktopModules/OpenContent/images/editsettings2.png",
-                        ModuleContext.EditUrl("formsettings"),
+                        RenderCanvas.EditUrl("formsettings"),
                         ActionType.Misc,
                         SecurityAccessLevel.AdminRights
                     )
@@ -756,7 +755,7 @@ namespace Satrabel.OpenContent.Components.Render
                 new MenuAction(
                 Localizer.Instance.GetString("EditInit.Action", LocalResourceFile),
                 "~/DesktopModules/OpenContent/images/editinit.png",
-                ModuleContext.EditUrl("EditInit"),
+                RenderCanvas.EditUrl("EditInit"),
                 ActionType.Misc,
                 SecurityAccessLevel.AdminRights
                 )
@@ -771,7 +770,7 @@ namespace Satrabel.OpenContent.Components.Render
                         new MenuAction(
                             Localizer.Instance.GetString("EditQuery.Action", LocalResourceFile),
                             "~/DesktopModules/OpenContent/images/editfilter.png",
-                            ModuleContext.EditUrl("EditQuery"),
+                            RenderCanvas.EditUrl("EditQuery"),
                             ActionType.Misc,
                             SecurityAccessLevel.AdminRights
                         )
@@ -785,7 +784,7 @@ namespace Satrabel.OpenContent.Components.Render
                     new MenuAction(
                         Localizer.Instance.GetString("Builder.Action", LocalResourceFile),
                         "~/DesktopModules/OpenContent/images/formbuilder.png",
-                        ModuleContext.EditUrl("FormBuilder"),
+                        RenderCanvas.EditUrl("FormBuilder"),
                         ActionType.Misc,
                         SecurityAccessLevel.AdminRights
                     )
@@ -797,7 +796,7 @@ namespace Satrabel.OpenContent.Components.Render
                     new MenuAction(
                         Localizer.Instance.GetString("EditTemplate.Action", LocalResourceFile),
                         "~/DesktopModules/OpenContent/images/edittemplate.png",
-                        ModuleContext.EditUrl("EditTemplate"),
+                        RenderCanvas.EditUrl("EditTemplate"),
                         ActionType.Misc,
                         SecurityAccessLevel.SuperUserRights
                     )
@@ -811,7 +810,7 @@ namespace Satrabel.OpenContent.Components.Render
                     new MenuAction(
                         Localizer.Instance.GetString("EditData.Action", LocalResourceFile),
                         "~/DesktopModules/OpenContent/images/edit.png",
-                        isDetailPageRequest ? ModuleContext.EditUrl("id", _renderinfo.DetailItemId, "EditData") : ModuleContext.EditUrl("EditData"),
+                        isDetailPageRequest ? RenderCanvas.EditUrl("id", _renderinfo.DetailItemId, "EditData") : RenderCanvas.EditUrl("EditData"),
                         ActionType.Edit,
                         SecurityAccessLevel.SuperUserRights
                     )
@@ -823,7 +822,7 @@ namespace Satrabel.OpenContent.Components.Render
                 new MenuAction(
                     Localizer.Instance.GetString("ShareTemplate.Action", LocalResourceFile),
                     "~/DesktopModules/OpenContent/images/exchange.png",
-                    ModuleContext.EditUrl("ShareTemplate"),
+                    RenderCanvas.EditUrl("ShareTemplate"),
                     ActionType.Misc,
                     SecurityAccessLevel.SuperUserRights
                 )
@@ -834,7 +833,7 @@ namespace Satrabel.OpenContent.Components.Render
                 new MenuAction(
                     Localizer.Instance.GetString("EditGlobalSettings.Action", LocalResourceFile),
                     "~/DesktopModules/OpenContent/images/settings.png",
-                    ModuleContext.EditUrl("EditGlobalSettings"),
+                    RenderCanvas.EditUrl("EditGlobalSettings"),
                     ActionType.Misc,
                     SecurityAccessLevel.SuperUserRights
                 )
