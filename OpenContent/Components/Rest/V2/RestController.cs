@@ -33,7 +33,7 @@ namespace Satrabel.OpenContent.Components.Rest.V2
             try
             {
                 var collection = entity;
-                OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
+                OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule, PortalSettings);
 
                 JObject reqOptions = null;
                 //if (!string.IsNullOrEmpty(req.options))
@@ -53,10 +53,10 @@ namespace Satrabel.OpenContent.Components.Rest.V2
                     res["meta"] = new JObject();
                     if (dsItem != null)
                     {
-                        var mf = new ModelFactorySingle(dsItem, module, PortalSettings, collection);
+                        var mf = new ModelFactorySingle(dsItem, module, collection);
 
                         string raison = "";
-                        if (!OpenContentUtils.HaveViewPermissions(dsItem, PortalSettings.UserInfo, indexConfig, out raison))
+                        if (!OpenContentUtils.HaveViewPermissions(dsItem, module.UserRoles, indexConfig, out raison))
                         {
                             Exceptions.ProcessHttpException(new HttpException(404, "No detail view permissions for id=" + id + " (" + raison + ")"));
                             //throw new UnauthorizedAccessException("No detail view permissions for id " + info.DetailItemId);
@@ -64,7 +64,7 @@ namespace Satrabel.OpenContent.Components.Rest.V2
 
                         mf.Options = reqOptions;
                         var model = mf.GetModelAsJson(false);
-                        
+
                         model["id"] = model["Context"]["Id"];
                         res["meta"]["total"] = dsItem == null ? 0 : 1;
                         //JsonUtils.IdJson(model);
@@ -76,7 +76,7 @@ namespace Satrabel.OpenContent.Components.Rest.V2
                         }
                         res[entity] = model;
                     }
-                    
+
                     return Request.CreateResponse(HttpStatusCode.OK, res);
                 }
                 else
@@ -115,14 +115,14 @@ namespace Satrabel.OpenContent.Components.Rest.V2
                 ModuleInfo activeModule = ActiveModule;
 
                 OpenContentSettings settings = activeModule.OpenContentSettings();
-                OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
+                OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule, PortalSettings);
                 JObject reqOptions = null;
 
                 if (module.IsListMode())
                 {
                     var indexConfig = OpenContentUtils.GetIndexConfig(settings.TemplateDir, collection);
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
-                    bool isEditable = ActiveModule.CheckIfEditable(PortalSettings);
+                    bool isEditable = ActiveModule.CheckIfEditable(module);
                     queryBuilder.Build(settings.Query, !isEditable, UserInfo.UserID, DnnLanguageUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
 
                     RestQueryBuilder.MergeQuery(indexConfig, queryBuilder.Select, restSelect, DnnLanguageUtils.GetCurrentCultureCode());
@@ -142,7 +142,7 @@ namespace Satrabel.OpenContent.Components.Rest.V2
                         dsContext.Collection = collection;
                         dsItems = ds.GetAll(dsContext, queryBuilder.Select);
                     }
-                    var mf = new ModelFactoryMultiple(dsItems.Items, module, PortalSettings, collection);
+                    var mf = new ModelFactoryMultiple(dsItems.Items, module, collection);
                     mf.Options = reqOptions;
                     var model = mf.GetModelAsJson(false);
                     var res = new JObject();
@@ -188,7 +188,7 @@ namespace Satrabel.OpenContent.Components.Rest.V2
             try
             {
                 var collection = entity;
-                OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
+                OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule, PortalSettings);
 
                 var manifest = module.Settings.Manifest;
                 TemplateManifest templateManifest = module.Settings.Template;
@@ -235,7 +235,7 @@ namespace Satrabel.OpenContent.Components.Rest.V2
             try
             {
                 var collection = entity;
-                OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
+                OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule, PortalSettings);
 
                 string editRole = module.Settings.Template.Manifest.GetEditRole();
                 int createdByUserid = -1;
@@ -261,7 +261,7 @@ namespace Satrabel.OpenContent.Components.Rest.V2
                     if (dsItem != null)
                         createdByUserid = dsItem.CreatedByUserId;
                 }
-                if (!DnnPermissionsUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, createdByUserid))
+                if (!DnnPermissionsUtils.HasEditPermissions(module, editRole, createdByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
@@ -312,7 +312,7 @@ namespace Satrabel.OpenContent.Components.Rest.V2
             try
             {
                 var collection = entity;
-                OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
+                OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule, PortalSettings);
                 string editRole = module.Settings.Template.Manifest.GetEditRole();
                 int createdByUserid = -1;
 
@@ -338,7 +338,7 @@ namespace Satrabel.OpenContent.Components.Rest.V2
                     if (dsItem != null)
                         createdByUserid = dsItem.CreatedByUserId;
                 }
-                if (!DnnPermissionsUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, createdByUserid))
+                if (!DnnPermissionsUtils.HasEditPermissions(module, editRole, createdByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
@@ -366,7 +366,7 @@ namespace Satrabel.OpenContent.Components.Rest.V2
             try
             {
                 var collection = entity;
-                OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
+                OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule, PortalSettings);
 
                 var manifest = module.Settings.Template.Manifest;
                 string editRole = manifest.GetEditRole();
@@ -374,7 +374,7 @@ namespace Satrabel.OpenContent.Components.Rest.V2
                 IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
                 dsContext.Collection = collection;
-                if (!DnnPermissionsUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, -1))
+                if (!DnnPermissionsUtils.HasEditPermissions(module, editRole, -1))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
@@ -397,7 +397,7 @@ namespace Satrabel.OpenContent.Components.Rest.V2
             try
             {
                 var collection = entity;
-                OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
+                OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule, PortalSettings);
                 string editRole = module.Settings.Template.Manifest.GetEditRole();
                 int createdByUserid = -1;
 
@@ -422,7 +422,7 @@ namespace Satrabel.OpenContent.Components.Rest.V2
                     if (dsItem != null)
                         createdByUserid = dsItem.CreatedByUserId;
                 }
-                if (!DnnPermissionsUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, createdByUserid))
+                if (!DnnPermissionsUtils.HasEditPermissions(module, editRole, createdByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }

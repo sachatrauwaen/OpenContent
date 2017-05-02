@@ -7,6 +7,7 @@ using DotNetNuke.Services.FileSystem;
 using Satrabel.OpenContent.Components.Datasource;
 using System.Collections;
 using System.Collections.Generic;
+using DotNetNuke.Entities.Portals;
 
 namespace Satrabel.OpenContent.Components.Json
 {
@@ -351,7 +352,7 @@ namespace Satrabel.OpenContent.Components.Json
                             {
                                 try
                                 {
-                                    var module = new OpenContentModuleInfo(int.Parse(moduleId), int.Parse(tabId));
+                                    var module = new OpenContentModuleInfo(int.Parse(moduleId), int.Parse(tabId), PortalSettings.Current);
                                     var ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                                     var dsContext = OpenContentUtils.CreateDataContext(module);
                                     IDataItem dataItem = ds.Get(dsContext, val.ToString());
@@ -381,7 +382,7 @@ namespace Satrabel.OpenContent.Components.Json
                         string val = childProperty.Value.ToString();
                         try
                         {
-                            var module = new OpenContentModuleInfo(int.Parse(moduleId), int.Parse(tabId));
+                            var module = new OpenContentModuleInfo(int.Parse(moduleId), int.Parse(tabId), PortalSettings.Current);
                             var ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                             var dsContext = OpenContentUtils.CreateDataContext(module);
                             IDataItem dataItem = ds.Get(dsContext, val);

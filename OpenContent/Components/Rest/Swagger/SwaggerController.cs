@@ -29,7 +29,7 @@ namespace Satrabel.OpenContent.Components.Rest.Swagger
         {
             try
             {
-                var module = new OpenContentModuleInfo(moduleId, tabId);
+                var module = new OpenContentModuleInfo(moduleId, tabId,PortalSettings);
                 var manifest = module.Settings.Manifest;
                 string templateFolder = module.Settings.TemplateDir.UrlFolder;
 

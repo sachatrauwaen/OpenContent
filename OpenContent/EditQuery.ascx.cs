@@ -39,7 +39,7 @@ namespace Satrabel.OpenContent
         protected void bIndex_Click(object sender, EventArgs e)
         {
             //LuceneController.Instance.ReIndexModuleData(ModuleId, this.OpenContentSettings());
-            var module = new OpenContentModuleInfo(this.ModuleConfiguration);
+            var module = new OpenContentModuleInfo(this.ModuleConfiguration, PortalSettings);
             var settings = module.Settings;
             bool index = false;
             if (settings.TemplateAvailable)

@@ -22,6 +22,7 @@ using Satrabel.OpenContent.Components.Json;
 using DotNetNuke.Entities.Modules;
 using System.Collections.Generic;
 using DotNetNuke.Services.Localization;
+using DotNetNuke.UI.Modules;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.Datasource;
@@ -54,11 +55,11 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
-                var moduleInfo = new OpenContentModuleInfo(ActiveModule);
-                IDataSource ds = DataSourceManager.GetDataSource(moduleInfo.Settings.Manifest.DataSource);
-                var dsContext = OpenContentUtils.CreateDataContext(moduleInfo);
+                var module = new OpenContentModuleInfo(ActiveModule, PortalSettings);
+                IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
+                var dsContext = OpenContentUtils.CreateDataContext(module);
                 IDataItem dsItem = null;
-                if (moduleInfo.IsListMode())
+                if (module.IsListMode())
                 {
                     if (!string.IsNullOrEmpty(id)) // not a new item
                     {
@@ -127,7 +128,7 @@ namespace Satrabel.OpenContent.Components
                 json["context"] = context;
 
                 //todo: can't we do some of these checks at the beginning of this method to fail faster?
-                if (!DnnPermissionsUtils.HasEditPermissions(PortalSettings, moduleInfo.ViewModule, moduleInfo.Settings.Manifest.GetEditRole(), createdByUserid))
+                if (!DnnPermissionsUtils.HasEditPermissions(module, module.Settings.Manifest.GetEditRole(), createdByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
@@ -148,7 +149,7 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
-                var module = new OpenContentModuleInfo(ActiveModule);
+                var module = new OpenContentModuleInfo(ActiveModule, PortalSettings);
                 var dataManifest = module.Settings.Manifest.GetAdditionalData(key);
 
                 IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
@@ -181,7 +182,7 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
-                var module = new OpenContentModuleInfo(ActiveModule);
+                var module = new OpenContentModuleInfo(ActiveModule, PortalSettings);
                 string key = json["key"].ToString();
                 var dataManifest = module.Settings.Template.Manifest.GetAdditionalData(key);
 
@@ -214,7 +215,7 @@ namespace Satrabel.OpenContent.Components
         [HttpGet]
         public HttpResponseMessage Version(string id, string ticks)
         {
-            var module = new OpenContentModuleInfo(ActiveModule);
+            var module = new OpenContentModuleInfo(ActiveModule, PortalSettings);
             JToken json = new JObject();
             try
             {
@@ -236,7 +237,7 @@ namespace Satrabel.OpenContent.Components
 
                 string editRole = module.Settings.Template.Manifest.GetEditRole();
                 //todo: can't we do some of these checks at the beginning of this method to fail faster?
-                if (!DnnPermissionsUtils.HasEditPermissions(PortalSettings, module.ViewModule, editRole, createdByUserid))
+                if (!DnnPermissionsUtils.HasEditPermissions(module, editRole, createdByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
@@ -345,7 +346,7 @@ namespace Satrabel.OpenContent.Components
             List<LookupResultDTO> res = new List<LookupResultDTO>();
             try
             {
-                var module = new OpenContentModuleInfo(ActiveModule);
+                var module = new OpenContentModuleInfo(ActiveModule, PortalSettings);
 
                 string key = req.dataKey;
                 var additionalDataManifest = module.Settings.Template.Manifest.GetAdditionalData(key);
@@ -384,7 +385,7 @@ namespace Satrabel.OpenContent.Components
         [HttpPost]
         public HttpResponseMessage Lookup(LookupRequestDTO req)
         {
-            var module = new OpenContentModuleInfo(req.moduleid, req.tabid);
+            var module = new OpenContentModuleInfo(req.moduleid, req.tabid,PortalSettings);
             if (module == null) throw new Exception($"Can not find ModuleInfo (tabid:{req.tabid}, moduleid:{req.moduleid})");
 
             List<LookupResultDTO> res = new List<LookupResultDTO>();
@@ -468,7 +469,7 @@ namespace Satrabel.OpenContent.Components
         [HttpPost]
         public HttpResponseMessage LookupCollection(LookupCollectionRequestDTO req)
         {
-            var module = new OpenContentModuleInfo(ActiveModule);
+            var module = new OpenContentModuleInfo(ActiveModule, PortalSettings);
             var res = new List<LookupResultDTO>();
 
             try
@@ -557,7 +558,7 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
-                var module = new OpenContentModuleInfo(ActiveModule);
+                var module = new OpenContentModuleInfo(ActiveModule, PortalSettings);
                 string editRole = module.Settings.Template.Manifest.GetEditRole();
                 int createdByUserid = -1;
 
@@ -584,7 +585,7 @@ namespace Satrabel.OpenContent.Components
                 }
 
                 //todo: can't we do some of these checks at the beginning of this method to fail faster?
-                if (!DnnPermissionsUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, createdByUserid))
+                if (!DnnPermissionsUtils.HasEditPermissions(module, editRole, createdByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
@@ -640,7 +641,7 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
-                var module = new OpenContentModuleInfo(ActiveModule);
+                var module = new OpenContentModuleInfo(ActiveModule, PortalSettings);
                 string editRole = module.Settings.Template.Manifest.GetEditRole();
                 int createdByUserid = -1;
 
@@ -667,7 +668,7 @@ namespace Satrabel.OpenContent.Components
                 }
 
                 //todo: can't we do some of these checks at the beginning of this method to fail faster?
-                if (!DnnPermissionsUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, createdByUserid))
+                if (!DnnPermissionsUtils.HasEditPermissions(module, editRole, createdByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
@@ -703,7 +704,7 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
-                var module = new OpenContentModuleInfo(ActiveModule);
+                var module = new OpenContentModuleInfo(ActiveModule, PortalSettings);
                 string editRole = module.Settings.Template.Manifest.GetEditRole();
                 int createdByUserid = -1;
 
@@ -730,7 +731,7 @@ namespace Satrabel.OpenContent.Components
                 }
 
                 //todo: can't we do some of these checks at the beginning of this method to fail faster?
-                if (!DnnPermissionsUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, createdByUserid))
+                if (!DnnPermissionsUtils.HasEditPermissions(module, editRole, createdByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }

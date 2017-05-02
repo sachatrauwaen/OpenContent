@@ -16,62 +16,62 @@ namespace Satrabel.OpenContent.Components.Form
 {
     public class FormUtils
     {
-        public static MailAddress GenerateMailAddress(string TypeOfAddress, string Email, string Name, string FormEmailField, string FormNameField, JObject form)
+        public static MailAddress GenerateMailAddress(string typeOfAddress, string email, string name, string formEmailField, string formNameField, JObject form)
         {
             MailAddress adr = null;
             var portalSettings = PortalSettings.Current;
             var userInfo = portalSettings.UserInfo;
 
-            if (TypeOfAddress == "host")
+            if (typeOfAddress == "host")
             {
                 adr = new MailAddress(Host.HostEmail, Host.HostTitle);
             }
-            else if (TypeOfAddress == "admin")
+            else if (typeOfAddress == "admin")
             {
                 var user = UserController.GetUserById(portalSettings.PortalId, portalSettings.AdministratorId);
                 adr = new MailAddress(user.Email, user.DisplayName);
             }
-            else if (TypeOfAddress == "form")
+            else if (typeOfAddress == "form")
             {
-                if (string.IsNullOrEmpty(FormNameField))
-                    FormNameField = "name";
-                if (string.IsNullOrEmpty(FormEmailField))
-                    FormEmailField = "email";
+                if (string.IsNullOrEmpty(formNameField))
+                    formNameField = "name";
+                if (string.IsNullOrEmpty(formEmailField))
+                    formEmailField = "email";
 
-                string FormEmail = GetProperty(form, FormEmailField);
-                string FormName = GetProperty(form, FormNameField);
-                adr = new MailAddress(FormEmail, FormName);
+                string formEmail = GetProperty(form, formEmailField);
+                string formName = GetProperty(form, formNameField);
+                adr = new MailAddress(formEmail, formName);
             }
-            else if (TypeOfAddress == "custom")
+            else if (typeOfAddress == "custom")
             {
-                adr = new MailAddress(Email, Name);
+                adr = new MailAddress(email, name);
             }
-            else if (TypeOfAddress == "current")
+            else if (typeOfAddress == "current")
             {
                 if (userInfo == null)
-                    throw new Exception(string.Format("Can't send email to current user, as there is no current user. Parameters were TypeOfAddress: [{0}], Email: [{1}], Name: [{2}], FormEmailField: [{3}], FormNameField: [{4}], FormNameField: [{5}]", TypeOfAddress, Email, Name, FormEmailField, FormNameField, form));
+                    throw new Exception($"Can't send email to current user, as there is no current user. Parameters were TypeOfAddress: [{typeOfAddress}], Email: [{email}], Name: [{name}], FormEmailField: [{formEmailField}], FormNameField: [{formNameField}], FormNameField: [{form}]");
                 if (string.IsNullOrEmpty(userInfo.Email))
-                    throw new Exception(string.Format("Can't send email to current user, as email address of current user is unknown. Parameters were TypeOfAddress: [{0}], Email: [{1}], Name: [{2}], FormEmailField: [{3}], FormNameField: [{4}], FormNameField: [{5}]", TypeOfAddress, Email, Name, FormEmailField, FormNameField, form));
+                    throw new Exception($"Can't send email to current user, as email address of current user is unknown. Parameters were TypeOfAddress: [{typeOfAddress}], Email: [{email}], Name: [{name}], FormEmailField: [{formEmailField}], FormNameField: [{formNameField}], FormNameField: [{form}]");
 
                 adr = new MailAddress(userInfo.Email, userInfo.DisplayName);
             }
 
             if (adr == null)
             {
-                throw new Exception(string.Format("Can't determine email address. Parameters were TypeOfAddress: [{0}], Email: [{1}], Name: [{2}], FormEmailField: [{3}], FormNameField: [{4}], FormNameField: [{5}]", TypeOfAddress, Email, Name, FormEmailField, FormNameField, form));
+                throw new Exception($"Can't determine email address. Parameters were TypeOfAddress: [{typeOfAddress}], Email: [{email}], Name: [{name}], FormEmailField: [{formEmailField}], FormNameField: [{formNameField}], FormNameField: [{form}]");
             }
 
             return adr;
         }
-        private static string GetProperty(JObject obj, string PropertyName)
+        private static string GetProperty(JObject obj, string propertyName)
         {
-            string PropertyValue = "";
-            var Property = obj.Children<JProperty>().SingleOrDefault(p => p.Name.ToLower() == PropertyName.ToLower());
-            if (Property != null)
+            string propertyValue = "";
+            var property = obj.Children<JProperty>().SingleOrDefault(p => p.Name.ToLower() == propertyName.ToLower());
+            if (property != null)
             {
-                PropertyValue = Property.Value.ToString();
+                propertyValue = property.Value.ToString();
             }
-            return PropertyValue;
+            return propertyValue;
         }
         public static string SendMail(string mailFrom, string mailTo, string replyTo, string subject, string body)
         {
@@ -91,7 +91,7 @@ namespace Satrabel.OpenContent.Components.Form
             string smtpAuthentication = Host.SMTPAuthentication;
             string smtpUsername = Host.SMTPUsername;
             string smtpPassword = Host.SMTPPassword;
-            bool smtpEnableSSL = Host.EnableSMTPSSL;
+            bool smtpEnableSsl = Host.EnableSMTPSSL;
 
             string res = Mail.SendMail(mailFrom,
                             mailTo,
@@ -108,7 +108,7 @@ namespace Satrabel.OpenContent.Components.Form
                             smtpAuthentication,
                             smtpUsername,
                             smtpPassword,
-                            smtpEnableSSL);
+                            smtpEnableSsl);
 
             //Mail.SendEmail(replyTo, mailFrom, mailTo, subject, body);
             return res;
@@ -179,10 +179,9 @@ namespace Satrabel.OpenContent.Components.Form
 
         public static JObject FormSubmit(JObject formInfo)
         {
-            SettingsDTO settings = null;
             if (formInfo["formSettings"] is JObject)
             {
-                settings = (formInfo["formSettings"] as JObject).ToObject<SettingsDTO>();
+                var settings = (formInfo["formSettings"] as JObject).ToObject<SettingsDTO>();
                 var form = formInfo["form"] as JObject;
                 return FormSubmit(form, settings);
             }
@@ -217,9 +216,9 @@ namespace Satrabel.OpenContent.Components.Form
                     data = FormUtils.GenerateFormData(form.ToString(), out formData);
                 }
                 // Send emails
-                string Message = "Form submitted.";
-                var Errors = new List<string>();
-                if (settings != null && settings.Notifications != null)
+                string message = "Form submitted.";
+                var errors = new List<string>();
+                if (settings?.Notifications != null)
                 {
                     foreach (var notification in settings.Notifications)
                     {
@@ -238,28 +237,28 @@ namespace Satrabel.OpenContent.Components.Form
                                 body = hbs.Execute(notification.EmailBody, data);
                             }
 
-                            string send = FormUtils.SendMail(from.ToString(), to.ToString(), (reply == null ? "" : reply.ToString()), notification.EmailSubject, body);
+                            string send = FormUtils.SendMail(from.ToString(), to.ToString(), reply?.ToString() ?? "", notification.EmailSubject, body);
                             if (!string.IsNullOrEmpty(send))
                             {
-                                Errors.Add("From:" + from.ToString() + " - To:" + to.ToString() + " - " + send);
+                                errors.Add("From:" + from.ToString() + " - To:" + to.ToString() + " - " + send);
                             }
                         }
                         catch (Exception exc)
                         {
-                            Errors.Add("Notification " + (settings.Notifications.IndexOf(notification) + 1) + " : " + exc.Message);
+                            errors.Add("Notification " + (settings.Notifications.IndexOf(notification) + 1) + " : " + exc.Message);
                             App.Services.Logger.Error(exc);
                         }
                     }
                 }
-                if (settings != null && settings.Settings != null)
+                if (settings?.Settings != null)
                 {
                     if (!string.IsNullOrEmpty(settings.Settings.Message))
                     {
-                        Message = hbs.Execute(settings.Settings.Message, data);
+                        message = hbs.Execute(settings.Settings.Message, data);
                     }
                     else
                     {
-                        Message = "Message sended.";
+                        message = "Message sended.";
                     }
                     //Tracking = settings.Settings.Tracking;
                     if (!string.IsNullOrEmpty(settings.Settings.Tracking))
@@ -268,7 +267,7 @@ namespace Satrabel.OpenContent.Components.Form
                     }
                 }
                 var res = new JObject();
-                res["message"] = Message;
+                res["message"] = message;
                 return res;
             }
             return null;

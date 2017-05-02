@@ -54,7 +54,7 @@ namespace Satrabel.OpenContent
 
         private List<dynamic> GetDataAsListOfDynamics()
         {
-            var module = new OpenContentModuleInfo(this.ModuleConfiguration);
+            var module = new OpenContentModuleInfo(this.ModuleConfiguration, PortalSettings);
             OpenContentController ctrl = new OpenContentController();
             var data = ctrl.GetContents(module.DataModule.ModuleID, "Submissions").OrderByDescending(c => c.CreatedOnDate);
             var dynData = new List<dynamic>();

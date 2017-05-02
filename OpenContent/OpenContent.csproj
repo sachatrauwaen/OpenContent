@@ -177,7 +177,7 @@
     <Compile Include="Components\Alpaca\AlpacaLayoutEnum.cs" />
     <Compile Include="Components\AppDefinitions\MenuAction.cs" />
     <Compile Include="Components\AppDefinitions\SecurityAccessLevel.cs" />
-    <Compile Include="Components\Render\DnnRenderCanvas.cs" />
+    <Compile Include="Components\Render\DnnRenderContext.cs" />
     <Compile Include="Components\Files\DnnClientResourceManager.cs" />
     <Compile Include="Components\Files\IClientResourceManager.cs" />
     <Compile Include="Components\Settings\IGlobalSettingsRepositoryAdapter.cs" />

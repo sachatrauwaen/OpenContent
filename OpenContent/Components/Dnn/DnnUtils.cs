@@ -47,7 +47,7 @@ namespace Satrabel.OpenContent.Components
         {
             ModuleController mc = new ModuleController();
             ArrayList modules = mc.GetModulesByDefinition(portalId, App.Config.Opencontent);
-            return modules.OfType<ModuleInfo>().Select(module => new OpenContentModuleInfo(module));
+            return modules.OfType<ModuleInfo>().Select(module => new OpenContentModuleInfo(module, PortalSettings.Current));
         }
 
         /// <summary>

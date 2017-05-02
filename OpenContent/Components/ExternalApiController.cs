@@ -20,14 +20,14 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
-                var module = new OpenContentModuleInfo(req.ModuleId, req.TabId);
+                var module = new OpenContentModuleInfo(req.ModuleId, req.TabId, PortalSettings);
                 string editRole = module.Settings.Template.Manifest.GetEditRole();
 
                 var dataSource = new OpenContentDataSource();
 
                 if (module.IsListMode())
                 {
-                    if (!DnnPermissionsUtils.HasEditPermissions(PortalSettings, module.ViewModule, editRole, -1))
+                    if (!DnnPermissionsUtils.HasEditPermissions(module, editRole, -1))
                     {
                         App.Services.Logger.Warn($"Failed the HasEditPermissions() check");
                         return Request.CreateResponse(HttpStatusCode.Unauthorized, "Failed the HasEditPermissions() check");

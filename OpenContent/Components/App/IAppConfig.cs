@@ -8,6 +8,5 @@ namespace Satrabel.OpenContent.Components
         string FieldNamePublishStatus { get; }
         string Opencontent { get; }
         string DefaultCollection { get; }
-        IRenderCanvas RenderCanvas(object context);
     }
 }

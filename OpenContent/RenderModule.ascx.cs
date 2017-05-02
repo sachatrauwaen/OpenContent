@@ -3,6 +3,7 @@ using DotNetNuke.UI.Skins;
 using System;
 using System.Linq;
 using System.Web.UI;
+using Satrabel.OpenContent.Components;
 using Satrabel.OpenContent.Components.Render;
 using Satrabel.OpenContent.Components.Logging;
 using Satrabel.OpenContent.Components.Json;
@@ -67,7 +68,7 @@ namespace Satrabel.OpenContent
                 moduleClone.ModuleSettings["template"] = Template;
                 module = moduleClone;
             }
-            var engine = new RenderEngine(module);
+            var engine = new RenderEngine(new OpenContentModuleInfo(module, PortalSettings));
             try
             {
                 engine.Render(Page);

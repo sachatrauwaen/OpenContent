@@ -11,20 +11,20 @@ namespace Satrabel.OpenContent.Components.Dnn
 {
     public static class DnnPermissionsUtils
     {
-        public static bool HasEditPermissions(PortalSettings portalSettings, ModuleInfo module, string editrole, int createdByUserId)
+        public static bool HasEditPermissions(OpenContentModuleInfo portalSettings, string editrole, int createdByUserId)
         {
-            return module.HasEditRightsOnModule() || HasEditRole(portalSettings, editrole, createdByUserId);
+            return portalSettings.ViewModule.HasEditRightsOnModule() || HasEditRole(portalSettings, editrole, createdByUserId);
         }
 
-        public static bool HasEditRole(PortalSettings portalSettings, string editrole, int createdByUserId)
+        public static bool HasEditRole(OpenContentModuleInfo portalSettings, string editrole, int createdByUserId)
         {
             if (String.IsNullOrEmpty(editrole)) return false;
             if (editrole.ToLower() == "all") return true;
-            if (portalSettings.UserInfo.IsInRole(editrole) && (createdByUserId == -1 || createdByUserId == portalSettings.UserId)) return true;
+            if (portalSettings.IsInRole(editrole) && (createdByUserId == -1 || createdByUserId == portalSettings.UserId)) return true;
             return false;
         }
 
-        public static bool CheckIfEditable(this ModuleInfo activeModule, PortalSettings portalSettings)
+        public static bool CheckIfEditable(this ModuleInfo dataModule, OpenContentModuleInfo portalSettings)
         {
             bool isEditable;
             //first check some weird Dnn issue
@@ -38,13 +38,13 @@ namespace Satrabel.OpenContent.Components.Dnn
                     HttpContext.Current.Items.Remove("Personalization");
                 }
             }
-            bool blnPreview = (portalSettings.UserMode == PortalSettings.Mode.View);
-            if (Globals.IsHostTab(portalSettings.ActiveTab.TabID))
+            bool blnPreview = portalSettings.PreviewEnabled ;
+            if (Globals.IsHostTab(portalSettings.ActiveTabId))
             {
                 blnPreview = false;
             }
 
-            bool blnHasModuleEditPermissions = HasEditRightsOnModule(activeModule);
+            bool blnHasModuleEditPermissions = dataModule.HasEditRightsOnModule();
 
             if (blnPreview == false && blnHasModuleEditPermissions)
             {

@@ -51,11 +51,6 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
-        public IRenderCanvas RenderCanvas(object context)
-        {
-            return new DnnRenderCanvas(context);
-        }
-
         #endregion
     }
 }

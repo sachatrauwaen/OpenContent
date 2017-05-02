@@ -32,11 +32,10 @@ namespace Satrabel.OpenContent.Components.Render
         // only multiple
         protected readonly Manifest.Manifest _manifest;
         protected readonly TemplateManifest _templateManifest;
-        protected readonly PortalSettings _portalSettings;
         protected readonly OpenContentModuleInfo _module;
         protected readonly int _detailTabId;
 
-        public ModelFactoryBase(string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleInfo module, PortalSettings portalSettings)
+        public ModelFactoryBase(string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleInfo module)
 
         {
             this._settingsJson = settingsJson;
@@ -44,8 +43,7 @@ namespace Satrabel.OpenContent.Components.Render
             this._manifest = manifest;
             this._templateFiles = templateFiles;
             this._module = module;
-            this._portalSettings = portalSettings;
-            this._portalId = portalSettings.PortalId;
+            this._portalId = module.PortalId;
             this._templateManifest = templateManifest;
             this._collection = templateManifest.Collection;
             this._detailTabId = DnnUtils.GetTabByCurrentCulture(this._portalId, module.GetDetailTabId(), GetCurrentCultureCode());
@@ -71,7 +69,7 @@ namespace Satrabel.OpenContent.Components.Render
             _dsContext = OpenContentUtils.CreateDataContext(_module);
         }
 
-        public ModelFactoryBase(OpenContentModuleInfo module, PortalSettings portalSettings)
+        public ModelFactoryBase(OpenContentModuleInfo module)
         {
             OpenContentSettings settings = module.Settings;
             this._settingsJson = settings.Data;
@@ -79,15 +77,14 @@ namespace Satrabel.OpenContent.Components.Render
             this._manifest = settings.Template.Manifest;
             this._templateFiles = settings.Template?.Main;
             this._module = module;
-            this._portalSettings = portalSettings;
-            this._portalId = portalSettings.PortalId;
+            this._portalId = module.PortalId;
             this._templateManifest = settings.Template;
             this._collection = _templateManifest.Collection;
             this._detailTabId = DnnUtils.GetTabByCurrentCulture(this._portalId, module.GetDetailTabId(), GetCurrentCultureCode());
             _ds = DataSourceManager.GetDataSource(_manifest.DataSource);
             _dsContext = OpenContentUtils.CreateDataContext(_module);
         }
-        public ModelFactoryBase(OpenContentModuleInfo module, PortalSettings portalSettings, string collection)
+        public ModelFactoryBase(OpenContentModuleInfo module, string collection)
         {
             OpenContentSettings settings = module.Settings;
             this._settingsJson = settings.Data;
@@ -95,8 +92,7 @@ namespace Satrabel.OpenContent.Components.Render
             this._manifest = settings.Template.Manifest;
             this._templateFiles = settings.Template?.Main;
             this._module = module;
-            this._portalSettings = portalSettings;
-            this._portalId = portalSettings.PortalId;
+            this._portalId = module.PortalId;
             this._templateManifest = settings.Template;
             this._collection = collection;
             this._detailTabId = DnnUtils.GetTabByCurrentCulture(this._portalId, module.GetDetailTabId(), GetCurrentCultureCode());
@@ -109,14 +105,14 @@ namespace Satrabel.OpenContent.Components.Render
 
         public dynamic GetModelAsDynamic(bool onlyData = false)
         {
-            if (_portalSettings == null) onlyData = true;
+            if (_module.CanvasUnavailable) onlyData = true;
 
             JToken model = GetModelAsJson(onlyData);
             return JsonUtils.JsonToDynamic(model.ToString());
         }
         public Dictionary<string, object> GetModelAsDictionary(bool onlyData = false)
         {
-            if (_portalSettings == null) onlyData = true;
+            if (_module.CanvasUnavailable) onlyData = true;
 
             JToken model = GetModelAsJson(onlyData);
             return JsonUtils.JsonToDictionary(model.ToString());
@@ -178,7 +174,7 @@ namespace Satrabel.OpenContent.Components.Render
 
         protected void ExtendModel(JObject model, bool onlyData)
         {
-            if (_portalSettings == null) onlyData = true;
+            if (_module.CanvasUnavailable) onlyData = true;
 
             if (_templateFiles != null)
             {
@@ -280,9 +276,9 @@ namespace Satrabel.OpenContent.Components.Render
                 context["IsEditable"] = editIsAllowed; //allowed to edit the item or list (meaning allow Add)
                 context["IsEditMode"] = IsEditMode;
                 context["PortalId"] = _portalId;
-                context["MainUrl"] = DnnUrlUtils.NavigateUrl(_detailTabId, _portalSettings, GetCurrentCultureCode());
-                context["HomeDirectory"] = _portalSettings.HomeDirectory;
-                context["HTTPAlias"] = _portalSettings.PortalAlias.HTTPAlias;
+                context["MainUrl"] = _module.GetUrl(_detailTabId, GetCurrentCultureCode());
+                context["HomeDirectory"] = _module.HomeDirectory;
+                context["HTTPAlias"] = _module.HostName;
             }
         }
 
@@ -316,7 +312,7 @@ namespace Satrabel.OpenContent.Components.Render
 
         protected void ExtendSchemaOptions(JObject model, bool onlyData)
         {
-            if (_portalSettings == null) onlyData = true;
+            if (_module.CanvasUnavailable) onlyData = true;
 
             if (_templateFiles != null)
             {
@@ -344,14 +340,14 @@ namespace Satrabel.OpenContent.Components.Render
         protected bool IsEditAllowed(int createdByUser)
         {
             string editRole = _manifest.GetEditRole();
-            return (IsEditMode || DnnPermissionsUtils.HasEditRole(_portalSettings, editRole, createdByUser)) // edit Role can edit without being in edit mode
-                    && DnnPermissionsUtils.HasEditPermissions(_portalSettings, _module.ViewModule, editRole, createdByUser);
+            return (IsEditMode || DnnPermissionsUtils.HasEditRole(_module, editRole, createdByUser)) // edit Role can edit without being in edit mode
+                    && DnnPermissionsUtils.HasEditPermissions(_module, editRole, createdByUser);
         }
 
         protected bool HasEditPermissions(int createdByUser)
         {
             string editRole = _manifest.GetEditRole();
-            return DnnPermissionsUtils.HasEditPermissions(_portalSettings, _module.ViewModule, editRole, createdByUser);
+            return DnnPermissionsUtils.HasEditPermissions(_module, editRole, createdByUser);
         }
 
         protected string GetCurrentCultureCode()
@@ -376,7 +372,7 @@ namespace Satrabel.OpenContent.Components.Render
                 //role lookup on every property access (instead caching the result)
                 if (!_isEditMode.HasValue)
                 {
-                    _isEditMode = _module.DataModule.CheckIfEditable(PortalSettings.Current);
+                    _isEditMode = _module.DataModule.CheckIfEditable(_module);
                 }
                 return _isEditMode.Value;
             }

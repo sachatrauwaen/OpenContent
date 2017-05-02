@@ -553,7 +553,7 @@ namespace Satrabel.OpenContent.Components
             return false;
         }
 
-        internal static bool HaveViewPermissions(IDataItem dsItem, UserInfo userInfo, FieldConfig IndexConfig, out string raison)
+        internal static bool HaveViewPermissions(IDataItem dsItem, IList<UserRoleInfo> userRoles, FieldConfig IndexConfig, out string raison)
         {
             raison = "";
             if (dsItem?.Data == null) return true;
@@ -614,7 +614,7 @@ namespace Satrabel.OpenContent.Components
                     }
                     else
                     {
-                        var roles = userInfo.Social.Roles;
+                        var roles = userRoles;
                         if (roles.Any())
                         {
                             permissions = roles.Any(r => dataRoles.Contains(r.RoleID.ToString()));

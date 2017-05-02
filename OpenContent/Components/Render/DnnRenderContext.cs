@@ -1,48 +1,33 @@
-﻿using System;
-using DotNetNuke.UI.Modules;
+﻿using DotNetNuke.UI.Modules;
 using DotNetNuke.Web.Razor.Helpers;
-using Satrabel.OpenContent.Components.Dnn;
 
 namespace Satrabel.OpenContent.Components
 {
-    public interface IRenderCanvas
+    public interface IRenderContext
     {
         string EditUrl(string key = "");
         string EditUrl(string key, string value, string control = "");
         void InitHelpers(OpenContentWebPage webPage, string localResourceFile);
-
-
-        string PageUrl { get; }
-        int ModuleId { get; }
     }
 
-    public class DnnRenderCanvas : IRenderCanvas
+    public class DnnRenderContext : IRenderContext
     {
         private readonly ModuleInstanceContext _moduleContext;
 
-        public DnnRenderCanvas(object moduleContext)
+        public DnnRenderContext(ModuleInstanceContext moduleContext)
         {
-            _moduleContext = (ModuleInstanceContext)moduleContext;
+            _moduleContext = moduleContext;
         }
 
         public string EditUrl(string key = "")
         {
-            if (string.IsNullOrEmpty(key))
-                return _moduleContext.EditUrl();
-            else
-                return _moduleContext.EditUrl(key);
+            return string.IsNullOrEmpty(key) ? _moduleContext.EditUrl() : _moduleContext.EditUrl(key);
         }
 
         public string EditUrl(string key, string value, string control = "")
         {
-            if (string.IsNullOrEmpty(control))
-                return _moduleContext.EditUrl(key, value);
-            else
-                return _moduleContext.EditUrl(key, value, control);
+            return string.IsNullOrEmpty(control) ? _moduleContext.EditUrl(key, value) : _moduleContext.EditUrl(key, value, control);
         }
-
-        public string PageUrl => DnnUrlUtils.NavigateUrl(_moduleContext.TabId);
-        public int ModuleId => _moduleContext.ModuleId;
 
         public void InitHelpers(OpenContentWebPage webPage, string localResourceFile)
         {

@@ -27,7 +27,7 @@ namespace Satrabel.OpenContent.Components.Rss
         {
             ModuleController mc = new ModuleController();
             IEnumerable<IDataItem> dataList = new List<IDataItem>();
-            var module = new OpenContentModuleInfo(moduleId, tabId);
+            var module = new OpenContentModuleInfo(moduleId, tabId, PortalSettings);
             var manifest = module.Settings.Template.Manifest;
 
             var rssTemplate = new FileUri(module.Settings.TemplateDir, template + ".hbs");
@@ -48,7 +48,7 @@ namespace Satrabel.OpenContent.Components.Rss
                 dataList = dsItems.Items;
             }
 
-            var mf = new ModelFactoryMultiple(dataList, null, module.Settings.TemplateDir.PhysicalFullDirectory, manifest, null, null, module, PortalSettings);
+            var mf = new ModelFactoryMultiple(dataList, null, module.Settings.TemplateDir.PhysicalFullDirectory, manifest, null, null, module);
             dynamic model = mf.GetModelAsDictionary(true);
             HandlebarsEngine hbEngine = new HandlebarsEngine();
             string res = hbEngine.Execute(source, model);

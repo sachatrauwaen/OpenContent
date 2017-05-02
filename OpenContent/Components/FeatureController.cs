@@ -55,7 +55,7 @@ namespace Satrabel.OpenContent.Components
         }
         public void ImportModule(int moduleId, string content, string version, int userId)
         {
-            var module = new OpenContentModuleInfo(moduleId, Null.NullInteger);
+            var module = new OpenContentModuleInfo(moduleId, Null.NullInteger, PortalSettings.Current);
             //var index = module.Settings.Template.Manifest.Index;
             //var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template);
             var dataSource = new OpenContentDataSource();
@@ -71,7 +71,7 @@ namespace Satrabel.OpenContent.Components
                 //dsContext.Key = key?.InnerText ?? "";
 
                 JToken data = item.InnerText;
-                data["_id"]= key?.InnerText ?? "";
+                data["_id"] = key?.InnerText ?? "";
 
                 dataSource.Add(dsContext, data);
                 //dataSource.Add(contentInfo, index, indexConfig);
@@ -105,13 +105,12 @@ namespace Satrabel.OpenContent.Components
                 return searchDocuments;
             }
 
-            var module = new OpenContentModuleInfo(modInfo);
-            OpenContentSettings settings = modInfo.OpenContentSettings();
-            if (settings.Template?.Main == null || !settings.Template.Main.DnnSearch)
+            var module = new OpenContentModuleInfo(modInfo, PortalSettings.Current);
+            if (module.Settings.Template?.Main == null || !module.Settings.Template.Main.DnnSearch)
             {
                 return searchDocuments;
             }
-            if (settings.IsOtherModule)
+            if (module.Settings.IsOtherModule)
             {
                 return searchDocuments;
             }
@@ -130,24 +129,24 @@ namespace Satrabel.OpenContent.Components
                 {
                     App.Services.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} - NOT - Content is Null");
                 }
-                else if (content.LastModifiedOnDate.ToUniversalTime() > beginDateUtc 
+                else if (content.LastModifiedOnDate.ToUniversalTime() > beginDateUtc
                       && content.LastModifiedOnDate.ToUniversalTime() < DateTime.UtcNow)
                 {
                     SearchDocument searchDoc;
                     if (DnnLanguageUtils.IsMultiLingualPortal(modInfo.PortalID))
                     {
-                        searchDoc = GetLocalizedItem(modInfo, settings, content);
+                        searchDoc = GetLocalizedItem(modInfo, module.Settings, content);
                         searchDocuments.Add(searchDoc);
                         if (modInfo.LocalizedModules != null)
                             foreach (var localizedModule in modInfo.LocalizedModules)
                             {
-                                SearchDocument localizedSearchDoc = GetLocalizedItem(localizedModule.Value, settings, content);
+                                SearchDocument localizedSearchDoc = GetLocalizedItem(localizedModule.Value, module.Settings, content);
                                 searchDocuments.Add(localizedSearchDoc);
                             }
                     }
                     else
                     {
-                        searchDoc = CreateSearchDocument(modInfo, settings, content.Data, content.Id, "", content.Title, JsonToSearchableString(content.Data), content.LastModifiedOnDate.ToUniversalTime());
+                        searchDoc = CreateSearchDocument(modInfo, module.Settings, content.Data, content.Id, "", content.Title, JsonToSearchableString(content.Data), content.LastModifiedOnDate.ToUniversalTime());
                         searchDocuments.Add(searchDoc);
                         App.Services.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} -  OK!  {searchDoc.Title} ({modInfo.TabID}) of {content.LastModifiedOnDate.ToUniversalTime()}");
                     }

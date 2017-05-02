@@ -9,30 +9,30 @@
 
 #region Using Statements
 
-using System;
-using System.Linq;
-using System.Diagnostics;
+using DotNetNuke.Common.Utilities;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Modules.Actions;
-using System.Web.UI;
-using DotNetNuke.Web.Client.ClientResourceManagement;
-using DotNetNuke.Web.Client;
-using Satrabel.OpenContent.Components;
-using Satrabel.OpenContent.Components.Json;
-using DotNetNuke.Framework;
-using DotNetNuke.Common.Utilities;
 using DotNetNuke.Entities.Portals;
-using DotNetNuke.Security.Permissions;
-using Satrabel.OpenContent.Components.Manifest;
-using Satrabel.OpenContent.Components.Logging;
-using Newtonsoft.Json;
-using System.Text;
-using Satrabel.OpenContent.Components.Render;
-using System.Web;
-using Satrabel.OpenContent.Components.Dnn;
 using DotNetNuke.Entities.Tabs;
-using DotNetNuke.Services.Personalization;
+using DotNetNuke.Framework;
 using DotNetNuke.Framework.JavaScriptLibraries;
+using DotNetNuke.Security.Permissions;
+using DotNetNuke.Services.Personalization;
+using DotNetNuke.Web.Client;
+using DotNetNuke.Web.Client.ClientResourceManagement;
+using Newtonsoft.Json;
+using Satrabel.OpenContent.Components;
+using Satrabel.OpenContent.Components.Dnn;
+using Satrabel.OpenContent.Components.Json;
+using Satrabel.OpenContent.Components.Logging;
+using Satrabel.OpenContent.Components.Manifest;
+using Satrabel.OpenContent.Components.Render;
+using System;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Web;
+using System.Web.UI;
 using SecurityAccessLevel = DotNetNuke.Security.SecurityAccessLevel;
 
 #endregion
@@ -62,7 +62,7 @@ namespace Satrabel.OpenContent
                 // auto attach a ContentLocalized OpenContent module to the reference module of the default language
                 AutoAttachLocalizedModule(ref module);
             }
-            _engine = new RenderEngine(module, App.Config.RenderCanvas(ModuleContext), LocalResourceFile);
+            _engine = new RenderEngine(new OpenContentModuleInfo(module, PortalSettings.Current), new DnnRenderContext(ModuleContext), LocalResourceFile);
             _renderinfo = _engine.Info;
             _settings = _engine.Settings;
             _engine.QueryString = Page.Request.QueryString;

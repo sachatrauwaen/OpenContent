@@ -17,10 +17,10 @@ namespace Satrabel.OpenContent.Components.Razor
 {
     public class RazorEngine
     {
-        public RazorEngine(string razorScriptFile, IRenderCanvas renderCanvas, string localResourceFile)
+        public RazorEngine(string razorScriptFile, IRenderContext renderContext, string localResourceFile)
         {
             RazorScriptFile = razorScriptFile;
-            RenderCanvas = renderCanvas;
+            RenderContext = renderContext;
             LocalResourceFile = localResourceFile ?? Path.Combine(Path.GetDirectoryName(razorScriptFile), DotNetNuke.Services.Localization.Localization.LocalResourceDirectory, Path.GetFileName(razorScriptFile) + ".resx");
 
             try
@@ -42,7 +42,7 @@ namespace Satrabel.OpenContent.Components.Razor
         }
 
         protected string RazorScriptFile { get; set; }
-        protected IRenderCanvas RenderCanvas { get; set; }
+        protected IRenderContext RenderContext { get; set; }
         protected string LocalResourceFile { get; set; }
         public OpenContentWebPage Webpage { get; set; }
 
@@ -113,8 +113,8 @@ namespace Satrabel.OpenContent.Components.Razor
                 }
                 Webpage.Context = HttpContextBase;
                 Webpage.VirtualPath = VirtualPathUtility.GetDirectory(RazorScriptFile);
-                if (RenderCanvas != null) //called from a skin object?  todo: can we improve this? Inithelpers not initialized now.
-                    RenderCanvas.InitHelpers(Webpage, LocalResourceFile);
+                if (RenderContext != null) //called from a skin object?  todo: can we improve this? Inithelpers not initialized now.
+                    RenderContext.InitHelpers(Webpage, LocalResourceFile);
             }
         }
     }

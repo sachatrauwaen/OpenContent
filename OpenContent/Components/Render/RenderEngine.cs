@@ -1,7 +1,4 @@
-﻿using DotNetNuke.Entities.Modules;
-using DotNetNuke.Entities.Portals;
-
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.AppDefinitions;
 using Satrabel.OpenContent.Components.Datasource;
@@ -13,7 +10,6 @@ using Satrabel.OpenContent.Components.Logging;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.Razor;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
@@ -34,25 +30,28 @@ namespace Satrabel.OpenContent.Components.Render
         private readonly OpenContentModuleInfo _module; // active module (not datasource module)
         private readonly OpenContentSettings _settings;
 
-        public RenderEngine(ModuleInfo viewmodule, IDictionary moduleSettings = null)
+        public RenderEngine(OpenContentModuleInfo moduleInfo)
         {
-            _module = new OpenContentModuleInfo(viewmodule, moduleSettings);
+            _module = moduleInfo;
             _renderinfo = new RenderInfo(_module.Settings.Template, _module.Settings.IsOtherModule);
             _settings = _module.Settings;
         }
 
-        public RenderEngine(ModuleInfo viewmodule, IRenderCanvas renderCanvas, string localResourceFile) 
+        public RenderEngine(OpenContentModuleInfo moduleInfo, IRenderContext renderContext, string localResourceFile)
         {
-            _module = new OpenContentModuleInfo(viewmodule, null);
+            _module = moduleInfo;
             _renderinfo = new RenderInfo(_module.Settings.Template, _module.Settings.IsOtherModule);
             _settings = _module.Settings;
-            RenderCanvas = renderCanvas;
+            RenderContext = renderContext;
             ResourceFile = localResourceFile;
         }
 
         public RenderInfo Info => _renderinfo;
 
+        public OpenContentModuleInfo ModuleContext => _module;
         public OpenContentSettings Settings => _settings;
+
+        public IRenderContext RenderContext { get; }
 
         public string ItemId // For detail view
         {
@@ -61,12 +60,11 @@ namespace Satrabel.OpenContent.Components.Render
         }
 
         public NameValueCollection QueryString { get; set; } // Only for filtering
-        public string ResourceFile { get; set; } // Only for Dnn Razor helpers
+        public string ResourceFile { get; } // Only for Dnn Razor helpers
 
         public string MetaTitle { get; set; }
         public string MetaDescription { get; set; }
         public string MetaOther { get; set; }
-        public IRenderCanvas RenderCanvas { get; set; }
 
         public void Render(Page page)
         {
@@ -92,7 +90,7 @@ namespace Satrabel.OpenContent.Components.Render
                         {
                             // for list templates a main template need to be defined
                             _renderinfo.Files = _renderinfo.Template.Main;
-                            string templateKey = GetDataList(_renderinfo, _module.Settings, _renderinfo.Template.ClientSideData);
+                            string templateKey = GetDataList(_renderinfo, _module, _renderinfo.Template.ClientSideData);
                             if (!string.IsNullOrEmpty(templateKey) && _renderinfo.Template.Views != null && _renderinfo.Template.Views.ContainsKey(templateKey))
                             {
                                 _renderinfo.Files = _renderinfo.Template.Views[templateKey];
@@ -123,7 +121,7 @@ namespace Satrabel.OpenContent.Components.Render
                             {
                                 // for list templates a main template need to be defined
                                 _renderinfo.Files = _renderinfo.Template.Main;
-                                string templateKey = GetDataList(_renderinfo, _settings, _renderinfo.Template.ClientSideData);
+                                string templateKey = GetDataList(_renderinfo, _module, _renderinfo.Template.ClientSideData);
                                 if (!string.IsNullOrEmpty(templateKey) && _renderinfo.Template.Views != null && _renderinfo.Template.Views.ContainsKey(templateKey))
                                 {
                                     _renderinfo.Files = _renderinfo.Template.Views[templateKey];
@@ -243,7 +241,7 @@ namespace Satrabel.OpenContent.Components.Render
 
         #region Data
 
-        private string GetDataList(RenderInfo info, OpenContentSettings settings, bool clientSide)
+        private string GetDataList(RenderInfo info, OpenContentModuleInfo moduleInfo, bool clientSide)
         {
             string templateKey = "";
             info.ResetData();
@@ -256,7 +254,7 @@ namespace Satrabel.OpenContent.Components.Render
             {
                 if (ds.Any(dsContext))
                 {
-                    info.SetData(resultList, settings.Data);
+                    info.SetData(resultList, moduleInfo.Settings.Data);
                     info.DataExist = true;
                 }
 
@@ -272,23 +270,22 @@ namespace Satrabel.OpenContent.Components.Render
                 bool useLucene = info.Template.Manifest.Index;
                 if (useLucene)
                 {
-                    PortalSettings portalSettings = PortalSettings.Current;
                     var indexConfig = OpenContentUtils.GetIndexConfig(info.Template);
                     if (info.Template.Views != null)
                     {
                         templateKey = GetTemplateKey(indexConfig);
                     }
-                    bool isEditable = _module.ViewModule.CheckIfEditable(portalSettings);
+                    bool isEditable = _module.ViewModule.CheckIfEditable(moduleInfo);
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
-                    queryBuilder.Build(settings.Query, !isEditable, portalSettings.UserId, DnnLanguageUtils.GetCurrentCultureCode(), portalSettings.UserInfo.Social.Roles, QueryString);
+                    queryBuilder.Build(moduleInfo.Settings.Query, !isEditable, moduleInfo.UserId, DnnLanguageUtils.GetCurrentCultureCode(), moduleInfo.UserRoles, QueryString);
 
                     resultList = ds.GetAll(dsContext, queryBuilder.Select).Items;
                     if (LogContext.IsLogActive)
                     {
                         //LogContext.Log(_module.ModuleID, "RequestContext", "EditMode", !addWorkFlow);
                         LogContext.Log(_module.ViewModule.ModuleID, "RequestContext", "IsEditable", isEditable);
-                        LogContext.Log(_module.ViewModule.ModuleID, "RequestContext", "UserRoles", portalSettings.UserInfo.Social.Roles.Select(r => r.RoleName));
-                        LogContext.Log(_module.ViewModule.ModuleID, "RequestContext", "CurrentUserId", portalSettings.UserId);
+                        LogContext.Log(_module.ViewModule.ModuleID, "RequestContext", "UserRoles", moduleInfo.UserRoles.Select(r => r.RoleName));
+                        LogContext.Log(_module.ViewModule.ModuleID, "RequestContext", "CurrentUserId", moduleInfo.UserId);
                         var logKey = "Query";
                         LogContext.Log(_module.ViewModule.ModuleID, logKey, "select", queryBuilder.Select);
                         //LogContext.Log(_module.ModuleID, logKey, "result", resultList);
@@ -299,7 +296,7 @@ namespace Satrabel.OpenContent.Components.Render
                         //App.Services.Logger.Debug($"Query did not return any results. API request: [{0}], Lucene Filter: [{1}], Lucene Query:[{2}]", settings.Query, queryDef.Filter == null ? "" : queryDef.Filter.ToString(), queryDef.Query == null ? "" : queryDef.Query.ToString());
                         if (ds.Any(dsContext))
                         {
-                            info.SetData(resultList, settings.Data);
+                            info.SetData(resultList, moduleInfo.Settings.Data);
                             info.DataExist = true;
                         }
                     }
@@ -315,7 +312,7 @@ namespace Satrabel.OpenContent.Components.Render
                 }
                 if (resultList.Any())
                 {
-                    info.SetData(resultList, settings.Data);
+                    info.SetData(resultList, moduleInfo.Settings.Data);
                 }
             }
             return templateKey;
@@ -337,13 +334,12 @@ namespace Satrabel.OpenContent.Components.Render
             if (dsItem != null)
             {
                 //check permissions
-                var portalSettings = PortalSettings.Current;
-                bool isEditable = _module.ViewModule.CheckIfEditable(portalSettings);
+                bool isEditable = _module.ViewModule.CheckIfEditable(module);
                 if (!isEditable)
                 {
                     var indexConfig = OpenContentUtils.GetIndexConfig(info.Template);
                     string raison;
-                    if (!OpenContentUtils.HaveViewPermissions(dsItem, portalSettings.UserInfo, indexConfig, out raison))
+                    if (!OpenContentUtils.HaveViewPermissions(dsItem, module.UserRoles, indexConfig, out raison))
                     {
                         if (module.ViewModule.HasEditRightsOnModule())
                             throw new NotAuthorizedException(404, $"No detail view permissions for id={info.DetailItemId}  (due to {raison}) \nGo into Edit Mode to view/change the item");
@@ -443,7 +439,7 @@ namespace Satrabel.OpenContent.Components.Render
             var writer = new StringWriter();
             try
             {
-                var razorEngine = new RazorEngine("~/" + template.FilePath, RenderCanvas, ResourceFile);
+                var razorEngine = new RazorEngine("~/" + template.FilePath, RenderContext, ResourceFile);
                 razorEngine.Render(writer, model);
             }
             catch (Exception ex)
@@ -501,7 +497,7 @@ namespace Satrabel.OpenContent.Components.Render
 
                 if (dataJson != null)
                 {
-                    var mf = new ModelFactorySingle(_renderinfo.Data, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, PortalSettings.Current);
+                    var mf = new ModelFactorySingle(_renderinfo.Data, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module);
                     mf.Detail = true;
                     object model;
                     if (templateUri.Extension != ".hbs") // razor
@@ -560,11 +556,11 @@ namespace Satrabel.OpenContent.Components.Render
                     if (_renderinfo.Data == null)
                     {
                         // demo data
-                        mf = new ModelFactorySingle(_renderinfo.DataJson, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, PortalSettings.Current);
+                        mf = new ModelFactorySingle(_renderinfo.DataJson, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module);
                     }
                     else
                     {
-                        mf = new ModelFactorySingle(_renderinfo.Data, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, PortalSettings.Current);
+                        mf = new ModelFactorySingle(_renderinfo.Data, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module);
                     }
                     if (template.Extension != ".hbs") // razor
                     {
@@ -614,7 +610,7 @@ namespace Satrabel.OpenContent.Components.Render
                 FileUri templateUri = CheckFiles(templateManifest, files);
                 if (dataList != null)
                 {
-                    ModelFactoryMultiple mf = new ModelFactoryMultiple(dataList, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module, PortalSettings.Current);
+                    ModelFactoryMultiple mf = new ModelFactoryMultiple(dataList, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module);
                     object model;
                     if (templateUri.Extension != ".hbs") // razor
                     {
@@ -681,7 +677,7 @@ namespace Satrabel.OpenContent.Components.Render
                     new MenuAction(
                         title,
                         isListPageRequest ? "~/DesktopModules/OpenContent/images/addcontent2.png" : "~/DesktopModules/OpenContent/images/editcontent2.png",
-                        isDetailPageRequest ? RenderCanvas.EditUrl("id", _renderinfo.DetailItemId) : RenderCanvas.EditUrl(),
+                        isDetailPageRequest ? RenderContext.EditUrl("id", _renderinfo.DetailItemId) : RenderContext.EditUrl(),
                         ActionType.Add
                         )
                     );
@@ -698,7 +694,7 @@ namespace Satrabel.OpenContent.Components.Render
                             new MenuAction(
                                 addData.Value.Title,
                                 "~/DesktopModules/OpenContent/images/editcontent2.png",
-                                RenderCanvas.EditUrl("key", addData.Key, "EditAddData"),
+                                RenderContext.EditUrl("key", addData.Key, "EditAddData"),
                                 ActionType.Edit
                             )
                         );
@@ -724,7 +720,7 @@ namespace Satrabel.OpenContent.Components.Render
                     new MenuAction(
                         "Submissions",
                         "~/DesktopModules/OpenContent/images/editcontent2.png",
-                        RenderCanvas.EditUrl("Submissions"),
+                        RenderContext.EditUrl("Submissions"),
                         ActionType.Edit
                     )
                 );
@@ -737,7 +733,7 @@ namespace Satrabel.OpenContent.Components.Render
                     new MenuAction(
                         Localizer.Instance.GetString("EditSettings.Action", ResourceFile),
                         "~/DesktopModules/OpenContent/images/editsettings2.png",
-                        RenderCanvas.EditUrl("EditSettings"),
+                        RenderContext.EditUrl("EditSettings"),
                         ActionType.Misc,
                         SecurityAccessLevel.AdminRights
                     )
@@ -751,7 +747,7 @@ namespace Satrabel.OpenContent.Components.Render
                     new MenuAction(
                         Localizer.Instance.GetString("FormSettings.Action", ResourceFile),
                         "~/DesktopModules/OpenContent/images/editsettings2.png",
-                        RenderCanvas.EditUrl("formsettings"),
+                        RenderContext.EditUrl("formsettings"),
                         ActionType.Misc,
                         SecurityAccessLevel.AdminRights
                     )
@@ -763,7 +759,7 @@ namespace Satrabel.OpenContent.Components.Render
                 new MenuAction(
                 Localizer.Instance.GetString("EditInit.Action", ResourceFile),
                 "~/DesktopModules/OpenContent/images/editinit.png",
-                RenderCanvas.EditUrl("EditInit"),
+                RenderContext.EditUrl("EditInit"),
                 ActionType.Misc,
                 SecurityAccessLevel.AdminRights
                 )
@@ -778,7 +774,7 @@ namespace Satrabel.OpenContent.Components.Render
                         new MenuAction(
                             Localizer.Instance.GetString("EditQuery.Action", ResourceFile),
                             "~/DesktopModules/OpenContent/images/editfilter.png",
-                            RenderCanvas.EditUrl("EditQuery"),
+                            RenderContext.EditUrl("EditQuery"),
                             ActionType.Misc,
                             SecurityAccessLevel.AdminRights
                         )
@@ -792,7 +788,7 @@ namespace Satrabel.OpenContent.Components.Render
                     new MenuAction(
                         Localizer.Instance.GetString("Builder.Action", ResourceFile),
                         "~/DesktopModules/OpenContent/images/formbuilder.png",
-                        RenderCanvas.EditUrl("FormBuilder"),
+                        RenderContext.EditUrl("FormBuilder"),
                         ActionType.Misc,
                         SecurityAccessLevel.AdminRights
                     )
@@ -804,7 +800,7 @@ namespace Satrabel.OpenContent.Components.Render
                     new MenuAction(
                         Localizer.Instance.GetString("EditTemplate.Action", ResourceFile),
                         "~/DesktopModules/OpenContent/images/edittemplate.png",
-                        RenderCanvas.EditUrl("EditTemplate"),
+                        RenderContext.EditUrl("EditTemplate"),
                         ActionType.Misc,
                         SecurityAccessLevel.SuperUserRights
                     )
@@ -818,7 +814,7 @@ namespace Satrabel.OpenContent.Components.Render
                     new MenuAction(
                         Localizer.Instance.GetString("EditData.Action", ResourceFile),
                         "~/DesktopModules/OpenContent/images/edit.png",
-                        isDetailPageRequest ? RenderCanvas.EditUrl("id", _renderinfo.DetailItemId, "EditData") : RenderCanvas.EditUrl("EditData"),
+                        isDetailPageRequest ? RenderContext.EditUrl("id", _renderinfo.DetailItemId, "EditData") : RenderContext.EditUrl("EditData"),
                         ActionType.Edit,
                         SecurityAccessLevel.SuperUserRights
                     )
@@ -830,7 +826,7 @@ namespace Satrabel.OpenContent.Components.Render
                 new MenuAction(
                     Localizer.Instance.GetString("ShareTemplate.Action", ResourceFile),
                     "~/DesktopModules/OpenContent/images/exchange.png",
-                    RenderCanvas.EditUrl("ShareTemplate"),
+                    RenderContext.EditUrl("ShareTemplate"),
                     ActionType.Misc,
                     SecurityAccessLevel.SuperUserRights
                 )
@@ -841,7 +837,7 @@ namespace Satrabel.OpenContent.Components.Render
                 new MenuAction(
                     Localizer.Instance.GetString("EditGlobalSettings.Action", ResourceFile),
                     "~/DesktopModules/OpenContent/images/settings.png",
-                    RenderCanvas.EditUrl("EditGlobalSettings"),
+                    RenderContext.EditUrl("EditGlobalSettings"),
                     ActionType.Misc,
                     SecurityAccessLevel.SuperUserRights
                 )
@@ -864,5 +860,5 @@ namespace Satrabel.OpenContent.Components.Render
 
     }
 
- 
+
 }

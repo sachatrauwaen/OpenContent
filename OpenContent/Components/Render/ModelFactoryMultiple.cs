@@ -1,10 +1,7 @@
-﻿using DotNetNuke.Common;
-using DotNetNuke.Entities.Portals;
-using DotNetNuke.Entities.Users;
+﻿using DotNetNuke.Entities.Users;
 using DotNetNuke.Services.Localization;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Datasource;
-using Satrabel.OpenContent.Components.Dnn;
 using Satrabel.OpenContent.Components.Handlebars;
 using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Manifest;
@@ -19,18 +16,18 @@ namespace Satrabel.OpenContent.Components.Render
     {
         private readonly IEnumerable<IDataItem> _dataList = null;
 
-        public ModelFactoryMultiple(IEnumerable<IDataItem> dataList, OpenContentModuleInfo module, PortalSettings portalSettings) :
-            base(module, portalSettings)
+        public ModelFactoryMultiple(IEnumerable<IDataItem> dataList, OpenContentModuleInfo module) :
+            base(module)
         {
             this._dataList = dataList;
         }
-        public ModelFactoryMultiple(IEnumerable<IDataItem> dataList, OpenContentModuleInfo module, PortalSettings portalSettings, string collection) :
-            base(module, portalSettings, collection)
+        public ModelFactoryMultiple(IEnumerable<IDataItem> dataList, OpenContentModuleInfo module, string collection) :
+            base(module, collection)
         {
             this._dataList = dataList;
         }
-        public ModelFactoryMultiple(IEnumerable<IDataItem> dataList, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleInfo module, PortalSettings portalSettings) :
-            base(settingsJson, physicalTemplateFolder, manifest, templateManifest, templateFiles, module, portalSettings)
+        public ModelFactoryMultiple(IEnumerable<IDataItem> dataList, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleInfo module) :
+            base(settingsJson, physicalTemplateFolder, manifest, templateManifest, templateFiles, module)
         {
             this._dataList = dataList;
         }
@@ -66,7 +63,7 @@ namespace Satrabel.OpenContent.Components.Render
         }
         public override JToken GetModelAsJson(bool onlyData = false, bool onlyMainData = false)
         {
-            if (_portalSettings == null) onlyData = true;
+            if (_module.CanvasUnavailable) onlyData = true;
             JObject model = new JObject();
             var itemsModel = model;
 
@@ -76,15 +73,14 @@ namespace Satrabel.OpenContent.Components.Render
 
             if (!onlyData && !onlyMainData)
             {
-                itemsModel["Context"]["RssUrl"] = _portalSettings.PortalAlias.HTTPAlias +
-                       "/DesktopModules/OpenContent/API/RssAPI/GetFeed?moduleId=" + _module.ViewModule.ModuleID + "&tabId=" + _detailTabId;
+                itemsModel["Context"]["RssUrl"] = _module.HostName + "/DesktopModules/OpenContent/API/RssAPI/GetFeed?moduleId=" + _module.ViewModule.ModuleID + "&tabId=" + _detailTabId;
             }
             JArray items = new JArray(); ;
             itemsModel["Items"] = items;
             //string editRole = Manifest.GetEditRole();
             if (_dataList != null && _dataList.Any())
             {
-                var mainUrl = Globals.NavigateURL(_detailTabId, false, _portalSettings, "", GetCurrentCultureCode(), "");
+                var mainUrl = _module.NavigateUrl(_detailTabId, GetCurrentCultureCode());
                 foreach (var item in _dataList)
                 {
                     JObject dyn = item.Data as JObject;
@@ -117,9 +113,9 @@ namespace Satrabel.OpenContent.Components.Render
                         context["IsEditable"] = editStatus;
                         if (HasEditPermissions(item.CreatedByUserId))
                         {
-                            context["EditUrl"] = DnnUrlUtils.EditUrl("id", item.Id, _module.ViewModule.ModuleID, _portalSettings);
+                            context["EditUrl"] = _module.EditUrl("id", item.Id, _module.ViewModule.ModuleID);
                         }
-                        context["DetailUrl"] = Globals.NavigateURL(_detailTabId, false, _portalSettings, "", GetCurrentCultureCode(), UrlHelpers.CleanupUrl(url), "id=" + item.Id);
+                        context["DetailUrl"] = _module.NavigateUrl(_detailTabId, url.CleanupUrl(), "id=" + item.Id);
                         context["MainUrl"] = mainUrl;
                     }
                     items.Add(dyn);
@@ -130,7 +126,7 @@ namespace Satrabel.OpenContent.Components.Render
 
         private void ExtendItemsModel(JObject model, bool onlyData)
         {
-            if (_portalSettings == null) onlyData = true;
+            if (_module.CanvasUnavailable) onlyData = true;
 
             if (!onlyData)
             {
@@ -145,7 +141,7 @@ namespace Satrabel.OpenContent.Components.Render
                     context = new JObject();
                     model["Context"] = context;
                 }
-                context["AddUrl"] = DnnUrlUtils.EditUrl(_module.ViewModule.ModuleID, _portalSettings);
+                context["AddUrl"] = _module.EditUrl(_module.ViewModule.ModuleID);
             }
         }
 
