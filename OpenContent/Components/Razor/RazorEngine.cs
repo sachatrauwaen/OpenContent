@@ -46,10 +46,7 @@ namespace Satrabel.OpenContent.Components.Razor
         protected string LocalResourceFile { get; set; }
         public OpenContentWebPage Webpage { get; set; }
 
-        protected HttpContextBase HttpContextBase
-        {
-            get { return new HttpContextWrapper(System.Web.HttpContext.Current); }
-        }
+        protected HttpContextBase HttpContextBase => new HttpContextWrapper(System.Web.HttpContext.Current);
 
         public Type RequestedModelType()
         {

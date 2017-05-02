@@ -52,7 +52,7 @@ namespace Satrabel.OpenContent.Components.Render
         }
 
         public NameValueCollection QueryString { get; set; } // Only for filtering
-        public string LocalResourceFile { get; set; } // Only for Dnn Razor helpers
+        public string ResourceFile { get; set; } // Only for Dnn Razor helpers
 
         public string MetaTitle { get; set; }
         public string MetaDescription { get; set; }
@@ -234,7 +234,7 @@ namespace Satrabel.OpenContent.Components.Render
 
         #region Data
 
-        public string GetDataList(RenderInfo info, OpenContentSettings settings, bool clientSide)
+        private string GetDataList(RenderInfo info, OpenContentSettings settings, bool clientSide)
         {
             string templateKey = "";
             info.ResetData();
@@ -269,7 +269,7 @@ namespace Satrabel.OpenContent.Components.Render
                     {
                         templateKey = GetTemplateKey(indexConfig);
                     }
-                    bool isEditable = _module.ViewModule.CheckIfEditable(portalSettings);//portalSettings.UserMode != PortalSettings.Mode.Edit;
+                    bool isEditable = _module.ViewModule.CheckIfEditable(portalSettings);
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
                     queryBuilder.Build(settings.Query, !isEditable, portalSettings.UserId, DnnLanguageUtils.GetCurrentCultureCode(), portalSettings.UserInfo.Social.Roles, QueryString);
 
@@ -312,7 +312,7 @@ namespace Satrabel.OpenContent.Components.Render
             return templateKey;
         }
 
-        public void GetDetailData(RenderInfo info, OpenContentModuleInfo module)
+        private void GetDetailData(RenderInfo info, OpenContentModuleInfo module)
         {
             info.ResetData();
             var ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
@@ -346,7 +346,7 @@ namespace Satrabel.OpenContent.Components.Render
             }
         }
 
-        public void GetSingleData(RenderInfo info, OpenContentSettings settings)
+        private void GetSingleData(RenderInfo info, OpenContentSettings settings)
         {
             info.ResetData();
 
@@ -405,7 +405,7 @@ namespace Satrabel.OpenContent.Components.Render
             {
                 foreach (string key in QueryString)
                 {
-                    if (IndexConfig != null && IndexConfig.Fields != null && IndexConfig.Fields.Any(f => f.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase)))
+                    if (IndexConfig?.Fields != null && IndexConfig.Fields.Any(f => f.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase)))
                     {
                         var indexConfig = IndexConfig.Fields.Single(f => f.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase));
                         string val = QueryString[key];
@@ -434,7 +434,7 @@ namespace Satrabel.OpenContent.Components.Render
             var writer = new StringWriter();
             try
             {
-                var razorEngine = new RazorEngine("~/" + template.FilePath, RenderCanvas, LocalResourceFile);
+                var razorEngine = new RazorEngine("~/" + template.FilePath, RenderCanvas, ResourceFile);
                 razorEngine.Render(writer, model);
             }
             catch (Exception ex)
@@ -650,7 +650,6 @@ namespace Satrabel.OpenContent.Components.Render
 
         public List<MenuAction> GetMenuActions()
         {
-
             var actions = new List<MenuAction>();
 
             TemplateManifest template = _settings.Template;
@@ -663,7 +662,7 @@ namespace Satrabel.OpenContent.Components.Render
             //Add item / Edit Item
             if (templateDefined && template.DataNeeded() && !_settings.Manifest.DisableEdit)
             {
-                string title = Localizer.Instance.GetString(isListPageRequest ? "Add.Action" : "Edit.Action", LocalResourceFile);
+                string title = Localizer.Instance.GetString(isListPageRequest ? "Add.Action" : "Edit.Action", ResourceFile);
                 if (!string.IsNullOrEmpty(_settings.Manifest.Title))
                 {
                     title = title + " " + _settings.Manifest.Title;
@@ -727,7 +726,7 @@ namespace Satrabel.OpenContent.Components.Render
             {
                 actions.Add(
                     new MenuAction(
-                        Localizer.Instance.GetString("EditSettings.Action", LocalResourceFile),
+                        Localizer.Instance.GetString("EditSettings.Action", ResourceFile),
                         "~/DesktopModules/OpenContent/images/editsettings2.png",
                         RenderCanvas.EditUrl("EditSettings"),
                         ActionType.Misc,
@@ -741,7 +740,7 @@ namespace Satrabel.OpenContent.Components.Render
             {
                 actions.Add(
                     new MenuAction(
-                        Localizer.Instance.GetString("FormSettings.Action", LocalResourceFile),
+                        Localizer.Instance.GetString("FormSettings.Action", ResourceFile),
                         "~/DesktopModules/OpenContent/images/editsettings2.png",
                         RenderCanvas.EditUrl("formsettings"),
                         ActionType.Misc,
@@ -753,7 +752,7 @@ namespace Satrabel.OpenContent.Components.Render
             //Switch Template
             actions.Add(
                 new MenuAction(
-                Localizer.Instance.GetString("EditInit.Action", LocalResourceFile),
+                Localizer.Instance.GetString("EditInit.Action", ResourceFile),
                 "~/DesktopModules/OpenContent/images/editinit.png",
                 RenderCanvas.EditUrl("EditInit"),
                 ActionType.Misc,
@@ -768,7 +767,7 @@ namespace Satrabel.OpenContent.Components.Render
                 {
                     actions.Add(
                         new MenuAction(
-                            Localizer.Instance.GetString("EditQuery.Action", LocalResourceFile),
+                            Localizer.Instance.GetString("EditQuery.Action", ResourceFile),
                             "~/DesktopModules/OpenContent/images/editfilter.png",
                             RenderCanvas.EditUrl("EditQuery"),
                             ActionType.Misc,
@@ -782,7 +781,7 @@ namespace Satrabel.OpenContent.Components.Render
             if (templateDefined && OpenContentUtils.BuildersExist(_settings.Template.ManifestFolderUri))
                 actions.Add(
                     new MenuAction(
-                        Localizer.Instance.GetString("Builder.Action", LocalResourceFile),
+                        Localizer.Instance.GetString("Builder.Action", ResourceFile),
                         "~/DesktopModules/OpenContent/images/formbuilder.png",
                         RenderCanvas.EditUrl("FormBuilder"),
                         ActionType.Misc,
@@ -794,7 +793,7 @@ namespace Satrabel.OpenContent.Components.Render
             if (templateDefined)
                 actions.Add(
                     new MenuAction(
-                        Localizer.Instance.GetString("EditTemplate.Action", LocalResourceFile),
+                        Localizer.Instance.GetString("EditTemplate.Action", ResourceFile),
                         "~/DesktopModules/OpenContent/images/edittemplate.png",
                         RenderCanvas.EditUrl("EditTemplate"),
                         ActionType.Misc,
@@ -808,7 +807,7 @@ namespace Satrabel.OpenContent.Components.Render
             {
                 actions.Add(
                     new MenuAction(
-                        Localizer.Instance.GetString("EditData.Action", LocalResourceFile),
+                        Localizer.Instance.GetString("EditData.Action", ResourceFile),
                         "~/DesktopModules/OpenContent/images/edit.png",
                         isDetailPageRequest ? RenderCanvas.EditUrl("id", _renderinfo.DetailItemId, "EditData") : RenderCanvas.EditUrl("EditData"),
                         ActionType.Edit,
@@ -820,7 +819,7 @@ namespace Satrabel.OpenContent.Components.Render
             //Template Exchange
             actions.Add(
                 new MenuAction(
-                    Localizer.Instance.GetString("ShareTemplate.Action", LocalResourceFile),
+                    Localizer.Instance.GetString("ShareTemplate.Action", ResourceFile),
                     "~/DesktopModules/OpenContent/images/exchange.png",
                     RenderCanvas.EditUrl("ShareTemplate"),
                     ActionType.Misc,
@@ -831,7 +830,7 @@ namespace Satrabel.OpenContent.Components.Render
             //Edit Global Settings
             actions.Add(
                 new MenuAction(
-                    Localizer.Instance.GetString("EditGlobalSettings.Action", LocalResourceFile),
+                    Localizer.Instance.GetString("EditGlobalSettings.Action", ResourceFile),
                     "~/DesktopModules/OpenContent/images/settings.png",
                     RenderCanvas.EditUrl("EditGlobalSettings"),
                     ActionType.Misc,
@@ -842,7 +841,7 @@ namespace Satrabel.OpenContent.Components.Render
             //Help
             actions.Add(
                 new MenuAction(
-                    Localizer.Instance.GetString("Help.Action", LocalResourceFile),
+                    Localizer.Instance.GetString("Help.Action", ResourceFile),
                     "~/DesktopModules/OpenContent/images/help.png",
                     "https://opencontent.readme.io",
                     ActionType.Misc,
@@ -855,4 +854,6 @@ namespace Satrabel.OpenContent.Components.Render
         }
 
     }
+
+ 
 }
