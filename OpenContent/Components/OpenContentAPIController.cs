@@ -122,8 +122,8 @@ namespace Satrabel.OpenContent.Components
                 context["numberDecimalSeparator"] = currentLocale.Culture.NumberFormat.NumberDecimalSeparator;
                 context["rootUrl"] = System.Web.VirtualPathUtility.ToAbsolute(string.Concat(System.Web.HttpRuntime.AppDomainAppVirtualPath, "/"));
                 context["alpacaCulture"] = AlpacaEngine.AlpacaCulture(currentLocale.Code);
-                context["bootstrap"] = App.Services.GlobalSettings.GetEditLayout() != AlpacaLayoutEnum.DNN;
-                context["horizontal"] = App.Services.GlobalSettings.GetEditLayout() == AlpacaLayoutEnum.BootstrapHorizontal;
+                context["bootstrap"] = App.Services.GlobalSettings().GetEditLayout() != AlpacaLayoutEnum.DNN;
+                context["horizontal"] = App.Services.GlobalSettings().GetEditLayout() == AlpacaLayoutEnum.BootstrapHorizontal;
                 json["context"] = context;
 
                 //todo: can't we do some of these checks at the beginning of this method to fail faster?

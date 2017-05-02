@@ -12,7 +12,7 @@ namespace Satrabel.OpenContent.Components
         ILocalizationAdapter LocalizationAdapter { get; }
         ICacheAdapter CacheAdapter { get; }
         IFileRepositoryAdapter FileRepository { get; }
-        IGlobalSettingsRepositoryAdapter GlobalSettings { get; }
+        IGlobalSettingsRepositoryAdapter GlobalSettings(int tenantId = -1);
         IClientResourceManager ClientResourceManager { get; }
     }
 }

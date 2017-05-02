@@ -19,7 +19,14 @@ namespace Satrabel.OpenContent.Components
         public IIndexAdapter IndexAdapter => new LuceneIndexAdapter(@"App_Data\OpenContent\lucene_index");
         public ICacheAdapter CacheAdapter => new DnnCacheAdapter();
         public IFileRepositoryAdapter FileRepository => new DnnFileRepositoryAdapter();
-        public IGlobalSettingsRepositoryAdapter GlobalSettings => new DnnGlobalSettingsRepositoryAdapter(PortalSettings.Current.PortalId);
+        public IGlobalSettingsRepositoryAdapter GlobalSettings(int tenantId = -1)
+        {
+            if (tenantId < 0)
+                return new DnnGlobalSettingsRepositoryAdapter(PortalSettings.Current.PortalId);
+            else
+                return new DnnGlobalSettingsRepositoryAdapter(tenantId);
+        }
+
         public IClientResourceManager ClientResourceManager => new DnnClientResourceManager();
     }
 }
