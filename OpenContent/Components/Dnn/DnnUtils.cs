@@ -51,20 +51,20 @@ namespace Satrabel.OpenContent.Components
             return modules.OfType<ModuleInfo>().Select(module => OpenContentModuleInfo.Create(module, PortalSettings.Current));
         }
 
-        /// <summary>
-        /// Gets the DNN tab by URL and culture.
-        /// </summary>
-        /// <param name="pageUrl">The page URL.</param>
-        /// <param name="culture">The culture.</param>
-        /// <returns></returns>
-        /// <exception cref="System.NotImplementedException"></exception>
-        internal static TabInfo GetDnnTabByUrl(string pageUrl, string culture)
-        {
-            var alternativeLocale = LocaleController.Instance.GetLocale(culture);
-            TabController tc = new TabController();
-            var alternativeTab = tc.GetTabByCulture(PortalSettings.Current.ActiveTab.TabID, PortalSettings.Current.PortalId, alternativeLocale);
-            throw new NotImplementedException();
-        }
+        ///// <summary>
+        ///// Gets the DNN tab by URL and culture.
+        ///// </summary>
+        ///// <param name="pageUrl">The page URL.</param>
+        ///// <param name="culture">The culture.</param>
+        ///// <returns></returns>
+        ///// <exception cref="System.NotImplementedException"></exception>
+        //internal static TabInfo GetDnnTabByUrl(string pageUrl, string culture)
+        //{
+        //    var alternativeLocale = LocaleController.Instance.GetLocale(culture);
+        //    TabController tc = new TabController();
+        //    var alternativeTab = tc.GetTabByCulture(PortalSettings.Current.ActiveTab.TabID, PortalSettings.Current.PortalId, alternativeLocale);
+        //    throw new NotImplementedException();
+        //}
 
         public static int GetTabByCurrentCulture(int portalId, int tabId, string cultureCode)
         {
@@ -90,15 +90,15 @@ namespace Satrabel.OpenContent.Components
 
         public static OpenContentSettings OpenContentSettings(this ModuleInfo module)
         {
-            return new OpenContentSettings(module.ModuleSettings);
+            return new OpenContentSettings(ComponentSettingsInfo.Create(module.ModuleSettings));
         }
         public static OpenContentSettings OpenContentSettings(this ModuleInstanceContext module)
         {
-            return new OpenContentSettings(module.Settings);
+            return new OpenContentSettings(ComponentSettingsInfo.Create(module.Settings));
         }
         public static OpenContentSettings OpenContentSettings(this PortalModuleBase module)
         {
-            return new OpenContentSettings(module.Settings);
+            return new OpenContentSettings(ComponentSettingsInfo.Create(module.Settings));
         }
 
         internal static void RegisterScript(Page page, string sourceFolder, string jsfilename, int jsOrder)

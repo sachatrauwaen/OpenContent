@@ -49,22 +49,19 @@ namespace Satrabel.OpenContent.Components.Manifest
             if (getContents != null && getContents.Any()) DataExist = true;
         }
 
-        public JToken DataJson { get; private set; }
-        public string SettingsJson { get; private set; }
-        public IDataItem Data { get; private set; }
-        public IEnumerable<IDataItem> DataList { get; private set; }
         public bool DataExist { get; set; }
         public bool ShowDemoData { get; set; }
         public TemplateManifest Template { get; set; }
         public TemplateFiles Files { get; set; }
+        public bool IsOtherModule { get; set; }
 
         #endregion
 
         #region ReadOnly
-
-        public bool IsOtherModule { get; set; }
-
-        //public bool SettingsMissing => string.IsNullOrEmpty(SettingsJson) && Template.SettingsNeeded();
+        public JToken DataJson { get; private set; }
+        public string SettingsJson { get; private set; }
+        public IDataItem Data { get; private set; }
+        public IEnumerable<IDataItem> DataList { get; private set; }
         public bool ShowInitControl => Template == null || (!DataExist && Template.DataNeeded()) || (string.IsNullOrEmpty(SettingsJson) && Template.SettingsNeeded());
 
         #endregion

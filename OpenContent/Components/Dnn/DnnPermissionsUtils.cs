@@ -11,20 +11,20 @@ namespace Satrabel.OpenContent.Components.Dnn
 {
     public static class DnnPermissionsUtils
     {
-        public static bool HasEditPermissions(OpenContentModuleInfo portalSettings, string editrole, int createdByUserId)
+        public static bool HasEditPermissions(OpenContentModuleInfo ocModuleInfo, string editrole, int createdByUserId)
         {
-            return portalSettings.ViewModule.HasEditRightsOnModule() || HasEditRole(portalSettings, editrole, createdByUserId);
+            return ocModuleInfo.ViewModule.HasEditRightsOnModule() || HasEditRole(ocModuleInfo, editrole, createdByUserId);
         }
 
-        public static bool HasEditRole(OpenContentModuleInfo portalSettings, string editrole, int createdByUserId)
+        public static bool HasEditRole(OpenContentModuleInfo ocModuleInfo, string editrole, int createdByUserId)
         {
             if (String.IsNullOrEmpty(editrole)) return false;
             if (editrole.ToLower() == "all") return true;
-            if (portalSettings.IsInRole(editrole) && (createdByUserId == -1 || createdByUserId == portalSettings.UserId)) return true;
+            if (ocModuleInfo.IsInRole(editrole) && (createdByUserId == -1 || createdByUserId == ocModuleInfo.UserId)) return true;
             return false;
         }
 
-        public static bool CheckIfEditable(this ModuleInfo dataModule, OpenContentModuleInfo portalSettings)
+        public static bool CheckIfEditable(this ModuleInfo dataModule, OpenContentModuleInfo ocModuleInfo)
         {
             bool isEditable;
             //first check some weird Dnn issue
@@ -38,8 +38,8 @@ namespace Satrabel.OpenContent.Components.Dnn
                     HttpContext.Current.Items.Remove("Personalization");
                 }
             }
-            bool blnPreview = portalSettings.PreviewEnabled ;
-            if (Globals.IsHostTab(portalSettings.ActiveTabId))
+            bool blnPreview = ocModuleInfo.PreviewEnabled ;
+            if (Globals.IsHostTab(ocModuleInfo.ActiveTabId))
             {
                 blnPreview = false;
             }

@@ -37,11 +37,7 @@ namespace Satrabel.OpenContent.Components.Rest
                 OpenContentModuleInfo module = OpenContentModuleInfo.Create(ActiveModule, PortalSettings);
 
                 JObject reqOptions = null;
-                //if (!string.IsNullOrEmpty(req.options))
-                //{
-                //    reqOptions = JObject.Parse(req.options);
-                //}
-                //string editRole = manifest.GetEditRole();
+
                 if (module.IsListMode())
                 {
                     var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.TemplateDir, collection);

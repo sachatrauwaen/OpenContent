@@ -3,9 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Entities.Users;
-using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Dnn;
-using System;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -41,7 +39,7 @@ namespace Satrabel.OpenContent.Components
             {
                 TabId = viewModule.TabID,
                 ModuleId = viewModule.ModuleID,
-                PageUrl = DnnUrlUtils.NavigateUrl(viewModule.TabID),
+               // PageUrl = DnnUrlUtils.NavigateUrl(viewModule.TabID),
                 UserId = portalSettings.UserId,
                 UserRoles = portalSettings.UserInfo.Social.Roles,
                 PortalId = portalSettings.PortalId,
@@ -77,7 +75,7 @@ namespace Satrabel.OpenContent.Components
             get
             {
                 if (_settings == null)
-                    _settings = new OpenContentSettings(_moduleSettings);
+                    _settings = new OpenContentSettings(ComponentSettingsInfo.Create(_moduleSettings));
                 return _settings;
             }
         }
@@ -121,7 +119,6 @@ namespace Satrabel.OpenContent.Components
 
         public int TabId { get; set; }
         public int ModuleId { get; set; }
-        public string PageUrl { get; set; }
         public int UserId { get; set; }
         public IList<UserRoleInfo> UserRoles { get; set; }
         public int PortalId { get; set; }

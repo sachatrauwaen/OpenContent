@@ -23,7 +23,7 @@ namespace Satrabel.OpenContent.Components.Logging
                     LoggingUtils.HttpRequestLogInfo(HttpContext.Current),
                     "unknown",
                     "unknown",
-                    renderEngine.ModuleContext.PageUrl
+                    DnnUrlUtils.NavigateUrl(renderEngine.ModuleContext.TabId)
                 );
             }
             else
