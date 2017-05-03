@@ -68,7 +68,7 @@ namespace Satrabel.OpenContent
                 moduleClone.ModuleSettings["template"] = Template;
                 module = moduleClone;
             }
-            var engine = new RenderEngine(new OpenContentModuleInfo(module, PortalSettings));
+            var engine = new RenderEngine(OpenContentModuleInfo.Create(module, PortalSettings));
             try
             {
                 engine.Render(Page);

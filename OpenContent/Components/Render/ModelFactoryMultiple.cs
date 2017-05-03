@@ -80,7 +80,7 @@ namespace Satrabel.OpenContent.Components.Render
             //string editRole = Manifest.GetEditRole();
             if (_dataList != null && _dataList.Any())
             {
-                var mainUrl = _module.NavigateUrl(_detailTabId, GetCurrentCultureCode());
+                var mainUrl = _module.GetUrl(_detailTabId, GetCurrentCultureCode());
                 foreach (var item in _dataList)
                 {
                     JObject dyn = item.Data as JObject;
@@ -115,7 +115,7 @@ namespace Satrabel.OpenContent.Components.Render
                         {
                             context["EditUrl"] = _module.EditUrl("id", item.Id, _module.ViewModule.ModuleID);
                         }
-                        context["DetailUrl"] = _module.NavigateUrl(_detailTabId, url.CleanupUrl(), "id=" + item.Id);
+                        context["DetailUrl"] = _module.GetUrl(_detailTabId, url.CleanupUrl(), "id=" + item.Id);
                         context["MainUrl"] = mainUrl;
                     }
                     items.Add(dyn);

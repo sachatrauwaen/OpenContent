@@ -4,6 +4,10 @@ namespace Satrabel.OpenContent.Components.Datasource
 {
     public class DataSourceContext
     {
+        public DataSourceContext()
+        {
+        }
+
         public string TemplateFolder { get; set; }
         public int PortalId { get; set; }
         public int UserId { get; set; } // Only Used for Add and Update commands

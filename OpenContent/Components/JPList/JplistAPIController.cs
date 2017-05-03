@@ -25,7 +25,7 @@ namespace Satrabel.OpenContent.Components.JPList
         {
             try
             {
-                OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule, PortalSettings);
+                OpenContentModuleInfo module = OpenContentModuleInfo.Create(ActiveModule, PortalSettings);
                 JObject reqOptions = null;
                 if (!string.IsNullOrEmpty(req.options))
                 {

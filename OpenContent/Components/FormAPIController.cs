@@ -57,7 +57,7 @@ namespace Satrabel.OpenContent.Components
                 {
                     data["formSettings"] = JObject.Parse(jsonSettings);
                 }
-                var module = new OpenContentModuleInfo(ActiveModule, PortalSettings);
+                var module = OpenContentModuleInfo.Create(ActiveModule, PortalSettings);
                 IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
                 //var source = req.form["Source"].ToString();

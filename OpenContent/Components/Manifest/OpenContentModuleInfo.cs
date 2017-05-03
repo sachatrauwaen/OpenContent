@@ -13,6 +13,7 @@ namespace Satrabel.OpenContent.Components
     {
     }
 
+
     public class OpenContentModuleInfo : IOpenContentModuleInfo
     {
         private ModuleInfo _dataModule;
@@ -20,19 +21,37 @@ namespace Satrabel.OpenContent.Components
         private readonly IDictionary _moduleSettings;
         private readonly PortalSettings _portalSettings;
 
-        public OpenContentModuleInfo(ModuleInfo viewModule, PortalSettings ps)
+        private OpenContentModuleInfo(ModuleInfo viewModule, PortalSettings ps)
         {
             ViewModule = viewModule;
             _moduleSettings = viewModule.ModuleSettings;
             _portalSettings = ps;
         }
 
-        public OpenContentModuleInfo(int moduleId, int tabId, PortalSettings ps)
+        public static OpenContentModuleInfo Create(int moduleId, int tabId, PortalSettings ps)
         {
             ModuleController mc = new ModuleController();
-            ViewModule = mc.GetModule(moduleId, tabId, false);
-            _moduleSettings = ViewModule.ModuleSettings;
-            _portalSettings = ps;
+            var viewModule = mc.GetModule(moduleId, tabId, false);
+            return Create(viewModule, ps);
+        }
+
+        public static OpenContentModuleInfo Create(ModuleInfo viewModule, PortalSettings portalSettings)
+        {
+            var retval = new OpenContentModuleInfo(viewModule, portalSettings)
+            {
+                TabId = viewModule.TabID,
+                ModuleId = viewModule.ModuleID,
+                PageUrl = DnnUrlUtils.NavigateUrl(viewModule.TabID),
+                UserId = portalSettings.UserId,
+                UserRoles = portalSettings.UserInfo.Social.Roles,
+                PortalId = portalSettings.PortalId,
+                HomeDirectory = portalSettings.HomeDirectory,
+                ActiveTabId = portalSettings.ActiveTab.TabID,
+                CanvasUnavailable = portalSettings == null,
+                HostName = portalSettings.PortalAlias.HTTPAlias,
+                PreviewEnabled = (portalSettings.UserMode == PortalSettings.Mode.View),
+            };
+            return retval;
         }
 
         public ModuleInfo ViewModule { get; }
@@ -53,25 +72,6 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
-        public int TabId => ViewModule.TabID;
-        public int ModuleId => ViewModule.ModuleID;
-
-        public string PageUrl => DnnUrlUtils.NavigateUrl(ViewModule.TabID);
-        public int UserId => _portalSettings.UserId;
-        public IList<UserRoleInfo> UserRoles => _portalSettings.UserInfo.Social.Roles;
-        public int PortalId => _portalSettings.PortalId;
-        public string HomeDirectory => _portalSettings.HomeDirectory;
-
-        public string GetUrl(int detailTabId, string getCurrentCultureCode)
-        {
-            return DnnUrlUtils.NavigateUrl(detailTabId, _portalSettings, getCurrentCultureCode);
-        }
-
-        public bool IsInRole(string editrole)
-        {
-            return _portalSettings.UserInfo.IsInRole(editrole);
-        }
-
         public OpenContentSettings Settings
         {
             get
@@ -81,11 +81,6 @@ namespace Satrabel.OpenContent.Components
                 return _settings;
             }
         }
-
-        public int ActiveTabId => _portalSettings.ActiveTab.TabID;
-        public bool CanvasUnavailable => _portalSettings == null;
-        public string HostName => _portalSettings.PortalAlias.HTTPAlias;
-        public bool PreviewEnabled => (_portalSettings.UserMode == PortalSettings.Mode.View);
 
         public int GetDetailTabId()
         {
@@ -97,9 +92,19 @@ namespace Satrabel.OpenContent.Components
             return Settings.Template != null && Settings.Template.IsListTemplate;
         }
 
-        public string NavigateUrl(int detailTabId, string getCurrentCultureCode)
+        public bool IsInRole(string editrole)
+        {
+            return _portalSettings.UserInfo.IsInRole(editrole);
+        }
+
+        public string GetUrl(int detailTabId, string getCurrentCultureCode)
         {
             return DnnUrlUtils.NavigateUrl(detailTabId, _portalSettings, getCurrentCultureCode);
+        }
+
+        internal string GetUrl(int detailTabId, string v1, string v2)
+        {
+            return DnnUrlUtils.NavigateUrl(detailTabId, _portalSettings, v1, v2);
         }
 
         public string EditUrl(string id, string itemId, int viewModuleModuleId)
@@ -107,15 +112,26 @@ namespace Satrabel.OpenContent.Components
             return DnnUrlUtils.EditUrl(id, itemId, viewModuleModuleId, _portalSettings);
         }
 
-        internal string NavigateUrl(int detailTabId, string v1, string v2)
-        {
-            return DnnUrlUtils.NavigateUrl(detailTabId, _portalSettings, v1, v2);
-        }
-
         internal string EditUrl(int moduleId)
         {
             return DnnUrlUtils.EditUrl(moduleId, _portalSettings);
         }
+
+        #region Properties
+
+        public int TabId { get; set; }
+        public int ModuleId { get; set; }
+        public string PageUrl { get; set; }
+        public int UserId { get; set; }
+        public IList<UserRoleInfo> UserRoles { get; set; }
+        public int PortalId { get; set; }
+        public string HomeDirectory { get; set; }
+        public int ActiveTabId { get; set; }
+        public bool CanvasUnavailable { get; set; }
+        public string HostName { get; set; }
+        public bool PreviewEnabled { get; set; }
+
+        #endregion
     }
 
 

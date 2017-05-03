@@ -12,6 +12,7 @@ using DotNetNuke.Services.Localization;
 using DotNetNuke.UI.Modules;
 using DotNetNuke.Web.Client.ClientResourceManagement;
 using Satrabel.OpenContent.Components.AppDefinitions;
+using Satrabel.OpenContent.Components.Dnn;
 
 
 namespace Satrabel.OpenContent.Components
@@ -47,7 +48,7 @@ namespace Satrabel.OpenContent.Components
         {
             ModuleController mc = new ModuleController();
             ArrayList modules = mc.GetModulesByDefinition(portalId, App.Config.Opencontent);
-            return modules.OfType<ModuleInfo>().Select(module => new OpenContentModuleInfo(module, PortalSettings.Current));
+            return modules.OfType<ModuleInfo>().Select(module => OpenContentModuleInfo.Create(module, PortalSettings.Current));
         }
 
         /// <summary>
@@ -124,7 +125,7 @@ namespace Satrabel.OpenContent.Components
         {
             return DnnLanguageUtils.GetCurrentCultureCode();
         }
-        
+
         public static DotNetNuke.Security.SecurityAccessLevel ToDnnSecurityAccessLevel(this SecurityAccessLevel level)
         {
             switch (level)
@@ -153,7 +154,7 @@ namespace Satrabel.OpenContent.Components
                 case ActionType.Misc:
                     return ModuleActionType.ContentOptions;
                 default:
-                    string msg= $"unknown ActionType {itemActionType}";
+                    string msg = $"unknown ActionType {itemActionType}";
                     App.Services.Logger.Error(msg);
                     throw new NotImplementedException(msg);
             }

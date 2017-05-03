@@ -65,7 +65,7 @@ namespace Satrabel.OpenContent.Components.Render
                         url = hbEngine.Execute(_manifest.DetailUrl, dynForHBS);
                         url = HttpUtility.HtmlDecode(url);
                     }
-                    context["DetailUrl"] = _module.NavigateUrl(_detailTabId, url.CleanupUrl(), "id=" + _data.Id);
+                    context["DetailUrl"] = _module.GetUrl(_detailTabId, url.CleanupUrl(), "id=" + _data.Id);
                     context["Id"] = _data.Id;
                     var editIsAllowed = !_manifest.DisableEdit && IsEditAllowed(_data.CreatedByUserId);
                     context["EditUrl"] = editIsAllowed ? _module.EditUrl("id", _data.Id, _module.ViewModule.ModuleID) : "";
