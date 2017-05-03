@@ -55,7 +55,7 @@ namespace Satrabel.OpenContent.Components
         }
         public void ImportModule(int moduleId, string content, string version, int userId)
         {
-            var module = OpenContentModuleInfo.Create(moduleId, Null.NullInteger, PortalSettings.Current);
+            var module = OpenContentModuleConfig.Create(moduleId, Null.NullInteger, PortalSettings.Current);
             //var index = module.Settings.Template.Manifest.Index;
             //var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template);
             var dataSource = new OpenContentDataSource();
@@ -105,7 +105,7 @@ namespace Satrabel.OpenContent.Components
                 return searchDocuments;
             }
 
-            var module = OpenContentModuleInfo.Create(modInfo, PortalSettings.Current);
+            var module = OpenContentModuleConfig.Create(modInfo, PortalSettings.Current);
             if (module.Settings.Template?.Main == null || !module.Settings.Template.Main.DnnSearch)
             {
                 return searchDocuments;

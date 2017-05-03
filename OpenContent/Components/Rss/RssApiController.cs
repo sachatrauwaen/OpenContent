@@ -27,7 +27,7 @@ namespace Satrabel.OpenContent.Components.Rss
         {
             ModuleController mc = new ModuleController();
             IEnumerable<IDataItem> dataList = new List<IDataItem>();
-            var module = OpenContentModuleInfo.Create(moduleId, tabId, PortalSettings);
+            var module = OpenContentModuleConfig.Create(moduleId, tabId, PortalSettings);
             var manifest = module.Settings.Template.Manifest;
 
             var rssTemplate = new FileUri(module.Settings.TemplateDir, template + ".hbs");

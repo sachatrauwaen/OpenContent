@@ -27,19 +27,19 @@ namespace Satrabel.OpenContent.Components.Render
     public class RenderEngine
     {
         private readonly RenderInfo _renderinfo;
-        private readonly OpenContentModuleInfo _module; // active module (not datasource module)
+        private readonly OpenContentModuleConfig _module; // active module (not datasource module)
         private readonly OpenContentSettings _settings;
 
-        public RenderEngine(OpenContentModuleInfo moduleInfo)
+        public RenderEngine(OpenContentModuleConfig ocModuleConfig)
         {
-            _module = moduleInfo;
+            _module = ocModuleConfig;
             _renderinfo = new RenderInfo(_module.Settings.Template, _module.Settings.IsOtherModule);
             _settings = _module.Settings;
         }
 
-        public RenderEngine(OpenContentModuleInfo moduleInfo, IRenderContext renderContext, string localResourceFile)
+        public RenderEngine(OpenContentModuleConfig ocModuleConfig, IRenderContext renderContext, string localResourceFile)
         {
-            _module = moduleInfo;
+            _module = ocModuleConfig;
             _renderinfo = new RenderInfo(_module.Settings.Template, _module.Settings.IsOtherModule);
             _settings = _module.Settings;
             RenderContext = renderContext;
@@ -48,7 +48,7 @@ namespace Satrabel.OpenContent.Components.Render
 
         public RenderInfo Info => _renderinfo;
 
-        public OpenContentModuleInfo ModuleContext => _module;
+        public OpenContentModuleConfig ModuleConfig => _module;
         public OpenContentSettings Settings => _settings;
 
         public IRenderContext RenderContext { get; }
@@ -103,7 +103,7 @@ namespace Satrabel.OpenContent.Components.Render
                     }
                     else
                     {
-                        LogContext.Log(_module.ViewModule.ModuleID, "RequestContext", "QueryParam Id", ItemId);
+                        LogContext.Log(_module.ViewModule.ModuleId, "RequestContext", "QueryParam Id", ItemId);
                         // detail template
                         if (_renderinfo.Template.Detail != null)
                         {
@@ -241,7 +241,7 @@ namespace Satrabel.OpenContent.Components.Render
 
         #region Data
 
-        private string GetDataList(RenderInfo info, OpenContentModuleInfo moduleInfo, bool clientSide)
+        private string GetDataList(RenderInfo info, OpenContentModuleConfig ocModuleConfig, bool clientSide)
         {
             string templateKey = "";
             info.ResetData();
@@ -254,7 +254,7 @@ namespace Satrabel.OpenContent.Components.Render
             {
                 if (ds.Any(dsContext))
                 {
-                    info.SetData(resultList, moduleInfo.Settings.Data);
+                    info.SetData(resultList, ocModuleConfig.Settings.Data);
                     info.DataExist = true;
                 }
 
@@ -275,19 +275,19 @@ namespace Satrabel.OpenContent.Components.Render
                     {
                         templateKey = GetTemplateKey(indexConfig);
                     }
-                    bool isEditable = _module.ViewModule.CheckIfEditable(moduleInfo);
+                    bool isEditable = _module.ViewModule.CheckIfEditable(ocModuleConfig);
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
-                    queryBuilder.Build(moduleInfo.Settings.Query, !isEditable, moduleInfo.UserId, DnnLanguageUtils.GetCurrentCultureCode(), moduleInfo.UserRoles, QueryString);
+                    queryBuilder.Build(ocModuleConfig.Settings.Query, !isEditable, ocModuleConfig.UserId, DnnLanguageUtils.GetCurrentCultureCode(), ocModuleConfig.UserRoles, QueryString);
 
                     resultList = ds.GetAll(dsContext, queryBuilder.Select).Items;
                     if (LogContext.IsLogActive)
                     {
                         //LogContext.Log(_module.ModuleID, "RequestContext", "EditMode", !addWorkFlow);
-                        LogContext.Log(_module.ViewModule.ModuleID, "RequestContext", "IsEditable", isEditable);
-                        LogContext.Log(_module.ViewModule.ModuleID, "RequestContext", "UserRoles", moduleInfo.UserRoles.Select(r => r.RoleName));
-                        LogContext.Log(_module.ViewModule.ModuleID, "RequestContext", "CurrentUserId", moduleInfo.UserId);
+                        LogContext.Log(_module.ViewModule.ModuleId, "RequestContext", "IsEditable", isEditable);
+                        LogContext.Log(_module.ViewModule.ModuleId, "RequestContext", "UserRoles", ocModuleConfig.UserRoles.Select(r => r.RoleName));
+                        LogContext.Log(_module.ViewModule.ModuleId, "RequestContext", "CurrentUserId", ocModuleConfig.UserId);
                         var logKey = "Query";
-                        LogContext.Log(_module.ViewModule.ModuleID, logKey, "select", queryBuilder.Select);
+                        LogContext.Log(_module.ViewModule.ModuleId, logKey, "select", queryBuilder.Select);
                         //LogContext.Log(_module.ModuleID, logKey, "result", resultList);
                     }
                     //App.Services.Logger.Debug($"Query returned [{0}] results.", total);
@@ -296,7 +296,7 @@ namespace Satrabel.OpenContent.Components.Render
                         //App.Services.Logger.Debug($"Query did not return any results. API request: [{0}], Lucene Filter: [{1}], Lucene Query:[{2}]", settings.Query, queryDef.Filter == null ? "" : queryDef.Filter.ToString(), queryDef.Query == null ? "" : queryDef.Query.ToString());
                         if (ds.Any(dsContext))
                         {
-                            info.SetData(resultList, moduleInfo.Settings.Data);
+                            info.SetData(resultList, ocModuleConfig.Settings.Data);
                             info.DataExist = true;
                         }
                     }
@@ -312,13 +312,13 @@ namespace Satrabel.OpenContent.Components.Render
                 }
                 if (resultList.Any())
                 {
-                    info.SetData(resultList, moduleInfo.Settings.Data);
+                    info.SetData(resultList, ocModuleConfig.Settings.Data);
                 }
             }
             return templateKey;
         }
 
-        private void GetDetailData(RenderInfo info, OpenContentModuleInfo module)
+        private void GetDetailData(RenderInfo info, OpenContentModuleConfig module)
         {
             info.ResetData();
             var ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
@@ -458,8 +458,8 @@ namespace Satrabel.OpenContent.Components.Render
             if (LogContext.IsLogActive)
             {
                 var logKey = "Render template";
-                LogContext.Log(_module.ViewModule.ModuleID, logKey, "template", templateUri.FilePath);
-                LogContext.Log(_module.ViewModule.ModuleID, logKey, "model", model);
+                LogContext.Log(_module.ViewModule.ModuleId, logKey, "template", templateUri.FilePath);
+                LogContext.Log(_module.ViewModule.ModuleId, logKey, "model", model);
                 stopwatch = new Stopwatch();
                 stopwatch.Start();
             }
@@ -476,7 +476,7 @@ namespace Satrabel.OpenContent.Components.Render
             {
                 stopwatch.Stop();
                 var logKey = "Render template";
-                LogContext.Log(_module.ViewModule.ModuleID, logKey, "render time (ms)", stopwatch.ElapsedMilliseconds);
+                LogContext.Log(_module.ViewModule.ModuleId, logKey, "render time (ms)", stopwatch.ElapsedMilliseconds);
                 stopwatch.Stop();
             }
             return output;
@@ -568,8 +568,8 @@ namespace Satrabel.OpenContent.Components.Render
                         if (LogContext.IsLogActive)
                         {
                             var logKey = "Render single item template";
-                            LogContext.Log(_module.ViewModule.ModuleID, logKey, "template", template.FilePath);
-                            LogContext.Log(_module.ViewModule.ModuleID, logKey, "model", model);
+                            LogContext.Log(_module.ViewModule.ModuleId, logKey, "template", template.FilePath);
+                            LogContext.Log(_module.ViewModule.ModuleId, logKey, "model", model);
                         }
                         return ExecuteRazor(template, model);
                     }
@@ -583,8 +583,8 @@ namespace Satrabel.OpenContent.Components.Render
                         if (LogContext.IsLogActive)
                         {
                             var logKey = "Render single item template";
-                            LogContext.Log(_module.ViewModule.ModuleID, logKey, "template", template.FilePath);
-                            LogContext.Log(_module.ViewModule.ModuleID, logKey, "model", model);
+                            LogContext.Log(_module.ViewModule.ModuleId, logKey, "template", template.FilePath);
+                            LogContext.Log(_module.ViewModule.ModuleId, logKey, "model", model);
                         }
                         HandlebarsEngine hbEngine = new HandlebarsEngine();
                         return hbEngine.Execute(page, template, model);

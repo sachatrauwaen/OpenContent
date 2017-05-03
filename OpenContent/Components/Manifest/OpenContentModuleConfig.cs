@@ -11,35 +11,51 @@ namespace Satrabel.OpenContent.Components
     {
     }
 
-
-    public class OpenContentModuleInfo : IOpenContentModuleInfo
+    public class OpenContentModuleInfo
     {
-        private ModuleInfo _dataModule;
+        public OpenContentModuleInfo(int portalId, int tabId, int moduleId, string moduleTitle, int tabModuleId)
+        {
+            ModuleId = moduleId;
+            ModuleTitle = moduleTitle;
+            TabModuleId = tabModuleId;
+            PortalId = portalId;
+            TabId = tabId;
+        }
+
+        public int ModuleId { get; }
+        public int TabId { get; }
+        public int PortalId { get; }
+        public string ModuleTitle { get; }
+        public int TabModuleId { get; }
+    }
+
+    public class OpenContentModuleConfig : IOpenContentModuleInfo
+    {
+        private OpenContentModuleInfo _dataModule;
         private OpenContentSettings _settings;
         private readonly IDictionary _moduleSettings;
         private readonly PortalSettings _portalSettings;
 
-        private OpenContentModuleInfo(ModuleInfo viewModule, PortalSettings ps)
+        private OpenContentModuleConfig(ModuleInfo viewModule, PortalSettings ps)
         {
-            ViewModule = viewModule;
+            ViewModule = viewModule.CreateOpenContentModuleInfo();
             _moduleSettings = viewModule.ModuleSettings;
             _portalSettings = ps;
         }
 
-        public static OpenContentModuleInfo Create(int moduleId, int tabId, PortalSettings ps)
+        public static OpenContentModuleConfig Create(int moduleId, int tabId, PortalSettings ps)
         {
             ModuleController mc = new ModuleController();
             var viewModule = mc.GetModule(moduleId, tabId, false);
             return Create(viewModule, ps);
         }
 
-        public static OpenContentModuleInfo Create(ModuleInfo viewModule, PortalSettings portalSettings)
+        public static OpenContentModuleConfig Create(ModuleInfo viewModule, PortalSettings portalSettings)
         {
-            var retval = new OpenContentModuleInfo(viewModule, portalSettings)
+            var retval = new OpenContentModuleConfig(viewModule, portalSettings)
             {
                 TabId = viewModule.TabID,
                 ModuleId = viewModule.ModuleID,
-               // PageUrl = DnnUrlUtils.NavigateUrl(viewModule.TabID),
                 UserId = portalSettings.UserId,
                 UserRoles = portalSettings.UserInfo.Social.Roles,
                 PortalId = portalSettings.PortalId,
@@ -52,15 +68,14 @@ namespace Satrabel.OpenContent.Components
             return retval;
         }
 
-        public ModuleInfo ViewModule { get; }
-        public ModuleInfo DataModule
+        public OpenContentModuleInfo ViewModule { get; }
+        public OpenContentModuleInfo DataModule
         {
             get
             {
                 if (Settings.ModuleId > 0 && _dataModule == null)
                 {
-                    ModuleController mc = new ModuleController();
-                    _dataModule = mc.GetModule(Settings.ModuleId, Settings.TabId, false);
+                    _dataModule = DnnUtils.CreateOpenContentModuleInfo(Settings.TabId, Settings.ModuleId);
                 }
                 else if (_dataModule == null)
                 {
@@ -82,7 +97,7 @@ namespace Satrabel.OpenContent.Components
 
         public int GetDetailTabId()
         {
-            return Settings.DetailTabId > 0 ? Settings.DetailTabId : (Settings.TabId > 0 ? Settings.TabId : ViewModule.TabID);
+            return Settings.DetailTabId > 0 ? Settings.DetailTabId : (Settings.TabId > 0 ? Settings.TabId : ViewModule.TabId);
         }
 
         public bool IsListMode()

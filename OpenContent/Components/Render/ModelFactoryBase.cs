@@ -32,10 +32,10 @@ namespace Satrabel.OpenContent.Components.Render
         // only multiple
         protected readonly Manifest.Manifest _manifest;
         protected readonly TemplateManifest _templateManifest;
-        protected readonly OpenContentModuleInfo _module;
+        protected readonly OpenContentModuleConfig _module;
         protected readonly int _detailTabId;
 
-        public ModelFactoryBase(string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleInfo module)
+        public ModelFactoryBase(string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleConfig module)
 
         {
             this._settingsJson = settingsJson;
@@ -52,7 +52,7 @@ namespace Satrabel.OpenContent.Components.Render
             _dsContext = OpenContentUtils.CreateDataContext(_module);
         }
 
-        public ModelFactoryBase(string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleInfo module, int portalId, string cultureCode)
+        public ModelFactoryBase(string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleConfig module, int portalId, string cultureCode)
 
         {
             this._settingsJson = settingsJson;
@@ -69,7 +69,7 @@ namespace Satrabel.OpenContent.Components.Render
             _dsContext = OpenContentUtils.CreateDataContext(_module);
         }
 
-        public ModelFactoryBase(OpenContentModuleInfo module)
+        public ModelFactoryBase(OpenContentModuleConfig module)
         {
             OpenContentSettings settings = module.Settings;
             this._settingsJson = settings.Data;
@@ -84,7 +84,7 @@ namespace Satrabel.OpenContent.Components.Render
             _ds = DataSourceManager.GetDataSource(_manifest.DataSource);
             _dsContext = OpenContentUtils.CreateDataContext(_module);
         }
-        public ModelFactoryBase(OpenContentModuleInfo module, string collection)
+        public ModelFactoryBase(OpenContentModuleConfig module, string collection)
         {
             OpenContentSettings settings = module.Settings;
             this._settingsJson = settings.Data;
@@ -269,7 +269,7 @@ namespace Satrabel.OpenContent.Components.Render
                 // include CONTEXT in the Model
                 JObject context = new JObject();
                 model["Context"] = context;
-                context["ModuleId"] = _module.ViewModule.ModuleID;
+                context["ModuleId"] = _module.ViewModule.ModuleId;
                 context["GoogleApiKey"] = App.Services.GlobalSettings(_portalId).GetGoogleApiKey();
                 context["ModuleTitle"] = _module.ViewModule.ModuleTitle;
                 var editIsAllowed = !_manifest.DisableEdit && IsEditAllowed(-1);

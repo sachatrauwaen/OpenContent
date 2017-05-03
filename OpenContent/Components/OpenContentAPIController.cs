@@ -55,7 +55,7 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
-                var module = OpenContentModuleInfo.Create(ActiveModule, PortalSettings);
+                var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
                 IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(module);
                 IDataItem dsItem = null;
@@ -149,7 +149,7 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
-                var module = OpenContentModuleInfo.Create(ActiveModule, PortalSettings);
+                var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
                 var dataManifest = module.Settings.Manifest.GetAdditionalData(key);
 
                 IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
@@ -182,7 +182,7 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
-                var module = OpenContentModuleInfo.Create(ActiveModule, PortalSettings);
+                var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
                 string key = json["key"].ToString();
                 var dataManifest = module.Settings.Template.Manifest.GetAdditionalData(key);
 
@@ -215,7 +215,7 @@ namespace Satrabel.OpenContent.Components
         [HttpGet]
         public HttpResponseMessage Version(string id, string ticks)
         {
-            var module = OpenContentModuleInfo.Create(ActiveModule, PortalSettings);
+            var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
             JToken json = new JObject();
             try
             {
@@ -346,7 +346,7 @@ namespace Satrabel.OpenContent.Components
             List<LookupResultDTO> res = new List<LookupResultDTO>();
             try
             {
-                var module = OpenContentModuleInfo.Create(ActiveModule, PortalSettings);
+                var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
 
                 string key = req.dataKey;
                 var additionalDataManifest = module.Settings.Template.Manifest.GetAdditionalData(key);
@@ -385,7 +385,7 @@ namespace Satrabel.OpenContent.Components
         [HttpPost]
         public HttpResponseMessage Lookup(LookupRequestDTO req)
         {
-            var module = OpenContentModuleInfo.Create(req.moduleid, req.tabid,PortalSettings);
+            var module = OpenContentModuleConfig.Create(req.moduleid, req.tabid,PortalSettings);
             if (module == null) throw new Exception($"Can not find ModuleInfo (tabid:{req.tabid}, moduleid:{req.moduleid})");
 
             List<LookupResultDTO> res = new List<LookupResultDTO>();
@@ -469,7 +469,7 @@ namespace Satrabel.OpenContent.Components
         [HttpPost]
         public HttpResponseMessage LookupCollection(LookupCollectionRequestDTO req)
         {
-            var module = OpenContentModuleInfo.Create(ActiveModule, PortalSettings);
+            var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
             var res = new List<LookupResultDTO>();
 
             try
@@ -558,7 +558,7 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
-                var module = OpenContentModuleInfo.Create(ActiveModule, PortalSettings);
+                var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
                 string editRole = module.Settings.Template.Manifest.GetEditRole();
                 int createdByUserid = -1;
 
@@ -641,7 +641,7 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
-                var module = OpenContentModuleInfo.Create(ActiveModule, PortalSettings);
+                var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
                 string editRole = module.Settings.Template.Manifest.GetEditRole();
                 int createdByUserid = -1;
 
@@ -704,7 +704,7 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
-                var module = OpenContentModuleInfo.Create(ActiveModule, PortalSettings);
+                var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
                 string editRole = module.Settings.Template.Manifest.GetEditRole();
                 int createdByUserid = -1;
 

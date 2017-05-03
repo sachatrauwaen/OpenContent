@@ -461,28 +461,28 @@ namespace Satrabel.OpenContent.Components
             return FileUri.ReverseMapPath(template);
         }
 
-        public static bool CheckOpenContentSettings(OpenContentModuleInfo module)
+        public static bool CheckOpenContentSettings(OpenContentModuleConfig module)
         {
             bool result = true;
             var settings = module.Settings;
             if (settings?.TemplateKey?.TemplateDir != null && !settings.TemplateKey.TemplateDir.FolderExists)
             {
-                var url = DnnUrlUtils.NavigateUrl(module.ViewModule.TabID);
-                App.Services.Logger.Error($"Error loading OpenContent Template on page [{module.ViewModule.PortalID}-{module.ViewModule.TabID}-{url}] module [{module.ViewModule.ModuleID}-{module.ViewModule.ModuleTitle}]. Reason: Template not found [{settings.TemplateKey}]");
+                var url = DnnUrlUtils.NavigateUrl(module.ViewModule.TabId);
+                App.Services.Logger.Error($"Error loading OpenContent Template on page [{module.ViewModule.PortalId}-{module.ViewModule.TabId}-{url}] module [{module.ViewModule.ModuleId}-{module.ViewModule.ModuleTitle}]. Reason: Template not found [{settings.TemplateKey}]");
                 result = false;
             }
             return result;
         }
 
-        public static DataSourceContext CreateDataContext(OpenContentModuleInfo module, int userId = -1, bool single = false, JObject options = null)
+        public static DataSourceContext CreateDataContext(OpenContentModuleConfig module, int userId = -1, bool single = false, JObject options = null)
         {
             var dsContext = new DataSourceContext
             {
-                PortalId = module.ViewModule.PortalID,
-                ActiveModuleId = module.ViewModule.ModuleID,
-                TabId = module.ViewModule.TabID,
-                TabModuleId = module.ViewModule.TabModuleID,
-                ModuleId = module.DataModule.ModuleID,
+                PortalId = module.ViewModule.PortalId,
+                ActiveModuleId = module.ViewModule.ModuleId,
+                TabId = module.ViewModule.TabId,
+                TabModuleId = module.ViewModule.TabModuleId,
+                ModuleId = module.DataModule.ModuleId,
                 TemplateFolder = module.Settings.TemplateDir.FolderPath,
                 UserId = userId,
                 Config = module.Settings.Manifest.DataSourceConfig,

@@ -62,7 +62,7 @@ namespace Satrabel.OpenContent
                 // auto attach a ContentLocalized OpenContent module to the reference module of the default language
                 AutoAttachLocalizedModule(ref module);
             }
-            _engine = new RenderEngine(OpenContentModuleInfo.Create(module, PortalSettings.Current), new DnnRenderContext(ModuleContext), LocalResourceFile);
+            _engine = new RenderEngine(OpenContentModuleConfig.Create(module, PortalSettings.Current), new DnnRenderContext(ModuleContext), LocalResourceFile);
             _renderinfo = _engine.Info;
             _settings = _engine.Settings;
             _engine.QueryString = Page.Request.QueryString;
@@ -102,7 +102,7 @@ namespace Satrabel.OpenContent
             }
             catch (NotAuthorizedException ex)
             {
-                if (ModuleContext.Configuration.HasEditRightsOnModule())
+                if (_engine.ModuleConfig.ViewModule.HasEditRightsOnModule())
                     RenderHttpException(ex);
                 else
                     throw;

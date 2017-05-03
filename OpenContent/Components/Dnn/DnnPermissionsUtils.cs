@@ -11,20 +11,20 @@ namespace Satrabel.OpenContent.Components.Dnn
 {
     public static class DnnPermissionsUtils
     {
-        public static bool HasEditPermissions(OpenContentModuleInfo ocModuleInfo, string editrole, int createdByUserId)
+        public static bool HasEditPermissions(OpenContentModuleConfig ocModuleConfig, string editrole, int createdByUserId)
         {
-            return ocModuleInfo.ViewModule.HasEditRightsOnModule() || HasEditRole(ocModuleInfo, editrole, createdByUserId);
+            return ocModuleConfig.ViewModule.HasEditRightsOnModule() || HasEditRole(ocModuleConfig, editrole, createdByUserId);
         }
 
-        public static bool HasEditRole(OpenContentModuleInfo ocModuleInfo, string editrole, int createdByUserId)
+        public static bool HasEditRole(OpenContentModuleConfig ocModuleConfig, string editrole, int createdByUserId)
         {
             if (String.IsNullOrEmpty(editrole)) return false;
             if (editrole.ToLower() == "all") return true;
-            if (ocModuleInfo.IsInRole(editrole) && (createdByUserId == -1 || createdByUserId == ocModuleInfo.UserId)) return true;
+            if (ocModuleConfig.IsInRole(editrole) && (createdByUserId == -1 || createdByUserId == ocModuleConfig.UserId)) return true;
             return false;
         }
 
-        public static bool CheckIfEditable(this ModuleInfo dataModule, OpenContentModuleInfo ocModuleInfo)
+        public static bool CheckIfEditable(this OpenContentModuleInfo dataModule, OpenContentModuleConfig ocModuleConfig)
         {
             bool isEditable;
             //first check some weird Dnn issue
@@ -38,8 +38,8 @@ namespace Satrabel.OpenContent.Components.Dnn
                     HttpContext.Current.Items.Remove("Personalization");
                 }
             }
-            bool blnPreview = ocModuleInfo.PreviewEnabled ;
-            if (Globals.IsHostTab(ocModuleInfo.ActiveTabId))
+            bool blnPreview = ocModuleConfig.PreviewEnabled ;
+            if (Globals.IsHostTab(ocModuleConfig.ActiveTabId))
             {
                 blnPreview = false;
             }
@@ -57,13 +57,15 @@ namespace Satrabel.OpenContent.Components.Dnn
             return isEditable;
         }
 
-        public static bool HasEditRightsOnModule(this ModuleInfo activeModule)
+        public static bool HasEditRightsOnModule(this OpenContentModuleInfo activeModule)
         {
             bool blnHasModuleEditPermissions = false;
             if (activeModule != null)
             {
+
+
                 //DNN already checks SuperUser and Administrator
-                blnHasModuleEditPermissions = ModulePermissionController.HasModuleAccess(SecurityAccessLevel.Edit, "CONTENT", activeModule);
+                blnHasModuleEditPermissions = ModulePermissionController.HasModuleAccess(SecurityAccessLevel.Edit, "CONTENT", DnnUtils.GetDnnModule(activeModule));
             }
             return blnHasModuleEditPermissions;
         }

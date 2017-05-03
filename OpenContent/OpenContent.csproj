@@ -218,7 +218,7 @@
     <Compile Include="Components\Indexing\IIndexAdapter.cs" />
     <Compile Include="Components\Indexing\Indexer.cs" />
     <Compile Include="Components\Manifest\CollectionManifest.cs" />
-    <Compile Include="Components\Manifest\OpenContentModuleInfo.cs" />
+    <Compile Include="Components\Manifest\OpenContentModuleConfig.cs" />
     <Compile Include="Components\Datasource\DnnTabsDataSource.cs" />
     <Compile Include="Components\Settings\DnnGlobalSettingsRepositoryAdapter.cs" />
     <Compile Include="Components\Render\ModelFactoryBase.cs" />

@@ -14,19 +14,19 @@ namespace Satrabel.OpenContent.Components.Render
         private readonly JToken _dataJson;
         private readonly IDataItem _data;
 
-        public ModelFactorySingle(JToken dataJson, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleInfo module) :
+        public ModelFactorySingle(JToken dataJson, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleConfig module) :
             base(settingsJson, physicalTemplateFolder, manifest, templateManifest, templateFiles, module)
         {
             this._dataJson = dataJson;
         }
 
-        public ModelFactorySingle(IDataItem data, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleInfo module) :
+        public ModelFactorySingle(IDataItem data, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleConfig module) :
             base(settingsJson, physicalTemplateFolder, manifest, templateManifest, templateFiles, module)
         {
             this._dataJson = data.Data;
             this._data = data;
         }
-        public ModelFactorySingle(IDataItem data, OpenContentModuleInfo module, string collection) :
+        public ModelFactorySingle(IDataItem data, OpenContentModuleConfig module, string collection) :
             base(module, collection)
         {
             this._dataJson = data.Data;
@@ -68,7 +68,7 @@ namespace Satrabel.OpenContent.Components.Render
                     context["DetailUrl"] = _module.GetUrl(_detailTabId, url.CleanupUrl(), "id=" + _data.Id);
                     context["Id"] = _data.Id;
                     var editIsAllowed = !_manifest.DisableEdit && IsEditAllowed(_data.CreatedByUserId);
-                    context["EditUrl"] = editIsAllowed ? _module.EditUrl("id", _data.Id, _module.ViewModule.ModuleID) : "";
+                    context["EditUrl"] = editIsAllowed ? _module.EditUrl("id", _data.Id, _module.ViewModule.ModuleId) : "";
                 }
             }
         }

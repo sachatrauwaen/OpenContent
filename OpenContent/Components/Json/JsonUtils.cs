@@ -352,7 +352,7 @@ namespace Satrabel.OpenContent.Components.Json
                             {
                                 try
                                 {
-                                    var module = OpenContentModuleInfo.Create(int.Parse(moduleId), int.Parse(tabId), PortalSettings.Current);
+                                    var module = OpenContentModuleConfig.Create(int.Parse(moduleId), int.Parse(tabId), PortalSettings.Current);
                                     var ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                                     var dsContext = OpenContentUtils.CreateDataContext(module);
                                     IDataItem dataItem = ds.Get(dsContext, val.ToString());
@@ -382,7 +382,7 @@ namespace Satrabel.OpenContent.Components.Json
                         string val = childProperty.Value.ToString();
                         try
                         {
-                            var module = OpenContentModuleInfo.Create(int.Parse(moduleId), int.Parse(tabId), PortalSettings.Current);
+                            var module = OpenContentModuleConfig.Create(int.Parse(moduleId), int.Parse(tabId), PortalSettings.Current);
                             var ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                             var dsContext = OpenContentUtils.CreateDataContext(module);
                             IDataItem dataItem = ds.Get(dsContext, val);

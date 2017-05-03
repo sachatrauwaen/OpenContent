@@ -25,7 +25,7 @@ namespace Satrabel.OpenContent.Components.JPList
         {
             try
             {
-                OpenContentModuleInfo module = OpenContentModuleInfo.Create(ActiveModule, PortalSettings);
+                OpenContentModuleConfig module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
                 JObject reqOptions = null;
                 if (!string.IsNullOrEmpty(req.options))
                 {
@@ -35,7 +35,7 @@ namespace Satrabel.OpenContent.Components.JPList
                 {
                     var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template);
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
-                    bool isEditable = ActiveModule.CheckIfEditable(module);
+                    bool isEditable = module.ViewModule.CheckIfEditable(module);
                     queryBuilder.Build(module.Settings.Query, !isEditable, UserInfo.UserID, DnnLanguageUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
 
                     JplistQueryBuilder.MergeJpListQuery(indexConfig, queryBuilder.Select, req.StatusLst, DnnLanguageUtils.GetCurrentCultureCode());

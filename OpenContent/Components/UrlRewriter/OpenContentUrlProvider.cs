@@ -78,7 +78,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                             var dataList = ds.GetAll(dsContext, null).Items.ToList();
                             if (dataList.Count() > 1000)
                             {
-                                App.Services.Logger.Warn($"Module {module.DataModule.ModuleID} (portal/tab {module.DataModule.PortalID}/{module.DataModule.TabID}) has >1000 items. We are not making sluggs for them as this would be too inefficient");
+                                App.Services.Logger.Warn($"Module {module.DataModule.ModuleId} (portal/tab {module.DataModule.PortalId}/{module.DataModule.TabId}) has >1000 items. We are not making sluggs for them as this would be too inefficient");
                                 continue;
                             }
                             var physicalTemplateFolder = module.Settings.TemplateDir.PhysicalFullDirectory + "\\";
@@ -144,7 +144,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                     }
                     catch (Exception ex)
                     {
-                        App.Services.Logger.Error("Failed to generate url for opencontent module " + module.ViewModule.ModuleID, ex);
+                        App.Services.Logger.Error("Failed to generate url for opencontent module " + module.ViewModule.ModuleId, ex);
                     }
 
                 }

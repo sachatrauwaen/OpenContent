@@ -20,7 +20,7 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
-                var module = OpenContentModuleInfo.Create(req.ModuleId, req.TabId, PortalSettings);
+                var module = OpenContentModuleConfig.Create(req.ModuleId, req.TabId, PortalSettings);
                 string editRole = module.Settings.Template.Manifest.GetEditRole();
 
                 var dataSource = new OpenContentDataSource();

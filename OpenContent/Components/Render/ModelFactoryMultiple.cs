@@ -16,22 +16,22 @@ namespace Satrabel.OpenContent.Components.Render
     {
         private readonly IEnumerable<IDataItem> _dataList = null;
 
-        public ModelFactoryMultiple(IEnumerable<IDataItem> dataList, OpenContentModuleInfo module) :
+        public ModelFactoryMultiple(IEnumerable<IDataItem> dataList, OpenContentModuleConfig module) :
             base(module)
         {
             this._dataList = dataList;
         }
-        public ModelFactoryMultiple(IEnumerable<IDataItem> dataList, OpenContentModuleInfo module, string collection) :
+        public ModelFactoryMultiple(IEnumerable<IDataItem> dataList, OpenContentModuleConfig module, string collection) :
             base(module, collection)
         {
             this._dataList = dataList;
         }
-        public ModelFactoryMultiple(IEnumerable<IDataItem> dataList, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleInfo module) :
+        public ModelFactoryMultiple(IEnumerable<IDataItem> dataList, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleConfig module) :
             base(settingsJson, physicalTemplateFolder, manifest, templateManifest, templateFiles, module)
         {
             this._dataList = dataList;
         }
-        public ModelFactoryMultiple(IEnumerable<IDataItem> dataList, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleInfo module, int portalId, string cultureCode) :
+        public ModelFactoryMultiple(IEnumerable<IDataItem> dataList, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleConfig module, int portalId, string cultureCode) :
             base(settingsJson, physicalTemplateFolder, manifest, templateManifest, templateFiles, module, portalId, cultureCode)
         {
             this._dataList = dataList;
@@ -73,7 +73,7 @@ namespace Satrabel.OpenContent.Components.Render
 
             if (!onlyData && !onlyMainData)
             {
-                itemsModel["Context"]["RssUrl"] = _module.HostName + "/DesktopModules/OpenContent/API/RssAPI/GetFeed?moduleId=" + _module.ViewModule.ModuleID + "&tabId=" + _detailTabId;
+                itemsModel["Context"]["RssUrl"] = _module.HostName + "/DesktopModules/OpenContent/API/RssAPI/GetFeed?moduleId=" + _module.ViewModule.ModuleId + "&tabId=" + _detailTabId;
             }
             JArray items = new JArray(); ;
             itemsModel["Items"] = items;
@@ -113,7 +113,7 @@ namespace Satrabel.OpenContent.Components.Render
                         context["IsEditable"] = editStatus;
                         if (HasEditPermissions(item.CreatedByUserId))
                         {
-                            context["EditUrl"] = _module.EditUrl("id", item.Id, _module.ViewModule.ModuleID);
+                            context["EditUrl"] = _module.EditUrl("id", item.Id, _module.ViewModule.ModuleId);
                         }
                         context["DetailUrl"] = _module.GetUrl(_detailTabId, url.CleanupUrl(), "id=" + item.Id);
                         context["MainUrl"] = mainUrl;
@@ -141,7 +141,7 @@ namespace Satrabel.OpenContent.Components.Render
                     context = new JObject();
                     model["Context"] = context;
                 }
-                context["AddUrl"] = _module.EditUrl(_module.ViewModule.ModuleID);
+                context["AddUrl"] = _module.EditUrl(_module.ViewModule.ModuleId);
             }
         }
 

@@ -153,13 +153,13 @@ namespace Satrabel.OpenContent.Components.Lucene
             }
         }
 
-        private static void IndexModule(LuceneIndexAdapter lc, OpenContentModuleInfo module)
+        private static void IndexModule(LuceneIndexAdapter lc, OpenContentModuleConfig module)
         {
             OpenContentUtils.CheckOpenContentSettings(module);
 
             if (module.IsListMode() && !module.Settings.IsOtherModule && module.Settings.Manifest.Index)
             {
-                IndexModuleData(lc, module.ViewModule.ModuleID, module.Settings);
+                IndexModuleData(lc, module.ViewModule.ModuleId, module.Settings);
             }
         }
 

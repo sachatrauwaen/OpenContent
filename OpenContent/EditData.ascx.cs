@@ -113,7 +113,7 @@ namespace Satrabel.OpenContent
                 case DATATYPE_DATA:
                     {
                         TemplateManifest template = null;
-                        var module = OpenContentModuleInfo.Create(this.ModuleConfiguration, PortalSettings);
+                        var module = OpenContentModuleConfig.Create(this.ModuleConfiguration, PortalSettings);
                         var manifest = module.Settings.Manifest;
                         TemplateManifest templateManifest = module.Settings.Template;
                         string editRole = manifest.GetEditRole();
@@ -202,7 +202,7 @@ namespace Satrabel.OpenContent
                     break;
                 default:
                     {
-                        var module = OpenContentModuleInfo.Create(this.ModuleConfiguration, PortalSettings);
+                        var module = OpenContentModuleConfig.Create(this.ModuleConfiguration, PortalSettings);
                         var manifest = module.Settings.Manifest;
                         TemplateManifest templateManifest = module.Settings.Template;
                         string editRole = manifest.GetEditRole();
@@ -298,7 +298,7 @@ namespace Satrabel.OpenContent
 
         private void SaveData()
         {
-            var module = OpenContentModuleInfo.Create(this.ModuleConfiguration, PortalSettings);
+            var module = OpenContentModuleConfig.Create(this.ModuleConfiguration, PortalSettings);
             var manifest = module.Settings.Manifest;
             TemplateManifest template = module.Settings.Template;
             string editRole = manifest.GetEditRole();

@@ -18,18 +18,18 @@ namespace Satrabel.OpenContent.Components.Logging
             if (ps == null)
             {
                 friendlyMessage = string.Format("Alias: {3} \nTab: {4} - {5} \nModule: {0} \nContext: {2} \nError: {1}",
-                    renderEngine.ModuleContext.ModuleId,
+                    renderEngine.ModuleConfig.ModuleId,
                     exc.Message,
                     LoggingUtils.HttpRequestLogInfo(HttpContext.Current),
                     "unknown",
                     "unknown",
-                    DnnUrlUtils.NavigateUrl(renderEngine.ModuleContext.TabId)
+                    DnnUrlUtils.NavigateUrl(renderEngine.ModuleConfig.TabId)
                 );
             }
             else
             {
                 friendlyMessage = string.Format("Alias: {3} \nTab: {4} - {5} \nModule: {0} \nContext: {2} \nError: {1}",
-                   renderEngine.ModuleContext.ModuleId,
+                   renderEngine.ModuleConfig.ModuleId,
                    exc.Message,
                    LoggingUtils.HttpRequestLogInfo(HttpContext.Current),
                    ps.PortalAlias.HTTPAlias,

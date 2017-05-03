@@ -34,7 +34,7 @@ namespace Satrabel.OpenContent.Components.Rest
             {
                 //if (entity == "items")
                 var collection = App.Config.DefaultCollection;
-                OpenContentModuleInfo module = OpenContentModuleInfo.Create(ActiveModule, PortalSettings);
+                OpenContentModuleConfig module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
 
                 JObject reqOptions = null;
 
@@ -69,8 +69,8 @@ namespace Satrabel.OpenContent.Components.Rest
                         if (LogContext.IsLogActive)
                         {
                             var logKey = "Query";
-                            LogContext.Log(module.ViewModule.ModuleID, logKey, "model", model);
-                            res["meta"]["logs"] = JToken.FromObject(LogContext.Current.ModuleLogs(module.ViewModule.ModuleID));
+                            LogContext.Log(module.ViewModule.ModuleId, logKey, "model", model);
+                            res["meta"]["logs"] = JToken.FromObject(LogContext.Current.ModuleLogs(module.ViewModule.ModuleId));
                         }
                     }
                     res[entity] = items;
@@ -114,14 +114,14 @@ namespace Satrabel.OpenContent.Components.Rest
                 ModuleInfo activeModule = ActiveModule;
 
                 OpenContentSettings settings = activeModule.OpenContentSettings();
-                OpenContentModuleInfo module = OpenContentModuleInfo.Create(ActiveModule, PortalSettings);
+                OpenContentModuleConfig module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
                 JObject reqOptions = null;
 
                 if (module.IsListMode())
                 {
                     var indexConfig = OpenContentUtils.GetIndexConfig(settings.TemplateDir, collection);
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
-                    bool isEditable = ActiveModule.CheckIfEditable(module);
+                    bool isEditable = module.ViewModule.CheckIfEditable(module);
                     queryBuilder.Build(settings.Query, !isEditable, UserInfo.UserID, DnnLanguageUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
 
                     RestQueryBuilder.MergeQuery(indexConfig, queryBuilder.Select, restSelect, DnnLanguageUtils.GetCurrentCultureCode());
@@ -186,7 +186,7 @@ namespace Satrabel.OpenContent.Components.Rest
         {
             try
             {
-                OpenContentModuleInfo module = OpenContentModuleInfo.Create(ActiveModule, PortalSettings);
+                OpenContentModuleConfig module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
 
                 var manifest = module.Settings.Manifest;
                 TemplateManifest templateManifest = module.Settings.Template;
@@ -232,7 +232,7 @@ namespace Satrabel.OpenContent.Components.Rest
             // update
             try
             {
-                OpenContentModuleInfo module = OpenContentModuleInfo.Create(ActiveModule, PortalSettings);
+                OpenContentModuleConfig module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
 
                 string editRole = module.Settings.Template.Manifest.GetEditRole();
                 int createdByUserid = -1;
@@ -295,7 +295,7 @@ namespace Satrabel.OpenContent.Components.Rest
             // action
             try
             {
-                OpenContentModuleInfo module = OpenContentModuleInfo.Create(ActiveModule, PortalSettings);
+                OpenContentModuleConfig module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
                 string editRole = module.Settings.Template.Manifest.GetEditRole();
                 int createdByUserid = -1;
 
@@ -348,7 +348,7 @@ namespace Satrabel.OpenContent.Components.Rest
             // Add
             try
             {
-                OpenContentModuleInfo module = OpenContentModuleInfo.Create(ActiveModule, PortalSettings);
+                OpenContentModuleConfig module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
 
                 var manifest = module.Settings.Template.Manifest;
                 string editRole = manifest.GetEditRole();
@@ -378,7 +378,7 @@ namespace Satrabel.OpenContent.Components.Rest
 
             try
             {
-                OpenContentModuleInfo module = OpenContentModuleInfo.Create(ActiveModule, PortalSettings);
+                OpenContentModuleConfig module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
                 string editRole = module.Settings.Template.Manifest.GetEditRole();
                 int createdByUserid = -1;
 
