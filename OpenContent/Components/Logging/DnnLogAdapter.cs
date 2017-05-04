@@ -76,7 +76,7 @@ namespace Satrabel.OpenContent.Components.Logging
         private static string Enrich(string message)
         {
             if (HttpContext.Current?.Request != null)
-                message = $"{message} {Environment.NewLine}Called from {HttpContext.Current.Request.RawUrl}.";
+                message = $"{message}{Environment.NewLine}{LoggingUtils.HttpRequestLogInfo(HttpContext.Current)}";
             return message;
         }
 

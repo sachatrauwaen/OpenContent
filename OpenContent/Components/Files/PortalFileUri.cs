@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using DotNetNuke.Common;
 using DotNetNuke.Entities.Content.Common;
 using DotNetNuke.Entities.Modules;
@@ -41,7 +42,7 @@ namespace Satrabel.OpenContent.Components
         {
             var fileInfo = FileManager.Instance.GetFile(fileId);
             if (fileInfo == null)
-                throw new ArgumentNullException($"iFileInfo not found for id [{fileId}]");
+                throw new FileNotFoundException($"iFileInfo not found for id [{fileId}]");
 
             FileInfo = fileInfo;
         }
@@ -49,7 +50,6 @@ namespace Satrabel.OpenContent.Components
         private IFileInfo GetFileInfo(int portalid)
         {
             //var portalid = PortalSettings.Current.PortalId;
-            IFileInfo fileRequested = null;
             var pf = (new PortalController()).GetPortal(portalid).HomeDirectory;
             var pos = FilePath.IndexOf(pf, StringComparison.InvariantCultureIgnoreCase);
             if (pos < 0)
@@ -58,14 +58,14 @@ namespace Satrabel.OpenContent.Components
                 pf = "portals/_default";
                 pos = FilePath.IndexOf(pf, StringComparison.InvariantCultureIgnoreCase);
                 if (pos < 0)
-                    throw new ArgumentNullException($"iFileInfo not found for path [{FilePath}]. Incorrect Homedirectory.");
+                    throw new FileNotFoundException($"iFileInfo not found for path [{FilePath}]. Incorrect Homedirectory.");
                 else
                     portalid = -1;
             }
 
-            fileRequested = FileManager.Instance.GetFile(portalid, FilePath.Substring(pos + pf.Length + 1));
+            var fileRequested = FileManager.Instance.GetFile(portalid, FilePath.Substring(pos + pf.Length + 1));
             if (fileRequested == null)
-                throw new ArgumentNullException($"iFileInfo not found for path [{FilePath}]");
+                throw new FileNotFoundException($"iFileInfo not found for path [{FilePath}]");
 
             return fileRequested;
         }
@@ -73,7 +73,7 @@ namespace Satrabel.OpenContent.Components
         {
             IFileInfo fileInfo = FileManager.Instance.GetFile(fileId);
             if (fileInfo == null)
-                throw new ArgumentNullException($"iFileInfo not found for id [{fileId}]");
+                throw new FileNotFoundException($"iFileInfo not found for id [{fileId}]");
 
             return NormalizePath(fileInfo.ToUrlWithoutLinkClick());
         }

@@ -143,9 +143,9 @@ namespace Satrabel.OpenContent.Components.Logging
             if (context != null)
             {
                 url = context.Request.Url.AbsoluteUri;
-                referrer = context.Request.UrlReferrer == null ? "" : "\nReferrer: " + context.Request.UrlReferrer.AbsoluteUri;
+                referrer = context.Request.UrlReferrer == null ? "-unknown-" : context.Request.UrlReferrer.AbsoluteUri;
             }
-            string retval = $"Called from {url}. {referrer}.";
+            string retval = $"Called from {url}. Referred by {referrer}.";
 
             return retval;
         }
