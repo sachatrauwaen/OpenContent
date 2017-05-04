@@ -52,20 +52,7 @@ namespace Satrabel.OpenContent.Components
 
         public static OpenContentModuleConfig Create(ModuleInfo viewModule, PortalSettings portalSettings)
         {
-            var retval = new OpenContentModuleConfig(viewModule, portalSettings)
-            {
-                TabId = viewModule.TabID,
-                ModuleId = viewModule.ModuleID,
-                UserId = portalSettings.UserId,
-                UserRoles = portalSettings.UserInfo.Social.Roles,
-                PortalId = portalSettings.PortalId,
-                HomeDirectory = portalSettings.HomeDirectory,
-                ActiveTabId = portalSettings.ActiveTab.TabID,
-                CanvasUnavailable = portalSettings == null,
-                HostName = portalSettings.PortalAlias.HTTPAlias,
-                PreviewEnabled = (portalSettings.UserMode == PortalSettings.Mode.View),
-            };
-            return retval;
+            return new OpenContentModuleConfig(viewModule, portalSettings);
         }
 
         public OpenContentModuleInfo ViewModule { get; }
@@ -94,6 +81,8 @@ namespace Satrabel.OpenContent.Components
                 return _settings;
             }
         }
+
+        #region Methods
 
         public int GetDetailTabId()
         {
@@ -130,18 +119,20 @@ namespace Satrabel.OpenContent.Components
             return DnnUrlUtils.EditUrl(moduleId, _portalSettings);
         }
 
+        #endregion
+
         #region Properties
 
-        public int TabId { get; set; }
-        public int ModuleId { get; set; }
-        public int UserId { get; set; }
-        public IList<UserRoleInfo> UserRoles { get; set; }
-        public int PortalId { get; set; }
-        public string HomeDirectory { get; set; }
-        public int ActiveTabId { get; set; }
-        public bool CanvasUnavailable { get; set; }
-        public string HostName { get; set; }
-        public bool PreviewEnabled { get; set; }
+        public int TabId => ViewModule.TabId;
+        public int ModuleId => ViewModule.ModuleId;
+        public int UserId => _portalSettings.UserId;
+        public IList<UserRoleInfo> UserRoles => _portalSettings.UserInfo.Social.Roles;
+        public int PortalId => _portalSettings.PortalId;
+        public string HomeDirectory => _portalSettings.HomeDirectory;
+        public int ActiveTabId => _portalSettings.ActiveTab.TabID;
+        public bool CanvasUnavailable => _portalSettings == null;
+        public string HostName => _portalSettings.PortalAlias.HTTPAlias;
+        public bool PreviewEnabled => (_portalSettings.UserMode == PortalSettings.Mode.View);
 
         #endregion
     }
