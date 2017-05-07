@@ -127,7 +127,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         }
         #endregion
 
-        #region NormalizeDynamic
+        #region NormalizeJson
 
         public static JObject JsonObject(JObject value, string key, JObject defaultValue)
         {

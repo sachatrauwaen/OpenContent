@@ -91,7 +91,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
 
             if (ModuleDefinitionController.GetModuleDefinitionByFriendlyName("OpenFiles") == null)
             {
-                return file.ToUrl();
+                return DnnFileUtils.ToUrl(file);
             }
             var url = file.ToLinkClickSafeUrl();
             url = url.RemoveQueryParams(); //imageprocessor does not tolerate unknow querystrings (for security reasons). Remove them

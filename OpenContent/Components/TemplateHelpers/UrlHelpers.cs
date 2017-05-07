@@ -31,10 +31,10 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
 
         public static string CleanupUrl(this string text)
         {
-            const string replaceWith = "-";
+            const string REPLACE_WITH = "-";
 
-            const string accentFrom = "ÀÁÂÃÄÅàáâãäåảạăắằẳẵặấầẩẫậÒÓÔÕÖØòóôõöøỏõọồốổỗộơớờởợÈÉÊËèéêëẻẽẹếềểễệÌÍÎÏìíîïỉĩịÙÚÛÜùúûüủũụưứừửữựÿýỳỷỹỵÑñÇçĞğİıŞş₤€ßđ";
-            const string accentTo = "AAAAAAaaaaaaaaaaaaaaaaaaaOOOOOOoooooooooooooooooooEEEEeeeeeeeeeeeeIIIIiiiiiiiUUUUuuuuuuuuuuuuuyyyyyyNnCcGgIiSsLEsd";
+            const string ACCENT_FROM = "ÀÁÂÃÄÅàáâãäåảạăắằẳẵặấầẩẫậÒÓÔÕÖØòóôõöøỏõọồốổỗộơớờởợÈÉÊËèéêëẻẽẹếềểễệÌÍÎÏìíîïỉĩịÙÚÛÜùúûüủũụưứừửữựÿýỳỷỹỵÑñÇçĞğİıŞş₤€ßđ";
+            const string ACCENT_TO = "AAAAAAaaaaaaaaaaaaaaaaaaaOOOOOOoooooooooooooooooooEEEEeeeeeeeeeeeeIIIIiiiiiiiUUUUuuuuuuuuuuuuuyyyyyyNnCcGgIiSsLEsd";
 
             text = text.ToLower().Trim();
 
@@ -47,26 +47,26 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
                 var ch = c.ToString();
                 if (ch == " ")
                 {
-                    ch = replaceWith;
+                    ch = REPLACE_WITH;
                 }
                 else if (@".[]|:;`%\\""^№".Contains(ch))
                     ch = "";
                 else if (@" &$+,/=?@~#<>(){}¿¡«»!'‘’–*…“”".Contains(ch))
-                    ch = replaceWith;
+                    ch = REPLACE_WITH;
                 else
                 {
-                    for (int ii = 0; ii < accentFrom.Length; ii++)
+                    for (int ii = 0; ii < ACCENT_FROM.Length; ii++)
                     {
-                        if (ch == accentFrom[ii].ToString())
+                        if (ch == ACCENT_FROM[ii].ToString())
                         {
-                            ch = accentTo[ii].ToString();
+                            ch = ACCENT_TO[ii].ToString();
                         }
                     }
                 }
 
                 if (i == last)
                 {
-                    if (!(ch == "-" || ch == replaceWith))
+                    if (!(ch == "-" || ch == REPLACE_WITH))
                     {   //only append if not the same as the replacement character
                         result.Append(ch);
                     }
@@ -76,13 +76,13 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
                 i++;//increment counter
             }
             string retval = result.ToString();
-            if (!string.IsNullOrEmpty(replaceWith))
+            if (!string.IsNullOrEmpty(REPLACE_WITH))
             {
-                while (retval.Contains(replaceWith + replaceWith))
+                while (retval.Contains(REPLACE_WITH + REPLACE_WITH))
                 {
-                    retval = retval.Replace(replaceWith + replaceWith, replaceWith);
+                    retval = retval.Replace(REPLACE_WITH + REPLACE_WITH, REPLACE_WITH);
                 }
-                foreach (char c in replaceWith)
+                foreach (char c in REPLACE_WITH)
                 {
                     retval = retval.Trim(c);
                 }

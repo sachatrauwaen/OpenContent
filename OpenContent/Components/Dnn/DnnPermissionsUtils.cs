@@ -62,8 +62,6 @@ namespace Satrabel.OpenContent.Components.Dnn
             bool blnHasModuleEditPermissions = false;
             if (activeModule != null)
             {
-
-
                 //DNN already checks SuperUser and Administrator
                 blnHasModuleEditPermissions = ModulePermissionController.HasModuleAccess(SecurityAccessLevel.Edit, "CONTENT", DnnUtils.GetDnnModule(activeModule));
             }

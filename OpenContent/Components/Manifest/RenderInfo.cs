@@ -58,11 +58,19 @@ namespace Satrabel.OpenContent.Components.Manifest
         #endregion
 
         #region ReadOnly
+
         public JToken DataJson { get; private set; }
         public string SettingsJson { get; private set; }
         public IDataItem Data { get; private set; }
         public IEnumerable<IDataItem> DataList { get; private set; }
+
+        #endregion
+
+        #region ReadOnly Semantic Extentions
+
         public bool ShowInitControl => Template == null || (!DataExist && Template.DataNeeded()) || (string.IsNullOrEmpty(SettingsJson) && Template.SettingsNeeded());
+        public bool IsDetailPageRequest => IsListMode && !string.IsNullOrEmpty(DetailItemId);
+        public bool IsListMode => Template != null && Template.IsListTemplate;
 
         #endregion
 

@@ -659,10 +659,9 @@ namespace Satrabel.OpenContent.Components.Render
 
             TemplateManifest template = _settings.Template;
             bool templateDefined = template != null;
-            bool listMode = template != null && template.IsListTemplate;
 
-            bool isListPageRequest = listMode && string.IsNullOrEmpty(_renderinfo.DetailItemId);
-            bool isDetailPageRequest = listMode && !string.IsNullOrEmpty(_renderinfo.DetailItemId);
+            bool isListPageRequest = !_renderinfo.IsDetailPageRequest;
+            bool isDetailPageRequest = _renderinfo.IsDetailPageRequest;
 
             //Add item / Edit Item
             if (templateDefined && template.DataNeeded() && !_settings.Manifest.DisableEdit)
@@ -766,7 +765,7 @@ namespace Satrabel.OpenContent.Components.Render
             );
 
             //Edit Filter Settings
-            if (templateDefined && listMode)
+            if (templateDefined && _renderinfo.IsListMode)
             {
                 if (_settings.Manifest.Index)
                 {
