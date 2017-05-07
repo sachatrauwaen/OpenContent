@@ -187,7 +187,7 @@ namespace Satrabel.OpenContent.Components.Render
 
         public void IncludeResourses(Page page, Control control)
         {
-            IncludeResourses(page, _renderinfo.Template);
+            IncludeResourses(page, _renderinfo);
             if (_renderinfo.Template != null && _renderinfo.Template.ClientSideData)
             {
                 DotNetNuke.Framework.ServicesFramework.Instance.RequestAjaxScriptSupport();
@@ -205,14 +205,23 @@ namespace Satrabel.OpenContent.Components.Render
             }
         }
 
-        private static void IncludeResourses(Page page, TemplateManifest template)
+        private static void IncludeResourses(Page page, RenderInfo renderInfo)
         {
+            var template = renderInfo.Template;
             if (template != null)
             {
                 var cssfilename = new FileUri(Path.ChangeExtension(template.MainTemplateUri().FilePath, "css"));
                 if (cssfilename.FileExists)
                 {
                     App.Services.ClientResourceManager.RegisterStyleSheet(page, cssfilename.UrlFilePath);
+                }
+                if (renderInfo.IsDetailPageRequest && template.DetailTemplateUri() != null)
+                {
+                    cssfilename = new FileUri(Path.ChangeExtension(template.DetailTemplateUri().FilePath, "css"));
+                    if (cssfilename.FileExists)
+                    {
+                        App.Services.ClientResourceManager.RegisterStyleSheet(page, cssfilename.UrlFilePath);
+                    }
                 }
                 var jsfilename = new FileUri(Path.ChangeExtension(template.MainTemplateUri().FilePath, "js"));
                 if (jsfilename.FileExists)
