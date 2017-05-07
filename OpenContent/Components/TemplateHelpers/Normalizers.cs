@@ -125,6 +125,22 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             );
             return retval;
         }
+
+        /// <summary>
+        /// Normalizes an array. Return null if array is empty.
+        /// </summary>
+        public static dynamic NormalizeArray(dynamic array)
+        {
+            if (array == null)
+            {
+                return null;
+            }
+            if (string.IsNullOrEmpty(array.ToString()))
+            {
+                return null;
+            }
+            return array;
+        }
         #endregion
 
         #region NormalizeJson
