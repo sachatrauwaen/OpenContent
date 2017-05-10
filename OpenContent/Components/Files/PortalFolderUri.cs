@@ -23,7 +23,7 @@ namespace Satrabel.OpenContent.Components
         {
             var folderInfo = FolderManager.Instance.GetFolder(folderId);
             if (folderInfo == null)
-                throw new ArgumentNullException(string.Format("iFolderInfo not found for id [{0}]", folderId));
+                throw new ArgumentNullException($"iFolderInfo not found for id [{folderId}]");
 
             FolderInfo = folderInfo;
         }
@@ -43,7 +43,7 @@ namespace Satrabel.OpenContent.Components
         {
             IFolderInfo folderInfo = FolderManager.Instance.GetFolder(folderId);
             if (folderInfo == null)
-                throw new ArgumentNullException(string.Format("iFolderInfo not found for id [{0}]", folderId));
+                throw new ArgumentNullException($"iFolderInfo not found for id [{folderId}]");
             return GetFolderPath(folderInfo);
         }
         private static string GetFolderPath(IFolderInfo folderInfo)

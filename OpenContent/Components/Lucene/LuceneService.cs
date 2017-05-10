@@ -20,8 +20,8 @@ namespace Satrabel.OpenContent.Components.Lucene
     {
 
         #region Constants
-        private const string WriteLockFile = "write.lock";
-        private const int DefaultRereadTimeSpan = 10; // in seconds (initialy 30sec)
+        private const string WRITE_LOCK_FILE = "write.lock";
+        private const int DEFAULT_REREAD_TIME_SPAN = 10; // in seconds (initialy 30sec)
         private const int DISPOSED = 1;
         private const int UNDISPOSED = 0;
         #endregion
@@ -47,15 +47,15 @@ namespace Satrabel.OpenContent.Components.Lucene
             _searchFolder = searchFolder;
             _analyser = analyser;
             if (string.IsNullOrEmpty(_searchFolder))
-                throw new ArgumentNullException("searchFolder");
+                throw new ArgumentNullException(nameof(searchFolder));
             IndexFolder = Path.Combine(Globals.ApplicationMapPath, _searchFolder);
-            _readerTimeSpan = DefaultRereadTimeSpan;
+            _readerTimeSpan = DEFAULT_REREAD_TIME_SPAN;
         }
 
         private void CheckDisposed()
         {
             if (Thread.VolatileRead(ref _isDisposed) == DISPOSED)
-                throw new ObjectDisposedException(string.Format("LuceneController [{0}] is disposed and cannot be used anymore", _searchFolder));
+                throw new ObjectDisposedException($"LuceneController [{_searchFolder}] is disposed and cannot be used anymore");
         }
         #endregion
 
@@ -69,7 +69,7 @@ namespace Satrabel.OpenContent.Components.Lucene
                     {
                         if (_writer == null)
                         {
-                            var lockFile = Path.Combine(IndexFolder, WriteLockFile);
+                            var lockFile = Path.Combine(IndexFolder, WRITE_LOCK_FILE);
                             if (File.Exists(lockFile))
                             {
                                 try
@@ -157,16 +157,16 @@ namespace Satrabel.OpenContent.Components.Lucene
         {
             // forces re-opening the reader within 30 seconds from now (used mainly by commit)
             var now = DateTime.UtcNow;
-            if (_readerTimeSpan > DefaultRereadTimeSpan && (now - _lastReadTimeUtc).TotalSeconds > DefaultRereadTimeSpan)
+            if (_readerTimeSpan > DEFAULT_REREAD_TIME_SPAN && (now - _lastReadTimeUtc).TotalSeconds > DEFAULT_REREAD_TIME_SPAN)
             {
-                _lastReadTimeUtc = now - TimeSpan.FromSeconds(_readerTimeSpan - DefaultRereadTimeSpan);
+                _lastReadTimeUtc = now - TimeSpan.FromSeconds(_readerTimeSpan - DEFAULT_REREAD_TIME_SPAN);
             }
         }
 
         private void CheckValidIndexFolder()
         {
             if (!ValidateIndexFolder())
-                throw new Exception(string.Format("Lucene Search indexing directory [{0}] is either empty or does not exist", _searchFolder));
+                throw new Exception($"Lucene Search indexing directory [{_searchFolder}] is either empty or does not exist");
         }
 
         internal bool ValidateIndexFolder()

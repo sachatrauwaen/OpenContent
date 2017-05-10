@@ -22,7 +22,7 @@ namespace Satrabel.OpenContent.Components.Rss
                 case FeedType.Atom:
                     return ParseAtom(url);
                 default:
-                    throw new NotSupportedException(string.Format("{0} is not supported", feedType.ToString()));
+                    throw new NotSupportedException($"{feedType.ToString()} is not supported");
             }
         }
 

@@ -92,6 +92,7 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         #region Index
 
+
         /// <summary>
         /// Reindex all OpenContent modules of all portals.
         /// </summary>
