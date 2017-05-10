@@ -181,22 +181,24 @@ alpacaEngine.engine = function(config) {
             "connector": connector,
             "postRender": function (control) {
                 var selfControl = control;
-                $("#"+self.saveButton).click(function () {
+                $("#" + self.saveButton).click(function () {
+                    var button = this;
                     selfControl.refreshValidationState(true, function () {
                         if (selfControl.isValid(true)) {
                             var value = selfControl.getValue();
                             //alert(JSON.stringify(value, null, "  "));
-                            var href = $(this).attr('href');
+                            var href = $(button).attr('href');
                             self.FormSubmit(value, href);
                         }
                     });
                     return false;
                 });
                 $("#" + self.copyButton).click(function () {
+                    var button = this;
                     selfControl.refreshValidationState(true, function () {
                         if (selfControl.isValid(true)) {
                             var value = selfControl.getValue();                            
-                            var href = $(this).attr('href');
+                            var href = $(button).attr('href');
                             self.FormSubmit(value, href, true);
                         }
                     });
