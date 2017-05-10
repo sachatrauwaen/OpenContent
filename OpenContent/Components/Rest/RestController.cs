@@ -365,7 +365,31 @@ namespace Satrabel.OpenContent.Components.Rest
                 }
                 ds.Add(dsContext, value.Properties().First().Value as JObject);
 
-                return Request.CreateResponse(HttpStatusCode.OK, "");
+
+                var dsItem = ds.Get(dsContext, dsContext.Id);
+                var res = new JObject();
+                res["meta"] = new JObject();
+                var items = new JArray();
+                if (dsItem != null)
+                {
+                    var collection = AppConfig.DEFAULT_COLLECTION;
+                    var mf = new ModelFactorySingle(dsItem, module, PortalSettings, collection);
+                    var model = mf.GetModelAsJson(false);
+                    items.Add(model);
+                    model["id"] = dsContext.Id;
+                    res["meta"]["total"] = dsItem == null ? 0 : 1;
+                    JsonUtils.IdJson(model);
+                    if (LogContext.IsLogActive)
+                    {
+                        var logKey = "Query";
+                        LogContext.Log(module.ViewModule.ModuleID, logKey, "model", model);
+                        res["meta"]["logs"] = JToken.FromObject(LogContext.Current.ModuleLogs(module.ViewModule.ModuleID));
+                    }
+                }
+                res[entity] = items;
+                return Request.CreateResponse(HttpStatusCode.OK, res);
+
+                //return Request.CreateResponse(HttpStatusCode.OK, ""); 
             }
             catch (Exception exc)
             {

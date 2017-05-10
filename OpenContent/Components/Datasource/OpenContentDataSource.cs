@@ -289,8 +289,8 @@ namespace Satrabel.OpenContent.Components.Datasource
                 LastModifiedByUserId = context.UserId,
                 LastModifiedOnDate = DateTime.Now
             };
-            ctrl.AddContent(content); 
-
+            ctrl.AddContent(content);
+            context.Id = content.Id;
             //Index the content item
             if (context.Index)
             {
