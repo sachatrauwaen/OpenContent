@@ -5,7 +5,7 @@ namespace Satrabel.OpenContent.Components.Indexing
     public class Indexer
     {
         private static readonly Lazy<IIndexAdapter> Lazy = new Lazy<IIndexAdapter>(() => App.Services.IndexAdapter);
-        public static IIndexAdapter Instance => Lazy.Value;
+        public static IIndexAdapter Instance => Lazy.Value.Instance;
 
         private Indexer()
         {

@@ -5,6 +5,8 @@ namespace Satrabel.OpenContent.Components.Indexing
 {
     public interface IIndexAdapter
     {
+        IIndexAdapter Instance { get; }
+
         void IndexAll();
         void ReIndexModuleData(IEnumerable<IIndexableItem> context, FieldConfig indexConfig, string scope);
         void Add(IIndexableItem indexableItem, FieldConfig indexConfig);

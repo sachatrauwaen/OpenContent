@@ -16,7 +16,9 @@ namespace Satrabel.OpenContent.Components.Lucene
 {
     public class LuceneIndexAdapter : IDisposable, IIndexAdapter
     {
-        public static LuceneIndexAdapter Instance { get; private set; }
+        public IIndexAdapter Instance => _instance;
+
+        private static LuceneIndexAdapter _instance { get; set; }
         private static string _luceneIndexFolder;
 
         private LuceneService _serviceInstance;
@@ -36,7 +38,7 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         internal LuceneIndexAdapter(string luceneIndexFolder)
         {
-            LuceneIndexAdapter.Instance = this;
+            LuceneIndexAdapter._instance = this;
             _luceneIndexFolder = luceneIndexFolder;
             _serviceInstance = new LuceneService(luceneIndexFolder, JsonMappingUtils.GetAnalyser());
         }
@@ -102,7 +104,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             LuceneIndexAdapter.ClearInstance();
             try
             {
-                using (var lc = LuceneIndexAdapter.Instance)
+                using (var lc = LuceneIndexAdapter._instance)
                 {
                     foreach (PortalInfo portal in PortalController.Instance.GetPortals())
                     {
@@ -137,7 +139,7 @@ namespace Satrabel.OpenContent.Components.Lucene
         {
             try
             {
-                using (LuceneIndexAdapter lc = LuceneIndexAdapter.Instance)
+                using (LuceneIndexAdapter lc = LuceneIndexAdapter._instance)
                 {
                     lc.Store.Delete(new TermQuery(new Term("$type", scope)));
                     foreach (var item in list)
@@ -234,12 +236,12 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         private static void ClearInstance()
         {
-            if (Instance != null)
+            if (_instance != null)
             {
-                Instance.Dispose();
-                Instance = null;
+                _instance.Dispose();
+                _instance = null;
             }
-            Instance = new LuceneIndexAdapter(_luceneIndexFolder);
+            _instance = new LuceneIndexAdapter(_luceneIndexFolder);
         }
 
         #endregion
