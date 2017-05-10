@@ -57,5 +57,9 @@ namespace Satrabel.OpenContent.Components.Datasource
         public string Agent { get; set; }
         public string Collection { get; set; }
 
+        /// <summary>
+        /// Return value of Add method of Data Source Provider (workaroud because interface dont have return value)
+        /// </summary>
+        public string Id { get; set; }
     }
 }
