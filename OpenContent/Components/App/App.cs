@@ -5,8 +5,8 @@ namespace Satrabel.OpenContent.Components
     public class App 
     {
         private static readonly Lazy<App> Lazy = new Lazy<App>(() => new App());
-        public static IAppConfig Config => BaseConfig;
-        public static IAppServices Services => BaseServices;
+        public static IAppConfig Config => Lazy.Value.BaseConfig;
+        public static IAppServices Services => Lazy.Value.BaseServices;
 
         private App()
         {
@@ -16,13 +16,13 @@ namespace Satrabel.OpenContent.Components
         private static IAppConfig _configuration;
         private static IAppServices _serviceConfig;
 
-        private static void Init(IAppConfig config, MyServices services)
+        internal static void Init(IAppConfig config, MyServices services)
         {
             _configuration = config;
             _serviceConfig = services;
         }
 
-        private static IAppConfig BaseConfig
+        private IAppConfig BaseConfig
         {
             get
             {
@@ -32,7 +32,7 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
-        private static IAppServices BaseServices
+        private IAppServices BaseServices
         {
             get
             {
