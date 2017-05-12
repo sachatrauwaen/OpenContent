@@ -368,8 +368,8 @@ namespace Satrabel.OpenContent.Components.Rest
                 var items = new JArray();
                 if (dsItem != null)
                 {
-                    var collection = AppConfig.DEFAULT_COLLECTION;
-                    var mf = new ModelFactorySingle(dsItem, module, PortalSettings, collection);
+                    var collection = App.Config.DefaultCollection;
+                    var mf = new ModelFactorySingle(dsItem, module, collection);
                     var model = mf.GetModelAsJson(false);
                     items.Add(model);
                     model["id"] = dsContext.Id;
@@ -378,8 +378,8 @@ namespace Satrabel.OpenContent.Components.Rest
                     if (LogContext.IsLogActive)
                     {
                         var logKey = "Query";
-                        LogContext.Log(module.ViewModule.ModuleID, logKey, "model", model);
-                        res["meta"]["logs"] = JToken.FromObject(LogContext.Current.ModuleLogs(module.ViewModule.ModuleID));
+                        LogContext.Log(module.ViewModule.ModuleId, logKey, "model", model);
+                        res["meta"]["logs"] = JToken.FromObject(LogContext.Current.ModuleLogs(module.ViewModule.ModuleId));
                     }
                 }
                 res[entity] = items;
