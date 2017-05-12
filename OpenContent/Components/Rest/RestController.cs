@@ -362,7 +362,6 @@ namespace Satrabel.OpenContent.Components.Rest
                 }
                 ds.Add(dsContext, value.Properties().First().Value as JObject);
 
-
                 var dsItem = ds.Get(dsContext, dsContext.Id);
                 var res = new JObject();
                 res["meta"] = new JObject();

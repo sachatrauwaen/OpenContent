@@ -95,8 +95,7 @@ namespace Satrabel.OpenContent.Components.Json
                 throw new Exception(mess, ex);
             }
         }
-
-
+        
         /// <summary>
         ///   Serializes a type to Json. Note the type must be marked Serializable 
         ///   or include a DataContract attribute.
@@ -109,6 +108,7 @@ namespace Satrabel.OpenContent.Components.Json
             string json = ser.Serialize(value);
             return json;
         }
+
         /// <summary>
         ///   Extension method on object that serializes the value to Json. 
         ///   Note the type must be marked Serializable or include a DataContract attribute.
@@ -119,6 +119,7 @@ namespace Satrabel.OpenContent.Components.Json
         {
             return ToJsonString(value);
         }
+
         /// <summary>
         ///   Deserializes a json string into a specific type. 
         ///   Note that the type specified must be serializable.
