@@ -12,7 +12,6 @@ using System.Linq;
 using System.Net;
 using System.Web.Hosting;
 using System.Web.UI.WebControls;
-using DotNetNuke.Entities.Users;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Dnn;
 using Satrabel.OpenContent.Components.Localization;
@@ -21,6 +20,7 @@ using Satrabel.OpenContent.Components.TemplateHelpers;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Indexing;
+using UserRoleInfo = Satrabel.OpenContent.Components.Querying.UserRoleInfo;
 
 
 namespace Satrabel.OpenContent.Components
@@ -535,7 +535,7 @@ namespace Satrabel.OpenContent.Components
         internal static bool BuilderExist(FolderUri folder, string prefix = "")
         {
             if (folder.FolderExists)
-                return File.Exists(folder.PhysicalFullDirectory + "\\" + (String.IsNullOrEmpty(prefix) ? "" : prefix + "-") + "builder.json");
+                return File.Exists(folder.PhysicalFullDirectory + "\\" + (string.IsNullOrEmpty(prefix) ? "" : prefix + "-") + "builder.json");
             return false;
         }
 
@@ -553,27 +553,27 @@ namespace Satrabel.OpenContent.Components
             return false;
         }
 
-        internal static bool HaveViewPermissions(IDataItem dsItem, IList<UserRoleInfo> userRoles, FieldConfig IndexConfig, out string raison)
+        internal static bool HaveViewPermissions(IDataItem dsItem, IList<UserRoleInfo> userRoles, FieldConfig indexConfig, out string raison)
         {
             raison = "";
             if (dsItem?.Data == null) return true;
 
             bool permissions = true;
             //publish status , dates
-            if (IndexConfig?.Fields != null && IndexConfig.Fields.ContainsKey(App.Config.FieldNamePublishStatus))
+            if (indexConfig?.Fields != null && indexConfig.Fields.ContainsKey(App.Config.FieldNamePublishStatus))
             {
                 permissions = dsItem.Data[App.Config.FieldNamePublishStatus] != null &&
                     dsItem.Data[App.Config.FieldNamePublishStatus].ToString() == "published";
                 if (!permissions) raison = App.Config.FieldNamePublishStatus + $" being {dsItem.Data[App.Config.FieldNamePublishStatus]}";
             }
-            if (permissions && IndexConfig?.Fields != null && IndexConfig.Fields.ContainsKey(App.Config.FieldNamePublishStartDate))
+            if (permissions && indexConfig?.Fields != null && indexConfig.Fields.ContainsKey(App.Config.FieldNamePublishStartDate))
             {
                 permissions = dsItem.Data[App.Config.FieldNamePublishStartDate] != null &&
                                 dsItem.Data[App.Config.FieldNamePublishStartDate].Type == JTokenType.Date &&
                                 ((DateTime)dsItem.Data[App.Config.FieldNamePublishStartDate]) <= DateTime.Today;
                 if (!permissions) raison = App.Config.FieldNamePublishStartDate + $" being {dsItem.Data[App.Config.FieldNamePublishStartDate]}";
             }
-            if (permissions && IndexConfig?.Fields != null && IndexConfig.Fields.ContainsKey(App.Config.FieldNamePublishEndDate))
+            if (permissions && indexConfig?.Fields != null && indexConfig.Fields.ContainsKey(App.Config.FieldNamePublishEndDate))
             {
                 permissions = dsItem.Data[App.Config.FieldNamePublishEndDate] != null &&
                                 dsItem.Data[App.Config.FieldNamePublishEndDate].Type == JTokenType.Date &&
@@ -584,11 +584,11 @@ namespace Satrabel.OpenContent.Components
             {
                 // Roles                
                 string fieldName = "";
-                if (IndexConfig?.Fields != null && IndexConfig.Fields.ContainsKey("userrole"))
+                if (indexConfig?.Fields != null && indexConfig.Fields.ContainsKey("userrole"))
                 {
                     fieldName = "userrole";
                 }
-                else if (IndexConfig?.Fields != null && IndexConfig.Fields.ContainsKey("userroles"))
+                else if (indexConfig?.Fields != null && indexConfig.Fields.ContainsKey("userroles"))
                 {
                     fieldName = "userroles";
                 }
@@ -601,7 +601,6 @@ namespace Satrabel.OpenContent.Components
                         if (dsItem.Data[fieldName].Type == JTokenType.Array)
                         {
                             dataRoles = ((JArray)dsItem.Data[fieldName]).Select(d => d.ToString()).ToArray();
-
                         }
                         else
                         {
@@ -617,7 +616,7 @@ namespace Satrabel.OpenContent.Components
                         var roles = userRoles;
                         if (roles.Any())
                         {
-                            permissions = roles.Any(r => dataRoles.Contains(r.RoleID.ToString()));
+                            permissions = roles.Any(r => dataRoles.Contains(r.RoleId.ToString()));
                         }
                         else
                         {

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Satrabel.OpenContent.Components.Datasource.Search;
+using Satrabel.OpenContent.Components.Querying.Search;
 
 namespace Satrabel.OpenContent.Components.Indexing
 {

@@ -1,13 +1,13 @@
-﻿namespace Satrabel.OpenContent.Components.Datasource.Search
+﻿namespace Satrabel.OpenContent.Components.Querying.Search
 {
-    public class BooleanRuleValue : RuleValue
+    public class IntegerRuleValue : RuleValue
     {
-        private bool Value;
-        public BooleanRuleValue(bool value)
+        private int Value;
+        public IntegerRuleValue(int value)
         {
             Value = value;
         }
-        public override bool AsBoolean
+        public override int AsInteger
         {
             get
             {

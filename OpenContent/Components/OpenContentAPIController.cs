@@ -22,7 +22,6 @@ using Satrabel.OpenContent.Components.Json;
 using DotNetNuke.Entities.Modules;
 using System.Collections.Generic;
 using DotNetNuke.Services.Localization;
-using DotNetNuke.UI.Modules;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.Datasource;

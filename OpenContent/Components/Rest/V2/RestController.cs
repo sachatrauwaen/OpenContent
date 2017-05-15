@@ -18,13 +18,13 @@ using Satrabel.OpenContent.Components.Render;
 using DotNetNuke.Services.Exceptions;
 using System.Web;
 using Satrabel.OpenContent.Components.Dnn;
+using Satrabel.OpenContent.Components.Querying;
 
 namespace Satrabel.OpenContent.Components.Rest.V2
 {
 
     public class RestController : DnnApiController
     {
-
         //[ValidateAntiForgeryToken]
         [SupportedModules("OpenContent")]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
@@ -56,7 +56,7 @@ namespace Satrabel.OpenContent.Components.Rest.V2
                         var mf = new ModelFactorySingle(dsItem, module, collection);
 
                         string raison = "";
-                        if (!OpenContentUtils.HaveViewPermissions(dsItem, module.UserRoles, indexConfig, out raison))
+                        if (!OpenContentUtils.HaveViewPermissions(dsItem, module.UserRoles.FromDnnRoles(), indexConfig, out raison))
                         {
                             Exceptions.ProcessHttpException(new HttpException(404, "No detail view permissions for id=" + id + " (" + raison + ")"));
                             //throw new UnauthorizedAccessException("No detail view permissions for id " + info.DetailItemId);
@@ -123,7 +123,7 @@ namespace Satrabel.OpenContent.Components.Rest.V2
                     var indexConfig = OpenContentUtils.GetIndexConfig(settings.TemplateDir, collection);
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
                     bool isEditable = module.ViewModule.CheckIfEditable(module);
-                    queryBuilder.Build(settings.Query, !isEditable, UserInfo.UserID, DnnLanguageUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
+                    queryBuilder.Build(settings.Query, !isEditable, UserInfo.UserID, DnnLanguageUtils.GetCurrentCultureCode(), UserInfo.Social.Roles.FromDnnRoles());
 
                     RestQueryBuilder.MergeQuery(indexConfig, queryBuilder.Select, restSelect, DnnLanguageUtils.GetCurrentCultureCode());
                     IDataItems dsItems;
@@ -191,15 +191,9 @@ namespace Satrabel.OpenContent.Components.Rest.V2
                 OpenContentModuleConfig module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
 
                 var manifest = module.Settings.Manifest;
-                TemplateManifest templateManifest = module.Settings.Template;
                 if (manifest.AdditionalDataDefined(entity))
                 {
                     var dataManifest = manifest.AdditionalDataDefinition[entity];
-                    //string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings.PortalId, ActiveModule.TabID, module.ModuleID, ActiveModule.TabModuleID);
-
-                    //var templateFolder = string.IsNullOrEmpty(dataManifest.TemplateFolder) ? settings.TemplateDir : settings.TemplateDir.ParentFolder.Append(dataManifest.TemplateFolder);
-                    //var fb = new FormBuilder(templateFolder);
-                    //JObject json = fb.BuildForm(entity);
                     var res = new JObject();
 
                     IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
@@ -209,7 +203,6 @@ namespace Satrabel.OpenContent.Components.Rest.V2
                     if (dsItem != null)
                     {
                         var json = dsItem.Data;
-                        //JsonUtils.IdJson(json);
                         res[entity] = json;
                     }
                     return Request.CreateResponse(HttpStatusCode.OK, res);
@@ -426,7 +419,6 @@ namespace Satrabel.OpenContent.Components.Rest.V2
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
-                //var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
                 if (dsItem != null)
                 {
                     ds.Delete(dsContext, dsItem);

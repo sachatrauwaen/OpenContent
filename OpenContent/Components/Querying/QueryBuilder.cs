@@ -1,27 +1,28 @@
-﻿using DotNetNuke.Entities.Users;
-using Newtonsoft.Json.Linq;
-using Satrabel.OpenContent.Components.Datasource.Search;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Indexing;
 using Satrabel.OpenContent.Components.Json;
+using Satrabel.OpenContent.Components.Querying.Search;
 
-namespace Satrabel.OpenContent.Components.Alpaca
+namespace Satrabel.OpenContent.Components.Querying
 {
     public class QueryBuilder
     {
         private readonly FieldConfig _indexConfig;
 
         public bool DefaultNoResults { get; private set; }
-        public Select Select { get; private set; }
+        public Select Select { get; }
 
         public QueryBuilder(FieldConfig config)
         {
-            this._indexConfig = config;
-            Select = new Select();
-            Select.PageSize = 100;
+            _indexConfig = config;
+            Select = new Select
+            {
+                PageSize = 100
+            };
         }
 
         public QueryBuilder Build(JObject query, bool addWorkflowFilter, int userId, string cultureCode, IList<UserRoleInfo> roles, NameValueCollection queryString = null)
@@ -39,7 +40,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
             return this;
         }
 
-        public QueryBuilder BuildPage(JObject query)
+        private QueryBuilder BuildPage(JObject query)
         {
             int maxResults = 0;
             var sMaxResults = query["MaxResults"];
@@ -295,7 +296,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 List<string> roleLst;
                 if (roles.Any())
                 {
-                    roleLst = roles.Select(r => r.RoleID.ToString()).ToList();
+                    roleLst = roles.Select(r => r.RoleId.ToString()).ToList();
                 }
                 else
                 {
@@ -313,52 +314,6 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
         }
 
-        public QueryBuilder BuildSort(JObject query, string cultureCode)
-        {
-            var Sort = Select.Sort;
-            var sortArray = query["Sort"] as JArray;
-            if (sortArray != null && sortArray.Any())
-            {
-                foreach (JObject item in sortArray)
-                {
-                    string fieldName = item["Field"].ToString();
-                    string fieldOrder = item["Order"].ToString();
-                    Sort.Add(FieldConfigUtils.CreateSortRule(_indexConfig, cultureCode, fieldName, fieldOrder == "desc"));
-                }
-            }
-            else
-            {
-                string fieldName = "createdondate";
-                string fieldOrder = "desc";
-                Sort.Add(FieldConfigUtils.CreateSortRule(_indexConfig, cultureCode, fieldName, fieldOrder == "desc"));
-            }
-            return this;
-        }
-        public QueryBuilder BuildSort(string Sorts, string cultureCode)
-        {
-            var Sort = Select.Sort;
-            if (!string.IsNullOrEmpty(Sorts))
-            {
-                var sortArray = Sorts.Split(',');
-
-                foreach (var item in sortArray)
-                {
-                    bool reverse = false;
-                    var sortElements = item.Split(' ');
-                    string fieldName = sortElements[0];
-                    if (sortElements.Length > 1 && sortElements[1].ToLower() == "desc")
-                    {
-                        reverse = true;
-                    }
-                    Sort.Add(FieldConfigUtils.CreateSortRule(_indexConfig, cultureCode,
-                        fieldName,
-                        reverse
-                    ));
-                }
-            }
-            return this;
-        }
-
         private bool SortfieldMultiLanguage(string fieldName)
         {
 
@@ -369,5 +324,52 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
             return false;
         }
+
+        private QueryBuilder BuildSort(JObject query, string cultureCode)
+        {
+            var sort = Select.Sort;
+            var sortArray = query["Sort"] as JArray;
+            if (sortArray != null && sortArray.Any())
+            {
+                foreach (JObject item in sortArray)
+                {
+                    string fieldName = item["Field"].ToString();
+                    string fieldOrder = item["Order"].ToString();
+                    sort.Add(FieldConfigUtils.CreateSortRule(_indexConfig, cultureCode, fieldName, fieldOrder == "desc"));
+                }
+            }
+            else
+            {
+                const string FIELD_NAME = "createdondate";
+                const string FIELD_ORDER = "desc";
+                sort.Add(FieldConfigUtils.CreateSortRule(_indexConfig, cultureCode, FIELD_NAME, FIELD_ORDER == "desc"));
+            }
+            return this;
+        }
+
+        //public QueryBuilder BuildSort(string sorts, string cultureCode)
+        //{
+        //    var sort = Select.Sort;
+        //    if (!string.IsNullOrEmpty(sorts))
+        //    {
+        //        var sortArray = sorts.Split(',');
+
+        //        foreach (var item in sortArray)
+        //        {
+        //            bool reverse = false;
+        //            var sortElements = item.Split(' ');
+        //            string fieldName = sortElements[0];
+        //            if (sortElements.Length > 1 && sortElements[1].ToLower() == "desc")
+        //            {
+        //                reverse = true;
+        //            }
+        //            sort.Add(FieldConfigUtils.CreateSortRule(_indexConfig, cultureCode,
+        //                fieldName,
+        //                reverse
+        //            ));
+        //        }
+        //    }
+        //    return this;
+        //}
     }
 }

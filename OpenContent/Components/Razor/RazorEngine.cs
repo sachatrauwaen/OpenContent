@@ -8,8 +8,6 @@ using System.Web;
 using System.Web.Compilation;
 using System.Web.WebPages;
 using DotNetNuke.Services.Exceptions;
-using DotNetNuke.UI.Modules;
-using DotNetNuke.Web.Razor.Helpers;
 
 #endregion
 

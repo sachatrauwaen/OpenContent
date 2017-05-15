@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
-using Satrabel.OpenContent.Components.Datasource.Search;
 using System.Collections.Generic;
+using Satrabel.OpenContent.Components.Querying.Search;
 
 namespace Satrabel.OpenContent.Components.Rest
 {

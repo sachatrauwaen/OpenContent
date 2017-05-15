@@ -7,8 +7,8 @@ using Lucene.Net.Search;
 using Satrabel.OpenContent.Components.Lucene.Mapping;
 using DotNetNuke.Entities.Portals;
 using System.Collections.Generic;
-using Satrabel.OpenContent.Components.Datasource.Search;
 using Satrabel.OpenContent.Components.Indexing;
+using Satrabel.OpenContent.Components.Querying.Search;
 
 #endregion
 

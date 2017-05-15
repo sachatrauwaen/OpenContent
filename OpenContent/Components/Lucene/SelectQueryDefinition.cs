@@ -4,8 +4,8 @@ using System.Linq;
 using Lucene.Net.Index;
 using Lucene.Net.QueryParsers;
 using Lucene.Net.Search;
-using Satrabel.OpenContent.Components.Datasource.Search;
 using Satrabel.OpenContent.Components.Lucene.Mapping;
+using Satrabel.OpenContent.Components.Querying.Search;
 using Version = Lucene.Net.Util.Version;
 
 namespace Satrabel.OpenContent.Components.Lucene

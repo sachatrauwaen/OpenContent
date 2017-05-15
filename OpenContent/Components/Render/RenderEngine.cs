@@ -18,6 +18,7 @@ using System.Linq;
 using System.Web.Hosting;
 using System.Web.UI;
 using Satrabel.OpenContent.Components.Localization;
+using Satrabel.OpenContent.Components.Querying;
 using IDataSource = Satrabel.OpenContent.Components.Datasource.IDataSource;
 using SecurityAccessLevel = Satrabel.OpenContent.Components.AppDefinitions.SecurityAccessLevel;
 
@@ -286,7 +287,7 @@ namespace Satrabel.OpenContent.Components.Render
                     }
                     bool isEditable = _module.ViewModule.CheckIfEditable(ocModuleConfig);
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
-                    queryBuilder.Build(ocModuleConfig.Settings.Query, !isEditable, ocModuleConfig.UserId, DnnLanguageUtils.GetCurrentCultureCode(), ocModuleConfig.UserRoles, QueryString);
+                    queryBuilder.Build(ocModuleConfig.Settings.Query, !isEditable, ocModuleConfig.UserId, DnnLanguageUtils.GetCurrentCultureCode(), ocModuleConfig.UserRoles.FromDnnRoles(), QueryString);
 
                     resultList = ds.GetAll(dsContext, queryBuilder.Select).Items;
                     if (LogContext.IsLogActive)
@@ -348,7 +349,7 @@ namespace Satrabel.OpenContent.Components.Render
                 {
                     var indexConfig = OpenContentUtils.GetIndexConfig(info.Template);
                     string raison;
-                    if (!OpenContentUtils.HaveViewPermissions(dsItem, module.UserRoles, indexConfig, out raison))
+                    if (!OpenContentUtils.HaveViewPermissions(dsItem, module.UserRoles.FromDnnRoles(), indexConfig, out raison))
                     {
                         if (module.ViewModule.HasEditRightsOnModule())
                             throw new NotAuthorizedException(404, $"No detail view permissions for id={info.DetailItemId}  (due to {raison}) \nGo into Edit Mode to view/change the item");

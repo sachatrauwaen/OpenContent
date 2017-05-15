@@ -2,6 +2,7 @@
 using Satrabel.OpenContent.Components.Alpaca;
 using System;
 using System.Linq;
+using Satrabel.OpenContent.Components.Querying.Search;
 
 namespace Satrabel.OpenContent.Components.Datasource
 {
@@ -23,7 +24,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             throw new NotImplementedException();
         }
 
-        public abstract IDataItems GetAll(DataSourceContext context, Search.Select selectQuery);
+        public abstract IDataItems GetAll(DataSourceContext context, Select selectQuery);
 
         public virtual IDataItem GetData(DataSourceContext context, string scope, string key)
         {

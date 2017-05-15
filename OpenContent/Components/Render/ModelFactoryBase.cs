@@ -2,7 +2,6 @@
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Datasource;
-using Satrabel.OpenContent.Components.Datasource.Search;
 using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Manifest;
 using System;
@@ -10,6 +9,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Satrabel.OpenContent.Components.Dnn;
+using Satrabel.OpenContent.Components.Querying;
+using Satrabel.OpenContent.Components.Querying.Search;
 
 namespace Satrabel.OpenContent.Components.Render
 {
@@ -201,7 +202,7 @@ namespace Satrabel.OpenContent.Components.Render
                                 var indexConfig = OpenContentUtils.GetIndexConfig(_module.Settings.TemplateDir, item.Key);
                                 QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
                                 var u = PortalSettings.Current.UserInfo;
-                                queryBuilder.Build(item.Value.Query, true, u.UserID, DnnLanguageUtils.GetCurrentCultureCode(), u.Social.Roles);
+                                queryBuilder.Build(item.Value.Query, true, u.UserID, DnnLanguageUtils.GetCurrentCultureCode(), u.Social.Roles.FromDnnRoles());
                                 select = queryBuilder.Select;
                             }
                             IDataItems dataItems = _ds.GetAll(dsColContext, select);

@@ -1,5 +1,4 @@
 ﻿using System.Web.UI;
-using DotNetNuke.Web.Client;
 
 namespace Satrabel.OpenContent.Components
 {

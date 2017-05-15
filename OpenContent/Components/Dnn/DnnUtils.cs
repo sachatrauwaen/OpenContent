@@ -8,11 +8,11 @@ using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Modules.Actions;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Entities.Tabs;
+using DotNetNuke.Entities.Users;
 using DotNetNuke.Services.Localization;
 using DotNetNuke.UI.Modules;
 using DotNetNuke.Web.Client.ClientResourceManagement;
 using Satrabel.OpenContent.Components.AppDefinitions;
-using Satrabel.OpenContent.Components.Dnn;
 
 
 namespace Satrabel.OpenContent.Components
@@ -141,6 +141,19 @@ namespace Satrabel.OpenContent.Components
                     App.Services.Logger.Error(msg);
                     throw new NotImplementedException(msg);
             }
+        }
+
+        public static List<Querying.UserRoleInfo> FromDnnRoles(this IEnumerable<UserRoleInfo> userRoles)
+        {
+            var retval = new List<Querying.UserRoleInfo>();
+            foreach (var userRole in userRoles)
+            {
+                retval.Add(new Querying.UserRoleInfo()
+                {
+                    RoleId = userRole.RoleID
+                });
+            }
+            return retval;
         }
 
         public static string ToDnnActionType(this ActionType itemActionType)

@@ -11,6 +11,7 @@ using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Dnn;
 using Satrabel.OpenContent.Components.Logging;
+using Satrabel.OpenContent.Components.Querying;
 using Satrabel.OpenContent.Components.Render;
 
 namespace Satrabel.OpenContent.Components.JPList
@@ -36,7 +37,7 @@ namespace Satrabel.OpenContent.Components.JPList
                     var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template);
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
                     bool isEditable = module.ViewModule.CheckIfEditable(module);
-                    queryBuilder.Build(module.Settings.Query, !isEditable, UserInfo.UserID, DnnLanguageUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
+                    queryBuilder.Build(module.Settings.Query, !isEditable, UserInfo.UserID, DnnLanguageUtils.GetCurrentCultureCode(), UserInfo.Social.Roles.FromDnnRoles());
 
                     JplistQueryBuilder.MergeJpListQuery(indexConfig, queryBuilder.Select, req.StatusLst, DnnLanguageUtils.GetCurrentCultureCode());
                     IDataItems dsItems;

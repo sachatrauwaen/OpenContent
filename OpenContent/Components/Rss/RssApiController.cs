@@ -9,6 +9,7 @@ using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Alpaca;
+using Satrabel.OpenContent.Components.Querying;
 using Satrabel.OpenContent.Components.Render;
 
 namespace Satrabel.OpenContent.Components.Rss
@@ -39,7 +40,7 @@ namespace Satrabel.OpenContent.Components.Rss
                 var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template);
 
                 QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
-                queryBuilder.Build(module.Settings.Query, PortalSettings.UserMode != PortalSettings.Mode.Edit, UserInfo.UserID, DnnLanguageUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
+                queryBuilder.Build(module.Settings.Query, PortalSettings.UserMode != PortalSettings.Mode.Edit, UserInfo.UserID, DnnLanguageUtils.GetCurrentCultureCode(), UserInfo.Social.Roles.FromDnnRoles());
 
                 IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);

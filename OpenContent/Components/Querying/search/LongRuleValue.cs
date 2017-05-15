@@ -1,13 +1,13 @@
-﻿namespace Satrabel.OpenContent.Components.Datasource.Search
+﻿namespace Satrabel.OpenContent.Components.Querying.Search
 {
-    public class FloatRuleValue : RuleValue
+    public class LongRuleValue : RuleValue
     {
-        private float Value;
-        public FloatRuleValue(float value)
+        private long Value;
+        public LongRuleValue(long value)
         {
             Value = value;
         }
-        public override float AsFloat
+        public override long AsLong
         {
             get
             {

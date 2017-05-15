@@ -1,4 +1,4 @@
-﻿namespace Satrabel.OpenContent.Components.Datasource.Search
+﻿namespace Satrabel.OpenContent.Components.Querying.Search
 {
     public enum ConditionEnum
     {

@@ -3,7 +3,6 @@ using DotNetNuke.Common;
 using DotNetNuke.Common.Utilities;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.UI;
-using Newtonsoft.Json.Linq;
 
 namespace Satrabel.OpenContent.Components.Dnn
 {

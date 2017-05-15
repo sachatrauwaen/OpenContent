@@ -18,6 +18,7 @@ using Satrabel.OpenContent.Components.Render;
 using DotNetNuke.Services.Exceptions;
 using System.Web;
 using Satrabel.OpenContent.Components.Dnn;
+using Satrabel.OpenContent.Components.Querying;
 
 namespace Satrabel.OpenContent.Components.Rest
 {
@@ -54,7 +55,7 @@ namespace Satrabel.OpenContent.Components.Rest
                         var mf = new ModelFactorySingle(dsItem, module, collection);
 
                         string raison = "";
-                        if (!OpenContentUtils.HaveViewPermissions(dsItem, module.UserRoles, indexConfig, out raison))
+                        if (!OpenContentUtils.HaveViewPermissions(dsItem, module.UserRoles.FromDnnRoles(), indexConfig, out raison))
                         {
                             Exceptions.ProcessHttpException(new HttpException(404, "No detail view permissions for id=" + id + " (" + raison + ")"));
                             //throw new UnauthorizedAccessException("No detail view permissions for id " + info.DetailItemId);
@@ -122,7 +123,7 @@ namespace Satrabel.OpenContent.Components.Rest
                     var indexConfig = OpenContentUtils.GetIndexConfig(settings.TemplateDir, collection);
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
                     bool isEditable = module.ViewModule.CheckIfEditable(module);
-                    queryBuilder.Build(settings.Query, !isEditable, UserInfo.UserID, DnnLanguageUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
+                    queryBuilder.Build(settings.Query, !isEditable, UserInfo.UserID, DnnLanguageUtils.GetCurrentCultureCode(), UserInfo.Social.Roles.FromDnnRoles());
 
                     RestQueryBuilder.MergeQuery(indexConfig, queryBuilder.Select, restSelect, DnnLanguageUtils.GetCurrentCultureCode());
                     IDataItems dsItems;
