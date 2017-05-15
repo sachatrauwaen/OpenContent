@@ -69,8 +69,9 @@ namespace Satrabel.OpenContent.Components.Manifest
         #region ReadOnly Semantic Extentions
 
         public bool ShowInitControl => Template == null || (!DataExist && Template.DataNeeded()) || (string.IsNullOrEmpty(SettingsJson) && Template.SettingsNeeded());
-        public bool IsDetailPageRequest => IsListMode && !string.IsNullOrEmpty(DetailItemId);
         public bool IsListMode => Template != null && Template.IsListTemplate;
+        public bool IsListPageRequest => IsListMode && string.IsNullOrEmpty(DetailItemId);
+        public bool IsDetailPageRequest => IsListMode && !string.IsNullOrEmpty(DetailItemId);
 
         #endregion
 

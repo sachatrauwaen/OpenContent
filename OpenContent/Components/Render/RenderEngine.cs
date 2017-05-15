@@ -670,7 +670,7 @@ namespace Satrabel.OpenContent.Components.Render
             TemplateManifest template = _settings.Template;
             bool templateDefined = template != null;
 
-            bool isListPageRequest = !_renderinfo.IsDetailPageRequest;
+            bool isListPageRequest = _renderinfo.IsListPageRequest ;
             bool isDetailPageRequest = _renderinfo.IsDetailPageRequest;
 
             //Add item / Edit Item
