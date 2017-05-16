@@ -231,3 +231,7 @@ select.oc-ddl-versions {
     box-shadow: none;
     opacity: 0.65;
 }
+
+li.select2-search.select2-search--inline {
+    list-style-type: none;
+}
