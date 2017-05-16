@@ -30,7 +30,7 @@ namespace Satrabel.OpenContent.Components.Json
 
         public static bool IsNotEmpty(this JToken jtoken)
         {
-            if (jtoken == null) return true;
+            if (jtoken == null) return false;
             return !jtoken.IsEmpty();
         }
 
