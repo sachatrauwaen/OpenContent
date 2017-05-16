@@ -144,21 +144,20 @@ namespace Satrabel.OpenContent.Components.Json
 
         public static void LookupJson(JObject o, JObject additionalData, JObject schema, JObject options, bool includelabels, List<string> includes, Func<string, string, JObject> objFromCollection, string prefix = "")
         {
+            if (schema?["properties"] == null)
+                return;
+            if (options?["fields"] == null)
+                return;
+
             foreach (var child in o.Children<JProperty>().ToList())
             {
                 JObject sch = null;
                 JObject opt = null;
 
-                if (schema?["properties"] != null)
-                {
-                    sch = schema["properties"][child.Name] as JObject;
-                }
+                sch = schema["properties"][child.Name] as JObject;
                 if (sch == null) continue;
 
-                if (options?["fields"] != null)
-                {
-                    opt = options["fields"][child.Name] as JObject;
-                }
+                opt = options["fields"][child.Name] as JObject;
                 if (opt == null) continue;
 
                 // additionalData enhancement
