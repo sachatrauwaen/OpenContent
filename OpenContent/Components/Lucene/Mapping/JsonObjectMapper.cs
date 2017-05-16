@@ -36,9 +36,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
         /// <summary>
         /// Adds the given source object to the specified Document.
         /// </summary>
-        /// <param name="source">
-        /// The source object to add.
-        /// </param>
+        /// <param name="json"></param>
         /// <param name="doc">
         /// The Document to add the object to.
         /// </param>

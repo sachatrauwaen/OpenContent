@@ -75,7 +75,6 @@ namespace Satrabel.OpenContent.Components.Json
 
         public static void SimplifyJson(JObject o, string culture)
         {
-
             foreach (var child in o.Children<JProperty>().ToList())
             {
                 var childProperty = child;
@@ -182,14 +181,14 @@ namespace Satrabel.OpenContent.Components.Json
                 string collection = opt["dataService"]?["data"]?["collection"] != null ? opt["dataService"]?["data"]?["collection"].ToString() : "";
 
                 // enum enhancement
-                var enums = sch["enum"] is JArray ? (sch["enum"] as JArray).Select(l => l.ToString()).ToArray() : null;
-                var labels = opt["optionLabels"] is JArray ? (opt["optionLabels"] as JArray).Select(l => l.ToString()).ToArray() : null;
+                var enums = (sch["enum"] as JArray)?.Select(l => l.ToString()).ToArray();
+                var labels = (opt["optionLabels"] as JArray)?.Select(l => l.ToString()).ToArray();
 
                 var childProperty = child;
                 if (childProperty.Value is JArray)
                 {
                     var array = childProperty.Value as JArray;
-                    JArray newArray = new JArray();
+                    var newArray = new JArray();
                     foreach (var value in array)
                     {
                         var obj = value as JObject;

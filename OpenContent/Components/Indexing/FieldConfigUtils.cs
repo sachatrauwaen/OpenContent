@@ -66,7 +66,6 @@ namespace Satrabel.OpenContent.Components.Indexing
                 Field = field + cultureSuffix,
                 FieldType = indexType,
                 Descending = descending
-
             };
             return rule;
         }

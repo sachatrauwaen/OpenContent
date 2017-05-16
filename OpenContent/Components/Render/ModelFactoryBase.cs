@@ -129,8 +129,8 @@ namespace Satrabel.OpenContent.Components.Render
             {
                 GetAdditionalData();
             }
-            bool collectonEnhance = _templateFiles.Model != null && _templateFiles.Model.ContainsKey(colName);
-            bool enhance = addDataEnhance || collectonEnhance || _templateFiles.LabelsInTemplate;
+            bool collectionEnhance = _templateFiles.Model != null && _templateFiles.Model.ContainsKey(colName);
+            bool enhance = addDataEnhance || collectionEnhance || _templateFiles.LabelsInTemplate;
             if (enhance && (_optionsJson == null || _schemaJson == null))
             {
                 var alpaca = _ds.GetAlpaca(_dsContext, true, true, false);
@@ -143,7 +143,7 @@ namespace Satrabel.OpenContent.Components.Render
             }
             if (enhance)
             {
-                var colManifest = collectonEnhance ? _templateFiles.Model[colName] : null;
+                var colManifest = collectionEnhance ? _templateFiles.Model[colName] : null;
                 var includes = colManifest?.Includes;
                 var includelabels = _templateFiles.LabelsInTemplate;
                 var ds = DataSourceManager.GetDataSource(_manifest.DataSource);

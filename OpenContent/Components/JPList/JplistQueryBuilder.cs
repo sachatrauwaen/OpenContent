@@ -106,10 +106,7 @@ namespace Satrabel.OpenContent.Components.JPList
                     case "sort":
                         {
                             select.Sort.Clear();
-                            select.Sort.Add(FieldConfigUtils.CreateSortRule(config, cultureCode,
-                                status.data.path,
-                                status.data.order == "desc"
-                            ));
+                            select.Sort.Add(FieldConfigUtils.CreateSortRule(config, cultureCode, status.data.path, status.data.order == "desc"));
                             break;
                         }
                 }
