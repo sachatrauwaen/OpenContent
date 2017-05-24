@@ -211,23 +211,26 @@ namespace Satrabel.OpenContent.Components.Render
             var template = renderInfo.Template;
             if (template != null)
             {
-                var cssfilename = new FileUri(Path.ChangeExtension(template.MainTemplateUri().FilePath, "css"));
-                if (cssfilename.FileExists)
+                if (template.MainTemplateUri() != null)
                 {
-                    App.Services.ClientResourceManager.RegisterStyleSheet(page, cssfilename.UrlFilePath);
-                }
-                if (renderInfo.IsDetailPageRequest && template.DetailTemplateUri() != null)
-                {
-                    cssfilename = new FileUri(Path.ChangeExtension(template.DetailTemplateUri().FilePath, "css"));
+                    var cssfilename = new FileUri(Path.ChangeExtension(template.MainTemplateUri().FilePath, "css"));
                     if (cssfilename.FileExists)
                     {
                         App.Services.ClientResourceManager.RegisterStyleSheet(page, cssfilename.UrlFilePath);
                     }
+                    var jsfilename = new FileUri(Path.ChangeExtension(template.MainTemplateUri().FilePath, "js"));
+                    if (jsfilename.FileExists)
+                    {
+                        App.Services.ClientResourceManager.RegisterScript(page, jsfilename.UrlFilePath, 100);
+                    }
                 }
-                var jsfilename = new FileUri(Path.ChangeExtension(template.MainTemplateUri().FilePath, "js"));
-                if (jsfilename.FileExists)
+                if (renderInfo.IsDetailPageRequest && template.DetailTemplateUri() != null)
                 {
-                    App.Services.ClientResourceManager.RegisterScript(page, jsfilename.UrlFilePath, 100);
+                    var cssfilename = new FileUri(Path.ChangeExtension(template.DetailTemplateUri().FilePath, "css"));
+                    if (cssfilename.FileExists)
+                    {
+                        App.Services.ClientResourceManager.RegisterStyleSheet(page, cssfilename.UrlFilePath);
+                    }
                 }
                 App.Services.ClientResourceManager.RegisterScript(page, "~/DesktopModules/OpenContent/js/opencontent.js");
             }
@@ -413,17 +416,17 @@ namespace Satrabel.OpenContent.Components.Render
             }
             return !info.ShowInitControl; //!string.IsNullOrWhiteSpace(info.DataJson) && (!string.IsNullOrWhiteSpace(info.SettingsJson) || !settingsNeeded);
         }
-        private string GetTemplateKey(FieldConfig IndexConfig)
+        private string GetTemplateKey(FieldConfig indexConfig)
         {
             string templateKey = "";
             if (QueryString != null)
             {
                 foreach (string key in QueryString)
                 {
-                    if (IndexConfig?.Fields != null && IndexConfig.Fields.Any(f => f.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase)))
+                    if (indexConfig?.Fields != null && indexConfig.Fields.Any(f => f.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase)))
                     {
-                        var indexConfig = IndexConfig.Fields.Single(f => f.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase));
-                        string val = QueryString[key];
+                        //var indexConfig = IndexConfig.Fields.Single(f => f.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase));
+                        //string val = QueryString[key];
                         if (string.IsNullOrEmpty(templateKey))
                             templateKey = key;
                         else
@@ -670,7 +673,7 @@ namespace Satrabel.OpenContent.Components.Render
             TemplateManifest template = _settings.Template;
             bool templateDefined = template != null;
 
-            bool isListPageRequest = _renderinfo.IsListPageRequest ;
+            bool isListPageRequest = _renderinfo.IsListPageRequest;
             bool isDetailPageRequest = _renderinfo.IsDetailPageRequest;
 
             //Add item / Edit Item
