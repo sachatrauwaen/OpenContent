@@ -39,6 +39,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 RegisterArrayIndexHelper(hbs);
                 RegisterArrayTranslateHelper(hbs);
                 RegisterIfAndHelper(hbs);
+                RegisterIfOrHelper(hbs);
                 RegisterConvertHtmlToTextHelper(hbs);
                 RegisterConvertToJsonHelper(hbs);
                 RegisterTruncateWordsHelper(hbs);
@@ -108,6 +109,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterArrayTranslateHelper(hbs);
             RegisterArrayLookupHelper(hbs);
             RegisterIfAndHelper(hbs);
+            RegisterIfOrHelper(hbs);
             RegisterIfInHelper(hbs);
             RegisterEachPublishedHelper(hbs);
             RegisterConvertHtmlToTextHelper(hbs);
@@ -316,8 +318,8 @@ namespace Satrabel.OpenContent.Components.Handlebars
         {
             hbs.RegisterHelper("published", (writer, options, context, parameters) =>
             {
-                bool EditMode = PortalSettings.Current.UserMode == PortalSettings.Mode.Edit;
-                if (EditMode)
+                bool editMode = PortalSettings.Current.UserMode == PortalSettings.Mode.Edit;
+                if (editMode)
                 {
                     options.Template(writer, parameters[0]);
                 }
@@ -468,7 +470,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             {
                 if (parameters.Length == 3) //{{imageurl ImageId 4 '800x500'}}
                 {
-                    
+
                     string imageId = parameters[0] as string;
                     int width = Normalize.DynamicValue(parameters[1], -1);
                     string ratiostring = parameters[2] as string;
@@ -804,6 +806,25 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 foreach (var arg in arguments)
                 {
                     res = res && HandlebarsUtils.IsTruthyOrNonEmpty(arg);
+                }
+                if (res)
+                {
+                    options.Template(writer, (object)context);
+                }
+                else
+                {
+                    options.Inverse(writer, (object)context);
+                }
+            });
+        }
+        private static void RegisterIfOrHelper(IHandlebars hbs)
+        {
+            hbs.RegisterHelper("ifor", (writer, options, context, arguments) =>
+            {
+                bool res = false;
+                foreach (var arg in arguments)
+                {
+                    res = res || HandlebarsUtils.IsTruthyOrNonEmpty(arg);
                 }
                 if (res)
                 {
