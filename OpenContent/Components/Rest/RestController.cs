@@ -64,7 +64,7 @@ namespace Satrabel.OpenContent.Components.Rest
                         mf.Options = reqOptions;
                         var model = mf.GetModelAsJson(false);
                         items.Add(model);
-                        model["id"] = model["Context"]["Id"];
+                        model["id"] = dsItem.Id;
                         res["meta"]["total"] = dsItem == null ? 0 : 1;
                         JsonUtils.IdJson(model);
                         if (LogContext.IsLogActive)
