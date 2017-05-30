@@ -60,21 +60,33 @@ namespace Satrabel.OpenContent.Components
             //var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template);
             var dataSource = new OpenContentDataSource();
             XmlNode xml = Globals.GetContent(content, "opencontent");
-            foreach (XmlNode item in xml.SelectNodes("item"))
+            var items = xml.SelectNodes("item");
+            if (items != null)
             {
-                XmlNode json = item.SelectSingleNode("json");
-                XmlNode collection = item.SelectSingleNode("collection");
-                XmlNode key = item.SelectSingleNode("key");
+                foreach (XmlNode item in items)
+                {
+                    XmlNode json = item.SelectSingleNode("json");
+                    XmlNode collection = item.SelectSingleNode("collection");
+                    XmlNode key = item.SelectSingleNode("key");
+                    JToken data;
+                    try
+                    {
+                        data = item.InnerText;
+                        data["_id"] = key?.InnerText ?? "";
+                    }
+                    catch (Exception e)
+                    {
+                        App.Services.Logger.Error($"Failed to parse imported json. Item key: {key}. Collection: {collection}. Error: {e.Message}. Stacktrace: {e.StackTrace}");
+                        throw;
+                    }
 
-                var dsContext = OpenContentUtils.CreateDataContext(module, userId);
-                dsContext.Collection = collection?.InnerText ?? "";
-                //dsContext.Key = key?.InnerText ?? "";
+                    var dsContext = OpenContentUtils.CreateDataContext(module, userId);
+                    dsContext.Collection = collection?.InnerText ?? "";
+                    //dsContext.Key = key?.InnerText ?? "";
 
-                JToken data = item.InnerText;
-                data["_id"] = key?.InnerText ?? "";
-
-                dataSource.Add(dsContext, data);
-                //dataSource.Add(contentInfo, index, indexConfig);
+                    dataSource.Add(dsContext, data);
+                    //dataSource.Add(contentInfo, index, indexConfig);
+                }
             }
         }
 
