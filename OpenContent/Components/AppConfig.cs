@@ -16,7 +16,9 @@ namespace Satrabel.OpenContent.Components
         }
 
 
-        public string LuceneIndexFolder => @"App_Data\OpenContent\lucene_index";
+        //public string LuceneIndexFolder => @"App_Data\OpenContent\lucene_index";
+
+        readonly public string LuceneIndexFolder = @"App_Data\OpenContent\lucene_index"; 
 
 
         #region Constants
@@ -57,8 +59,8 @@ namespace Satrabel.OpenContent.Components
 
         #region Adapters config
 
-        public ILocalizationAdapter LocalizationAdapter => new DnnLocalizationAdapter();
-        public ILogAdapter LogAdapter => DnnLogAdapter.GetLogAdapter(OPENCONTENT);
+        readonly public ILocalizationAdapter LocalizationAdapter = new DnnLocalizationAdapter();
+        readonly public ILogAdapter LogAdapter = DnnLogAdapter.GetLogAdapter(OPENCONTENT);
 
         #endregion
     }
