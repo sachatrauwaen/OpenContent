@@ -109,12 +109,14 @@ namespace Satrabel.OpenContent.Components
 
             var module = new OpenContentModuleInfo(modInfo);
             OpenContentSettings settings = modInfo.OpenContentSettings();
-            if (settings.Template?.Main == null || !settings.Template.Main.DnnSearch)
-            {
-                return searchDocuments;
-            }
+            //if (settings.Template?.Main == null || !settings.Template.Main.DnnSearch)
+            //{
+            //    Log.Logger.TraceFormat("Indexing content Module {0} - Tab {1} - settings.Template?.Main == null || !settings.Template.Main.DnnSearch", modInfo.ModuleID, modInfo.TabID, modInfo.CultureCode);
+            //    return searchDocuments;
+            //}
             if (settings.IsOtherModule)
             {
+                Log.Logger.TraceFormat("Indexing content Module {0} - Tab {1} - settings.IsOtherModule", modInfo.ModuleID, modInfo.TabID, modInfo.CultureCode);
                 return searchDocuments;
             }
 
@@ -143,6 +145,7 @@ namespace Satrabel.OpenContent.Components
                         if (modInfo.LocalizedModules != null)
                             foreach (var localizedModule in modInfo.LocalizedModules)
                             {
+                                Log.Logger.TraceFormat("Indexing content Module {0} - Tab {1} -  foreach (var localizedModule in modInfo.LocalizedModules)", modInfo.ModuleID, modInfo.TabID, modInfo.CultureCode);
                                 SearchDocument localizedSearchDoc = GetLocalizedItem(localizedModule.Value, settings, content);
                                 searchDocuments.Add(localizedSearchDoc);
                             }
@@ -169,7 +172,7 @@ namespace Satrabel.OpenContent.Components
             JToken description;
             JToken singleLanguage = content.Data.DeepClone(); //Clone to keep Simplification into this Method
             JsonUtils.SimplifyJson(singleLanguage, culture);
-
+            Log.Logger.TraceFormat("Indexing content Module {0} - Tab {1} -  SearchDocument GetLocalizedItem", moduleInfo.ModuleID, moduleInfo.TabID, moduleInfo.CultureCode);
             if (content.Title.IsJson())
             {
                 title = singleLanguage["Title"] ?? moduleInfo.ModuleTitle;
