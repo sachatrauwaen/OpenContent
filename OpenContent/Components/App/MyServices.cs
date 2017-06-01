@@ -14,9 +14,19 @@ namespace Satrabel.OpenContent.Components
     /// </summary>
     public class MyServices : IAppServices
     {
+
+        private MyServices()
+        {
+        }
+
+        public MyServices(IAppConfig config)
+        {
+            Logger = DnnLogAdapter.GetLogAdapter(config.Opencontent);
+        }
+
         public ILocalizationAdapter LocalizationAdapter { get; } = new DnnLocalizationAdapter();
 
-        public ILogAdapter Logger => DnnLogAdapter.GetLogAdapter(App.Config.Opencontent);
+        public ILogAdapter Logger { get; }
 
         public IIndexAdapter IndexAdapter { get; } = new LuceneIndexAdapter(@"App_Data\OpenContent\lucene_index");
 
