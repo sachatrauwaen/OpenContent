@@ -18,9 +18,12 @@ namespace Satrabel.OpenContent.Components
 
         public ILogAdapter Logger { get; } = DnnLogAdapter.GetLogAdapter(App.Config.Opencontent);
 
-        public IIndexAdapter IndexAdapter => new LuceneIndexAdapter(@"App_Data\OpenContent\lucene_index");
-        public ICacheAdapter CacheAdapter => new DnnCacheAdapter();
-        public IFileRepositoryAdapter FileRepository => new DnnFileRepositoryAdapter();
+        public IIndexAdapter IndexAdapter { get; } = new LuceneIndexAdapter(@"App_Data\OpenContent\lucene_index");
+
+        public ICacheAdapter CacheAdapter { get; } = new DnnCacheAdapter();
+
+        public IFileRepositoryAdapter FileRepository { get; } = new DnnFileRepositoryAdapter();
+
         public IGlobalSettingsRepositoryAdapter GlobalSettings(int tenantId = -1)
         {
             if (tenantId < 0)
@@ -28,6 +31,6 @@ namespace Satrabel.OpenContent.Components
             else
                 return new DnnGlobalSettingsRepositoryAdapter(tenantId);
         }
-        public IClientResourceManager ClientResourceManager => new DnnClientResourceManager();
+        public IClientResourceManager ClientResourceManager { get; } = new DnnClientResourceManager();
     }
 }
