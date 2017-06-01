@@ -2,7 +2,6 @@
 using DotNetNuke.Security;
 using DotNetNuke.Web.Api;
 using Newtonsoft.Json.Linq;
-using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Logging;
 using System;

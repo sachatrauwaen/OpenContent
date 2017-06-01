@@ -2,7 +2,7 @@
 
 namespace Satrabel.OpenContent.Components
 {
-    public class App 
+    public class App
     {
         private static readonly Lazy<App> Lazy = new Lazy<App>(() => new App());
         public static IAppConfig Config => Lazy.Value.BaseConfig;
@@ -16,7 +16,7 @@ namespace Satrabel.OpenContent.Components
         private static IAppConfig _configuration;
         private static IAppServices _serviceConfig;
 
-        internal static void Init(IAppConfig config, MyServices services)
+        internal static void Init(IAppConfig config, IAppServices services)
         {
             _configuration = config;
             _serviceConfig = services;

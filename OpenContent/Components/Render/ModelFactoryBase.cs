@@ -1,6 +1,5 @@
 ﻿using DotNetNuke.Entities.Portals;
 using Newtonsoft.Json.Linq;
-using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Manifest;
