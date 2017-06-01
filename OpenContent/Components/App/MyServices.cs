@@ -16,7 +16,7 @@ namespace Satrabel.OpenContent.Components
     {
         public ILocalizationAdapter LocalizationAdapter { get; } = new DnnLocalizationAdapter();
 
-        public ILogAdapter Logger { get; } = DnnLogAdapter.GetLogAdapter(App.Config.Opencontent);
+        public ILogAdapter Logger => DnnLogAdapter.GetLogAdapter(App.Config.Opencontent);
 
         public IIndexAdapter IndexAdapter { get; } = new LuceneIndexAdapter(@"App_Data\OpenContent\lucene_index");
 
