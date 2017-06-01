@@ -14,8 +14,10 @@ namespace Satrabel.OpenContent.Components
     /// </summary>
     public class MyServices : IAppServices
     {
-        public ILocalizationAdapter LocalizationAdapter => new DnnLocalizationAdapter();
-        public ILogAdapter Logger => DnnLogAdapter.GetLogAdapter(App.Config.Opencontent);
+        public ILocalizationAdapter LocalizationAdapter { get; } = new DnnLocalizationAdapter();
+
+        public ILogAdapter Logger { get; } = DnnLogAdapter.GetLogAdapter(App.Config.Opencontent);
+
         public IIndexAdapter IndexAdapter => new LuceneIndexAdapter(@"App_Data\OpenContent\lucene_index");
         public ICacheAdapter CacheAdapter => new DnnCacheAdapter();
         public IFileRepositoryAdapter FileRepository => new DnnFileRepositoryAdapter();
@@ -26,7 +28,6 @@ namespace Satrabel.OpenContent.Components
             else
                 return new DnnGlobalSettingsRepositoryAdapter(tenantId);
         }
-
         public IClientResourceManager ClientResourceManager => new DnnClientResourceManager();
     }
 }

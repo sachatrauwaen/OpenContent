@@ -37,13 +37,31 @@ namespace Satrabel.OpenContent.Components.Manifest
         public bool DnnSearch { get; set; }
 
         /// <summary>
-        /// Gets or sets a value specifying the field to use for document Title in [DNN search] results.
+        /// Gets or sets a template specifying the field(s) to use for document Title in [DNN search] results.
         /// </summary>
         /// <value>
-        ///   <c>true</c> if [DNN search]; otherwise, <c>false</c>.
+        ///   You can use a Handlebars template.
         /// </value>
         [JsonProperty(PropertyName = "dnnSearchTitle")]
         public string DnnSearchTitle { get; set; }
+
+        /// <summary>
+        /// Gets or sets a template specifying the field(s) to use for document Description in [DNN search] results.
+        /// </summary>
+        /// <value>
+        ///   You can use a Handlebars template. Search Text will be used if you leave this empty.
+        /// </value>
+        [JsonProperty(PropertyName = "dnnSearchDescription")]
+        public string DnnSearchDescription { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value specifying the field(s) to use for document indexing in [DNN search].
+        /// </summary>
+        /// <value>
+        ///   You can use a Handlebars template.
+        /// </value>
+        [JsonProperty(PropertyName = "dnnSearchText")]
+        public string DnnSearchText { get; set; }
 
         [JsonProperty(PropertyName = "model")]
         public Dictionary<string, CollectionManifest> Model { get; set; }

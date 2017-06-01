@@ -172,7 +172,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         public static string HtmlDecodeIfNeeded(this string html)
         {
             if (string.IsNullOrEmpty(html)) return html;
-            if (html.Contains("&lt;") && html.Contains("&gt;"))
+            if ((html.Contains("&lt;") && html.Contains("&gt;")) || html.Contains("&#"))
                 html = HttpUtility.HtmlDecode(html);
             return html;
         }

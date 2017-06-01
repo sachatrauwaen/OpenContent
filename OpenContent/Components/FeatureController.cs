@@ -21,6 +21,7 @@ using DotNetNuke.Services.Search.Entities;
 using Newtonsoft.Json.Linq;
 using DotNetNuke.Entities.Portals;
 using System.IO;
+using System.Web;
 using System.Web.Hosting;
 using DotNetNuke.Common.Internal;
 using DotNetNuke.Services.Search.Controllers;
@@ -118,6 +119,7 @@ namespace Satrabel.OpenContent.Components
             }
 
             var module = OpenContentModuleConfig.Create(modInfo, PortalSettings.Current);
+
             if (module.Settings.Template?.Main == null || !module.Settings.Template.Main.DnnSearch)
             {
                 return searchDocuments;
@@ -147,18 +149,27 @@ namespace Satrabel.OpenContent.Components
                     SearchDocument searchDoc;
                     if (DnnLanguageUtils.IsMultiLingualPortal(modInfo.PortalID))
                     {
-                        searchDoc = GetLocalizedItem(modInfo, module.Settings, content);
+                        // first process the default language module
+                        var culture = modInfo.CultureCode;
+                        var localizedData = GetLocalizedContent(content.Data, culture);
+                        searchDoc = CreateSearchDocument(modInfo, module.Settings, localizedData, content.Id, culture, content.Title, content.LastModifiedOnDate.ToUniversalTime());
                         searchDocuments.Add(searchDoc);
+                        App.Services.Logger.Trace($"Indexing content {modInfo.ModuleID}|{culture} -  OK!  {searchDoc.Title} ({modInfo.TabID}) of {content.LastModifiedOnDate.ToUniversalTime()}");
+
+                        // now do the same with any linked localized instances of this module
                         if (modInfo.LocalizedModules != null)
                             foreach (var localizedModule in modInfo.LocalizedModules)
                             {
-                                SearchDocument localizedSearchDoc = GetLocalizedItem(localizedModule.Value, module.Settings, content);
-                                searchDocuments.Add(localizedSearchDoc);
+                                culture = localizedModule.Value.CultureCode;
+                                localizedData = GetLocalizedContent(content.Data, culture);
+                                searchDoc = CreateSearchDocument(modInfo, module.Settings, localizedData, content.Id, culture, content.Title, content.LastModifiedOnDate.ToUniversalTime());
+                                searchDocuments.Add(searchDoc);
+                                App.Services.Logger.Trace($"Indexing content {modInfo.ModuleID}|{culture} -  OK!  {searchDoc.Title} ({modInfo.TabID}) of {content.LastModifiedOnDate.ToUniversalTime()}");
                             }
                     }
                     else
                     {
-                        searchDoc = CreateSearchDocument(modInfo, module.Settings, content.Data, content.Id, "", content.Title, JsonToSearchableString(content.Data), content.LastModifiedOnDate.ToUniversalTime());
+                        searchDoc = CreateSearchDocument(modInfo, module.Settings, content.Data, content.Id, "", content.Title, content.LastModifiedOnDate.ToUniversalTime());
                         searchDocuments.Add(searchDoc);
                         App.Services.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} -  OK!  {searchDoc.Title} ({modInfo.TabID}) of {content.LastModifiedOnDate.ToUniversalTime()}");
                     }
@@ -171,30 +182,16 @@ namespace Satrabel.OpenContent.Components
             return searchDocuments;
         }
 
-        private static SearchDocument GetLocalizedItem(ModuleInfo moduleInfo, OpenContentSettings settings, IDataItem content)
+        private static JToken GetLocalizedContent(JToken contentData, string culture)
         {
-            string culture = moduleInfo.CultureCode;
-            JToken title;
-            JToken description;
-            JToken singleLanguage = content.Data.DeepClone(); //Clone to keep Simplification into this Method
-            JsonUtils.SimplifyJson(singleLanguage, culture);
+            JToken retval = contentData.DeepClone(); // clone to prevent from changing the original
+            // remove all other culture data
+            JsonUtils.SimplifyJson(retval, culture);
 
-            if (content.Title.IsJson())
-            {
-                title = singleLanguage["Title"] ?? moduleInfo.ModuleTitle;
-                description = singleLanguage["Description"] ?? JsonToSearchableString(content.Data);
-            }
-            else
-            {
-                title = content.Title;
-                description = JsonToSearchableString(singleLanguage);
-            }
-            var searchDoc = CreateSearchDocument(moduleInfo, settings, singleLanguage, content.Id, culture, title.ToString(), description.ToString(), content.LastModifiedOnDate.ToUniversalTime());
-            App.Services.Logger.Debug($"Indexing content {moduleInfo.ModuleID}|{culture} -  OK!  {searchDoc.Title} ({ moduleInfo.TabID})  {content.LastModifiedOnDate.ToUniversalTime()}");
-            return searchDoc;
+            return retval;
         }
 
-        private static SearchDocument CreateSearchDocument(ModuleInfo modInfo, OpenContentSettings settings, JToken content, string itemId, string culture, string title, string body, DateTime time)
+        private static SearchDocument CreateSearchDocument(ModuleInfo modInfo, OpenContentSettings settings, JToken contentData, string itemId, string culture, string dataItemTitle, DateTime time)
         {
             // existance of settings.Template.Main has already been checked: we wouldn't be here if it doesn't exist
             // but still, we don't want to count on that too much
@@ -203,21 +200,11 @@ namespace Satrabel.OpenContent.Components
 
             var url = TestableGlobals.Instance.NavigateURL(modInfo.TabID, ps, "", $"id={itemId}");
 
-            string docTitle = modInfo.ModuleTitle; // SK: this is the behaviour before introduction of DnnSearchTitle
-            if (!string.IsNullOrEmpty(settings.Template?.Main?.DnnSearchTitle))
-            {
-                var dynForHBS = JsonUtils.JsonToDictionary(content.ToString());
-                var hbEngine = new HandlebarsEngine();
-                docTitle = hbEngine.ExecuteWithoutFaillure(settings.Template.Main.DnnSearchTitle, dynForHBS, modInfo.ModuleTitle);
-            }
-
+            // instanciate the search document
             var retval = new SearchDocument
             {
                 UniqueKey = modInfo.ModuleID + "-" + itemId + "-" + culture,
                 PortalId = modInfo.PortalID,
-                Title = docTitle.StripHtml(),
-                Description = title.StripHtml(),
-                Body = body.StripHtml(),
                 ModifiedTimeUtc = time,
                 CultureCode = culture,
                 TabId = modInfo.TabID,
@@ -225,6 +212,62 @@ namespace Satrabel.OpenContent.Components
                 ModuleDefId = modInfo.ModuleDefID,
                 Url = url
             };
+
+            // get the title from the template, if it's there
+            if (!string.IsNullOrEmpty(settings.Template?.Main?.DnnSearchTitle))
+            {
+                var dicForHbs = JsonUtils.JsonToDictionary(contentData.ToString());
+                var hbEngine = new HandlebarsEngine();
+                retval.Title = hbEngine.ExecuteWithoutFaillure(settings.Template.Main.DnnSearchTitle, dicForHbs, modInfo.ModuleTitle);
+            }
+            // SK: this is the behaviour before introduction of DnnSearchTitle
+            else if (dataItemTitle.IsJson())
+            {
+                if (contentData["Title"] != null)
+                    retval.Title = contentData["Title"].ToString();
+                else
+                    retval.Title = modInfo.ModuleTitle;
+            }
+            else
+            {
+                retval.Title = dataItemTitle;
+            }
+
+            // for the search text, we're using the template in DnnSearchText if it's used
+            // otherwise, we fall back to previous behaviour:
+            // - if the item has a field called Description, we use that
+            // - otherwise just get the whole item contents
+            if (!string.IsNullOrEmpty(settings.Template?.Main?.DnnSearchText))
+            {
+                var dicForHbs = JsonUtils.JsonToDictionary(contentData.ToString());
+                var hbEngine = new HandlebarsEngine();
+                retval.Body = hbEngine.ExecuteWithoutFaillure(settings.Template.Main.DnnSearchText, dicForHbs, modInfo.ModuleTitle);
+            }
+            else if (contentData["Description"] != null)
+            {
+                retval.Body = contentData["Description"]?.ToString();
+            }
+            else
+            {
+                retval.Body = JsonToSearchableString(contentData);
+            }
+
+            // for description, we also try and use the available template first
+            // if that's not there, we'll use the body text for the search document
+            if (!string.IsNullOrEmpty(settings.Template?.Main?.DnnSearchDescription))
+            {
+                var dicForHbs = JsonUtils.JsonToDictionary(contentData.ToString());
+                var hbEngine = new HandlebarsEngine();
+                retval.Description = hbEngine.ExecuteWithoutFaillure(settings.Template.Main.DnnSearchDescription, dicForHbs, modInfo.ModuleTitle);
+            }
+            else
+            {
+                retval.Description = retval.Body;
+            }
+
+            retval.Title = HttpUtility.HtmlDecode(retval.Title).StripHtml();
+            retval.Body = HttpUtility.HtmlDecode(retval.Body).StripHtml();
+            retval.Description = HttpUtility.HtmlDecode(retval.Description).StripHtml();
 
             return retval;
         }
@@ -280,7 +323,7 @@ namespace Satrabel.OpenContent.Components
         /// -----------------------------------------------------------------------------
         //public string UpgradeModule(string Version)
         //{
-        //	throw new System.NotImplementedException("The method or operation is not implemented.");
+        //    throw new System.NotImplementedException("The method or operation is not implemented.");
         //}
         #endregion
 
