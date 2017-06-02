@@ -168,11 +168,13 @@ namespace Satrabel.OpenContent.Components.Json
                 string dataKey = "";
                 string dataMember = "";
                 string valueField = "Id";
+                string childrenField = "Id";
                 if (lookup)
                 {
                     dataKey = opt["dataService"]["data"]["dataKey"].ToString();
                     dataMember = opt["dataService"]["data"]["dataMember"]?.ToString() ?? "";
                     valueField = opt["dataService"]["data"]["valueField"]?.ToString() ?? "Id";
+                    childrenField = opt["dataService"]["data"]["childrenField"]?.ToString() ?? "";
                 }
 
                 // collections enhancement
@@ -203,7 +205,7 @@ namespace Satrabel.OpenContent.Components.Json
                             {
                                 try
                                 {
-                                    newArray.Add(GenerateObject(additionalData, dataKey, val.ToString(), dataMember, valueField));
+                                    newArray.Add(GenerateObject(additionalData, dataKey, val.ToString(), dataMember, valueField, childrenField));
                                 }
                                 catch (System.Exception)
                                 {
@@ -263,7 +265,7 @@ namespace Satrabel.OpenContent.Components.Json
                         string val = childProperty.Value.ToString();
                         try
                         {
-                            o[childProperty.Name] = GenerateObject(additionalData, dataKey, val, dataMember, valueField);
+                            o[childProperty.Name] = GenerateObject(additionalData, dataKey, val, dataMember, valueField, childrenField);
                         }
                         catch (System.Exception)
                         {
@@ -515,8 +517,9 @@ namespace Satrabel.OpenContent.Components.Json
             return res;
         }
 
-        private static JObject GenerateObject(JObject additionalData, string key, string id, string dataMember, string valueField)
+        private static JObject GenerateObject(JObject additionalData, string key, string id, string dataMember, string valueField, string childerenField)
         {
+
             var json = additionalData[key];
             if (json == null)
             {
@@ -526,6 +529,8 @@ namespace Satrabel.OpenContent.Components.Json
             {
                 json = json[dataMember];
             }
+            var res = GetObjectInHiearchy(json, id, valueField, childerenField);
+            /*
             JArray array = json as JArray;
             if (array != null)
             {
@@ -535,13 +540,52 @@ namespace Satrabel.OpenContent.Components.Json
                     if (id.Equals(objid))
                     {
                         return obj as JObject;
+                    } else if (!string.IsNullOrEmpty(childerenField))
+                    {
+                        var childerenjson = obj[childerenField] as JArray;
+                        if(childerenjson != null)
+                        {
+
+                        }
+
+                    }
+
+                }
+            }
+            */
+            if (res == null)
+            {
+                res = new JObject();
+                res["Id"] = id;
+                res["Title"] = "unknow";
+            }
+            return res;
+        }
+
+        private static JObject GetObjectInHiearchy(JToken json, string id, string valueField, string childrenField)
+        {
+            JArray array = json as JArray;
+            if (array != null)
+            {
+                foreach (var obj in array)
+                {
+                    var objid = obj[valueField]?.ToString();
+                    if (objid!= null && id.Equals(objid))
+                    {
+                        return obj as JObject;
+                    }
+                    else if (!string.IsNullOrEmpty(childrenField))
+                    {
+                        var childerenjson = obj[childrenField] as JArray;
+                        if (childerenjson != null)
+                        {
+                            var childerenRes = GetObjectInHiearchy(childerenjson, id, valueField, childrenField);
+                            if (childerenRes != null) return childerenRes;
+                        }
                     }
                 }
             }
-            JObject res = new JObject();
-            res["Id"] = id;
-            res["Title"] = "unknow";
-            return res;
+            return null;
         }
 
         public static void Merge(JObject model, JObject completeModel)
