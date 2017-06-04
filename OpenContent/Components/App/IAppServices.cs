@@ -9,7 +9,7 @@ namespace Satrabel.OpenContent.Components
     {
         ILogAdapter Logger { get; }
         IIndexAdapter Indexer { get; }
-        ILocalizationAdapter LocalizationAdapter { get; }
+        ILocalizationAdapter Localizer { get; }
         ICacheAdapter CacheAdapter { get; }
         IFileRepositoryAdapter FileRepository { get; }
         IGlobalSettingsRepositoryAdapter GlobalSettings(int tenantId = -1);

@@ -16,27 +16,41 @@ namespace Satrabel.OpenContent.Components
     public class MyServices : IAppServices
     {
 
-        private MyServices()
+        /// <summary>
+        /// Initializes the <see cref="MyServices"/> class.
+        /// All Thread-safe / cross-portal services go here. 
+        /// </summary>
+        /// <remarks>
+        /// We use Lazy() to make sure service objects don't get created immediatly, as this might cause loops when the underlying services call other services.
+        /// Also Lazy() ensures that objects are not created when never called. But that is not relevant with cross-portal services as they always get used at some point.
+        /// </remarks>
+        static MyServices()
         {
+            _Indexer = new Lazy<IIndexAdapter>(() => new DnnLuceneIndexAdapter(@"App_Data\OpenContent\lucene_index"));
+            _Localizer = new Lazy<ILocalizationAdapter>(() => new DnnLocalizationAdapter());
+            _Logger = new Lazy<ILogAdapter>(() => DnnLogAdapter.GetLogAdapter(App.Config.Opencontent));
+            _Cacher = new Lazy<ICacheAdapter>(() => new DnnCacheAdapter());
+            _FileRepos = new Lazy<IFileRepositoryAdapter>(() => new DnnFileRepositoryAdapter());
+            _ClientResourcer = new Lazy<IClientResourceManager>(() => new DnnClientResourceManager());
         }
 
-        public MyServices(IAppConfig config)
-        {
-            Logger = DnnLogAdapter.GetLogAdapter(config.Opencontent);
-        }
-
-        public ILocalizationAdapter LocalizationAdapter { get; } = new DnnLocalizationAdapter();
-
-        public ILogAdapter Logger { get; }
-
-
-        private static readonly Lazy<IIndexAdapter> _Indexer = new Lazy<IIndexAdapter>(() => new DnnLuceneIndexAdapter(@"App_Data\OpenContent\lucene_index"));
-        public IIndexAdapter Indexer => _Indexer.Value.Instance;
+        // static private variables for Thread-safe / cross-portal services
+        private static readonly Lazy<IIndexAdapter> _Indexer;
+        private static readonly Lazy<ILocalizationAdapter> _Localizer;
+        private static readonly Lazy<ILogAdapter> _Logger;
+        private static readonly Lazy<ICacheAdapter> _Cacher;
+        private static readonly Lazy<IFileRepositoryAdapter> _FileRepos;
+        private static readonly Lazy<IClientResourceManager> _ClientResourcer;
 
 
-        public ICacheAdapter CacheAdapter { get; } = new DnnCacheAdapter();
+        // static variables for Thread-safe / cross-portal services
+        public IIndexAdapter Indexer => _Indexer.Value;
+        public ILocalizationAdapter Localizer => _Localizer.Value;
+        public ILogAdapter Logger => _Logger.Value;
+        public ICacheAdapter CacheAdapter => _Cacher.Value;
+        public IFileRepositoryAdapter FileRepository => _FileRepos.Value;
+        public IClientResourceManager ClientResourceManager => _ClientResourcer.Value;
 
-        public IFileRepositoryAdapter FileRepository { get; } = new DnnFileRepositoryAdapter();
 
         public IGlobalSettingsRepositoryAdapter GlobalSettings(int tenantId = -1)
         {
@@ -45,6 +59,5 @@ namespace Satrabel.OpenContent.Components
             else
                 return new DnnGlobalSettingsRepositoryAdapter(tenantId);
         }
-        public IClientResourceManager ClientResourceManager { get; } = new DnnClientResourceManager();
     }
 }

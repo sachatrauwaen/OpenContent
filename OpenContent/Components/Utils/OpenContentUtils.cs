@@ -22,7 +22,6 @@ using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Indexing;
 using UserRoleInfo = Satrabel.OpenContent.Components.Querying.UserRoleInfo;
 
-
 namespace Satrabel.OpenContent.Components
 {
     public static class OpenContentUtils
@@ -397,22 +396,22 @@ namespace Satrabel.OpenContent.Components
             catch (PermissionsNotMetException)
             {
                 //Logger.Warn(exc);
-                strMessage = String.Format(Localizer.Instance.GetString("InsufficientFolderPermission"), "OpenContent/Templates");
+                strMessage = String.Format(App.Services.Localizer.GetString("InsufficientFolderPermission"), "OpenContent/Templates");
             }
             catch (NoSpaceAvailableException)
             {
                 //Logger.Warn(exc);
-                strMessage = String.Format(Localizer.Instance.GetString("DiskSpaceExceeded"), fileName);
+                strMessage = String.Format(App.Services.Localizer.GetString("DiskSpaceExceeded"), fileName);
             }
             catch (InvalidFileExtensionException)
             {
                 //Logger.Warn(exc);
-                strMessage = String.Format(Localizer.Instance.GetString("RestrictedFileType"), fileName, Host.AllowedExtensionWhitelist.ToDisplayString());
+                strMessage = String.Format(App.Services.Localizer.GetString("RestrictedFileType"), fileName, Host.AllowedExtensionWhitelist.ToDisplayString());
             }
             catch (Exception exc)
             {
                 //Logger.Error(exc);
-                strMessage = String.Format(Localizer.Instance.GetString("SaveFileError") + " - " + exc.Message, fileName);
+                strMessage = String.Format(App.Services.Localizer.GetString("SaveFileError") + " - " + exc.Message, fileName);
             }
             if (!String.IsNullOrEmpty(strMessage))
             {

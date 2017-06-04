@@ -10,8 +10,7 @@ namespace Satrabel.OpenContent.Components
 
         private App()
         {
-            IAppConfig config = new MyConfig();
-            Init(config, new MyServices(config));
+            Init(new MyConfig(), new MyServices());
         }
 
         private static IAppConfig _configuration;

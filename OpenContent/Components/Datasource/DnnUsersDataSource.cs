@@ -237,7 +237,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             else
             {
                 App.Services.Logger.Error($"Creation of user failed with createStatus: {createStatus}");
-                throw new DataNotValidException(Localizer.Instance.GetString(createStatus.ToString()) + " (1)");
+                throw new DataNotValidException(App.Services.Localizer.GetString(createStatus.ToString()) + " (1)");
             }
             var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection);
             if (context.Index)
@@ -298,7 +298,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                     catch (Exception exc)
                     {
                         App.Services.Logger.Error($"Update of user {user.Username} failed with 'Username not valid' error");
-                        throw new DataNotValidException(Localizer.Instance.GetString("Username not valid") + " (2)", exc);
+                        throw new DataNotValidException(App.Services.Localizer.GetString("Username not valid") + " (2)", exc);
                     }
                 }
             }
@@ -410,7 +410,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             if (!UserController.ValidatePassword(password))
             {
                 App.Services.Logger.Error($"Changing password of user {user.Username} failed with PasswordInvalid error");
-                throw new DataNotValidException(Localizer.Instance.GetString("PasswordInvalid"));
+                throw new DataNotValidException(App.Services.Localizer.GetString("PasswordInvalid"));
             }
             // Check New Password is not same as username or banned
             var settings = new MembershipPasswordSettings(user.PortalID);
@@ -420,7 +420,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 if (m.FoundBannedPassword(password) || user.Username == password)
                 {
                     App.Services.Logger.Error($"Changing password of user {user.Username} failed with BannedPasswordUsed error");
-                    throw new DataNotValidException(Localizer.Instance.GetString("BannedPasswordUsed"));
+                    throw new DataNotValidException(App.Services.Localizer.GetString("BannedPasswordUsed"));
                 }
             }
             UserController.ResetAndChangePassword(user, password);

@@ -1,14 +1,16 @@
-﻿using System;
+﻿//using System;
 
-namespace Satrabel.OpenContent.Components.Localization
-{
-    public class Localizer
-    {
-        private static readonly Lazy<ILocalizationAdapter> Lazy = new Lazy<ILocalizationAdapter>(() => App.Services.LocalizationAdapter);
-        public static ILocalizationAdapter Instance => Lazy.Value;
+//namespace Satrabel.OpenContent.Components.Localization
+//{
+//    public class Localizer
+//    {
+//        /// <summary>
+//        /// Shortcut to App.Services.Localizer
+//        /// </summary>
+//        public static readonly ILocalizationAdapter Instance = App.Services.Localizer;
 
-        private Localizer()
-        {
-        }
-    }
-}
+//        private Localizer()
+//        {
+//        }
+//    }
+//}
