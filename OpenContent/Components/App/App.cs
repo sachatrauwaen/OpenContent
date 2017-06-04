@@ -4,9 +4,9 @@ namespace Satrabel.OpenContent.Components
 {
     public class App
     {
-        private static readonly Lazy<App> Lazy = new Lazy<App>(() => new App());
-        public static IAppConfig Config => Lazy.Value.BaseConfig;
-        public static IAppServices Services => Lazy.Value.BaseServices;
+        private static readonly App _Lazy = new App();
+        public static IAppConfig Config => _Lazy.BaseConfig;
+        public static IAppServices Services => _Lazy.BaseServices;
 
         private App()
         {
