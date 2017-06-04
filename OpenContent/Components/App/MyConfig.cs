@@ -1,4 +1,6 @@
 ﻿
+using DotNetNuke.Common;
+
 namespace Satrabel.OpenContent.Components
 {
     public class MyConfig : IAppConfig
@@ -50,6 +52,8 @@ namespace Satrabel.OpenContent.Components
                 return CONSTANT;
             }
         }
+
+        public string ApplicationMapPath { get; } = Globals.ApplicationMapPath;
 
         #endregion
     }

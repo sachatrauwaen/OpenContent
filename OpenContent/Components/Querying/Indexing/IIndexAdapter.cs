@@ -8,7 +8,7 @@ namespace Satrabel.OpenContent.Components.Indexing
         IIndexAdapter Instance { get; }
 
         void IndexAll();
-        void ReIndexModuleData(IEnumerable<IIndexableItem> context, FieldConfig indexConfig, string scope);
+        void ReIndexData(IEnumerable<IIndexableItem> context, FieldConfig indexConfig, string scope);
         void Add(IIndexableItem indexableItem, FieldConfig indexConfig);
         void Update(IIndexableItem indexableItem, FieldConfig indexConfig);
         void Delete(IIndexableItem content);

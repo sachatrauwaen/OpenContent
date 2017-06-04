@@ -28,7 +28,7 @@ namespace Satrabel.OpenContent.Components
 
         public ILogAdapter Logger { get; }
 
-        public IIndexAdapter IndexAdapter { get; } = new LuceneIndexAdapter(@"App_Data\OpenContent\lucene_index");
+        public IIndexAdapter IndexAdapter { get; } = new DnnLuceneIndexAdapter(@"App_Data\OpenContent\lucene_index");
 
         public ICacheAdapter CacheAdapter { get; } = new DnnCacheAdapter();
 

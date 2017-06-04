@@ -355,7 +355,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         {
             string scope = INDEX_SCOPE;
             var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection); //todo index is being build from schema & options. But they should be provided by the provider, not directly from the files
-            Indexer.Instance.ReIndexModuleData(UserController.GetUsers(true, false, context.PortalId).Cast<UserInfo>().
+            Indexer.Instance.ReIndexData(UserController.GetUsers(true, false, context.PortalId).Cast<UserInfo>().
                 Where(u => !u.IsInRole("Administrators")).Select(u => new IndexableItemUser()
                 {
                     Data = ToData(u).Data,

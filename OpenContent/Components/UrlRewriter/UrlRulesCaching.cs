@@ -1,5 +1,4 @@
 ﻿using DotNetNuke.Collections.Internal;
-using DotNetNuke.Common;
 using DotNetNuke.Common.Utilities;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Services.Exceptions;
@@ -152,7 +151,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
 
         private static bool IsPathInApplication(string cacheFolder)
         {
-            return cacheFolder.Contains(Globals.ApplicationMapPath);
+            return cacheFolder.Contains(App.Config.ApplicationMapPath);
         }
 
         #endregion

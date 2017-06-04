@@ -399,7 +399,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             string scope = OpenContentInfo.GetScope(context.ModuleId, context.Collection);
             var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection); //todo index is being build from schema & options. But they should be provided by the provider, not directly from the files
             OpenContentController occ = new OpenContentController();
-            Indexer.Instance.ReIndexModuleData(occ.GetContents(context.ModuleId, context.Collection), indexConfig, scope);
+            Indexer.Instance.ReIndexData(occ.GetContents(context.ModuleId, context.Collection), indexConfig, scope);
         }
 
         #endregion

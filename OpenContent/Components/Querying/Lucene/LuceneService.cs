@@ -48,7 +48,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             _analyser = analyser;
             if (string.IsNullOrEmpty(_searchFolder))
                 throw new ArgumentNullException(nameof(searchFolder));
-            IndexFolder = Path.Combine(Globals.ApplicationMapPath, _searchFolder);
+            IndexFolder = Path.Combine(App.Config.ApplicationMapPath, _searchFolder);
             _readerTimeSpan = DEFAULT_REREAD_TIME_SPAN;
         }
 

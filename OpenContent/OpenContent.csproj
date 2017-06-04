@@ -175,6 +175,8 @@
       <DependentUpon>AddEdit.ascx</DependentUpon>
     </Compile>
     <Compile Include="Components\Alpaca\AlpacaLayoutEnum.cs" />
+    <Compile Include="Components\Querying\Lucene\BaseLuceneIndexAdapter.cs" />
+    <Compile Include="Components\Querying\Lucene\DnnLuceneIndexAdapter.cs" />
     <Compile Include="Components\Querying\UserRoleInfo.cs" />
     <Compile Include="Components\AppDefinitions\MenuAction.cs" />
     <Compile Include="Components\AppDefinitions\SecurityAccessLevel.cs" />
@@ -204,11 +206,11 @@
     <Compile Include="Components\Form\NotificationDTO.cs" />
     <Compile Include="Components\Form\SettingsDTO.cs" />
     <Compile Include="Components\App\IAppConfig.cs" />
-    <Compile Include="Components\Indexing\FieldConfig.cs" />
-    <Compile Include="Components\Indexing\FieldConfigUtils.cs" />
-    <Compile Include="Components\Lucene\SelectQueryDefinition.cs" />
-    <Compile Include="Components\Indexing\IIndexableItem.cs" />
-    <Compile Include="Components\Indexing\IndexExtentions.cs" />
+    <Compile Include="Components\Querying\Indexing\FieldConfig.cs" />
+    <Compile Include="Components\Querying\Indexing\FieldConfigUtils.cs" />
+    <Compile Include="Components\Querying\Lucene\SelectQueryDefinition.cs" />
+    <Compile Include="Components\Querying\Indexing\IIndexableItem.cs" />
+    <Compile Include="Components\Querying\Indexing\IndexExtentions.cs" />
     <Compile Include="Components\Json\NotAuthorizedException.cs" />
     <Compile Include="Components\Localization\DnnLocalizationAdapter.cs" />
     <Compile Include="Components\Localization\ILocalizationAdapter.cs" />
@@ -216,8 +218,8 @@
     <Compile Include="Components\Logging\DnnLogAdapter.cs" />
     <Compile Include="Components\Logging\ExceptionExtentions.cs" />
     <Compile Include="Components\Logging\ILogAdapter.cs" />
-    <Compile Include="Components\Indexing\IIndexAdapter.cs" />
-    <Compile Include="Components\Indexing\Indexer.cs" />
+    <Compile Include="Components\Querying\Indexing\IIndexAdapter.cs" />
+    <Compile Include="Components\Querying\Indexing\Indexer.cs" />
     <Compile Include="Components\Manifest\CollectionManifest.cs" />
     <Compile Include="Components\Manifest\OpenContentModuleConfig.cs" />
     <Compile Include="Components\Datasource\DnnTabsDataSource.cs" />
@@ -286,8 +288,7 @@
     <Compile Include="Components\FileUploadController.cs" />
     <Compile Include="Components\JPList\JplistQueryBuilder.cs" />
     <Compile Include="Components\Alpaca\SchemaConfig.cs" />
-    <Compile Include="Components\Lucene\LuceneIndexAdapter.cs" />
-    <Compile Include="Components\Indexing\SearchResults.cs" />
+    <Compile Include="Components\Querying\Indexing\SearchResults.cs" />
     <Compile Include="Components\Manifest\AdditionalDataManifest.cs" />
     <Compile Include="Components\Manifest\Manifest.cs" />
     <Compile Include="Components\Manifest\ManifestUtils.cs" />
@@ -350,10 +351,10 @@
     <Compile Include="Components\JPList\SortDTO.cs" />
     <Compile Include="Components\JPList\StatusDataDTO.cs" />
     <Compile Include="Components\JPList\StatusDTO.cs" />
-    <Compile Include="Components\Lucene\LuceneService.cs" />
-    <Compile Include="Components\Lucene\Mapping\JsonMappingUtils.cs" />
-    <Compile Include="Components\Lucene\Mapping\JsonObjectMapper.cs" />
-    <Compile Include="Components\Lucene\LuceneSearchExtentions.cs" />
+    <Compile Include="Components\Querying\Lucene\LuceneService.cs" />
+    <Compile Include="Components\Querying\Lucene\Mapping\JsonMappingUtils.cs" />
+    <Compile Include="Components\Querying\Lucene\Mapping\JsonObjectMapper.cs" />
+    <Compile Include="Components\Querying\Lucene\LuceneSearchExtentions.cs" />
     <Compile Include="Components\TemplateHelpers\Images\ImageHelper.cs" />
     <Compile Include="Components\TemplateHelpers\Images\ImageUri.cs" />
     <Compile Include="Components\TemplateHelpers\Images\Ratio.cs" />

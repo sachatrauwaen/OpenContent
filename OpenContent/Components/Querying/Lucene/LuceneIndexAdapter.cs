@@ -14,11 +14,11 @@ using Satrabel.OpenContent.Components.Querying.Search;
 
 namespace Satrabel.OpenContent.Components.Lucene
 {
-    public class LuceneIndexAdapter : IDisposable, IIndexAdapter
+    public class DnnLuceneIndexAdapter : IDisposable, IIndexAdapter
     {
         public IIndexAdapter Instance => _instance;
 
-        private static LuceneIndexAdapter _instance { get; set; }
+        private static DnnLuceneIndexAdapter _instance { get; set; }
         private static string _luceneIndexFolder;
 
         private LuceneService _serviceInstance;
@@ -36,9 +36,9 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         #region constructor
 
-        internal LuceneIndexAdapter(string luceneIndexFolder)
+        internal DnnLuceneIndexAdapter(string luceneIndexFolder)
         {
-            LuceneIndexAdapter._instance = this;
+            DnnLuceneIndexAdapter._instance = this;
             _luceneIndexFolder = luceneIndexFolder;
             _serviceInstance = new LuceneService(luceneIndexFolder, JsonMappingUtils.GetAnalyser());
         }
@@ -85,8 +85,8 @@ namespace Satrabel.OpenContent.Components.Lucene
                 topDocs = searcher.Search(type, filter, query, numOfItemsToReturn, sort);
             luceneResults.TotalResults = topDocs.TotalHits;
             luceneResults.ids = topDocs.ScoreDocs.Skip(pageIndex * pageSize)
-                    .Select(d => searcher.Doc(d.Doc).GetField(JsonMappingUtils.FieldId).StringValue)
-                    .ToArray();
+                .Select(d => searcher.Doc(d.Doc).GetField(JsonMappingUtils.FieldId).StringValue)
+                .ToArray();
             return luceneResults;
         }
 
@@ -101,10 +101,10 @@ namespace Satrabel.OpenContent.Components.Lucene
         public void IndexAll() //todo: this should only be called from DataSourceProviders
         {
             App.Services.Logger.Info("Reindexing all OpenContent data, from all portals");
-            LuceneIndexAdapter.ClearInstance();
+            DnnLuceneIndexAdapter.ClearInstance();
             try
             {
-                using (var lc = LuceneIndexAdapter._instance)
+                using (var lc = DnnLuceneIndexAdapter._instance)
                 {
                     foreach (PortalInfo portal in PortalController.Instance.GetPortals())
                     {
@@ -124,7 +124,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             }
             finally
             {
-                LuceneIndexAdapter.ClearInstance();
+                DnnLuceneIndexAdapter.ClearInstance();
             }
             App.Services.Logger.Info("Finished Reindexing all OpenContent data, from all portals");
         }
@@ -139,7 +139,7 @@ namespace Satrabel.OpenContent.Components.Lucene
         {
             try
             {
-                using (LuceneIndexAdapter lc = LuceneIndexAdapter._instance)
+                using (DnnLuceneIndexAdapter lc = DnnLuceneIndexAdapter._instance)
                 {
                     lc.Store.Delete(new TermQuery(new Term("$type", scope)));
                     foreach (var item in list)
@@ -152,11 +152,11 @@ namespace Satrabel.OpenContent.Components.Lucene
             }
             finally
             {
-                LuceneIndexAdapter.ClearInstance();
+                DnnLuceneIndexAdapter.ClearInstance();
             }
         }
 
-        private static void IndexModule(LuceneIndexAdapter lc, OpenContentModuleConfig module)
+        private static void IndexModule(DnnLuceneIndexAdapter lc, OpenContentModuleConfig module)
         {
             OpenContentUtils.CheckOpenContentSettings(module);
 
@@ -166,7 +166,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             }
         }
 
-        private static void IndexModuleData(LuceneIndexAdapter lc, int moduleId, OpenContentSettings settings)
+        private static void IndexModuleData(DnnLuceneIndexAdapter lc, int moduleId, OpenContentSettings settings)
         {
             bool index = false;
             if (settings.TemplateAvailable)
@@ -241,7 +241,7 @@ namespace Satrabel.OpenContent.Components.Lucene
                 _instance.Dispose();
                 _instance = null;
             }
-            _instance = new LuceneIndexAdapter(_luceneIndexFolder);
+            _instance = new DnnLuceneIndexAdapter(_luceneIndexFolder);
         }
 
         #endregion
