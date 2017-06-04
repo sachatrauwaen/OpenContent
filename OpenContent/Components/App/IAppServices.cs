@@ -8,7 +8,7 @@ namespace Satrabel.OpenContent.Components
     public interface IAppServices
     {
         ILogAdapter Logger { get; }
-        IIndexAdapter IndexAdapter { get; }
+        IIndexAdapter Indexer { get; }
         ILocalizationAdapter LocalizationAdapter { get; }
         ICacheAdapter CacheAdapter { get; }
         IFileRepositoryAdapter FileRepository { get; }

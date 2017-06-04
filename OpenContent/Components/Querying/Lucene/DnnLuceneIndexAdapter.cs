@@ -1,60 +1,80 @@
 ﻿using DotNetNuke.Entities.Portals;
+using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Indexing;
 
 namespace Satrabel.OpenContent.Components.Lucene
 {
-    public class DnnLuceneIndexAdapter : BaseLuceneIndexAdapter
+    public class DnnLuceneIndexAdapter : BaseLuceneIndexAdapter, IIndexAdapter
     {
         public DnnLuceneIndexAdapter(string luceneIndexFolder) : base(luceneIndexFolder)
         {
         }
 
-        protected override void GetIndexData(BaseLuceneIndexAdapter lc)
+        /// <summary>
+        /// A helper method to force a Datasource of a module to Reindex itself
+        /// </summary>
+        public static void ReIndexModuleData(OpenContentModuleConfig module)
+        {
+            var settings = module.Settings;
+            bool index = false;
+            if (settings.TemplateAvailable)
+            {
+                index = settings.Manifest.Index;
+            }
+            IDataSource ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
+            if (index && ds is IDataIndex)
+            {
+                //FieldConfig indexConfig = OpenContentUtils.GetIndexConfig(settings.Template);
+                var dsContext = OpenContentUtils.CreateDataContext(module);
+                var dataIndex = (IDataIndex)ds;
+                var indexableData = dataIndex.GetIndexableData(dsContext);
+
+                string scope = OpenContentInfo.GetScope(dsContext.ModuleId, dsContext.Collection);
+                var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(dsContext.TemplateFolder), dsContext.Collection); //todo index is being build from schema & options. But they should be provided by the provider, not directly from the files
+                App.Services.Indexer.Instance.ReIndexData(indexableData, indexConfig, scope);
+            }
+        }
+
+        /// <summary>
+        /// An override to Register all indexable data. This is used by the IndexAll() of the base.BaseLuceneIndexAdapter
+        /// </summary>
+        protected override void RegisterAllIndexableData(BaseLuceneIndexAdapter lc)
         {
             foreach (PortalInfo portal in PortalController.Instance.GetPortals())
             {
                 var modules = DnnUtils.GetDnnOpenContentModules(portal.PortalID);
                 foreach (var module in modules)
                 {
-                    IndexModule(lc, module);
+                    if (!OpenContentUtils.CheckOpenContentSettings(module)) { continue; }
+                    if (module.IsListMode() && !module.Settings.IsOtherModule && module.Settings.Manifest.Index)
+                    {
+                        RegisterModuleDataForIndexing(lc, module);
+                    }
                 }
             }
         }
 
-        private static void IndexModule(BaseLuceneIndexAdapter lc, OpenContentModuleConfig module)
-        {
-            OpenContentUtils.CheckOpenContentSettings(module);
-
-            if (module.IsListMode() && !module.Settings.IsOtherModule && module.Settings.Manifest.Index)
-            {
-                IndexModuleData(lc, module.ViewModule.ModuleId, module.Settings);
-            }
-        }
-
-        private static void IndexModuleData(BaseLuceneIndexAdapter lc, int moduleId, OpenContentSettings settings)
+        private static void RegisterModuleDataForIndexing(IIndexAdapter lc, OpenContentModuleConfig module)
         {
             bool index = false;
+            var settings = module.Settings;
             if (settings.TemplateAvailable)
             {
                 index = settings.Manifest.Index;
             }
-            FieldConfig indexConfig = null;
-            if (index)
+            if (!index) return;
+            
+            IDataSource ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
+            if (ds is IDataIndex)
             {
-                indexConfig = OpenContentUtils.GetIndexConfig(settings.Template);
-            }
-
-            if (settings.IsOtherModule)
-            {
-                moduleId = settings.ModuleId;
-            }
-            OpenContentController occ = new OpenContentController();
-            lc.DeleteAllOfType(OpenContentInfo.GetScope(moduleId, settings.Template.Collection));
-            foreach (OpenContentInfo item in occ.GetContents(moduleId, settings.Template.Collection))
-            {
-                lc.Add(item, indexConfig);
+                var moduleId = settings.IsOtherModule ? settings.ModuleId : module.ViewModule.ModuleId;
+                string scope = OpenContentInfo.GetScope(moduleId, settings.Template.Collection);
+                FieldConfig indexConfig = OpenContentUtils.GetIndexConfig(settings.Template); //todo index is being build from schema & options. But they should be provided by the provider, not directly from the files
+                var dsContext = OpenContentUtils.CreateDataContext(module);
+                var dataIndex = (IDataIndex)ds;
+                var indexableData = dataIndex.GetIndexableData(dsContext);
+                lc.AddList(indexableData, indexConfig, scope);
             }
         }
-
     }
 }

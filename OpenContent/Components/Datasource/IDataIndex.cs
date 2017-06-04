@@ -1,7 +1,10 @@
-﻿namespace Satrabel.OpenContent.Components.Datasource
+﻿using System.Collections.Generic;
+using Satrabel.OpenContent.Components.Indexing;
+
+namespace Satrabel.OpenContent.Components.Datasource
 {
     public interface IDataIndex
     {
-        void Reindex(DataSourceContext context);
+        IEnumerable<IIndexableItem> GetIndexableData(DataSourceContext context);
     }
 }

@@ -461,6 +461,9 @@ namespace Satrabel.OpenContent.Components
             return FileUri.ReverseMapPath(template);
         }
 
+        /// <summary>
+        /// Checks the OpenContent settings.
+        /// </summary>
         public static bool CheckOpenContentSettings(OpenContentModuleConfig module)
         {
             bool result = true;

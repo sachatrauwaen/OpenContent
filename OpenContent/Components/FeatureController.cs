@@ -349,7 +349,7 @@ namespace Satrabel.OpenContent.Components
             }
             else if (version == "03.02.00")
             {
-                Indexer.Instance.IndexAll();
+                App.Services.Indexer.Instance.IndexAll();
             }
             return version + res;
         }

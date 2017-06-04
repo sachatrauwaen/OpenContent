@@ -10,6 +10,7 @@ namespace Satrabel.OpenContent.Components.Indexing
         void IndexAll();
         void ReIndexData(IEnumerable<IIndexableItem> context, FieldConfig indexConfig, string scope);
         void Add(IIndexableItem indexableItem, FieldConfig indexConfig);
+        void AddList(IEnumerable<IIndexableItem> context, FieldConfig indexConfig, string scope);
         void Update(IIndexableItem indexableItem, FieldConfig indexConfig);
         void Delete(IIndexableItem content);
         void Commit();

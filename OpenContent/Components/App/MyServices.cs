@@ -1,4 +1,5 @@
-﻿using DotNetNuke.Entities.Portals;
+﻿using System;
+using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components.Dnn;
 using Satrabel.OpenContent.Components.Files;
 using Satrabel.OpenContent.Components.Indexing;
@@ -28,7 +29,10 @@ namespace Satrabel.OpenContent.Components
 
         public ILogAdapter Logger { get; }
 
-        public IIndexAdapter IndexAdapter { get; } = new DnnLuceneIndexAdapter(@"App_Data\OpenContent\lucene_index");
+
+        private static readonly Lazy<IIndexAdapter> _Indexer = new Lazy<IIndexAdapter>(() => new DnnLuceneIndexAdapter(@"App_Data\OpenContent\lucene_index"));
+        public IIndexAdapter Indexer => _Indexer.Value.Instance;
+
 
         public ICacheAdapter CacheAdapter { get; } = new DnnCacheAdapter();
 

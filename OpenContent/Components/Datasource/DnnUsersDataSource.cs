@@ -91,7 +91,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         {
             if (context.Index && selectQuery != null)
             {
-                SearchResults docs = Indexer.Instance.Search(INDEX_SCOPE, selectQuery);
+                SearchResults docs = App.Services.Indexer.Instance.Search(INDEX_SCOPE, selectQuery);
                 if (LogContext.IsLogActive)
                 {
                     var logKey = "Lucene query";
@@ -242,12 +242,12 @@ namespace Satrabel.OpenContent.Components.Datasource
             var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection);
             if (context.Index)
             {
-                Indexer.Instance.Add(new IndexableItemUser()
+                App.Services.Indexer.Instance.Add(new IndexableItemUser()
                 {
                     Data = data,
                     User = user
                 }, indexConfig);
-                Indexer.Instance.Commit();
+                App.Services.Indexer.Instance.Commit();
             }
         }
 
@@ -308,12 +308,12 @@ namespace Satrabel.OpenContent.Components.Datasource
             var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection);
             if (context.Index)
             {
-                Indexer.Instance.Update(new IndexableItemUser()
+                App.Services.Indexer.Instance.Update(new IndexableItemUser()
                 {
                     Data = data,
                     User = user
                 }, indexConfig);
-                Indexer.Instance.Commit();
+                App.Services.Indexer.Instance.Commit();
             }
         }
 
@@ -355,12 +355,23 @@ namespace Satrabel.OpenContent.Components.Datasource
         {
             string scope = INDEX_SCOPE;
             var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection); //todo index is being build from schema & options. But they should be provided by the provider, not directly from the files
-            Indexer.Instance.ReIndexData(UserController.GetUsers(true, false, context.PortalId).Cast<UserInfo>().
+            IEnumerable<IIndexableItem> indexData = UserController.GetUsers(true, false, context.PortalId).Cast<UserInfo>().
                 Where(u => !u.IsInRole("Administrators")).Select(u => new IndexableItemUser()
                 {
                     Data = ToData(u).Data,
                     User = u
-                }), indexConfig, scope);
+                });
+            App.Services.Indexer.Instance.ReIndexData(indexData, indexConfig, scope);
+        }
+
+        public IEnumerable<IIndexableItem> GetIndexableData(DataSourceContext context)
+        {
+            return UserController.GetUsers(true, false, context.PortalId).Cast<UserInfo>().
+                     Where(u => !u.IsInRole("Administrators")).Select(u => new IndexableItemUser()
+                     {
+                         Data = ToData(u).Data,
+                         User = u
+                     });
         }
 
         #region private methods

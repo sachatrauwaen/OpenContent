@@ -13,19 +13,20 @@ namespace Satrabel.OpenContent.Components.Lucene
     {
         public IIndexAdapter Instance => _instance;
 
-        protected static BaseLuceneIndexAdapter _instance { get; set; }
-        protected static string _luceneIndexFolder;
+        private static BaseLuceneIndexAdapter _instance;// { get; set; }
+        private static string _luceneIndexFolder;
 
-        private LuceneService _serviceInstance;
+
+        private LuceneService _serviceStoreInstance;
 
 
         protected internal LuceneService Store
         {
             get
             {
-                if (_serviceInstance == null)
+                if (_serviceStoreInstance == null)
                     throw new Exception("LuceneIndexAdapter not initialized properly");
-                return _serviceInstance;
+                return _serviceStoreInstance;
             }
         }
 
@@ -35,7 +36,7 @@ namespace Satrabel.OpenContent.Components.Lucene
         {
             _instance = this;
             _luceneIndexFolder = luceneIndexFolder;
-            _serviceInstance = new LuceneService(luceneIndexFolder, JsonMappingUtils.GetAnalyser());
+            _serviceStoreInstance = new LuceneService(luceneIndexFolder, JsonMappingUtils.GetAnalyser());
         }
 
         #endregion
@@ -46,7 +47,6 @@ namespace Satrabel.OpenContent.Components.Lucene
         {
             var def = new SelectQueryDefinition();
             def.Build(selectQuery);
-
 
             var results = Search(indexScope, def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
             results.QueryDefinition = new QueryDefinition()
@@ -89,11 +89,10 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         #region Index
 
-
         /// <summary>
-        /// Reindex all OpenContent modules of all portals.
+        /// Reindex all content.
         /// </summary>
-        public void IndexAll() //todo: this should only be called from DataSourceProviders
+        public void IndexAll()
         {
             App.Services.Logger.Info("Reindexing all OpenContent data, from all portals");
             ClearInstance();
@@ -101,7 +100,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             {
                 using (var lc = _instance)
                 {
-                    GetIndexData(lc);
+                    RegisterAllIndexableData(lc);
                     lc.Store.Commit();
                     lc.Store.OptimizeSearchIndex(true);
                 }
@@ -117,12 +116,10 @@ namespace Satrabel.OpenContent.Components.Lucene
             App.Services.Logger.Info("Finished Reindexing all OpenContent data, from all portals");
         }
 
-        protected virtual void GetIndexData(BaseLuceneIndexAdapter lc)
+        protected virtual void RegisterAllIndexableData(BaseLuceneIndexAdapter lc)
         {
             throw new Exception("method GetIndexData should be overridden");
         }
-
-        //public abstract void ReIndexModuleData(IEnumerable<IIndexableItem> list, FieldConfig indexConfig, string scope);
 
         /// <summary>
         /// Use this to 
@@ -155,6 +152,15 @@ namespace Satrabel.OpenContent.Components.Lucene
         #endregion
 
         #region Operations
+
+        public void AddList(IEnumerable<IIndexableItem> list, FieldConfig indexConfig, string scope)
+        {
+            DeleteAllOfType(this, scope);
+            foreach (IIndexableItem item in list)
+            {
+                Add(item, indexConfig);
+            }
+        }
 
         public void Add(IIndexableItem data, FieldConfig config)
         {
@@ -190,16 +196,12 @@ namespace Satrabel.OpenContent.Components.Lucene
             Store.Delete(deleteQuery);
         }
 
-        internal void DeleteAllOfType(string scope)
-        {
-            DeleteAllOfType(this, scope);
-        }
-
-        internal void DeleteAllOfType(BaseLuceneIndexAdapter lc, string scope)
+        private static void DeleteAllOfType(BaseLuceneIndexAdapter lc, string scope)
         {
             var selection = new TermQuery(new Term("$type", scope));
             lc.Store.Delete(selection);
         }
+
         public void Commit()
         {
             Store.Commit();
@@ -219,10 +221,10 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         public void Dispose()
         {
-            if (_serviceInstance != null)
+            if (_serviceStoreInstance != null)
             {
-                _serviceInstance.Dispose();
-                _serviceInstance = null;
+                _serviceStoreInstance.Dispose();
+                _serviceStoreInstance = null;
             }
         }
     }

@@ -219,7 +219,6 @@
     <Compile Include="Components\Logging\ExceptionExtentions.cs" />
     <Compile Include="Components\Logging\ILogAdapter.cs" />
     <Compile Include="Components\Querying\Indexing\IIndexAdapter.cs" />
-    <Compile Include="Components\Querying\Indexing\Indexer.cs" />
     <Compile Include="Components\Manifest\CollectionManifest.cs" />
     <Compile Include="Components\Manifest\OpenContentModuleConfig.cs" />
     <Compile Include="Components\Datasource\DnnTabsDataSource.cs" />

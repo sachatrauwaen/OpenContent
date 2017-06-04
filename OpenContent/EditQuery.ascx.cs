@@ -16,6 +16,7 @@ using Satrabel.OpenContent.Components;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Indexing;
+using Satrabel.OpenContent.Components.Lucene;
 
 #endregion
 
@@ -38,26 +39,12 @@ namespace Satrabel.OpenContent
         }
         protected void bIndex_Click(object sender, EventArgs e)
         {
-            //LuceneController.Instance.ReIndexModuleData(ModuleId, this.OpenContentSettings());
-            var module = OpenContentModuleConfig.Create(this.ModuleConfiguration, PortalSettings);
-            var settings = module.Settings;
-            bool index = false;
-            if (settings.TemplateAvailable)
-            {
-                index = settings.Manifest.Index;
-            }
-            IDataSource ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
-            if (index && ds is IDataIndex)
-            {
-                FieldConfig indexConfig = OpenContentUtils.GetIndexConfig(settings.Template);
-                var dsContext = OpenContentUtils.CreateDataContext(module);
-                var dataIndex = (IDataIndex)ds;
-                dataIndex.Reindex(dsContext);
-            }
+            var module = OpenContentModuleConfig.Create(ModuleConfiguration, PortalSettings);
+            DnnLuceneIndexAdapter.ReIndexModuleData(module);
         }
         protected void bIndexAll_Click(object sender, EventArgs e)
         {
-          Indexer.Instance.IndexAll();
+            App.Services.Indexer.Instance.IndexAll();
         }
         protected void bGenerate_Click(object sender, EventArgs e)
         {
