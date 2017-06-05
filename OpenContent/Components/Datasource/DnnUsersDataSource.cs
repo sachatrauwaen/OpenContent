@@ -13,10 +13,10 @@ using Satrabel.OpenContent.Components.Alpaca;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Satrabel.OpenContent.Components.Datasource.Search;
 using Satrabel.OpenContent.Components.Logging;
-using Satrabel.OpenContent.Components.Indexing;
 using Satrabel.OpenContent.Components.Localization;
-using Satrabel.OpenContent.Components.Querying.Search;
+using Satrabel.OpenContent.Components.Lucene.Config;
 
 namespace Satrabel.OpenContent.Components.Datasource
 {
@@ -91,7 +91,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         {
             if (context.Index && selectQuery != null)
             {
-                SearchResults docs = App.Services.Indexer.Instance.Search(INDEX_SCOPE, selectQuery);
+                SearchResults docs = App.Services.LuceneIndex.Instance.Search(INDEX_SCOPE, selectQuery);
                 if (LogContext.IsLogActive)
                 {
                     var logKey = "Lucene query";
@@ -242,12 +242,12 @@ namespace Satrabel.OpenContent.Components.Datasource
             var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection);
             if (context.Index)
             {
-                App.Services.Indexer.Instance.Add(new IndexableItemUser()
+                App.Services.LuceneIndex.Instance.Add(new IndexableItemUser()
                 {
                     Data = data,
                     User = user
                 }, indexConfig);
-                App.Services.Indexer.Instance.Commit();
+                App.Services.LuceneIndex.Instance.Commit();
             }
         }
 
@@ -308,12 +308,12 @@ namespace Satrabel.OpenContent.Components.Datasource
             var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection);
             if (context.Index)
             {
-                App.Services.Indexer.Instance.Update(new IndexableItemUser()
+                App.Services.LuceneIndex.Instance.Update(new IndexableItemUser()
                 {
                     Data = data,
                     User = user
                 }, indexConfig);
-                App.Services.Indexer.Instance.Commit();
+                App.Services.LuceneIndex.Instance.Commit();
             }
         }
 
@@ -361,7 +361,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                     Data = ToData(u).Data,
                     User = u
                 });
-            App.Services.Indexer.Instance.ReIndexData(indexData, indexConfig, scope);
+            App.Services.LuceneIndex.Instance.ReIndexData(indexData, indexConfig, scope);
         }
 
         public IEnumerable<IIndexableItem> GetIndexableData(DataSourceContext context)

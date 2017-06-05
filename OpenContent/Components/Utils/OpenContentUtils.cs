@@ -19,7 +19,7 @@ using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.TemplateHelpers;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Datasource;
-using Satrabel.OpenContent.Components.Indexing;
+using Satrabel.OpenContent.Components.Lucene.Config;
 using UserRoleInfo = Satrabel.OpenContent.Components.Querying.UserRoleInfo;
 
 namespace Satrabel.OpenContent.Components

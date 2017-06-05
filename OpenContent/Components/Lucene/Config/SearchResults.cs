@@ -1,4 +1,4 @@
-﻿namespace Satrabel.OpenContent.Components.Indexing
+﻿namespace Satrabel.OpenContent.Components.Lucene.Config
 {
     public class SearchResults
     {

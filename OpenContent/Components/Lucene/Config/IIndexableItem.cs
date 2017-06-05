@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json.Linq;
 
-namespace Satrabel.OpenContent.Components.Indexing
+namespace Satrabel.OpenContent.Components.Lucene.Config
 {
     public interface IIndexableItem
     {

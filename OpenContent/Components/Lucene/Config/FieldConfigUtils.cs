@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Satrabel.OpenContent.Components.Querying.Search;
+using Satrabel.OpenContent.Components.Datasource.Search;
 
-namespace Satrabel.OpenContent.Components.Indexing
+namespace Satrabel.OpenContent.Components.Lucene.Config
 {
     public class FieldConfigUtils
     {

@@ -1,6 +1,6 @@
 ﻿using System.Linq;
-using Satrabel.OpenContent.Components.Indexing;
-using Satrabel.OpenContent.Components.Querying.Search;
+using Satrabel.OpenContent.Components.Datasource.Search;
+using Satrabel.OpenContent.Components.Lucene.Config;
 
 namespace Satrabel.OpenContent.Components.Rest
 {

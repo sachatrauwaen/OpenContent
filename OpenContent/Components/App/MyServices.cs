@@ -2,10 +2,10 @@
 using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components.Dnn;
 using Satrabel.OpenContent.Components.Files;
-using Satrabel.OpenContent.Components.Indexing;
 using Satrabel.OpenContent.Components.Localization;
 using Satrabel.OpenContent.Components.Logging;
 using Satrabel.OpenContent.Components.Lucene;
+using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.Settings;
 
 namespace Satrabel.OpenContent.Components
@@ -26,7 +26,7 @@ namespace Satrabel.OpenContent.Components
         /// </remarks>
         static MyServices()
         {
-            _Indexer = new Lazy<IIndexAdapter>(() => new DnnLuceneIndexAdapter(@"App_Data\OpenContent\lucene_index"));
+            _Indexer = new Lazy<ILuceneIndexAdapter>(() => new DnnLuceneIndexAdapter(@"App_Data\OpenContent\lucene_index"));
             _Localizer = new Lazy<ILocalizationAdapter>(() => new DnnLocalizationAdapter());
             _Logger = new Lazy<ILogAdapter>(() => DnnLogAdapter.GetLogAdapter(App.Config.Opencontent));
             _Cacher = new Lazy<ICacheAdapter>(() => new DnnCacheAdapter());
@@ -35,7 +35,7 @@ namespace Satrabel.OpenContent.Components
         }
 
         // static private variables for Thread-safe / cross-portal services
-        private static readonly Lazy<IIndexAdapter> _Indexer;
+        private static readonly Lazy<ILuceneIndexAdapter> _Indexer;
         private static readonly Lazy<ILocalizationAdapter> _Localizer;
         private static readonly Lazy<ILogAdapter> _Logger;
         private static readonly Lazy<ICacheAdapter> _Cacher;
@@ -44,7 +44,7 @@ namespace Satrabel.OpenContent.Components
 
 
         // static variables for Thread-safe / cross-portal services
-        public IIndexAdapter Indexer => _Indexer.Value;
+        public ILuceneIndexAdapter LuceneIndex => _Indexer.Value;
         public ILocalizationAdapter Localizer => _Localizer.Value;
         public ILogAdapter Logger => _Logger.Value;
         public ICacheAdapter CacheAdapter => _Cacher.Value;

@@ -5,7 +5,7 @@ using Lucene.Net.Index;
 using Lucene.Net.Search;
 using Newtonsoft.Json.Linq;
 using System;
-using Satrabel.OpenContent.Components.Indexing;
+using Satrabel.OpenContent.Components.Lucene.Config;
 
 namespace Satrabel.OpenContent.Components.Lucene.Mapping
 {

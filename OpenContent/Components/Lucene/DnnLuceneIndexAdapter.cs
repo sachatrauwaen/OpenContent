@@ -1,10 +1,10 @@
 ﻿using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components.Datasource;
-using Satrabel.OpenContent.Components.Indexing;
+using Satrabel.OpenContent.Components.Lucene.Config;
 
 namespace Satrabel.OpenContent.Components.Lucene
 {
-    public class DnnLuceneIndexAdapter : BaseLuceneIndexAdapter, IIndexAdapter
+    public class DnnLuceneIndexAdapter : BaseLuceneIndexAdapter, ILuceneIndexAdapter
     {
         public DnnLuceneIndexAdapter(string luceneIndexFolder) : base(luceneIndexFolder)
         {
@@ -24,14 +24,13 @@ namespace Satrabel.OpenContent.Components.Lucene
             IDataSource ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
             if (index && ds is IDataIndex)
             {
-                //FieldConfig indexConfig = OpenContentUtils.GetIndexConfig(settings.Template);
                 var dsContext = OpenContentUtils.CreateDataContext(module);
                 var dataIndex = (IDataIndex)ds;
                 var indexableData = dataIndex.GetIndexableData(dsContext);
 
                 string scope = OpenContentInfo.GetScope(dsContext.ModuleId, dsContext.Collection);
                 var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(dsContext.TemplateFolder), dsContext.Collection); //todo index is being build from schema & options. But they should be provided by the provider, not directly from the files
-                App.Services.Indexer.Instance.ReIndexData(indexableData, indexConfig, scope);
+                App.Services.LuceneIndex.Instance.ReIndexData(indexableData, indexConfig, scope);
             }
         }
 
@@ -54,7 +53,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             }
         }
 
-        private static void RegisterModuleDataForIndexing(IIndexAdapter lc, OpenContentModuleConfig module)
+        private static void RegisterModuleDataForIndexing(ILuceneIndexAdapter lc, OpenContentModuleConfig module)
         {
             bool index = false;
             var settings = module.Settings;

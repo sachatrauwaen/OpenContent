@@ -1,13 +1,15 @@
-﻿namespace Satrabel.OpenContent.Components.Querying.Search
+﻿using System;
+
+namespace Satrabel.OpenContent.Components.Datasource.Search
 {
-    public class FloatRuleValue : RuleValue
+    public class DateTimeRuleValue : RuleValue
     {
-        private float Value;
-        public FloatRuleValue(float value)
+        private DateTime Value;
+        public DateTimeRuleValue(DateTime value)
         {
             Value = value;
         }
-        public override float AsFloat
+        public override DateTime AsDateTime
         {
             get
             {

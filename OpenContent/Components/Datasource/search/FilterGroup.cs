@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Satrabel.OpenContent.Components.Querying.Search
+namespace Satrabel.OpenContent.Components.Datasource.Search
 {
     public class FilterGroup
     {

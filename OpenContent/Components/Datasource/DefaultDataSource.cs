@@ -2,7 +2,7 @@
 using Satrabel.OpenContent.Components.Alpaca;
 using System;
 using System.Linq;
-using Satrabel.OpenContent.Components.Querying.Search;
+using Satrabel.OpenContent.Components.Datasource.Search;
 
 namespace Satrabel.OpenContent.Components.Datasource
 {

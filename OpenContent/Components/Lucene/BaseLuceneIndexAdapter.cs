@@ -3,24 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using Lucene.Net.Index;
 using Lucene.Net.Search;
-using Satrabel.OpenContent.Components.Indexing;
+using Satrabel.OpenContent.Components.Datasource.Search;
+using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.Lucene.Mapping;
-using Satrabel.OpenContent.Components.Querying.Search;
 
 namespace Satrabel.OpenContent.Components.Lucene
 {
-    public class BaseLuceneIndexAdapter : IDisposable, IIndexAdapter
+    public class BaseLuceneIndexAdapter : IDisposable, ILuceneIndexAdapter
     {
-        public IIndexAdapter Instance => _instance;
-
         private static BaseLuceneIndexAdapter _instance;// { get; set; }
         private static string _luceneIndexFolder;
 
 
+        public ILuceneIndexAdapter Instance => _instance;
+
         private LuceneService _serviceStoreInstance;
 
-
-        protected internal LuceneService Store
+        public LuceneService Store
         {
             get
             {

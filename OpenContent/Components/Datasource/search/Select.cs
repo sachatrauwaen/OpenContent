@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Satrabel.OpenContent.Components.Querying.Search
+namespace Satrabel.OpenContent.Components.Datasource.Search
 {
     public class Select
     {

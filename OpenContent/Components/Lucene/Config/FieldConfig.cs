@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using Newtonsoft.Json;
 
-namespace Satrabel.OpenContent.Components.Indexing
+namespace Satrabel.OpenContent.Components.Lucene.Config
 {
     public class FieldConfig
     {

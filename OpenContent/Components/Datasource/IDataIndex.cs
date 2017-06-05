@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Satrabel.OpenContent.Components.Indexing;
+using Satrabel.OpenContent.Components.Lucene.Config;
 
 namespace Satrabel.OpenContent.Components.Datasource
 {
