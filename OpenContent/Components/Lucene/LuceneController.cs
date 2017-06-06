@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Lucene.Net.Search;
-using Satrabel.OpenContent.Components.Datasource.Search;
 using Satrabel.OpenContent.Components.Lucene.Config;
 
 namespace Satrabel.OpenContent.Components.Lucene
@@ -12,6 +7,6 @@ namespace Satrabel.OpenContent.Components.Lucene
     public class LuceneController
     {
         [Obsolete("LuceneController.Instance is deprecated (since july 2017), please use App.Service.LuceneIndex instead.")]
-        public static readonly ILuceneIndexAdapter Instance = App.Services.LuceneIndex;
+        public static ILuceneIndexAdapter Instance => App.Services.LuceneIndex;
     }
 }

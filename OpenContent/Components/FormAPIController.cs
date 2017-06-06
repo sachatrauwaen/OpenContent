@@ -60,7 +60,6 @@ namespace Satrabel.OpenContent.Components
                 var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
                 IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
-                //var source = req.form["Source"].ToString();
                 var dsItem = ds.Get(dsContext, req.id);
                 var res = ds.Action(dsContext, string.IsNullOrEmpty(req.action) ? "FormSubmit" : req.action, dsItem, data);
                 return Request.CreateResponse(HttpStatusCode.OK, res);
