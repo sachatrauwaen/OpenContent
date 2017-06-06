@@ -91,7 +91,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         {
             if (context.Index && selectQuery != null)
             {
-                SearchResults docs = LuceneController.Instance.Search(INDEX_SCOPE, selectQuery);
+                SearchResults docs = LuceneUtils.Search(INDEX_SCOPE, selectQuery);
                 if (LogContext.IsLogActive)
                 {
                     var logKey = "Lucene query";

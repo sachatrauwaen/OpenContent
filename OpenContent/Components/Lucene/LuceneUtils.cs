@@ -1,11 +1,30 @@
 ﻿using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components.Datasource;
+using Satrabel.OpenContent.Components.Datasource.Search;
 using Satrabel.OpenContent.Components.Lucene.Config;
 
 namespace Satrabel.OpenContent.Components.Lucene
 {
-    public class LuceneUtils
+    public static class LuceneUtils
     {
+
+        public static SearchResults Search(string indexScope, Select selectQuery)
+        {
+            var def = new SelectQueryDefinition();
+            def.Build(selectQuery);
+
+            var results = LuceneController.Instance.Search(indexScope, def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
+            results.QueryDefinition = new QueryDefinition()
+            {
+                Filter = def.Filter.ToString(),
+                Query = def.Query.ToString(),
+                Sort = def.Sort.ToString(),
+                PageIndex = def.PageIndex,
+                PageSize = def.PageSize
+            };
+            return results;
+        }
+
         /// <summary>
         /// A helper method to force a Datasource of a module to Reindex itself
         /// </summary>
@@ -36,9 +55,9 @@ namespace Satrabel.OpenContent.Components.Lucene
         }
 
         /// <summary>
-        /// An override to Register all indexable data. This is used by the IndexAll() of the base.BaseLuceneIndexAdapter
+        /// A method to Register all indexable data. This is used by IndexAll()
         /// </summary>
-        protected static void RegisterAllIndexableData(LuceneController lc)
+        public static void RegisterAllIndexableData(LuceneController lc)
         {
             foreach (PortalInfo portal in PortalController.Instance.GetPortals())
             {

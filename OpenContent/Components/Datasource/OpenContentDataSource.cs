@@ -200,40 +200,38 @@ namespace Satrabel.OpenContent.Components.Datasource
             {
                 return GetAll(context);
             }
-            else
+
+            OpenContentController ctrl = new OpenContentController();
+            SearchResults docs = LuceneUtils.Search(OpenContentInfo.GetScope(GetModuleId(context), context.Collection), selectQuery);
+            if (LogContext.IsLogActive)
             {
-                OpenContentController ctrl = new OpenContentController();
-                SearchResults docs = LuceneController.Instance.Search(OpenContentInfo.GetScope(GetModuleId(context), context.Collection), selectQuery);
-                if (LogContext.IsLogActive)
-                {
-                    var logKey = "Lucene query";
-                    LogContext.Log(context.ActiveModuleId, logKey, "Filter", docs.QueryDefinition.Filter);
-                    LogContext.Log(context.ActiveModuleId, logKey, "Query", docs.QueryDefinition.Query);
-                    LogContext.Log(context.ActiveModuleId, logKey, "Sort", docs.QueryDefinition.Sort);
-                    LogContext.Log(context.ActiveModuleId, logKey, "PageIndex", docs.QueryDefinition.PageIndex);
-                    LogContext.Log(context.ActiveModuleId, logKey, "PageSize", docs.QueryDefinition.PageSize);
-                }
-                int total = docs.TotalResults;
-                var dataList = new List<IDataItem>();
-                foreach (string item in docs.ids)
-                {
-                    var content = ctrl.GetContent(int.Parse(item));
-                    if (content != null)
-                    {
-                        dataList.Add(CreateDefaultDataItem(content));
-                    }
-                    else
-                    {
-                        App.Services.Logger.Debug($"OpenContentDataSource.GetAll() ContentItem not found [{item}]");
-                    }
-                }
-                return new DefaultDataItems()
-                {
-                    Items = dataList,
-                    Total = total,
-                    DebugInfo = docs.QueryDefinition.Filter + " - " + docs.QueryDefinition.Query + " - " + docs.QueryDefinition.Sort
-                };
+                var logKey = "Lucene query";
+                LogContext.Log(context.ActiveModuleId, logKey, "Filter", docs.QueryDefinition.Filter);
+                LogContext.Log(context.ActiveModuleId, logKey, "Query", docs.QueryDefinition.Query);
+                LogContext.Log(context.ActiveModuleId, logKey, "Sort", docs.QueryDefinition.Sort);
+                LogContext.Log(context.ActiveModuleId, logKey, "PageIndex", docs.QueryDefinition.PageIndex);
+                LogContext.Log(context.ActiveModuleId, logKey, "PageSize", docs.QueryDefinition.PageSize);
             }
+            int total = docs.TotalResults;
+            var dataList = new List<IDataItem>();
+            foreach (string item in docs.ids)
+            {
+                var content = ctrl.GetContent(int.Parse(item));
+                if (content != null)
+                {
+                    dataList.Add(CreateDefaultDataItem(content));
+                }
+                else
+                {
+                    App.Services.Logger.Debug($"OpenContentDataSource.GetAll() ContentItem not found [{item}]");
+                }
+            }
+            return new DefaultDataItems()
+            {
+                Items = dataList,
+                Total = total,
+                DebugInfo = docs.QueryDefinition.Filter + " - " + docs.QueryDefinition.Query + " - " + docs.QueryDefinition.Sort
+            };
         }
 
         #region Query Alpaca info for Edit

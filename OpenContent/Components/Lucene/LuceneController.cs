@@ -9,7 +9,6 @@ using Satrabel.OpenContent.Components.Lucene.Mapping;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using Version = Lucene.Net.Util.Version;
 using System.Collections.Generic;
-using Satrabel.OpenContent.Components.Datasource.Search;
 
 #endregion
 
@@ -63,25 +62,9 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         #region Search
 
-        //public SearchResults Search(string type, QueryDefinition def)
-        //{
-        //    return Search(type, def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
-        //}
-        public SearchResults Search(string indexScope, Select selectQuery)
+        public SearchResults Search(string type, SelectQueryDefinition def)
         {
-            var def = new SelectQueryDefinition();
-            def.Build(selectQuery);
-
-            var results = Search(indexScope, def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
-            results.QueryDefinition = new QueryDefinition()
-            {
-                Filter = def.Filter.ToString(),
-                Query = def.Query.ToString(),
-                Sort = def.Sort.ToString(),
-                PageIndex = def.PageIndex,
-                PageSize = def.PageSize
-            };
-            return results;
+            return Search(type, def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
         }
 
         public SearchResults Search(string type, Query filter, Query query, Sort sort, int pageSize, int pageIndex)
