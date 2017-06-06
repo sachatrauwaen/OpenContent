@@ -141,11 +141,10 @@ namespace Satrabel.OpenContent.Components
                     if (DnnLanguageUtils.IsMultiLingualPortal(modInfo.PortalID))
                     {
                         searchDoc = GetLocalizedItem(modInfo, settings, content);
-                        searchDocuments.Add(searchDoc);
+                        searchDocuments.Add(searchDoc);                        
                         if (modInfo.LocalizedModules != null)
                             foreach (var localizedModule in modInfo.LocalizedModules)
-                            {
-                                Log.Logger.TraceFormat("Indexing content Module {0} - Tab {1} -  foreach (var localizedModule in modInfo.LocalizedModules)", modInfo.ModuleID, modInfo.TabID, modInfo.CultureCode);
+                            {                                
                                 SearchDocument localizedSearchDoc = GetLocalizedItem(localizedModule.Value, settings, content);
                                 searchDocuments.Add(localizedSearchDoc);
                             }
@@ -204,6 +203,15 @@ namespace Satrabel.OpenContent.Components
                 var hbEngine = new HandlebarsEngine();
                 docTitle = hbEngine.ExecuteWithoutFaillure(settings.Template.Main.DnnSearchTitle, dynForHBS, modInfo.ModuleTitle);
             }
+
+            // Check if it is a single template 
+            if (settings.Template?.Type != "multiple")
+            {
+                // With a signle template we don't want to identify the content by id.
+                url = TestableGlobals.Instance.NavigateURL(modInfo.TabID, ps, "");
+            } 
+
+
 
             var retval = new SearchDocument
             {
