@@ -20,7 +20,6 @@ using DotNetNuke.Entities.Host;
 using DotNetNuke.Common.Utilities;
 using ICSharpCode.SharpZipLib.Zip;
 using System.Web;
-using Satrabel.OpenContent.Components.Localization;
 using Satrabel.OpenContent.Components.Rss;
 using Satrabel.OpenContent.Components.Manifest;
 

@@ -4,12 +4,8 @@ using Satrabel.OpenContent.Components.Lucene.Config;
 
 namespace Satrabel.OpenContent.Components.Lucene
 {
-    public class DnnLuceneIndexAdapter : BaseLuceneIndexAdapter, ILuceneIndexAdapter
+    public class DnnLuceneIndexAdapter
     {
-        public DnnLuceneIndexAdapter(string luceneIndexFolder) : base(luceneIndexFolder)
-        {
-        }
-
         /// <summary>
         /// A helper method to force a Datasource of a module to Reindex itself
         /// </summary>
@@ -30,14 +26,19 @@ namespace Satrabel.OpenContent.Components.Lucene
 
                 string scope = OpenContentInfo.GetScope(dsContext.ModuleId, dsContext.Collection);
                 var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(dsContext.TemplateFolder), dsContext.Collection); //todo index is being build from schema & options. But they should be provided by the provider, not directly from the files
-                App.Services.LuceneIndex.Instance.ReIndexData(indexableData, indexConfig, scope);
+                LuceneController.Instance.ReIndexData(indexableData, indexConfig, scope);
             }
+        }
+
+        public static void IndexAll()
+        {
+            LuceneController.Instance.IndexAll(RegisterAllIndexableData);
         }
 
         /// <summary>
         /// An override to Register all indexable data. This is used by the IndexAll() of the base.BaseLuceneIndexAdapter
         /// </summary>
-        protected override void RegisterAllIndexableData(BaseLuceneIndexAdapter lc)
+        protected static void RegisterAllIndexableData(LuceneController lc)
         {
             foreach (PortalInfo portal in PortalController.Instance.GetPortals())
             {
@@ -53,7 +54,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             }
         }
 
-        private static void RegisterModuleDataForIndexing(ILuceneIndexAdapter lc, OpenContentModuleConfig module)
+        private static void RegisterModuleDataForIndexing(LuceneController lc, OpenContentModuleConfig module)
         {
             bool index = false;
             var settings = module.Settings;
@@ -62,7 +63,7 @@ namespace Satrabel.OpenContent.Components.Lucene
                 index = settings.Manifest.Index;
             }
             if (!index) return;
-            
+
             IDataSource ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
             if (ds is IDataIndex)
             {

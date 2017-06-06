@@ -14,7 +14,6 @@ using DotNetNuke.Entities.Modules;
 using DotNetNuke.Common;
 using Satrabel.OpenContent.Components;
 using Satrabel.OpenContent.Components.Alpaca;
-using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Lucene;
 
 #endregion
@@ -43,7 +42,7 @@ namespace Satrabel.OpenContent
         }
         protected void bIndexAll_Click(object sender, EventArgs e)
         {
-            App.Services.LuceneIndex.Instance.IndexAll();
+            DnnLuceneIndexAdapter.IndexAll();
         }
         protected void bGenerate_Click(object sender, EventArgs e)
         {

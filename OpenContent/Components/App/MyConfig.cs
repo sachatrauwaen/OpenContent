@@ -54,7 +54,15 @@ namespace Satrabel.OpenContent.Components
         }
 
         public string ApplicationMapPath { get; } = Globals.ApplicationMapPath;
+        public string LuceneIndexFolder
+        {
+            get
+            {
+                const string CONSTANT = @"App_Data\OpenContent\lucene_index";
+                return CONSTANT;
+            }
+        }
 
-        #endregion
-    }
+    #endregion
+}
 }

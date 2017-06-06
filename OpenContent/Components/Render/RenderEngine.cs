@@ -15,7 +15,6 @@ using System.IO;
 using System.Linq;
 using System.Web.Hosting;
 using System.Web.UI;
-using Satrabel.OpenContent.Components.Localization;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.Querying;
 using IDataSource = Satrabel.OpenContent.Components.Datasource.IDataSource;

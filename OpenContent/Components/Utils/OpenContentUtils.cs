@@ -14,7 +14,6 @@ using System.Web.Hosting;
 using System.Web.UI.WebControls;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Dnn;
-using Satrabel.OpenContent.Components.Localization;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.TemplateHelpers;
 using Newtonsoft.Json.Linq;

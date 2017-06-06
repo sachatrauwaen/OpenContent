@@ -7,6 +7,7 @@ using System.Linq;
 using Satrabel.OpenContent.Components.Datasource.Search;
 using Satrabel.OpenContent.Components.Logging;
 using Satrabel.OpenContent.Components.Form;
+using Satrabel.OpenContent.Components.Lucene;
 using Satrabel.OpenContent.Components.Lucene.Config;
 
 namespace Satrabel.OpenContent.Components.Datasource
@@ -202,7 +203,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             else
             {
                 OpenContentController ctrl = new OpenContentController();
-                SearchResults docs = App.Services.LuceneIndex.Instance.Search(OpenContentInfo.GetScope(GetModuleId(context), context.Collection), selectQuery);
+                SearchResults docs = LuceneController.Instance.Search(OpenContentInfo.GetScope(GetModuleId(context), context.Collection), selectQuery);
                 if (LogContext.IsLogActive)
                 {
                     var logKey = "Lucene query";
@@ -276,8 +277,8 @@ namespace Satrabel.OpenContent.Components.Datasource
             //Index the content item
             if (context.Index)
             {
-                App.Services.LuceneIndex.Instance.Add(content, indexConfig);
-                App.Services.LuceneIndex.Instance.Commit();
+                LuceneController.Instance.Add(content, indexConfig);
+                LuceneController.Instance.Commit();
             }
         }
         public virtual void Update(DataSourceContext context, IDataItem item, JToken data)
@@ -293,8 +294,8 @@ namespace Satrabel.OpenContent.Components.Datasource
             if (context.Index)
             {
                 content.HydrateDefaultFields(indexConfig);
-                App.Services.LuceneIndex.Instance.Update(content, indexConfig);
-                App.Services.LuceneIndex.Instance.Commit();
+                LuceneController.Instance.Update(content, indexConfig);
+                LuceneController.Instance.Commit();
             }
             ClearUrlRewriterCache(context);
         }
@@ -305,8 +306,8 @@ namespace Satrabel.OpenContent.Components.Datasource
             ctrl.DeleteContent(content);
             if (context.Index)
             {
-                App.Services.LuceneIndex.Instance.Delete(content);
-                App.Services.LuceneIndex.Instance.Commit();
+                LuceneController.Instance.Delete(content);
+                LuceneController.Instance.Commit();
             }
             ClearUrlRewriterCache(context);
         }
@@ -342,8 +343,8 @@ namespace Satrabel.OpenContent.Components.Datasource
                 //Index the content item
                 if (context.Index)
                 {
-                    App.Services.LuceneIndex.Instance.Add(content, indexConfig);
-                    App.Services.LuceneIndex.Instance.Commit();
+                    LuceneController.Instance.Add(content, indexConfig);
+                    LuceneController.Instance.Commit();
                 }
 
                 return FormUtils.FormSubmit(data as JObject);
@@ -399,7 +400,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             string scope = OpenContentInfo.GetScope(context.ModuleId, context.Collection);
             var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection); //todo index is being build from schema & options. But they should be provided by the provider, not directly from the files
             OpenContentController occ = new OpenContentController();
-            App.Services.LuceneIndex.Instance.ReIndexData(occ.GetContents(context.ModuleId, context.Collection), indexConfig, scope);
+            LuceneController.Instance.ReIndexData(occ.GetContents(context.ModuleId, context.Collection), indexConfig, scope);
         }
 
         public IEnumerable<IIndexableItem> GetIndexableData(DataSourceContext context)

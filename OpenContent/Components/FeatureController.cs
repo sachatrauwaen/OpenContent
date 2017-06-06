@@ -29,6 +29,7 @@ using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Dnn;
 using Satrabel.OpenContent.Components.Handlebars;
 using Satrabel.OpenContent.Components.Json;
+using Satrabel.OpenContent.Components.Lucene;
 using Satrabel.OpenContent.Components.TemplateHelpers;
 
 namespace Satrabel.OpenContent.Components
@@ -348,7 +349,7 @@ namespace Satrabel.OpenContent.Components
             }
             else if (version == "03.02.00")
             {
-                App.Services.LuceneIndex.Instance.IndexAll();
+                DnnLuceneIndexAdapter.IndexAll();
             }
             return version + res;
         }

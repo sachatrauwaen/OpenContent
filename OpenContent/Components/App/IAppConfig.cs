@@ -9,5 +9,6 @@ namespace Satrabel.OpenContent.Components
         string Opencontent { get; }
         string DefaultCollection { get; }
         string ApplicationMapPath { get; }
+        string LuceneIndexFolder { get; }
     }
 }
