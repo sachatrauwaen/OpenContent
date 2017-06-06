@@ -349,7 +349,7 @@ namespace Satrabel.OpenContent.Components
             }
             else if (version == "03.02.00")
             {
-                DnnLuceneIndexAdapter.IndexAll();
+                LuceneUtils.IndexAll();
             }
             return version + res;
         }

@@ -4,7 +4,7 @@ using Satrabel.OpenContent.Components.Lucene.Config;
 
 namespace Satrabel.OpenContent.Components.Lucene
 {
-    public class DnnLuceneIndexAdapter
+    public class LuceneUtils
     {
         /// <summary>
         /// A helper method to force a Datasource of a module to Reindex itself

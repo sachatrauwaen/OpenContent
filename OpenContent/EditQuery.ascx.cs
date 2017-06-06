@@ -38,11 +38,11 @@ namespace Satrabel.OpenContent
         protected void bIndex_Click(object sender, EventArgs e)
         {
             var module = OpenContentModuleConfig.Create(ModuleConfiguration, PortalSettings);
-            DnnLuceneIndexAdapter.ReIndexModuleData(module);
+            LuceneUtils.ReIndexModuleData(module);
         }
         protected void bIndexAll_Click(object sender, EventArgs e)
         {
-            DnnLuceneIndexAdapter.IndexAll();
+            LuceneUtils.IndexAll();
         }
         protected void bGenerate_Click(object sender, EventArgs e)
         {
