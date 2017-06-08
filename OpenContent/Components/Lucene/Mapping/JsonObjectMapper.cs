@@ -4,11 +4,11 @@ using System.Runtime.Serialization.Formatters;
 using System.Text.RegularExpressions;
 using System.Web;
 using Lucene.Net.Documents;
+using Lucene.Net.QueryParsers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Satrabel.OpenContent.Components.Json;
-using Lucene.Net.QueryParsers;
 using Satrabel.OpenContent.Components.Lucene.Config;
+using Satrabel.OpenContent.Components.Json;
 
 namespace Satrabel.OpenContent.Components.Lucene.Mapping
 {

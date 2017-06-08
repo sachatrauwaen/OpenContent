@@ -1,14 +1,14 @@
 ﻿#region Usings
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Lucene.Net.Index;
-using Lucene.Net.Search;
 using Lucene.Net.QueryParsers;
+using Lucene.Net.Search;
 using Satrabel.OpenContent.Components.Lucene.Mapping;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using Version = Lucene.Net.Util.Version;
-using System.Collections.Generic;
 
 #endregion
 
@@ -82,9 +82,9 @@ namespace Satrabel.OpenContent.Components.Lucene
             TopDocs topDocs;
             var numOfItemsToReturn = (pageIndex + 1) * pageSize;
             if (filter == null)
-                topDocs = searcher.Search(type, query, numOfItemsToReturn, sort);
+                topDocs = Search(searcher, type, query, numOfItemsToReturn, sort);
             else
-                topDocs = searcher.Search(type, filter, query, numOfItemsToReturn, sort);
+                topDocs = Search(searcher, type, filter, query, numOfItemsToReturn, sort);
             luceneResults.TotalResults = topDocs.TotalHits;
             luceneResults.ids = topDocs.ScoreDocs.Skip(pageIndex * pageSize)
                 .Select(d => searcher.Doc(d.Doc).GetField(JsonMappingUtils.FieldId).StringValue)
@@ -212,8 +212,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             var selection = new TermQuery(new Term("$type", scope));
             lc.Store.Delete(selection);
         }
-		
-	
+
         public static Query ParseQuery(string searchQuery, string defaultFieldName)
         {
             var parser = new QueryParser(Version.LUCENE_30, defaultFieldName, JsonMappingUtils.GetAnalyser());
@@ -231,9 +230,28 @@ namespace Satrabel.OpenContent.Components.Lucene
             }
             catch (ParseException)
             {
-                query = parser.Parse(QueryParser.Escape(searchQuery.Trim()));
+                query = parser.Parse(QueryParser.Escape(searchQuery?.Trim()));
             }
             return query;
+        }
+
+        public static TopDocs Search(Searcher searcher, string type, Query query, int numResults, Sort sort)
+        {
+            var res = searcher.Search(query, JsonMappingUtils.GetTypeFilter(type), numResults, sort);
+            return res;
+        }
+
+        public static TopDocs Search(Searcher searcher, string type, Query query, Query filter, int numResults, Sort sort)
+        {
+            try
+            {
+                return searcher.Search(query, JsonMappingUtils.GetTypeFilter(type, filter), numResults, sort);
+            }
+            catch (Exception ex)
+            {
+                App.Services.Logger.Error($"Error while searching {type}, {query}", ex);
+                throw;
+            }
         }
 
         #endregion

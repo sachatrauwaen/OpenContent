@@ -5,12 +5,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using Lucene.Net.Analysis;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.Search;
 using Lucene.Net.Store;
 using DotNetNuke.Common;
-using Lucene.Net.Analysis;
 
 #endregion
 

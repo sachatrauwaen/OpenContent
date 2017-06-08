@@ -8,10 +8,10 @@
         }
         public int TotalResults { get; set; }
         public string[] ids { get; set; }
-        public QueryDefinition QueryDefinition { get; set; }
+        public ResultDefinition ResultDefinition { get; set; }
     }
 
-    public class QueryDefinition
+    public class ResultDefinition
     {
         public string Filter { get; set; }
         public string Query { get; set; }

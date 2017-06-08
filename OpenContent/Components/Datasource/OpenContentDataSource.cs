@@ -206,11 +206,11 @@ namespace Satrabel.OpenContent.Components.Datasource
             if (LogContext.IsLogActive)
             {
                 var logKey = "Lucene query";
-                LogContext.Log(context.ActiveModuleId, logKey, "Filter", docs.QueryDefinition.Filter);
-                LogContext.Log(context.ActiveModuleId, logKey, "Query", docs.QueryDefinition.Query);
-                LogContext.Log(context.ActiveModuleId, logKey, "Sort", docs.QueryDefinition.Sort);
-                LogContext.Log(context.ActiveModuleId, logKey, "PageIndex", docs.QueryDefinition.PageIndex);
-                LogContext.Log(context.ActiveModuleId, logKey, "PageSize", docs.QueryDefinition.PageSize);
+                LogContext.Log(context.ActiveModuleId, logKey, "Filter", docs.ResultDefinition.Filter);
+                LogContext.Log(context.ActiveModuleId, logKey, "Query", docs.ResultDefinition.Query);
+                LogContext.Log(context.ActiveModuleId, logKey, "Sort", docs.ResultDefinition.Sort);
+                LogContext.Log(context.ActiveModuleId, logKey, "PageIndex", docs.ResultDefinition.PageIndex);
+                LogContext.Log(context.ActiveModuleId, logKey, "PageSize", docs.ResultDefinition.PageSize);
             }
             int total = docs.TotalResults;
             var dataList = new List<IDataItem>();
@@ -230,7 +230,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             {
                 Items = dataList,
                 Total = total,
-                DebugInfo = docs.QueryDefinition.Filter + " - " + docs.QueryDefinition.Query + " - " + docs.QueryDefinition.Sort
+                DebugInfo = docs.ResultDefinition.Filter + " - " + docs.ResultDefinition.Query + " - " + docs.ResultDefinition.Sort
             };
         }
 

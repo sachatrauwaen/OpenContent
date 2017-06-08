@@ -1,10 +1,10 @@
-﻿using Lucene.Net.Analysis;
+﻿using System;
+using Lucene.Net.Analysis;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.Search;
 using Newtonsoft.Json.Linq;
-using System;
 using Satrabel.OpenContent.Components.Lucene.Config;
 
 namespace Satrabel.OpenContent.Components.Lucene.Mapping

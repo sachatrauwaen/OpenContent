@@ -1,4 +1,5 @@
-﻿using DotNetNuke.Entities.Portals;
+﻿using System.Collections.Generic;
+using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Datasource.Search;
 using Satrabel.OpenContent.Components.Lucene.Config;
@@ -7,6 +8,7 @@ namespace Satrabel.OpenContent.Components.Lucene
 {
     public static class LuceneUtils
     {
+        #region Search Utils
 
         public static SearchResults Search(string indexScope, Select selectQuery)
         {
@@ -14,7 +16,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             def.Build(selectQuery);
 
             var results = LuceneController.Instance.Search(indexScope, def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
-            results.QueryDefinition = new QueryDefinition()
+            results.ResultDefinition = new ResultDefinition()
             {
                 Filter = def.Filter.ToString(),
                 Query = def.Query.ToString(),
@@ -25,29 +27,9 @@ namespace Satrabel.OpenContent.Components.Lucene
             return results;
         }
 
-        /// <summary>
-        /// A helper method to force a Datasource of a module to Reindex itself
-        /// </summary>
-        public static void ReIndexModuleData(OpenContentModuleConfig module)
-        {
-            var settings = module.Settings;
-            bool index = false;
-            if (settings.TemplateAvailable)
-            {
-                index = settings.Manifest.Index;
-            }
-            IDataSource ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
-            if (index && ds is IDataIndex)
-            {
-                var dsContext = OpenContentUtils.CreateDataContext(module);
-                var dataIndex = (IDataIndex)ds;
-                var indexableData = dataIndex.GetIndexableData(dsContext);
+        #endregion
 
-                string scope = OpenContentInfo.GetScope(dsContext.ModuleId, dsContext.Collection);
-                var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(dsContext.TemplateFolder), dsContext.Collection); //todo index is being build from schema & options. But they should be provided by the provider, not directly from the files
-                LuceneController.Instance.ReIndexData(indexableData, indexConfig, scope);
-            }
-        }
+        #region Indexing Utils
 
         public static void IndexAll()
         {
@@ -73,27 +55,58 @@ namespace Satrabel.OpenContent.Components.Lucene
             }
         }
 
+        /// <summary>
+        /// A helper method to force a Datasource of a module to Reindex itself
+        /// </summary>
+        public static void ReIndexModuleData(OpenContentModuleConfig module)
+        {
+            var indexableData = GetModuleIndexableData(module);
+            if (indexableData == null) return;
+
+            var settings = module.Settings;
+            var moduleId = settings.IsOtherModule ? settings.ModuleId : module.ViewModule.ModuleId;
+            string scope = OpenContentInfo.GetScope(moduleId, settings.Template.Collection);
+            var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template); //todo index is being build from schema & options. But they should be provided by the provider, not directly from the files
+
+            LuceneController.Instance.ReIndexData(indexableData, indexConfig, scope);
+        }
+
+        #endregion
+
+        #region private helpers
+
         private static void RegisterModuleDataForIndexing(LuceneController lc, OpenContentModuleConfig module)
+        {
+            var indexableData = GetModuleIndexableData(module);
+            if (indexableData == null) return;
+
+            var settings = module.Settings;
+            var moduleId = settings.IsOtherModule ? settings.ModuleId : module.ViewModule.ModuleId;
+            string scope = OpenContentInfo.GetScope(moduleId, settings.Template.Collection);
+            var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template); //todo index is being build from schema & options. But they should be provided by the provider, not directly from the files
+
+            lc.AddList(indexableData, indexConfig, scope);
+        }
+
+        private static IEnumerable<IIndexableItem> GetModuleIndexableData(OpenContentModuleConfig module)
         {
             bool index = false;
             var settings = module.Settings;
+
             if (settings.TemplateAvailable)
             {
                 index = settings.Manifest.Index;
             }
-            if (!index) return;
+            if (!index) return null;
 
             IDataSource ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
-            if (ds is IDataIndex)
-            {
-                var moduleId = settings.IsOtherModule ? settings.ModuleId : module.ViewModule.ModuleId;
-                string scope = OpenContentInfo.GetScope(moduleId, settings.Template.Collection);
-                FieldConfig indexConfig = OpenContentUtils.GetIndexConfig(settings.Template); //todo index is being build from schema & options. But they should be provided by the provider, not directly from the files
-                var dsContext = OpenContentUtils.CreateDataContext(module);
-                var dataIndex = (IDataIndex)ds;
-                var indexableData = dataIndex.GetIndexableData(dsContext);
-                lc.AddList(indexableData, indexConfig, scope);
-            }
+            if (!(ds is IDataIndex)) return null;
+
+            var dsContext = OpenContentUtils.CreateDataContext(module);
+            var dataIndex = (IDataIndex)ds;
+            return dataIndex.GetIndexableData(dsContext);
         }
+
+        #endregion
     }
 }
