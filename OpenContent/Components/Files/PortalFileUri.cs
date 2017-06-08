@@ -119,10 +119,15 @@ namespace Satrabel.OpenContent.Components
                 }
             }
 
-            return _fileMetaData == null ? null : _fileMetaData[fieldname];
+            return _fileMetaData?[fieldname];
         }
 
-        public int DnnFileId => FileInfo == null ? 0 : FileInfo.FileId;
+        /// <summary>
+        /// Gets URL to the file as defined by Dnn, using LinkClick if appropriate
+        /// </summary>
+        public string PortalFileUrl => FileManager.Instance.GetUrl(FileInfo);
+
+        public int DnnFileId => FileInfo?.FileId ?? 0;
 
         /// <summary>
         /// Get a value from the OpenFiles Metadata attached to a PortalFile.
