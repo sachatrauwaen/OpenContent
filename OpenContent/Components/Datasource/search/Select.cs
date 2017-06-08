@@ -17,6 +17,6 @@ namespace Satrabel.OpenContent.Components.Datasource.Search
         public int PageSize { get; set; }
         public int PageIndex { get; set; }
 
-        public bool IsQueryEmpty => !Query.FilterRules.Any() && !Query.FilterGroups.Any();
+        public bool IsEmptyQuery => !Query.FilterRules.Any() && !Query.FilterGroups.Any();
     }
 }

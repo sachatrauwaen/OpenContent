@@ -126,7 +126,7 @@ namespace Satrabel.OpenContent.Components.Rest
 
                     RestQueryBuilder.MergeQuery(indexConfig, queryBuilder.Select, restSelect, DnnLanguageUtils.GetCurrentCultureCode());
                     IDataItems dsItems;
-                    if (queryBuilder.DefaultNoResults && queryBuilder.Select.IsQueryEmpty)
+                    if (queryBuilder.DefaultNoResults && queryBuilder.Select.IsEmptyQuery)
                     {
                         dsItems = new DefaultDataItems()
                         {

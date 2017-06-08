@@ -40,7 +40,7 @@ namespace Satrabel.OpenContent.Components.JPList
 
                     JplistQueryBuilder.MergeJpListQuery(indexConfig, queryBuilder.Select, req.StatusLst, DnnLanguageUtils.GetCurrentCultureCode());
                     IDataItems dsItems;
-                    if (queryBuilder.DefaultNoResults && queryBuilder.Select.IsQueryEmpty)
+                    if (queryBuilder.DefaultNoResults && queryBuilder.Select.IsEmptyQuery)
                     {
                         dsItems = new DefaultDataItems()
                         {
