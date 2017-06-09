@@ -116,8 +116,7 @@ namespace Satrabel.OpenContent.Components
             //    return searchDocuments;
             //}
             if (settings.IsOtherModule)
-            {
-                Log.Logger.TraceFormat("Indexing content Module {0} - Tab {1} - settings.IsOtherModule", modInfo.ModuleID, modInfo.TabID, modInfo.CultureCode);
+            {                
                 return searchDocuments;
             }
 
@@ -171,8 +170,7 @@ namespace Satrabel.OpenContent.Components
             JToken title;
             JToken description;
             JToken singleLanguage = content.Data.DeepClone(); //Clone to keep Simplification into this Method
-            JsonUtils.SimplifyJson(singleLanguage, culture);
-            Log.Logger.TraceFormat("Indexing content Module {0} - Tab {1} -  SearchDocument GetLocalizedItem", moduleInfo.ModuleID, moduleInfo.TabID, moduleInfo.CultureCode);
+            JsonUtils.SimplifyJson(singleLanguage, culture);            
             if (content.Title.IsJson())
             {
                 title = singleLanguage["Title"] ?? moduleInfo.ModuleTitle;
@@ -233,7 +231,6 @@ namespace Satrabel.OpenContent.Components
             {
                 retval.Tags = CollectHierarchicalTags(modInfo.Terms);
             }
-
 
             return retval;
         }
