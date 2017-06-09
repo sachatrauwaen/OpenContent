@@ -18,6 +18,7 @@ using System.Linq;
 using DotNetNuke.Common;
 using System;
 using DotNetNuke.Services.Search.Entities;
+using DotNetNuke.Entities.Content.Taxonomy;
 using Newtonsoft.Json.Linq;
 using DotNetNuke.Entities.Portals;
 using System.IO;
@@ -227,9 +228,35 @@ namespace Satrabel.OpenContent.Components
                 ModuleDefId = modInfo.ModuleDefID,
                 Url = url
             };
+            // Add support for module terms
+            if (modInfo.Terms != null && modInfo.Terms.Count > 0)
+            {
+                retval.Tags = CollectHierarchicalTags(modInfo.Terms);
+            }
+
 
             return retval;
         }
+
+        private static List<string> CollectHierarchicalTags(List<Term> terms)
+        {
+            Func<List<Term>, List<string>, List<string>> collectTagsFunc = null;
+            collectTagsFunc = (ts, tags) =>
+            {
+                if (ts != null && ts.Count > 0)
+                {
+                    foreach (var t in ts)
+                    {
+                        tags.Add(t.Name);
+                        tags.AddRange(collectTagsFunc(t.ChildTerms, new List<string>()));
+                    }
+                }
+                return tags;
+            };
+
+            return collectTagsFunc(terms, new List<string>());
+        }
+
 
         private static string JsonToSearchableString(JToken data)
         {
