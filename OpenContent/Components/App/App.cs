@@ -4,9 +4,9 @@ namespace Satrabel.OpenContent.Components
 {
     public class App
     {
-        private static readonly App _Lazy = new App();
-        public static IAppConfig Config => _Lazy.BaseConfig;
-        public static IAppServices Services => _Lazy.BaseServices;
+        private static readonly App _Instance = new App();
+        public static IAppConfig Config => _Instance.BaseConfig;
+        public static IAppServices Services => _Instance.BaseServices;
 
         private App()
         {
@@ -16,6 +16,10 @@ namespace Satrabel.OpenContent.Components
         private static IAppConfig _configuration;
         private static IAppServices _serviceConfig;
 
+
+        /// <summary>
+        /// Initializes the specified configuration.
+        /// </summary>
         internal static void Init(IAppConfig config, IAppServices services)
         {
             _configuration = config;
@@ -27,7 +31,7 @@ namespace Satrabel.OpenContent.Components
             get
             {
                 if (_configuration == null)
-                    throw new Exception("AppBase not initialized.  Call AppConfig.Init(config) first.");
+                    throw new Exception("App not initialized.  Call App.Init(config) first.");
                 return _configuration;
             }
         }
@@ -37,7 +41,7 @@ namespace Satrabel.OpenContent.Components
             get
             {
                 if (_serviceConfig == null)
-                    throw new Exception("AppBase not initialized.  Call AppConfig.Init(config) first.");
+                    throw new Exception("App not initialized.  Call App.Init(config) first.");
                 return _serviceConfig;
             }
         }

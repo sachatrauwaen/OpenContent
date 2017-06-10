@@ -272,6 +272,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             };
             ctrl.AddContent(content);
             context.Id = content.Id;
+
             //Index the content item
             if (context.Index)
             {

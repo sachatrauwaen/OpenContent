@@ -54,6 +54,8 @@ namespace Satrabel.OpenContent.Components
         }
 
         public string ApplicationMapPath { get; } = Globals.ApplicationMapPath;
+
+
         public string LuceneIndexFolder
         {
             get

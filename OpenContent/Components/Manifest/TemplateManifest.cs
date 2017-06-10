@@ -20,6 +20,9 @@ namespace Satrabel.OpenContent.Components.Manifest
         [JsonProperty(PropertyName = "detail")]
         public TemplateFiles Detail { get; set; }
 
+        /// <summary>
+        /// Gets additional views
+        /// </summary>
         [JsonProperty(PropertyName = "views")]
         public Dictionary<string, TemplateFiles> Views { get; set; }
 
