@@ -1,6 +1,4 @@
-﻿#region Usings
-
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -10,9 +8,7 @@ using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.Search;
 using Lucene.Net.Store;
-using DotNetNuke.Common;
 
-#endregion
 
 namespace Satrabel.OpenContent.Components.Lucene
 {
@@ -44,10 +40,10 @@ namespace Satrabel.OpenContent.Components.Lucene
         #region constructor
         internal LuceneService(string searchFolder, Analyzer analyser)
         {
+            Requires.NotNullOrEmpty(searchFolder, nameof(searchFolder));
+
             _searchFolder = searchFolder;
             _analyser = analyser;
-            if (string.IsNullOrEmpty(_searchFolder))
-                throw new ArgumentNullException(nameof(searchFolder));
             IndexFolder = Path.Combine(App.Config.ApplicationMapPath, _searchFolder);
             _readerTimeSpan = DEFAULT_REREAD_TIME_SPAN;
         }
@@ -198,7 +194,7 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         public void Add(Document doc)
         {
-            Requires.NotNull("searchDocument", doc);
+            Requires.NotNull(doc, "searchDocument");
             if (doc.GetFields().Count > 0)
             {
                 try
@@ -219,7 +215,7 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         public void Delete(Query query)
         {
-            Requires.NotNull("luceneQuery", query);
+            Requires.NotNull(query, "luceneQuery");
             Writer.DeleteDocuments(query);
         }
 

@@ -166,19 +166,15 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         public void Add(IIndexableItem data, FieldConfig config)
         {
-            if (null == data)
-            {
-                throw new ArgumentNullException(nameof(data));
-            }
+            Requires.NotNull(data);
+
             Store.Add(JsonMappingUtils.JsonToDocument(data.GetScope(), data.GetId(), data.GetCreatedByUserId(), data.GetCreatedOnDate(), data.GetData(), data.GetSource(), config));
         }
 
         public void Update(IIndexableItem data, FieldConfig config)
         {
-            if (null == data)
-            {
-                throw new ArgumentNullException(nameof(data));
-            }
+            Requires.NotNull(data);
+
             Delete(data);
             Add(data, config);
         }
@@ -189,10 +185,8 @@ namespace Satrabel.OpenContent.Components.Lucene
         /// <param name="data"></param>
         public void Delete(IIndexableItem data)
         {
-            if (null == data)
-            {
-                throw new ArgumentNullException(nameof(data));
-            }
+            Requires.NotNull(data);
+
             var selection = new TermQuery(new Term(JsonMappingUtils.FieldId, data.GetId()));
             Query deleteQuery = new FilteredQuery(selection, JsonMappingUtils.GetTypeFilter(data.GetScope()));
             Store.Delete(deleteQuery);
