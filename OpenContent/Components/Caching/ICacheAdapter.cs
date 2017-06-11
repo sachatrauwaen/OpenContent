@@ -6,10 +6,10 @@ namespace Satrabel.OpenContent.Components
 
     public interface ICacheAdapter
     {
-        T GetCache<T>(string cacheKey);
         void SetCache(string cacheKey, object objectToCache, string dependentFile);
         void SetCache(string cacheKey, object objectToCache, string[] dependentFiles);
-        T GetCachedData<T>(string key, int cacheTimeInMinutes, Func<object,object> func);
+        T GetCachedData<T>(string cacheKey, int cacheTimeInMinutes, Func<object,object> func);
+        T GetCache<T>(string cacheKey);
         void ClearCache(string cacheKey);
     }
 }

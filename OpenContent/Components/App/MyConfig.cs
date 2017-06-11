@@ -1,5 +1,7 @@
 ﻿
+using System;
 using DotNetNuke.Common;
+using Satrabel.OpenContent.Components.Lucene;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -65,6 +67,8 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
-    #endregion
+        public Action LuceneIndexAllDelegate { get; } = LuceneUtils.IndexAll;
+
+        #endregion
 }
 }

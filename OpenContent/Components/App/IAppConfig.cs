@@ -1,4 +1,6 @@
 ﻿
+using System;
+
 namespace Satrabel.OpenContent.Components
 {
     public interface IAppConfig
@@ -10,5 +12,6 @@ namespace Satrabel.OpenContent.Components
         string DefaultCollection { get; }
         string ApplicationMapPath { get; }
         string LuceneIndexFolder { get; }
+        Action LuceneIndexAllDelegate { get; }
     }
 }

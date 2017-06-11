@@ -2,24 +2,12 @@
 {
     public class BooleanRuleValue : RuleValue
     {
-        private bool Value;
+        private readonly bool _value;
         public BooleanRuleValue(bool value)
         {
-            Value = value;
+            _value = value;
         }
-        public override bool AsBoolean
-        {
-            get
-            {
-                return Value;
-            }
-        }
-        public override string AsString
-        {
-            get
-            {
-                return Value.ToString();
-            }
-        }
+        public override bool AsBoolean => _value;
+        public override string AsString => _value.ToString();
     }
 }

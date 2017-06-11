@@ -2,17 +2,11 @@
 {
     public class StringRuleValue : RuleValue
     {
-        private string Value;
+        private readonly string _value;
         public StringRuleValue(string value)
         {
-            Value = value;
+            _value = value;
         }
-        public override string AsString
-        {
-            get
-            {
-                return Value;
-            }
-        }
+        public override string AsString => _value;
     }
 }

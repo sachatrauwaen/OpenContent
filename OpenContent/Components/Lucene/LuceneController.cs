@@ -1,6 +1,4 @@
-﻿#region Usings
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Lucene.Net.Index;
@@ -10,7 +8,6 @@ using Satrabel.OpenContent.Components.Lucene.Mapping;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using Version = Lucene.Net.Util.Version;
 
-#endregion
 
 namespace Satrabel.OpenContent.Components.Lucene
 {
@@ -71,12 +68,12 @@ namespace Satrabel.OpenContent.Components.Lucene
         {
             var luceneResults = new SearchResults();
 
-            ////validate whether index folder is exist and contains index files, otherwise return null.
-            //if (!Store.ValidateIndexFolder())
-            //{
-            //    IndexAll();
-            //    return luceneResults;
-            //}
+            //validate whether index folder is exist and contains index files, otherwise return null.
+            if (!Store.ValidateIndexFolder())
+            {
+                App.Config.LuceneIndexAllDelegate();  //execute the IndexAll delegate
+                return luceneResults;
+            }
 
             var searcher = Store.GetSearcher();
             TopDocs topDocs;

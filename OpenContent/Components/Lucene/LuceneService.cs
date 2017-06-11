@@ -41,6 +41,7 @@ namespace Satrabel.OpenContent.Components.Lucene
         internal LuceneService(string searchFolder, Analyzer analyser)
         {
             Requires.NotNullOrEmpty(searchFolder, nameof(searchFolder));
+            Requires.NotNull(analyser, nameof(analyser));
 
             _searchFolder = searchFolder;
             _analyser = analyser;
