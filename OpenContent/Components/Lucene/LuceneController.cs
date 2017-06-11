@@ -13,10 +13,9 @@ namespace Satrabel.OpenContent.Components.Lucene
 {
     public class LuceneController : IDisposable
     {
-        private static LuceneController _instance = new LuceneController();
         private LuceneService _serviceStoreInstance;
 
-        public static LuceneController Instance => _instance;
+        public static LuceneController Instance { get; private set; }
 
         [Obsolete("Do not use the Lucene Store.Commit() (as of June 2017 v3.2.3). Use LuceneController.Commit() instead.")]
         public LuceneService Store
@@ -38,12 +37,12 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         public static void ClearInstance()
         {
-            if (_instance != null)
+            if (Instance != null)
             {
-                _instance.Dispose();
-                _instance = null;
+                Instance.Dispose();
+                Instance = null;
             }
-            _instance = new LuceneController();
+            Instance = new LuceneController();
         }
 
         public void Dispose()

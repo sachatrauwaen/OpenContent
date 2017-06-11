@@ -26,8 +26,7 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         private readonly string _searchFolder;
         private readonly Analyzer _analyser;
-
-        private string IndexFolder { get; set; }
+        private readonly string _indexFolder;
 
         private IndexWriter _writer;
         private IndexReader _idxReader;
@@ -45,7 +44,7 @@ namespace Satrabel.OpenContent.Components.Lucene
 
             _searchFolder = searchFolder;
             _analyser = analyser;
-            IndexFolder = Path.Combine(App.Config.ApplicationMapPath, _searchFolder);
+            _indexFolder = Path.Combine(App.Config.ApplicationMapPath, _searchFolder);
             _readerTimeSpan = DEFAULT_REREAD_TIME_SPAN;
         }
 
@@ -66,7 +65,7 @@ namespace Satrabel.OpenContent.Components.Lucene
                     {
                         if (_writer == null)
                         {
-                            var lockFile = Path.Combine(IndexFolder, WRITE_LOCK_FILE);
+                            var lockFile = Path.Combine(_indexFolder, WRITE_LOCK_FILE);
                             if (File.Exists(lockFile))
                             {
                                 try
@@ -84,7 +83,7 @@ namespace Satrabel.OpenContent.Components.Lucene
                             }
 
                             CheckDisposed();
-                            var writer = new IndexWriter(FSDirectory.Open(IndexFolder), _analyser, IndexWriter.MaxFieldLength.UNLIMITED);
+                            var writer = new IndexWriter(FSDirectory.Open(_indexFolder), _analyser, IndexWriter.MaxFieldLength.UNLIMITED);
                             _idxReader = writer.GetReader();
                             Thread.MemoryBarrier();
                             _writer = writer;
@@ -114,7 +113,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             {
                 // Note: disposing the IndexSearcher instance obtained from the next
                 // statement will not close the underlying reader on dispose.
-                searcher = new IndexSearcher(FSDirectory.Open(IndexFolder));
+                searcher = new IndexSearcher(FSDirectory.Open(_indexFolder));
             }
 
             var reader = new CachedReader(searcher);
@@ -136,17 +135,17 @@ namespace Satrabel.OpenContent.Components.Lucene
             get
             {
                 return (DateTime.UtcNow - _lastReadTimeUtc).TotalSeconds >= _readerTimeSpan &&
-                    System.IO.Directory.Exists(IndexFolder) &&
-                    System.IO.Directory.GetLastWriteTimeUtc(IndexFolder) != _lastDirModifyTimeUtc;
+                    System.IO.Directory.Exists(_indexFolder) &&
+                    System.IO.Directory.GetLastWriteTimeUtc(_indexFolder) != _lastDirModifyTimeUtc;
             }
         }
 
         private void UpdateLastAccessTimes()
         {
             _lastReadTimeUtc = DateTime.UtcNow;
-            if (System.IO.Directory.Exists(IndexFolder))
+            if (System.IO.Directory.Exists(_indexFolder))
             {
-                _lastDirModifyTimeUtc = System.IO.Directory.GetLastWriteTimeUtc(IndexFolder);
+                _lastDirModifyTimeUtc = System.IO.Directory.GetLastWriteTimeUtc(_indexFolder);
             }
         }
 
@@ -168,8 +167,8 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         internal bool ValidateIndexFolder()
         {
-            return System.IO.Directory.Exists(IndexFolder) &&
-                   System.IO.Directory.GetFiles(IndexFolder, "*.*").Length > 0;
+            return System.IO.Directory.Exists(_indexFolder) &&
+                   System.IO.Directory.GetFiles(_indexFolder, "*.*").Length > 0;
         }
 
         #endregion
