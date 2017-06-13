@@ -20,6 +20,7 @@ using System;
 using DotNetNuke.Services.Search.Entities;
 using Newtonsoft.Json.Linq;
 using DotNetNuke.Entities.Portals;
+using DotNetNuke.Entities.Content.Taxonomy;
 using System.IO;
 using System.Web;
 using System.Web.Hosting;
@@ -186,7 +187,17 @@ namespace Satrabel.OpenContent.Components
             var ps = new PortalSettings(modInfo.PortalID);
             ps.PortalAlias = PortalAliasController.Instance.GetPortalAlias(ps.DefaultPortalAlias);
 
-            var url = TestableGlobals.Instance.NavigateURL(modInfo.TabID, ps, "", $"id={itemId}");
+            string url = null;
+            // Check if it is a single or list template 
+            if (settings.Template.IsListTemplate)
+            {
+                url = TestableGlobals.Instance.NavigateURL(modInfo.TabID, ps, "", $"id={itemId}");
+            }
+            else
+            {
+                // With a signle template we don't want to identify the content by id.
+                url = TestableGlobals.Instance.NavigateURL(modInfo.TabID, ps, "");
+            }
 
             // instanciate the seearch document
             var retval = new SearchDocument
@@ -259,7 +270,31 @@ namespace Satrabel.OpenContent.Components
             retval.Body = HttpUtility.HtmlDecode(retval.Body).StripHtml();
             retval.Description = HttpUtility.HtmlDecode(retval.Description).StripHtml();
 
+            // Add support for module terms
+            if (modInfo.Terms != null && modInfo.Terms.Count > 0)
+            {
+                retval.Tags = CollectHierarchicalTags(modInfo.Terms);
+            }
+
             return retval;
+        }
+
+        private static List<string> CollectHierarchicalTags(List<Term> terms)
+        {
+            Func<List<Term>, List<string>, List<string>> collectTagsFunc = null;
+            collectTagsFunc = (ts, tags) =>
+            {
+                if (ts != null && ts.Count > 0)
+                {
+                    foreach (var t in ts)
+                    {
+                        tags.Add(t.Name);
+                        tags.AddRange(collectTagsFunc(t.ChildTerms, new List<string>()));
+                    }
+                }
+                return tags;
+            };
+            return collectTagsFunc(terms, new List<string>());
         }
 
         private static string JsonToSearchableString(JToken data)
