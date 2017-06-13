@@ -18,6 +18,7 @@ using System.Linq;
 using DotNetNuke.Common;
 using System;
 using DotNetNuke.Services.Search.Entities;
+using DotNetNuke.Entities.Content.Taxonomy;
 using Newtonsoft.Json.Linq;
 using DotNetNuke.Entities.Portals;
 using System.IO;
@@ -109,12 +110,13 @@ namespace Satrabel.OpenContent.Components
 
             var module = new OpenContentModuleInfo(modInfo);
             OpenContentSettings settings = modInfo.OpenContentSettings();
-            if (settings.Template?.Main == null || !settings.Template.Main.DnnSearch)
-            {
-                return searchDocuments;
-            }
+            //if (settings.Template?.Main == null || !settings.Template.Main.DnnSearch)
+            //{
+            //    Log.Logger.TraceFormat("Indexing content Module {0} - Tab {1} - settings.Template?.Main == null || !settings.Template.Main.DnnSearch", modInfo.ModuleID, modInfo.TabID, modInfo.CultureCode);
+            //    return searchDocuments;
+            //}
             if (settings.IsOtherModule)
-            {
+            {                
                 return searchDocuments;
             }
 
@@ -139,10 +141,10 @@ namespace Satrabel.OpenContent.Components
                     if (DnnLanguageUtils.IsMultiLingualPortal(modInfo.PortalID))
                     {
                         searchDoc = GetLocalizedItem(modInfo, settings, content);
-                        searchDocuments.Add(searchDoc);
+                        searchDocuments.Add(searchDoc);                        
                         if (modInfo.LocalizedModules != null)
                             foreach (var localizedModule in modInfo.LocalizedModules)
-                            {
+                            {                                
                                 SearchDocument localizedSearchDoc = GetLocalizedItem(localizedModule.Value, settings, content);
                                 searchDocuments.Add(localizedSearchDoc);
                             }
@@ -168,8 +170,7 @@ namespace Satrabel.OpenContent.Components
             JToken title;
             JToken description;
             JToken singleLanguage = content.Data.DeepClone(); //Clone to keep Simplification into this Method
-            JsonUtils.SimplifyJson(singleLanguage, culture);
-
+            JsonUtils.SimplifyJson(singleLanguage, culture);            
             if (content.Title.IsJson())
             {
                 title = singleLanguage["Title"] ?? moduleInfo.ModuleTitle;
@@ -202,6 +203,15 @@ namespace Satrabel.OpenContent.Components
                 docTitle = hbEngine.ExecuteWithoutFaillure(settings.Template.Main.DnnSearchTitle, dynForHBS, modInfo.ModuleTitle);
             }
 
+            // Check if it is a single template 
+            if (settings.Template?.Type != "multiple")
+            {
+                // With a signle template we don't want to identify the content by id.
+                url = TestableGlobals.Instance.NavigateURL(modInfo.TabID, ps, "");
+            } 
+
+
+
             var retval = new SearchDocument
             {
                 UniqueKey = modInfo.ModuleID + "-" + itemId + "-" + culture,
@@ -216,9 +226,34 @@ namespace Satrabel.OpenContent.Components
                 ModuleDefId = modInfo.ModuleDefID,
                 Url = url
             };
+            // Add support for module terms
+            if (modInfo.Terms != null && modInfo.Terms.Count > 0)
+            {
+                retval.Tags = CollectHierarchicalTags(modInfo.Terms);
+            }
 
             return retval;
         }
+
+        private static List<string> CollectHierarchicalTags(List<Term> terms)
+        {
+            Func<List<Term>, List<string>, List<string>> collectTagsFunc = null;
+            collectTagsFunc = (ts, tags) =>
+            {
+                if (ts != null && ts.Count > 0)
+                {
+                    foreach (var t in ts)
+                    {
+                        tags.Add(t.Name);
+                        tags.AddRange(collectTagsFunc(t.ChildTerms, new List<string>()));
+                    }
+                }
+                return tags;
+            };
+
+            return collectTagsFunc(terms, new List<string>());
+        }
+
 
         private static string JsonToSearchableString(JToken data)
         {
