@@ -129,16 +129,17 @@ namespace Satrabel.OpenContent
                 }
                 mc.UpdateModuleSetting(ModuleContext.ModuleId, "detailtabid", ddlDetailPage.SelectedValue);
 
-                
+
                 //don't reset settings. Sure they might be invalid, but maybe not. And you can't ever revert.
                 //mc.DeleteModuleSetting(ModuleContext.ModuleId, "data");
-                if (PageRefresh)
+
+                Settings = ModuleContext.OpenContentSettings();
+                if (PageRefresh || !Settings.Template.DataNeeded())
                 {
                     Response.Redirect(Globals.NavigateURL(), true);
                 }
                 else
-                {
-                    Settings = ModuleContext.OpenContentSettings();
+                {                    
                     rblUseTemplate.SelectedIndex = 0;
                     phTemplateName.Visible = rblUseTemplate.SelectedIndex == 1;
                     phFrom.Visible = rblUseTemplate.SelectedIndex == 1;
@@ -148,7 +149,6 @@ namespace Satrabel.OpenContent
                     BindButtons(Settings, Renderinfo);
                     ActivateDetailPage();
                 }
-
             }
             catch (Exception exc)
             {
