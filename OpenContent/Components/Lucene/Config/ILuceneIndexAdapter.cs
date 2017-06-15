@@ -18,9 +18,5 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
         void Commit();
         SearchResults Search(string indexScope, Select selectQuery);
         SearchResults Search(string type, Query filter, Query query, Sort sort, int pageSize, int pageIndex);
-
-        [Obsolete("Don't use this. Only made available for backwards compatibility (since july 2017). Please use App.Service.LuceneIndex instead.")]
-        LuceneService Store { get; }
-
     }
 }

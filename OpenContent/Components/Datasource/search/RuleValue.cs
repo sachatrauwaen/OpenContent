@@ -52,6 +52,5 @@ namespace Satrabel.OpenContent.Components.Datasource.Search
                 throw new NotImplementedException();
             }
         }
-
     }
 }

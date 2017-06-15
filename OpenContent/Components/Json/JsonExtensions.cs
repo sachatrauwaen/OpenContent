@@ -157,6 +157,12 @@ namespace Satrabel.OpenContent.Components.Json
             return result;
         }
 
+        /// <summary>
+        /// Serializers the factory.
+        /// </summary>
+        /// <remarks>
+        /// Needs reference to System.Web.Extentions
+        /// </remarks>
         private static JavaScriptSerializer SerializerFactory()
         {
             // Allow large JSON strings to be serialized and deserialized.
