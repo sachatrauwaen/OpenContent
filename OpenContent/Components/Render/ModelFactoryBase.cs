@@ -35,8 +35,7 @@ namespace Satrabel.OpenContent.Components.Render
         protected readonly OpenContentModuleConfig _module;
         protected readonly int _detailTabId;
 
-        public ModelFactoryBase(string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleConfig module)
-
+        protected ModelFactoryBase(string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleConfig module)
         {
             this._settingsJson = settingsJson;
             this._physicalTemplateFolder = physicalTemplateFolder;
@@ -45,15 +44,14 @@ namespace Satrabel.OpenContent.Components.Render
             this._module = module;
             this._portalId = module.PortalId;
             this._templateManifest = templateManifest;
-            this._collection = templateManifest.Collection;
+            this._collection = templateManifest == null ? App.Config.DefaultCollection : templateManifest.Collection;
             this._detailTabId = DnnUtils.GetTabByCurrentCulture(this._portalId, module.GetDetailTabId(), GetCurrentCultureCode());
 
             _ds = DataSourceManager.GetDataSource(_manifest.DataSource);
             _dsContext = OpenContentUtils.CreateDataContext(_module);
         }
 
-        public ModelFactoryBase(string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleConfig module, int portalId, string cultureCode)
-
+        protected ModelFactoryBase(string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleConfig module, int portalId, string cultureCode)
         {
             this._settingsJson = settingsJson;
             this._physicalTemplateFolder = physicalTemplateFolder;
@@ -69,7 +67,7 @@ namespace Satrabel.OpenContent.Components.Render
             _dsContext = OpenContentUtils.CreateDataContext(_module);
         }
 
-        public ModelFactoryBase(OpenContentModuleConfig module)
+        protected ModelFactoryBase(OpenContentModuleConfig module)
         {
             OpenContentSettings settings = module.Settings;
             this._settingsJson = settings.Data;
@@ -84,7 +82,7 @@ namespace Satrabel.OpenContent.Components.Render
             _ds = DataSourceManager.GetDataSource(_manifest.DataSource);
             _dsContext = OpenContentUtils.CreateDataContext(_module);
         }
-        public ModelFactoryBase(OpenContentModuleConfig module, string collection)
+        protected ModelFactoryBase(OpenContentModuleConfig module, string collection)
         {
             OpenContentSettings settings = module.Settings;
             this._settingsJson = settings.Data;
@@ -128,8 +126,9 @@ namespace Satrabel.OpenContent.Components.Render
             {
                 GetAdditionalData();
             }
-            bool collectionEnhance = _templateFiles.Model != null && _templateFiles.Model.ContainsKey(colName);
+            bool collectionEnhance = _templateFiles?.Model != null && _templateFiles.Model.ContainsKey(colName);
             bool enhance = addDataEnhance || collectionEnhance || _templateFiles.LabelsInTemplate;
+
             if (enhance && (_optionsJson == null || _schemaJson == null))
             {
                 var alpaca = _ds.GetAlpaca(_dsContext, true, true, false);
@@ -144,7 +143,7 @@ namespace Satrabel.OpenContent.Components.Render
             {
                 var colManifest = collectionEnhance ? _templateFiles.Model[colName] : null;
                 var includes = colManifest?.Includes;
-                var includelabels = _templateFiles.LabelsInTemplate;
+                var includelabels = _templateFiles != null && _templateFiles.LabelsInTemplate;
                 var ds = DataSourceManager.GetDataSource(_manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(_module);
                 JsonUtils.LookupJson(model, _additionalData, _schemaJson, _optionsJson, includelabels, includes, (col, id) =>
