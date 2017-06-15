@@ -48,7 +48,7 @@ namespace Satrabel.OpenContent.Components.Render
             this._portalSettings = portalSettings;
             this._portalId = portalSettings.PortalId;
             this._templateManifest = templateManifest;
-            this._collection = templateManifest.Collection;
+            this._collection = templateManifest == null ? AppConfig.DEFAULT_COLLECTION : templateManifest.Collection;
             this._detailTabId = DnnUtils.GetTabByCurrentCulture(this._portalId, module.GetDetailTabId(), GetCurrentCultureCode());
 
             _ds = DataSourceManager.GetDataSource(_manifest.DataSource);
@@ -133,7 +133,7 @@ namespace Satrabel.OpenContent.Components.Render
             {
                 GetAdditionalData();
             }
-            bool collectonEnhance = _templateFiles.Model != null && _templateFiles.Model.ContainsKey(colName);
+            bool collectonEnhance = _templateFiles != null && _templateFiles.Model != null && _templateFiles.Model.ContainsKey(colName);
             bool enhance = addDataEnhance || collectonEnhance || _templateFiles.LabelsInTemplate;
             if (enhance && (_optionsJson == null || _schemaJson == null))
             {
@@ -147,7 +147,7 @@ namespace Satrabel.OpenContent.Components.Render
             {
                 var colManifest = collectonEnhance ? _templateFiles.Model[colName] : null;
                 var includes = colManifest?.Includes;
-                var includelabels = _templateFiles.LabelsInTemplate;
+                var includelabels = _templateFiles != null && _templateFiles.LabelsInTemplate;
                 var ds = DataSourceManager.GetDataSource(_manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(_module);
                 JsonUtils.LookupJson(model, _additionalData, _schemaJson, _optionsJson, includelabels, includes, (col, id) =>
