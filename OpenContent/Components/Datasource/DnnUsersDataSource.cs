@@ -226,9 +226,9 @@ namespace Satrabel.OpenContent.Components.Datasource
                         strMessage += Mail.SendMail(newUser, MessageType.UserRegistrationPublic, ps);
                     }
                 }
-                if (string.IsNullOrEmpty(strMessage))
+                if (!string.IsNullOrEmpty(strMessage))
                 {
-                    App.Services.Logger.Error($"Error sending notification email: {strMessage}");
+                    App.Services.Logger.Error($"Error sending notification email: [{strMessage}]");
                     //don't throw error, otherwise item does not get indexed.
                     //throw new Exception($"Error sending notification email: {strMessage}"); 
                 }
