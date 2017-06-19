@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Datasource.Search;
@@ -63,11 +64,12 @@ namespace Satrabel.OpenContent.Components.Lucene
             var indexableData = GetModuleIndexableData(module);
             if (indexableData == null) return;
 
-            var settings = module.Settings;
-            var moduleId = settings.IsOtherModule ? settings.ModuleId : module.ViewModule.ModuleId;
-            string scope = OpenContentInfo.GetScope(moduleId, settings.Template.Collection);
-            var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template); //todo index is being build from schema & options. But they should be provided by the provider, not directly from the files
-
+            //var settings = module.Settings;
+            //var moduleId = settings.IsOtherModule ? settings.ModuleId : module.ViewModule.ModuleId;
+            //string scope = OpenContentInfo.GetScope(moduleId, settings.Template.Collection);
+            var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template); //todo index is being build from schema & options. But they should be provided by the provider, not directly from the files
+            string scope = indexableData.ToList().First().GetScope();
+            
             LuceneController.Instance.ReIndexData(indexableData, indexConfig, scope);
         }
 
@@ -80,10 +82,12 @@ namespace Satrabel.OpenContent.Components.Lucene
             var indexableData = GetModuleIndexableData(module);
             if (indexableData == null) return;
 
-            var settings = module.Settings;
-            var moduleId = settings.IsOtherModule ? settings.ModuleId : module.ViewModule.ModuleId;
-            string scope = OpenContentInfo.GetScope(moduleId, settings.Template.Collection);
-            var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template); //todo index is being build from schema & options. But they should be provided by the provider, not directly from the files
+            //var settings = module.Settings;
+            //var moduleId = settings.IsOtherModule ? settings.ModuleId : module.ViewModule.ModuleId;
+            //string scope = OpenContentInfo.GetScope(moduleId, settings.Template.Collection);
+
+            var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template); //todo index is being build from schema & options. But they should be provided by the provider, not directly from the files
+            string scope = indexableData.ToList().First().GetScope();
 
             lc.AddList(indexableData, indexConfig, scope);
         }
