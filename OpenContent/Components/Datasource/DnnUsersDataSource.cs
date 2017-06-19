@@ -228,8 +228,9 @@ namespace Satrabel.OpenContent.Components.Datasource
                 }
                 if (string.IsNullOrEmpty(strMessage))
                 {
-                    throw new Exception("Error sending notification email: " + strMessage);
-
+                    App.Services.Logger.Error($"Error sending notification email: {strMessage}");
+                    //don't throw error, otherwise item does not get indexed.
+                    //throw new Exception($"Error sending notification email: {strMessage}"); 
                 }
                 FillProfile(data, schema, user);
                 UpdateRoles(context, data, schema, user);
