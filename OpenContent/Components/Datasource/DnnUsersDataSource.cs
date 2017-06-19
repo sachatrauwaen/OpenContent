@@ -154,6 +154,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 {
                     users = UserController.GetUsers(context.PortalId, pageIndex, pageSize, ref total, true, false).Cast<UserInfo>();
                 }
+                int excluded = users.Count() - users.Count(u => u.IsInRole("Administrators"));
                 users = users.Where(u => !u.IsInRole("Administrators"));
                 //users = users.Skip(pageIndex * pageSize).Take(pageSize);
                 var dataList = new List<IDataItem>();
@@ -164,7 +165,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 return new DefaultDataItems()
                 {
                     Items = dataList,
-                    Total = total,
+                    Total = total - excluded,
                     //DebugInfo = 
                 };
             }
