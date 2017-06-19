@@ -15,7 +15,7 @@ namespace Satrabel.OpenContent.Components.Lucene
     {
         private LuceneService _serviceStoreInstance;
 
-        public static LuceneController Instance { get; private set; }
+        public static LuceneController Instance { get; private set; } = new LuceneController();
 
         [Obsolete("Do not use the Lucene Store.Commit() (as of June 2017 v3.2.3). Use LuceneController.Commit() instead.")]
         public LuceneService Store
