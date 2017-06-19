@@ -83,7 +83,7 @@ namespace Satrabel.OpenContent.Components.Lucene
                 topDocs = Search(searcher, type, filter, query, numOfItemsToReturn, sort);
             luceneResults.TotalResults = topDocs.TotalHits;
             luceneResults.ids = topDocs.ScoreDocs.Skip(pageIndex * pageSize)
-                .Select(d => searcher.Doc(d.Doc).GetField(JsonMappingUtils.FieldId).StringValue)
+                .Select(d => searcher.Doc(d.Doc).GetField(JsonMappingUtils.FIELD_ID).StringValue)
                 .ToArray();
             return luceneResults;
         }
@@ -128,7 +128,6 @@ namespace Satrabel.OpenContent.Components.Lucene
         /// <param name="scope">The scope.</param>
         public void ReIndexData(IEnumerable<IIndexableItem> list, FieldConfig indexConfig, string scope)
         {
-
             try
             {
                 using (var lc = LuceneController.Instance)
@@ -184,7 +183,7 @@ namespace Satrabel.OpenContent.Components.Lucene
         {
             Requires.NotNull(data);
 
-            var selection = new TermQuery(new Term(JsonMappingUtils.FieldId, data.GetId()));
+            var selection = new TermQuery(new Term(JsonMappingUtils.FIELD_ID, data.GetId()));
             Query deleteQuery = new FilteredQuery(selection, JsonMappingUtils.GetTypeFilter(data.GetScope()));
             Store.Delete(deleteQuery);
         }

@@ -353,18 +353,18 @@ namespace Satrabel.OpenContent.Components.Datasource
             return null;
         }
 
-        public void Reindex(DataSourceContext context)
-        {
-            string scope = INDEX_SCOPE;
-            var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection); //todo index is being build from schema & options. But they should be provided by the provider, not directly from the files
-            IEnumerable<IIndexableItem> indexData = UserController.GetUsers(true, false, context.PortalId).Cast<UserInfo>().
-                Where(u => !u.IsInRole("Administrators")).Select(u => new IndexableItemUser()
-                {
-                    Data = ToData(u).Data,
-                    User = u
-                });
-            LuceneController.Instance.ReIndexData(indexData, indexConfig, scope);
-        }
+        //public void Reindex(DataSourceContext context)
+        //{
+        //    string scope = INDEX_SCOPE;
+        //    var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection); //todo index is being build from schema & options. But they should be provided by the provider, not directly from the files
+        //    IEnumerable<IIndexableItem> indexData = UserController.GetUsers(true, false, context.PortalId).Cast<UserInfo>().
+        //        Where(u => !u.IsInRole("Administrators")).Select(u => new IndexableItemUser()
+        //        {
+        //            Data = ToData(u).Data,
+        //            User = u
+        //        });
+        //    LuceneController.Instance.ReIndexData(indexData, indexConfig);
+        //}
 
         public IEnumerable<IIndexableItem> GetIndexableData(DataSourceContext context)
         {
