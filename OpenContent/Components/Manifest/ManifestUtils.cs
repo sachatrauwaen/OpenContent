@@ -136,7 +136,8 @@ namespace Satrabel.OpenContent.Components.Manifest
         }
         internal static bool DataNeeded(this TemplateManifest template)
         {
-            var schemaFileUri = new FileUri(template.ManifestFolderUri.UrlFolder, "schema.json");
+            string prefix = (string.IsNullOrEmpty(template.Collection) || template.Collection == "Items") ? "" : template.Collection + "-";
+            var schemaFileUri = new FileUri(template.ManifestFolderUri.UrlFolder, prefix + "schema.json");
             if (schemaFileUri.FileExists)
                 return true;
 
