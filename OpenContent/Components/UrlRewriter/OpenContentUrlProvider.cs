@@ -81,7 +81,6 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                                 App.Services.Logger.Warn($"Module {module.DataModule.ModuleId} (portal/tab {module.DataModule.PortalId}/{module.DataModule.TabId}) has >1000 items. We are not making sluggs for them as this would be too inefficient");
                                 continue;
                             }
-                            var physicalTemplateFolder = module.Settings.TemplateDir.PhysicalFullDirectory + "\\";
                             HandlebarsEngine hbEngine = new HandlebarsEngine();
                             if (!string.IsNullOrEmpty(module.Settings.Manifest.DetailUrl))
                             {
@@ -91,7 +90,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                             {
                                 string cultureCode = key.Value.Code;
                                 string ruleCultureCode = (dicLocales.Count > 1 ? cultureCode : null);
-                                ModelFactoryMultiple mf = new ModelFactoryMultiple(dataList, module.Settings.Data, physicalTemplateFolder, module.Settings.Template.Manifest, module.Settings.Template, module.Settings.Template.Main, module, portalId, cultureCode);
+                                ModelFactoryMultiple mf = new ModelFactoryMultiple(dataList, module.Settings.Data, module.Settings.Template.Manifest, module.Settings.Template, module.Settings.Template.Main, module, portalId, cultureCode);
                                 //dynamic model = mf.GetModelAsDynamic(true);
                                 //dynamic items = model.Items;
                                 IEnumerable<Dictionary<string, object>> items = mf.GetModelAsDictionaryList();

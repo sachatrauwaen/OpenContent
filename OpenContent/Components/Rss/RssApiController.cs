@@ -48,7 +48,7 @@ namespace Satrabel.OpenContent.Components.Rss
                 dataList = dsItems.Items;
             }
 
-            var mf = new ModelFactoryMultiple(dataList, null, module.Settings.TemplateDir.PhysicalFullDirectory, manifest, null, null, module);
+            var mf = new ModelFactoryMultiple(dataList, null, manifest, null, null, module);
             dynamic model = mf.GetModelAsDictionary(true);
             HandlebarsEngine hbEngine = new HandlebarsEngine();
             string res = hbEngine.Execute(source, model);

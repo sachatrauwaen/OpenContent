@@ -500,15 +500,13 @@ namespace Satrabel.OpenContent.Components.Render
         private string GenerateOutputDetail(Page page, TemplateManifest templateManifest, TemplateFiles files, JToken dataJson, string settingsJson)
         {
             // detail template
-            var templateVirtualFolder = templateManifest.ManifestFolderUri.UrlFolder;
             if (!string.IsNullOrEmpty(files.Template))
             {
-                string physicalTemplateFolder = HostingEnvironment.MapPath(templateVirtualFolder);
                 FileUri templateUri = CheckFiles(templateManifest, files);
 
                 if (dataJson != null)
                 {
-                    var mf = new ModelFactorySingle(_renderinfo.Data, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module);
+                    var mf = new ModelFactorySingle(_renderinfo.Data, settingsJson, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module);
                     mf.Detail = true;
                     object model;
                     if (templateUri.Extension != ".hbs") // razor
@@ -558,8 +556,6 @@ namespace Satrabel.OpenContent.Components.Render
         {
             if (template != null)
             {
-                string templateVirtualFolder = template.UrlFolder;
-                string physicalTemplateFolder = HostingEnvironment.MapPath(templateVirtualFolder);
                 if (dataJson != null)
                 {
                     ModelFactorySingle mf;
@@ -567,11 +563,11 @@ namespace Satrabel.OpenContent.Components.Render
                     if (_renderinfo.Data == null)
                     {
                         // demo data
-                        mf = new ModelFactorySingle(_renderinfo.DataJson, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module);
+                        mf = new ModelFactorySingle(_renderinfo.DataJson, settingsJson, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module);
                     }
                     else
                     {
-                        mf = new ModelFactorySingle(_renderinfo.Data, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module);
+                        mf = new ModelFactorySingle(_renderinfo.Data, settingsJson, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module);
                     }
                     if (template.Extension != ".hbs") // razor
                     {
@@ -614,14 +610,12 @@ namespace Satrabel.OpenContent.Components.Render
 
         private string GenerateListOutput(Page page, TemplateManifest templateManifest, TemplateFiles files, IEnumerable<IDataItem> dataList, string settingsJson)
         {
-            var templateVirtualFolder = templateManifest.ManifestFolderUri.UrlFolder;
             if (!string.IsNullOrEmpty(files.Template))
             {
-                string physicalTemplateFolder = HostingEnvironment.MapPath(templateVirtualFolder);
                 FileUri templateUri = CheckFiles(templateManifest, files);
                 if (dataList != null)
                 {
-                    ModelFactoryMultiple mf = new ModelFactoryMultiple(dataList, settingsJson, physicalTemplateFolder, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module);
+                    ModelFactoryMultiple mf = new ModelFactoryMultiple(dataList, settingsJson, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module);
                     object model;
                     if (templateUri.Extension != ".hbs") // razor
                     {

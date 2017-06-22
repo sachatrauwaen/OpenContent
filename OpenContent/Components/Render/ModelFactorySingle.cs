@@ -14,14 +14,14 @@ namespace Satrabel.OpenContent.Components.Render
         private readonly JToken _dataJson;
         private readonly IDataItem _data;
 
-        public ModelFactorySingle(JToken dataJson, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleConfig module) :
-            base(settingsJson, physicalTemplateFolder, manifest, templateManifest, templateFiles, module)
+        public ModelFactorySingle(JToken dataJson, string settingsJson, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleConfig module) :
+            base(settingsJson, manifest, templateManifest, templateFiles, module)
         {
             this._dataJson = dataJson;
         }
 
-        public ModelFactorySingle(IDataItem data, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleConfig module) :
-            base(settingsJson, physicalTemplateFolder, manifest, templateManifest, templateFiles, module)
+        public ModelFactorySingle(IDataItem data, string settingsJson, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleConfig module) :
+            base(settingsJson, manifest, templateManifest, templateFiles, module)
         {
             this._dataJson = data.Data;
             this._data = data;

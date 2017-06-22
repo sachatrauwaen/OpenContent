@@ -16,7 +16,6 @@ namespace Satrabel.OpenContent.Components.Render
     public abstract class ModelFactoryBase
     {
         private readonly string _settingsJson;
-        private readonly string _physicalTemplateFolder;
         protected readonly TemplateFiles _templateFiles;
         protected readonly int _portalId;
         private readonly string _cultureCode;
@@ -35,10 +34,9 @@ namespace Satrabel.OpenContent.Components.Render
         protected readonly OpenContentModuleConfig _module;
         protected readonly int _detailTabId;
 
-        protected ModelFactoryBase(string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleConfig module)
+        protected ModelFactoryBase(string settingsJson, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleConfig module)
         {
             this._settingsJson = settingsJson;
-            this._physicalTemplateFolder = physicalTemplateFolder;
             this._manifest = manifest;
             this._templateFiles = templateFiles;
             this._module = module;
@@ -51,10 +49,9 @@ namespace Satrabel.OpenContent.Components.Render
             _dsContext = OpenContentUtils.CreateDataContext(_module);
         }
 
-        protected ModelFactoryBase(string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleConfig module, int portalId, string cultureCode)
+        protected ModelFactoryBase(string settingsJson, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleConfig module, int portalId, string cultureCode)
         {
             this._settingsJson = settingsJson;
-            this._physicalTemplateFolder = physicalTemplateFolder;
             this._manifest = manifest;
             this._templateFiles = templateFiles;
             this._module = module;
@@ -71,7 +68,6 @@ namespace Satrabel.OpenContent.Components.Render
         {
             OpenContentSettings settings = module.Settings;
             this._settingsJson = settings.Data;
-            this._physicalTemplateFolder = settings.Template.ManifestFolderUri.PhysicalFullDirectory + "\\";
             this._manifest = settings.Template.Manifest;
             this._templateFiles = settings.Template?.Main;
             this._module = module;
@@ -86,7 +82,6 @@ namespace Satrabel.OpenContent.Components.Render
         {
             OpenContentSettings settings = module.Settings;
             this._settingsJson = settings.Data;
-            this._physicalTemplateFolder = settings.Template.ManifestFolderUri.PhysicalFullDirectory + "\\";
             this._manifest = settings.Template.Manifest;
             this._templateFiles = settings.Template?.Main;
             this._module = module;
@@ -274,7 +269,7 @@ namespace Satrabel.OpenContent.Components.Render
 
         private JObject LoadLocalizationJson()
         {
-            var localizationFilename = new FileUri(_module.Settings.TemplateDir, $"localization-{GetCurrentCultureCode()}.json");
+            var localizationFilename = new FileUri(_module.Settings.TemplateDir, $"localization.{GetCurrentCultureCode()}.json");
             JObject localizationJson = App.Services.FileRepository.LoadJsonFromCacheOrDisk(localizationFilename) as JObject;
             if (localizationJson == null)
             {

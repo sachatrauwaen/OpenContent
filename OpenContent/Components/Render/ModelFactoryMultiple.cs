@@ -26,13 +26,13 @@ namespace Satrabel.OpenContent.Components.Render
         {
             this._dataList = dataList;
         }
-        public ModelFactoryMultiple(IEnumerable<IDataItem> dataList, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleConfig module) :
-            base(settingsJson, physicalTemplateFolder, manifest, templateManifest, templateFiles, module)
+        public ModelFactoryMultiple(IEnumerable<IDataItem> dataList, string settingsJson,  Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleConfig module) :
+            base(settingsJson, manifest, templateManifest, templateFiles, module)
         {
             this._dataList = dataList;
         }
-        public ModelFactoryMultiple(IEnumerable<IDataItem> dataList, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleConfig module, int portalId, string cultureCode) :
-            base(settingsJson, physicalTemplateFolder, manifest, templateManifest, templateFiles, module, portalId, cultureCode)
+        public ModelFactoryMultiple(IEnumerable<IDataItem> dataList, string settingsJson, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleConfig module, int portalId, string cultureCode) :
+            base(settingsJson, manifest, templateManifest, templateFiles, module, portalId, cultureCode)
         {
             this._dataList = dataList;
         }
