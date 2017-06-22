@@ -215,7 +215,6 @@
     <Compile Include="Components\Json\NotAuthorizedException.cs" />
     <Compile Include="Components\Localization\DnnLocalizationAdapter.cs" />
     <Compile Include="Components\Localization\ILocalizationAdapter.cs" />
-    <Compile Include="Components\Localization\Localizer.cs" />
     <Compile Include="Components\Logging\DnnLogAdapter.cs" />
     <Compile Include="Components\Logging\ExceptionExtentions.cs" />
     <Compile Include="Components\Logging\ILogAdapter.cs" />

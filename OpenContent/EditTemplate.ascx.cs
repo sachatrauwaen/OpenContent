@@ -18,6 +18,7 @@ using System.IO;
 using Satrabel.OpenContent.Components;
 using Satrabel.OpenContent.Components.Manifest;
 using Newtonsoft.Json.Linq;
+using Satrabel.OpenContent.Components.Localization;
 
 #endregion
 
@@ -63,10 +64,10 @@ namespace Satrabel.OpenContent
 
                 JObject builder = new JObject();
 
-                if (schema != null && schema["items"] != null)
+                if (schema?["items"] != null)
                 {
                     builder["formtype"] = "array";
-                    builder["formfields"] = GetBuilder(schema["items"] as JObject, options?["items"] != null ? options["items"] as JObject : null);
+                    builder["formfields"] = GetBuilder(schema["items"] as JObject, options?["items"] as JObject);
                 }
                 else
                 {
@@ -81,21 +82,21 @@ namespace Satrabel.OpenContent
             }
         }
 
-        private JArray GetBuilder(JObject schema, JObject options)
+        private static JArray GetBuilder(JObject schema, JObject options)
         {
             var formfields = new JArray();
 
-            if (schema != null && schema["properties"] != null)
+            if (schema?["properties"] != null)
             {
                 var schemaProperties = schema["properties"] as JObject;
                 foreach (var schProp in schemaProperties.Properties())
                 {
                     var sch = schProp.Value as JObject;
-                    var opt = options != null && options["fields"] != null ? options["fields"][schProp.Name] : null;
+                    var opt = options?["fields"]?[schProp.Name];
                     var field = new JObject();
                     field["fieldname"] = schProp.Name;
-                    string schematype = sch["type"] != null ? sch["type"].ToString() : "string";
-                    string fieldtype = opt != null && opt["type"] != null ? opt["type"].ToString() : "text";
+                    string schematype = sch["type"]?.ToString() ?? "string";
+                    string fieldtype = opt?["type"] != null ? opt["type"].ToString() : "text";
                     if (fieldtype.Substring(0, 2) == "ml")
                     {
                         fieldtype = fieldtype.Substring(2, fieldtype.Length - 2);
@@ -108,7 +109,7 @@ namespace Satrabel.OpenContent
                             fieldtype = "select";
                         }
                         JArray optionLabels = null;
-                        if (opt != null && opt["optionLabels"] != null)
+                        if (opt?["optionLabels"] != null)
                         {
                             optionLabels = opt["optionLabels"] as JArray;
                         }
@@ -118,7 +119,7 @@ namespace Satrabel.OpenContent
                         {
                             var fieldOpt = new JObject();
                             fieldOpt["value"] = item.ToString();
-                            fieldOpt["text"] = optionLabels != null ? optionLabels[i].ToString() : item.ToString();
+                            fieldOpt["text"] = optionLabels?[i].ToString() ?? item.ToString();
                             fieldoptions.Add(fieldOpt);
                             i++;
                         }
@@ -140,7 +141,7 @@ namespace Satrabel.OpenContent
                         }
                         if (sch["items"] != null)
                         {
-                            var b = GetBuilder(sch["items"] as JObject, opt != null && opt["items"] != null ? opt["items"] as JObject : null);
+                            var b = GetBuilder(sch["items"] as JObject, opt?["items"] as JObject);
                             field["subfields"] = b;
                         }
                     }
@@ -150,7 +151,7 @@ namespace Satrabel.OpenContent
                         var b = GetBuilder(sch, opt as JObject);
                         field["subfields"] = b;
                     }
-                    if (fieldtype == "select2" && opt["dataService"] != null && opt["dataService"]["data"] != null)
+                    if (fieldtype == "select2" && opt["dataService"]?["data"] != null)
                     {
                         fieldtype = "relation";
                         field["relationoptions"] = new JObject();
@@ -201,16 +202,16 @@ namespace Satrabel.OpenContent
                         field["default"] = sch["default"];
                         field["advanced"] = true;
                     }
-                    if (opt != null && opt["label"] != null)
+                    if (opt?["label"] != null)
                     {
                         field["title"] = opt["label"];
                     }
-                    if (opt != null && opt["helper"] != null)
+                    if (opt?["helper"] != null)
                     {
                         field["helper"] = opt["helper"];
                         field["advanced"] = true;
                     }
-                    if (opt != null && opt["placeholder"] != null)
+                    if (opt?["placeholder"] != null)
                     {
                         field["placeholder"] = opt["placeholder"];
                         field["advanced"] = true;
@@ -220,7 +221,7 @@ namespace Satrabel.OpenContent
                         field["required"] = sch["required"];
                         field["advanced"] = true;
                     }
-                    if (opt != null && opt["vertical"] != null)
+                    if (opt?["vertical"] != null)
                     {
                         field["vertical"] = opt["vertical"];
                     }
@@ -364,7 +365,7 @@ namespace Satrabel.OpenContent
                     string title = string.IsNullOrEmpty(template.Manifest.Title) ? "Data " : template.Manifest.Title + " ";
                     scriptList.Items.Add(new ListItem(title + "Schema", "schema.json"));
                     scriptList.Items.Add(new ListItem(title + "Options", "options.json"));
-                    //scriptList.Items.Add(new ListItem("Edit Layout Options - Template File Overides", "options." + template.FileNameWithoutExtension + ".json"));
+                    
                     foreach (Locale item in LocaleController.Instance.GetLocales(PortalId).Values)
                     {
                         scriptList.Items.Add(new ListItem(title + "Options - " + item.Code, "options." + item.Code + ".json"));
