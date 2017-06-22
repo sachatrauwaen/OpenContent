@@ -89,7 +89,7 @@ namespace Satrabel.OpenContent.Components.Rest.Swagger
                 */
                 {
                     // main item
-                    var schemaJson = App.Services.FileRepository.LoadJsonFromFile(new FileUri(templateFolder, "schema.json"));
+                    var schemaJson = App.Services.FileRepository.LoadJsonFromCacheOrDisk(new FileUri(templateFolder, "schema.json"));
 
                     //var resItems = new List<SchemaObject>();
                     //resItems.Add(new SchemaObject()
@@ -294,7 +294,7 @@ namespace Satrabel.OpenContent.Components.Rest.Swagger
                 {
                     foreach (var entity in manifest.AdditionalDataDefinition.Keys)
                     {
-                        var schemaJson = App.Services.FileRepository.LoadJsonFromFile(new FileUri(templateFolder, entity + "-schema.json"));
+                        var schemaJson = App.Services.FileRepository.LoadJsonFromCacheOrDisk(new FileUri(templateFolder, entity + "-schema.json"));
                         if (schemaJson["items"] != null)
                         {
                             var entityName = entity.ToLower();

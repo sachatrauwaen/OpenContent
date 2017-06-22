@@ -62,7 +62,7 @@ namespace Satrabel.OpenContent.Components.Lucene
         public static void ReIndexModuleData(OpenContentModuleConfig module)
         {
             var indexableData = GetModuleIndexableData(module);
-            if (indexableData == null) return;
+            if (indexableData == null || !indexableData.Any()) return;
 
             //var settings = module.Settings;
             //var moduleId = settings.IsOtherModule ? settings.ModuleId : module.ViewModule.ModuleId;

@@ -58,8 +58,8 @@ namespace Satrabel.OpenContent
                 string scriptFile = templateFolder + "/" + scriptList.SelectedValue.Replace("schema.json", "builder.json");
                 string srcFile = Server.MapPath(scriptFile);
 
-                var schema = App.Services.FileRepository.LoadJsonFromFile(new FileUri(templateFolder, scriptList.SelectedValue)) as JObject;
-                var options = App.Services.FileRepository.LoadJsonFromFile(new FileUri(templateFolder, scriptList.SelectedValue.Replace("schema.json", "options.json"))) as JObject;
+                var schema = App.Services.FileRepository.LoadJsonFromCacheOrDisk(new FileUri(templateFolder, scriptList.SelectedValue)) as JObject;
+                var options = App.Services.FileRepository.LoadJsonFromCacheOrDisk(new FileUri(templateFolder, scriptList.SelectedValue.Replace("schema.json", "options.json"))) as JObject;
 
                 JObject builder = new JObject();
 

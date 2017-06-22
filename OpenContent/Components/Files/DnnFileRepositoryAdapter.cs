@@ -2,6 +2,7 @@
 using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Satrabel.OpenContent.Components.Json;
 
 namespace Satrabel.OpenContent.Components.Files
 {
@@ -32,26 +33,15 @@ namespace Satrabel.OpenContent.Components.Files
             }
         }
 
-        public JToken LoadJsonFileFromDisk(string filename)
-        {
-            if (!File.Exists(filename)) return null;
-
-            JToken json = null;
-            string fileContent = File.ReadAllText(filename);
-            if (!String.IsNullOrWhiteSpace(fileContent))
-            {
-                json = JObject.Parse(fileContent);
-            }
-            return json;
-        }
-
-        public JToken LoadJsonFromFile(FileUri fileUri)
+        public JToken LoadJsonFromCacheOrDisk(FileUri fileUri)
         {
             string cacheKey = fileUri.FilePath;
             var json = App.Services.CacheAdapter.GetCache<JObject>(cacheKey);
             if (json == null)
             {
-                json = ToJObject(fileUri) as JObject;
+                var fileContent = ReadFileFromDisk(fileUri);
+                json = fileContent.ToJObject($"file [{fileUri.FilePath}]") as JObject;
+
                 if (json != null)
                 {
                     App.Services.CacheAdapter.SetCache(cacheKey, json, fileUri.PhysicalFilePath);
@@ -60,23 +50,36 @@ namespace Satrabel.OpenContent.Components.Files
             return json;
         }
 
-        private static JToken ToJObject(FileUri file)
+        public JToken LoadJsonFileFromDisk(string filename)
+        {
+            if (!File.Exists(filename)) return null;
+
+            JToken json = null;
+            string fileContent = File.ReadAllText(filename);
+            if (!string.IsNullOrWhiteSpace(fileContent))
+            {
+                json = fileContent.ToJObject($"file [{filename}]") as JObject;
+            }
+            return json;
+        }
+
+        public static string ReadFileFromDisk(FileUri file)
         {
             if (file == null) return null;
             if (!file.FileExists) return null;
-
+            string fileContent;
             try
             {
-                string fileContent = File.ReadAllText(file.PhysicalFilePath);
+                fileContent = File.ReadAllText(file.PhysicalFilePath);
                 if (string.IsNullOrWhiteSpace(fileContent)) return null;
-                return JToken.Parse(fileContent);
             }
             catch (Exception ex)
             {
-                var mess = $"Error while parsing file [{file.FilePath}]";
+                var mess = $"Error reading file [{file.FilePath}]";
                 App.Services.Logger.Error(mess, ex);
                 throw new Exception(mess, ex);
             }
+            return fileContent;
         }
     }
 }

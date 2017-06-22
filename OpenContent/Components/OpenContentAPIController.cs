@@ -533,7 +533,7 @@ namespace Satrabel.OpenContent.Components
                 OpenContentSettings settings = ActiveModule.OpenContentSettings();
                 string prefix = string.IsNullOrEmpty(key) ? "" : key + "-";
                 JObject json = new JObject();
-                var dataJson = App.Services.FileRepository.LoadJsonFromFile(new FileUri(settings.TemplateDir, $"{prefix}builder.json"));
+                var dataJson = App.Services.FileRepository.LoadJsonFromCacheOrDisk(new FileUri(settings.TemplateDir, $"{prefix}builder.json"));
                 if (dataJson != null)
                     json["data"] = dataJson;
 

@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
+using System.IO;
 using System.Web.Script.Serialization;
 
 
@@ -67,7 +68,7 @@ namespace Satrabel.OpenContent.Components.Json
                 jToken[fieldname] = defaultvalue;
         }
 
-        public static JToken ToJObject(this string text, string desc)
+        public static JToken ToJObject(this string text, string descRemark)
         {
             try
             {
@@ -76,33 +77,35 @@ namespace Satrabel.OpenContent.Components.Json
             }
             catch (Exception ex)
             {
-                string mess = $"Error while parsing text [{desc}]";
+                string mess = $"Error while parsing text [{descRemark}]";
                 App.Services.Logger.Error(mess, ex);
                 throw new Exception(mess, ex);
             }
         }
-        public static JToken ToJObject(this object obj, string desc)
+        public static JToken ToJObject(this object obj, string descRemark)
         {
             try
             {
                 if (obj == null) return null;
-                return JToken.Parse(obj.ToJson());
+                return JToken.Parse(obj.ToJsonString());
             }
             catch (Exception ex)
             {
-                string mess = $"Error while parsing object [{desc}]";
+                string mess = $"Error while parsing object [{descRemark}]";
                 App.Services.Logger.Error(mess, ex);
                 throw new Exception(mess, ex);
             }
         }
-        
+
+
+
         /// <summary>
         ///   Serializes a type to Json. Note the type must be marked Serializable 
         ///   or include a DataContract attribute.
         /// </summary>
         /// <param name = "value"></param>
         /// <returns></returns>
-        public static string ToJsonString(object value)
+        public static string ToJsonString(this object value)
         {
             var ser = SerializerFactory();
             string json = ser.Serialize(value);

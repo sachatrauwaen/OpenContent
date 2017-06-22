@@ -248,16 +248,7 @@ namespace Satrabel.OpenContent.Components.Render
             // include static localization in the Model
             if (!onlyData)
             {
-                JToken localizationJson = null;
-                string localizationFilename = _physicalTemplateFolder + GetCurrentCultureCode() + ".json";
-                if (File.Exists(localizationFilename))
-                {
-                    string fileContent = File.ReadAllText(localizationFilename);
-                    if (!string.IsNullOrWhiteSpace(fileContent))
-                    {
-                        localizationJson = fileContent.ToJObject("Localization: " + localizationFilename);
-                    }
-                }
+                var localizationJson = LoadLocalizationJson();
                 if (localizationJson != null)
                 {
                     model["Localization"] = localizationJson;
@@ -279,6 +270,19 @@ namespace Satrabel.OpenContent.Components.Render
                 context["HomeDirectory"] = _module.HomeDirectory;
                 context["HTTPAlias"] = _module.HostName;
             }
+        }
+
+        private JObject LoadLocalizationJson()
+        {
+            var localizationFilename = new FileUri(_module.Settings.TemplateDir, $"localization-{GetCurrentCultureCode()}.json");
+            JObject localizationJson = App.Services.FileRepository.LoadJsonFromCacheOrDisk(localizationFilename) as JObject;
+            if (localizationJson == null)
+            {
+                // try loading localization files without prefix (for backwards compatibility)
+                localizationFilename = new FileUri(_module.Settings.TemplateDir, $"{GetCurrentCultureCode()}.json");
+                localizationJson = App.Services.FileRepository.LoadJsonFromCacheOrDisk(localizationFilename) as JObject;
+            }
+            return localizationJson;
         }
 
         private JObject GetAdditionalData()
