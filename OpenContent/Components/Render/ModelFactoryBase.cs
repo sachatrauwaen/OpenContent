@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using Satrabel.OpenContent.Components.Datasource.Search;
 using Satrabel.OpenContent.Components.Dnn;
+using Satrabel.OpenContent.Components.Localization;
 using Satrabel.OpenContent.Components.Querying;
 
 namespace Satrabel.OpenContent.Components.Render
@@ -243,7 +244,7 @@ namespace Satrabel.OpenContent.Components.Render
             // include static localization in the Model
             if (!onlyData)
             {
-                var localizationJson = LoadLocalizationJson();
+                var localizationJson = LocalizationUtils.LoadLocalizationJson(_module.Settings.TemplateDir, GetCurrentCultureCode());
                 if (localizationJson != null)
                 {
                     model["Localization"] = localizationJson;
@@ -265,19 +266,6 @@ namespace Satrabel.OpenContent.Components.Render
                 context["HomeDirectory"] = _module.HomeDirectory;
                 context["HTTPAlias"] = _module.HostName;
             }
-        }
-
-        private JObject LoadLocalizationJson()
-        {
-            var localizationFilename = new FileUri(_module.Settings.TemplateDir, $"localization.{GetCurrentCultureCode()}.json");
-            JObject localizationJson = App.Services.FileRepository.LoadJsonFromCacheOrDisk(localizationFilename) as JObject;
-            if (localizationJson == null)
-            {
-                // try loading localization files without prefix (for backwards compatibility)
-                localizationFilename = new FileUri(_module.Settings.TemplateDir, $"{GetCurrentCultureCode()}.json");
-                localizationJson = App.Services.FileRepository.LoadJsonFromCacheOrDisk(localizationFilename) as JObject;
-            }
-            return localizationJson;
         }
 
         private JObject GetAdditionalData()

@@ -396,10 +396,28 @@ namespace Satrabel.OpenContent
                         }
                     }
                 }
+
+                // check if old localization file naming is being used
+                bool oldNamingSchemeIsUsed = false;
                 foreach (Locale item in LocaleController.Instance.GetLocales(PortalId).Values)
                 {
-                    scriptList.Items.Add(new ListItem("Localization - " + item.Code, item.Code + ".json"));
+                    oldNamingSchemeIsUsed = oldNamingSchemeIsUsed | LocalizationUtils.LoadLocalizationJsonV1(settings.TemplateDir, item.Code) != null;
                 }
+                if (oldNamingSchemeIsUsed)
+                {
+                    foreach (Locale item in LocaleController.Instance.GetLocales(PortalId).Values)
+                    {
+                        scriptList.Items.Add(new ListItem("Localization - " + item.Code, item.Code + ".json"));
+                    }
+                }
+                else
+                {
+                    foreach (Locale item in LocaleController.Instance.GetLocales(PortalId).Values)
+                    {
+                        scriptList.Items.Add(new ListItem("Localization - " + item.Code, $"localization.{item.Code}.json"));
+                    }
+                }
+                
                 //if (OpenContentUtils.FormExist(settings.Template.ManifestFolderUri))
                 {
                     string title = "Form ";
