@@ -120,8 +120,9 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
                                 int left = int.Parse(cropper["x"].ToString());
                                 int top = int.Parse(cropper["y"].ToString());
 
+                                var newHeight = Convert.ToInt32(Math.Ceiling((h / (double)w) * requestedCropRatio.Width) ); //recal height based on exact ratio
                                 //crop first then resize (order defined by the processors definition order in the config file)
-                                return url.AppendQueryParams($"crop={left},{top},{w},{h}&width={requestedCropRatio.Width}&height={requestedCropRatio.Height}");
+                                return url.AppendQueryParams($"crop={left},{top},{w},{h}&width={requestedCropRatio.Width}&height={newHeight}");
                             }
                         }
                         catch (Exception ex)
