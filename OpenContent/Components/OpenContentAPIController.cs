@@ -611,14 +611,14 @@ namespace Satrabel.OpenContent.Components
                 if (json["form"]["ModuleTitle"] != null && json["form"]["ModuleTitle"].Type == JTokenType.String)
                 {
                     string moduleTitle = json["form"]["ModuleTitle"].ToString();
-                    OpenContentUtils.UpdateModuleTitle(ActiveModule, moduleTitle);
+                    ActiveModule.UpdateModuleTitle(moduleTitle);
                 }
                 else if (json["form"]["ModuleTitle"] != null && json["form"]["ModuleTitle"].Type == JTokenType.Object)
                 {
                     if (json["form"]["ModuleTitle"][DnnLanguageUtils.GetCurrentCultureCode()] != null)
                     {
                         string moduleTitle = json["form"]["ModuleTitle"][DnnLanguageUtils.GetCurrentCultureCode()].ToString();
-                        OpenContentUtils.UpdateModuleTitle(ActiveModule, moduleTitle);
+                        ActiveModule.UpdateModuleTitle(moduleTitle);
                     }
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, new
@@ -766,7 +766,8 @@ namespace Satrabel.OpenContent.Components
                 {
                     var form = json["form"].ToString();
                     var key = json["key"].ToString();
-                    if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(form)) mc.UpdateModuleSetting(moduleId, key, form);
+                    if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(form))
+                        mc.UpdateModuleSetting(moduleId, key, form);
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, new
                 {
