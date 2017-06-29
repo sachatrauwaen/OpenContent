@@ -171,6 +171,15 @@ namespace Satrabel.OpenContent.Components
         {
             return DnnLanguageUtils.GetCurrentCultureCode();
         }
-
+        public static void UpdateModuleTitle(this ModuleInfo module, string moduleTitle)
+        {
+            if (module.ModuleTitle != moduleTitle)
+            {
+                ModuleController mc = new ModuleController();
+                var mod = mc.GetModule(module.ModuleID, module.TabID, true);
+                mod.ModuleTitle = moduleTitle;
+                mc.UpdateModule(mod);
+            }
+        }
     }
 }

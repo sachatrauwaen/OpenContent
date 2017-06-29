@@ -335,13 +335,13 @@ namespace Satrabel.OpenContent
                         }
                         if (json["ModuleTitle"] != null && json["ModuleTitle"].Type == JTokenType.String)
                         {
-                            string ModuleTitle = json["ModuleTitle"].ToString();
-                            OpenContentUtils.UpdateModuleTitle(ModuleContext.Configuration, ModuleTitle);
+                            string moduleTitle = json["ModuleTitle"].ToString();
+                            ModuleContext.Configuration.UpdateModuleTitle(moduleTitle);
                         }
                         else if (json["ModuleTitle"] != null && json["ModuleTitle"].Type == JTokenType.Object)
                         {
                             string ModuleTitle = json["ModuleTitle"][DnnLanguageUtils.GetCurrentCultureCode()].ToString();
-                            OpenContentUtils.UpdateModuleTitle(ModuleContext.Configuration, ModuleTitle);
+                            ModuleContext.Configuration.UpdateModuleTitle(ModuleTitle);
                         }
                     }
                 }
@@ -390,13 +390,13 @@ namespace Satrabel.OpenContent
                     }
                     if (json["ModuleTitle"] != null && json["ModuleTitle"].Type == JTokenType.String)
                     {
-                        string ModuleTitle = json["ModuleTitle"].ToString();
-                        OpenContentUtils.UpdateModuleTitle(ModuleContext.Configuration, ModuleTitle);
+                        string moduleTitle = json["ModuleTitle"].ToString();
+                        ModuleContext.Configuration.UpdateModuleTitle(moduleTitle);
                     }
                     else if (json["ModuleTitle"] != null && json["ModuleTitle"].Type == JTokenType.Object)
                     {
-                        string ModuleTitle = json["ModuleTitle"][DnnLanguageUtils.GetCurrentCultureCode()].ToString();
-                        OpenContentUtils.UpdateModuleTitle(ModuleContext.Configuration, ModuleTitle);
+                        string moduleTitle = json["ModuleTitle"][DnnLanguageUtils.GetCurrentCultureCode()].ToString();
+                        ModuleContext.Configuration.UpdateModuleTitle(moduleTitle);
                     }
                 }
             }
