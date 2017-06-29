@@ -186,6 +186,8 @@ namespace Satrabel.OpenContent.Components
         public static OpenContentModuleInfo CreateOpenContentModuleInfo(int tabId, int moduleId)
         {
             var module = GetDnnModule(tabId, moduleId);
+            if(module==null) throw new Exception($"No Module found with tabId {tabId} and moduleId {moduleId}. Review your 'OtherModule' settings");
+
             return new OpenContentModuleInfo(module.PortalID, tabId, moduleId, module.ModuleTitle, module.TabModuleID);
         }
         public static OpenContentModuleInfo CreateOpenContentModuleInfo(this ModuleInfo module)
