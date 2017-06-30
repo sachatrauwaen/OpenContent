@@ -33,8 +33,18 @@ namespace Satrabel.OpenContent.Components.Manifest
         /// <value>
         ///   <c>true</c> if [DNN search]; otherwise, <c>false</c>.
         /// </value>
-        [JsonProperty(PropertyName = "dnnsearch")]
+        [JsonProperty(PropertyName = "dnnSearch")]
         public bool DnnSearch { get; set; }
+        /// <summary>
+        /// serves as a property for backwards compatibility after renaming dnnsearch to dnnSeach in json
+        /// </summary>
+        [JsonProperty(PropertyName = "dnnsearch")]
+        public bool DnnSearchBackwardsCompatibility
+        {
+            get { return DnnSearch; }
+            set { DnnSearch = value; }
+        }
+
 
         /// <summary>
         /// Gets or sets a template specifying the field(s) to use for document Title in [DNN search] results.
