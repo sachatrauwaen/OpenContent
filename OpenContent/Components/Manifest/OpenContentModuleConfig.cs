@@ -45,8 +45,7 @@ namespace Satrabel.OpenContent.Components
 
         public static OpenContentModuleConfig Create(int moduleId, int tabId, PortalSettings ps)
         {
-            ModuleController mc = new ModuleController();
-            var viewModule = mc.GetModule(moduleId, tabId, false);
+            var viewModule = DnnUtils.GetDnnModule(tabId, moduleId);
             return Create(viewModule, ps);
         }
 

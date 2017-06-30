@@ -352,8 +352,9 @@ namespace Satrabel.OpenContent.Components.Render
                     string raison;
                     if (!OpenContentUtils.HaveViewPermissions(dsItem, module.UserRoles.FromDnnRoles(), indexConfig, out raison))
                     {
+                        App.Services.Logger.Error($"Error accessing {HttpContext.Current?.Request?.Url?.AbsoluteUri}. Referrer {HttpContext.Current?.Request?.UrlReferrer?.AbsoluteUri}");
                         if (module.ViewModule.HasEditRightsOnModule())
-                            throw new NotAuthorizedException(404, $"No detail view permissions for id={info.DetailItemId}  (due to {raison}) \nGo into Edit Mode to view/change the item");
+                            throw new NotAuthorizedException(404, $"No detail view permissions for id={info.DetailItemId}  (due to {raison}) \nGo into Edit Mode to view/change the item.");
                         else
                             throw new NotAuthorizedException(404, $"Access denied. You might want to contact your administrator for more information. (due to {raison})");
                     }
