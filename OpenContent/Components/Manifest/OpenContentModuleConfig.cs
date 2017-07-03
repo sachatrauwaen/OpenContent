@@ -103,9 +103,9 @@ namespace Satrabel.OpenContent.Components
             return DnnUrlUtils.NavigateUrl(detailTabId, _portalSettings, getCurrentCultureCode);
         }
 
-        internal string GetUrl(int detailTabId, string v1, string v2)
+        internal string GetUrl(int detailTabId, string pagename, string idParam)
         {
-            return DnnUrlUtils.NavigateUrl(detailTabId, _portalSettings, v1, v2);
+            return DnnUrlUtils.NavigateUrl(detailTabId, _portalSettings, pagename, idParam);
         }
 
         public string EditUrl(string id, string itemId, int viewModuleModuleId)

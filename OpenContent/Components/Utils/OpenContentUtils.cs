@@ -586,7 +586,7 @@ namespace Satrabel.OpenContent.Components
                 if (!String.IsNullOrEmpty(fieldName))
                 {
                     permissions = false;
-                    string[] dataRoles = null;
+                    string[] dataRoles = { };
                     if (dsItem.Data[fieldName] != null)
                     {
                         if (dsItem.Data[fieldName].Type == JTokenType.Array)

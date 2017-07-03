@@ -12,6 +12,7 @@ using DotNetNuke.Framework;
 using DotNetNuke.Framework.JavaScriptLibraries;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Json;
+using Satrabel.OpenContent.Components.TemplateHelpers;
 
 
 namespace Satrabel.OpenContent.Components.Alpaca
@@ -150,16 +151,12 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 string apikey = App.Services.GlobalSettings().GetGoogleApiKey();
                 ClientResourceManager.RegisterScript(Page, "//maps.googleapis.com/maps/api/js?v=3.exp&libraries=places" + (string.IsNullOrEmpty(apikey) ? "" : "&key=" + apikey), FileOrder.Js.DefaultPriority);
             }
-            if (allFields || fieldTypes.Contains("imagecropper") || fieldTypes.Contains("imagecrop") || fieldTypes.Contains("imagecrop2"))
+            if (allFields || fieldTypes.ContainsAny("imagecropper", "imagecrop", "imagecrop2"))
             {
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/cropper/cropper.js", FileOrder.Js.DefaultPriority);
                 ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/cropper/cropper.css", FileOrder.Css.DefaultPriority);
             }
-            if (allFields ||
-                    fieldTypes.Contains("select2") || fieldTypes.Contains("image2") || fieldTypes.Contains("file2") || fieldTypes.Contains("url2") ||
-                    fieldTypes.Contains("mlimage2") || fieldTypes.Contains("mlfile2") || fieldTypes.Contains("mlurl2") || fieldTypes.Contains("mlfolder2") ||
-                    fieldTypes.Contains("imagecrop2")
-                )
+            if (allFields || fieldTypes.ContainsAny("select2", "image2", "file2", "url2", "mlimage2", "mlfile2", "mlurl2", "mlfolder2", "imagecrop2"))
             {
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/select2/select2.js", FileOrder.Js.DefaultPriority);
                 ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/select2/select2.css", FileOrder.Css.DefaultPriority);
@@ -285,10 +282,10 @@ namespace Satrabel.OpenContent.Components.Alpaca
             return types;
         }
 
-        public static string AlpacaCulture(string CultureCode)
+        public static string AlpacaCulture(string cultureCode)
         {
             string[] alpacaLocales = { "zh_CN", "hr_HR", "fr_FR", "de_AT", "it_IT", "ja_JP", "pl_PL", "pt_BR", "es_ES" };
-            string lang = CultureCode.Replace("-", "_");
+            string lang = cultureCode.Replace("-", "_");
             foreach (var item in alpacaLocales)
             {
                 if (item == lang)

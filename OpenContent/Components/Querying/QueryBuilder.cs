@@ -215,7 +215,7 @@ namespace Satrabel.OpenContent.Components.Querying
             {
                 foreach (string key in queryString)
                 {
-                    if (_indexConfig != null && _indexConfig.Fields != null && _indexConfig.Fields.Any(f => f.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase)))
+                    if (_indexConfig?.Fields != null && _indexConfig.Fields.Any(f => f.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase)))
                     {
                         var indexConfig = _indexConfig.Fields.Single(f => f.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase));
                         string val = queryString[key];

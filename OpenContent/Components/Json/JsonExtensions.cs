@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Web.Script.Serialization;
 
@@ -8,6 +10,12 @@ namespace Satrabel.OpenContent.Components.Json
 {
     public static class JsonExtensions
     {
+        public static bool EqualsAny(this JToken json, params string[] valueList)
+        {
+            if (json.IsEmpty()) return false;
+            return ((IList)valueList).Contains(json.ToString());
+        }
+
         public static bool IsEmpty(this JObject json)
         {
             if (json == null) return true;

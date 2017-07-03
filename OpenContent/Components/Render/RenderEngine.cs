@@ -13,6 +13,7 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Web;
 using System.Web.Hosting;
 using System.Web.UI;
 using Satrabel.OpenContent.Components.Lucene.Config;
@@ -384,7 +385,7 @@ namespace Satrabel.OpenContent.Components.Render
             FileUri dataFilename = null;
             if (info.Template != null)
             {
-                dataFilename = new FileUri(info.Template.ManifestFolderUri.UrlFolder, "data.json"); ;
+                dataFilename = new FileUri(info.Template.ManifestFolderUri.UrlFolder, "data.json");
             }
             if (dataFilename != null && dataFilename.FileExists)
             {
@@ -442,7 +443,7 @@ namespace Satrabel.OpenContent.Components.Render
         private string ExecuteRazor(FileUri template, dynamic model)
         {
             string webConfig = template.PhysicalFullDirectory;
-            webConfig = webConfig.Remove(webConfig.LastIndexOf("\\")) + "\\web.config";
+            webConfig = webConfig.Remove(webConfig.LastIndexOf("\\", StringComparison.Ordinal)) + "\\web.config";
             if (!File.Exists(webConfig))
             {
                 string filename = HostingEnvironment.MapPath("~/DesktopModules/OpenContent/Templates/web.config");
