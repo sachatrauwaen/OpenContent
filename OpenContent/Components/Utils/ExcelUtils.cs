@@ -12,6 +12,22 @@ namespace Satrabel.OpenContent.Components
             ExcelUtils.OutputFile(excelBytes, filename, ctx);
         }
 
+        public static byte[] OutputFile(string csv)
+        {
+            using (var pck = new ExcelPackage())  //we gebruiken using om zeker mooi alles te sluiten achteraf.
+            {
+                var worksheet = pck.Workbook.Worksheets.Add("Sheet1");
+                worksheet.Cells["A1"].LoadFromText(csv, new ExcelTextFormat()
+                {
+                    Delimiter = ';',
+                    TextQualifier = '"',
+                    //EOL = "|"
+                    
+                });
+                return pck.GetAsByteArray();
+            }
+        }
+
         private static byte[] CreateExcel(DataTable dataTable)
         {
             using (var pck = new ExcelPackage())  //we gebruiken using om zeker mooi alles te sluiten achteraf.

@@ -166,6 +166,17 @@ namespace Satrabel.OpenContent.Components
             return blnHasModuleEditPermissions;
         }
 
+        public static bool HasViewRightsOnModule(this ModuleInfo activeModule)
+        {
+            bool blnHasModuleViewPermissions = false;
+            if (activeModule != null)
+            {
+                //DNN already checks SuperUser and Administrator
+                blnHasModuleViewPermissions = ModulePermissionController.HasModuleAccess(SecurityAccessLevel.View, "CONTENT", activeModule);
+            }
+            return blnHasModuleViewPermissions;
+        }
+
         // for openform compatibility
         public static string GetCurrentCultureCode()
         {

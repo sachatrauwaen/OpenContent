@@ -46,6 +46,11 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
+        internal static bool HasAllUsersViewPermissions(PortalSettings portalSettings, ModuleInfo module)
+        {
+            return module.HasViewRightsOnModule();
+        }
+
         public static string GetSiteTemplateFolder(PortalSettings portalSettings, string moduleSubDir)
         {
             return portalSettings.HomeDirectory + moduleSubDir + "/Templates/";
