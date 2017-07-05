@@ -19,6 +19,7 @@ using DotNetNuke.Entities.Modules;
 using Satrabel.OpenContent.Components.Lucene;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.Common;
+using DotNetNuke.Entities.Portals;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -88,7 +89,7 @@ namespace Satrabel.OpenContent.Components
             if (versions.Count == 0 || versions[0].Json.ToString() != content.Json)
             {
                 versions.Insert(0, ver);
-                if (versions.Count > OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetMaxVersions())
+                if (versions.Count > OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController(PortalSettings.Current.PortalId).GetMaxVersions())
                 {
                     versions.RemoveAt(versions.Count - 1);
                 }
