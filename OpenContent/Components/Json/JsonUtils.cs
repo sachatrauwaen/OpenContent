@@ -398,7 +398,7 @@ namespace Satrabel.OpenContent.Components.Json
         }
 
         /// <summary>
-        /// Enhance data for all alpaca fields of type 'image2'
+        /// Enhance data for all alpaca fields of type 'image2' and 'mlimage2'
         /// </summary>
         public static void ImagesJson(JObject o, JObject requestOptions, JObject options, bool isEditable)
         {
@@ -415,7 +415,7 @@ namespace Satrabel.OpenContent.Components.Json
                     reqOpt = requestOptions["fields"][child.Name] as JObject;
                 }
 
-                bool image = opt?["type"] != null && opt["type"].ToString() == "image2";
+                bool image = (opt?["type"]).EqualsAny("image2", "mlimage2");
 
                 if (image && reqOpt != null)
                 {
