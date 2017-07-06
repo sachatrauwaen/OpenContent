@@ -118,7 +118,6 @@ namespace Satrabel.OpenContent.Components
             ClientResourceManager.RegisterScript(page, jsfilename, jsOrder);
         }
 
-
         // for openform compatibility
         [Obsolete("This method is obsolete since dec 2015; use DnnLanguageUtils.GetCurrentCultureCode() instead")]
         public static string GetCurrentCultureCode()

@@ -7,25 +7,25 @@ using System.Net.Http.Headers;
 using Satrabel.OpenContent.Components.Handlebars;
 using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components.Datasource;
-using Satrabel.OpenContent.Components.Querying;
 using Satrabel.OpenContent.Components.Render;
 using System.Net;
 using Satrabel.OpenContent.Components.Dnn;
+using Satrabel.OpenContent.Components.Querying;
 
-namespace Satrabel.OpenContent.Components.Rss
+namespace Satrabel.OpenContent.Components.Export
 {
-    public class RssApiController : DnnApiController
+    public class ExcelApiController : DnnApiController
     {
         [AllowAnonymous]
         [HttpGet]
-        public HttpResponseMessage GetFeed(int moduleId, int tabId)
+        public HttpResponseMessage GetExcel(int moduleId, int tabId)
         {
-            return GetFeed(moduleId, tabId, "rss", "application/rss+xml");
+            return GetExcel(moduleId, tabId, "excel", "export.xlsx");
         }
 
         [AllowAnonymous]
         [HttpGet]
-        public HttpResponseMessage GetFeed(int moduleId, int tabId, string template, string mediaType)
+        public HttpResponseMessage GetExcel(int moduleId, int tabId, string template, string fileName)
         {
             IEnumerable<IDataItem> dataList = new List<IDataItem>();
             var module = OpenContentModuleConfig.Create(moduleId, tabId, PortalSettings);
@@ -58,10 +58,21 @@ namespace Satrabel.OpenContent.Components.Rss
             dynamic model = mf.GetModelAsDictionary(true);
             HandlebarsEngine hbEngine = new HandlebarsEngine();
             string res = hbEngine.Execute(source, model);
-            var response = new HttpResponseMessage();
-            response.Content = new StringContent(res);
-            response.Content.Headers.ContentType = new MediaTypeHeaderValue(mediaType);
+
+            var fileBytes = ExcelUtils.OutputFile(res);
+                        
+            var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
+            
+            //Create a file on the fly and get file data as a byte array and send back to client
+            response.Content = new ByteArrayContent(fileBytes);//Use your byte array
+            response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
+            response.Content.Headers.ContentDisposition.FileName = fileName;//your file Name- text.xlsx
+            response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            //response.Content.Headers.ContentType  = new MediaTypeHeaderValue("application/octet-stream");
+            response.Content.Headers.ContentLength = fileBytes.Length;
+            response.StatusCode = System.Net.HttpStatusCode.OK;
             return response;
+            
         }
     }
 }

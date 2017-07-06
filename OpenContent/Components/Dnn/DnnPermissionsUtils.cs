@@ -9,9 +9,31 @@ namespace Satrabel.OpenContent.Components.Dnn
 {
     public static class DnnPermissionsUtils
     {
+        public static bool HasAllUsersViewPermissions(this OpenContentModuleConfig module)
+        {
+            bool blnHasModuleViewPermissions = false;
+            if (module.ViewModule != null)
+            {
+                //DNN already checks SuperUser and Administrator
+                blnHasModuleViewPermissions = ModulePermissionController.HasModuleAccess(AppDefinitions.SecurityAccessLevel.View.ToDnnSecurityAccessLevel(), "CONTENT", DnnUtils.GetDnnModule(module.ViewModule));
+            }
+            return blnHasModuleViewPermissions;
+        }
+
         public static bool HasEditPermissions(OpenContentModuleConfig ocModuleConfig, string editrole, int createdByUserId)
         {
             return ocModuleConfig.ViewModule.HasEditRightsOnModule() || HasEditRole(ocModuleConfig, editrole, createdByUserId);
+        }
+
+        public static bool HasEditRightsOnModule(this OpenContentModuleInfo activeModule)
+        {
+            bool blnHasModuleEditPermissions = false;
+            if (activeModule != null)
+            {
+                //DNN already checks SuperUser and Administrator
+                blnHasModuleEditPermissions = ModulePermissionController.HasModuleAccess(SecurityAccessLevel.Edit, "CONTENT", DnnUtils.GetDnnModule(activeModule));
+            }
+            return blnHasModuleEditPermissions;
         }
 
         public static bool HasEditRole(OpenContentModuleConfig ocModuleConfig, string editrole, int createdByUserId)
@@ -53,17 +75,6 @@ namespace Satrabel.OpenContent.Components.Dnn
                 isEditable = false;
             }
             return isEditable;
-        }
-
-        public static bool HasEditRightsOnModule(this OpenContentModuleInfo activeModule)
-        {
-            bool blnHasModuleEditPermissions = false;
-            if (activeModule != null)
-            {
-                //DNN already checks SuperUser and Administrator
-                blnHasModuleEditPermissions = ModulePermissionController.HasModuleAccess(SecurityAccessLevel.Edit, "CONTENT", DnnUtils.GetDnnModule(activeModule));
-            }
-            return blnHasModuleEditPermissions;
         }
     }
 }

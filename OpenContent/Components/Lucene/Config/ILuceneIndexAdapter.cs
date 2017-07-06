@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Lucene.Net.Search;
 using Satrabel.OpenContent.Components.Datasource.Search;
 

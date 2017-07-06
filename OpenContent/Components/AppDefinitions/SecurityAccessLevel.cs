@@ -4,6 +4,7 @@
     {
         EditRights,
         AdminRights,
-        SuperUserRights
+        SuperUserRights,
+        View
     }
 }

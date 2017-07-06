@@ -1,6 +1,5 @@
 ﻿using DotNetNuke.Common.Utilities;
 using DotNetNuke.Entities.Host;
-using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Services.FileSystem;
 using ICSharpCode.SharpZipLib.Zip;

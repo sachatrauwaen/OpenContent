@@ -175,6 +175,7 @@
       <DependentUpon>AddEdit.ascx</DependentUpon>
     </Compile>
     <Compile Include="Components\Alpaca\AlpacaLayoutEnum.cs" />
+    <Compile Include="Components\Export\ExcelApiController.cs" />
     <Compile Include="Components\Localization\LocalizationUtils.cs" />
     <Compile Include="Components\Lucene\LuceneUtils.cs" />
     <Compile Include="Components\Lucene\LuceneController.cs" />

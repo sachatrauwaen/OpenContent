@@ -5,7 +5,6 @@ using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Manifest;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Satrabel.OpenContent.Components.Datasource.Search;
 using Satrabel.OpenContent.Components.Dnn;
