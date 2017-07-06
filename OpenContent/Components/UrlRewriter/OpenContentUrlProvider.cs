@@ -64,11 +64,13 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                             List<OpenContentUrlRule> moduleRules = UrlRulesCaching.GetCache(portalId, cacheKey, purgeResult.ValidCacheItems);
                             if (moduleRules != null)
                             {
+                                //App.Services.Logger.Error($"GetRules {portalId}/{module.TabId}/{module.ModuleId} count: {moduleRules.Count}");
                                 rules.AddRange(moduleRules);
                                 cachedModules += 1;
                                 continue;
                             }
 
+                            //App.Services.Logger.Error($"GetRules {portalId}/{module.TabId}/{module.ModuleId} start processing");
 
                             nonCached += 1;
 
@@ -134,6 +136,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                                 }
                             }
                             UrlRulesCaching.SetCache(portalId, UrlRulesCaching.GenerateModuleCacheKey(module.TabId, module.ModuleId, dsContext.ModuleId,  null), new TimeSpan(1, 0, 0, 0), moduleRules);
+                            //App.Services.Logger.Error($"GetRules {portalId}/{module.TabId}/{module.ModuleId} NewCount: {moduleRules.Count}");
                         }
                     }
                     catch (Exception ex)
