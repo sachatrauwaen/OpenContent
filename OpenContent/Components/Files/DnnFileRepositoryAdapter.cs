@@ -39,7 +39,7 @@ namespace Satrabel.OpenContent.Components.Files
             var json = App.Services.CacheAdapter.GetCache<JObject>(cacheKey);
             if (json == null)
             {
-                var fileContent = ReadFileFromDisk(fileUri);
+                var fileContent = FileUriUtils.ReadFileFromDisk(fileUri);
                 json = fileContent.ToJObject($"file [{fileUri.FilePath}]") as JObject;
 
                 if (json != null)
@@ -62,26 +62,5 @@ namespace Satrabel.OpenContent.Components.Files
             }
             return json;
         }
-
-        public static string ReadFileFromDisk(FileUri file)
-        {
-            if (file == null) return null;
-            if (!file.FileExists) return null;
-            string fileContent;
-            try
-            {
-                fileContent = File.ReadAllText(file.PhysicalFilePath);
-                if (string.IsNullOrWhiteSpace(fileContent)) return null;
-            }
-            catch (Exception ex)
-            {
-                var mess = $"Error reading file [{file.FilePath}]";
-                App.Services.Logger.Error(mess, ex);
-                throw new Exception(mess, ex);
-            }
-            return fileContent;
-        }
-
-
     }
 }

@@ -122,7 +122,7 @@ namespace Satrabel.OpenContent.Components.Render
                 GetAdditionalData();
             }
             bool collectionEnhance = _templateFiles?.Model != null && _templateFiles.Model.ContainsKey(colName);
-            bool enhance = addDataEnhance || collectionEnhance || _templateFiles.LabelsInTemplate;
+            bool enhance = addDataEnhance || collectionEnhance || (_templateFiles != null && _templateFiles.LabelsInTemplate);
 
             if (enhance && (_optionsJson == null || _schemaJson == null))
             {

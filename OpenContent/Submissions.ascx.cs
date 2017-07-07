@@ -46,8 +46,9 @@ namespace Satrabel.OpenContent
         {
             var dynData = GetDataAsListOfDynamics();
             DataTable datatable = ToDataTable(dynData);
-            string filename=GetFileNameFromFormName();
-            ExcelUtils.OutputFile(datatable, filename, HttpContext.Current);
+            string filename = GetFileNameFromFormName();
+            var excelBytes = ExcelUtils.CreateExcel(datatable);
+            ExcelUtils.PushDataAsExcelOntoHttpResponse(excelBytes, filename, HttpContext.Current);
         }
 
         #region Private Methods
