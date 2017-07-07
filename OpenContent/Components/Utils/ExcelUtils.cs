@@ -1,4 +1,6 @@
 ﻿using System.Data;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Web;
 using OfficeOpenXml;
 
@@ -50,6 +52,20 @@ namespace Satrabel.OpenContent.Components
                 response.BinaryWrite(excelBytes);
                 response.End();
             }
+        }
+
+        public static HttpResponseMessage CreateExcelResponseMessage(string fileName, byte[] fileBytes)
+        {
+            var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
+
+            //Create a file on the fly and get file data as a byte array and send back to client
+            response.Content = new ByteArrayContent(fileBytes);//Use your byte array
+            response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
+            response.Content.Headers.ContentDisposition.FileName = fileName;//your file Name- text.xlsx
+            response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.Content.Headers.ContentLength = fileBytes.Length;
+            response.StatusCode = System.Net.HttpStatusCode.OK;
+            return response;
         }
     }
 }
