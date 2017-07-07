@@ -129,6 +129,8 @@ namespace Satrabel.OpenContent.Components
         {
             switch (level)
             {
+                case SecurityAccessLevel.View:
+                    return DotNetNuke.Security.SecurityAccessLevel.View;
                 case SecurityAccessLevel.EditRights:
                     return DotNetNuke.Security.SecurityAccessLevel.Edit;
                 case SecurityAccessLevel.AdminRights:
