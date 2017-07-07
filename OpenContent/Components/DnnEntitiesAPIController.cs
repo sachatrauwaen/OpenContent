@@ -27,6 +27,7 @@ using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components.TemplateHelpers;
 using System.Text.RegularExpressions;
 using Satrabel.OpenContent.Components.Dnn;
+using DotNetNuke.Entities.Users;
 
 #endregion
 
@@ -168,12 +169,12 @@ namespace Satrabel.OpenContent.Components
                 {
                     files = files.Where(f => f.FileName.ToLower().Contains(q.ToLower()));
                 }
-                int folderLength = imageFolder.Length;                
+                int folderLength = imageFolder.Length;
                 var res = files.Select(f => new
                 {
                     id = f.FileId.ToString(),
                     thumbUrl = ImageHelper.GetImageUrl(f, new Ratio(40, 40)),  //todo for install in application folder is dat niet voldoende ???
-                    url = FileManager.Instance.GetUrl(f).RemoveCachebuster(),  
+                    url = FileManager.Instance.GetUrl(f).RemoveCachebuster(),
                     text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName
                 }).Take(1000);
 
@@ -719,6 +720,90 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
+
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [HttpGet]
+        public HttpResponseMessage UsersLookup(string q, string[] roles)
+        {
+            try
+            {
+                q += "%";
+                int totalRecords = 0;
+                var users = UserController.GetUsersByDisplayName(PortalSettings.PortalId, q, 0, 1000, ref totalRecords, false, false).Cast<UserInfo>();
+                if (roles != null)
+                {
+                    users = users.Where(u => u.Roles.Any(r => roles.Contains(r)));
+                }
+                var res = users.Select(u => new { value = u.UserID.ToString(), text = u.DisplayName });
+                return Request.CreateResponse(HttpStatusCode.OK, res);
+            }
+            catch (Exception exc)
+            {
+                Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
+
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [HttpGet]
+        public HttpResponseMessage UsersLookup(string q, string role, int pageIndex, int pageSize)
+        {
+            try
+            {
+                q += "%";
+                int totalRecords = 0;
+                IEnumerable<UserInfo> users;
+                if (string.IsNullOrEmpty(role))
+                {
+                    users = UserController.GetUsersByDisplayName(PortalSettings.PortalId, q, pageIndex - 1, pageSize, ref totalRecords, false, false).Cast<UserInfo>();
+                }
+                else
+                {
+                    users = UserController.GetUsersByDisplayName(PortalSettings.PortalId, q, 0, 100000, ref totalRecords, false, false).Cast<UserInfo>();
+                    users = users.Where(u => u.Roles.Any(r => r == role));
+                    if (pageIndex > 0 && pageSize > 0)
+                    {
+                        users = users.Skip((pageIndex - 1) * pageSize).Take(pageSize);
+                    }
+                }
+                var res = users.Select(u => new { id = u.UserID.ToString(), text = u.DisplayName });
+                return Request.CreateResponse(HttpStatusCode.OK, new
+                {
+                    items = res,
+                    total = totalRecords,
+                    pageIndex,
+                    pageSize
+                });
+            }
+            catch (Exception exc)
+            {
+                Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
+
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [HttpGet]
+        public HttpResponseMessage GetUserInfo(int userid)
+        {
+            try
+            {
+                var user = UserController.GetUserById(PortalSettings.PortalId, userid);
+                return Request.CreateResponse(HttpStatusCode.OK, new
+                {
+                    id = user.UserID.ToString(),
+                    text = user.DisplayName
+                });
+            }
+            catch (Exception exc)
+            {
+                Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
         public class FileDTO
         {
             public string uploadfolder { get; set; }

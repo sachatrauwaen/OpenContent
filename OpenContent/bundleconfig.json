@@ -20,6 +20,7 @@
       "alpaca/js/fields/dnn/ImageCropperField.js",
       "alpaca/js/fields/dnn/NumberField.js",
       "alpaca/js/fields/dnn/Role2Field.js",
+      "alpaca/js/fields/dnn/User2Field.js",
       "alpaca/js/fields/dnn/Select2Field.js",
       "alpaca/js/fields/dnn/UrlField.js",
       "alpaca/js/fields/dnn/Url2Field.js",
