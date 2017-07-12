@@ -159,7 +159,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
 
                     fieldLst.Add(propKey);
                 }
-                else if (optType == "text" || optType == "mltext" || optType == "checkbox" || optType == "select" || optType == "select2")
+                else if (optType == "text" || optType == "mltext" || optType == "checkbox" || optType == "select" || optType == "select2" || optType == "radio")
                 {
                     var newProp = new SchemaConfig()
                     {
@@ -180,7 +180,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     {
                         newProp.Type = "array";
                         newField.Type = "select2";
-                        newField.DataService = opts == null ? null : opts.DataService;
+                        newField.DataService = opts?.DataService;
                     }
                     fieldLst.Add(propKey);
                 }
