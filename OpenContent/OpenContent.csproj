@@ -175,6 +175,8 @@
       <DependentUpon>AddEdit.ascx</DependentUpon>
     </Compile>
     <Compile Include="Components\Alpaca\AlpacaLayoutEnum.cs" />
+    <Compile Include="Components\Datasource\IDataQuery.cs" />
+    <Compile Include="Components\Datasource\IDataQueries.cs" />
     <Compile Include="Components\Export\ExcelApiController.cs" />
     <Compile Include="Components\Files\FileUriUtils.cs" />
     <Compile Include="Components\Localization\LocalizationUtils.cs" />
