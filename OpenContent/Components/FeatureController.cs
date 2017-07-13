@@ -57,26 +57,27 @@ namespace Satrabel.OpenContent.Components
         }
         public void ImportModule(int moduleId, string content, string version, int userId)
         {
-            var module = new OpenContentModuleInfo(moduleId, Null.NullInteger);
-            //var index = module.Settings.Template.Manifest.Index;
-            //var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template);
             var dataSource = new OpenContentDataSource();
+            var dsContext = new DataSourceContext
+            {
+                ModuleId = moduleId,
+                UserId = userId,
+            };
             XmlNode xml = Globals.GetContent(content, "opencontent");
             foreach (XmlNode item in xml.SelectNodes("item"))
             {
                 XmlNode json = item.SelectSingleNode("json");
                 XmlNode collection = item.SelectSingleNode("collection");
                 XmlNode key = item.SelectSingleNode("key");
-
-                var dsContext = OpenContentUtils.CreateDataContext(module, userId);
                 dsContext.Collection = collection?.InnerText ?? "";
-                //dsContext.Key = key?.InnerText ?? "";
-
-                JToken data = item.InnerText;
-                data["_id"] = key?.InnerText ?? "";
-
+                JToken data = JToken.Parse(json.InnerText);
+                /*
+                if (!string.IsNullOrEmpty(key?.InnerText))
+                {
+                    data["_id"] = new JValue(key.InnerText);
+                }
+                */
                 dataSource.Add(dsContext, data);
-                //dataSource.Add(contentInfo, index, indexConfig);
             }
         }
 
