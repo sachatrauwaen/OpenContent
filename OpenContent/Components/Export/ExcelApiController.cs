@@ -51,7 +51,7 @@ namespace Satrabel.OpenContent.Components.Export
             {
                 return Request.CreateResponse(HttpStatusCode.Unauthorized);
             }
-
+            string filename = queryName;
             bool useLucene = module.Settings.Template.Manifest.Index;
             if (useLucene)
             {
@@ -62,15 +62,26 @@ namespace Satrabel.OpenContent.Components.Export
                 RestQueryBuilder.MergeQuery(indexConfig, queryBuilder.Select, restSelect, DnnLanguageUtils.GetCurrentCultureCode());
                 IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
-
-                var qds = ds as IDataQueries;
-                if (qds != null)
+                
+                if (string.IsNullOrEmpty(queryName))
                 {
-                    var query = qds.GetQueries(dsContext).SingleOrDefault(q => q.Name == queryName);
-                    if (query != null)
+                    var dsItems = ds.GetAll(dsContext, queryBuilder.Select);
+                    dataList = dsItems.Items;
+                    filename = dsContext.Collection;
+                }
+                else
+                {
+                    var qds = ds as IDataQueries;
+                    if (qds != null)
                     {
-                        var dsItems = query.GetAll(dsContext, queryBuilder.Select);
-                        dataList = dsItems.Items;
+
+                        var query = qds.GetQueries(dsContext).SingleOrDefault(q => q.Name == queryName);
+                        if (query != null)
+                        {
+                            var dsItems = query.GetAll(dsContext, queryBuilder.Select);
+                            dataList = dsItems.Items;
+                        }
+
                     }
                 }
             }
@@ -78,15 +89,16 @@ namespace Satrabel.OpenContent.Components.Export
             var mf = new ModelFactoryMultiple(dataList, null, manifest, null, null, module);
             dynamic model = mf.GetModelAsDictionary(true);
 
-            var rssTemplate = new FileUri(module.Settings.TemplateDir, queryName + ".hbs");
+            
+
+            var rssTemplate = new FileUri(module.Settings.TemplateDir, filename + "-excel.hbs");
             string source = rssTemplate.FileExists ? FileUriUtils.ReadFileFromDisk(rssTemplate) : GenerateTemplateFromModel(model, rssTemplate);
 
             HandlebarsEngine hbEngine = new HandlebarsEngine();
             string res = hbEngine.Execute(source, model);
-
+            
             var fileBytes = ExcelUtils.CreateExcel(res);
-            return ExcelUtils.CreateExcelResponseMessage(queryName+ ".xlsx", fileBytes);
-
+            return ExcelUtils.CreateExcelResponseMessage(filename + ".xlsx", fileBytes);
 
         }
 
