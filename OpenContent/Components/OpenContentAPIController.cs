@@ -54,6 +54,11 @@ namespace Satrabel.OpenContent.Components
             try
             {
                 var moduleInfo = new OpenContentModuleInfo(ActiveModule);
+                if (moduleInfo.Settings.Manifest.DisableEdit)
+                {
+                    return Request.CreateResponse(HttpStatusCode.Unauthorized);
+                }
+
                 IDataSource ds = DataSourceManager.GetDataSource(moduleInfo.Settings.Manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(moduleInfo);
                 IDataItem dsItem = null;
@@ -148,8 +153,12 @@ namespace Satrabel.OpenContent.Components
             try
             {
                 var module = new OpenContentModuleInfo(ActiveModule);
-                var dataManifest = module.Settings.Manifest.GetAdditionalData(key);
+                if (module.Settings.Manifest.DisableEdit)
+                {
+                    return Request.CreateResponse(HttpStatusCode.Unauthorized);
+                }
 
+                var dataManifest = module.Settings.Manifest.GetAdditionalData(key);
                 IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
 
