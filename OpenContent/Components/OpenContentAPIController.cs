@@ -337,7 +337,7 @@ namespace Satrabel.OpenContent.Components
         /// <param name="req">The req.</param>
         /// <returns></returns>
         [ValidateAntiForgeryToken]
-        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         [HttpPost]
         public HttpResponseMessage LookupData(LookupDataRequestDTO req)
         {
@@ -355,6 +355,11 @@ namespace Satrabel.OpenContent.Components
                 var dataItems = ds.GetData(dsContext, additionalDataManifest.ScopeType, additionalDataManifest.StorageKey ?? key);
                 if (dataItems != null)
                 {
+                    if (!OpenContentUtils.HasEditPermissions(PortalSettings, module.ViewModule, module.Settings.Manifest.GetEditRole(), dataItems))
+                    {
+                        return Request.CreateResponse(HttpStatusCode.Unauthorized);
+                    }
+
                     JToken json = dataItems.Data;
                     if (!string.IsNullOrEmpty(req.dataMember))
                     {
@@ -379,7 +384,7 @@ namespace Satrabel.OpenContent.Components
         }
 
         [ValidateAntiForgeryToken]
-        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         [HttpPost]
         public HttpResponseMessage Lookup(LookupRequestDTO req)
         {
@@ -397,7 +402,8 @@ namespace Satrabel.OpenContent.Components
                     var items = ds.GetAll(dsContext, null).Items;
                     if (items != null)
                     {
-                        foreach (var item in items)
+                        var itemUserHasPermissionToEdit = items.Where(item => OpenContentUtils.HasEditPermissions(PortalSettings, module.ViewModule, module.Settings.Manifest.GetEditRole(), item));
+                        foreach (var item in itemUserHasPermissionToEdit)
                         {
                             var json = item.Data;
 
@@ -435,6 +441,11 @@ namespace Satrabel.OpenContent.Components
                     var struc = ds.Get(dsContext, null);
                     if (struc != null)
                     {
+                        if (!OpenContentUtils.HasEditPermissions(PortalSettings, module.ViewModule, module.Settings.Manifest.GetEditRole(), struc))
+                        {
+                            return Request.CreateResponse(HttpStatusCode.Unauthorized);
+                        }
+
                         JToken json = struc.Data;
                         if (!string.IsNullOrEmpty(req.dataMember))
                         {
@@ -463,7 +474,7 @@ namespace Satrabel.OpenContent.Components
         }
 
         [ValidateAntiForgeryToken]
-        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         [HttpPost]
         public HttpResponseMessage LookupCollection(LookupCollectionRequestDTO req)
         {
@@ -481,7 +492,8 @@ namespace Satrabel.OpenContent.Components
                     var items = ds.GetAll(dsContext, null).Items;
                     if (items != null)
                     {
-                        foreach (var item in items)
+                        var itemUserHasPermissionToEdit = items.Where(item => OpenContentUtils.HasEditPermissions(PortalSettings, module.ViewModule, module.Settings.Manifest.GetEditRole(), item));
+                        foreach (var item in itemUserHasPermissionToEdit)
                         {
                             var json = item.Data as JObject;
                             if (json?[req.textField] != null)
