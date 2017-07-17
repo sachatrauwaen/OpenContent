@@ -590,7 +590,7 @@ namespace Satrabel.OpenContent.Components
             }
             if (permissions)
             {
-                // Roles                
+                // Roles
                 string fieldName = "";
                 if (IndexConfig?.Fields != null && IndexConfig.Fields.ContainsKey("userrole"))
                 {

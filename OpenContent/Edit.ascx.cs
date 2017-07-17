@@ -1,9 +1,9 @@
 #region Copyright
 
-// 
+//
 // Copyright (c) 2015-2016
 // by Satrabel
-// 
+//
 
 #endregion
 

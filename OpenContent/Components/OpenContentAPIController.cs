@@ -1,9 +1,9 @@
 #region Copyright
 
-// 
+//
 // Copyright (c) 2015-2017
 // by Satrabel
-// 
+//
 
 #endregion
 
@@ -845,7 +845,7 @@ namespace Satrabel.OpenContent.Components
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, new
                 {
-                    isValid = true                 
+                    isValid = true
                 });
             }
             catch (Exception exc)
@@ -867,7 +867,7 @@ namespace Satrabel.OpenContent.Components
         /// Gets or sets the value field.
         /// </summary>
         /// <value>
-        /// The Id field. 
+        /// The Id field.
         /// </value>
         public string valueField { get; set; }
         /// <summary>
@@ -884,14 +884,14 @@ namespace Satrabel.OpenContent.Components
         /// Gets or sets the data key.
         /// </summary>
         /// <value>
-        /// Which additional data object to search. 
+        /// Which additional data object to search.
         /// </value>
         public string dataKey { get; set; }
         /// <summary>
         /// Gets or sets the data member.
         /// </summary>
         /// <value>
-        /// Optional The data member of the data object to search. 
+        /// Optional The data member of the data object to search.
         /// </value>
         public string dataMember { get; set; }
         /// <summary>
