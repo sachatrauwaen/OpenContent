@@ -501,6 +501,11 @@ namespace Satrabel.OpenContent.Components
             return FolderUri.ReverseMapPath(path);
         }
 
+        public static bool HasEditPermissions(PortalSettings portalSettings, ModuleInfo module, string editrole, IDataItem dataItem)
+        {
+            return HasEditPermissions(portalSettings, module, editrole, dataItem.CreatedByUserId);
+        }
+
         public static bool HasEditPermissions(PortalSettings portalSettings, ModuleInfo module, string editrole, int createdByUserId)
         {
             return module.HasEditRightsOnModule() || HasEditRole(portalSettings, editrole, createdByUserId);
@@ -512,6 +517,7 @@ namespace Satrabel.OpenContent.Components
             if (portalSettings.UserInfo.IsInRole(editrole) && (createdByUserId == -1 || createdByUserId == portalSettings.UserId)) return true;
             return false;
         }
+
         public static FieldConfig GetIndexConfig(TemplateManifest template)
         {
             return GetIndexConfig(template.Key.TemplateDir, template.Collection);
