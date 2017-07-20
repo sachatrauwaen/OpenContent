@@ -231,6 +231,7 @@ namespace Satrabel.OpenContent.Components.Lucene
         public static Query ParseQuery(string searchQuery, string defaultFieldName)
         {
             var parser = new QueryParser(Version.LUCENE_30, defaultFieldName, JsonMappingUtils.GetAnalyser());
+            parser.AllowLeadingWildcard = true;
             Query query;
             try
             {
