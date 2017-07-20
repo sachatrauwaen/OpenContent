@@ -6,6 +6,8 @@
         NOT_EQUAL,
         BETWEEN,
         START_WITH,
+        ENDS_WITH,
+        CONTAINS,
         LESS_THEN,
         GREATER_THEN,
         LESS_THEN_OR_EQUALS,

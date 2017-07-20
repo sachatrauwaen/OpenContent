@@ -97,11 +97,33 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                 {
                     if (rule.FieldType == FieldTypeEnum.STRING || rule.FieldType == FieldTypeEnum.TEXT || rule.FieldType == FieldTypeEnum.HTML)
                     {
-                        q.Add(LuceneController.ParseQuery(rule.Value.AsString + "*", fieldName), cond);
+                        q.Add(LuceneController.ParseQuery(this.ApplyAsteriskToSearchQuery(rule.Value.AsString, prepend: false, append: true), fieldName), cond);
                     }
                     else
                     {
-                        q.Add(new WildcardQuery(new Term(fieldName, rule.Value.AsString + "*")), cond);
+                        q.Add(new WildcardQuery(new Term(this.ApplyAsteriskToSearchQuery(rule.Value.AsString, prepend: false, append: true))), cond);
+                    }
+                }
+                else if (rule.FieldOperator == OperatorEnum.ENDS_WITH)
+                {
+                    if (rule.FieldType == FieldTypeEnum.STRING || rule.FieldType == FieldTypeEnum.TEXT || rule.FieldType == FieldTypeEnum.HTML)
+                    {
+                        q.Add(LuceneController.ParseQuery(this.ApplyAsteriskToSearchQuery(rule.Value.AsString, prepend: true, append: false), fieldName), cond);
+                    }
+                    else
+                    {
+                        q.Add(new WildcardQuery(new Term(fieldName, this.ApplyAsteriskToSearchQuery(rule.Value.AsString, prepend: true, append: false))), cond);
+                    }
+                }
+                else if (rule.FieldOperator == OperatorEnum.CONTAINS)
+                {
+                    if (rule.FieldType == FieldTypeEnum.STRING || rule.FieldType == FieldTypeEnum.TEXT || rule.FieldType == FieldTypeEnum.HTML)
+                    {
+                        q.Add(LuceneController.ParseQuery(this.ApplyAsteriskToSearchQuery(rule.Value.AsString, prepend: true, append: true), fieldName), cond);
+                    }
+                    else
+                    {
+                        q.Add(new WildcardQuery(new Term(fieldName, this.ApplyAsteriskToSearchQuery(rule.Value.AsString, prepend: true, append: true))), cond);
                     }
                 }
                 else if (rule.FieldOperator == OperatorEnum.IN)
@@ -208,6 +230,29 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                 sortfieldtype = SortField.STRING;
                 sortFieldPrefix = "@";
             }
+        }
+
+        private string ApplyAsteriskToSearchQuery(string searchQuery, bool prepend, bool append)
+        {
+            if (prepend
+                && !searchQuery.StartsWith("\"", StringComparison.InvariantCultureIgnoreCase)
+                && !searchQuery.StartsWith("?", StringComparison.InvariantCultureIgnoreCase)
+                && !searchQuery.StartsWith(" ", StringComparison.InvariantCultureIgnoreCase)
+                && !searchQuery.StartsWith("*", StringComparison.InvariantCultureIgnoreCase))
+            {
+                searchQuery = $"*{searchQuery}";
+            }
+
+            if (append
+                && !searchQuery.EndsWith("\"", StringComparison.InvariantCultureIgnoreCase)
+                && !searchQuery.EndsWith("?", StringComparison.InvariantCultureIgnoreCase)
+                && !searchQuery.EndsWith(" ", StringComparison.InvariantCultureIgnoreCase)
+                && !searchQuery.EndsWith("*", StringComparison.InvariantCultureIgnoreCase))
+            {
+                searchQuery = $"{searchQuery}*";
+            }
+
+            return searchQuery;
         }
     }
 }
