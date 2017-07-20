@@ -81,7 +81,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                     }
                     else if (rule.FieldType == FieldTypeEnum.STRING || rule.FieldType == FieldTypeEnum.TEXT || rule.FieldType == FieldTypeEnum.HTML)
                     {
-                        q.Add(LuceneController.ParseQuery(rule.Value.AsString + "*", fieldName), cond);
+                        q.Add(LuceneController.ParseQuery(this.ApplyAsteriskToSearchQuery(rule.Value.AsString, prepend: true, append: true), fieldName), cond);
                     }
                     else
                     {
