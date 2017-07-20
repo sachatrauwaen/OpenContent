@@ -91,7 +91,7 @@ namespace Satrabel.OpenContent.Components.Lucene
         #region Index
 
         /// <summary>
-        /// Use this to 
+        /// Use this to
         /// </summary>
         /// <param name="list">The list.</param>
         /// <param name="indexConfig">The index configuration.</param>
@@ -177,7 +177,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             if (settings.IsOtherModule)
             {
                 moduleId = settings.ModuleId;
-            }            
+            }
             lc.Store.Delete(new TermQuery(new Term("$type", OpenContentInfo.GetScope(moduleId, settings.Template.Collection))));
             OpenContentController occ = new OpenContentController();
             foreach (var item in occ.GetContents(moduleId, settings.Template.Collection))

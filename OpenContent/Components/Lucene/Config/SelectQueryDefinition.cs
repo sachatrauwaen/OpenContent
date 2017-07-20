@@ -87,7 +87,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                     }
                     else
                     {
-                        string searchstring = QueryParser.Escape(rule.Value.AsString);                        
+                        string searchstring = QueryParser.Escape(rule.Value.AsString);
                         q.Add(new TermQuery(new Term(fieldName, searchstring)), cond);
                     }
                 }
@@ -112,11 +112,11 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                     BooleanQuery arrQ = new BooleanQuery();
                     foreach (var arrItem in rule.MultiValue)
                     {
-                        arrQ.Add(new TermQuery(new Term(fieldName, QueryParser.Escape(arrItem.AsString))), Occur.SHOULD); // OR                        
+                        arrQ.Add(new TermQuery(new Term(fieldName, QueryParser.Escape(arrItem.AsString))), Occur.SHOULD); // OR
                         /*
                         var phraseQ = new PhraseQuery();
                         phraseQ.Add(new Term(fieldName, arrItem.AsString));
-                        arrQ.Add(phraseQ, Occur.SHOULD); // OR                        
+                        arrQ.Add(phraseQ, Occur.SHOULD); // OR
                          */
                     }
                     q.Add(arrQ, cond);
