@@ -38,30 +38,28 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
         }
         public Query BuildFilter(FilterGroup filter)
         {
-            BooleanQuery q = new BooleanQuery();
+            var q = new BooleanQuery();
+            var cond = filter.Condition == ConditionEnum.OR ? Occur.SHOULD : Occur.MUST;
             q.Add(new MatchAllDocsQuery(), Occur.MUST);
-            Occur cond = Occur.MUST; // AND
-            if (filter.Condition == ConditionEnum.OR)
-            {
-                cond = Occur.SHOULD;
-            }
-            AddRulles(q, filter.FilterRules, cond);
-            foreach (var rule in filter.FilterGroups)
-            {
-                Occur groupCond = Occur.MUST; // AND
-                if (rule.Condition == ConditionEnum.OR)
-                {
-                    groupCond = Occur.SHOULD;
-                }
-                BooleanQuery groupQ = new BooleanQuery();
-                AddRulles(groupQ, rule.FilterRules, groupCond);
-                q.Add(groupQ, cond);
-            }
+            AddRules(q, filter.FilterRules, cond);
+            AddRules(q, filter.FilterGroups, cond);
             q = q.Clauses.Count > 0 ? q : null;
             return q;
         }
 
-        private void AddRulles(BooleanQuery q, List<FilterRule> filterRules, Occur cond)
+        private void AddRules(BooleanQuery q, List<FilterGroup> filterGroups, Occur cond)
+        {
+            foreach (var rule in filterGroups)
+            {
+                var groupCond = rule.Condition == ConditionEnum.OR ? Occur.SHOULD : Occur.MUST;
+                var groupQ = new BooleanQuery();
+                AddRules(groupQ, rule.FilterRules, groupCond);
+                AddRules(groupQ, rule.FilterGroups, groupCond);
+                q.Add(groupQ, cond);
+            }
+        }
+
+        private void AddRules(BooleanQuery q, List<FilterRule> filterRules, Occur cond)
         {
             foreach (var rule in filterRules)
             {
