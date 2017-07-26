@@ -254,6 +254,7 @@ namespace Satrabel.OpenContent.Components.Render
                 // include CONTEXT in the Model
                 JObject context = new JObject();
                 model["Context"] = context;
+                context["TabId"] = _module.ViewModule.TabId;
                 context["ModuleId"] = _module.ViewModule.ModuleId;
                 context["GoogleApiKey"] = App.Services.GlobalSettings(_portalId).GetGoogleApiKey();
                 context["ModuleTitle"] = _module.ViewModule.ModuleTitle;
