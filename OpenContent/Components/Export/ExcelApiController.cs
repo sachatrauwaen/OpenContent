@@ -62,7 +62,7 @@ namespace Satrabel.OpenContent.Components.Export
                 RestQueryBuilder.MergeQuery(indexConfig, queryBuilder.Select, restSelect, DnnLanguageUtils.GetCurrentCultureCode());
                 IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
-                
+
                 if (string.IsNullOrEmpty(queryName))
                 {
                     var dsItems = ds.GetAll(dsContext, queryBuilder.Select);
@@ -72,16 +72,11 @@ namespace Satrabel.OpenContent.Components.Export
                 else
                 {
                     var qds = ds as IDataQueries;
-                    if (qds != null)
+                    var query = qds?.GetQueries(dsContext).SingleOrDefault(q => q.Name == queryName);
+                    if (query != null)
                     {
-
-                        var query = qds.GetQueries(dsContext).SingleOrDefault(q => q.Name == queryName);
-                        if (query != null)
-                        {
-                            var dsItems = query.GetAll(dsContext, queryBuilder.Select);
-                            dataList = dsItems.Items;
-                        }
-
+                        var dsItems = query.GetAll(dsContext, queryBuilder.Select);
+                        dataList = dsItems.Items;
                     }
                 }
             }
@@ -89,14 +84,14 @@ namespace Satrabel.OpenContent.Components.Export
             var mf = new ModelFactoryMultiple(dataList, null, manifest, null, null, module);
             dynamic model = mf.GetModelAsDictionary(true);
 
-            
+
 
             var rssTemplate = new FileUri(module.Settings.TemplateDir, filename + "-excel.hbs");
             string source = rssTemplate.FileExists ? FileUriUtils.ReadFileFromDisk(rssTemplate) : GenerateTemplateFromModel(model, rssTemplate);
 
             HandlebarsEngine hbEngine = new HandlebarsEngine();
             string res = hbEngine.Execute(source, model);
-            
+
             var fileBytes = ExcelUtils.CreateExcel(res);
             return ExcelUtils.CreateExcelResponseMessage(filename + ".xlsx", fileBytes);
 
@@ -146,9 +141,19 @@ namespace Satrabel.OpenContent.Components.Export
         {
             string retval = string.Empty;
             var fieldlist = new List<string>();
-            dynamic items = model["Items"];
+            dynamic items;
+            try
+            {
+                dynamic modelItems = model["Items"];
+                items = modelItems[0];
+            }
+            catch (Exception)
+            {
+                // no data available to check the fields
+                return "";
+            }
 
-            foreach (var item in items[0])
+            foreach (var item in items)
             {
                 if (item.Key != "Context")
                     fieldlist.Add(item.Key);
