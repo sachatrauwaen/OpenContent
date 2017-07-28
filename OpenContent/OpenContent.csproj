@@ -234,6 +234,7 @@
     <Compile Include="Components\Settings\OpenContentSettingsExtentions.cs" />
     <Compile Include="Components\Settings\ComponentSettingsInfo.cs" />
     <Compile Include="Components\TemplateHelpers\FormHelpers.cs" />
+    <Compile Include="Components\TemplateHelpers\RazorUtils.cs" />
     <Compile Include="Components\UrlRewriter\UrlRulesCaching.cs" />
     <Compile Include="Components\Utils\Requires.cs" />
     <Compile Include="Components\Utils\ExcelUtils.cs" />
