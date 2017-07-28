@@ -364,11 +364,6 @@ namespace Satrabel.OpenContent.Components
                 var dataItems = ds.GetData(dsContext, additionalDataManifest.ScopeType, additionalDataManifest.StorageKey ?? key);
                 if (dataItems != null)
                 {
-                    if (!OpenContentUtils.HasEditPermissions(PortalSettings, module.ViewModule, module.Settings.Manifest.GetEditRole(), dataItems))
-                    {
-                        return Request.CreateResponse(HttpStatusCode.Unauthorized);
-                    }
-
                     JToken json = dataItems.Data;
                     if (!string.IsNullOrEmpty(req.dataMember))
                     {
