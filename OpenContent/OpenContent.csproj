@@ -393,6 +393,7 @@
       <DependentUpon>EditFormSettings.ascx</DependentUpon>
     </Compile>
     <Compile Include="Components\AppDefinitions\IMenuAction.cs" />
+    <Content Include="js\jplist\jplisthelper.js" />
     <Compile Include="RenderModule.ascx.cs">
       <DependentUpon>RenderModule.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -611,6 +612,9 @@
     <Content Include="js\jplist\jplist.textbox-filter.min.js" />
     <Content Include="js\jplist\jplist.views-control.min.css" />
     <Content Include="js\jplist\jplist.views-control.min.js" />
+    <Content Include="js\jplist\jplisthelper.min.js">
+      <DependentUpon>jplisthelper.js</DependentUpon>
+    </Content>
     <Content Include="js\jplist\list-btn-disabled.png" />
     <Content Include="js\jplist\list-btn.png" />
     <Content Include="js\jplist\rocket.png" />

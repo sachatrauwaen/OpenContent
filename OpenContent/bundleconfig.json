@@ -54,5 +54,11 @@
       "alpaca/templates/dnn-edit/control-wysihtml.html",
       "alpaca/templates/dnn-edit/control.html"
     ]
+  },
+  {
+    "outputFileName": "js/jplist/jplisthelper.min.js",
+    "inputFiles": [
+      "js/jplist/jplisthelper.js"
+    ]
   }
 ]
