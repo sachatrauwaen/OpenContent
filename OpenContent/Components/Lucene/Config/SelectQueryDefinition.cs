@@ -5,6 +5,7 @@ using Lucene.Net.Search;
 using Lucene.Net.Index;
 using Satrabel.OpenContent.Components.Datasource.Search;
 using Lucene.Net.QueryParsers;
+using Satrabel.OpenContent.Components.Lucene.Mapping;
 
 namespace Satrabel.OpenContent.Components.Lucene.Config
 {
@@ -64,8 +65,8 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
             foreach (var rule in filterRules)
             {
                 string fieldName = rule.Field;
-                if (fieldName == "id") fieldName = "$id";
-                if (fieldName == "userid") fieldName = "$userid";
+                if (fieldName == "id") fieldName = JsonMappingUtils.FieldId;
+                if (fieldName == "userid") fieldName = JsonMappingUtils.FieldUserId;
 
                 if (rule.FieldOperator == OperatorEnum.EQUAL)
                 {
@@ -81,7 +82,8 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                     }
                     else if (rule.FieldType == FieldTypeEnum.STRING || rule.FieldType == FieldTypeEnum.TEXT || rule.FieldType == FieldTypeEnum.HTML)
                     {
-                        q.Add(LuceneController.ParseQuery(this.ApplyAsteriskToSearchQuery(rule.Value.AsString, prepend: true, append: true), fieldName), cond);
+                        var performStringContainsSearch = !fieldName.Equals(JsonMappingUtils.FieldId) && !fieldName.Equals(JsonMappingUtils.FieldUserId);
+                        q.Add(LuceneController.ParseQuery(this.ApplyAsteriskToSearchQuery(rule.Value.AsString, prepend: performStringContainsSearch, append: performStringContainsSearch), fieldName), cond);
                     }
                     else
                     {
