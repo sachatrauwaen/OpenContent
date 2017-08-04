@@ -108,7 +108,7 @@ namespace Satrabel.OpenContent.Components.Logging
 
         public override string ToString()
         {
-            return string.Format("{0} - {1} - {2}", Date, Label, Message);
+            return $"{Date} - {Label} - {Message}";
         }
     }
 }

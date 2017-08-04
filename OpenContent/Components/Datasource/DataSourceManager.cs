@@ -1,6 +1,5 @@
 ﻿using DotNetNuke.Collections.Internal;
 using DotNetNuke.Framework.Reflections;
-using DotNetNuke.Instrumentation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +9,7 @@ namespace Satrabel.OpenContent.Components.Datasource
     public class DataSourceManager
     {
 
-        private static readonly ILog Logger = LoggerSource.Instance.GetLogger(typeof(DataSourceManager));
+        private static readonly ILogAdapter Logger = AppConfig.Instance.LogAdapter.GetLogAdapter(typeof(DataSourceManager));
         private static NaiveLockingList<IDataSource> _dataSources;
 
         public static void RegisterDataSources()
@@ -37,7 +36,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 }
                 catch (Exception e)
                 {
-                    Logger.ErrorFormat("Unable to create {0} while GetDatasources.  {1}", filterType.FullName, e.Message);
+                    Logger.Error($"Unable to create {filterType.FullName} while GetDatasources. {e.Message}");
                     filter = null;
                 }
 

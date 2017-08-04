@@ -73,8 +73,8 @@ namespace Satrabel.OpenContent.Components.Manifest
             }
             catch (Exception ex)
             {
-                Log.Logger.ErrorFormat("Failed to load manifest from folder {0}. Error:{1}", folder.UrlFolder, ex.ToString());
-                throw ex;
+                Log.Logger.Error($"Failed to load manifest from folder {folder.UrlFolder}. Error: {ex}");
+                throw;
             }
         }
 
@@ -146,7 +146,8 @@ namespace Satrabel.OpenContent.Components.Manifest
         }
         internal static bool DataNeeded(this TemplateManifest template)
         {
-            var schemaFileUri = new FileUri(template.ManifestFolderUri.UrlFolder, "schema.json");
+            string prefix = (string.IsNullOrEmpty(template.Collection) || template.Collection == "Items") ? "" : template.Collection + "-";
+            var schemaFileUri = new FileUri(template.ManifestFolderUri.UrlFolder, prefix + "schema.json");
             if (schemaFileUri.FileExists)
                 return true;
 

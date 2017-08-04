@@ -271,7 +271,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
         }
         public FieldConfig BuildIndex(string key)
         {
-            string prefix =  (key == "Items") ? "" : key + "-";
+            string prefix =  (string.IsNullOrEmpty(key) || key == "Items") ? "" : key + "-";
             string cacheKey = _templateUri.UrlFolder + prefix + "index.json";
             FieldConfig newConfig = (FieldConfig)DataCache.GetCache(cacheKey);
             if (newConfig == null)
@@ -351,7 +351,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                             };
                             newConfig.Fields.Add(prop.Key, newField);
                         }
-                        else if (optType == "text")
+                        else if (optType == "text" || optType == "textarea" || optType == "email")
                         {
                             var newField = new FieldConfig()
                             {

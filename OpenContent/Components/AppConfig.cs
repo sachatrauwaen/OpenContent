@@ -1,17 +1,24 @@
 ﻿using System;
+using Satrabel.OpenContent.Components.Dnn;
+using Satrabel.OpenContent.Components.Localization;
+using Satrabel.OpenContent.Components.Logging;
 
 namespace Satrabel.OpenContent.Components
 {
     public class AppConfig
     {
-        private static readonly Lazy<AppConfig> lazy = new Lazy<AppConfig>(() => new AppConfig());
+        private static readonly Lazy<AppConfig> Lazy = new Lazy<AppConfig>(() => new AppConfig());
 
-        public static AppConfig Instance { get { return lazy.Value; } }
+        public static AppConfig Instance => Lazy.Value;
 
         private AppConfig()
         {
         }
-        public string LuceneIndexFolder { get { return @"App_Data\OpenContent\lucene_index"; } }
+
+
+        //public string LuceneIndexFolder => @"App_Data\OpenContent\lucene_index";
+
+        readonly public string LuceneIndexFolder = @"App_Data\OpenContent\lucene_index"; 
 
 
         #region Constants
@@ -48,5 +55,14 @@ namespace Satrabel.OpenContent.Components
         public const string DEFAULT_COLLECTION = "Items";
 
         #endregion
+
+
+        #region Adapters config
+
+        readonly public ILocalizationAdapter LocalizationAdapter = new DnnLocalizationAdapter();
+        readonly public ILogAdapter LogAdapter = DnnLogAdapter.GetLogAdapter(OPENCONTENT);
+
+        #endregion
     }
+
 }

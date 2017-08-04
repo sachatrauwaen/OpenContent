@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Web;
+using DotNetNuke.Common;
 using DotNetNuke.Entities.Content.Common;
 using DotNetNuke.Entities.Modules.Definitions;
 using DotNetNuke.Services.FileSystem;
@@ -15,6 +16,11 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
 {
     public static class ImageHelper
     {
+        public static bool IsImageFile(this IFileInfo file)
+        {
+            return (Globals.glbImageFileTypes + ",").IndexOf(file.Extension.ToLower().Replace(".", "") + ",") > -1;
+        }
+
         /// <summary>
         /// Gets the image URL.
         /// </summary>
@@ -87,9 +93,8 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             {
                 return file.ToUrl();
             }
-            var url = file.ToUrlWithoutLinkClick();
-            if (url.Contains("LinkClick.aspx")) return url;
-            url = url.RemoveQueryParams();
+            var url = file.ToLinkClickSafeUrl();
+            url = url.RemoveQueryParams(); //imageprocessor does not tolerate unknow querystrings (for security reasons). Remove them
 
             JObject content = GetContentAsJObject(file);
             if (content != null)
@@ -116,7 +121,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
                                 int top = int.Parse(cropper["y"].ToString());
 
                                 //crop first then resize (order defined by the processors definition order in the config file)
-                                return url + $"?crop={left},{top},{w},{h}&width={requestedCropRatio.Width}&height={requestedCropRatio.Height}";
+                                return url.AppendQueryParams($"crop={left},{top},{w},{h}&width={requestedCropRatio.Width}&height={requestedCropRatio.Height}");
                             }
                         }
                         catch (Exception ex)
@@ -131,8 +136,12 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
                 }
 
             }
+            return url.AppendQueryParams($"width={requestedCropRatio.Width}&height={requestedCropRatio.Height}&mode=crop");
+        }
 
-            return url + $"?width={requestedCropRatio.Width}&height={requestedCropRatio.Height}&mode=crop";
+        private static string AppendQueryParams(this string url, string queryparams)
+        {
+            return url.Contains("?") ? url + "&" + queryparams : url + "?" + queryparams;
         }
 
         private static JObject GetContentAsJObject(IFileInfo file)

@@ -66,7 +66,7 @@ namespace Satrabel.OpenContent.Components.Rest
                         mf.Options = reqOptions;
                         var model = mf.GetModelAsJson(false);
                         items.Add(model);
-                        model["id"] = model["Context"]["Id"];
+                        model["id"] = dsItem.Id;
                         res["meta"]["total"] = dsItem == null ? 0 : 1;
                         JsonUtils.IdJson(model);
                         if (LogContext.IsLogActive)
@@ -265,7 +265,6 @@ namespace Satrabel.OpenContent.Components.Rest
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
-                //var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
                 if (dsItem == null)
                 {
                     ds.Add(dsContext, value.Properties().First().Value as JObject);
@@ -274,19 +273,7 @@ namespace Satrabel.OpenContent.Components.Rest
                 {
                     ds.Update(dsContext, dsItem, value.Properties().First().Value as JObject);
                 }
-                //if (json["form"]["ModuleTitle"] != null && json["form"]["ModuleTitle"].Type == JTokenType.String)
-                //{
-                //    string moduleTitle = json["form"]["ModuleTitle"].ToString();
-                //    OpenContentUtils.UpdateModuleTitle(ActiveModule, moduleTitle);
-                //}
-                //else if (json["form"]["ModuleTitle"] != null && json["form"]["ModuleTitle"].Type == JTokenType.Object)
-                //{
-                //    if (json["form"]["ModuleTitle"][DnnUtils.GetCurrentCultureCode()] != null)
-                //    {
-                //        string moduleTitle = json["form"]["ModuleTitle"][DnnUtils.GetCurrentCultureCode()].ToString();
-                //        OpenContentUtils.UpdateModuleTitle(ActiveModule, moduleTitle);
-                //    }
-                //}
+
                 return Request.CreateResponse(HttpStatusCode.OK, "");
             }
             catch (Exception exc)
@@ -378,7 +365,31 @@ namespace Satrabel.OpenContent.Components.Rest
                 }
                 ds.Add(dsContext, value.Properties().First().Value as JObject);
 
-                return Request.CreateResponse(HttpStatusCode.OK, "");
+
+                var dsItem = ds.Get(dsContext, dsContext.Id);
+                var res = new JObject();
+                res["meta"] = new JObject();
+                var items = new JArray();
+                if (dsItem != null)
+                {
+                    var collection = AppConfig.DEFAULT_COLLECTION;
+                    var mf = new ModelFactorySingle(dsItem, module, PortalSettings, collection);
+                    var model = mf.GetModelAsJson(false);
+                    items.Add(model);
+                    model["id"] = dsContext.Id;
+                    res["meta"]["total"] = dsItem == null ? 0 : 1;
+                    JsonUtils.IdJson(model);
+                    if (LogContext.IsLogActive)
+                    {
+                        var logKey = "Query";
+                        LogContext.Log(module.ViewModule.ModuleID, logKey, "model", model);
+                        res["meta"]["logs"] = JToken.FromObject(LogContext.Current.ModuleLogs(module.ViewModule.ModuleID));
+                    }
+                }
+                res[entity] = items;
+                return Request.CreateResponse(HttpStatusCode.OK, res);
+
+                //return Request.CreateResponse(HttpStatusCode.OK, ""); 
             }
             catch (Exception exc)
             {

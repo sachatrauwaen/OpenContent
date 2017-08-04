@@ -15,12 +15,12 @@ namespace Satrabel.OpenContent.Components
         {
             if (string.IsNullOrEmpty(pathToFile))
             {
-                throw new ArgumentNullException("pathToFile");
+                throw new ArgumentNullException(nameof(pathToFile));
             }
             _fileName = Path.GetFileName(NormalizePath(pathToFile));
             if (string.IsNullOrEmpty(_fileName))
             {
-                throw new ArgumentNullException("pathToFile");
+                throw new ArgumentNullException(nameof(pathToFile));
             }
         }
         public FileUri(string path, string filename)
@@ -28,7 +28,7 @@ namespace Satrabel.OpenContent.Components
         {
             if (string.IsNullOrEmpty(filename))
             {
-                throw new ArgumentNullException("filename");
+                throw new ArgumentNullException(nameof(filename));
             }
             _fileName = filename;
         }
@@ -37,7 +37,7 @@ namespace Satrabel.OpenContent.Components
         {
             if (string.IsNullOrEmpty(filename))
             {
-                throw new ArgumentNullException("filename");
+                throw new ArgumentNullException(nameof(filename));
             }
             _fileName = filename;
         }
@@ -51,10 +51,9 @@ namespace Satrabel.OpenContent.Components
         /// <value>
         /// The file path.
         /// </value>
-        public string FilePath { get { return base.FolderPath + "/" + FileName; } }
+        public string FilePath => base.FolderPath + "/" + FileName;
 
-        public string UrlFilePath { get { return base.UrlPath + "/" + FileName; } }
-
+        public string UrlFilePath => base.UrlPath + "/" + FileName;
 
         /// <summary>
         /// Gets the full physical file path.
@@ -62,38 +61,14 @@ namespace Satrabel.OpenContent.Components
         /// <value>
         /// The physical file path.
         /// </value>
-        public string PhysicalFilePath
-        {
-            get
-            {
-                return HostingEnvironment.MapPath("~/" + FilePath);
-            }
-        }
+        public string PhysicalFilePath => HostingEnvironment.MapPath("~/" + FilePath);
 
-        public string FileName
-        {
-            get { return _fileName; }
-        }
+        public string FileName => _fileName;
 
-        public string FileNameWithoutExtension
-        {
-            get
-            {
-                return System.IO.Path.GetFileNameWithoutExtension(FilePath);
-            }
-        }
-        public string Extension
-        {
-            get { return System.IO.Path.GetExtension(FilePath); }
-        }
+        public string FileNameWithoutExtension => System.IO.Path.GetFileNameWithoutExtension(FilePath);
+        public string Extension => System.IO.Path.GetExtension(FilePath);
 
-        public bool FileExists
-        {
-            get
-            {
-                return File.Exists(PhysicalFilePath);
-            }
-        }
+        public bool FileExists => File.Exists(PhysicalFilePath);
 
         //private static string SanitizeFilenameKeepingTheOptionalVersion(string fileName)
         //{
@@ -125,10 +100,10 @@ namespace Satrabel.OpenContent.Components
         {
             if (string.IsNullOrEmpty(path))
             {
-                throw new ArgumentNullException("path");
+                throw new ArgumentNullException(nameof(path));
             }
             string appPath = HostingEnvironment.MapPath("~");
-            string file = string.Format("{0}", path.Replace(appPath, "").Replace("\\", "/"));
+            string file = $"{path.Replace(appPath, "").Replace("\\", "/")}";
             //if (!res.StartsWith("/")) res = "/" + res;
             if (file != null)
             {

@@ -70,6 +70,7 @@ namespace Satrabel.OpenContent.Components.Render
                     // template without schema & options
                     // render the template with no data
                     _renderinfo.SetData(null, new JObject(), Settings.Data);
+                    _renderinfo.Files = _renderinfo.Template.Main;
                     _renderinfo.OutputString = GenerateOutputSingle(page, _renderinfo.Template.MainTemplateUri(), _renderinfo.DataJson, _renderinfo.SettingsJson, _renderinfo.Template.Main);
                 }
                 else if (_renderinfo.Template.IsListTemplate)
@@ -285,7 +286,7 @@ namespace Satrabel.OpenContent.Components.Render
                         LogContext.Log(_module.ViewModule.ModuleID, logKey, "select", queryBuilder.Select);
                         //LogContext.Log(_module.ModuleID, logKey, "result", resultList);
                     }
-                    //Log.Logger.DebugFormat("Query returned [{0}] results.", total);
+                    //Log.Logger.Debug($"Query returned [{0}] results.", total);
                     if (!resultList.Any())
                     {
                         /*
@@ -295,7 +296,7 @@ namespace Satrabel.OpenContent.Components.Render
                              //Components.Lucene.LuceneController.Instance.ReIndexModuleData(_module.ViewModule.ModuleID, settings);
                          }
                           */
-                        //Log.Logger.DebugFormat("Query did not return any results. API request: [{0}], Lucene Filter: [{1}], Lucene Query:[{2}]", settings.Query, queryDef.Filter == null ? "" : queryDef.Filter.ToString(), queryDef.Query == null ? "" : queryDef.Query.ToString());
+                        //Log.Logger.Debug($"Query did not return any results. API request: [{0}], Lucene Filter: [{1}], Lucene Query:[{2}]", settings.Query, queryDef.Filter == null ? "" : queryDef.Filter.ToString(), queryDef.Query == null ? "" : queryDef.Query.ToString());
                         if (ds.Any(dsContext))
                         {
                             info.SetData(resultList, settings.Data);
@@ -509,7 +510,7 @@ namespace Satrabel.OpenContent.Components.Render
                     }
                     else // handlebars
                     {
-                        if (OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetFastHandlebars())
+                        if (OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController(PortalSettings.Current.PortalId).GetFastHandlebars())
                             model = mf.GetModelAsDictionary();
                         else
                             model = mf.GetModelAsDynamic();
@@ -579,7 +580,7 @@ namespace Satrabel.OpenContent.Components.Render
                     else // handlebars
                     {
                         object model;
-                        if (OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetFastHandlebars())
+                        if (OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController(PortalSettings.Current.PortalId).GetFastHandlebars())
                             model = mf.GetModelAsDictionary();
                         else
                             model = mf.GetModelAsDynamic();
@@ -621,7 +622,7 @@ namespace Satrabel.OpenContent.Components.Render
                     }
                     else // handlebars
                     {
-                        if (OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetFastHandlebars())
+                        if (OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController(PortalSettings.Current.PortalId).GetFastHandlebars())
                             model = mf.GetModelAsDictionary();
                         else
                             model = mf.GetModelAsDynamic();

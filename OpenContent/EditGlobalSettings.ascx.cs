@@ -37,6 +37,7 @@ namespace Satrabel.OpenContent
             base.OnLoad(e);
             if (!Page.IsPostBack)
             {
+                var globalSettingsController = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController(ModuleContext.PortalId);
                 ddlRoles.Items.Add(new ListItem("None", "-1"));
                 var rc = new RoleController();
                 foreach (var role in rc.GetRoles(PortalId))
@@ -60,23 +61,24 @@ namespace Satrabel.OpenContent
                 {
                     ddlMaxVersions.Items.Add(new ListItem(item.ToString(), item.ToString()));
                 }
-                var maxVersionItem = ddlMaxVersions.Items.FindByValue(OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetMaxVersions().ToString());
+                var maxVersionItem = ddlMaxVersions.Items.FindByValue(globalSettingsController.GetMaxVersions().ToString());
                 if (maxVersionItem != null) maxVersionItem.Selected = true;
 
                 string OpenContent_Logging = PortalController.GetPortalSetting("OpenContent_Logging", ModuleContext.PortalId, "none");
                 ddlLogging.SelectedValue = OpenContent_Logging;
 
-                var editLayoutItem = ddlEditLayout.Items.FindByValue(((int)OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetEditLayout()).ToString());
+                var editLayoutItem = ddlEditLayout.Items.FindByValue(((int)globalSettingsController.GetEditLayout()).ToString());
                 if (editLayoutItem != null) editLayoutItem.Selected = true;
 
-                cbLoadBootstrap.Checked = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetLoadBootstrap();
-                cbLoadBootstrap.Visible = lLoadBootstrap.Visible = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetEditLayout() != AlpacaLayoutEnum.DNN;
-                tbGoogleApiKey.Text = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetGoogleApiKey();
-                cbFastHandlebars.Checked = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetFastHandlebars();
+                cbLoadBootstrap.Checked = globalSettingsController.GetLoadBootstrap();
+                cbLoadBootstrap.Visible = lLoadBootstrap.Visible = globalSettingsController.GetEditLayout() != AlpacaLayoutEnum.DNN;
+                tbGoogleApiKey.Text = globalSettingsController.GetGoogleApiKey();
+                cbFastHandlebars.Checked = globalSettingsController.GetFastHandlebars();
             }
         }
         protected void cmdSave_Click(object sender, EventArgs e)
         {
+            var globalSettingsController = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController(ModuleContext.PortalId);
             if (ddlRoles.SelectedIndex > 0)
                 PortalController.UpdatePortalSetting(ModuleContext.PortalId, "OpenContent_EditorsRoleId", ddlRoles.SelectedValue, true);
             else
@@ -86,17 +88,17 @@ namespace Satrabel.OpenContent
             int maxVersions;
             if (int.TryParse(ddlMaxVersions.SelectedValue, out maxVersions))
             {
-                OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.SetMaxVersions(maxVersions);
+                globalSettingsController.SetMaxVersions(maxVersions);
             }
             PortalController.UpdatePortalSetting(ModuleContext.PortalId, "OpenContent_Logging", ddlLogging.SelectedValue, true);
             int editLayout;
             if (int.TryParse(ddlEditLayout.SelectedValue, out editLayout))
             {
-                OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.SetEditLayout((AlpacaLayoutEnum)editLayout);
+                globalSettingsController.SetEditLayout((AlpacaLayoutEnum)editLayout);
             }
-            OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.SetLoadBootstrap(cbLoadBootstrap.Checked);
-            OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.SetGoogleApiKey(tbGoogleApiKey.Text);
-            OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.SetFastHandlebars(cbFastHandlebars.Checked);
+            globalSettingsController.SetLoadBootstrap(cbLoadBootstrap.Checked);
+            globalSettingsController.SetGoogleApiKey(tbGoogleApiKey.Text);
+            globalSettingsController.SetFastHandlebars(cbFastHandlebars.Checked);
 
             Response.Redirect(Globals.NavigateURL(), true);
         }

@@ -3,7 +3,6 @@ using DotNetNuke.Entities.Host;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Services.FileSystem;
-using DotNetNuke.Services.Localization;
 using ICSharpCode.SharpZipLib.Zip;
 using System;
 using System.Collections.Generic;
@@ -15,6 +14,7 @@ using System.Web.Hosting;
 using System.Web.UI.WebControls;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Dnn;
+using Satrabel.OpenContent.Components.Localization;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.Lucene.Index;
@@ -399,22 +399,22 @@ namespace Satrabel.OpenContent.Components
             catch (PermissionsNotMetException)
             {
                 //Logger.Warn(exc);
-                strMessage = string.Format(Localization.GetString("InsufficientFolderPermission"), "OpenContent/Templates");
+                strMessage = string.Format(Localizer.Instance.GetString("InsufficientFolderPermission"), "OpenContent/Templates");
             }
             catch (NoSpaceAvailableException)
             {
                 //Logger.Warn(exc);
-                strMessage = string.Format(Localization.GetString("DiskSpaceExceeded"), fileName);
+                strMessage = string.Format(Localizer.Instance.GetString("DiskSpaceExceeded"), fileName);
             }
             catch (InvalidFileExtensionException)
             {
                 //Logger.Warn(exc);
-                strMessage = string.Format(Localization.GetString("RestrictedFileType"), fileName, Host.AllowedExtensionWhitelist.ToDisplayString());
+                strMessage = string.Format(Localizer.Instance.GetString("RestrictedFileType"), fileName, Host.AllowedExtensionWhitelist.ToDisplayString());
             }
             catch (Exception exc)
             {
                 //Logger.Error(exc);
-                strMessage = string.Format(Localization.GetString("SaveFileError") + " - " + exc.Message, fileName);
+                strMessage = string.Format(Localizer.Instance.GetString("SaveFileError") + " - " + exc.Message, fileName);
             }
             if (!string.IsNullOrEmpty(strMessage))
             {
@@ -470,7 +470,7 @@ namespace Satrabel.OpenContent.Components
             if (settings?.TemplateKey?.TemplateDir != null && !settings.TemplateKey.TemplateDir.FolderExists)
             {
                 var url = DnnUrlUtils.NavigateUrl(module.ViewModule.TabID);
-                Log.Logger.ErrorFormat("Error loading OpenContent Template on page [{5}-{4}-{1}] module [{2}-{3}]. Reason: Template not found [{0}]", settings.TemplateKey.ToString(), url, module.ViewModule.ModuleID, module.ViewModule.ModuleTitle, module.ViewModule.TabID, module.ViewModule.PortalID);
+                Log.Logger.Error($"Error loading OpenContent Template on page [{module.ViewModule.PortalID}-{module.ViewModule.TabID}-{url}] module [{module.ViewModule.ModuleID}-{module.ViewModule.ModuleTitle}]. Reason: Template not found [{settings.TemplateKey}]");
                 result = false;
             }
             return result;
@@ -532,7 +532,7 @@ namespace Satrabel.OpenContent.Components
             catch (Exception ex)
             {
                 //we should log this
-                Log.Logger.ErrorFormat("Error while parsing json", ex);
+                Log.Logger.Error($"Error while parsing json", ex);
                 if (Debugger.IsAttached) Debugger.Break();
                 return null;
             }

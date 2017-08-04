@@ -274,7 +274,7 @@ namespace Satrabel.OpenContent.Components.Render
                 JObject context = new JObject();
                 model["Context"] = context;
                 context["ModuleId"] = _module.ViewModule.ModuleID;
-                context["GoogleApiKey"] = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetGoogleApiKey();
+                context["GoogleApiKey"] = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController(_portalId).GetGoogleApiKey();
                 context["ModuleTitle"] = _module.ViewModule.ModuleTitle;
                 var editIsAllowed = !_manifest.DisableEdit && IsEditAllowed(-1);
                 context["IsEditable"] = editIsAllowed; //allowed to edit the item or list (meaning allow Add)
@@ -305,7 +305,7 @@ namespace Satrabel.OpenContent.Components.Render
                         }
                         additionalDataJson = json;
                     }
-                    if (OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetFastHandlebars())
+                    if (OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController(_portalId).GetFastHandlebars())
                         _additionalData[(item.Value.ModelKey ?? item.Key)] = additionalDataJson;
                     else
                         _additionalData[(item.Value.ModelKey ?? item.Key).ToLowerInvariant()] = additionalDataJson;
@@ -347,6 +347,12 @@ namespace Satrabel.OpenContent.Components.Render
             string editRole = _manifest.GetEditRole();
             return (IsEditMode || OpenContentUtils.HasEditRole(_portalSettings, editRole, createdByUser)) // edit Role can edit whtout be in edit mode
                     && OpenContentUtils.HasEditPermissions(_portalSettings, _module.ViewModule, editRole, createdByUser);
+        }
+
+        protected bool HasEditPermissions(int createdByUser)
+        {
+            string editRole = _manifest.GetEditRole();
+            return OpenContentUtils.HasEditPermissions(_portalSettings, _module.ViewModule, editRole, createdByUser);
         }
 
         protected string GetCurrentCultureCode()

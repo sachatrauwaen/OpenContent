@@ -77,7 +77,7 @@ namespace Satrabel.OpenContent.Components
                 }
                 catch (Exception ex)
                 {
-                    Log.Logger.ErrorFormat("Can't get ParentFolder from {0}", FolderPath);
+                    Log.Logger.Error($"Can't get ParentFolder from {FolderPath}");
                 }
                 return null;
             }

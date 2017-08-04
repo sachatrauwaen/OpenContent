@@ -177,13 +177,24 @@
     <Compile Include="Components\Alpaca\AlpacaLayoutEnum.cs" />
     <Compile Include="Components\AppConfig.cs" />
     <Compile Include="Components\Common\ObjectId.cs" />
+    <Compile Include="Components\Datasource\DataNotValidException.cs" />
+    <Compile Include="Components\Datasource\DefaultDataAction.cs" />
+    <Compile Include="Components\Datasource\DnnUsersDataSource.cs" />
+    <Compile Include="Components\Datasource\IDataAction.cs" />
+    <Compile Include="Components\Datasource\IDataActions.cs" />
+    <Compile Include="Components\Datasource\IDataIndex.cs" />
     <Compile Include="Components\FormAPIController.cs" />
     <Compile Include="Components\Form\FormUtils.cs" />
     <Compile Include="Components\Form\GenSettingsDTO.cs" />
     <Compile Include="Components\Form\NotificationDTO.cs" />
     <Compile Include="Components\Form\SettingsDTO.cs" />
     <Compile Include="Components\Json\NotAuthorizedException.cs" />
+    <Compile Include="Components\Dnn\DnnLocalizationAdapter.cs" />
+    <Compile Include="Components\Localization\ILocalizationAdapter.cs" />
+    <Compile Include="Components\Localization\Localizer.cs" />
+    <Compile Include="Components\Logging\DnnLogAdapter.cs" />
     <Compile Include="Components\Logging\ExceptionExtentions.cs" />
+    <Compile Include="Components\Logging\ILogAdapter.cs" />
     <Compile Include="Components\Lucene\Index\IIndexableItem.cs" />
     <Compile Include="Components\Manifest\CollectionManifest.cs" />
     <Compile Include="Components\Manifest\OpenContentModuleInfo.cs" />
@@ -300,7 +311,7 @@
     <Compile Include="Components\Rss\RssApiController.cs" />
     <Compile Include="Components\TemplateHelpers\Images\ImageUriFactory.cs" />
     <Compile Include="Components\TemplateHelpers\OpenGraph.cs" />
-    <Compile Include="Components\TemplateHelpers\OtherExtentions.cs" />
+    <Compile Include="Components\TemplateHelpers\StringExtentions.cs" />
     <Compile Include="Components\Manifest\TemplateManifest.cs" />
     <Compile Include="Components\TemplateHelpers\RazorExtensions.cs" />
     <Compile Include="Components\TemplateHelpers\StringHtmlExtensions.cs" />
@@ -336,7 +347,7 @@
     <Compile Include="Components\DnnEntitiesAPIController.cs" />
     <Compile Include="Components\Lucene\Index\IndexExtentions.cs" />
     <Compile Include="Components\Utils\HttpUtils.cs" />
-    <Compile Include="Components\Utils\Logger.cs" />
+    <Compile Include="Components\Logging\Logger.cs" />
     <Compile Include="Components\OpenContentController.cs" />
     <Compile Include="Components\OpenContentInfo.cs" />
     <Compile Include="Components\OpenContentAPIController.cs" />
@@ -353,13 +364,6 @@
     <Compile Include="Components\Common\Utils.cs" />
     <Compile Include="Components\UrlRewriter\OpenContentUrlRule.cs" />
     <Compile Include="Components\UrlRewriter\OpenContentUrlProvider.cs" />
-    <Compile Include="EditCollection.ascx.cs">
-      <DependentUpon>EditCollection.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EditCollection.ascx.designer.cs">
-      <DependentUpon>EditCollection.ascx</DependentUpon>
-    </Compile>
     <Compile Include="EditFormSettings.ascx.cs">
       <DependentUpon>EditFormSettings.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -551,7 +555,6 @@
     <Content Include="css\glyphicons\fonts\glyphicons-regular.svg" />
     <Content Include="css\glyphicons\fonts\glyphicons-social-regular.svg" />
     <Content Include="css\glyphicons\glyphicons.css" />
-    <Content Include="EditCollection.ascx" />
     <Content Include="EditFormSettings.ascx" />
     <Content Include="js\bootstrap\css\bootstrap-theme.css" />
     <Content Include="js\bootstrap\css\bootstrap-theme.min.css" />

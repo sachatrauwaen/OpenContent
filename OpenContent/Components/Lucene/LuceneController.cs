@@ -11,6 +11,8 @@ using DotNetNuke.Entities.Portals;
 using DotNetNuke.Entities.Modules;
 using Version = Lucene.Net.Util.Version;
 using Satrabel.OpenContent.Components.Lucene.Index;
+using Satrabel.OpenContent.Components.Datasource;
+using System.Collections.Generic;
 
 #endregion
 
@@ -21,10 +23,7 @@ namespace Satrabel.OpenContent.Components.Lucene
         private static LuceneController _instance = new LuceneController();
         private LuceneService _serviceInstance;
 
-        public static LuceneController Instance
-        {
-            get { return _instance; }
-        }
+        public static LuceneController Instance => _instance;
 
         public LuceneService Store
         {
@@ -91,13 +90,23 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         #region Index
 
-        public void ReIndexModuleData(int moduleId, OpenContentSettings settings)
+        /// <summary>
+        /// Use this to 
+        /// </summary>
+        /// <param name="list">The list.</param>
+        /// <param name="indexConfig">The index configuration.</param>
+        /// <param name="scope">The scope.</param>
+        public void ReIndexModuleData(IEnumerable<IIndexableItem> list, FieldConfig indexConfig, string scope)
         {
             try
             {
                 using (LuceneController lc = LuceneController.Instance)
                 {
-                    IndexModuleData(lc, moduleId, settings);
+                    lc.Store.Delete(new TermQuery(new Term("$type", scope)));
+                    foreach (var item in list)
+                    {
+                        lc.Add(item, indexConfig);
+                    }
                     lc.Store.Commit();
                     lc.Store.OptimizeSearchIndex(true);
                 }
@@ -111,7 +120,7 @@ namespace Satrabel.OpenContent.Components.Lucene
         /// <summary>
         /// Reindex all OpenContent modules of all portals.
         /// </summary>
-        internal void IndexAll()
+        internal void IndexAll() //todo: this should only be called from DataSourceProviders
         {
             Log.Logger.Info("Reindexing all OpenContent data, from all portals");
             LuceneController.ClearInstance();
@@ -119,7 +128,6 @@ namespace Satrabel.OpenContent.Components.Lucene
             {
                 using (var lc = LuceneController.Instance)
                 {
-                    ModuleController mc = new ModuleController();
                     foreach (PortalInfo portal in PortalController.Instance.GetPortals())
                     {
                         var modules = DnnUtils.GetDnnOpenContentModules(portal.PortalID);
@@ -147,7 +155,7 @@ namespace Satrabel.OpenContent.Components.Lucene
         {
             OpenContentUtils.CheckOpenContentSettings(module);
 
-            if (module.IsListMode() && !module.Settings.IsOtherModule)
+            if (module.IsListMode() && !module.Settings.IsOtherModule && module.Settings.Manifest.Index)
             {
                 IndexModuleData(lc, module.ViewModule.ModuleID, module.Settings);
             }
@@ -169,8 +177,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             if (settings.IsOtherModule)
             {
                 moduleId = settings.ModuleId;
-            }
-
+            }            
             lc.Store.Delete(new TermQuery(new Term("$type", OpenContentInfo.GetScope(moduleId, settings.Template.Collection))));
             OpenContentController occ = new OpenContentController();
             foreach (var item in occ.GetContents(moduleId, settings.Template.Collection))

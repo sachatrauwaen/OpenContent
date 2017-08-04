@@ -1,4 +1,7 @@
-﻿using DotNetNuke.Services.FileSystem;
+﻿using DotNetNuke.Common.Utilities;
+using DotNetNuke.Entities.Modules.Definitions;
+using DotNetNuke.Services.FileSystem;
+using Satrabel.OpenContent.Components.TemplateHelpers;
 
 namespace Satrabel.OpenContent.Components.Dnn
 {
@@ -24,7 +27,25 @@ namespace Satrabel.OpenContent.Components.Dnn
             return url;
         }
 
-        internal static string RemoveCachbuster(string url)
+        /// <summary>
+        /// Returns the Url of the file. In case OpenImageProcessor is installed, Linkclick urls are transformed into ImgClick urls.
+        /// </summary>
+        /// <param name="fileInfo">The file information.</param>
+        /// <returns></returns>
+        internal static string ToLinkClickSafeUrl(this IFileInfo fileInfo)
+        {
+            if (fileInfo == null) return "";
+
+            var url = FileManager.Instance.GetUrl(fileInfo);
+            if (url.ToLower().Contains("linkclick"))
+            {
+                var hash = url.SubstringBetween("fileticket=", "&portalid");
+                url = $"/imgclick/{fileInfo.PortalId}/{hash}.axd";
+            }
+            return url;
+        }
+
+        internal static string RemoveCachebuster(this string url)
         {
             if (!string.IsNullOrEmpty(url))
             {
