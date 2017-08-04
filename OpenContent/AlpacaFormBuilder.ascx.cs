@@ -27,11 +27,12 @@ namespace Satrabel.OpenContent
         protected override void OnInit(EventArgs e)
         {
             base.OnInit(e);
+            var globalSettingsController = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController(ModuleContext.PortalId);
             hlCancel.NavigateUrl = Globals.NavigateURL();
             cmdSave.NavigateUrl = Globals.NavigateURL();
-            var editLayout = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetEditLayout();
-            var bootstrap = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetEditLayout() != AlpacaLayoutEnum.DNN;
-            bool loadBootstrap = bootstrap && OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetLoadBootstrap();
+            var editLayout = globalSettingsController.GetEditLayout();
+            var bootstrap = globalSettingsController.GetEditLayout() != AlpacaLayoutEnum.DNN;
+            bool loadBootstrap = bootstrap && globalSettingsController.GetLoadBootstrap();
 
             OpenContentSettings settings = this.OpenContentSettings();
             AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext.PortalId, "" /*settings.Template.Uri().FolderPath*/, "builder");
@@ -70,7 +71,7 @@ namespace Satrabel.OpenContent
 
             AlpacaContext = new AlpacaContext(PortalId, ModuleId, null, ScopeWrapper.ClientID, hlCancel.ClientID, cmdSave.ClientID, null, null, null);
             AlpacaContext.Bootstrap = bootstrap;
-            AlpacaContext.Horizontal = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController.GetEditLayout() == AlpacaLayoutEnum.BootstrapHorizontal;
+            AlpacaContext.Horizontal = globalSettingsController.GetEditLayout() == AlpacaLayoutEnum.BootstrapHorizontal;
         }
         public AlpacaContext AlpacaContext { get; private set; }
 

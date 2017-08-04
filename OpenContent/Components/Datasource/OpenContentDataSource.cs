@@ -277,7 +277,6 @@ namespace Satrabel.OpenContent.Components.Datasource
         public virtual void Add(DataSourceContext context, JToken data)
         {
             OpenContentController ctrl = new OpenContentController();
-            var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection);
             var content = new OpenContentInfo()
             {
                 ModuleId = GetModuleId(context),
@@ -294,14 +293,14 @@ namespace Satrabel.OpenContent.Components.Datasource
             //Index the content item
             if (context.Index)
             {
+                var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection);
                 LuceneController.Instance.Add(content, indexConfig);
                 LuceneController.Instance.Store.Commit();
             }
         }
         public virtual void Update(DataSourceContext context, IDataItem item, JToken data)
         {
-            OpenContentController ctrl = new OpenContentController();
-            var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection);
+            OpenContentController ctrl = new OpenContentController();            
             var content = (OpenContentInfo)item.Item;
             content.Title = data["Title"]?.ToString() ?? "";
             content.Json = data.ToString();
@@ -310,6 +309,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             ctrl.UpdateContent(content);
             if (context.Index)
             {
+                var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection);
                 content.HydrateDefaultFields(indexConfig);
                 LuceneController.Instance.Update(content, indexConfig);
                 LuceneController.Instance.Store.Commit();

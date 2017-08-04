@@ -4,14 +4,10 @@ namespace Satrabel.OpenContent.Components
 {
     public class OpenContentControllerFactory
     {
-        private OpenContentGlobalSettingsController _openContentGlobalSettingsController;
-        public OpenContentGlobalSettingsController OpenContentGlobalSettingsController
+        
+        public OpenContentGlobalSettingsController OpenContentGlobalSettingsController(int portalId)
         {
-            get
-            {
-                return _openContentGlobalSettingsController ??
-                (_openContentGlobalSettingsController = new OpenContentGlobalSettingsController(PortalSettings.Current.PortalId));
-            }
+                return new OpenContentGlobalSettingsController(portalId);
         }
 
         private OpenContentControllerFactory() { }
