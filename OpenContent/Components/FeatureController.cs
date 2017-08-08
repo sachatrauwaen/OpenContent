@@ -58,9 +58,8 @@ namespace Satrabel.OpenContent.Components
         public void ImportModule(int moduleId, string content, string version, int userId)
         {
             var module = OpenContentModuleConfig.Create(moduleId, Null.NullInteger, PortalSettings.Current);
-            //var index = module.Settings.Template.Manifest.Index;
-            //var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template);
             var dataSource = new OpenContentDataSource();
+            var dsContext = OpenContentUtils.CreateDataContext(module, userId);
             XmlNode xml = Globals.GetContent(content, "opencontent");
             var items = xml.SelectNodes("item");
             if (items != null)
@@ -70,24 +69,17 @@ namespace Satrabel.OpenContent.Components
                     XmlNode json = item.SelectSingleNode("json");
                     XmlNode collection = item.SelectSingleNode("collection");
                     XmlNode key = item.SelectSingleNode("key");
-                    JToken data;
                     try
                     {
-                        data = item.InnerText;
-                        data["_id"] = key?.InnerText ?? "";
+                        JToken data = JToken.Parse(json.InnerText);
+                        dsContext.Collection = collection?.InnerText ?? "";
+                        dataSource.Add(dsContext, data);
                     }
                     catch (Exception e)
                     {
                         App.Services.Logger.Error($"Failed to parse imported json. Item key: {key}. Collection: {collection}. Error: {e.Message}. Stacktrace: {e.StackTrace}");
                         throw;
                     }
-
-                    var dsContext = OpenContentUtils.CreateDataContext(module, userId);
-                    dsContext.Collection = collection?.InnerText ?? "";
-                    //dsContext.Key = key?.InnerText ?? "";
-
-                    dataSource.Add(dsContext, data);
-                    //dataSource.Add(contentInfo, index, indexConfig);
                 }
             }
         }

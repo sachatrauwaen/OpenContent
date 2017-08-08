@@ -14,6 +14,7 @@ using DotNetNuke.Entities.Modules;
 using DotNetNuke.Common;
 using Satrabel.OpenContent.Components;
 using System.Web.UI.WebControls;
+using DotNetNuke.Entities.Portals;
 using DotNetNuke.Security.Roles;
 using Satrabel.OpenContent.Components.Alpaca;
 
@@ -79,6 +80,7 @@ namespace Satrabel.OpenContent
             if (int.TryParse(ddlMaxVersions.SelectedValue, out maxVersions))
             {
                 App.Services.GlobalSettings().SetMaxVersions(maxVersions);
+
             }
             App.Services.GlobalSettings().SetLoggingScope(ddlLogging.SelectedValue);
             int editLayout;
@@ -89,6 +91,7 @@ namespace Satrabel.OpenContent
             App.Services.GlobalSettings().SetLoadBootstrap(cbLoadBootstrap.Checked);
             App.Services.GlobalSettings().SetGoogleApiKey(tbGoogleApiKey.Text);
             App.Services.GlobalSettings().SetFastHandlebars(cbFastHandlebars.Checked);
+
 
             Response.Redirect(Globals.NavigateURL(), true);
         }

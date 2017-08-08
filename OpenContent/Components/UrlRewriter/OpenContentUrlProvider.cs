@@ -15,7 +15,6 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
         public static List<OpenContentUrlRule> GetRules(int portalId)
         {
             object padlock = new object();
-
             lock (padlock)
             {
                 List<OpenContentUrlRule> rules = new List<OpenContentUrlRule>();
@@ -29,7 +28,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
 
                 var portalCacheKey = UrlRulesCaching.GeneratePortalCacheKey(portalId, null);
                 var portalRules = UrlRulesCaching.GetCache(portalId, portalCacheKey, purgeResult.ValidCacheItems);
-                if (portalRules != null)
+                if (portalRules != null && portalRules.Count > 0)
                 {
                     //#if DEBUG
                     //   App.Services.Logger.Debug($"GetRules {portalId} CachedRuleCount: {portalRules.Count}");
@@ -62,7 +61,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
 
                             var cacheKey = UrlRulesCaching.GenerateModuleCacheKey(module.TabId, module.ModuleId, dsContext.ModuleId, null);
                             List<OpenContentUrlRule> moduleRules = UrlRulesCaching.GetCache(portalId, cacheKey, purgeResult.ValidCacheItems);
-                            if (moduleRules != null)
+                            if (moduleRules != null && moduleRules.Count > 0)
                             {
                                 //App.Services.Logger.Error($"GetRules {portalId}/{module.TabId}/{module.ModuleId} count: {moduleRules.Count}");
                                 rules.AddRange(moduleRules);
@@ -70,10 +69,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                                 continue;
                             }
 
-                            //App.Services.Logger.Error($"GetRules {portalId}/{module.TabId}/{module.ModuleId} start processing");
-
                             nonCached += 1;
-
                             moduleRules = new List<OpenContentUrlRule>();
                             IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
 

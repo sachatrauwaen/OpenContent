@@ -16,6 +16,7 @@ using DotNetNuke.Common.Utilities;
 using DotNetNuke.Data;
 using DotNetNuke.Entities.Modules;
 using Satrabel.OpenContent.Components.Common;
+using DotNetNuke.Entities.Portals;
 
 namespace Satrabel.OpenContent.Components
 {

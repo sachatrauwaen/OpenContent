@@ -16,6 +16,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Hosting;
 using System.Web.UI;
+using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.Querying;
 using IDataSource = Satrabel.OpenContent.Components.Datasource.IDataSource;
@@ -519,7 +520,7 @@ namespace Satrabel.OpenContent.Components.Render
                     }
                     else // handlebars
                     {
-                        if (App.Services.GlobalSettings().GetFastHandlebars())
+                        if (App.Services.GlobalSettings(PortalSettings.Current.PortalId).GetFastHandlebars())
                             model = mf.GetModelAsDictionary();
                         else
                             model = mf.GetModelAsDynamic();
@@ -587,7 +588,7 @@ namespace Satrabel.OpenContent.Components.Render
                     else // handlebars
                     {
                         object model;
-                        if (App.Services.GlobalSettings().GetFastHandlebars())
+                        if (App.Services.GlobalSettings(PortalSettings.Current.PortalId).GetFastHandlebars())
                             model = mf.GetModelAsDictionary();
                         else
                             model = mf.GetModelAsDynamic();
