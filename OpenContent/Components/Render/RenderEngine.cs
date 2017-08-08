@@ -90,7 +90,7 @@ namespace Satrabel.OpenContent.Components.Render
                         {
                             // for list templates a main template need to be defined
                             _renderinfo.Files = _renderinfo.Template.Main;
-                            string templateKey = GetDataList(_renderinfo, _module, _renderinfo.Template.ClientSideData);
+                            string templateKey = GetDataList(_renderinfo, _module);
                             if (!string.IsNullOrEmpty(templateKey) && _renderinfo.Template.Views != null && _renderinfo.Template.Views.ContainsKey(templateKey))
                             {
                                 _renderinfo.Files = _renderinfo.Template.Views[templateKey];
@@ -121,7 +121,7 @@ namespace Satrabel.OpenContent.Components.Render
                             {
                                 // for list templates a main template need to be defined
                                 _renderinfo.Files = _renderinfo.Template.Main;
-                                string templateKey = GetDataList(_renderinfo, _module, _renderinfo.Template.ClientSideData);
+                                string templateKey = GetDataList(_renderinfo, _module);
                                 if (!string.IsNullOrEmpty(templateKey) && _renderinfo.Template.Views != null && _renderinfo.Template.Views.ContainsKey(templateKey))
                                 {
                                     _renderinfo.Files = _renderinfo.Template.Views[templateKey];
@@ -253,13 +253,14 @@ namespace Satrabel.OpenContent.Components.Render
 
         #region Data
 
-        private string GetDataList(RenderInfo info, OpenContentModuleConfig ocModuleConfig, bool clientSide)
+        private string GetDataList(RenderInfo info, OpenContentModuleConfig ocModuleConfig)
         {
+            var clientSide = info.Template.ClientSideData;
             string templateKey = "";
             info.ResetData();
 
             IDataSource ds = DataSourceManager.GetDataSource(_settings.Manifest.DataSource);
-            var dsContext = OpenContentUtils.CreateDataContext(_module);
+            var dsContext = OpenContentUtils.CreateDataContext(ocModuleConfig);
 
             IEnumerable<IDataItem> resultList = new List<IDataItem>();
             if (clientSide || !info.Files.DataInTemplate)
