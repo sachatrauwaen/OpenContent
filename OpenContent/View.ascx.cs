@@ -28,11 +28,14 @@ using Satrabel.OpenContent.Components.Logging;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.Render;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.UI;
+using Satrabel.OpenContent.Components.Datasource;
+using IDataSource = Satrabel.OpenContent.Components.Datasource.IDataSource;
 using SecurityAccessLevel = DotNetNuke.Security.SecurityAccessLevel;
 
 #endregion
@@ -191,11 +194,19 @@ namespace Satrabel.OpenContent
 
         private void AutoAttachLocalizedModule(ref ModuleInfo module)
         {
-            var defaultModule = module.DefaultLanguageModule;
-            if (defaultModule != null)
+            if (module.DefaultLanguageModule != null) //if module is not on a default language page
             {
-                if (ModuleContext.ModuleId != defaultModule.ModuleID)
+                var defaultModule = module.DefaultLanguageModule;
+                if (ModuleContext.ModuleId != defaultModule.ModuleID) //not yet attached
                 {
+                    if (ModuleHasAlreadyData(module))
+                    {
+                        // this module is in another language but has already data.
+                        // Therefor we will not AutoAttach it, because otherwise all data will be deleted.
+                        App.Services.Logger.Info($"Module {module.ModuleID} on Tab {module.TabID} has not been AutoAttached because it already contains data.");
+                        return;
+                    }
+
                     var mc = (new ModuleController());
                     mc.DeLocalizeModule(module);
 
@@ -210,6 +221,15 @@ namespace Satrabel.OpenContent
                     //_settings = module.OpenContentSettings();
                 }
             }
+        }
+
+        private bool ModuleHasAlreadyData(ModuleInfo moduleInfo)
+        {
+            OpenContentModuleConfig ocModuleConfig = OpenContentModuleConfig.Create(moduleInfo, PortalSettings.Current);
+            IDataSource ds = DataSourceManager.GetDataSource(_settings.Manifest.DataSource);
+            var dsContext = OpenContentUtils.CreateDataContext(ocModuleConfig);
+
+            return ds.Any(dsContext);
         }
 
         private void AutoEditMode()
