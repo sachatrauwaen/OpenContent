@@ -13,6 +13,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         public int UserId { get; set; } // Only Used for Add and Update commands
         public string CurrentCultureCode { get; set; }
         public bool Index { get; set; }
+
         /// <summary>
         /// Datasource Config coming from the manifest. To initialize the DataSource.
         /// </summary>
@@ -35,6 +36,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         /// The active module identifier.
         /// </value>
         public int ActiveModuleId { get; set; }
+
         /// <summary>
         /// Gets or sets the module identifier of the Data Module.
         /// </summary>
@@ -42,6 +44,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         /// The module identifier.
         /// </value>
         public int ModuleId { get; set; }
+
         /// <summary>
         /// Gets or sets the tab identifier of the View Module.
         /// </summary>

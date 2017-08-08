@@ -416,6 +416,7 @@ namespace Satrabel.OpenContent.Components.Render
             }
             return !info.ShowInitControl; //!string.IsNullOrWhiteSpace(info.DataJson) && (!string.IsNullOrWhiteSpace(info.SettingsJson) || !settingsNeeded);
         }
+
         private string GetTemplateKey(FieldConfig indexConfig)
         {
             string templateKey = "";

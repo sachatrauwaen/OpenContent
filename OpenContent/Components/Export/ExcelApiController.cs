@@ -84,8 +84,6 @@ namespace Satrabel.OpenContent.Components.Export
             var mf = new ModelFactoryMultiple(dataList, null, manifest, null, null, module);
             dynamic model = mf.GetModelAsDictionary(true);
 
-
-
             var rssTemplate = new FileUri(module.Settings.TemplateDir, filename + "-excel.hbs");
             string source = rssTemplate.FileExists ? FileUriUtils.ReadFileFromDisk(rssTemplate) : GenerateTemplateFromModel(model, rssTemplate);
 
