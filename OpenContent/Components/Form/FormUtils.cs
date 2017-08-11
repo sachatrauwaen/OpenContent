@@ -20,7 +20,6 @@ namespace Satrabel.OpenContent.Components.Form
         {
             MailAddress adr = null;
             var portalSettings = PortalSettings.Current;
-            var userInfo = portalSettings.UserInfo;
 
             if (TypeOfAddress == "host")
             {
@@ -48,6 +47,7 @@ namespace Satrabel.OpenContent.Components.Form
             }
             else if (TypeOfAddress == "current")
             {
+                var userInfo = portalSettings.UserInfo;
                 if (userInfo == null)
                     throw new Exception(string.Format("Can't send email to current user, as there is no current user. Parameters were TypeOfAddress: [{0}], Email: [{1}], Name: [{2}], FormEmailField: [{3}], FormNameField: [{4}], FormNameField: [{5}]", TypeOfAddress, Email, Name, FormEmailField, FormNameField, form));
                 if (string.IsNullOrEmpty(userInfo.Email))
