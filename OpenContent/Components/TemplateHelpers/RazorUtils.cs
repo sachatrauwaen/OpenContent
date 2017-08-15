@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Text;
 
 namespace Satrabel.OpenContent.Components.TemplateHelpers
@@ -36,6 +37,28 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             }
             var result = $"<a href='#' {dataAttribs} onfocus=\"{onfocus}\">{visibleText}{onload}</a>";
             return result;
+        }
+
+        /// <summary>
+        /// Formats the date time, just like the HandleBarHelper formatDateTime does.
+        /// </summary>
+        /// <param name="isoDateTime">The iso date time.</param>
+        /// <param name="format">The date format.</param>
+        /// <param name="culture">The culture.</param>
+        public static string FormatDateTime(string isoDateTime, string format = "dd/MM/yyyy", string culture = "invariant")
+        {
+            try
+            {
+                var datetime = DateTime.Parse(isoDateTime, null, DateTimeStyles.RoundtripKind);
+                var formatprovider = culture == "invariant" ? CultureInfo.InvariantCulture : CultureInfo.CreateSpecificCulture(culture);
+                var res = datetime.ToString(format, formatprovider);
+
+                return res;
+            }
+            catch (Exception)
+            {
+                return "";
+            }
         }
     }
 }
