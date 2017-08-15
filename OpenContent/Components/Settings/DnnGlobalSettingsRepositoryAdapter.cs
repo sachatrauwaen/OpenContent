@@ -26,6 +26,7 @@ namespace Satrabel.OpenContent.Components.Settings
 
         public int GetMaxVersions()
         {
+            if (_portalId == -1) return SETTINGS_DEFAULT_MAX_VERSIONS;
             var maxVersionsSetting = PortalController.GetPortalSetting(SETTINGS_KEY_MAX_VERSIONS, _portalId, string.Empty);
             int maxVersions;
             if (!string.IsNullOrWhiteSpace(maxVersionsSetting) && int.TryParse(maxVersionsSetting, out maxVersions))
@@ -40,6 +41,7 @@ namespace Satrabel.OpenContent.Components.Settings
 
         public AlpacaLayoutEnum GetEditLayout()
         {
+            if (_portalId == -1) return SETTINGS_DEFAULT_EDIT_LAYOUT;
             var editLayoutSetting = PortalController.GetPortalSetting(SETTINGS_EDIT_LAYOUT, _portalId, string.Empty);
             int editLayout;
             if (!string.IsNullOrWhiteSpace(editLayoutSetting) && int.TryParse(editLayoutSetting, out editLayout))
@@ -53,6 +55,7 @@ namespace Satrabel.OpenContent.Components.Settings
         }
         public bool GetLoadBootstrap()
         {
+            if (_portalId == -1) return SETTINGS_DEFAULT_LOAD_BOOTSTRAP;
             var loadBootstrapSetting = PortalController.GetPortalSetting(SETTINGS_LOAD_BOOTSTRAP, _portalId, string.Empty);
             bool loadBootstrap;
             if (!string.IsNullOrWhiteSpace(loadBootstrapSetting) && bool.TryParse(loadBootstrapSetting, out loadBootstrap))
@@ -67,6 +70,7 @@ namespace Satrabel.OpenContent.Components.Settings
 
         public string GetGoogleApiKey()
         {
+            if (_portalId == -1) return string.Empty;
             return PortalController.GetPortalSetting(SETTINGS_GOOGLE_API_KEY, _portalId, string.Empty);
         }
         public void SetGoogleApiKey(string googleMapsApiKey)
@@ -76,6 +80,7 @@ namespace Satrabel.OpenContent.Components.Settings
 
         public bool GetFastHandlebars()
         {
+            if (_portalId == -1) return SETTINGS_DEFAULT_FAST_HANDLEBARS;
             var fastHandlebarsSetting = PortalController.GetPortalSetting(SETTINGS_FAST_HANDLEBARS, _portalId, string.Empty);
             bool fastHandlebars;
             if (!string.IsNullOrWhiteSpace(fastHandlebarsSetting) && bool.TryParse(fastHandlebarsSetting, out fastHandlebars))
@@ -92,6 +97,7 @@ namespace Satrabel.OpenContent.Components.Settings
         private const bool SETTINGS_DEFAULT_AUTO_ATTACH = false;
         public bool GetAutoAttach()
         {
+            if (_portalId == -1) return SETTINGS_DEFAULT_AUTO_ATTACH;
             var setting = PortalController.GetPortalSetting(SETTINGS_AUTO_ATTACH, _portalId, string.Empty);
             bool result;
             if (!string.IsNullOrWhiteSpace(setting) && bool.TryParse(setting, out result))
@@ -105,9 +111,11 @@ namespace Satrabel.OpenContent.Components.Settings
         }
 
         private const string SETTINGS_LOGGING = "OpenContent_Logging";
+        private const string SETTINGS_DEFAULT_LOGGING = "none";
         public string GetLoggingScope()
         {
-            return PortalController.GetPortalSetting(SETTINGS_LOGGING, _portalId, "none");
+            if (_portalId == -1) return SETTINGS_DEFAULT_LOGGING;
+            return PortalController.GetPortalSetting(SETTINGS_LOGGING, _portalId, SETTINGS_DEFAULT_LOGGING);
         }
 
         public void SetLoggingScope(string value)
@@ -119,6 +127,7 @@ namespace Satrabel.OpenContent.Components.Settings
         private const string SETTINGS_EDITOR_ROLE_ID = "OpenContent_EditorsRoleId";
         public string GetEditorRoleId()
         {
+            if (_portalId == -1) return "";
             return PortalController.GetPortalSetting(SETTINGS_EDITOR_ROLE_ID, _portalId, "");
         }
 
