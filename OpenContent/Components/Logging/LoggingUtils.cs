@@ -59,7 +59,15 @@ namespace Satrabel.OpenContent.Components.Logging
         }
         private static string PrepareErrorMessage(DnnApiController ctrl, Exception exc)
         {
-            string friendlyMessage = $"\n{exc.Message} \n\n PortalId: {ctrl.ActiveModule.PortalID} \nTab: {ctrl.ActiveModule.TabID} - {DnnUrlUtils.NavigateUrl(ctrl.ActiveModule.TabID)} \nModule: {ctrl.ActiveModule.ModuleID} \n{LoggingUtils.HttpRequestLogInfo(HttpContext.Current)} ";
+            string friendlyMessage;
+            if (ctrl?.ActiveModule == null)
+            {
+                friendlyMessage = $"\n{exc.Message} \n{LoggingUtils.HttpRequestLogInfo(HttpContext.Current)} ";
+            }
+            else
+            {
+                friendlyMessage = $"\n{exc.Message} \n\n PortalId: {ctrl.ActiveModule.PortalID} \nTab: {ctrl.ActiveModule.TabID} - {DnnUrlUtils.NavigateUrl(ctrl.ActiveModule.TabID)} \nModule: {ctrl.ActiveModule.ModuleID} \n{LoggingUtils.HttpRequestLogInfo(HttpContext.Current)} ";
+            }
             Exception lastExc = exc;
             while (lastExc.InnerException != null)
             {
