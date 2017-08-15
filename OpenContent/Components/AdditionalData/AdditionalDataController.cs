@@ -64,7 +64,7 @@ namespace Satrabel.OpenContent.Components
             if (versions.Count == 0 || versions[0].Json.ToString() != data.Json)
             {
                 versions.Insert(0, ver);
-                if (versions.Count > App.Services.GlobalSettings(PortalSettings.Current.PortalId).GetMaxVersions())
+                if (versions.Count > App.Services.GlobalSettings().GetMaxVersions())
                 {
                     versions.RemoveAt(versions.Count - 1);
                 }
