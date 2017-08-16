@@ -470,8 +470,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             {
                 if (parameters.Length == 3) //{{imageurl ImageId 4 '800x500'}}
                 {
-
-                    string imageId = parameters[0] as string;
+                    string imageId = parameters[0].ToString();
                     int width = Normalize.DynamicValue(parameters[1], -1);
                     string ratiostring = parameters[2] as string;
                     bool isMobile = HttpContext.Current.Request.Browser.IsMobileDevice;
@@ -481,9 +480,9 @@ namespace Satrabel.OpenContent.Components.Handlebars
 
                     writer.WriteSafeString(imageUrl);
                 }
-                if (parameters.Length == 2) //{{imageurl ImageId 4 '800x500'}}
+                if (parameters.Length == 2) //{{imageurl ImageId 4}}
                 {
-                    string imageId = parameters[0] as string;
+                    string imageId = parameters[0].ToString();
                     int width = Normalize.DynamicValue(parameters[1], -1);
                     bool isMobile = HttpContext.Current.Request.Browser.IsMobileDevice;
 
