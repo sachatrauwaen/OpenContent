@@ -258,7 +258,7 @@ namespace Satrabel.OpenContent.Components.Form
                     }
                     else
                     {
-                        message = "Message sended.";
+                        message = "Message sent.";
                     }
                     //Tracking = settings.Settings.Tracking;
                     if (!string.IsNullOrEmpty(settings.Settings.Tracking))
