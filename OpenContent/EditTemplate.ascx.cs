@@ -321,8 +321,25 @@ namespace Satrabel.OpenContent
                 if (schemaFile.FileExists)
                 {
                     schema = File.ReadAllText(schemaFile.PhysicalFilePath);
+                    return JObject.Parse(schema);
                 }
-                return JObject.Parse(schema);
+                return new JObject();
+            }
+        }
+
+        public JObject Options
+        {
+            get
+            {
+                TemplateManifest template = ModuleContext.OpenContentSettings().Template;
+                var optionsFile = new FileUri(template.ManifestFolderUri, "options.json");
+                string options = "";
+                if (optionsFile.FileExists)
+                {
+                    options = File.ReadAllText(optionsFile.PhysicalFilePath);
+                    return JObject.Parse(options);
+                }
+                return new JObject();
             }
         }
 
@@ -356,12 +373,14 @@ namespace Satrabel.OpenContent
                     break;
                 case ".hbs":
                     mimeType = "htmlhandlebars";
+                    
                     break;
                 default:
                     mimeType = "text/html";
                     break;
             }
             DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "mimeType", mimeType, true);
+            phHandlebars.Visible = mimeType == "htmlhandlebars";
         }
         private void LoadFiles(TemplateManifest template)
         {

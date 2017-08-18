@@ -18,7 +18,9 @@
 <dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/addon/mode/multiplex.js" Priority="103" />
 <dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/addon/mode/simple.js" Priority="103" />
 <dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/addon/hint/show-hint.js" Priority="103" />
-<dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/mode/handlebars/handlebars.js" Priority="103" />
+<dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/mode/handlebars/handlebars.js" Priority="104" />
+
+<dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/oc.codeMirror.js" Priority="105" />
 
 <div class="dnnForm dnnRazorHostEditScript dnnClear" id="dnnEditScript">
     <fieldset class="nomargin">
@@ -52,7 +54,7 @@
         <li>
             <asp:LinkButton ID="cmdBuilder" resourcekey="cmdBuilder" runat="server" CssClass="dnnSecondaryAction" />
         </li>
-        
+        <asp:PlaceHolder ID="phHandlebars" runat="server">
         <li>
             Ctrl-Space : variables | 
         </li>
@@ -62,6 +64,7 @@
         <li>
             <a href="https://opencontent.readme.io/docs/tokens" target="_blank">Help</a>
         </li>
+        </asp:PlaceHolder>
     </ul>
 </div>
 <script type="text/javascript">
@@ -69,173 +72,22 @@
     jQuery(function ($) {
         var mimeType = dnn.getVar('mimeType') || "text/html";
 
-        CodeMirror.defineMode("htmlhandlebars", function (config) {
-            return CodeMirror.multiplexingMode(
-              CodeMirror.getMode(config, "text/html"),
-              {
-                  open: "{{", close: "}}",
-                  mode: CodeMirror.getMode(config, "handlebars"),
-                  parseDelimiters: true
-              });
-        });
-
-        var handlebarsHelpers = [     
-            {'text':'{{#each var}}{{/each}}', 'displayText': 'each', 'sort':'each'},
-            {'text':'{{#if var}}{{/if}}', 'displayText': 'if', 'sort': 'if'},
-            {'text':'{{#ifand var1 var2 var3}}{{/ifand}}', 'displayText': 'ifand', 'sort': 'ifand'},
-            {'text':'{{#ifor var1 var2 var3}}{{/ifor}}', 'displayText': 'ifor', 'sort': 'ifor'},
-            {'text':'{{multiply var 2}}', 'displayText': 'multiply', 'sort': 'multiply'},
-            {'text':'{{divide var 2}}', 'displayText': 'divide', 'sort': 'divide'},
-            {'text':'{{add var 2}}', 'displayText': 'add', 'sort': 'add'},
-            {'text':'{{substract var 2}}', 'displayText': 'substract', 'sort': 'substract'},
-            {'text':'{{registerscript "javascript.js"}}', 'displayText': 'registerscript', 'sort': 'registerscript'},
-            {'text':'{{registerstylesheet "stylesheet.css"}}', 'displayText': 'registerstylesheet', 'sort': 'registerstylesheet'},
-            {'text':'{{formatNumber var "0.00"}}', 'displayText': 'formatNumber', 'sort': 'formatNumber'},
-            {'text':'{{formatDateTime var "dd/MMM/yy" "nl-NL" }}', 'displayText': 'formatDateTime', 'sort': 'formatDateTime'},
-            {'text':'{{convertHtmlToText var }}', 'displayText': 'convertHtmlToText', 'sort': 'convertHtmlToText'},
-            {'text':'{{convertToJson var }}', 'displayText': 'convertToJson', 'sort': 'convertToJson'},
-            {'text':'{{truncateWords var 50 "..." }}', 'displayText': 'formatDateTime', 'sort': 'formatDateTime'},
-            {'text':'{{#equal var "value"}}{{/equal}}', 'displayText': 'equal', 'sort': 'equal'},
-            {'text':'{{#unless var}}{{/unless}}', 'displayText': 'unless', 'sort': 'unless'},                    
-            {'text':'{{#with var}}{{/with}}', 'displayText': 'with', 'sort': 'with'}
-
-        ];
-
-        var handlebarsHints = [
-                    {'text':'{{#each Items}}{{/each}}', 'displayText': '#each', 'sort':'#each'},
-                    {'text':'{{#unless var}}{{/unless}}', 'displayText': '#unless', 'sort': '#unless'},                    
-                    {'text':'{{#if var}}{{/if}}', 'displayText': '#if', 'sort': '#if'}];
-
-
         var schema = <%= Schema.ToString() %>;
+        var options = <%= Options.ToString() %>;
 
-        var addProperties = function(sch, parent, prefix){
-            if (sch && sch.properties){
-                for (k in sch.properties) {            
-                    p = sch.properties[k];
-                    var vartext = (prefix ? prefix+'.':'')+k;
-                    if (p.type == 'object'){
-                        //handlebarsHints.push({'text':'{{#with '+k+'}} {{/with}}', 'displayText': k+ (parent ? ' ('+ parent+')' : ''), 'sort': (parent ? parent+'.' : '')+k});
-                    } else if (p.type == 'array'){
-                        handlebarsHints.push({'text':'{{#each '+vartext+'}} {{/each}}', 'displayText': vartext + (parent ? ' ('+ parent+')' : ''), 'sort': (parent ? parent+'.' : '')+k});
-                    } else {
-                        handlebarsHints.push({'text':'{{'+vartext+'}}', 'displayText': vartext+ (parent ? ' ('+ parent+')' : ''), 'sort': (parent ? parent+'.' : '')+k});
-                    }
-
-                    if(k == 'Image'){
-                        handlebarsHints.push({'text':'<img src="{{'+vartext+'}}" alt="" />', 'displayText': vartext+ (parent ? ' <img> ('+ parent+')' : ''), 'sort': (parent ? parent+'.' : '')+k});
-                    }
-
-                    if (p.type == 'object'){
-                        addProperties(p, '', k);
-                    } else if (p.type == 'array' && p.items){
-                        addProperties(p.items, k, '');
-                    }
-                }
-            }
-        };
-        if (schema){
-            addProperties(schema, '', '');
-        };
-    
-        CodeMirror.registerHelper("hint", "htmlhandlebars", function (editor) {
-            var list = handlebarsHints;
-            var cursor = editor.getCursor();
-            var currentLine = editor.getLine(cursor.line);
-            var start = cursor.ch;
-            var end = start;
-            while (end < currentLine.length && /[\w$]+/.test(currentLine.charAt(end))) ++end;
-            while (start && /[\w$]+/.test(currentLine.charAt(start - 1))) --start;
-            var curWord = start != end && currentLine.slice(start, end);            
-            var regex = new RegExp('^' + curWord, 'i');
-            var result = {
-                list: (!curWord ? list : list.filter(function (item) {
-                    return item.displayText.match(regex);
-                })).sort(function compare(a,b) {
-                  if (a.sort < b.sort)
-                    return -1;
-                  if (a.sort > b.sort)
-                    return 1;
-                  return 0;
-                }),
-                from: CodeMirror.Pos(cursor.line, start),
-                to: CodeMirror.Pos(cursor.line, end)
-            };
-            return result;
-        });
-
-
+        ocInitCodeMirror(mimeType, schema, options);
 
         var setupModule = function () {
 
             $('#<%= cmdCustom.ClientID %>').dnnConfirm({
-                text: '<%= Localization.GetSafeJSString("OverwriteTemplate.Text") %>',
-                yesText: '<%= Localization.GetSafeJSString("Yes.Text", Localization.SharedResourceFile) %>',
-                noText: '<%= Localization.GetSafeJSString("No.Text", Localization.SharedResourceFile) %>',
-                title: '<%= Localization.GetSafeJSString("Confirm.Text", Localization.SharedResourceFile) %>'
+	            text: '<%= Localization.GetSafeJSString("OverwriteTemplate.Text") %>',
+	            yesText: '<%= Localization.GetSafeJSString("Yes.Text", Localization.SharedResourceFile) %>',
+	            noText: '<%= Localization.GetSafeJSString("No.Text", Localization.SharedResourceFile) %>',
+	            title: '<%= Localization.GetSafeJSString("Confirm.Text", Localization.SharedResourceFile) %>'
             });
 
-            var cm = CodeMirror.fromTextArea($("textarea[id$='txtSource']")[0], {
-                lineNumbers: true,
-                matchBrackets: true,
-                lineWrapping: true,
-                mode: mimeType,
-                extraKeys: {"Ctrl-Space": "autocomplete","Shift-Space": function(editor){ 
-                    var options = {
-                        hint: function() {
+            var cm = ocSetupCodeMirror(mimeType, $("textarea[id$='txtSource']")[0]);
 
-                            var list = handlebarsHelpers;
-                            var cursor = editor.getCursor();
-                            var currentLine = editor.getLine(cursor.line);
-                            var start = cursor.ch;
-                            var end = start;
-                            while (end < currentLine.length && /[\w$]+/.test(currentLine.charAt(end))) ++end;
-                            while (start && /[\w$]+/.test(currentLine.charAt(start - 1))) --start;
-                            var curWord = start != end && currentLine.slice(start, end);            
-                            var regex = new RegExp('^' + curWord, 'i');
-                            var result = {
-                                list: (!curWord ? list : list.filter(function (item) {
-                                    return item.displayText.match(regex);
-                                })).sort(function compare(a,b) {
-                                  if (a.sort < b.sort)
-                                    return -1;
-                                  if (a.sort > b.sort)
-                                    return 1;
-                                  return 0;
-                                }),
-                                from: CodeMirror.Pos(cursor.line, start),
-                                to: CodeMirror.Pos(cursor.line, end)
-                            };
-                            return result;
-/*
-                          return {
-                            from: editor.getDoc().getCursor(),
-                              to: editor.getDoc().getCursor(),
-                            list: handlebarsHelpers
-                          }
-*/
-                        }
-                      };
-                      editor.showHint(options);
-                } },
-                hintOptions: {hint: CodeMirror.hint.htmlhandlebars}
-            });
-/*
-            cm.on("inputRead", function(editor, change) {
-              if (change.text[0] == "{"){
-                var options = {
-                    hint: function() {
-                      return {
-                        from: editor.getDoc().getCursor(),
-                          to: editor.getDoc().getCursor(),
-                        list: handlebarsHints
-                      }
-                    }
-                  };
-                  editor.showHint(options);
-                }
-            });
-*/
             var resizeModule = function resizeDnnEditHtml() {
                 //$('#dnnEditScript fieldset').height($(window).height() - $('#dnnEditScript ul dnnActions').height() - 18 - 52);
                 //$('window.frameElement, body, html').css('overflow', 'hidden');
