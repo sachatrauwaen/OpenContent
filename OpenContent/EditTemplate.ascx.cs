@@ -178,7 +178,7 @@ namespace Satrabel.OpenContent
                         field["file2options"] = new JObject();
                         if (opt["folder"] != null)
                         {
-                            field["file2options"]["folder"] = opt["folder"];    
+                            field["file2options"]["folder"] = opt["folder"];
                         }
                         if (opt["filter"] != null)
                         {
@@ -282,15 +282,15 @@ namespace Satrabel.OpenContent
              */
         }
 
-        private void DisplayFile(FileUri template)
+        private void DisplayFile(FileUri file)
         {
             //string TemplateFolder = template.Directory;
             //TemplateFolder = OpenContentUtils.ReverseMapPath(TemplateFolder);
             //string scriptFile = TemplateFolder + "/" + scriptList.SelectedValue;
             //plSource.Text = scriptFile;
             //string srcFile = Server.MapPath(scriptFile);
-            plSource.Text = template.FilePath;
-            string srcFile = template.PhysicalFilePath;
+            plSource.Text = file.FilePath;
+            string srcFile = file.PhysicalFilePath;
 
             if (File.Exists(srcFile))
             {
@@ -302,7 +302,30 @@ namespace Satrabel.OpenContent
             }
             SetFileType(srcFile);
             cmdBuilder.Visible = scriptList.SelectedValue.EndsWith("schema.json") && scriptList.SelectedValue != "form-schaema.json";
+            var schemaFile = new FileUri(file.FolderPath, "schema.json");
+            string schema = "";
+            if (schemaFile.FileExists)
+            {
+                schema = File.ReadAllText(schemaFile.PhysicalFilePath);
+            }
+            DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "schema", schema, true);
         }
+
+        public JObject Schema
+        {
+            get
+            {
+                TemplateManifest template = ModuleContext.OpenContentSettings().Template;
+                var schemaFile = new FileUri(template.ManifestFolderUri, "schema.json");
+                string schema = "";
+                if (schemaFile.FileExists)
+                {
+                    schema = File.ReadAllText(schemaFile.PhysicalFilePath);
+                }
+                return JObject.Parse(schema);
+            }
+        }
+
         private void SetFileType(string filePath)
         {
             string mimeType;
@@ -383,7 +406,7 @@ namespace Satrabel.OpenContent
                         scriptList.Items.Add(new ListItem(title + "Options - " + item.Code, "options." + item.Code + ".json"));
                     }
                 }
-               
+
                 if (!OpenContentUtils.BuilderExist(settings.Template.ManifestFolderUri, template.Key.ShortKey))
                 {
                     scriptList.Items.Add(new ListItem("Settings Schema", template.Key.ShortKey + "-schema.json"));
