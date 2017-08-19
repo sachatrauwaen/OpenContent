@@ -61,50 +61,54 @@
 				{ 'text': '{{#if var}}\n\n{{/if}}', 'displayText': '#if', 'sort': '#if' }*/
 	];
 
-	var addHbsProperties = function (sch, opt, parent, prefix) {
+	var addHbsProperties = function (sch, opt, vartext, vardisplaytext) {
 		var hints = [];
-		if (sch && sch.properties) {
-			for (var k in sch.properties) {
-				p = sch.properties[k];
-				var vartext = (prefix ? prefix + '.' : '') + k;
-				var vardisplaytext = (parent ? parent + '.' : '') + k;
-				var o = opt && opt.fields ? opt.fields[k] : null;
-				if (p.type == 'object') {
-					if (o.type == 'address') {
-						var childHints = addHbsProperties(addressSchema, null, vardisplaytext, k);
+		if (sch) {
+			if (sch.type == 'object') {
+				var properties = sch.properties;
+				if (opt && opt.type == 'address') {
+					properties = addressSchema.properties;
+				}
+				if (properties) {
+					for (var k in properties) {
+						p = properties[k];
+
+						var vt = (vartext ? vartext + '.' : '') + k;
+						var vdt = (vardisplaytext ? vardisplaytext + '.' : '') + k;
+						var o = opt && opt.fields ? opt.fields[k] : null;
+
+						var childHints = addHbsProperties(p, o, vt ,vdt);
 						hints = hints.concat(childHints);
-					} else if (!p.properties) {
-						hints.push({ 'text': '{{' + vartext + '.var}}', 'displayText': vardisplaytext });
-					} else {
-						var childHints = addHbsProperties(p, o, vardisplaytext, k);
-						hints = hints.concat(childHints);
-					}
-					//handlebarsHints.push({'text':'{{#with '+k+'}} {{/with}}', 'displayText': k+ (parent ? ' ('+ parent+')' : ''), 'sort': (parent ? parent+'.' : '')+k});
-				} else if (p.type == 'array') {
-					if (p.items) {
-						var childHints = addHbsProperties(p.items, o ? o.items : null, k, '');
-						var snipet = '';
-						for (i = 0; i < childHints.length; i++) {
-							snipet += childHints[i].text + '\n';
-						}
-						snipet = '{{#each ' + vartext + '}}\n' + snipet + '{{/each}}';
-						hints.push({ 'text': snipet, 'displayText': vardisplaytext });
-						hints = hints.concat(childHints);
-					} else {
-						hints.push({ 'text': '{{#each ' + vartext + '}}\n\n{{/each}}', 'displayText': vardisplaytext });
+
 					}
 				} else {
-					if (o && o.type == 'image') {
-						hints.push({ 'text': '<img src="{{' + vartext + '}}" alt="" />', 'displayText': vardisplaytext });
-					} else if (o && o.type == 'file') {
-						hints.push({ 'text': '<a href="{{' + vartext + '}}" target="_blank" >Download</a>', 'displayText': vardisplaytext });
-					} else if (o && o.type == 'url') {
-						hints.push({ 'text': '<a href="{{' + vartext + '}}"  >More</a>', 'displayText': vardisplaytext });
-					} else if (o && (o.type == 'ckeditor' || o.type == 'wysihtml')) {
-						hints.push({ 'text': '{{{' + vartext + '}}}', 'displayText': vardisplaytext });
-					} else {
-						hints.push({ 'text': '{{' + vartext + '}}', 'displayText': vardisplaytext });
+					hints.push({ 'text': '{{' + vartext + '.var}}', 'displayText': vardisplaytext });
+				}
+				//handlebarsHints.push({'text':'{{#with '+k+'}} {{/with}}', 'displayText': k+ (parent ? ' ('+ parent+')' : ''), 'sort': (parent ? parent+'.' : '')+k});
+			} else if (sch.type == 'array') {
+				if (sch.items) {
+					var childHints = addHbsProperties(sch.items, opt ? opt.items : null, '', vardisplaytext);
+					var snipet = '';
+					for (i = 0; i < childHints.length; i++) {
+						snipet += childHints[i].text + '\n';
 					}
+					snipet = '{{#each ' + vartext + '}}\n' + snipet + '{{/each}}';
+					hints.push({ 'text': snipet, 'displayText': vardisplaytext });
+					hints = hints.concat(childHints);
+				} else {
+					hints.push({ 'text': '{{#each ' + vartext + '}}\n\n{{/each}}', 'displayText': vardisplaytext });
+				}
+			} else {
+				if (opt && opt.type == 'image') {
+					hints.push({ 'text': '<img src="{{' + vartext + '}}" alt="" />', 'displayText': vardisplaytext });
+				} else if (opt && opt.type == 'file') {
+					hints.push({ 'text': '<a href="{{' + vartext + '}}" target="_blank" >Download</a>', 'displayText': vardisplaytext });
+				} else if (opt && opt.type == 'url') {
+					hints.push({ 'text': '<a href="{{' + vartext + '}}"  >More</a>', 'displayText': vardisplaytext });
+				} else if (opt && (opt.type == 'ckeditor' || opt.type == 'wysihtml')) {
+					hints.push({ 'text': '{{{' + vartext + '}}}', 'displayText': vardisplaytext });
+				} else {
+					hints.push({ 'text': '{{' + vartext + '}}', 'displayText': vardisplaytext });
 				}
 			}
 
@@ -112,57 +116,59 @@
 		return hints;
 	};
 
-	var addRazorProperties = function (sch, opt, parent, prefix) {
+	var addRazorProperties = function (sch, opt, vartext, vardisplaytext, varfulltext) {
 		var hints = [];
-		if (sch && sch.properties) {
-			for (var k in sch.properties) {
-				p = sch.properties[k];
-				var varfulltext = (prefix ? prefix + '.' : 'Model.') + k;
-				var vartext = (prefix ? prefix + '.' : '') + k;
-				var vardisplaytext = (parent ? parent + '.' : '') + k;
-				var o = opt && opt.fields ? opt.fields[k] : null;
-				if (p.type == 'object') {
-					if (o.type == 'address') {
-						var childHints = addRazorProperties(addressSchema, null, vardisplaytext, varfulltext);
+		if (sch) {
+			if (sch.type == 'object') {
+				var properties = sch.properties;
+				if (opt && opt.type == 'address') {
+					properties = addressSchema.properties;
+				}
+				if (properties) {
+					for (var k in properties) {
+						p = properties[k];
+						var vft = (varfulltext ? varfulltext + '.' : 'Model.') + k;
+						var vt = k;
+						var vdt = (vardisplaytext ? vardisplaytext + '.' : '') + k;
+						var o = opt && opt.fields ? opt.fields[k] : null;
+
+						var childHints = addRazorProperties(p, o, vt,vdt, vft);
 						hints = hints.concat(childHints);
-					} else if (!p.properties) {
-						hints.push({ 'text': '@' + varfulltext + '.var', 'displayText': vardisplaytext });
-					} else {
-						var childHints = addRazorProperties(p, o, vardisplaytext, varfulltext);
-						hints = hints.concat(childHints);
-					}
-				} else if (p.type == 'array') {
-					if (p.type == 'array' && p.items) {
-						var childHints = addRazorProperties(p.items, o ? o.items : null, k, vartext + 'Item');
-						var snipet = '';
-						for (i = 0; i < childHints.length; i++) {
-							snipet += '' + childHints[i].text + '\n';
-						}
-						snipet = '@foreach(var ' + vartext + 'Item in ' + varfulltext + ') {\n' + snipet + '}';
-						hints.push({ 'text': snipet, 'displayText': vardisplaytext });
-						hints = hints.concat(childHints);
-					} else {
-						hints.push({ 'text': '@foreach(var ' + vartext + 'Item in ' + (prefix ? vartext : 'Model.' + vartext) + ') {\n}', 'displayText': vardisplaytext });
 					}
 				} else {
-					if (o && o.type == 'image') {
-						hints.push({ 'text': '<img src="@(' + varfulltext + ')" alt="" />', 'displayText': vardisplaytext });
-					} else if (o && o.type == 'file') {
-						hints.push({ 'text': '<a href="@(' + varfulltext + ')" target="_blank" >Download</a>', 'displayText': vardisplaytext });
-					} else if (o && o.type == 'url') {
-						hints.push({ 'text': '<a href="@(' + varfulltext + ')"  >More</a>', 'displayText': vardisplaytext });
-					} else if (o && (o.type == 'ckeditor' || o.type == 'wysihtml')) {
-						hints.push({ 'text': '@Html.Raw(' + varfulltext + ')', 'displayText': vardisplaytext });
-					} else {
-						hints.push({ 'text': '@' + varfulltext + '', 'displayText': vardisplaytext });
+					hints.push({ 'text': '@' + varfulltext + '.var', 'displayText': vardisplaytext });
+				}
+			} else if (sch.type == 'array') {
+				if (sch.items) {
+					var childHints = addRazorProperties(sch.items, opt ? opt.items : null, vartext + 'Item', vardisplaytext, vartext + 'Item');
+					var snipet = '';
+					for (i = 0; i < childHints.length; i++) {
+						snipet += '  ' + childHints[i].text + '\n';
 					}
+					snipet = '@foreach(var ' + vartext + 'Item in ' + varfulltext + ') {\n' + snipet + '}';
+					hints.push({ 'text': snipet, 'displayText': vardisplaytext });
+					hints = hints.concat(childHints);
+				} else {
+					hints.push({ 'text': '@foreach(var ' + vartext + 'Item in ' + (vartext ? vartext : 'Model.' + vartext) + ') {\n}', 'displayText': vardisplaytext });
+				}
+			} else {
+				if (opt && opt.type == 'image') {
+					hints.push({ 'text': '<img src="@(' + varfulltext + ')" alt="" />', 'displayText': vardisplaytext });
+				} else if (opt && opt.type == 'file') {
+					hints.push({ 'text': '<a href="@(' + varfulltext + ')" target="_blank" >Download</a>', 'displayText': vardisplaytext });
+				} else if (opt && opt.type == 'url') {
+					hints.push({ 'text': '<a href="@(' + varfulltext + ')"  >More</a>', 'displayText': vardisplaytext });
+				} else if (opt && (opt.type == 'ckeditor' || opt.type == 'wysihtml')) {
+					hints.push({ 'text': '@Html.Raw(' + varfulltext + ')', 'displayText': vardisplaytext });
+				} else {
+					hints.push({ 'text': '@' + varfulltext + '', 'displayText': vardisplaytext });
 				}
 			}
 		}
+
 		return hints;
 	};
 	if (mimeType == 'htmlhandlebars') {
-
 		var hints = addHbsProperties(schema, options, '', '');
 		if (model.listTemplate) {
 			var snipet = '';
@@ -176,7 +182,7 @@
 		var settingsHints = addHbsProperties(model.settingsSchema, model.settingsOptions, 'Settings', 'Settings');
 		handlebarsHints = handlebarsHints.concat(settingsHints);
 		for (var i = 0; i < contextVars.length; i++) {
-			handlebarsHints.push({ 'text': '{{Context.' + contextVars[i]+'}}', 'displayText': 'Context.' + contextVars[i] });
+			handlebarsHints.push({ 'text': '{{Context.' + contextVars[i] + '}}', 'displayText': 'Context.' + contextVars[i] });
 		}
 		if (model.localization) {
 			for (var i in model.localization) {
@@ -190,18 +196,20 @@
 			}
 		}
 	} else if (mimeType == 'text/html') { //razor
-
-		var hints = addRazorProperties(schema, options, '', '');
+		var hints = [];
 		if (model.listTemplate) {
+			hints = addRazorProperties(schema, options, 'item', '','item');
 			var snipet = '';
 			for (i = 0; i < hints.length; i++) {
-				snipet += hints[i].text + '\n';
+				snipet += '  '+hints[i].text + '\n';
 			}
 			snipet = '@foreach(var item in Model.Items) {\n' + snipet + '}';
 			handlebarsHints.push({ 'text': snipet, 'displayText': 'Items' });
+		} else {
+			hints = addRazorProperties(schema, options, '', '','');
 		}
 		handlebarsHints = handlebarsHints.concat(hints);
-		var settingsHints = addRazorProperties(model.settingsSchema, model.settingsOptions, 'Settings', 'Model.Settings');
+		var settingsHints = addRazorProperties(model.settingsSchema, model.settingsOptions, 'Settings', 'Settings', 'Model.Settings');
 		handlebarsHints = handlebarsHints.concat(settingsHints);
 		for (var i = 0; i < contextVars.length; i++) {
 			handlebarsHints.push({ 'text': '@Model_or_item.Context.' + contextVars[i], 'displayText': 'Context.' + contextVars[i] });
@@ -213,7 +221,8 @@
 		}
 		if (model.additionalData) {
 			for (var i in model.additionalData) {
-				handlebarsHints.push({ 'text': '@Model.Localization.' + i + '}}', 'displayText': 'Localization.' + i });
+				var aHints = addRazorProperties(model.additionalData[i].schema, model.additionalData[i].options, i, 'AdditionalData.' + i, 'Model.AdditionalData.' + i);
+				handlebarsHints = handlebarsHints.concat(aHints);
 			}
 		}
 	}
