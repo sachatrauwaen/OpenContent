@@ -72,10 +72,10 @@
     jQuery(function ($) {
         var mimeType = dnn.getVar('mimeType') || "text/html";
 
-        var schema = <%= Schema.ToString() %>;
-        var options = <%= Options.ToString() %>;
+        var model = <%= Model.ToString() %>;
+        
 
-        ocInitCodeMirror(mimeType, schema, options);
+        ocInitCodeMirror(mimeType, model);
 
         var setupModule = function () {
 

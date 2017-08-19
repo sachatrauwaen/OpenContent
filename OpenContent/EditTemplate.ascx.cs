@@ -311,35 +311,33 @@ namespace Satrabel.OpenContent
             DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "schema", schema, true);
         }
 
-        public JObject Schema
+        public JObject Model
         {
             get
             {
+                var model = new JObject();
                 TemplateManifest template = ModuleContext.OpenContentSettings().Template;
                 var schemaFile = new FileUri(template.ManifestFolderUri, "schema.json");
-                string schema = "";
-                if (schemaFile.FileExists)
+                model["schema"] = JsonUtils.LoadJsonFromFile(template.ManifestFolderUri.UrlFolder + "schema.json");
+                model["options"] = JsonUtils.LoadJsonFromFile(template.ManifestFolderUri.UrlFolder + "options.json");
+                string key = template.MainTemplateUri().FileNameWithoutExtension;
+                model["settingsSchema"] = JsonUtils.LoadJsonFromFile(template.ManifestFolderUri.UrlFolder + key + "-schema.json");
+                model["settingsOptions"] = JsonUtils.LoadJsonFromFile(template.ManifestFolderUri.UrlFolder + key + "-options.json");
+                model["listTemplate"] = template.IsListTemplate;
+                model["localization"] = JsonUtils.LoadJsonFromFile(template.ManifestFolderUri.UrlFolder + DnnLanguageUtils.GetCurrentCultureCode() + ".json");
+                var additionalData = new JObject();
+                model["additionalData"] = additionalData;
+                if (template.Manifest.AdditionalDataDefined())
                 {
-                    schema = File.ReadAllText(schemaFile.PhysicalFilePath);
-                    return JObject.Parse(schema);
+                    foreach (var addData in template.Manifest.AdditionalDataDefinition)
+                    {
+                        var addDataDef = new JObject();
+                        additionalData[addData.Key] = addDataDef;
+                        addDataDef["schema"] = JsonUtils.LoadJsonFromFile(template.ManifestFolderUri.UrlFolder + addData.Key + "-schema.json");
+                        addDataDef["options"] = JsonUtils.LoadJsonFromFile(template.ManifestFolderUri.UrlFolder + addData.Key + "-options.json");
+                    }
                 }
-                return new JObject();
-            }
-        }
-
-        public JObject Options
-        {
-            get
-            {
-                TemplateManifest template = ModuleContext.OpenContentSettings().Template;
-                var optionsFile = new FileUri(template.ManifestFolderUri, "options.json");
-                string options = "";
-                if (optionsFile.FileExists)
-                {
-                    options = File.ReadAllText(optionsFile.PhysicalFilePath);
-                    return JObject.Parse(options);
-                }
-                return new JObject();
+                return model;
             }
         }
 
@@ -373,7 +371,7 @@ namespace Satrabel.OpenContent
                     break;
                 case ".hbs":
                     mimeType = "htmlhandlebars";
-                    
+
                     break;
                 default:
                     mimeType = "text/html";
