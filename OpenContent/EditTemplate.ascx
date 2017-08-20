@@ -62,7 +62,10 @@
             Shift-Space : helpers | 
         </li>
         <li>
-            <a href="https://opencontent.readme.io/docs/tokens" target="_blank">Help</a>
+            Shift-Ctrl-Space : snipets | 
+        </li>
+        <li>
+            <a href="https://opencontent.readme.io/docs/tokens" target="_blank">Handlebars Help</a>
         </li>
         </asp:PlaceHolder>
     </ul>

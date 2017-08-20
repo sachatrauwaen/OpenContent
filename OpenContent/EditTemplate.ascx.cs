@@ -378,7 +378,7 @@ namespace Satrabel.OpenContent
                     break;
             }
             DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "mimeType", mimeType, true);
-            phHandlebars.Visible = mimeType == "htmlhandlebars";
+            phHandlebars.Visible = mimeType == "htmlhandlebars" || mimeType == "text/html";
         }
         private void LoadFiles(TemplateManifest template)
         {
