@@ -113,7 +113,39 @@
 				{ 'text': '{{#if var}}\n\n{{/if}}', 'displayText': '#if', 'sort': '#if' }*/
 	];
 
-	var addHbsProperties = function (sch, opt, vartext, vardisplaytext) {
+	var generateHbs = function (vartext, vardisplaytext, varonly, varfulltext, type, snipet) {
+		if (type == "each") {
+			return '{{#each ' + vartext + '}}\n' + (snipet ? snipet : '') + '{{/each}}';
+		} else if (type == "image") {
+			return '<img src="{{' + vartext + '}}" alt="" />';
+		} else if (type == "file") {
+			return '<a href="{{' + vartext + '}}" target="_blank" >Download</a>';
+		} else if (type == "url") {
+			return '<a href="{{' + vartext + '}}"  >More</a>';
+		} else if (type == 'ckeditor' || type == 'wysihtml') {
+			return '{{{' + vartext + '}}}';
+		} else {
+			return '{{' + vartext + '}}';
+		}
+	};
+
+	var generateRazor = function (vartext, vardisplaytext, varonly, varfulltext, type, snipet) {
+		if (type == "each") {
+			return '@foreach(var ' + varonly + 'Item in ' + varfulltext + ') {\n' + (snipet ? snipet : '') + '}';
+		} else if (type == "image") {
+			return '<img src="@(' + varfulltext + ')" alt="" />';
+		} else if (type == "file") {
+			return '<a href="@(' + varfulltext + ')" target="_blank" >Download</a>';
+		} else if (type == "url") {
+			return '<a href="@(' + varfulltext + ')"  >More</a>';
+		} else if (type == 'ckeditor' || type == 'wysihtml') {
+			return '@Html.Raw(' + varfulltext + ')';
+		} else {
+			return '@' + varfulltext;
+		}
+	};
+
+	var addHbsProperties = function (sch, opt, vartext, vardisplaytext, varonly, varfulltext, generate) {
 		var hints = [];
 		if (sch) {
 			if (sch.type == 'object') {
@@ -127,17 +159,19 @@
 					for (var k in properties) {
 						p = properties[k];
 
+						var vft = (varfulltext ? varfulltext + '.' : 'Model.') + k;
+						var vo = k;
 						var vt = (vartext ? vartext + '.' : '') + k;
 						var vdt = (vardisplaytext ? vardisplaytext + '.' : '') + k;
+
 						var o = fields ? fields[k] : null;
 
-						var childHints = addHbsProperties(p, o, vt, vdt);
+						var childHints = addHbsProperties(p, o, vt, vdt, vo, vft, generate);
 						hints = hints.concat(childHints);
 					}
 				} else {
-					hints.push({ 'text': '{{' + vartext + '.var}}', 'displayText': vardisplaytext });
+					hints.push({ 'text': generate(vartext, vardisplaytext, varonly, varfulltext), 'displayText': vardisplaytext });
 				}
-				//handlebarsHints.push({'text':'{{#with '+k+'}} {{/with}}', 'displayText': k+ (parent ? ' ('+ parent+')' : ''), 'sort': (parent ? parent+'.' : '')+k});
 			} else if (sch.type == 'array') {
 				var s = sch;
 				var o = opt;
@@ -154,40 +188,33 @@
 					}
 				}
 				if (s.items) {
-					var childHints = addHbsProperties(s.items, o ? o.items : null, '', vardisplaytext);
+					var childHints = addHbsProperties(s.items, o ? o.items : null, '', vardisplaytext, varonly + 'Item', varonly + 'Item', generate);
 					var snipet = '';
 					for (i = 0; i < childHints.length; i++) {
 						snipet += childHints[i].text + '\n';
 					}
-					snipet = '{{#each ' + vartext + '}}\n' + snipet + '{{/each}}';
+					snipet = generate(vartext, vardisplaytext, varonly, varfulltext, 'each', snipet);
 					hints.push({ 'text': snipet, 'displayText': vardisplaytext });
 					hints = hints.concat(childHints);
 				} else {
-					hints.push({ 'text': '{{#each ' + vartext + '}}\n\n{{/each}}', 'displayText': vardisplaytext });
+					hints.push({ 'text': generate(vartext, vardisplaytext, varonly, varfulltext, 'each'), 'displayText': vardisplaytext });
 				}
 			} else if (opt && opt.type == 'select2' && opt.dataService && opt.dataService.data && opt.dataService.data.dataKey) {
 				var addData = model.additionalData[opt.dataService.data.dataKey];
 				if (addData && addData.schema.items) {
-					var childHints = addHbsProperties(addData.schema.items, (addData.options ? addData.options.items : null), vartext, vardisplaytext);
+					var childHints = addHbsProperties(addData.schema.items, (addData.options ? addData.options.items : null), vartext, vardisplaytext, varonly, varfulltext, generate);
 					hints = hints.concat(childHints);
 				}
 			} else {
-				if (opt && opt.type == 'image') {
-					hints.push({ 'text': '<img src="{{' + vartext + '}}" alt="" />', 'displayText': vardisplaytext });
-				} else if (opt && opt.type == 'file') {
-					hints.push({ 'text': '<a href="{{' + vartext + '}}" target="_blank" >Download</a>', 'displayText': vardisplaytext });
-				} else if (opt && opt.type == 'url') {
-					hints.push({ 'text': '<a href="{{' + vartext + '}}"  >More</a>', 'displayText': vardisplaytext });
-				} else if (opt && (opt.type == 'ckeditor' || opt.type == 'wysihtml')) {
-					hints.push({ 'text': '{{{' + vartext + '}}}', 'displayText': vardisplaytext });
-				} else {
-					hints.push({ 'text': '{{' + vartext + '}}', 'displayText': vardisplaytext });
-				}
+				if (opt)
+					hints.push({ 'text': generate(vartext, vardisplaytext, varonly, varfulltext, opt.type), 'displayText': vardisplaytext });
+				else
+					hints.push({ 'text': generate(vartext, vardisplaytext, varonly, varfulltext), 'displayText': vardisplaytext });
 			}
 		}
 		return hints;
 	};
-
+	/*
 	var addRazorProperties = function (sch, opt, vartext, vardisplaytext, varfulltext) {
 		var hints = [];
 		if (sch) {
@@ -247,34 +274,47 @@
 		}
 		return hints;
 	};
+	*/
+	var generate = null;
 	if (mimeType == 'htmlhandlebars') {
-		var hints = addHbsProperties(schema, options, '', '');
+		generate = generateHbs;
+	} else if (mimeType == 'text/html') { //razor
+		generate = generateRazor;
+	}
+	generate = generateRazor;
+	if (generate) {
+		var hints = [];
 		if (model.listTemplate) {
+			hints = addHbsProperties(schema, options, '', '', 'Item', 'Item', generate);
 			var snipet = '';
 			for (i = 0; i < hints.length; i++) {
 				snipet += hints[i].text + '\n';
 			}
-			snipet = '{{#each Items}}\n' + snipet + '{{/each}}';
+			snipet = generate('Items', 'Items', '', 'Model.Items', 'each', snipet);
 			handlebarsHints.push({ 'text': snipet, 'displayText': 'Items' });
+		} else {
+			hints = addHbsProperties(schema, options, '', '', '', '', generate);
 		}
 		handlebarsHints = handlebarsHints.concat(hints);
-		var settingsHints = addHbsProperties(model.settingsSchema, model.settingsOptions, 'Settings', 'Settings');
+		var settingsHints = addHbsProperties(model.settingsSchema, model.settingsOptions, 'Settings', 'Settings', 'Settings', 'Model.Settings', generate);
 		handlebarsHints = handlebarsHints.concat(settingsHints);
 		var cv = model.listTemplate ? contextListVars : contextVars;
 		for (var i = 0; i < cv.length; i++) {
-			handlebarsHints.push({ 'text': '{{Context.' + cv[i] + '}}', 'displayText': 'Context.' + cv[i] });
+			handlebarsHints.push({ 'text': generate('Context.' + cv[i], 'Context.' + cv[i], cv[i], 'Model_or_item.Context.' + cv[i]), 'displayText': 'Context.' + cv[i] });
 		}
 		if (model.localization) {
 			for (var i in model.localization) {
-				handlebarsHints.push({ 'text': '{{Localization.' + i + '}}', 'displayText': 'Localization.' + i });
+				handlebarsHints.push({ 'text': generate('Localization.' + i, 'Localization.' + i, i, 'Model.Localization.' + i), 'displayText': 'Localization.' + i });
 			}
 		}
 		if (model.additionalData) {
 			for (var i in model.additionalData) {
-				var aHints = addHbsProperties(model.additionalData[i].schema, model.additionalData[i].options, 'AdditionalData.' + i, 'AdditionalData.' + i);
+				var aHints = addHbsProperties(model.additionalData[i].schema, model.additionalData[i].options, 'AdditionalData.' + i, 'AdditionalData.' + i, i, 'Model.AdditionalData.' + i, generate);
 				handlebarsHints = handlebarsHints.concat(aHints);
 			}
 		}
+	}
+	/*
 	} else if (mimeType == 'text/html') { //razor
 		var hints = [];
 		if (model.listTemplate) {
@@ -306,7 +346,7 @@
 			}
 		}
 	}
-
+	*/
 	//console.log(handlebarsHints);
 	CodeMirror.registerHelper("hint", "htmlhandlebars", function (editor) {
 		var list = handlebarsHints;
@@ -338,22 +378,22 @@
 function ocSetupCodeMirror(mimeType, elem) {
 
 	var handlebarsHelpers = [
-		{ 'text': '{{#each var}}\n{{/each}}', 'displayText': 'each'},
-		{ 'text': '{{#if var}}\n{{/if}}', 'displayText': 'if'},
+		{ 'text': '{{#each var}}\n{{/each}}', 'displayText': 'each' },
+		{ 'text': '{{#if var}}\n{{/if}}', 'displayText': 'if' },
 		{ 'text': '{{else}}', 'displayText': 'else' },
-		{ 'text': '{{#ifand var1 var2 var3}}\n{{/ifand}}', 'displayText': 'ifand'},
+		{ 'text': '{{#ifand var1 var2 var3}}\n{{/ifand}}', 'displayText': 'ifand' },
 		{ 'text': '{{#ifor var1 var2 var3}}\n{{/ifor}}', 'displayText': 'ifor' },
 		{ 'text': '{{multiply var 2}}', 'displayText': 'multiply' },
-		{ 'text': '{{divide var 2}}', 'displayText': 'divide'},
+		{ 'text': '{{divide var 2}}', 'displayText': 'divide' },
 		{ 'text': '{{add var 2}}', 'displayText': 'add' },
 		{ 'text': '{{substract var 2}}', 'displayText': 'substract' },
-		{ 'text': '{{registerscript "javascript.js"}}', 'displayText': 'registerscript'},
-		{ 'text': '{{registerstylesheet "stylesheet.css"}}', 'displayText': 'registerstylesheet'},
-		{ 'text': '{{formatNumber var "0.00"}}', 'displayText': 'formatNumber'},
-		{ 'text': '{{formatDateTime var "dd/MMM/yy" "nl-NL" }}', 'displayText': 'formatDateTime'},
-		{ 'text': '{{convertHtmlToText var }}', 'displayText': 'convertHtmlToText'},
-		{ 'text': '{{convertToJson var }}', 'displayText': 'convertToJson'},
-		{ 'text': '{{truncateWords var 50 "..." }}', 'displayText': 'formatDateTime'},
+		{ 'text': '{{registerscript "javascript.js"}}', 'displayText': 'registerscript' },
+		{ 'text': '{{registerstylesheet "stylesheet.css"}}', 'displayText': 'registerstylesheet' },
+		{ 'text': '{{formatNumber var "0.00"}}', 'displayText': 'formatNumber' },
+		{ 'text': '{{formatDateTime var "dd/MMM/yy" "nl-NL" }}', 'displayText': 'formatDateTime' },
+		{ 'text': '{{convertHtmlToText var }}', 'displayText': 'convertHtmlToText' },
+		{ 'text': '{{convertToJson var }}', 'displayText': 'convertToJson' },
+		{ 'text': '{{truncateWords var 50 "..." }}', 'displayText': 'formatDateTime' },
 		{ 'text': '{{#equal var "value"}}\n{{/equal}}', 'displayText': 'equal' },
 		{ 'text': '{{#unless var}}\n{{/unless}}', 'displayText': 'unless' },
 		{ 'text': '{{#with var}}\n{{/with}}', 'displayText': 'with' }
@@ -377,7 +417,7 @@ function ocSetupCodeMirror(mimeType, elem) {
 	];
 
 	var getHintsList = function (editor, list) {
-		
+
 		var cursor = editor.getCursor();
 		var currentLine = editor.getLine(cursor.line);
 		var start = cursor.ch;
