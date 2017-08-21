@@ -24,13 +24,11 @@
 
 <div class="dnnForm dnnRazorHostEditScript dnnClear" id="dnnEditScript">
     <fieldset class="nomargin">
-        <div class="dnnFormItem">
-            <dnn:Label id="scriptsLabel" runat="Server" controlname="scriptList" />
+        <div class="dnnFormItem" style="padding:5px;background-color:gray;width:auto;border-radius: 5px 5px 0 0;">
             <asp:DropDownList ID="scriptList" runat="server" AutoPostBack="true" CssClass="nomargin" />
-        </div>
-        <div class="dnnFormItem">
-            <asp:Label ID="Label1" ControlName="txtSource" runat="server" CssClass="dnnLabel" Text="" />
-            <asp:Label ID="plSource" ControlName="txtSource" runat="server" />
+            <div style="float:right;padding-right:10px;padding-top:8px;">
+            <asp:Label ID="plSource" ControlName="txtSource" runat="server" ForeColor="White" />
+                </div>
         </div>
         <div>
             <asp:TextBox ID="txtSource" runat="server" TextMode="MultiLine" Rows="30" Columns="140" />
@@ -50,6 +48,9 @@
         </li>
         <li>
             <asp:LinkButton ID="cmdBuilder" resourcekey="cmdBuilder" runat="server" CssClass="dnnSecondaryAction" />
+        </li>
+        <li>
+
         </li>
         <asp:PlaceHolder ID="phHandlebars" runat="server">
             <li>Ctrl-Space : variables | 
@@ -72,12 +73,8 @@
 
     jQuery(function ($) {
         var mimeType = dnn.getVar('mimeType') || "text/html";
-
         var model = <%= Model.ToString() %>;
-        
-
         ocInitCodeMirror(mimeType, model);
-
         var setupModule = function () {
 
             $('#<%= cmdCustom.ClientID %>').dnnConfirm({
@@ -92,14 +89,10 @@
             var resizeModule = function resizeDnnEditHtml() {
                 //$('#dnnEditScript fieldset').height($(window).height() - $('#dnnEditScript ul dnnActions').height() - 18 - 52);
                 //$('window.frameElement, body, html').css('overflow', 'hidden');
-
-
-                var containerHeight = $(window).height() - 52 - 52 - 0;
-
+                var containerHeight = $(window).height() - 52 - 32 - 0;
                 //$('.editorContainer').height(containerHeight - $('.editorContainer').offset().top - 110);
                 //$('.editorContainer').height(containerHeight - 250);
                 $('#dnnEditScript .CodeMirror').height(containerHeight);
-
                 cm.refresh();
             };
             var windowTop = parent;
@@ -127,13 +120,13 @@
                     //position: 'center'
                     resizable: false,
                 });
-                jQuery('html').css('overflow','hidden');
+                jQuery('html').css('overflow', 'hidden');
+                popup.css('padding-top', '0');
+                //windowTop.jQuery(".ui-dialog-title").hide();
             }
 
             if (window.frameElement && window.frameElement.id == "iPopUp") {
-
                 resizeModule();
-
                 $(window).resize(function () {
                     var timeout;
                     if (timeout) clearTimeout(timeout);
@@ -143,17 +136,14 @@
                     }, 50);
                 });
             }
-
         };
 
         setupModule();
 
         Sys.WebForms.PageRequestManager.getInstance().add_endRequest(function () {
-
             // note that this will fire when _any_ UpdatePanel is triggered,
             // which may or may not cause an issue
             setupModule();
-
         });
     });
 

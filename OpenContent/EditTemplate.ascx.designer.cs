@@ -13,15 +13,6 @@ namespace Satrabel.OpenContent {
     public partial class EditTemplate {
         
         /// <summary>
-        /// Contrôle scriptsLabel.
-        /// </summary>
-        /// <remarks>
-        /// Champ généré automatiquement.
-        /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
-        /// </remarks>
-        protected global::System.Web.UI.UserControl scriptsLabel;
-        
-        /// <summary>
         /// Contrôle scriptList.
         /// </summary>
         /// <remarks>
@@ -29,15 +20,6 @@ namespace Satrabel.OpenContent {
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList scriptList;
-        
-        /// <summary>
-        /// Contrôle Label1.
-        /// </summary>
-        /// <remarks>
-        /// Champ généré automatiquement.
-        /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label Label1;
         
         /// <summary>
         /// Contrôle plSource.
