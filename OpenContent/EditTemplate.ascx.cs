@@ -19,6 +19,7 @@ using Satrabel.OpenContent.Components;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.Json;
 using Newtonsoft.Json.Linq;
+using DotNetNuke.Framework.JavaScriptLibraries;
 
 #endregion
 
@@ -267,6 +268,7 @@ namespace Satrabel.OpenContent
                 TemplateManifest template = ModuleContext.OpenContentSettings().Template;
                 InitEditor(template);
             }
+            JavaScript.RequestRegistration(CommonJs.DnnPlugins);
         }
 
         private void InitEditor(TemplateManifest template)
@@ -289,6 +291,9 @@ namespace Satrabel.OpenContent
             //string scriptFile = TemplateFolder + "/" + scriptList.SelectedValue;
             //plSource.Text = scriptFile;
             //string srcFile = Server.MapPath(scriptFile);
+
+            lError.Visible = false;
+            lError.Text = "";
             plSource.Text = file.FilePath;
             string srcFile = file.PhysicalFilePath;
 
@@ -497,6 +502,7 @@ namespace Satrabel.OpenContent
                 {
                     lError.Visible = true;
                     lError.Text = ex.Message;
+                    
                     return false;
                 }
             }

@@ -117,7 +117,11 @@
 		if (type == "each") {
 			return '{{#each ' + vartext + '}}\n' + (snipet ? snipet : '') + '{{/each}}';
 		} else if (type == "image") {
-			return '<img src="{{' + vartext + '}}" alt="" />';
+			return '<img src="{{' + vartext + '}}" alt="" class="img-responsive" />';
+		} else if (type == "imagecrop2") {
+			return '<img src="{{' + vartext + '.cropurl}}" alt="" class="img-responsive" />';
+		} else if (type == "imagecrop") {
+			return '<img src="{{' + vartext + '.url}}?crop={{' + vartext + '.x}},{{' + vartext + '.y}},{{' + vartext + '.width}},{{' + vartext + '.height}}" alt="" class="img-responsive" />';
 		} else if (type == "file") {
 			return '<a href="{{' + vartext + '}}" target="_blank" >Download</a>';
 		} else if (type == "url") {
@@ -133,7 +137,11 @@
 		if (type == "each") {
 			return '@foreach(var ' + varonly + 'Item in ' + varfulltext + ') {\n' + (snipet ? snipet : '') + '}';
 		} else if (type == "image") {
-			return '<img src="@(' + varfulltext + ')" alt="" />';
+			return '<img src="@(' + varfulltext + ')" alt="" class="img-responsive"  />';
+		} else if (type == "imagecrop2") {
+			return '<img src="@(' + varfulltext + '.cropurl)" alt="" class="img-responsive" />';
+		} else if (type == "imagecrop") {
+			return '<img src="@(' + varfulltext + '.url)?crop=@(' + varfulltext + '.x),@(' + varfulltext + '.y),@(' + varfulltext + '.width),@(' + varfulltext + '.height)" alt="" class="img-responsive" />';
 		} else if (type == "file") {
 			return '<a href="@(' + varfulltext + ')" target="_blank" >Download</a>';
 		} else if (type == "url") {
@@ -281,7 +289,7 @@
 	} else if (mimeType == 'text/html') { //razor
 		generate = generateRazor;
 	}
-	generate = generateRazor;
+	//generate = generateRazor;
 	if (generate) {
 		var hints = [];
 		if (model.listTemplate) {
@@ -380,6 +388,7 @@ function ocSetupCodeMirror(mimeType, elem) {
 	var handlebarsHelpers = [
 		{ 'text': '{{#each var}}\n{{/each}}', 'displayText': 'each' },
 		{ 'text': '{{#if var}}\n{{/if}}', 'displayText': 'if' },
+		{ 'text': '{{#if var}}\n{{else}}\n{{/if}}', 'displayText': 'ifelse' },
 		{ 'text': '{{else}}', 'displayText': 'else' },
 		{ 'text': '{{#ifand var1 var2 var3}}\n{{/ifand}}', 'displayText': 'ifand' },
 		{ 'text': '{{#ifor var1 var2 var3}}\n{{/ifor}}', 'displayText': 'ifor' },
@@ -396,7 +405,16 @@ function ocSetupCodeMirror(mimeType, elem) {
 		{ 'text': '{{truncateWords var 50 "..." }}', 'displayText': 'formatDateTime' },
 		{ 'text': '{{#equal var "value"}}\n{{/equal}}', 'displayText': 'equal' },
 		{ 'text': '{{#unless var}}\n{{/unless}}', 'displayText': 'unless' },
-		{ 'text': '{{#with var}}\n{{/with}}', 'displayText': 'with' }
+		{ 'text': '{{#with var}}\n{{/with}}', 'displayText': 'with' },
+		{ 'text': '{{!--  --}}', 'displayText': 'comment' },
+	];
+
+	var razorHelpers = [
+		{ 'text': '@foreach(var item in collection){\n\n}', 'displayText': 'foreach' },
+		{ 'text': '@if(var){\n}', 'displayText': 'if' },
+		{ 'text': '@if(var){\n} else {\n}', 'displayText': 'ifelse' },
+		{ 'text': '@ObjectInfo.Print(var)', 'displayText': 'objectinfo.print' },
+		{ 'text': '@*  *@', 'displayText': 'comment' },
 	];
 
 	var htmlHints = [
@@ -414,6 +432,12 @@ function ocSetupCodeMirror(mimeType, elem) {
 		{ 'text': '<a href="..." class="btn btn-default">Default</a>', 'displayText': 'button-default' },
 		{ 'text': '<a href="" class="btn btn-primary">Primary</a>', 'displayText': 'button-primary' },
 		{ 'text': '<div class="table-responsive">\n\t<table class="table">\n\t\t<tr>\n\t\t\t<td>\n\t\t\t</td>\n\t\t</tr>\n\t</table>\n</div>', 'displayText': 'table-responsive' },
+		{ 'text': '<div class="panel panel-default">\n\t<div class="panel-heading">\n\t\t<h3 class="panel-title">Panel title</h3>\n\t</div>\n\t<div class="panel-body">\n\tPanel content\n\t</div>\n</div>', 'displayText': 'panel' },
+		{ 'text': '<div class="alert alert-success" role="alert">...</div>', 'displayText': 'alert-success' },
+		{ 'text': '<div class="alert alert-info" role="alert">...</div>', 'displayText': 'alert-info' },
+		{ 'text': '<div class="alert alert-warning" role="alert">...</div>', 'displayText': 'alert-warning' },
+		{ 'text': '<div class="alert alert-success" role="alert">...</div>', 'displayText': 'alert-danger' },
+
 	];
 
 	var getHintsList = function (editor, list) {
@@ -457,7 +481,15 @@ function ocSetupCodeMirror(mimeType, elem) {
 						}
 					};
 					editor.showHint(options);
+				} else if (editor.doc.modeOption == 'text/html') { // razor
+					var options = {
+						hint: function myfunction() {
+							return getHintsList(editor, razorHelpers);
+						}
+					};
+					editor.showHint(options);
 				}
+
 			},
 			"Shift-Ctrl-Space": function (editor) {
 				if (editor.doc.modeOption == 'htmlhandlebars' || editor.doc.modeOption == 'text/html') {

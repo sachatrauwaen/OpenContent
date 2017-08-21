@@ -32,15 +32,12 @@
             <asp:Label ID="Label1" ControlName="txtSource" runat="server" CssClass="dnnLabel" Text="" />
             <asp:Label ID="plSource" ControlName="txtSource" runat="server" />
         </div>
-        <div class="dnnFormItem">
-            <asp:Label ID="Label2" runat="server" />
-        </div>
         <div>
             <asp:TextBox ID="txtSource" runat="server" TextMode="MultiLine" Rows="30" Columns="140" />
         </div>
     </fieldset>
-    <asp:Label ID="lError" runat="server" Visible="false" CssClass="dnnFormMessage dnnFormValidationSummary"></asp:Label>
-    <ul class="dnnActions dnnClear">
+
+    <ul class="dnnActions dnnClear" style="padding-top: 8px;">
         <li>
             <asp:LinkButton ID="cmdSave" resourcekey="cmdSave" runat="server" CssClass="dnnPrimaryAction" /></li>
         <li>
@@ -55,20 +52,21 @@
             <asp:LinkButton ID="cmdBuilder" resourcekey="cmdBuilder" runat="server" CssClass="dnnSecondaryAction" />
         </li>
         <asp:PlaceHolder ID="phHandlebars" runat="server">
-        <li>
-            Ctrl-Space : variables | 
-        </li>
-        <li>
-            Shift-Space : helpers | 
-        </li>
-        <li>
-            Shift-Ctrl-Space : snipets | 
-        </li>
-        <li>
-            <a href="https://opencontent.readme.io/docs/tokens" target="_blank">Handlebars Help</a>
-        </li>
+            <li>Ctrl-Space : variables | 
+            </li>
+            <li>Shift-Space : helpers | 
+            </li>
+            <li>Shift-Ctrl-Space : snippets | 
+            </li>
+            <li>
+                <a href="https://opencontent.readme.io/docs/tokens" target="_blank">Handlebars Help</a>
+            </li>
         </asp:PlaceHolder>
+
     </ul>
+    <div style="position: absolute; bottom: 50px; right: 10px;">
+        <asp:Label ID="lError" runat="server" Visible="false" CssClass="dnnFormMessage dnnFormValidationSummary"></asp:Label>
+    </div>
 </div>
 <script type="text/javascript">
 
@@ -83,10 +81,10 @@
         var setupModule = function () {
 
             $('#<%= cmdCustom.ClientID %>').dnnConfirm({
-	            text: '<%= Localization.GetSafeJSString("OverwriteTemplate.Text") %>',
-	            yesText: '<%= Localization.GetSafeJSString("Yes.Text", Localization.SharedResourceFile) %>',
-	            noText: '<%= Localization.GetSafeJSString("No.Text", Localization.SharedResourceFile) %>',
-	            title: '<%= Localization.GetSafeJSString("Confirm.Text", Localization.SharedResourceFile) %>'
+                text: '<%= Localization.GetSafeJSString("OverwriteTemplate.Text") %>',
+                yesText: '<%= Localization.GetSafeJSString("Yes.Text", Localization.SharedResourceFile) %>',
+                noText: '<%= Localization.GetSafeJSString("No.Text", Localization.SharedResourceFile) %>',
+                title: '<%= Localization.GetSafeJSString("Confirm.Text", Localization.SharedResourceFile) %>'
             });
 
             var cm = ocSetupCodeMirror(mimeType, $("textarea[id$='txtSource']")[0]);
@@ -96,7 +94,7 @@
                 //$('window.frameElement, body, html').css('overflow', 'hidden');
 
 
-                var containerHeight = $(window).height() - 52 - 52 - 40 ;
+                var containerHeight = $(window).height() - 52 - 52 - 0;
 
                 //$('.editorContainer').height(containerHeight - $('.editorContainer').offset().top - 110);
                 //$('.editorContainer').height(containerHeight - 250);
@@ -109,12 +107,12 @@
             if (popup.length) {
 
                 var $window = $(windowTop),
-                                newHeight,
-                                newWidth;
+                    newHeight,
+                    newWidth;
 
                 var $window = $(windowTop),
-                            newHeight,
-                            newWidth;
+                    newHeight,
+                    newWidth;
 
                 newHeight = $window.height() - 36;
                 newWidth = Math.min($window.width() - 40, 1200);
@@ -129,6 +127,7 @@
                     //position: 'center'
                     resizable: false,
                 });
+                jQuery('html').css('overflow','hidden');
             }
 
             if (window.frameElement && window.frameElement.id == "iPopUp") {

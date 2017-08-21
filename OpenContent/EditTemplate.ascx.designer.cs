@@ -49,15 +49,6 @@ namespace Satrabel.OpenContent {
         protected global::System.Web.UI.WebControls.Label plSource;
         
         /// <summary>
-        /// Contrôle Label2.
-        /// </summary>
-        /// <remarks>
-        /// Champ généré automatiquement.
-        /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label Label2;
-        
-        /// <summary>
         /// Contrôle txtSource.
         /// </summary>
         /// <remarks>
@@ -65,15 +56,6 @@ namespace Satrabel.OpenContent {
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtSource;
-        
-        /// <summary>
-        /// Contrôle lError.
-        /// </summary>
-        /// <remarks>
-        /// Champ généré automatiquement.
-        /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lError;
         
         /// <summary>
         /// Contrôle cmdSave.
@@ -128,5 +110,14 @@ namespace Satrabel.OpenContent {
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
         protected global::System.Web.UI.WebControls.PlaceHolder phHandlebars;
+        
+        /// <summary>
+        /// Contrôle lError.
+        /// </summary>
+        /// <remarks>
+        /// Champ généré automatiquement.
+        /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lError;
     }
 }
