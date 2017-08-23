@@ -223,10 +223,10 @@ namespace Satrabel.OpenContent
             }
         }
 
-        private bool ModuleHasAlreadyData(ModuleInfo moduleInfo)
+        private static bool ModuleHasAlreadyData(ModuleInfo moduleInfo)
         {
             OpenContentModuleConfig ocModuleConfig = OpenContentModuleConfig.Create(moduleInfo, PortalSettings.Current);
-            IDataSource ds = DataSourceManager.GetDataSource(_settings.Manifest.DataSource);
+            IDataSource ds = DataSourceManager.GetDataSource(ocModuleConfig.Settings.Manifest.DataSource);
             var dsContext = OpenContentUtils.CreateDataContext(ocModuleConfig);
 
             return ds.Any(dsContext);
