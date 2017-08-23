@@ -13,6 +13,13 @@ namespace Satrabel.OpenContent.Components
 
     public class OpenContentModuleInfo
     {
+        
+
+        public OpenContentModuleInfo(ModuleInfo activeModule)
+        {
+            throw new NotImplementedException();
+        }
+
         public OpenContentModuleInfo(int portalId, int tabId, int moduleId, string moduleTitle, int tabModuleId)
         {
             ModuleId = moduleId;

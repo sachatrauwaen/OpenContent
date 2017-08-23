@@ -36,6 +36,12 @@ namespace Satrabel.OpenContent.Components.Render
         {
             this._dataList = dataList;
         }
+
+        public ModelFactoryMultiple(List<IDataItem> dataList, string data, string v, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles files, OpenContentModuleInfo ocModule, PortalSettings portalSettings)
+        {
+           todo
+        }
+
         /// <summary>
         /// Gets the model as dictionary list, used by Url Rewriter
         /// </summary>

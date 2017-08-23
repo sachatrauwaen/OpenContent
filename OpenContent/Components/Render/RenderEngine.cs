@@ -47,6 +47,11 @@ namespace Satrabel.OpenContent.Components.Render
             ResourceFile = localResourceFile;
         }
 
+        public RenderEngine(ModuleInfo module)
+        {
+            throw new NotImplementedException(); 
+        }
+
         public RenderInfo Info => _renderinfo;
 
         public OpenContentModuleConfig ModuleConfig => _module;
