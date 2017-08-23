@@ -127,7 +127,9 @@
 		} else if (type == "url") {
 			return '<a href="{{' + vartext + '}}"  >More</a>';
 		} else if (type == 'ckeditor' || type == 'wysihtml') {
-			return '{{{' + vartext + '}}}';
+		    return '{{{' + vartext + '}}}';
+		} else if (type == 'icon') {
+		    return '<span class="{{' + vartext + '}}"></span>';		    
 		} else {
 			return '{{' + vartext + '}}';
 		}
@@ -148,6 +150,8 @@
 			return '<a href="@(' + varfulltext + ')"  >More</a>';
 		} else if (type == 'ckeditor' || type == 'wysihtml') {
 			return '@Html.Raw(' + varfulltext + ')';
+		} else if (type == 'icon') {
+		    return '<span class="@(' + varfulltext + ')"></span>';
 		} else {
 			return '@' + varfulltext;
 		}
