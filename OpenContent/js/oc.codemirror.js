@@ -475,6 +475,8 @@ function ocSetupCodeMirror(mimeType, elem) {
 		matchBrackets: true,
 		lineWrapping: true,
 		mode: mimeType,
+		lint: true,
+		gutters: ["CodeMirror-lint-markers"],
 		extraKeys: {
 			"Ctrl-Space": "autocomplete",
 			"Shift-Space": function (editor) {

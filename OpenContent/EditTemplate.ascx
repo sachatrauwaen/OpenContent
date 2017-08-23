@@ -7,6 +7,7 @@
 <%-- Custom CSS Registration --%>
 <dnn:DnnCssInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/lib/codemirror.css" />
 <dnn:DnnCssInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/addon/hint/show-hint.css" />
+<dnn:DnnCssInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/addon/lint/lint.css" />
 <%-- Custom JavaScript Registration --%>
 <dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/lib/codemirror.js" Priority="101" />
 <dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/mode/clike/clike.js" Priority="102" />
@@ -17,11 +18,19 @@
 <dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/mode/htmlmixed/htmlmixed.js" Priority="103" />
 <dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/addon/hint/show-hint.js" Priority="103" />
 
+<dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/addon/lint/lint.js" Priority="102" />
+<dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/jsonlint.js" Priority="103" />
+<dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/addon/lint/json-lint.js" Priority="103" />
+<dnn:DnnJsInclude runat="server" FilePath="http://csslint.net/js/csslint.js" Priority="103" />
+<dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/addon/lint/css-lint.js" Priority="103" />
+<dnn:DnnJsInclude runat="server" FilePath="//ajax.aspnetcdn.com/ajax/jshint/r07/jshint.js" Priority="103" />
+<dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/addon/lint/javascript-lint.js" Priority="103" />
+<dnn:DnnJsInclude runat="server" FilePath="http://htmlhint.com/js/htmlhint.js" Priority="103" />
+<dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/addon/lint/html-lint.js" Priority="103" />
+
 <dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/addon/mode/multiplex.js" Priority="103" />
 <dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/addon/mode/simple.js" Priority="103" />
-
 <dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/mode/handlebars/handlebars.js" Priority="104" />
-
 <dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/oc.codeMirror.js" Priority="105" />
 
 <div class="dnnForm dnnRazorHostEditScript dnnClear" id="dnnEditScript">
