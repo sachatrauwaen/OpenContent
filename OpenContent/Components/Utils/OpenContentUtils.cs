@@ -464,6 +464,11 @@ namespace Satrabel.OpenContent.Components
             return result;
         }
 
+        public static DataSourceContext CreateDataContext(OpenContentModuleInfo module, int userId = -1, bool single = false, JObject options = null)
+        {
+
+        }
+
         public static DataSourceContext CreateDataContext(OpenContentModuleConfig module, int userId = -1, bool single = false, JObject options = null)
         {
             var dsContext = new DataSourceContext
