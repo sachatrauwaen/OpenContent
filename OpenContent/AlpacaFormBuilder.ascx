@@ -79,8 +79,15 @@
                 //position: 'center'
                 resizable: false,
             });
+            
+            $(".form-builder .fb-left .fb-wrap").height('100%').width('50%').css('overflow', 'hidden').css('position', 'fixed');
+            var formHeight = $(".form-builder .fb-left .fb-wrap").height() - 62-20;
 
-            $(".form-builder .fb-wrap").height('100%').width('50%').css('overflow-y', 'auto').css('overflow-x', 'hidden').css('position', 'fixed');
+            $(".form-builder .fb-left .fb-wrap #form").height(formHeight + 'px').css('overflow-y', 'auto').css('overflow-x', 'hidden');
+            $(".form-builder .fb-left .fb-wrap #form > .alpaca-field-object").css('margin','0');
+            
+
+            $(".form-builder .fb-right .fb-wrap").height('100%').width('50%').css('overflow-y', 'auto').css('overflow-x', 'hidden').css('position', 'fixed');
         }
 
         var moduleScope = $('#<%=ScopeWrapper.ClientID %>'),
