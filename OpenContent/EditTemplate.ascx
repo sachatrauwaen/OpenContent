@@ -5,19 +5,21 @@
 <%@ Register TagPrefix="dnn" Namespace="DotNetNuke.Web.Client.ClientResourceManagement" Assembly="DotNetNuke.Web.Client" %>
 <%@ Register TagPrefix="dnnweb" Namespace="DotNetNuke.Web.UI.WebControls" Assembly="DotNetNuke.Web" %>
 <%-- Custom CSS Registration --%>
-<dnn:DnnCssInclude runat="server" FilePath="~/Resources/Shared/components/CodeEditor/lib/codemirror.css" />
-<dnn:DnnCssInclude runat="server" FilePath="~/Resources/Shared/components/CodeEditor/addon/hint/show-hint.css" />
+<dnn:DnnCssInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/lib/codemirror.css" />
+<dnn:DnnCssInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/addon/hint/show-hint.css" />
 <%-- Custom JavaScript Registration --%>
-<dnn:DnnJsInclude runat="server" FilePath="~/Resources/Shared/components/CodeEditor/lib/codemirror.js" Priority="101" />
-<dnn:DnnJsInclude runat="server" FilePath="~/Resources/Shared/components/CodeEditor/mode/clike/clike.js" Priority="102" />
-<dnn:DnnJsInclude runat="server" FilePath="~/Resources/Shared/components/CodeEditor/mode/vb/vb.js" Priority="102" />
-<dnn:DnnJsInclude runat="server" FilePath="~/Resources/Shared/components/CodeEditor/mode/xml/xml.js" Priority="102" />
-<dnn:DnnJsInclude runat="server" FilePath="~/Resources/Shared/components/CodeEditor/mode/javascript/javascript.js" Priority="102" />
-<dnn:DnnJsInclude runat="server" FilePath="~/Resources/Shared/components/CodeEditor/mode/css/css.js" Priority="102" />
-<dnn:DnnJsInclude runat="server" FilePath="~/Resources/Shared/components/CodeEditor/mode/htmlmixed/htmlmixed.js" Priority="103" />
+<dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/lib/codemirror.js" Priority="101" />
+<dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/mode/clike/clike.js" Priority="102" />
+<dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/mode/vb/vb.js" Priority="102" />
+<dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/mode/xml/xml.js" Priority="102" />
+<dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/mode/javascript/javascript.js" Priority="102" />
+<dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/mode/css/css.js" Priority="102" />
+<dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/mode/htmlmixed/htmlmixed.js" Priority="103" />
+<dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/addon/hint/show-hint.js" Priority="103" />
+
 <dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/addon/mode/multiplex.js" Priority="103" />
 <dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/addon/mode/simple.js" Priority="103" />
-<dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/addon/hint/show-hint.js" Priority="103" />
+
 <dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/mode/handlebars/handlebars.js" Priority="104" />
 
 <dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/oc.codeMirror.js" Priority="105" />
