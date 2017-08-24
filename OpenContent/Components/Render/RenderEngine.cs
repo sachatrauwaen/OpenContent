@@ -16,6 +16,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Hosting;
 using System.Web.UI;
+using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.Querying;
@@ -47,9 +48,13 @@ namespace Satrabel.OpenContent.Components.Render
             ResourceFile = localResourceFile;
         }
 
-        public RenderEngine(ModuleInfo module)
+        [Obsolete("This method is obsolete since aug 2017; use another constructor instead.")]
+        public RenderEngine(ModuleInfo moduleinfo)
         {
-            throw new NotImplementedException(); 
+            var ocModuleConfig = OpenContentModuleConfig.Create(moduleinfo.ModuleID, moduleinfo.TabID, PortalSettings.Current);
+            _module = ocModuleConfig;
+            _renderinfo = new RenderInfo(_module.Settings.Template, _module.Settings.IsOtherModule);
+            _settings = _module.Settings;
         }
 
         public RenderInfo Info => _renderinfo;

@@ -1,4 +1,5 @@
-﻿using DotNetNuke.Entities.Users;
+﻿using System;
+using DotNetNuke.Entities.Users;
 using DotNetNuke.Services.Localization;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Datasource;
@@ -9,6 +10,7 @@ using Satrabel.OpenContent.Components.TemplateHelpers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using DotNetNuke.Entities.Portals;
 
 namespace Satrabel.OpenContent.Components.Render
 {
@@ -37,9 +39,11 @@ namespace Satrabel.OpenContent.Components.Render
             this._dataList = dataList;
         }
 
-        public ModelFactoryMultiple(List<IDataItem> dataList, string data, string v, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles files, OpenContentModuleInfo ocModule, PortalSettings portalSettings)
+        [Obsolete("This method is obsolete since aug 2017; use another constructor instead")]
+        public ModelFactoryMultiple(IEnumerable<IDataItem> dataList, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleInfo moduleinfo, PortalSettings portalSettings) :
+            base(settingsJson, manifest, templateManifest, templateFiles, OpenContentModuleConfig.Create(moduleinfo.ModuleId, moduleinfo.TabId, portalSettings))
         {
-           todo
+            this._dataList = dataList;
         }
 
         /// <summary>

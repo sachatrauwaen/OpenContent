@@ -464,9 +464,11 @@ namespace Satrabel.OpenContent.Components
             return result;
         }
 
-        public static DataSourceContext CreateDataContext(OpenContentModuleInfo module, int userId = -1, bool single = false, JObject options = null)
+        [Obsolete("This method is obsolete since aug 2017; use another constructor instead.")]
+        public static DataSourceContext CreateDataContext(OpenContentModuleInfo moduleinfo, int userId = -1, bool single = false, JObject options = null)
         {
-
+            var module = OpenContentModuleConfig.Create(moduleinfo.ModuleId, moduleinfo.TabId, PortalSettings.Current);
+            return CreateDataContext(module, userId, single, options);
         }
 
         public static DataSourceContext CreateDataContext(OpenContentModuleConfig module, int userId = -1, bool single = false, JObject options = null)

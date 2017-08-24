@@ -11,31 +11,6 @@ namespace Satrabel.OpenContent.Components
     {
     }
 
-    public class OpenContentModuleInfo
-    {
-        
-
-        public OpenContentModuleInfo(ModuleInfo activeModule)
-        {
-            throw new NotImplementedException();
-        }
-
-        public OpenContentModuleInfo(int portalId, int tabId, int moduleId, string moduleTitle, int tabModuleId)
-        {
-            ModuleId = moduleId;
-            ModuleTitle = moduleTitle;
-            TabModuleId = tabModuleId;
-            PortalId = portalId;
-            TabId = tabId;
-        }
-
-        public int ModuleId { get; }
-        public int TabId { get; }
-        public int PortalId { get; }
-        public string ModuleTitle { get; }
-        public int TabModuleId { get; }
-    }
-
     public class OpenContentModuleConfig : IOpenContentModuleInfo
     {
         private OpenContentModuleInfo _dataModule;
