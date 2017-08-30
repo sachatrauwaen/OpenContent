@@ -36,7 +36,8 @@
       "alpaca/js/fields/dnn/MLTextField.js",
       "alpaca/js/fields/dnn/MLUrl2Field.js",
       "alpaca/js/fields/dnn/MLUrlField.js",
-      "alpaca/js/fields/dnn/MLWysihtmlField.js"
+      "alpaca/js/fields/dnn/MLWysihtmlField.js",
+      "alpaca/js/fields/dnn/AccordionField.js"
     ]
   },
   {
@@ -52,7 +53,9 @@
       "alpaca/templates/dnn-edit/control-imagecrop2.html",
       "alpaca/templates/dnn-edit/control-imagecropper.html",
       "alpaca/templates/dnn-edit/control-wysihtml.html",
-      "alpaca/templates/dnn-edit/control.html"
+      "alpaca/templates/dnn-edit/control.html",
+      "alpaca/templates/dnn-edit/container-accordion.html",
+      "alpaca/templates/dnn-edit/container-accordion-item.html"
     ]
   }
 ]
