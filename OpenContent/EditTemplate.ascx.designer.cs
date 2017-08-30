@@ -19,7 +19,7 @@ namespace Satrabel.OpenContent {
         /// Champ généré automatiquement.
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList scriptList;
+        protected global::Satrabel.OpenContent.GroupDropDownList scriptList;
         
         /// <summary>
         /// Contrôle plSource.

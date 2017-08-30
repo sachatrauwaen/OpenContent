@@ -87,7 +87,7 @@
             $(".form-builder .fb-left .fb-wrap #form > .alpaca-field-object").css('margin','0');
             
 
-            $(".form-builder .fb-right .fb-wrap").height('100%').width('50%').css('overflow-y', 'auto').css('overflow-x', 'hidden').css('position', 'fixed');
+            $(".form-builder .fb-right .fb-wrap").height('100%').width('50%').css('overflow-y', 'auto').css('overflow-x', 'hidden').css('position', 'fixed').css('padding-left', '20px');
         }
 
         var moduleScope = $('#<%=ScopeWrapper.ClientID %>'),

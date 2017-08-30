@@ -4,6 +4,9 @@
 <%@ Register TagPrefix="dnn" TagName="Label" Src="~/controls/LabelControl.ascx" %>
 <%@ Register TagPrefix="dnn" Namespace="DotNetNuke.Web.Client.ClientResourceManagement" Assembly="DotNetNuke.Web.Client" %>
 <%@ Register TagPrefix="dnnweb" Namespace="DotNetNuke.Web.UI.WebControls" Assembly="DotNetNuke.Web" %>
+
+<%@ Register TagPrefix="My" Namespace="Satrabel.OpenContent" Assembly="OpenContent" %>
+
 <%-- Custom CSS Registration --%>
 <dnn:DnnCssInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/lib/codemirror.css" />
 <dnn:DnnCssInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/addon/hint/show-hint.css" />
@@ -21,12 +24,10 @@
 <dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/addon/lint/lint.js" Priority="102" />
 <dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/jsonlint.js" Priority="103" />
 <dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/addon/lint/json-lint.js" Priority="103" />
-<dnn:DnnJsInclude runat="server" FilePath="http://csslint.net/js/csslint.js" Priority="103" />
+<dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/csslint.js" Priority="103" />
 <dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/addon/lint/css-lint.js" Priority="103" />
-<dnn:DnnJsInclude runat="server" FilePath="//ajax.aspnetcdn.com/ajax/jshint/r07/jshint.js" Priority="103" />
+<dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/jshint.js" Priority="103" />
 <dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/addon/lint/javascript-lint.js" Priority="103" />
-<dnn:DnnJsInclude runat="server" FilePath="http://htmlhint.com/js/htmlhint.js" Priority="103" />
-<dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/addon/lint/html-lint.js" Priority="103" />
 
 <dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/addon/mode/multiplex.js" Priority="103" />
 <dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/addon/mode/simple.js" Priority="103" />
@@ -36,7 +37,12 @@
 <div class="dnnForm dnnRazorHostEditScript dnnClear" id="dnnEditScript">
     <fieldset class="nomargin">
         <div class="dnnFormItem" style="padding:5px;background-color:gray;width:auto;border-radius: 5px 5px 0 0;">
-            <asp:DropDownList ID="scriptList" runat="server" AutoPostBack="true" CssClass="nomargin" />
+
+        <My:GroupDropDownList runat="server" ID="scriptList" AutoPostBack="true" CssClass="nomargin">
+        
+        </My:GroupDropDownList>
+
+            
             <div style="float:right;padding-right:10px;padding-top:8px;">
             <asp:Label ID="plSource" ControlName="txtSource" runat="server" ForeColor="White" />
                 </div>
