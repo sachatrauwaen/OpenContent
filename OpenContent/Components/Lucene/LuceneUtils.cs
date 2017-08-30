@@ -69,7 +69,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             //string scope = OpenContentInfo.GetScope(moduleId, settings.Template.Collection);
             var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template); //todo index is being build from schema & options. But they should be provided by the provider, not directly from the files
             string scope = indexableData.ToList().First().GetScope();
-            
+
             LuceneController.Instance.ReIndexData(indexableData, indexConfig, scope);
         }
 
@@ -80,15 +80,12 @@ namespace Satrabel.OpenContent.Components.Lucene
         private static void RegisterModuleDataForIndexing(LuceneController lc, OpenContentModuleConfig module)
         {
             var indexableData = GetModuleIndexableData(module);
-            if (indexableData == null) return;
+            var dataExample = indexableData?.ToList().FirstOrDefault();
 
-            //var settings = module.Settings;
-            //var moduleId = settings.IsOtherModule ? settings.ModuleId : module.ViewModule.ModuleId;
-            //string scope = OpenContentInfo.GetScope(moduleId, settings.Template.Collection);
+            if (dataExample == null) return;
 
+            string scope = dataExample.GetScope();
             var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template); //todo index is being build from schema & options. But they should be provided by the provider, not directly from the files
-            string scope = indexableData.ToList().First().GetScope();
-
             lc.AddList(indexableData, indexConfig, scope);
         }
 
