@@ -387,7 +387,7 @@
 	});
 }
 
-function ocSetupCodeMirror(mimeType, elem) {
+function ocSetupCodeMirror(mimeType, elem, model) {
 
 	var handlebarsHelpers = [
 		{ 'text': '{{#each var}}\n{{/each}}', 'displayText': 'each' },
@@ -442,7 +442,10 @@ function ocSetupCodeMirror(mimeType, elem) {
 		{ 'text': '<div class="alert alert-warning" role="alert">...</div>', 'displayText': 'alert-warning' },
 		{ 'text': '<div class="alert alert-success" role="alert">...</div>', 'displayText': 'alert-danger' },
 
-	];
+    ];
+    if (model.snippets) {
+        htmlHints = model.snippets;
+    }
 
 	var getHintsList = function (editor, list) {
 

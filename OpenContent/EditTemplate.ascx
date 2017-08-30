@@ -101,7 +101,7 @@
                 title: '<%= Localization.GetSafeJSString("Confirm.Text", Localization.SharedResourceFile) %>'
             });
 
-            var cm = ocSetupCodeMirror(mimeType, $("textarea[id$='txtSource']")[0]);
+            var cm = ocSetupCodeMirror(mimeType, $("textarea[id$='txtSource']")[0], model);
 
             var resizeModule = function resizeDnnEditHtml() {
                 //$('#dnnEditScript fieldset').height($(window).height() - $('#dnnEditScript ul dnnActions').height() - 18 - 52);

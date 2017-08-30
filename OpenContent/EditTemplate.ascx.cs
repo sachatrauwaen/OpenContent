@@ -342,6 +342,19 @@ namespace Satrabel.OpenContent
                         addDataDef["options"] = JsonUtils.LoadJsonFromFile(template.ManifestFolderUri.UrlFolder + addData.Key + "-options.json");
                     }
                 }
+                var file = new FileUri(ModuleContext.PortalSettings.HomeDirectory + "OpenContent","htmlsnippets.json");
+                if (file.FileExists)
+                {
+                    model["snippets"] = JsonUtils.LoadJsonFromFile(file.FilePath);
+                }
+                else
+                {
+                    file = new FileUri("/Portals/_default/OpenContent","htmlsnippets.json");
+                    if (file.FileExists)
+                    {
+                        model["snippets"] = JsonUtils.LoadJsonFromFile(file.FilePath);
+                    }
+                }
                 return model;
             }
         }
