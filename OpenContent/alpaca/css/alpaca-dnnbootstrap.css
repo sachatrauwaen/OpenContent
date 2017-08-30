@@ -143,41 +143,57 @@ select.oc-ddl-versions {
 
 
 
-.alpaca-field-object,
-.alpaca-field-array,
-.alpaca-field-table {
+/*.alpaca-container-item,*/
+.alpaca-field-table,
+.alpaca-field-accordion {
+    border: 1px #eee solid;
+    border-radius: 4px;
+    padding: 10px;
+}
+
+
+
+.alpaca-field-object * .alpaca-field-object,
+.alpaca-container-item > div > div > .alpaca-field-table,
+.alpaca-field-object > div > div > .alpaca-field-object > fieldset > div > div > .alpaca-field-object > fieldset > div > div > .alpaca-field-object {
+    background-color: #f7f7f9;
+}
+
+.alpaca-field-object > div > div > .alpaca-field-object > fieldset > div > div > .alpaca-field-object {
+    background-color: #fff;
+}
+    
+
+.panel-body > .alpaca-field-object {
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    background-color: #ffffff;
+}
+
+/*
+{
     border: 1px solid #eee;
     border-radius: 4px;
     padding: 10px;
     margin: 10px 0;
 }
+    */
 
 
 
-.alpaca-field-object > div > div > .alpaca-field-object,
-.alpaca-field-object > fieldset > div > div > .alpaca-field-array,
-.alpaca-field-object > div > div > .alpaca-field-array,
-.alpaca-field-object > div > div > .alpaca-field-table,
-.alpaca-field-object > div > div > .alpaca-field-object > fieldset > div > div > .alpaca-field-object > fieldset > div > div > .alpaca-field-object,
-.alpaca-field-object > div > div > .alpaca-field-array > fieldset > div > div > div > .alpaca-field-object > fieldset > div > div > .alpaca-field-object,
-.alpaca-field-object > div > div > .alpaca-field-object > fieldset > div > div > .alpaca-field-object > fieldset > div > div > .alpaca-field-array,
-.alpaca-field-object > div > div > .alpaca-field-array > div > div > div > .alpaca-field-object > fieldset > div > div > .alpaca-field-object,
-.alpaca-field-object > div > div > .alpaca-field-array > fieldset > div > div > .alpaca-field-object > fieldset > div > div > .alpaca-field-array {
-    background-color: #f7f7f9;
-}
 
-.alpaca-field-object > div > div > .alpaca-field-object > fieldset > div > div > .alpaca-field-object,
-.alpaca-field-object > div > div > .alpaca-field-array > fieldset > div > div > div > .alpaca-field-object,
-.alpaca-field-object > div > div > .alpaca-field-array > div > div > div > .alpaca-field-object,
-.alpaca-field-object > fieldset > div > div > .alpaca-field-array > fieldset > div > div > div > .alpaca-field-object {
-    background-color: #fff;
-}
 
-/*
 .alpaca-container-item > div {
     position:relative;
 }
 
+
+    .alpaca-container-item > div > .alpaca-field-object {
+        padding-top: 40px;
+    }
+
+/*
 .alpaca-array-actionbar.alpaca-array-actionbar-top{
     position:absolute;
     width:auto !important;
@@ -199,8 +215,18 @@ select.oc-ddl-versions {
     */
 
 .alpaca-array-actionbar.alpaca-array-actionbar-top {
+    display: block !important;
     padding-bottom: 0 !important;
-    display:block !important;
+}
+
+
+
+.alpaca-field-array .alpaca-array-actionbar.alpaca-array-actionbar-top {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: auto;
+    z-index: 9;
 }
 
 /* for dnngo icons in editor 
@@ -230,4 +256,9 @@ select.oc-ddl-versions {
     cursor: not-allowed;
     box-shadow: none;
     opacity: 0.65;
+}
+
+
+.alpaca-field-accordion .panel-title > a {
+    font-size:21px;
 }
