@@ -433,6 +433,9 @@ function getView(formdef) {
             }
         }
     };
+    if (formdef.formtype == "array") {
+        return view.parent;
+    }
     if (formdef.formfields) {
         var row = 0;
         var lastCols = 0;
@@ -782,10 +785,10 @@ var fieldOptions =
     "fieldtype": {
         "optionLabels": ["Text", "Checkbox", "Multi checkbox", "Dropdown list (select)", "Radio buttons", "Text area", "Email address", "Date", "Number",
                             "Image (upload & autocomplete)", "File (upload & autocomplete)", "Url (autocomplete for pages)", "Font Awesome Icons", "Guid (auto id)", "Address (autocomplete & geocode)",
-                            "List (array)", "Table (array)", "Accordion (array)", "Relation (Additional Data)",
+                            "List (Panels)", "List (Table)", "List (Accordion)", "Relation (Additional Data)",
                             "Folder2 (folderID)", "File2 (fileID)", "Url2 (tabID)", "Role2 (roleID)", "Image2 (fileID)",
                             "Image (with croppper)",
-                            "Wysihtml", "Summernote", "CK Editor", "Image Gallery", "Documents", "Group (object)" /*,
+                            "Html (Wysihtml)", "Html (Summernote)", "Html (CK Editor)", "Image Gallery", "Documents", "Group (object)" /*,
                             "Publish status", "Publish start date", "Publish end date"*/]
     },
     "fieldoptions": {
