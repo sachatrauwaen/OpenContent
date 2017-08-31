@@ -191,9 +191,9 @@ namespace Satrabel.OpenContent.Components.Lucene
                 var sortFields = new List<SortField>();
                 foreach (var rule in @select.Sort)
                 {
-                    int sortfieldtype = SortField.STRING;
+                    int sortfieldtype;
                     string sortFieldPrefix = "";
-                    Sortfieldtype(rule.FieldType, ref sortfieldtype, ref sortFieldPrefix);
+                    Sortfieldtype(rule.FieldType, out sortfieldtype, ref sortFieldPrefix);
 
                     if (rule.Field == "createdondate") rule.Field = "$createdondate";
 
@@ -205,7 +205,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             return this;
         }
 
-        private static void Sortfieldtype(FieldTypeEnum fieldType, ref int sortfieldtype, ref string sortFieldPrefix)
+        private static void Sortfieldtype(FieldTypeEnum fieldType, out int sortfieldtype, ref string sortFieldPrefix)
         {
             if (fieldType == FieldTypeEnum.DATETIME)
             {
@@ -217,11 +217,11 @@ namespace Satrabel.OpenContent.Components.Lucene
             }
             else if (fieldType == FieldTypeEnum.INTEGER)
             {
-                sortfieldtype = SortField.LONG;
+                sortfieldtype = SortField.FLOAT;
             }
             else if (fieldType == FieldTypeEnum.LONG)
             {
-                sortfieldtype = SortField.LONG;
+                sortfieldtype = SortField.FLOAT;
             }
             else if (fieldType == FieldTypeEnum.FLOAT) // or double
             {
