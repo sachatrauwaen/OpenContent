@@ -407,49 +407,49 @@ namespace Satrabel.OpenContent
                 //string templateFolder = template.DirectoryName;
                 if (template.Main != null)
                 {
-                    scriptList.Items.Add(newListItem("Template", template.Main.Template, "Template"));
+                    scriptList.Items.Add(newListItem("Template", template.Main.Template, "Template", template));
                     if (template.Main.PartialTemplates != null)
                     {
                         foreach (var part in template.Main.PartialTemplates)
                         {
-                            scriptList.Items.Add(newListItem(Path.GetFileNameWithoutExtension(part.Value.Template), part.Value.Template, "Template"));
+                            scriptList.Items.Add(newListItem(Path.GetFileNameWithoutExtension(part.Value.Template), part.Value.Template, "Template", template));
                         }
                     }
                 }
                 if (template.Detail != null)
                 {
-                    scriptList.Items.Add(newListItem(Path.GetFileNameWithoutExtension(template.Detail.Template), template.Detail.Template, "Template"));
+                    scriptList.Items.Add(newListItem(Path.GetFileNameWithoutExtension(template.Detail.Template), template.Detail.Template, "Template", template));
                     if (template.Detail.PartialTemplates != null)
                     {
                         foreach (var part in template.Detail.PartialTemplates)
                         {
-                            scriptList.Items.Add(newListItem(Path.GetFileNameWithoutExtension(part.Value.Template), part.Value.Template, "Template"));
+                            scriptList.Items.Add(newListItem(Path.GetFileNameWithoutExtension(part.Value.Template), part.Value.Template, "Template", template));
                         }
                     }
                 }
-                scriptList.Items.Add(newListItem("Stylesheet", template.Key.ShortKey + ".css", "Template"));
-                scriptList.Items.Add(newListItem("Javascript", template.Key.ShortKey + ".js", "Template"));
-                scriptList.Items.Add(newListItem("Manifest", "manifest.json", "Template"));
+                scriptList.Items.Add(newListItem("Stylesheet", template.Key.ShortKey + ".css", "Template", template));
+                scriptList.Items.Add(newListItem("Javascript", template.Key.ShortKey + ".js", "Template", template));
+                scriptList.Items.Add(newListItem("Manifest", "manifest.json", "Template", template));
                 if (!OpenContentUtils.BuilderExist(settings.Template.ManifestFolderUri))
                 {
                     string title = string.IsNullOrEmpty(template.Manifest.Title) ? "Data" : template.Manifest.Title;
-                    scriptList.Items.Add(newListItem("Schema", "schema.json", title));
-                    scriptList.Items.Add(newListItem("Options", "options.json", title));
+                    scriptList.Items.Add(newListItem("Schema", "schema.json", title, template));
+                    scriptList.Items.Add(newListItem("Options", "options.json", title, template));
                     //scriptList.Items.Add(new ListItem("Edit Layout Options - Template File Overides", "options." + template.FileNameWithoutExtension + ".json"));
                     foreach (Locale item in LocaleController.Instance.GetLocales(PortalId).Values)
                     {
-                        scriptList.Items.Add(newListItem("Options (" + item.Code+")", "options." + item.Code + ".json", title));
+                        scriptList.Items.Add(newListItem("Options (" + item.Code+")", "options." + item.Code + ".json", title, template));
                     }
                 }
 
                 if (!OpenContentUtils.BuilderExist(settings.Template.ManifestFolderUri, template.Key.ShortKey))
                 {
                     var title = "Settings";
-                    scriptList.Items.Add(newListItem("Schema", template.Key.ShortKey + "-schema.json", title));
-                    scriptList.Items.Add(newListItem("Options", template.Key.ShortKey + "-options.json", title));
+                    scriptList.Items.Add(newListItem("Schema", template.Key.ShortKey + "-schema.json", title, template));
+                    scriptList.Items.Add(newListItem("Options", template.Key.ShortKey + "-options.json", title, template));
                     foreach (Locale item in LocaleController.Instance.GetLocales(PortalId).Values)
                     {
-                        scriptList.Items.Add(newListItem("Options (" + item.Code+")", template.Key.ShortKey + "-options." + item.Code + ".json", title));
+                        scriptList.Items.Add(newListItem("Options (" + item.Code+")", template.Key.ShortKey + "-options." + item.Code + ".json", title, template));
                     }
                 }
                 if (template.Manifest.AdditionalDataDefined())
@@ -459,37 +459,43 @@ namespace Satrabel.OpenContent
                         if (!OpenContentUtils.BuilderExist(settings.Template.ManifestFolderUri, addData.Key))
                         {
                             string title = string.IsNullOrEmpty(addData.Value.Title) ? addData.Key : addData.Value.Title;
-                            scriptList.Items.Add(newListItem(" Schema", addData.Key + "-schema.json", title));
-                            scriptList.Items.Add(newListItem(" Options", addData.Key + "-options.json", title));
+                            scriptList.Items.Add(newListItem(" Schema", addData.Key + "-schema.json", title, template));
+                            scriptList.Items.Add(newListItem(" Options", addData.Key + "-options.json", title, template));
                             foreach (Locale item in LocaleController.Instance.GetLocales(PortalId).Values)
                             {
-                                scriptList.Items.Add(newListItem(" Options (" + item.Code+")", addData.Key + "-options." + item.Code + ".json", title));
+                                scriptList.Items.Add(newListItem(" Options (" + item.Code+")", addData.Key + "-options." + item.Code + ".json", title, template));
                             }
                         }
                     }
                 }
                 foreach (Locale item in LocaleController.Instance.GetLocales(PortalId).Values)
                 {
-                    scriptList.Items.Add(newListItem(item.Code, item.Code + ".json", "Localization"));
+                    scriptList.Items.Add(newListItem(item.Code, item.Code + ".json", "Localization", template));
                 }
                 //if (OpenContentUtils.FormExist(settings.Template.ManifestFolderUri))
                 {
                     string title = "Form ";
-                    scriptList.Items.Add(newListItem("Schema", "form-schema.json", title));
-                    scriptList.Items.Add(newListItem("Options", "form-options.json", title));
+                    scriptList.Items.Add(newListItem("Schema", "form-schema.json", title, template));
+                    scriptList.Items.Add(newListItem("Options", "form-options.json", title, template));
                     //scriptList.Items.Add(new ListItem("Edit Layout Options - Template File Overides", "options." + template.FileNameWithoutExtension + ".json"));
                     foreach (Locale item in LocaleController.Instance.GetLocales(PortalId).Values)
                     {
-                        scriptList.Items.Add(newListItem("Options (" + item.Code+")", "options." + item.Code + ".json", title));
+                        scriptList.Items.Add(newListItem("Options (" + item.Code+")", "options." + item.Code + ".json", title, template));
                     }
                 }
             }
         }
 
-        private ListItem newListItem(string text, string value, string group)
+        private ListItem newListItem(string text, string value, string group, TemplateManifest template)
         {
             var li = new ListItem(text, value);
             li.Attributes["DataGroupField"] = group;
+            var scriptFile = new FileUri(template.ManifestFolderUri.UrlFolder, value);
+            
+            if (!scriptFile.FileExists)
+            {
+                li.Attributes["CssClass"] = "fileNotExist";
+            }            
             return li;
         }
 

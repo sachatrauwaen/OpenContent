@@ -18,3 +18,7 @@
 .nomargin {
     margin: 0 !important;
 }
+
+.fileNotExist {
+    color: #ccc !important;
+}
