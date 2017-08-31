@@ -9,7 +9,7 @@ namespace Satrabel.OpenContent.Components
         public static IAppServices Services => _Instance.BaseServices;
 
         /// <summary>
-        /// This is our Composite Root. Here we inject our dependancies.
+        /// This is our Composite Root. Here we inject our dependancies. (see http://blog.ploeh.dk/2011/07/28/CompositionRoot/)
         /// Prevents a default instance of the <see cref="App"/> class from being created.
         /// </summary>
         private App()
