@@ -7,7 +7,10 @@ using DotNetNuke.Services.FileSystem;
 using Satrabel.OpenContent.Components.Datasource;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using DotNetNuke.Common.Utilities;
 using DotNetNuke.Entities.Portals;
+using DotNetNuke.Services.Cache;
 
 namespace Satrabel.OpenContent.Components.Json
 {
@@ -17,6 +20,18 @@ namespace Satrabel.OpenContent.Components.Json
         {
             if (string.IsNullOrWhiteSpace(jsonData)) return false;
             return jsonData.Trim().Substring(0, 1).IndexOfAny(new[] { '[', '{' }) == 0;
+        }
+
+        [Obsolete("This method is obsolete since aug 2017; use App.Services.FileRepository.LoadJsonFromCacheOrDisk() instead")]
+        public static JToken LoadJsonFromFile(string filename)
+        {
+            return App.Services.FileRepository.LoadJsonFromCacheOrDisk(new FileUri(filename));
+        }
+
+        [Obsolete("This method is obsolete since aug 2017; use App.Services.FileRepository.LoadJsonFileFromDisk() instead")]
+        public static JObject GetJsonFromFile(string filename)
+        {
+            return App.Services.FileRepository.LoadJsonFileFromDisk(filename) as JObject;
         }
 
         public static dynamic JsonToDynamic(string json)
@@ -570,7 +585,7 @@ namespace Satrabel.OpenContent.Components.Json
                 foreach (var obj in array)
                 {
                     var objid = obj[valueField]?.ToString();
-                    if (objid!= null && id.Equals(objid))
+                    if (objid != null && id.Equals(objid))
                     {
                         return obj as JObject;
                     }
@@ -665,6 +680,7 @@ namespace Satrabel.OpenContent.Components.Json
                 }
             }
         }
+
     }
     class DictionaryNoCase : Dictionary<string, object>
     {

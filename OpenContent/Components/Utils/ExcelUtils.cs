@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Web;
@@ -60,6 +61,13 @@ namespace Satrabel.OpenContent.Components
             responseMessage.Content.Headers.ContentLength = filebytes.Length;
             responseMessage.StatusCode = System.Net.HttpStatusCode.OK;
             return responseMessage;
+        }
+
+        [Obsolete("This method is obsolete since aug 2017; use PushDataAsExcelOntoHttpResponse() instead")]
+        public static void OutputFile(DataTable datatable, string filename, HttpContext currentContext)
+        {
+            var excelBytes = ExcelUtils.CreateExcel(datatable);
+            ExcelUtils.PushDataAsExcelOntoHttpResponse(excelBytes, filename, currentContext);
         }
     }
 }
