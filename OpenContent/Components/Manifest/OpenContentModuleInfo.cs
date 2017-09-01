@@ -9,7 +9,7 @@ namespace Satrabel.OpenContent.Components
     public class OpenContentModuleInfo
     {
         [Obsolete("This method is obsolete since aug 2017; use another constructor instead")]
-        public OpenContentModuleInfo(ModuleInfo activeModule)
+        public OpenContentModuleInfo(ModuleInfo activeModule, System.Collections.Hashtable moduleSettings)
         {
             ModuleId = activeModule.ModuleID;
             ModuleTitle = activeModule.ModuleTitle;
