@@ -14,11 +14,3 @@
     color: #585858;
     /*margin-bottom: 5px;*/
 }
-
-.nomargin {
-    margin: 0 !important;
-}
-
-.fileNotExist {
-    color: #ccc !important;
-}

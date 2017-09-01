@@ -34,21 +34,40 @@
 <dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/mode/handlebars/handlebars.js" Priority="104" />
 <dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/oc.codeMirror.js" Priority="105" />
 
+<style>
+
+.nomargin {
+    margin: 0 !important;
+}
+
+.scriptListSelect {
+    margin: 0 !important;
+    height: 25px !important;
+    padding: 0 !important;
+    -webkit-appearance: menulist-button;
+}
+
+.fileNotExist {
+    color: #ccc !important;
+}
+
+.CodeMirror{    
+    border: 1px solid #eee;
+}
+
+</style>
+
 <div class="dnnForm dnnRazorHostEditScript dnnClear" id="dnnEditScript">
     <fieldset class="nomargin">
         <div class="dnnFormItem" style="padding:5px;background-color:gray;width:auto;border-radius: 5px 5px 0 0;">
-
-        <My:GroupDropDownList runat="server" ID="scriptList" AutoPostBack="true" CssClass="nomargin">
-        
+        <My:GroupDropDownList runat="server" ID="scriptList" AutoPostBack="true" CssClass="scriptListSelect">
         </My:GroupDropDownList>
-
-            
-            <div style="float:right;padding-right:10px;padding-top:8px;">
+            <div style="float:right;padding-right:10px;padding-top:5px;">
             <asp:Label ID="plSource" ControlName="txtSource" runat="server" ForeColor="White" />
                 </div>
         </div>
         <div>
-            <asp:TextBox ID="txtSource" runat="server" TextMode="MultiLine" Rows="30" Columns="140" />
+            <asp:TextBox ID="txtSource" runat="server" TextMode="MultiLine" Rows="30" Width="100%" />
         </div>
     </fieldset>
 
