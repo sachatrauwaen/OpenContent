@@ -37,6 +37,7 @@ namespace Satrabel.OpenContent
             base.OnLoad(e);
             if (!Page.IsPostBack)
             {
+                var globalSettingsRepository= App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId);
                 ddlRoles.Items.Add(new ListItem("None", "-1"));
                 var rc = new RoleController();
                 foreach (var role in rc.GetRoles(PortalId))
@@ -44,53 +45,54 @@ namespace Satrabel.OpenContent
                     ddlRoles.Items.Add(new ListItem(role.RoleName, role.RoleID.ToString()));
                 }
 
-                if (!string.IsNullOrEmpty(App.Services.CreateGlobalSettingsRepository().GetEditorRoleId()))
+                if (!string.IsNullOrEmpty(globalSettingsRepository.GetEditorRoleId()))
                 {
-                    var li = ddlRoles.Items.FindByValue(App.Services.CreateGlobalSettingsRepository().GetEditorRoleId());
+                    var li = ddlRoles.Items.FindByValue(globalSettingsRepository.GetEditorRoleId());
                     if (li != null)
                     {
                         li.Selected = true;
                     }
                 }
-                cbMLContent.Checked = App.Services.CreateGlobalSettingsRepository().GetAutoAttach();
+                cbMLContent.Checked = App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetAutoAttach();
 
                 foreach (var item in new[] { 5, 10, 25, 50, 100 })
                 {
                     ddlMaxVersions.Items.Add(new ListItem(item.ToString(), item.ToString()));
                 }
-                var maxVersionItem = ddlMaxVersions.Items.FindByValue(App.Services.CreateGlobalSettingsRepository().GetMaxVersions().ToString());
+                var maxVersionItem = ddlMaxVersions.Items.FindByValue(globalSettingsRepository.GetMaxVersions().ToString());
                 if (maxVersionItem != null) maxVersionItem.Selected = true;
 
-                ddlLogging.SelectedValue = App.Services.CreateGlobalSettingsRepository().GetLoggingScope();
+                ddlLogging.SelectedValue = globalSettingsRepository.GetLoggingScope();
 
-                var editLayoutItem = ddlEditLayout.Items.FindByValue(((int)App.Services.CreateGlobalSettingsRepository().GetEditLayout()).ToString());
+                var editLayoutItem = ddlEditLayout.Items.FindByValue(((int)globalSettingsRepository.GetEditLayout()).ToString());
                 if (editLayoutItem != null) editLayoutItem.Selected = true;
 
-                cbLoadBootstrap.Checked = App.Services.CreateGlobalSettingsRepository().GetLoadBootstrap();
-                cbLoadBootstrap.Visible = lLoadBootstrap.Visible = App.Services.CreateGlobalSettingsRepository().GetEditLayout() != AlpacaLayoutEnum.DNN;
-                tbGoogleApiKey.Text = App.Services.CreateGlobalSettingsRepository().GetGoogleApiKey();
-                cbFastHandlebars.Checked = App.Services.CreateGlobalSettingsRepository().GetFastHandlebars();
+                cbLoadBootstrap.Checked = globalSettingsRepository.GetLoadBootstrap();
+                cbLoadBootstrap.Visible = lLoadBootstrap.Visible = globalSettingsRepository.GetEditLayout() != AlpacaLayoutEnum.DNN;
+                tbGoogleApiKey.Text = globalSettingsRepository.GetGoogleApiKey();
+                cbFastHandlebars.Checked = globalSettingsRepository.GetFastHandlebars();
             }
         }
         protected void cmdSave_Click(object sender, EventArgs e)
         {
-            App.Services.CreateGlobalSettingsRepository().SetEditorRoleId(ddlRoles.SelectedIndex > 0 ? ddlRoles.SelectedValue : "");
-            App.Services.CreateGlobalSettingsRepository().SetAutoAttach(cbMLContent.Checked.ToString());
+            var globalSettingsRepository = App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId);
+            globalSettingsRepository.SetEditorRoleId(ddlRoles.SelectedIndex > 0 ? ddlRoles.SelectedValue : "");
+            globalSettingsRepository.SetAutoAttach(cbMLContent.Checked.ToString());
             int maxVersions;
             if (int.TryParse(ddlMaxVersions.SelectedValue, out maxVersions))
             {
-                App.Services.CreateGlobalSettingsRepository().SetMaxVersions(maxVersions);
+                globalSettingsRepository.SetMaxVersions(maxVersions);
 
             }
-            App.Services.CreateGlobalSettingsRepository().SetLoggingScope(ddlLogging.SelectedValue);
+            globalSettingsRepository.SetLoggingScope(ddlLogging.SelectedValue);
             int editLayout;
             if (int.TryParse(ddlEditLayout.SelectedValue, out editLayout))
             {
-                App.Services.CreateGlobalSettingsRepository().SetEditLayout((AlpacaLayoutEnum)editLayout);
+                globalSettingsRepository.SetEditLayout((AlpacaLayoutEnum)editLayout);
             }
-            App.Services.CreateGlobalSettingsRepository().SetLoadBootstrap(cbLoadBootstrap.Checked);
-            App.Services.CreateGlobalSettingsRepository().SetGoogleApiKey(tbGoogleApiKey.Text);
-            App.Services.CreateGlobalSettingsRepository().SetFastHandlebars(cbFastHandlebars.Checked);
+            globalSettingsRepository.SetLoadBootstrap(cbLoadBootstrap.Checked);
+            globalSettingsRepository.SetGoogleApiKey(tbGoogleApiKey.Text);
+            globalSettingsRepository.SetFastHandlebars(cbFastHandlebars.Checked);
 
 
             Response.Redirect(Globals.NavigateURL(), true);

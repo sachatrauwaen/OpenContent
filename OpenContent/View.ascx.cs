@@ -60,7 +60,7 @@ namespace Satrabel.OpenContent
             base.OnInit(e);
             ModuleInfo module = ModuleContext.Configuration;
 
-            if (App.Services.CreateGlobalSettingsRepository().GetAutoAttach())
+            if (App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetAutoAttach())
             {
                 // auto attach a ContentLocalized OpenContent module to the reference module of the default language
                 AutoAttachLocalizedModule(ref module);
@@ -261,9 +261,10 @@ namespace Satrabel.OpenContent
         {
             if (ModuleContext.PortalSettings.UserId > 0)
             {
-                if (!string.IsNullOrEmpty(App.Services.CreateGlobalSettingsRepository().GetEditorRoleId()))
+                var roleIdStr = App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetEditorRoleId();
+                if (!string.IsNullOrEmpty(roleIdStr))
                 {
-                    int roleId = int.Parse(App.Services.CreateGlobalSettingsRepository().GetEditorRoleId());
+                    int roleId = int.Parse(roleIdStr);
                     var objModule = ModuleContext.Configuration;
                     //todo: probable DNN bug.  objModule.ModulePermissions doesn't return correct permissions for attached multi-lingual modules
                     //don't alter permissions of modules that are non-default language and that are attached

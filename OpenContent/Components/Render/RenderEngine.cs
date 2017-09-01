@@ -638,7 +638,7 @@ namespace Satrabel.OpenContent.Components.Render
                     }
                     else // handlebars
                     {
-                        if (App.Services.CreateGlobalSettingsRepository().GetFastHandlebars())
+                        if (App.Services.CreateGlobalSettingsRepository(_module.PortalId).GetFastHandlebars())
                             model = mf.GetModelAsDictionary();
                         else
                             model = mf.GetModelAsDynamic();

@@ -1,5 +1,6 @@
 using System;
 using DotNetNuke.Entities.Modules;
+using System.Collections;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -9,7 +10,7 @@ namespace Satrabel.OpenContent.Components
     public class OpenContentModuleInfo
     {
         [Obsolete("This method is obsolete since aug 2017; use another constructor instead")]
-        public OpenContentModuleInfo(ModuleInfo activeModule, System.Collections.Hashtable moduleSettings)
+        public OpenContentModuleInfo(ModuleInfo activeModule, Hashtable moduleSettings)
         {
             ModuleId = activeModule.ModuleID;
             ModuleTitle = activeModule.ModuleTitle;
