@@ -256,7 +256,7 @@ namespace Satrabel.OpenContent.Components.Render
                 model["Context"] = context;
                 context["TabId"] = _module.ViewModule.TabId;
                 context["ModuleId"] = _module.ViewModule.ModuleId;
-                context["GoogleApiKey"] = App.Services.GlobalSettings(_portalId).GetGoogleApiKey();
+                context["GoogleApiKey"] = App.Services.CreateGlobalSettingsRepository(_portalId).GetGoogleApiKey();
                 context["ModuleTitle"] = _module.ViewModule.ModuleTitle;
                 var editIsAllowed = !_manifest.DisableEdit && IsEditAllowed(-1);
                 context["IsEditable"] = editIsAllowed; //allowed to edit the item or list (meaning allow Add)
@@ -287,7 +287,7 @@ namespace Satrabel.OpenContent.Components.Render
                         }
                         additionalDataJson = json;
                     }
-                    if (App.Services.GlobalSettings(_portalId).GetFastHandlebars())
+                    if (App.Services.CreateGlobalSettingsRepository(_portalId).GetFastHandlebars())
                         _additionalData[(item.Value.ModelKey ?? item.Key)] = additionalDataJson;
                     else
                         _additionalData[(item.Value.ModelKey ?? item.Key).ToLowerInvariant()] = additionalDataJson;

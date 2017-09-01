@@ -8,6 +8,13 @@ namespace Satrabel.OpenContent.Components.Files
 {
     public class DnnFileRepositoryAdapter : IFileRepositoryAdapter
     {
+        private ICacheAdapter _cacheAdapter;
+
+        public DnnFileRepositoryAdapter(ICacheAdapter cacheAdapter)
+        {
+            _cacheAdapter = cacheAdapter;
+        }
+
         public T LoadJsonFileFromCacheOrDisk<T>(FileUri file)
         {
             try
@@ -16,12 +23,12 @@ namespace Satrabel.OpenContent.Components.Files
                 if (file.FileExists)
                 {
                     string cacheKey = file.FilePath;
-                    jsonObject = App.Services.CacheAdapter.GetCache<T>(cacheKey);
+                    jsonObject = _cacheAdapter.GetCache<T>(cacheKey);
                     if (jsonObject == null)
                     {
                         string content = File.ReadAllText(file.PhysicalFilePath);
                         jsonObject = JsonConvert.DeserializeObject<T>(content);
-                        App.Services.CacheAdapter.SetCache(cacheKey, jsonObject, file.PhysicalFilePath);
+                        _cacheAdapter.SetCache(cacheKey, jsonObject, file.PhysicalFilePath);
                     }
                 }
                 return jsonObject;
@@ -44,7 +51,7 @@ namespace Satrabel.OpenContent.Components.Files
 
                 if (json != null)
                 {
-                    App.Services.CacheAdapter.SetCache(cacheKey, json, fileUri.PhysicalFilePath);
+                    _cacheAdapter.SetCache(cacheKey, json, fileUri.PhysicalFilePath);
                 }
             }
             return json;

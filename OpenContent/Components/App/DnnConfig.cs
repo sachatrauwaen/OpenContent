@@ -5,7 +5,7 @@ using Satrabel.OpenContent.Components.Lucene;
 
 namespace Satrabel.OpenContent.Components
 {
-    public class MyConfig : IAppConfig
+    public class DnnConfig : IAppConfig
     {
 
         #region Constants - explicitly defined to make it easier to see where they are used.

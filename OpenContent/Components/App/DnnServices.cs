@@ -11,23 +11,23 @@ namespace Satrabel.OpenContent.Components
     /// <summary>
     /// Configure all Services here
     /// </summary>
-    public class MyServices : IAppServices
+    public class DnnServices : IAppServices
     {
 
         /// <summary>
-        /// Initializes the <see cref="MyServices"/> class.
+        /// Initializes the <see cref="DnnServices"/> class.
         /// All Thread-safe / cross-portal services go here. 
         /// </summary>
         /// <remarks>
         /// We use Lazy() to make sure service objects don't get created immediatly, as this might cause loops when the underlying services call other services.
         /// Also Lazy() ensures that objects are not created when never called. But that is not relevant with cross-portal services as they always get used at some point.
         /// </remarks>
-        static MyServices()
+        static DnnServices()
         {
             _Localizer = new Lazy<ILocalizationAdapter>(() => new DnnLocalizationAdapter());
-            _Logger = new Lazy<ILogAdapter>(() => DnnLogAdapter.GetLogAdapter(App.Config.Opencontent));
+            _Logger = new Lazy<ILogAdapter>(() => new DnnLogAdapter(App.Config.Opencontent));
             _Cacher = new Lazy<ICacheAdapter>(() => new DnnCacheAdapter());
-            _FileRepos = new Lazy<IFileRepositoryAdapter>(() => new DnnFileRepositoryAdapter());
+            _FileRepos = new Lazy<IFileRepositoryAdapter>(() => new DnnFileRepositoryAdapter(_Cacher.Value));
             _ClientResourcer = new Lazy<IClientResourceManager>(() => new DnnClientResourceManager());
         }
 
@@ -47,12 +47,16 @@ namespace Satrabel.OpenContent.Components
         public IClientResourceManager ClientResourceManager => _ClientResourcer.Value;
 
 
-        public IGlobalSettingsRepositoryAdapter GlobalSettings(int tenantId = -1)
+        public IGlobalSettingsRepository CreateGlobalSettingsRepository(int tenantId = -1)
         {
             if (tenantId < 0)
-                return new DnnGlobalSettingsRepositoryAdapter(PortalSettings.Current.PortalId);
+                return new DnnGlobalSettingsRepository(PortalSettings.Current.PortalId);
             else
-                return new DnnGlobalSettingsRepositoryAdapter(tenantId);
+                return new DnnGlobalSettingsRepository(tenantId);
+        }
+
+        public ILogAdapter CreateLogger(Type type) {
+            return new DnnLogAdapter(type);
         }
     }
 }

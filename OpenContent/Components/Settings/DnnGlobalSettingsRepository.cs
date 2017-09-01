@@ -5,7 +5,7 @@ using Satrabel.OpenContent.Components.Dnn;
 namespace Satrabel.OpenContent.Components.Settings
 {
 
-    public class DnnGlobalSettingsRepositoryAdapter : IGlobalSettingsRepositoryAdapter
+    public class DnnGlobalSettingsRepository : IGlobalSettingsRepository
     {
         private readonly int _portalId;
 
@@ -19,7 +19,7 @@ namespace Satrabel.OpenContent.Components.Settings
         private const string SETTINGS_FAST_HANDLEBARS = "OpenContent_FastHandlebars";
         private const bool SETTINGS_DEFAULT_FAST_HANDLEBARS = false;
 
-        public DnnGlobalSettingsRepositoryAdapter(int portalId)
+        public DnnGlobalSettingsRepository(int portalId)
         {
             _portalId = portalId;
         }

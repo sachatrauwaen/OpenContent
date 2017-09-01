@@ -41,7 +41,7 @@ namespace Satrabel.OpenContent.Components
 {
     public class FileUploadController : DnnApiController
     {
-        private static readonly ILogAdapter Logger = App.Services.Logger.GetLogAdapter(typeof(FileUploadController));
+        private static readonly ILogAdapter Logger = App.Services.CreateLogger(typeof(FileUploadController));
         private readonly IFileManager _fileManager = FileManager.Instance;
         private readonly IFolderManager _folderManager = FolderManager.Instance;
 

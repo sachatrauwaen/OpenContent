@@ -4,6 +4,7 @@
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -194,10 +195,10 @@
     <Compile Include="Components\Files\DnnFileRepositoryAdapter.cs" />
     <Compile Include="Components\App\IAppServices.cs" />
     <Compile Include="Components\Files\IFileRepositoryAdapter.cs" />
-    <Compile Include="Components\App\MyServices.cs" />
+    <Compile Include="Components\App\DnnServices.cs" />
     <Compile Include="Components\Caching\DnnCacheAdapter.cs" />
     <Compile Include="Components\Caching\ICacheAdapter.cs" />
-    <Compile Include="Components\App\MyConfig.cs" />
+    <Compile Include="Components\App\DnnConfig.cs" />
     <Compile Include="Components\App\App.cs" />
     <Compile Include="Components\Common\ObjectId.cs" />
     <Compile Include="Components\Datasource\DataNotValidException.cs" />

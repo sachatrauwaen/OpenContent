@@ -2,7 +2,7 @@
 
 namespace Satrabel.OpenContent.Components.Dnn
 {
-    public interface IGlobalSettingsRepositoryAdapter
+    public interface IGlobalSettingsRepository
     {
         int GetMaxVersions();
         void SetMaxVersions(int maxVersions);

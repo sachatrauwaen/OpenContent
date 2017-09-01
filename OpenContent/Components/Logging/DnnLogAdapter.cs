@@ -14,28 +14,18 @@ namespace Satrabel.OpenContent.Components.Logging
 
         #region Constructors
 
-        private DnnLogAdapter(Type type)
+        public DnnLogAdapter(Type type)
         {
             _dnnILog = LoggerSource.Instance.GetLogger(type);
         }
 
-        private DnnLogAdapter(string name)
+        public DnnLogAdapter(string name)
         {
             _dnnILog = LoggerSource.Instance.GetLogger(name);
         }
 
         #endregion
-
-        public static ILogAdapter GetLogAdapter(string name)
-        {
-            return new DnnLogAdapter(name);
-        }
-
-        public ILogAdapter GetLogAdapter(Type type)
-        {
-            return new DnnLogAdapter(type);
-        }
-
+       
         public void Error(string message)
         {
             _dnnILog.Error(message);

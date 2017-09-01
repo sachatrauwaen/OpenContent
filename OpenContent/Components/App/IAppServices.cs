@@ -1,6 +1,7 @@
 ﻿using Satrabel.OpenContent.Components.Dnn;
 using Satrabel.OpenContent.Components.Files;
 using Satrabel.OpenContent.Components.Localization;
+using System;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -10,7 +11,8 @@ namespace Satrabel.OpenContent.Components
         ILocalizationAdapter Localizer { get; }
         ICacheAdapter CacheAdapter { get; }
         IFileRepositoryAdapter FileRepository { get; }
-        IGlobalSettingsRepositoryAdapter GlobalSettings(int tenantId = -1);
+        IGlobalSettingsRepository CreateGlobalSettingsRepository(int tenantId = -1);
         IClientResourceManager ClientResourceManager { get; }
+        ILogAdapter CreateLogger(Type type);
     }
 }

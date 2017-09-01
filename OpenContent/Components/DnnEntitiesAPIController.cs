@@ -36,7 +36,7 @@ namespace Satrabel.OpenContent.Components
 
     public class DnnEntitiesAPIController : DnnApiController
     {
-        private static readonly ILogAdapter Logger = App.Services.Logger.GetLogAdapter(typeof(DnnEntitiesAPIController));
+        private static readonly ILogAdapter Logger = App.Services.CreateLogger(typeof(DnnEntitiesAPIController));
 
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
