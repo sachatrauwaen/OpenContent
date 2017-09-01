@@ -191,7 +191,6 @@
     <Compile Include="Components\Render\DnnRenderContext.cs" />
     <Compile Include="Components\Files\DnnClientResourceManager.cs" />
     <Compile Include="Components\Files\IClientResourceManager.cs" />
-    <Compile Include="Components\Settings\IGlobalSettingsRepositoryAdapter.cs" />
     <Compile Include="Components\Files\DnnFileRepositoryAdapter.cs" />
     <Compile Include="Components\App\IAppServices.cs" />
     <Compile Include="Components\Files\IFileRepositoryAdapter.cs" />
@@ -229,11 +228,12 @@
     <Compile Include="Components\Manifest\CollectionManifest.cs" />
     <Compile Include="Components\Manifest\OpenContentModuleConfig.cs" />
     <Compile Include="Components\Datasource\DnnTabsDataSource.cs" />
-    <Compile Include="Components\Settings\DnnGlobalSettingsRepositoryAdapter.cs" />
     <Compile Include="Components\Render\ModelFactoryBase.cs" />
     <Compile Include="Components\Render\ModelFactoryMultiple.cs" />
     <Compile Include="Components\Render\ModelFactorySingle.cs" />
     <Compile Include="Components\Rest\V2\RestController.cs" />
+    <Compile Include="Components\Settings\DnnGlobalSettingsRepository.cs" />
+    <Compile Include="Components\Settings\IGlobalSettingsRepository.cs" />
     <Compile Include="Components\Settings\OpenContentSettingsExtentions.cs" />
     <Compile Include="Components\Settings\ComponentSettingsInfo.cs" />
     <Compile Include="Components\TemplateHelpers\FormHelpers.cs" />
