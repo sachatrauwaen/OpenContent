@@ -181,7 +181,7 @@
     <Compile Include="Components\Export\ExcelApiController.cs" />
     <Compile Include="Components\Files\FileUriUtils.cs" />
     <Compile Include="Components\Localization\LocalizationUtils.cs" />
-    <Compile Include="Components\Logging\Log.cs" />
+    <Compile Include="Components\Logging\Logger.cs" />
     <Compile Include="Components\Lucene\LuceneUtils.cs" />
     <Compile Include="Components\Lucene\LuceneController.cs" />
     <Compile Include="Components\Manifest\OpenContentModuleInfo.cs" />
