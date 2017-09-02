@@ -27,7 +27,6 @@ namespace Satrabel.OpenContent.Components
             _Localizer = new Lazy<ILocalizationAdapter>(() => new DnnLocalizationAdapter());
             _Logger = new Lazy<ILogAdapter>(() => new DnnLogAdapter(App.Config.Opencontent));
             _Cacher = new Lazy<ICacheAdapter>(() => new DnnCacheAdapter());
-            _FileRepos = new Lazy<IFileRepositoryAdapter>(() => new DnnFileRepositoryAdapter(_Cacher.Value));
             _ClientResourcer = new Lazy<IClientResourceManager>(() => new DnnClientResourceManager());
         }
 
@@ -35,7 +34,6 @@ namespace Satrabel.OpenContent.Components
         private static readonly Lazy<ILocalizationAdapter> _Localizer;
         private static readonly Lazy<ILogAdapter> _Logger;
         private static readonly Lazy<ICacheAdapter> _Cacher;
-        private static readonly Lazy<IFileRepositoryAdapter> _FileRepos;
         private static readonly Lazy<IClientResourceManager> _ClientResourcer;
 
 
@@ -43,7 +41,6 @@ namespace Satrabel.OpenContent.Components
         public ILocalizationAdapter Localizer => _Localizer.Value;
         public ILogAdapter Logger => _Logger.Value;
         public ICacheAdapter CacheAdapter => _Cacher.Value;
-        public IFileRepositoryAdapter FileRepository => _FileRepos.Value;
         public IClientResourceManager ClientResourceManager => _ClientResourcer.Value;
 
 

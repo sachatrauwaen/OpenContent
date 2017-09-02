@@ -10,7 +10,6 @@ namespace Satrabel.OpenContent.Components
         ILogAdapter Logger { get; }
         ILocalizationAdapter Localizer { get; }
         ICacheAdapter CacheAdapter { get; }
-        IFileRepositoryAdapter FileRepository { get; }
         IGlobalSettingsRepository CreateGlobalSettingsRepository(int tenantId = -1);
         IClientResourceManager ClientResourceManager { get; }
         ILogAdapter CreateLogger(Type type);

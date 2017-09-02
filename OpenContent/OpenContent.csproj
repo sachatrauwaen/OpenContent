@@ -191,9 +191,7 @@
     <Compile Include="Components\Render\DnnRenderContext.cs" />
     <Compile Include="Components\Files\DnnClientResourceManager.cs" />
     <Compile Include="Components\Files\IClientResourceManager.cs" />
-    <Compile Include="Components\Files\DnnFileRepositoryAdapter.cs" />
     <Compile Include="Components\App\IAppServices.cs" />
-    <Compile Include="Components\Files\IFileRepositoryAdapter.cs" />
     <Compile Include="Components\App\DnnServices.cs" />
     <Compile Include="Components\Caching\DnnCacheAdapter.cs" />
     <Compile Include="Components\Caching\ICacheAdapter.cs" />

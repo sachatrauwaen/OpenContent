@@ -11,6 +11,8 @@ using System.IO;
 using DotNetNuke.Common.Utilities;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Services.Cache;
+using Newtonsoft.Json;
+using Satrabel.OpenContent.Components.Files;
 
 namespace Satrabel.OpenContent.Components.Json
 {
@@ -22,16 +24,71 @@ namespace Satrabel.OpenContent.Components.Json
             return jsonData.Trim().Substring(0, 1).IndexOfAny(new[] { '[', '{' }) == 0;
         }
 
-        [Obsolete("This method is obsolete since aug 2017; use App.Services.FileRepository.LoadJsonFromCacheOrDisk() instead")]
+        [Obsolete("This method is obsolete since aug 2017; use LoadJsonFromCacheOrDisk() instead")]
         public static JToken LoadJsonFromFile(string filename)
         {
-            return App.Services.FileRepository.LoadJsonFromCacheOrDisk(new FileUri(filename));
+            return LoadJsonFromCacheOrDisk(new FileUri(filename));
         }
 
-        [Obsolete("This method is obsolete since aug 2017; use App.Services.FileRepository.LoadJsonFileFromDisk() instead")]
+        [Obsolete("This method is obsolete since aug 2017; use LoadJsonFileFromDisk() instead")]
         public static JObject GetJsonFromFile(string filename)
         {
-            return App.Services.FileRepository.LoadJsonFileFromDisk(filename) as JObject;
+            return LoadJsonFileFromDisk(filename) as JObject;
+        }
+
+        public static T LoadJsonFileFromCacheOrDisk<T>(FileUri file)
+        {
+            try
+            {
+                T jsonObject = default(T);
+                if (file.FileExists)
+                {
+                    string cacheKey = file.FilePath;
+                    jsonObject = App.Services.CacheAdapter.GetCache<T>(cacheKey);
+                    if (jsonObject == null)
+                    {
+                        string content = File.ReadAllText(file.PhysicalFilePath);
+                        jsonObject = JsonConvert.DeserializeObject<T>(content);
+                        App.Services.CacheAdapter.SetCache(cacheKey, jsonObject, file.PhysicalFilePath);
+                    }
+                }
+                return jsonObject;
+            }
+            catch (Exception ex)
+            {
+                App.Services.Logger.Error($"Failed to load json file {file.FilePath}. Error: {ex}");
+                throw;
+            }
+        }
+
+        public static JToken LoadJsonFromCacheOrDisk(FileUri fileUri)
+        {
+            string cacheKey = fileUri.FilePath;
+            var json = App.Services.CacheAdapter.GetCache<JObject>(cacheKey);
+            if (json == null)
+            {
+                var fileContent = FileUriUtils.ReadFileFromDisk(fileUri);
+                json = fileContent.ToJObject($"file [{fileUri.FilePath}]") as JObject;
+
+                if (json != null)
+                {
+                    App.Services.CacheAdapter.SetCache(cacheKey, json, fileUri.PhysicalFilePath);
+                }
+            }
+            return json;
+        }
+
+        public static JToken LoadJsonFileFromDisk(string filename)
+        {
+            if (!File.Exists(filename)) return null;
+
+            JToken json = null;
+            string fileContent = File.ReadAllText(filename);
+            if (!string.IsNullOrWhiteSpace(fileContent))
+            {
+                json = fileContent.ToJObject($"file [{filename}]") as JObject;
+            }
+            return json;
         }
 
         public static dynamic JsonToDynamic(string json)

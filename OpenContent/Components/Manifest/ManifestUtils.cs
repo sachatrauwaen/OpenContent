@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Satrabel.OpenContent.Components.Json;
 
 namespace Satrabel.OpenContent.Components.Manifest
 {
@@ -54,7 +55,7 @@ namespace Satrabel.OpenContent.Components.Manifest
             try
             {
                 var file = new FileUri(folder, "manifest.json");
-                var manifest = App.Services.FileRepository.LoadJsonFileFromCacheOrDisk<Manifest>(file);
+                var manifest = JsonUtils.LoadJsonFileFromCacheOrDisk<Manifest>(file);
                 return manifest;
             }
             catch (Exception ex)

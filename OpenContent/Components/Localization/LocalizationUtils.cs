@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using Satrabel.OpenContent.Components.Json;
 
 namespace Satrabel.OpenContent.Components.Localization
 {
@@ -19,14 +20,14 @@ namespace Satrabel.OpenContent.Components.Localization
         {
             // try loading localization files without prefix (for backwards compatibility)
             var localizationFilename = new FileUri(templateDir, $"{culture}.json");
-            var localizationJson = App.Services.FileRepository.LoadJsonFromCacheOrDisk(localizationFilename) as JObject;
+            var localizationJson = JsonUtils.LoadJsonFromCacheOrDisk(localizationFilename) as JObject;
             return localizationJson;
         }
 
         public static JObject LoadLocalizationJsonV2(FolderUri templateDir, string culture)
         {
             var localizationFilename = new FileUri(templateDir, $"localization.{culture}.json");
-            JObject localizationJson = App.Services.FileRepository.LoadJsonFromCacheOrDisk(localizationFilename) as JObject;
+            JObject localizationJson = JsonUtils.LoadJsonFromCacheOrDisk(localizationFilename) as JObject;
             return localizationJson;
         }
     }

@@ -236,21 +236,21 @@ namespace Satrabel.OpenContent.Components.Alpaca
             // schema
             if (schema)
             {
-                var schemaJson = App.Services.FileRepository.LoadJsonFromCacheOrDisk(new FileUri(_templateUri, $"{prefix}schema.json"));
+                var schemaJson = JsonUtils.LoadJsonFromCacheOrDisk(new FileUri(_templateUri, $"{prefix}schema.json"));
                 if (schemaJson != null)
                     json["schema"] = schemaJson;
             }
             // default options
             if (options)
             {
-                var optionsJson = App.Services.FileRepository.LoadJsonFromCacheOrDisk(new FileUri(_templateUri, $"{prefix}options.json"));
+                var optionsJson = JsonUtils.LoadJsonFromCacheOrDisk(new FileUri(_templateUri, $"{prefix}options.json"));
                 if (optionsJson != null)
                 {
                     json["options"] = optionsJson;
                     if (translations)
                     {
                         // language options
-                        optionsJson = App.Services.FileRepository.LoadJsonFromCacheOrDisk(new FileUri(_templateUri, $"{prefix}options.{currentCultureCode}.json"));
+                        optionsJson = JsonUtils.LoadJsonFromCacheOrDisk(new FileUri(_templateUri, $"{prefix}options.{currentCultureCode}.json"));
                         json["options"] = json["options"].JsonMerge(optionsJson);
                     }
                 }
@@ -258,7 +258,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
             // view
             if (view)
             {
-                var viewJson = App.Services.FileRepository.LoadJsonFromCacheOrDisk(new FileUri(_templateUri, $"{prefix}view.json"));
+                var viewJson = JsonUtils.LoadJsonFromCacheOrDisk(new FileUri(_templateUri, $"{prefix}view.json"));
                 if (viewJson != null)
                     json["view"] = viewJson;
             }
@@ -269,7 +269,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
         {
             string prefix = (string.IsNullOrEmpty(key) || key == "Items") ? "" : key + "-";
             var file = new FileUri(_templateUri, $"{prefix}index.json");
-            FieldConfig newConfig = App.Services.FileRepository.LoadJsonFileFromCacheOrDisk<FieldConfig>(file);
+            FieldConfig newConfig = JsonUtils.LoadJsonFileFromCacheOrDisk<FieldConfig>(file);
             if (newConfig == null)
             {
                 newConfig = CreateFieldConfigFromSchemaAndOptionFile(key);

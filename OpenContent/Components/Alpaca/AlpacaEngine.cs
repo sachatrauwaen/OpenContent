@@ -241,11 +241,11 @@ namespace Satrabel.OpenContent.Components.Alpaca
             string physicalDirectory = HostingEnvironment.MapPath("~/" + VirtualDirectory);
             string optionsFilename = physicalDirectory + "\\" + $"{prefix}options.json";
             // default options
-            JToken optionsJson = App.Services.FileRepository.LoadJsonFileFromDisk(optionsFilename);
+            JToken optionsJson = JsonUtils.LoadJsonFileFromDisk(optionsFilename);
 
             // language options
             optionsFilename = physicalDirectory + "\\" + $"{prefix}options.{DnnLanguageUtils.GetCurrentCultureCode()}.json";
-            JToken languageOptionsJson = App.Services.FileRepository.LoadJsonFileFromDisk(optionsFilename);
+            JToken languageOptionsJson = JsonUtils.LoadJsonFileFromDisk(optionsFilename);
             optionsJson = optionsJson.JsonMerge(languageOptionsJson);
 
             return optionsJson;
