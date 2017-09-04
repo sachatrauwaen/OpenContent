@@ -1116,6 +1116,11 @@
     <Content Include="formsettings-schema.json" />
     <Content Include="Providers\DataProviders\SqlDataProvider\03.02.00.SqlDataProvider" />
     <Content Include="js\oc.codemirror.js" />
+    <Content Include="css\font-awesome\fonts\fontawesome-webfont.eot" />
+    <Content Include="css\font-awesome\fonts\fontawesome-webfont.ttf" />
+    <Content Include="css\font-awesome\fonts\fontawesome-webfont.woff" />
+    <Content Include="css\font-awesome\fonts\fontawesome-webfont.woff2" />
+    <Content Include="css\font-awesome\fonts\FontAwesome.otf" />
     <None Include="Scripts\_references.js" />
     <Content Include="js\select2\i18n\az.js" />
     <Content Include="js\select2\i18n\bg.js" />
@@ -1205,13 +1210,6 @@
   <ItemGroup>
     <Content Include="Providers\DataProviders\SqlDataProvider\00.00.01.SqlDataProvider" />
     <Content Include="Providers\DataProviders\SqlDataProvider\Uninstall.SqlDataProvider" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="css\font-awesome\fonts\fontawesome-webfont.eot" />
-    <Content Include="css\font-awesome\fonts\fontawesome-webfont.ttf" />
-    <Content Include="css\font-awesome\fonts\fontawesome-webfont.woff" />
-    <Content Include="css\font-awesome\fonts\fontawesome-webfont.woff2" />
-    <Content Include="css\font-awesome\fonts\FontAwesome.otf" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Templates\web.config">
