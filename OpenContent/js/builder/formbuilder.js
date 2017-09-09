@@ -93,6 +93,7 @@ function getSchema(formdef) {
         "textarea": "string",
         "array": "array",
         "table": "array",
+        "accordion": "array",
         "multicheckbox": "array",
         "file": "string",
         "url": "string",
@@ -162,7 +163,7 @@ function getSchema(formdef) {
             }
             prop.dependencies = deps;
         }
-        if (value.fieldtype == "array" || value.fieldtype == "table") {
+        if (value.fieldtype == "array" || value.fieldtype == "table" || value.fieldtype == "accordion") {
 
             if (!value.subfields) {
                 prop.items = {};
@@ -326,7 +327,7 @@ var baseFields = function (index, value, oldOptions) {
             }
         }
     }
-    if (value.fieldtype == "array" || value.fieldtype == "table") {
+    if (value.fieldtype == "array" || value.fieldtype == "table" || value.fieldtype == "accordion") {
         //field.toolbarSticky = true;
         if (!value.subfields) {
             field.items = {};
@@ -432,6 +433,9 @@ function getView(formdef) {
             }
         }
     };
+    if (formdef.formtype == "array") {
+        return view.parent;
+    }
     if (formdef.formfields) {
         var row = 0;
         var lastCols = 0;
@@ -525,7 +529,7 @@ var fieldSchema =
             "title": "Type",
             "enum": ["text", "checkbox", "multicheckbox", "select", "radio", "textarea", "email", "date", "number",
                         "image", "file", "url", "icon", "guid", "address",
-                        "array", "table", "relation",
+                        "array", "table", "accordion", "relation",
                         "folder2", "file2", "url2","role2", "image2",
                         "imagecrop",
                         "wysihtml", "summernote", "ckeditor", "gallery", "documents", "object" /*,
@@ -757,8 +761,6 @@ var fieldSchema =
     }
 };
 
-
-
 fieldSchema.properties.subfields.items = fieldSchema;
 
 var fieldOptions =
@@ -783,10 +785,10 @@ var fieldOptions =
     "fieldtype": {
         "optionLabels": ["Text", "Checkbox", "Multi checkbox", "Dropdown list (select)", "Radio buttons", "Text area", "Email address", "Date", "Number",
                             "Image (upload & autocomplete)", "File (upload & autocomplete)", "Url (autocomplete for pages)", "Font Awesome Icons", "Guid (auto id)", "Address (autocomplete & geocode)",
-                            "List (array)", "Table (array)", "Relation (Additional Data)",
+                            "List (Panels)", "List (Table)", "List (Accordion)", "Relation (Additional Data)",
                             "Folder2 (folderID)", "File2 (fileID)", "Url2 (tabID)", "Role2 (roleID)", "Image2 (fileID)",
                             "Image (with croppper)",
-                            "Wysihtml", "Summernote", "CK Editor", "Image Gallery", "Documents", "Group (object)" /*,
+                            "Html (Wysihtml)", "Html (Summernote)", "Html (CK Editor)", "Image Gallery", "Documents", "Group (object)" /*,
                             "Publish status", "Publish start date", "Publish end date"*/]
     },
     "fieldoptions": {
@@ -819,11 +821,13 @@ var fieldOptions =
     },
     "subfields": {
         "collapsible": true,
+        "type": "accordion",
         "items": {
-            "fieldClass": "listfielddiv"
+            "fieldClass": "listfielddiv",
+            "titleField": "fieldname"
         },
         "dependencies": {
-            "fieldtype": ["array", "table", "object"]
+            "fieldtype": ["array", "table", "accordion", "object"]
         }
     },
     "relationoptions": {
@@ -933,11 +937,13 @@ var formbuilderConfig = {
     "options": {
         "fields": {
             "formfields": {
+                "type": "accordion",
                 "toolbarSticky": true,
                 "items": {
                     //"collapsible": true,
                     "fieldClass": "fielddiv",
-                    "fields": fieldOptions
+                    "fields": fieldOptions,
+                    "titleField":"fieldname"
                 }
             },
             "formtype": {

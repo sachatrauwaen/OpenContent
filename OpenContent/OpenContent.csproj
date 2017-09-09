@@ -4,6 +4,7 @@
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -366,6 +367,7 @@
     <Compile Include="Components\Common\Utils.cs" />
     <Compile Include="Components\UrlRewriter\OpenContentUrlRule.cs" />
     <Compile Include="Components\UrlRewriter\OpenContentUrlProvider.cs" />
+    <Compile Include="GroupedDropDownList.cs" />
     <Compile Include="EditFormSettings.ascx.cs">
       <DependentUpon>EditFormSettings.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -498,6 +500,7 @@
     <Content Include="alpaca\js\fields\dnn\dnnfields.min.js">
       <DependentUpon>dnnfields.js</DependentUpon>
     </Content>
+    <Content Include="alpaca\js\fields\dnn\AccordionField.js" />
     <Content Include="alpaca\js\fields\dnn\User2Field.js" />
     <Content Include="alpaca\js\fields\dnn\Folder2Field.js" />
     <Content Include="alpaca\js\fields\dnn\GalleryField.js" />
@@ -535,6 +538,8 @@
     <Content Include="alpaca\js\fields\dnn\wysihtmlField.js" />
     <Content Include="alpaca\js\views\dnnbootstrap.js" />
     <Content Include="alpaca\js\views\dnn.js" />
+    <Content Include="alpaca\templates\dnn-edit\container-accordion-item.html" />
+    <Content Include="alpaca\templates\dnn-edit\container-accordion.html" />
     <Content Include="alpaca\templates\dnn-edit\container.html" />
     <Content Include="alpaca\templates\dnn-edit\control-checkbox.html" />
     <Content Include="alpaca\templates\dnn-edit\control-file.html" />
@@ -566,6 +571,34 @@
     <Content Include="js\bootstrap\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="js\bootstrap\js\bootstrap.js" />
     <Content Include="js\bootstrap\js\bootstrap.min.js" />
+    <Content Include="js\CodeMirror\addon\hint\anyword-hint.js" />
+    <Content Include="js\CodeMirror\addon\hint\css-hint.js" />
+    <Content Include="js\CodeMirror\addon\hint\html-hint.js" />
+    <Content Include="js\CodeMirror\addon\hint\javascript-hint.js" />
+    <Content Include="js\CodeMirror\addon\hint\show-hint.css" />
+    <Content Include="js\CodeMirror\addon\hint\show-hint.js" />
+    <Content Include="js\CodeMirror\addon\hint\sql-hint.js" />
+    <Content Include="js\CodeMirror\addon\hint\xml-hint.js" />
+    <Content Include="js\CodeMirror\addon\lint\coffeescript-lint.js" />
+    <Content Include="js\CodeMirror\addon\lint\css-lint.js" />
+    <Content Include="js\CodeMirror\addon\lint\html-lint.js" />
+    <Content Include="js\CodeMirror\addon\lint\javascript-lint.js" />
+    <Content Include="js\CodeMirror\addon\lint\json-lint.js" />
+    <Content Include="js\CodeMirror\addon\lint\lint.css" />
+    <Content Include="js\CodeMirror\addon\lint\lint.js" />
+    <Content Include="js\CodeMirror\addon\lint\yaml-lint.js" />
+    <Content Include="js\CodeMirror\csslint.js" />
+    <Content Include="js\CodeMirror\jshint.js" />
+    <Content Include="js\CodeMirror\jsonlint.js" />
+    <Content Include="js\CodeMirror\lib\codemirror.css" />
+    <Content Include="js\CodeMirror\lib\codemirror.js" />
+    <Content Include="js\CodeMirror\mode\clike\clike.js" />
+    <Content Include="js\CodeMirror\mode\css\css.js" />
+    <Content Include="js\CodeMirror\mode\htmlmixed\htmlmixed.js" />
+    <Content Include="js\CodeMirror\mode\javascript\javascript.js" />
+    <Content Include="js\CodeMirror\mode\vb\vb.js" />
+    <Content Include="js\CodeMirror\mode\vue\vue.js" />
+    <Content Include="js\CodeMirror\mode\xml\xml.js" />
     <Content Include="js\jplist\ajax-loader-line.gif" />
     <Content Include="js\jplist\ajax-loader.gif" />
     <Content Include="js\jplist\grid-btn-disabled.png" />
@@ -1082,6 +1115,12 @@
     <Content Include="formsettings-options.json" />
     <Content Include="formsettings-schema.json" />
     <Content Include="Providers\DataProviders\SqlDataProvider\03.02.00.SqlDataProvider" />
+    <Content Include="js\oc.codemirror.js" />
+    <Content Include="css\font-awesome\fonts\fontawesome-webfont.eot" />
+    <Content Include="css\font-awesome\fonts\fontawesome-webfont.ttf" />
+    <Content Include="css\font-awesome\fonts\fontawesome-webfont.woff" />
+    <Content Include="css\font-awesome\fonts\fontawesome-webfont.woff2" />
+    <Content Include="css\font-awesome\fonts\FontAwesome.otf" />
     <None Include="Scripts\_references.js" />
     <Content Include="js\select2\i18n\az.js" />
     <Content Include="js\select2\i18n\bg.js" />
@@ -1171,13 +1210,6 @@
   <ItemGroup>
     <Content Include="Providers\DataProviders\SqlDataProvider\00.00.01.SqlDataProvider" />
     <Content Include="Providers\DataProviders\SqlDataProvider\Uninstall.SqlDataProvider" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="css\font-awesome\fonts\fontawesome-webfont.eot" />
-    <Content Include="css\font-awesome\fonts\fontawesome-webfont.ttf" />
-    <Content Include="css\font-awesome\fonts\fontawesome-webfont.woff" />
-    <Content Include="css\font-awesome\fonts\fontawesome-webfont.woff2" />
-    <Content Include="css\font-awesome\fonts\FontAwesome.otf" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Templates\web.config">

@@ -1,0 +1,50 @@
+<script type="text/x-handlebars-template" id="dnn-edit-container-accordion-item">
+    <div>
+        {{#compare actionbarStyle "left"}}
+        <div class="pull-left">
+            {{#arrayActionbar}}{{/arrayActionbar}}
+        </div>
+        <div class="pull-right">
+            {{#itemField}}{{/itemField}}
+        </div>
+        <div class="clear"></div>
+        {{else}}
+        {{#compare actionbarStyle "right"}}
+        <div class="pull-left">
+            {{#itemField}}{{/itemField}}
+        </div>
+        <div class="pull-right">
+            {{#arrayActionbar}}{{/arrayActionbar}}
+        </div>
+        <div class="alpaca-clear"></div>
+        {{else}}
+        <div class="panel panel-default">
+            <div class="panel-heading" role="tab" id="#actionbar-heading-{{name}}">
+                <h4 class="panel-title pull-left">
+                    <a role="button" data-toggle="collapse" data-parent="#accordion-{{parentFieldId}} .alpaca-container-item" href="#actionbar-{{name}}" aria-expanded="false" aria-controls="#accordion-{{parentFieldId}}">
+                        [no titleField specifier]
+                    </a>
+                </h4>
+                <div class="pull-right">
+                    {{#compare actionbarStyle "top"}}
+                    {{#arrayActionbar}}{{/arrayActionbar}}
+                    {{/compare}}
+                </div>
+                <div class="alpaca-clear"></div>
+
+            </div>
+            <div id="actionbar-{{name}}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="#actionbar-heading-{{id}}">
+                <div class="panel-body">
+
+
+                    {{#itemField}}{{/itemField}}
+                </div>
+                {{#compare actionbarStyle "bottom"}}
+                {{#arrayActionbar}}{{/arrayActionbar}}
+                {{/compare}}
+            </div>
+        </div>
+        {{/compare}}
+        {{/compare}}
+    </div>
+</script>

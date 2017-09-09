@@ -4,39 +4,75 @@
 <%@ Register TagPrefix="dnn" TagName="Label" Src="~/controls/LabelControl.ascx" %>
 <%@ Register TagPrefix="dnn" Namespace="DotNetNuke.Web.Client.ClientResourceManagement" Assembly="DotNetNuke.Web.Client" %>
 <%@ Register TagPrefix="dnnweb" Namespace="DotNetNuke.Web.UI.WebControls" Assembly="DotNetNuke.Web" %>
+
+<%@ Register TagPrefix="My" Namespace="Satrabel.OpenContent" Assembly="OpenContent" %>
+
 <%-- Custom CSS Registration --%>
-<dnn:DnnCssInclude runat="server" FilePath="~/Resources/Shared/components/CodeEditor/lib/codemirror.css" />
+<dnn:DnnCssInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/lib/codemirror.css" />
+<dnn:DnnCssInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/addon/hint/show-hint.css" />
+<dnn:DnnCssInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/addon/lint/lint.css" />
 <%-- Custom JavaScript Registration --%>
-<dnn:DnnJsInclude runat="server" FilePath="~/Resources/Shared/components/CodeEditor/lib/codemirror.js" Priority="101" />
-<dnn:DnnJsInclude runat="server" FilePath="~/Resources/Shared/components/CodeEditor/mode/clike/clike.js" Priority="102" />
-<dnn:DnnJsInclude runat="server" FilePath="~/Resources/Shared/components/CodeEditor/mode/vb/vb.js" Priority="102" />
-<dnn:DnnJsInclude runat="server" FilePath="~/Resources/Shared/components/CodeEditor/mode/xml/xml.js" Priority="102" />
-<dnn:DnnJsInclude runat="server" FilePath="~/Resources/Shared/components/CodeEditor/mode/javascript/javascript.js" Priority="102" />
-<dnn:DnnJsInclude runat="server" FilePath="~/Resources/Shared/components/CodeEditor/mode/css/css.js" Priority="102" />
-<dnn:DnnJsInclude runat="server" FilePath="~/Resources/Shared/components/CodeEditor/mode/htmlmixed/htmlmixed.js" Priority="103" />
+<dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/lib/codemirror.js" Priority="101" />
+<dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/mode/clike/clike.js" Priority="102" />
+<dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/mode/vb/vb.js" Priority="102" />
+<dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/mode/xml/xml.js" Priority="102" />
+<dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/mode/javascript/javascript.js" Priority="102" />
+<dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/mode/css/css.js" Priority="102" />
+<dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/mode/htmlmixed/htmlmixed.js" Priority="103" />
+<dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/addon/hint/show-hint.js" Priority="103" />
+
+<dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/addon/lint/lint.js" Priority="102" />
+<dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/jsonlint.js" Priority="103" />
+<dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/addon/lint/json-lint.js" Priority="103" />
+<dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/csslint.js" Priority="103" />
+<dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/addon/lint/css-lint.js" Priority="103" />
+<dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/jshint.js" Priority="103" />
+<dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/addon/lint/javascript-lint.js" Priority="103" />
+
 <dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/addon/mode/multiplex.js" Priority="103" />
 <dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/addon/mode/simple.js" Priority="103" />
-<dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/mode/handlebars/handlebars.js" Priority="103" />
+<dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/CodeMirror/mode/handlebars/handlebars.js" Priority="104" />
+<dnn:DnnJsInclude runat="server" FilePath="~/DesktopModules/OpenContent/js/oc.codeMirror.js" Priority="105" />
+
+<style>
+
+.nomargin {
+    margin: 0 !important;
+}
+
+.scriptListSelect {
+    margin: 0 !important;
+    height: 25px !important;
+    padding: 0 !important;
+    -webkit-appearance: menulist-button;
+}
+
+.fileNotExist {
+    color: #ccc !important;
+}
+
+.CodeMirror{    
+    border: 1px solid #eee;
+    height: 500px;
+}
+
+</style>
 
 <div class="dnnForm dnnRazorHostEditScript dnnClear" id="dnnEditScript">
     <fieldset class="nomargin">
-        <div class="dnnFormItem">
-            <dnn:Label id="scriptsLabel" runat="Server" controlname="scriptList" />
-            <asp:DropDownList ID="scriptList" runat="server" AutoPostBack="true" CssClass="nomargin" />
-        </div>
-        <div class="dnnFormItem">
-            <asp:Label ID="Label1" ControlName="txtSource" runat="server" CssClass="dnnLabel" Text="" />
-            <asp:Label ID="plSource" ControlName="txtSource" runat="server" />
-        </div>
-        <div class="dnnFormItem">
-            <asp:Label ID="Label2" runat="server" />
+        <div class="dnnFormItem" style="padding:5px;background-color:gray;width:auto;border-radius: 5px 5px 0 0;">
+        <My:GroupDropDownList runat="server" ID="scriptList" AutoPostBack="true" CssClass="scriptListSelect">
+        </My:GroupDropDownList>
+            <div style="float:right;padding-right:10px;padding-top:5px;">
+            <asp:Label ID="plSource" ControlName="txtSource" runat="server" ForeColor="White" />
+                </div>
         </div>
         <div>
-            <asp:TextBox ID="txtSource" runat="server" TextMode="MultiLine" Rows="30" Columns="140" />
+            <asp:TextBox ID="txtSource" runat="server" TextMode="MultiLine" Rows="30" Width="100%" />
         </div>
     </fieldset>
-    <asp:Label ID="lError" runat="server" Visible="false" CssClass="dnnFormMessage dnnFormValidationSummary"></asp:Label>
-    <ul class="dnnActions dnnClear">
+
+    <ul class="dnnActions dnnClear" style="padding-top: 8px;">
         <li>
             <asp:LinkButton ID="cmdSave" resourcekey="cmdSave" runat="server" CssClass="dnnPrimaryAction" /></li>
         <li>
@@ -50,24 +86,32 @@
         <li>
             <asp:LinkButton ID="cmdBuilder" resourcekey="cmdBuilder" runat="server" CssClass="dnnSecondaryAction" />
         </li>
+        <li>
+
+        </li>
+        <asp:PlaceHolder ID="phHandlebars" runat="server">
+            <li>Ctrl-Space : variables | 
+            </li>
+            <li>Shift-Space : helpers | 
+            </li>
+            <li>Shift-Ctrl-Space : snippets | 
+            </li>
+            <li>
+                <a href="https://opencontent.readme.io/docs/tokens" target="_blank">Handlebars Help</a>
+            </li>
+        </asp:PlaceHolder>
 
     </ul>
+    <div style="position: absolute; bottom: 50px; right: 10px;">
+        <asp:Label ID="lError" runat="server" Visible="false" CssClass="dnnFormMessage dnnFormValidationSummary"></asp:Label>
+    </div>
 </div>
 <script type="text/javascript">
 
     jQuery(function ($) {
         var mimeType = dnn.getVar('mimeType') || "text/html";
-
-        CodeMirror.defineMode("htmlhandlebars", function (config) {
-            return CodeMirror.multiplexingMode(
-              CodeMirror.getMode(config, "text/html"),
-              {
-                  open: "{{", close: "}}",
-                  mode: CodeMirror.getMode(config, "handlebars"),
-                  parseDelimiters: true
-              });
-        });
-
+        var model = <%= Model.ToString() %>;
+        ocInitCodeMirror(mimeType, model);
         var setupModule = function () {
 
             $('#<%= cmdCustom.ClientID %>').dnnConfirm({
@@ -77,25 +121,15 @@
                 title: '<%= Localization.GetSafeJSString("Confirm.Text", Localization.SharedResourceFile) %>'
             });
 
-
-            var cm = CodeMirror.fromTextArea($("textarea[id$='txtSource']")[0], {
-                lineNumbers: true,
-                matchBrackets: true,
-                lineWrapping: true,
-                mode: mimeType
-            });
+            var cm = ocSetupCodeMirror(mimeType, $("textarea[id$='txtSource']")[0], model);
 
             var resizeModule = function resizeDnnEditHtml() {
                 //$('#dnnEditScript fieldset').height($(window).height() - $('#dnnEditScript ul dnnActions').height() - 18 - 52);
                 //$('window.frameElement, body, html').css('overflow', 'hidden');
-
-
-                var containerHeight = $(window).height() - 52 - 52 - 40 ;
-
+                var containerHeight = $(window).height() - 52 - 32 - 0;
                 //$('.editorContainer').height(containerHeight - $('.editorContainer').offset().top - 110);
                 //$('.editorContainer').height(containerHeight - 250);
                 $('#dnnEditScript .CodeMirror').height(containerHeight);
-
                 cm.refresh();
             };
             var windowTop = parent;
@@ -103,12 +137,12 @@
             if (popup.length) {
 
                 var $window = $(windowTop),
-                                newHeight,
-                                newWidth;
+                    newHeight,
+                    newWidth;
 
                 var $window = $(windowTop),
-                            newHeight,
-                            newWidth;
+                    newHeight,
+                    newWidth;
 
                 newHeight = $window.height() - 36;
                 newWidth = Math.min($window.width() - 40, 1200);
@@ -123,12 +157,13 @@
                     //position: 'center'
                     resizable: false,
                 });
+                jQuery('html').css('overflow', 'hidden');
+                popup.css('padding-top', '0');
+                //windowTop.jQuery(".ui-dialog-title").hide();
             }
 
             if (window.frameElement && window.frameElement.id == "iPopUp") {
-
                 resizeModule();
-
                 $(window).resize(function () {
                     var timeout;
                     if (timeout) clearTimeout(timeout);
@@ -138,17 +173,14 @@
                     }, 50);
                 });
             }
-
         };
 
         setupModule();
 
         Sys.WebForms.PageRequestManager.getInstance().add_endRequest(function () {
-
             // note that this will fire when _any_ UpdatePanel is triggered,
             // which may or may not cause an issue
             setupModule();
-
         });
     });
 

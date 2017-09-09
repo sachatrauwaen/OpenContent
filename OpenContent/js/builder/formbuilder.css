@@ -1,3 +1,8 @@
+.alpaca-field-object.alpaca-top .alpaca-container-item-first .alpaca-field-accordion {
+    border: 0px;
+    padding: 0;
+}
+
 .alpaca-array-actionbar.alpaca-array-actionbar-top {
 }
 
@@ -39,17 +44,14 @@ label.control-label {
 }
 
 .fb-container {
-    display: table;
+    
     width: 100%;
-    margin-right: -15px;
-    margin-left: -15px;
     min-height: 300px;
 }
 
 .fb-left, .fb-right {
-    display: table-cell;
-    padding-right: 15px;
-    padding-left: 15px;
+    float:left;
+    min-height: 300px;
 }
 
 .fb-left {
@@ -61,7 +63,7 @@ label.control-label {
 }
 
 .loading {
-    left: 40%;
+    left: 20%;
     top: 40%;
     position: absolute;
 }
