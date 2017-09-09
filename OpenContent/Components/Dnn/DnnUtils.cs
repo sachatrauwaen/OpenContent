@@ -166,11 +166,31 @@ namespace Satrabel.OpenContent.Components
             return blnHasModuleEditPermissions;
         }
 
+        public static bool HasViewRightsOnModule(this ModuleInfo activeModule)
+        {
+            bool blnHasModuleViewPermissions = false;
+            if (activeModule != null)
+            {
+                //DNN already checks SuperUser and Administrator
+                blnHasModuleViewPermissions = ModulePermissionController.HasModuleAccess(SecurityAccessLevel.View, "CONTENT", activeModule);
+            }
+            return blnHasModuleViewPermissions;
+        }
+
         // for openform compatibility
         public static string GetCurrentCultureCode()
         {
             return DnnLanguageUtils.GetCurrentCultureCode();
         }
-
+        public static void UpdateModuleTitle(this ModuleInfo module, string moduleTitle)
+        {
+            if (module.ModuleTitle != moduleTitle)
+            {
+                ModuleController mc = new ModuleController();
+                var mod = mc.GetModule(module.ModuleID, module.TabID, true);
+                mod.ModuleTitle = moduleTitle;
+                mc.UpdateModule(mod);
+            }
+        }
     }
 }

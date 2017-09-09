@@ -84,12 +84,12 @@
         afterRenderControl: function (model, callback) {
             var self = this;
             this.base(model, function () {
-                self.handlePostRender(function () {
+                self.handlePostRender2(function () {
                     callback();
                 });
             });
         },
-        handlePostRender: function (callback) {
+        handlePostRender2: function (callback) {
             var self = this;
             var el = this.getTextControlEl();
             $(this.control.get(0)).after('<img src="' + self.rootUrl + 'images/Flags/' + this.culture + '.gif" class="flag" />');

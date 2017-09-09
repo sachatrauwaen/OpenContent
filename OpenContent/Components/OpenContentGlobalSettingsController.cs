@@ -10,7 +10,7 @@ namespace Satrabel.OpenContent.Components
         private const string SettingsKeyMaxVersions = "OpenContent_MaxVersions";
         private const int SettingsDefaultMaxVersions = 5;
         private const string SettingsEditLayout = "OpenContent_EditLayout";
-        private const AlpacaLayoutEnum SettingsDefaultEditLayout = AlpacaLayoutEnum.DNN;
+        private const AlpacaLayoutEnum SettingsDefaultEditLayout = AlpacaLayoutEnum.BootstrapHorizontal;
         private const string SettingsLoadBootstrap = "OpenContent_LoadBootstrap";
         private const bool SettingsDefaultLoadBootstrap = true;
         private const string SettingsGoogleApiKey = "OpenContent_GoogleApiKey";

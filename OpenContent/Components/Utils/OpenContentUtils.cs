@@ -46,16 +46,11 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
-        public static void UpdateModuleTitle(ModuleInfo module, string moduleTitle)
+        internal static bool HasAllUsersViewPermissions(PortalSettings portalSettings, ModuleInfo module)
         {
-            if (module.ModuleTitle != moduleTitle)
-            {
-                ModuleController mc = new ModuleController();
-                var mod = mc.GetModule(module.ModuleID, module.TabID, true);
-                mod.ModuleTitle = moduleTitle;
-                mc.UpdateModule(mod);
-            }
+            return module.HasViewRightsOnModule();
         }
+
         public static string GetSiteTemplateFolder(PortalSettings portalSettings, string moduleSubDir)
         {
             return portalSettings.HomeDirectory + moduleSubDir + "/Templates/";

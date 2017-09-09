@@ -33,6 +33,7 @@
 /// <reference path="../alpaca/js/fields/dnn/summernotefield.js" />
 /// <reference path="../alpaca/js/fields/dnn/url2field.js" />
 /// <reference path="../alpaca/js/fields/dnn/UrlField.js" />
+/// <reference path="../alpaca/js/fields/dnn/User2Field.js" />
 /// <reference path="../alpaca/js/fields/dnn/wysihtmlfield.js" />
 /// <reference path="../alpaca/js/views/dnn.js" />
 /// <reference path="../alpaca/js/views/dnnbootstrap.js" />

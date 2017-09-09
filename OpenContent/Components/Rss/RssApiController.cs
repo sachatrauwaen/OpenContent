@@ -10,6 +10,7 @@ using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Render;
+using System.Net;
 
 namespace Satrabel.OpenContent.Components.Rss
 {
@@ -29,6 +30,11 @@ namespace Satrabel.OpenContent.Components.Rss
             IEnumerable<IDataItem> dataList = new List<IDataItem>();
             var module = new OpenContentModuleInfo(moduleId, tabId);
             var manifest = module.Settings.Template.Manifest;
+
+            if (!OpenContentUtils.HasAllUsersViewPermissions(PortalSettings, module.ViewModule))
+            {
+                return Request.CreateResponse(HttpStatusCode.Unauthorized);
+            }
 
             var rssTemplate = new FileUri(module.Settings.TemplateDir, template + ".hbs");
             string source = File.ReadAllText(rssTemplate.PhysicalFilePath);

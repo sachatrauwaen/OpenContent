@@ -31,7 +31,8 @@ namespace Satrabel.OpenContent.Components
                     "Satrabel.OpenContent.Components",
                     "Satrabel.OpenContent.Components.JpList",
                     "Satrabel.OpenContent.Components.Rss",
-                    "Satrabel.OpenContent.Components.Rest.Swagger" }
+                    "Satrabel.OpenContent.Components.Rest.Swagger",
+                    "Satrabel.OpenContent.Components.Export",}
                 );
 
             //  /desktopmodules/OpenContent/api/{controller}/v1/{entity}/{id}/{memberAction}
