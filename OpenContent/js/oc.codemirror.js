@@ -474,6 +474,7 @@ function ocSetupCodeMirror(mimeType, elem, model) {
 	}
 
 	var cm = CodeMirror.fromTextArea(elem, {
+        
 		lineNumbers: true,
 		matchBrackets: true,
 		lineWrapping: true,
