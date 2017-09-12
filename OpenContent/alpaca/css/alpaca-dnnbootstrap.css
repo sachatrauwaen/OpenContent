@@ -223,7 +223,7 @@ select.oc-ddl-versions {
 
 
 
-.alpaca-field-array .alpaca-array-actionbar.alpaca-array-actionbar-top {
+.alpaca-field-array > .alpaca-container > .alpaca-container-item > div > .alpaca-array-actionbar.alpaca-array-actionbar-top {
     position: absolute;
     right: 0;
     top: 0;
