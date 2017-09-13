@@ -1,6 +1,7 @@
+/*
 function Load() {
-    var sch = JSON.parse($("#schema").val());
-    var opts = JSON.parse($("#options").val());
+    //var sch = JSON.parse($("#schema").val());
+    //var opts = JSON.parse($("#options").val());
     var data = getBuilder(sch, opts);
     return data;
 }
@@ -62,9 +63,9 @@ function getBuilder(schema, options) {
     }
     return data;
 }
-
+*/
 function getSchema(formdef) {
-    var sch = null; //JSON.parse($("#schema").val());
+    var sch = null; 
     var schema = {
         //"title": "Form preview",
         "type": "object",
@@ -299,6 +300,7 @@ var baseFields = function (index, value, oldOptions) {
         };
     }
     if (value.fieldoptions) {
+        field.sort = false;
         field.optionLabels = $.map(value.fieldoptions, function (v, i) {
             return v.text;
         });
@@ -385,12 +387,10 @@ var baseFields = function (index, value, oldOptions) {
 };
 
 function getOptions(formdef) {
-    var opts = null; //JSON.parse($("#options").val());
-
+    var opts = null;
     var options = {
         "fields": {}
     };
-
     var fields = options.fields;
     if (formdef.formtype == "array") {
         options = {
@@ -401,7 +401,6 @@ function getOptions(formdef) {
         };
         fields = options.items.fields;
     }
-
     if (formdef.formfields) {
         $.each(formdef.formfields, function (index, value) {
             var oldOptions = opts && opts.fields ? opts.fields[value.fieldname] : null;
@@ -497,9 +496,6 @@ function showForm(value) {
         config.view = "dnnbootstrap-edit-horizontal";
     }
     */
-    //alert(JSON.stringify(value, null, "  "));
-    $("#schema").val(JSON.stringify(schema, null, "  "));
-    $("#options").val(JSON.stringify(options, null, "  "));
     var exists = $("#form2").alpaca("exists");
     if (exists) {
         $("#form2").alpaca("destroy");
@@ -913,9 +909,6 @@ var fieldOptions =
 
 fieldOptions.subfields.items.fields = fieldOptions;
 
-
-
-
 var formbuilderConfig = {
     "schema": {
         //"title": "Fields",
@@ -956,14 +949,10 @@ var formbuilderConfig = {
     "postRender": function (control) {
         var self = control;
         control.childrenByPropertyId["formfields"].on("change", function () {
-            //alert("The value of title was changed to: " + this.getValue());
             var value = self.getValue();
-            //$.cookie('alpacadata', JSON.stringify(value), { expires: 7, path: '/' });
-            $('#builder').val(JSON.stringify(value, null, "  "));
             showForm(value);
         });
         $(".form-builder div.loading").hide();
         $(".form-builder .dnnActions").show();
     }
-
 };
