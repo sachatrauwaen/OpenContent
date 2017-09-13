@@ -300,6 +300,7 @@ var baseFields = function (index, value, oldOptions) {
         };
     }
     if (value.fieldoptions) {
+        field.sort = false;
         field.optionLabels = $.map(value.fieldoptions, function (v, i) {
             return v.text;
         });
