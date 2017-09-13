@@ -97,7 +97,6 @@
             data: getData,
             beforeSend: sf.setModuleHeaders
         }).done(function (res) {
-            $('#builder').val(JSON.stringify(res.data, null, "  "));
             if (!res.data) res.data = {};
             showForm(res.data);
             formbuilderConfig.data = res.data;
@@ -109,7 +108,6 @@
         });
         $("#<%=cmdSave.ClientID%>").click(function () {
             var href = $(this).attr('href');
-            //var data = $('#builder').val();
             var form = $("#form").alpaca("get");
             var data = form.getValue();
             var schema = getSchema(data);
@@ -140,7 +138,6 @@
                 return;
             }
             var value = form.getValue();
-            $('#builder').val(JSON.stringify(value, null, "  "));
             showForm(value);
             return false;
         });
