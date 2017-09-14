@@ -100,7 +100,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                                         try
                                         {
                                             url = hbEngine.Execute(content);
-                                            url = HttpUtility.HtmlDecode(url).CleanupUrl();
+                                            url = HttpUtility.HtmlDecode(url).StripHtml("-").CleanupUrl();
                                         }
                                         catch (Exception ex)
                                         {
