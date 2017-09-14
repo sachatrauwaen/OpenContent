@@ -39,7 +39,7 @@ namespace Satrabel.OpenContent.Components.Razor
             }
         }
 
-        protected string RazorScriptFile { get; set; }
+        protected string RazorScriptFile { get;  }
         protected IRenderContext RenderContext { get; set; }
         protected string LocalResourceFile { get; set; }
         public OpenContentWebPage Webpage { get; set; }

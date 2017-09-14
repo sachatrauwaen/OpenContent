@@ -51,7 +51,10 @@
             "control-imagecropper": "#dnn-edit-control-imagecropper",
             "control-file": "#dnn-edit-control-file",
             "control-wysihtml": "#dnn-edit-control-wysihtml",
-            "control-file2": "#dnn-edit-control-file2"
+            "control-file2": "#dnn-edit-control-file2",
+            "container-accordion": "#dnn-edit-container-accordion",
+            "container-accordion-item": "#dnn-edit-container-accordion-item"
+
         }
     });
 

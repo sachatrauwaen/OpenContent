@@ -266,6 +266,7 @@ namespace Satrabel.OpenContent
             {
                 rblDataSource.SelectedIndex = (Settings.IsOtherModule ? 1 : 0);
                 BindOtherModules(Settings.TabId, Settings.ModuleId);
+                
                 BindTemplates(Settings.Template, (Renderinfo.IsOtherModule ? Renderinfo.Template.MainTemplateUri() : null));
                 BindDetailPage(Settings.DetailTabId, Settings.TabId, Settings.GetModuleId(ModuleContext.ModuleId));
             }
@@ -344,6 +345,7 @@ namespace Satrabel.OpenContent
             {
                 ddlDataSource.Items.Add(li);
             }
+            rblDataSource.Items[1].Enabled = ddlDataSource.Items.Count > 0;
         }
         private void BindDetailPage(int currentDetailTabId, int othermoduleTabId, int dataModuleId)
         {

@@ -69,7 +69,6 @@ namespace Satrabel.OpenContent.Components.Json
             {
                 var fileContent = FileUriUtils.ReadFileFromDisk(fileUri);
                 json = fileContent.ToJObject($"file [{fileUri.FilePath}]") as JObject;
-
                 if (json != null)
                 {
                     App.Services.CacheAdapter.SetCache(cacheKey, json, fileUri.PhysicalFilePath);

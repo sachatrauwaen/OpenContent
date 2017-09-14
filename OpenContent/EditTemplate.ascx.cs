@@ -20,6 +20,7 @@ using Satrabel.OpenContent.Components.Manifest;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Localization;
+using DotNetNuke.Framework.JavaScriptLibraries;
 
 #endregion
 
@@ -268,6 +269,7 @@ namespace Satrabel.OpenContent
                 TemplateManifest template = ModuleContext.OpenContentSettings().Template;
                 InitEditor(template);
             }
+            JavaScript.RequestRegistration(CommonJs.DnnPlugins);
         }
 
         private void InitEditor(TemplateManifest template)
@@ -277,10 +279,12 @@ namespace Satrabel.OpenContent
             DisplayFile(scriptFile);
         }
 
-        private void DisplayFile(FileUri template)
+        private void DisplayFile(FileUri file)
         {
-            plSource.Text = template.FilePath;
-            string srcFile = template.PhysicalFilePath;
+            lError.Visible = false;
+            lError.Text = "";
+            plSource.Text = file.FilePath;
+            string srcFile = file.PhysicalFilePath;
 
             if (File.Exists(srcFile))
             {
@@ -292,7 +296,58 @@ namespace Satrabel.OpenContent
             }
             SetFileType(srcFile);
             cmdBuilder.Visible = scriptList.SelectedValue.EndsWith("schema.json") && scriptList.SelectedValue != "form-schaema.json";
+            var schemaFile = new FileUri(file.FolderPath, "schema.json");
+            string schema = "";
+            if (schemaFile.FileExists)
+            {
+                schema = File.ReadAllText(schemaFile.PhysicalFilePath);
+            }
+            DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "schema", schema, true);
         }
+
+        public JObject Model
+        {
+            get
+            {
+                var model = new JObject();
+                TemplateManifest template = ModuleContext.OpenContentSettings().Template;
+                var schemaFile = new FileUri(template.ManifestFolderUri, "schema.json");
+                model["schema"] = JsonUtils.LoadJsonFromFile(template.ManifestFolderUri.UrlFolder + "schema.json");
+                model["options"] = JsonUtils.LoadJsonFromFile(template.ManifestFolderUri.UrlFolder + "options.json");
+                string key = template.MainTemplateUri().FileNameWithoutExtension;
+                model["settingsSchema"] = JsonUtils.LoadJsonFromFile(template.ManifestFolderUri.UrlFolder + key + "-schema.json");
+                model["settingsOptions"] = JsonUtils.LoadJsonFromFile(template.ManifestFolderUri.UrlFolder + key + "-options.json");
+                model["listTemplate"] = template.IsListTemplate;
+                model["localization"] = JsonUtils.LoadJsonFromFile(template.ManifestFolderUri.UrlFolder + DnnLanguageUtils.GetCurrentCultureCode() + ".json");
+                var additionalData = new JObject();
+                model["additionalData"] = additionalData;
+                if (template.Manifest.AdditionalDataDefined())
+                {
+                    foreach (var addData in template.Manifest.AdditionalDataDefinition)
+                    {
+                        var addDataDef = new JObject();
+                        additionalData[addData.Key] = addDataDef;
+                        addDataDef["schema"] = JsonUtils.LoadJsonFromFile(template.ManifestFolderUri.UrlFolder + addData.Key + "-schema.json");
+                        addDataDef["options"] = JsonUtils.LoadJsonFromFile(template.ManifestFolderUri.UrlFolder + addData.Key + "-options.json");
+                    }
+                }
+                var file = new FileUri(ModuleContext.PortalSettings.HomeDirectory + "OpenContent", "htmlsnippets.json");
+                if (file.FileExists)
+                {
+                    model["snippets"] = JsonUtils.LoadJsonFromFile(file.FilePath);
+                }
+                else
+                {
+                    file = new FileUri("/Portals/_default/OpenContent", "htmlsnippets.json");
+                    if (file.FileExists)
+                    {
+                        model["snippets"] = JsonUtils.LoadJsonFromFile(file.FilePath);
+                    }
+                }
+                return model;
+            }
+        }
+
         private void SetFileType(string filePath)
         {
             string mimeType;
@@ -323,12 +378,14 @@ namespace Satrabel.OpenContent
                     break;
                 case ".hbs":
                     mimeType = "htmlhandlebars";
+
                     break;
                 default:
                     mimeType = "text/html";
                     break;
             }
             DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "mimeType", mimeType, true);
+            phHandlebars.Visible = mimeType == "htmlhandlebars" || mimeType == "text/html";
         }
         private void LoadFiles(TemplateManifest template)
         {
@@ -338,48 +395,48 @@ namespace Satrabel.OpenContent
             {
                 if (template.Main != null)
                 {
-                    scriptList.Items.Add(new ListItem("Template", template.Main.Template));
+                    scriptList.Items.Add(NewListItem("Template", template.Main.Template, "Template", template));
                     if (template.Main.PartialTemplates != null)
                     {
                         foreach (var part in template.Main.PartialTemplates)
                         {
-                            scriptList.Items.Add(new ListItem("Template - " + Path.GetFileNameWithoutExtension(part.Value.Template), part.Value.Template));
+                            scriptList.Items.Add(NewListItem(Path.GetFileNameWithoutExtension(part.Value.Template), part.Value.Template, "Template", template));
                         }
                     }
                 }
                 if (template.Detail != null)
                 {
-                    scriptList.Items.Add(new ListItem("Template - " + Path.GetFileNameWithoutExtension(template.Detail.Template), template.Detail.Template));
+                    scriptList.Items.Add(NewListItem(Path.GetFileNameWithoutExtension(template.Detail.Template), template.Detail.Template, "Template", template));
                     if (template.Detail.PartialTemplates != null)
                     {
                         foreach (var part in template.Detail.PartialTemplates)
                         {
-                            scriptList.Items.Add(new ListItem("Template - " + Path.GetFileNameWithoutExtension(part.Value.Template), part.Value.Template));
+                            scriptList.Items.Add(NewListItem(Path.GetFileNameWithoutExtension(part.Value.Template), part.Value.Template, "Template", template));
                         }
                     }
                 }
-                scriptList.Items.Add(new ListItem("Stylesheet", template.Key.ShortKey + ".css"));
-                scriptList.Items.Add(new ListItem("Javascript", template.Key.ShortKey + ".js"));
-                scriptList.Items.Add(new ListItem("Manifest", "manifest.json"));
+                scriptList.Items.Add(NewListItem("Stylesheet", template.Key.ShortKey + ".css", "Template", template));
+                scriptList.Items.Add(NewListItem("Javascript", template.Key.ShortKey + ".js", "Template", template));
+                scriptList.Items.Add(NewListItem("Manifest", "manifest.json", "Template", template));
                 if (!OpenContentUtils.BuilderExist(settings.Template.ManifestFolderUri))
                 {
-                    string title = string.IsNullOrEmpty(template.Manifest.Title) ? "Data " : template.Manifest.Title + " ";
-                    scriptList.Items.Add(new ListItem(title + "Schema", "schema.json"));
-                    scriptList.Items.Add(new ListItem(title + "Options", "options.json"));
-                    
+                    string title = string.IsNullOrEmpty(template.Manifest.Title) ? "Data" : template.Manifest.Title;
+                    scriptList.Items.Add(NewListItem("Schema", "schema.json", title, template));
+                    scriptList.Items.Add(NewListItem("Options", "options.json", title, template));
                     foreach (Locale item in LocaleController.Instance.GetLocales(PortalId).Values)
                     {
-                        scriptList.Items.Add(new ListItem(title + "Options - " + item.Code, "options." + item.Code + ".json"));
+                        scriptList.Items.Add(NewListItem("Options (" + item.Code + ")", "options." + item.Code + ".json", title, template));
                     }
                 }
 
                 if (!OpenContentUtils.BuilderExist(settings.Template.ManifestFolderUri, template.Key.ShortKey))
                 {
-                    scriptList.Items.Add(new ListItem("Settings Schema", template.Key.ShortKey + "-schema.json"));
-                    scriptList.Items.Add(new ListItem("Settings Options", template.Key.ShortKey + "-options.json"));
+                    var title = "Settings";
+                    scriptList.Items.Add(NewListItem("Schema", template.Key.ShortKey + "-schema.json", title, template));
+                    scriptList.Items.Add(NewListItem("Options", template.Key.ShortKey + "-options.json", title, template));
                     foreach (Locale item in LocaleController.Instance.GetLocales(PortalId).Values)
                     {
-                        scriptList.Items.Add(new ListItem("Settings Options - " + item.Code, template.Key.ShortKey + "-options." + item.Code + ".json"));
+                        scriptList.Items.Add(NewListItem("Options (" + item.Code + ")", template.Key.ShortKey + "-options." + item.Code + ".json", title, template));
                     }
                 }
                 if (template.Manifest.AdditionalDataDefined())
@@ -389,11 +446,11 @@ namespace Satrabel.OpenContent
                         if (!OpenContentUtils.BuilderExist(settings.Template.ManifestFolderUri, addData.Key))
                         {
                             string title = string.IsNullOrEmpty(addData.Value.Title) ? addData.Key : addData.Value.Title;
-                            scriptList.Items.Add(new ListItem(title + " Schema", addData.Key + "-schema.json"));
-                            scriptList.Items.Add(new ListItem(title + " Options", addData.Key + "-options.json"));
+                            scriptList.Items.Add(NewListItem(" Schema", addData.Key + "-schema.json", title, template));
+                            scriptList.Items.Add(NewListItem(" Options", addData.Key + "-options.json", title, template));
                             foreach (Locale item in LocaleController.Instance.GetLocales(PortalId).Values)
                             {
-                                scriptList.Items.Add(new ListItem(title + " Options - " + item.Code, addData.Key + "-options." + item.Code + ".json"));
+                                scriptList.Items.Add(NewListItem(" Options (" + item.Code + ")", addData.Key + "-options." + item.Code + ".json", title, template));
                             }
                         }
                     }
@@ -409,29 +466,42 @@ namespace Satrabel.OpenContent
                 {
                     foreach (Locale item in LocaleController.Instance.GetLocales(PortalId).Values)
                     {
-                        scriptList.Items.Add(new ListItem("Localization - " + item.Code, item.Code + ".json"));
+                        scriptList.Items.Add(NewListItem(item.Code, item.Code + ".json", "Localization", template));
                     }
                 }
                 else
                 {
                     foreach (Locale item in LocaleController.Instance.GetLocales(PortalId).Values)
                     {
-                        scriptList.Items.Add(new ListItem("Localization - " + item.Code, $"localization.{item.Code}.json"));
+                        scriptList.Items.Add(NewListItem(item.Code, $"localization.{item.Code}" + ".json", "Localization", template));
                     }
                 }
-                
+
                 //if (OpenContentUtils.FormExist(settings.Template.ManifestFolderUri))
                 {
                     string title = "Form ";
-                    scriptList.Items.Add(new ListItem(title + "Schema", "form-schema.json"));
-                    scriptList.Items.Add(new ListItem(title + "Options", "form-options.json"));
+                    scriptList.Items.Add(NewListItem("Schema", "form-schema.json", title, template));
+                    scriptList.Items.Add(NewListItem("Options", "form-options.json", title, template));
                     //scriptList.Items.Add(new ListItem("Edit Layout Options - Template File Overides", "options." + template.FileNameWithoutExtension + ".json"));
                     foreach (Locale item in LocaleController.Instance.GetLocales(PortalId).Values)
                     {
-                        scriptList.Items.Add(new ListItem(title + "Options - " + item.Code, "options." + item.Code + ".json"));
+                        scriptList.Items.Add(NewListItem("Options (" + item.Code + ")", "options." + item.Code + ".json", title, template));
                     }
                 }
             }
+        }
+
+        private static ListItem NewListItem(string text, string value, string group, TemplateManifest template)
+        {
+            var li = new ListItem(text, value);
+            li.Attributes["DataGroupField"] = group;
+            var scriptFile = new FileUri(template.ManifestFolderUri.UrlFolder, value);
+
+            if (!scriptFile.FileExists)
+            {
+                li.Attributes["CssClass"] = "fileNotExist";
+            }
+            return li;
         }
 
         protected void cmdSave_Click(object sender, EventArgs e)
@@ -464,6 +534,7 @@ namespace Satrabel.OpenContent
                 {
                     lError.Visible = true;
                     lError.Text = ex.Message;
+
                     return false;
                 }
             }

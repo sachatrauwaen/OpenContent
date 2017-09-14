@@ -35,26 +35,7 @@
             </div>
             <div style="clear: both;"></div>
         </div>
-        <div class="fb-container" style="display: none;">
-            <div class="fb-left">
-                schema<br />
-                <textarea class="form-control" rows="10" id="schema"></textarea>
-            </div>
-            <div class="fb-right">
-                options<br />
-                <textarea class="form-control" rows="10" id="options"></textarea>
-            </div>
-            <div style="clear: both;"></div>
-        </div>
-        <div class="row" style="display: none;">
-            <div class="col-sm-12">
-                Builder<br />
-                <textarea class="form-control" rows="10" id="builder"></textarea>
-            </div>
-        </div>
-
     </div>
-
 </asp:Panel>
 
 <script type="text/javascript">
@@ -80,7 +61,18 @@
                 resizable: false,
             });
 
-            $(".form-builder .fb-wrap").height('100%').width('50%').css('overflow-y', 'auto').css('overflow-x', 'hidden').css('position', 'fixed');
+            $('body').css('overflow', 'hidden');
+            
+            $(".form-builder .fb-left .fb-wrap").height('100%').css('overflow', 'hidden'); //.width('50%').css('position', 'fixed');
+            var formHeight = newHeight - 100 - 20;
+
+            $(".form-builder .fb-left .fb-wrap #form").height(formHeight-62 + 'px').css('overflow-y', 'auto').css('overflow-x', 'hidden');
+            $(".form-builder .fb-left .fb-wrap #form > .alpaca-field-object").css('margin','0');
+
+            $(".form-builder .fb-right .fb-wrap #form2").height(formHeight + 'px').css('overflow-x', 'hidden').css('overflow-y', 'auto').css('overflow-x', 'hidden');
+            
+
+            //$(".form-builder .fb-right .fb-wrap").height('100%').css('overflow-y', 'auto').css('overflow-x', 'hidden').css('overflow', 'hidden'); //.css('position', 'fixed').css('padding-left', '20px').width('50%');
         }
 
         var moduleScope = $('#<%=ScopeWrapper.ClientID %>'),
@@ -105,7 +97,6 @@
             data: getData,
             beforeSend: sf.setModuleHeaders
         }).done(function (res) {
-            $('#builder').val(JSON.stringify(res.data, null, "  "));
             if (!res.data) res.data = {};
             showForm(res.data);
             formbuilderConfig.data = res.data;
@@ -117,7 +108,6 @@
         });
         $("#<%=cmdSave.ClientID%>").click(function () {
             var href = $(this).attr('href');
-            //var data = $('#builder').val();
             var form = $("#form").alpaca("get");
             var data = form.getValue();
             var schema = getSchema(data);
@@ -148,7 +138,6 @@
                 return;
             }
             var value = form.getValue();
-            $('#builder').val(JSON.stringify(value, null, "  "));
             showForm(value);
             return false;
         });
