@@ -33,6 +33,7 @@ Templates download : [url:http://www.openextensions.net/templates/open-content]
 [![Build by AppVeyor](https://ci.appveyor.com/api/projects/status/github/sachatrauwaen/OpenContent?branch=master&svg=true)](https://ci.appveyor.com/project/sachatrauwaen/opencontent/)
 https://ci.appveyor.com/project/sachatrauwaen/opencontent
 
+[![GitHub Analitycs - OpenContent](http://github-analytics.apphb.com/badges/RepositoryDownloads/34470375.svg)](http://github-analytics.apphb.com/) 
 
 ### Contributions
 
