@@ -105,7 +105,7 @@ namespace Satrabel.OpenContent.Components.Datasource
 
         private DateTime getVersionDate(OpenContentVersion version)
         {
-            return version.LastModifiedOnDate == null ? version.CreatedOnDate : version.CreatedOnDate;
+            return version.LastModifiedOnDate == null ? version.CreatedOnDate : version.LastModifiedOnDate;
         }
 
         public virtual IDataItem Get(DataSourceContext context, string id)
