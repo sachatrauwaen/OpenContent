@@ -432,9 +432,11 @@ function getView(formdef) {
             }
         }
     };
+    
     if (formdef.formtype == "array") {
-        return view.parent;
+        return { parent: view.parent };
     }
+    
     if (formdef.formfields) {
         var row = 0;
         var lastCols = 0;
@@ -622,7 +624,7 @@ var fieldSchema =
                 },
                 "filter": {
                     "type": "string",
-                    "title": "Filter patern"
+                    "title": "Filter pattern"
                 }
             }
         },
@@ -637,7 +639,7 @@ var fieldSchema =
                 },
                 "filter": {
                     "type": "string",
-                    "title": "Filter patern"
+                    "title": "Filter pattern"
                 }
             }
         },
@@ -932,6 +934,7 @@ var formbuilderConfig = {
             "formfields": {
                 "type": "accordion",
                 "toolbarSticky": true,
+                "animate": false,
                 "items": {
                     //"collapsible": true,
                     "fieldClass": "fielddiv",
