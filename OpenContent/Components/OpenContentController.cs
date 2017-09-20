@@ -56,7 +56,6 @@ namespace Satrabel.OpenContent.Components
             {
                 var rep = ctx.GetRepository<OpenContentInfo>();
                 rep.Insert(content);
-                InvalidateOutputCache(content.ModuleId);
             }
         }
 
@@ -68,7 +67,6 @@ namespace Satrabel.OpenContent.Components
             {
                 var rep = ctx.GetRepository<OpenContentInfo>();
                 rep.Delete(content);
-                InvalidateOutputCache(content.ModuleId);
             }
         }
 
@@ -98,7 +96,6 @@ namespace Satrabel.OpenContent.Components
             {
                 var rep = ctx.GetRepository<OpenContentInfo>();
                 rep.Update(content);
-                InvalidateOutputCache(content.ModuleId);
             }
         }
 
@@ -217,36 +214,10 @@ namespace Satrabel.OpenContent.Components
 
         private static void ClearDataCache(OpenContentInfo content)
         {
-            if (content.ContentId > 0) DataCache.ClearCache(GetContentIdCacheKey(content.ContentId));
-            if (content.ModuleId > 0) DataCache.ClearCache(GetModuleIdCacheKey(content.ModuleId));
-        }
-
-        private static void InvalidateOutputCache(int dataModuleId)
-        {
-            var dataModule = DnnUtils.GetDnnOpenContentModule(PortalSettings.Current.PortalId, dataModuleId); //todo: this needs to be improved. It is an expensive way to fetch the module
-            var dataModuleHasCrossPortalData = dataModule.Settings.Manifest.Permissions.GetValue("AllowCrossPortalData", false);
-            if (dataModuleHasCrossPortalData)
-                foreach (PortalInfo portal in PortalController.Instance.GetPortals())
-                {
-                    SyncronizeLinkedModules(portal.PortalID, dataModuleId);
-                }
-            else
-            {
-                SyncronizeLinkedModules(PortalSettings.Current.PortalId, dataModuleId);
-            }
-        }
-
-        private static void SyncronizeLinkedModules(int portalId, int dataModuleId)
-        {
-            var ocModules = DnnUtils.GetDnnOpenContentModules(portalId);
-            foreach (var ocModule in ocModules)
-            {
-                if (ocModule.DataModule.ModuleId == dataModuleId)
-                    App.Services.CacheAdapter.SyncronizeCache(ocModule.ViewModule.ModuleId);
-            }
+            if (content.ContentId > 0) App.Services.CacheAdapter.ClearCache(GetContentIdCacheKey(content.ContentId));
+            if (content.ModuleId > 0) App.Services.CacheAdapter.ClearCache(GetModuleIdCacheKey(content.ModuleId));
         }
 
         #endregion
-
     }
 }

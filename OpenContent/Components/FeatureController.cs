@@ -74,6 +74,7 @@ namespace Satrabel.OpenContent.Components
                         JToken data = JToken.Parse(json.InnerText);
                         dsContext.Collection = collection?.InnerText ?? "";
                         dataSource.Add(dsContext, data);
+                        App.Services.CacheAdapter.SyncronizeCache(module);
                     }
                     catch (Exception e)
                     {

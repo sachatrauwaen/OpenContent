@@ -269,6 +269,7 @@ namespace Satrabel.OpenContent.Components.Rest
                 else
                 {
                     ds.Update(dsContext, dsItem, value.Properties().First().Value as JObject);
+                    App.Services.CacheAdapter.SyncronizeCache(module);
                 }
 
                 return Request.CreateResponse(HttpStatusCode.OK, "");

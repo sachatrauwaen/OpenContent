@@ -38,7 +38,7 @@ namespace Satrabel.OpenContent.Components
                     JToken data = req.json;
                     data["Title"] = ActiveModule.ModuleTitle;
                     dataSource.Add(dsContext, data);
-
+                    App.Services.CacheAdapter.SyncronizeCache(module);
                     return Request.CreateResponse(HttpStatusCode.OK, "");
                 }
                 else

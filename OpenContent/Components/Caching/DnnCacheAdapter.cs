@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using DotNetNuke.Common.Utilities;
 using DotNetNuke.Data;
 using DotNetNuke.Entities.Modules;
@@ -40,18 +41,46 @@ namespace Satrabel.OpenContent.Components
             DataCache.ClearCache(cacheKey);
         }
 
+        public void SyncronizeCache(OpenContentModuleConfig ocModuleConfig)
+        {
+            int dataModuleId = ocModuleConfig.DataModule.ModuleId;
+            var dataModuleHasCrossPortalData = Json.JsonExtensions.GetValue(ocModuleConfig.DataModule.ModuleInfo.OpenContentSettings().Manifest.Permissions, "AllowCrossPortalData", false);
+            if (dataModuleHasCrossPortalData)
+                foreach (PortalInfo portal in PortalController.Instance.GetPortals())
+                {
+                    SyncronizeLinkedModules(portal.PortalID, dataModuleId);
+                }
+            else
+            {
+                SyncronizeLinkedModules(PortalSettings.Current.PortalId, dataModuleId);
+            }
+        }
+
+        private static void SyncronizeLinkedModules(int portalId, int dataModuleId)
+        {
+            var currentPortal = portalId == PortalSettings.Current.PortalId;
+            var ocModules = DnnUtils.GetDnnOpenContentModules(portalId);
+            foreach (var ocModule in ocModules)
+            {
+                if (ocModule.DataModule.ModuleId == dataModuleId)
+                    SynchronizeModule(ocModule.ViewModule.ModuleId, currentPortal);
+            }
+        }
+
         /// <summary>
         /// Synchronizes the cache.
         /// </summary>
         /// <param name="moduleId">The module identifier.</param>
+        /// <param name="currentPortal"></param>
         /// <remarks>
         /// The original code comes from DNN, SynchronizeModule(int moduleID)
+        /// But we modified it to be more efficient
         /// </remarks>
-        public void SyncronizeCache(int moduleId)
+        private static void SynchronizeModule(int moduleId, bool currentPortal)
         {
             DataProvider dataProvider = DataProvider.Instance();
 
-            var modules = ModuleController.Instance.GetTabModulesByModule(moduleId);
+            IList<ModuleInfo> modules = ModuleController.Instance.GetTabModulesByModule(moduleId);
             foreach (ModuleInfo module in modules)
             {
                 Hashtable tabSettings = TabController.Instance.GetTabSettings(module.TabID);
@@ -67,22 +96,24 @@ namespace Satrabel.OpenContent.Components
                     moduleProvider?.Remove(module.TabModuleID);
                 }
 
-                //Synchronize module is called when a module needs to indicate that the content
-                //has changed and the cache's should be refreshed.  So we can update the Version
-                //and also the LastContentModificationDate
-                dataProvider.UpdateTabModuleVersion(module.TabModuleID, Guid.NewGuid());
-                dataProvider.UpdateModuleLastContentModifiedOnDate(module.ModuleID);
-
-                //We should also indicate that the Transalation Status has changed
-                if (PortalController.GetPortalSettingAsBoolean("ContentLocalizationEnabled", module.PortalID, false))
+                if (currentPortal)
                 {
-                    ModuleController.Instance.UpdateTranslationStatus(module, false);
+                    //Synchronize module is called when a module needs to indicate that the content
+                    //has changed and the cache's should be refreshed.  So we can update the Version
+                    //and also the LastContentModificationDate
+                    dataProvider.UpdateTabModuleVersion(module.TabModuleID, Guid.NewGuid());
+                    dataProvider.UpdateModuleLastContentModifiedOnDate(module.ModuleID);
+
+                    //We should also indicate that the Transalation Status has changed
+                    if (PortalController.GetPortalSettingAsBoolean("ContentLocalizationEnabled", module.PortalID, false))
+                    {
+                        ModuleController.Instance.UpdateTranslationStatus(module, false);
+                    }
                 }
-                
+
                 // and clear the cache
                 ModuleController.Instance.ClearCache(module.TabID);
             }
         }
-       
     }
 }
