@@ -1,6 +1,13 @@
 using System;
+using System.Collections;
 using DotNetNuke.Common.Utilities;
+using DotNetNuke.Data;
+using DotNetNuke.Entities.Modules;
+using DotNetNuke.Entities.Portals;
+using DotNetNuke.Entities.Tabs;
 using DotNetNuke.Services.Cache;
+using DotNetNuke.Services.ModuleCache;
+using DotNetNuke.Services.OutputCache;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -32,5 +39,50 @@ namespace Satrabel.OpenContent.Components
         {
             DataCache.ClearCache(cacheKey);
         }
+
+        /// <summary>
+        /// Synchronizes the cache.
+        /// </summary>
+        /// <param name="moduleId">The module identifier.</param>
+        /// <remarks>
+        /// The original code comes from DNN, SynchronizeModule(int moduleID)
+        /// </remarks>
+        public void SyncronizeCache(int moduleId)
+        {
+            DataProvider dataProvider = DataProvider.Instance();
+
+            var modules = ModuleController.Instance.GetTabModulesByModule(moduleId);
+            foreach (ModuleInfo module in modules)
+            {
+                Hashtable tabSettings = TabController.Instance.GetTabSettings(module.TabID);
+                if (tabSettings["CacheProvider"] != null && tabSettings["CacheProvider"].ToString().Length > 0)
+                {
+                    var outputProvider = OutputCachingProvider.Instance(tabSettings["CacheProvider"].ToString());
+                    outputProvider?.Remove(module.TabID);
+                }
+
+                if (module.CacheTime > 0)
+                {
+                    var moduleProvider = ModuleCachingProvider.Instance(module.GetEffectiveCacheMethod());
+                    moduleProvider?.Remove(module.TabModuleID);
+                }
+
+                //Synchronize module is called when a module needs to indicate that the content
+                //has changed and the cache's should be refreshed.  So we can update the Version
+                //and also the LastContentModificationDate
+                dataProvider.UpdateTabModuleVersion(module.TabModuleID, Guid.NewGuid());
+                dataProvider.UpdateModuleLastContentModifiedOnDate(module.ModuleID);
+
+                //We should also indicate that the Transalation Status has changed
+                if (PortalController.GetPortalSettingAsBoolean("ContentLocalizationEnabled", module.PortalID, false))
+                {
+                    ModuleController.Instance.UpdateTranslationStatus(module, false);
+                }
+                
+                // and clear the cache
+                ModuleController.Instance.ClearCache(module.TabID);
+            }
+        }
+       
     }
 }

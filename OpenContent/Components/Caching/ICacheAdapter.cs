@@ -11,5 +11,6 @@ namespace Satrabel.OpenContent.Components
         T GetCachedData<T>(string cacheKey, int cacheTimeInMinutes, Func<object,object> func);
         T GetCache<T>(string cacheKey);
         void ClearCache(string cacheKey);
+        void SyncronizeCache(int moduleID);
     }
 }

@@ -242,7 +242,7 @@ namespace Satrabel.OpenContent.Components
             foreach (var ocModule in ocModules)
             {
                 if (ocModule.DataModule.ModuleId == dataModuleId)
-                    ModuleController.SynchronizeModule(ocModule.ViewModule.ModuleId);
+                    App.Services.CacheAdapter.SyncronizeCache(ocModule.ViewModule.ModuleId);
             }
         }
 
