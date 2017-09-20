@@ -451,7 +451,7 @@ namespace Satrabel.OpenContent.Components
         /// <summary>
         /// Checks the OpenContent settings.
         /// </summary>
-        public static bool CheckOpenContentSettings(OpenContentModuleConfig module)
+        public static bool CheckOpenContentTemplateFiles(OpenContentModuleConfig module)
         {
             bool result = true;
             var settings = module.Settings;

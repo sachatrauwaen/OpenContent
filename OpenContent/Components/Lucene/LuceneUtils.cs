@@ -47,7 +47,7 @@ namespace Satrabel.OpenContent.Components.Lucene
                 var modules = DnnUtils.GetDnnOpenContentModules(portal.PortalID);
                 foreach (var module in modules)
                 {
-                    if (!OpenContentUtils.CheckOpenContentSettings(module)) { continue; }
+                    if (!OpenContentUtils.CheckOpenContentTemplateFiles(module)) { continue; }
                     if (module.IsListMode() && !module.Settings.IsOtherModule && module.Settings.Manifest.Index)
                     {
                         RegisterModuleDataForIndexing(lc, module);

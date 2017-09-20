@@ -44,13 +44,6 @@ namespace Satrabel.OpenContent.Components
             return modules.FirstOrDefault();
         }
 
-        public static IEnumerable<OpenContentModuleConfig> GetDnnOpenContentModules(int portalId)
-        {
-            ModuleController mc = new ModuleController();
-            ArrayList modules = mc.GetModulesByDefinition(portalId, App.Config.Opencontent);
-            return modules.OfType<ModuleInfo>().Select(module => OpenContentModuleConfig.Create(module, PortalSettings.Current));
-        }
-
         ///// <summary>
         ///// Gets the DNN tab by URL and culture.
         ///// </summary>
@@ -174,16 +167,25 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
+        public static IEnumerable<OpenContentModuleConfig> GetDnnOpenContentModules(int portalId)
+        {
+            ModuleController mc = new ModuleController();
+            ArrayList modules = mc.GetModulesByDefinition(portalId, App.Config.Opencontent);
+            return modules.OfType<ModuleInfo>().Select(module => OpenContentModuleConfig.Create(module, PortalSettings.Current));
+        }
+
         public static ModuleInfo GetDnnModule(OpenContentModuleInfo activeModule)
         {
             ModuleController mc = new ModuleController();
             return mc.GetModule(activeModule.ModuleId, activeModule.TabId, false);
         }
+
         public static ModuleInfo GetDnnModule(int tabId, int moduleId)
         {
             ModuleController mc = new ModuleController();
             return mc.GetModule(moduleId, tabId, false);
         }
+
         public static OpenContentModuleInfo CreateOpenContentModuleInfo(int tabId, int moduleId)
         {
             var module = GetDnnModule(tabId, moduleId);

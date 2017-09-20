@@ -289,7 +289,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         }
         public virtual void Update(DataSourceContext context, IDataItem item, JToken data)
         {
-            OpenContentController ctrl = new OpenContentController();            
+            OpenContentController ctrl = new OpenContentController();
             var content = (OpenContentInfo)item.Item;
             content.Title = data["Title"]?.ToString() ?? "";
             content.Json = data.ToString();
@@ -421,12 +421,13 @@ namespace Satrabel.OpenContent.Components.Datasource
 
         protected static int GetModuleId(DataSourceContext context)
         {
-            return context.Config?["ModuleId"]?.Value<int>() ?? context.ModuleId;
+            return context.Config.GetValue("ModuleId", context.ModuleId);
         }
         private static int GetTabId(DataSourceContext context)
         {
-            return context.Config?["TabId"]?.Value<int>() ?? context.TabId;
+            return context.Config.GetValue("TabId", context.TabId);
         }
+
         private static DefaultDataItem CreateDefaultDataItem(OpenContentInfo content)
         {
             return new DefaultDataItem

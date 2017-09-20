@@ -54,6 +54,17 @@ namespace Satrabel.OpenContent.Components.Json
         {
             return !json.IsEmpty() && json[fieldname] != null;
         }
+
+        public static int GetValue(this JObject json, string fieldname, int defaultvalue)
+        {
+            return json?[fieldname]?.Value<int>() ?? defaultvalue;
+        }
+        public static bool GetValue(this JObject json, string fieldname, bool defaultvalue)
+        {
+            return json?[fieldname]?.Value<bool>() ?? defaultvalue;
+        }
+
+
         public static void MakeSureFieldExists(this JToken jToken, string fieldname, JTokenType jTokenType)
         {
             JToken defaultvalue;
