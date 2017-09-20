@@ -192,21 +192,7 @@ namespace Satrabel.OpenContent.Components
             ModuleController mc = new ModuleController();
             return mc.GetModule(moduleId, tabId, false);
         }
-
-        public static OpenContentModuleInfo CreateOpenContentModuleInfo(int tabId, int moduleId)
-        {
-            var module = GetDnnModule(tabId, moduleId);
-            if (module == null)
-            {
-                throw new Exception($"No Module found with tabId {tabId} and moduleId {moduleId}. Review your 'OtherModule' settings");
-            }
-
-            return new OpenContentModuleInfo(module.PortalID, tabId, moduleId, module.ModuleTitle, module.TabModuleID);
-        }
-        public static OpenContentModuleInfo CreateOpenContentModuleInfo(this ModuleInfo module)
-        {
-            return new OpenContentModuleInfo(module.PortalID, module.TabID, module.ModuleID, module.ModuleTitle, module.TabModuleID);
-        }
+        
         public static void UpdateModuleTitle(this ModuleInfo module, string moduleTitle)
         {
             if (module.ModuleTitle != moduleTitle)

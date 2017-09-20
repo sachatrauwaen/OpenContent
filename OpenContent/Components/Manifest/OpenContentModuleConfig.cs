@@ -20,7 +20,7 @@ namespace Satrabel.OpenContent.Components
 
         private OpenContentModuleConfig(ModuleInfo viewModule, PortalSettings ps)
         {
-            ViewModule = viewModule.CreateOpenContentModuleInfo();
+            ViewModule = new OpenContentModuleInfo(viewModule);
             _moduleSettings = viewModule.ModuleSettings;
             _portalSettings = ps;
         }
@@ -43,7 +43,7 @@ namespace Satrabel.OpenContent.Components
             {
                 if (Settings.ModuleId > 0 && _dataModule == null)
                 {
-                    _dataModule = DnnUtils.CreateOpenContentModuleInfo(Settings.TabId, Settings.ModuleId);
+                    _dataModule = new OpenContentModuleInfo(PortalId, Settings.TabId, Settings.ModuleId);
                 }
                 else if (_dataModule == null)
                 {
@@ -118,5 +118,5 @@ namespace Satrabel.OpenContent.Components
         #endregion
     }
 
- 
+
 }
