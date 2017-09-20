@@ -104,11 +104,11 @@ namespace Satrabel.OpenContent.Components
                     dataProvider.UpdateTabModuleVersion(module.TabModuleID, Guid.NewGuid());
                     dataProvider.UpdateModuleLastContentModifiedOnDate(module.ModuleID);
 
-                    //We should also indicate that the Transalation Status has changed
-                    if (PortalController.GetPortalSettingAsBoolean("ContentLocalizationEnabled", module.PortalID, false))
-                    {
-                        ModuleController.Instance.UpdateTranslationStatus(module, false);
-                    }
+                    ////We should also indicate that the Transalation Status has changed
+                    //if (PortalController.GetPortalSettingAsBoolean("ContentLocalizationEnabled", module.PortalID, false))
+                    //{
+                    //    ModuleController.Instance.UpdateTranslationStatus(module, false);
+                    //}
                 }
 
                 // and clear the cache
