@@ -54,7 +54,7 @@ namespace Satrabel.OpenContent.Components
             {
                 var rep = ctx.GetRepository<OpenContentInfo>();
                 rep.Insert(content);
-                ModuleController.SynchronizeModule(content.ModuleId);
+                InvalidateOutputCache(content.ModuleId);
             }
         }
 
@@ -66,7 +66,7 @@ namespace Satrabel.OpenContent.Components
             {
                 var rep = ctx.GetRepository<OpenContentInfo>();
                 rep.Delete(content);
-                ModuleController.SynchronizeModule(content.ModuleId);
+                InvalidateOutputCache(content.ModuleId);
             }
         }
 
@@ -96,7 +96,7 @@ namespace Satrabel.OpenContent.Components
             {
                 var rep = ctx.GetRepository<OpenContentInfo>();
                 rep.Update(content);
-                ModuleController.SynchronizeModule(content.ModuleId);
+                InvalidateOutputCache(content.ModuleId);
             }
         }
 
@@ -219,6 +219,15 @@ namespace Satrabel.OpenContent.Components
             if (content.ModuleId > 0) DataCache.ClearCache(GetModuleIdCacheKey(content.ModuleId));
         }
 
+        private static void InvalidateOutputCache(int dataModuleId)
+        {
+            var ocModules = DnnUtils.GetDnnOpenContentModules(PortalSettings.Current.PortalId);
+            foreach (var ocModule in ocModules)
+            {
+                if (ocModule.DataModule.ModuleId == dataModuleId)
+                    ModuleController.SynchronizeModule(ocModule.ViewModule.ModuleId);
+            }
+        }
         #endregion
 
     }
