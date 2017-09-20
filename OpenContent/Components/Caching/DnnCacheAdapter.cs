@@ -58,12 +58,11 @@ namespace Satrabel.OpenContent.Components
 
         private static void SyncronizeLinkedModules(int portalId, int dataModuleId)
         {
-            var currentPortal = portalId == PortalSettings.Current.PortalId;
             var ocModules = DnnUtils.GetDnnOpenContentModules(portalId);
             foreach (var ocModule in ocModules)
             {
                 if (ocModule.DataModule.ModuleId == dataModuleId)
-                    SynchronizeModule(ocModule.ViewModule.ModuleId, currentPortal);
+                    SynchronizeModule(ocModule.ViewModule.ModuleId);
             }
         }
 
@@ -76,7 +75,7 @@ namespace Satrabel.OpenContent.Components
         /// The original code comes from DNN, SynchronizeModule(int moduleID)
         /// But we modified it to be more efficient
         /// </remarks>
-        private static void SynchronizeModule(int moduleId, bool currentPortal)
+        private static void SynchronizeModule(int moduleId)
         {
             DataProvider dataProvider = DataProvider.Instance();
 
@@ -92,24 +91,22 @@ namespace Satrabel.OpenContent.Components
 
                 if (module.CacheTime > 0)
                 {
-                    var moduleProvider = ModuleCachingProvider.Instance(module.GetEffectiveCacheMethod());
-                    moduleProvider?.Remove(module.TabModuleID);
+                    var cachingProvider = ModuleCachingProvider.Instance(module.GetEffectiveCacheMethod());
+                    cachingProvider?.Remove(module.TabModuleID);
                 }
 
-                if (currentPortal)
-                {
-                    //Synchronize module is called when a module needs to indicate that the content
-                    //has changed and the cache's should be refreshed.  So we can update the Version
-                    //and also the LastContentModificationDate
-                    dataProvider.UpdateTabModuleVersion(module.TabModuleID, Guid.NewGuid());
-                    dataProvider.UpdateModuleLastContentModifiedOnDate(module.ModuleID);
+                //Synchronize module is called when a module needs to indicate that the content
+                //has changed and the cache's should be refreshed.  So we can update the Version
+                //and also the LastContentModificationDate
+                dataProvider.UpdateTabModuleVersion(module.TabModuleID, Guid.NewGuid());
+                dataProvider.UpdateModuleLastContentModifiedOnDate(module.ModuleID);
 
-                    ////We should also indicate that the Transalation Status has changed
-                    //if (PortalController.GetPortalSettingAsBoolean("ContentLocalizationEnabled", module.PortalID, false))
-                    //{
-                    //    ModuleController.Instance.UpdateTranslationStatus(module, false);
-                    //}
-                }
+                ////We should also indicate that the Transalation Status has changed
+                //if (PortalController.GetPortalSettingAsBoolean("ContentLocalizationEnabled", module.PortalID, false))
+                //{
+                //    ModuleController.Instance.UpdateTranslationStatus(module, false);
+                //}
+
 
                 // and clear the cache
                 ModuleController.Instance.ClearCache(module.TabID);
