@@ -17,6 +17,8 @@ using DotNetNuke.Data;
 using DotNetNuke.Entities.Modules;
 using Satrabel.OpenContent.Components.Common;
 using DotNetNuke.Entities.Portals;
+using Satrabel.OpenContent.Components.Dnn;
+using Satrabel.OpenContent.Components.Json;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -221,13 +223,29 @@ namespace Satrabel.OpenContent.Components
 
         private static void InvalidateOutputCache(int dataModuleId)
         {
-            var ocModules = DnnUtils.GetDnnOpenContentModules(PortalSettings.Current.PortalId);
+            var dataModule = DnnUtils.GetDnnOpenContentModule(PortalSettings.Current.PortalId, dataModuleId); //todo: this needs to be improved. It is an expensive way to fetch the module
+            var dataModuleHasCrossPortalData = dataModule.Settings.Manifest.Permissions.GetValue("AllowCrossPortalData", false);
+            if (dataModuleHasCrossPortalData)
+                foreach (PortalInfo portal in PortalController.Instance.GetPortals())
+                {
+                    SyncronizeLinkedModules(portal.PortalID, dataModuleId);
+                }
+            else
+            {
+                SyncronizeLinkedModules(PortalSettings.Current.PortalId, dataModuleId);
+            }
+        }
+
+        private static void SyncronizeLinkedModules(int portalId, int dataModuleId)
+        {
+            var ocModules = DnnUtils.GetDnnOpenContentModules(portalId);
             foreach (var ocModule in ocModules)
             {
                 if (ocModule.DataModule.ModuleId == dataModuleId)
                     ModuleController.SynchronizeModule(ocModule.ViewModule.ModuleId);
             }
         }
+
         #endregion
 
     }

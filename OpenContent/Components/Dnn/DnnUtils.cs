@@ -174,6 +174,13 @@ namespace Satrabel.OpenContent.Components
             return modules.OfType<ModuleInfo>().Select(module => OpenContentModuleConfig.Create(module, PortalSettings.Current));
         }
 
+        public static OpenContentModuleConfig GetDnnOpenContentModule(int portalId, int dataModuleId)
+        {
+            ModuleController mc = new ModuleController();
+            ArrayList modules = mc.GetModulesByDefinition(portalId, App.Config.Opencontent);
+            return modules.OfType<ModuleInfo>().Where(module => module.ModuleID == dataModuleId).Select(module => OpenContentModuleConfig.Create(module, PortalSettings.Current)).FirstOrDefault();
+        }
+
         public static ModuleInfo GetDnnModule(OpenContentModuleInfo activeModule)
         {
             ModuleController mc = new ModuleController();
