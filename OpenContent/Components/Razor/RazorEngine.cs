@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Compilation;
 using System.Web.WebPages;
 using DotNetNuke.Services.Exceptions;
+using DotNetNuke.UI.Modules;
 
 #endregion
 
@@ -37,6 +38,11 @@ namespace Satrabel.OpenContent.Components.Razor
             {
                 Exceptions.LogException(exc);
             }
+        }
+
+        [Obsolete("This method is obsolete since aug 2017; use different constructor instead")]
+        public RazorEngine(string razorScriptFile, ModuleInstanceContext moduleContext, string localResourceFile) : this(razorScriptFile, new DnnRenderContext(moduleContext), localResourceFile)
+        {
         }
 
         protected string RazorScriptFile { get;  }
