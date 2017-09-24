@@ -14,7 +14,7 @@ using System.Text;
 
 namespace Satrabel.OpenContent.Components.Form
 {
-    public class FormUtils
+    public static class FormUtils
     {
         public static MailAddress GenerateMailAddress(string typeOfAddress, string email, string name, string formEmailField, string formNameField, JObject form)
         {
@@ -23,12 +23,12 @@ namespace Satrabel.OpenContent.Components.Form
 
             if (typeOfAddress == "host")
             {
-                adr = new MailAddress(Host.HostEmail, Host.HostTitle);
+                adr = GenerateMailAddress(Host.HostEmail, Host.HostTitle) ;
             }
             else if (typeOfAddress == "admin")
             {
                 var user = UserController.GetUserById(portalSettings.PortalId, portalSettings.AdministratorId);
-                adr = new MailAddress(user.Email, user.DisplayName);
+                adr = GenerateMailAddress(user.Email, user.DisplayName);
             }
             else if (typeOfAddress == "form")
             {
@@ -39,21 +39,21 @@ namespace Satrabel.OpenContent.Components.Form
 
                 string formEmail = GetProperty(form, formEmailField);
                 string formName = GetProperty(form, formNameField);
-                adr = new MailAddress(formEmail, formName);
+                adr = GenerateMailAddress(formEmail, formName);
             }
             else if (typeOfAddress == "custom")
             {
-                adr = new MailAddress(email, name);
+                adr = GenerateMailAddress(email, name);
             }
             else if (typeOfAddress == "current")
             {
                 var userInfo = portalSettings.UserInfo;
                 if (userInfo == null)
                     throw new Exception($"Can't send email to current user, as there is no current user. Parameters were TypeOfAddress: [{typeOfAddress}], Email: [{email}], Name: [{name}], FormEmailField: [{formEmailField}], FormNameField: [{formNameField}], FormNameField: [{form}]");
-                if (string.IsNullOrEmpty(userInfo.Email))
-                    throw new Exception($"Can't send email to current user, as email address of current user is unknown. Parameters were TypeOfAddress: [{typeOfAddress}], Email: [{email}], Name: [{name}], FormEmailField: [{formEmailField}], FormNameField: [{formNameField}], FormNameField: [{form}]");
 
-                adr = new MailAddress(userInfo.Email, userInfo.DisplayName);
+                adr = GenerateMailAddress(userInfo.Email, userInfo.DisplayName);
+                if (adr == null)
+                    throw new Exception($"Can't send email to current user, as email address of current user is unknown. Parameters were TypeOfAddress: [{typeOfAddress}], Email: [{email}], Name: [{name}], FormEmailField: [{formEmailField}], FormNameField: [{formNameField}], FormNameField: [{form}]");
             }
 
             if (adr == null)
@@ -63,6 +63,12 @@ namespace Satrabel.OpenContent.Components.Form
 
             return adr;
         }
+
+        private static MailAddress GenerateMailAddress(string email, string title)
+        {
+            return new MailAddress(email, title);
+        }
+
         private static string GetProperty(JObject obj, string propertyName)
         {
             string propertyValue = "";
@@ -73,6 +79,7 @@ namespace Satrabel.OpenContent.Components.Form
             }
             return propertyValue;
         }
+
         public static string SendMail(string mailFrom, string mailTo, string replyTo, string subject, string body)
         {
 
