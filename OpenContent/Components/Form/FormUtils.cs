@@ -7,9 +7,11 @@ using Satrabel.OpenContent.Components.Handlebars;
 using Satrabel.OpenContent.Components.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.Mail;
 using System.Text;
+using System.Text.RegularExpressions;
 
 
 namespace Satrabel.OpenContent.Components.Form
@@ -66,7 +68,7 @@ namespace Satrabel.OpenContent.Components.Form
 
         private static MailAddress GenerateMailAddress(string email, string title)
         {
-            return new MailAddress(email, title);
+            return IsValidEmail(email) ? new MailAddress(email, title) : null;
         }
 
         private static string GetProperty(JObject obj, string propertyName)
@@ -78,6 +80,47 @@ namespace Satrabel.OpenContent.Components.Form
                 propertyValue = property.Value.ToString();
             }
             return propertyValue;
+        }
+
+        /// <summary>
+        /// Determines whether email is valid.
+        /// </summary>
+        /// <remarks>
+        /// https://technet.microsoft.com/nl-be/library/01escwtf(v=vs.110).aspx
+        /// </remarks>
+        private static bool IsValidEmail(string strIn)
+        {
+            if (string.IsNullOrEmpty(strIn)) return false;
+
+            bool invalid = false;
+
+            // Use IdnMapping class to convert Unicode domain names.
+            try
+            {
+                strIn = Regex.Replace(strIn, @"(@)(.+)$", DomainMapper);
+            }
+            catch (Exception e)
+            {
+                invalid = true;
+            }
+
+            if (invalid)
+                return false;
+
+            // Return true if strIn is in valid e-mail format.
+            return Regex.IsMatch(strIn,
+                @"^(?("")(""[^""]+?""@)|(([0-9a-z]((\.(?!\.))|[-!#\$%&'\*\+/=\?\^`\{\}\|~\w])*)(?<=[0-9a-z])@))" +
+                @"(?(\[)(\[(\d{1,3}\.){3}\d{1,3}\])|(([0-9a-z][-\w]*[0-9a-z]*\.)+[a-z0-9]{2,17}))$",
+                RegexOptions.IgnoreCase);
+        }
+
+        private static string DomainMapper(Match match)
+        {
+            // IdnMapping class with default property values.
+            IdnMapping idn = new IdnMapping();
+            string domainName = match.Groups[2].Value;
+            domainName = idn.GetAscii(domainName);
+            return match.Groups[1].Value + domainName;
         }
 
         public static string SendMail(string mailFrom, string mailTo, string replyTo, string subject, string body)
