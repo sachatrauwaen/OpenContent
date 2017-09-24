@@ -18,17 +18,18 @@ namespace Satrabel.OpenContent.Components
         private readonly IDictionary _moduleSettings;
         private readonly PortalSettings _portalSettings;
 
-        private OpenContentModuleConfig(ModuleInfo viewModule, PortalSettings ps)
+        private OpenContentModuleConfig(ModuleInfo viewModule, PortalSettings portalSettings)
         {
             ViewModule = new OpenContentModuleInfo(viewModule);
+            PortalId = viewModule.PortalID;
             _moduleSettings = viewModule.ModuleSettings;
-            _portalSettings = ps;
+            _portalSettings = portalSettings;
         }
 
-        public static OpenContentModuleConfig Create(int moduleId, int tabId, PortalSettings ps)
+        public static OpenContentModuleConfig Create(int moduleId, int tabId, PortalSettings portalSettings)
         {
             var viewModule = DnnUtils.GetDnnModule(tabId, moduleId);
-            return Create(viewModule, ps);
+            return Create(viewModule, portalSettings);
         }
 
         public static OpenContentModuleConfig Create(ModuleInfo viewModule, PortalSettings portalSettings)
@@ -108,7 +109,7 @@ namespace Satrabel.OpenContent.Components
         public int ModuleId => ViewModule.ModuleId;
         public int UserId => _portalSettings.UserId;
         public IList<UserRoleInfo> UserRoles => _portalSettings.UserInfo.Social.Roles;
-        public int PortalId => _portalSettings.PortalId;
+        public int PortalId { get; }
         public string HomeDirectory => _portalSettings.HomeDirectory;
         public int ActiveTabId => _portalSettings.ActiveTab.TabID;
         public bool CanvasUnavailable => _portalSettings == null;
