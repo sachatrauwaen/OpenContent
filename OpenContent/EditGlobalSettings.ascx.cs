@@ -74,6 +74,7 @@ namespace Satrabel.OpenContent
                 cbLoadBootstrap.Visible = lLoadBootstrap.Visible = globalSettingsController.GetEditLayout() != AlpacaLayoutEnum.DNN;
                 tbGoogleApiKey.Text = globalSettingsController.GetGoogleApiKey();
                 cbFastHandlebars.Checked = globalSettingsController.GetFastHandlebars();
+                cbSaveXml.Checked = globalSettingsController.IsSaveXml();
             }
         }
         protected void cmdSave_Click(object sender, EventArgs e)
@@ -99,6 +100,7 @@ namespace Satrabel.OpenContent
             globalSettingsController.SetLoadBootstrap(cbLoadBootstrap.Checked);
             globalSettingsController.SetGoogleApiKey(tbGoogleApiKey.Text);
             globalSettingsController.SetFastHandlebars(cbFastHandlebars.Checked);
+            globalSettingsController.SetSaveXml(cbSaveXml.Checked);
 
             Response.Redirect(Globals.NavigateURL(), true);
         }

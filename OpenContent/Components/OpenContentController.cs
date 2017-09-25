@@ -10,16 +10,14 @@
 ' 
 */
 
-using System;
 using System.Linq;
 using System.Collections.Generic;
 using DotNetNuke.Common.Utilities;
 using DotNetNuke.Data;
 using DotNetNuke.Entities.Modules;
-using Satrabel.OpenContent.Components.Lucene;
-using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.Common;
 using DotNetNuke.Entities.Portals;
+
 
 namespace Satrabel.OpenContent.Components
 {
@@ -32,6 +30,7 @@ namespace Satrabel.OpenContent.Components
 
         public void AddContent(OpenContentInfo content)
         {
+            SynchronizeXml(content);
             ClearDataCache(content);
             var json = content.JsonAsJToken;
             if (string.IsNullOrEmpty(content.Key))
@@ -77,6 +76,7 @@ namespace Satrabel.OpenContent.Components
         {
             ClearDataCache(content);
             var json = content.JsonAsJToken;
+            SynchronizeXml(content);
             OpenContentVersion ver = new OpenContentVersion()
             {
                 Json = json,
@@ -100,6 +100,19 @@ namespace Satrabel.OpenContent.Components
                 var rep = ctx.GetRepository<OpenContentInfo>();
                 rep.Update(content);
                 ModuleController.SynchronizeModule(content.ModuleId);
+            }
+        }
+
+        private static void SynchronizeXml(OpenContentInfo content)
+        {
+            if (OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController(PortalSettings.Current.PortalId).IsSaveXml()
+                            && !string.IsNullOrEmpty(content.Json))
+            {
+                content.Xml = Newtonsoft.Json.JsonConvert.DeserializeXNode(content.Json, "root").ToString();
+            }
+            else
+            {
+                content.Xml = null;
             }
         }
 
