@@ -2128,6 +2128,7 @@
                     el.val("");
                 }
                 else {
+                    //if (value) value = value.split("?")[0];
                     el.val(value);
                 }
             }
@@ -6654,6 +6655,7 @@
                     el.val("");
                 }
                 else {
+                    //if (value) value = value.split("?")[0];
                     el.val(value);
                     $(self.control).parent().find('.alpaca-image-display img').attr('src', value);
                 }
@@ -7549,6 +7551,7 @@
                     this.control.val(val);
                 }
                 */
+                
                 if (this.control && typeof (val) != "undefined" && val != null) {
                     //this.base(val); ???
                     if (Alpaca.isEmpty(val)) {
@@ -7557,6 +7560,10 @@
                         $(self.getControlEl()).attr('data-cropurl', '');
                     }
                     else if (Alpaca.isObject(val)) {
+                        // Fix for OC data that still has the Cachebuster SQ parameter
+                        if (val.url) val.url = val.url.split("?")[0];
+                        if (val.cropUrl) val.cropUrl = val.cropUrl.split("?")[0];
+
                         if (val.cropdata && Object.keys(val.cropdata).length > 0) { // compatibility with imagecropper
                             var firstcropdata = val.cropdata[Object.keys(val.cropdata)[0]];
                             self.cropper(val.url, firstcropdata.cropper);
