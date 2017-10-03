@@ -10,7 +10,7 @@
 
 
 ALTER TABLE {databaseOwner}{objectQualifier}OpenContent_Items 
-	ADD Xml nvarchar(max) NULL
+	ADD Xml xml
 GO
 
 /************************************************************/

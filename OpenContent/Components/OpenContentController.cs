@@ -17,7 +17,7 @@ using DotNetNuke.Data;
 using DotNetNuke.Entities.Modules;
 using Satrabel.OpenContent.Components.Common;
 using DotNetNuke.Entities.Portals;
-
+using System;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -103,12 +103,32 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
+        public void UpdateXmlContent(OpenContentInfo content)
+        {
+            ClearDataCache(content);
+            SynchronizeXml(content);
+            using (IDataContext ctx = DataContext.Instance())
+            {
+                var rep = ctx.GetRepository<OpenContentInfo>();
+                rep.Update(content);
+                ModuleController.SynchronizeModule(content.ModuleId);
+            }
+        }
+
         private static void SynchronizeXml(OpenContentInfo content)
         {
             if (OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController(PortalSettings.Current.PortalId).IsSaveXml()
                             && !string.IsNullOrEmpty(content.Json))
             {
-                content.Xml = Newtonsoft.Json.JsonConvert.DeserializeXNode(content.Json, "root").ToString();
+                try
+                {
+                    content.Xml = Newtonsoft.Json.JsonConvert.DeserializeXNode(content.Json, "root").ToString();
+                }
+                catch (Exception ex)
+                {
+                    Log.Logger.Error($"Error while Updating penContent Xml data for module {content.ModuleId}, ContentId {content.ContentId}", ex);
+                }
+                
             }
             else
             {

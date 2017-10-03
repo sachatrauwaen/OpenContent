@@ -55,5 +55,8 @@
         <li>
             <asp:HyperLink ID="hlCancel" runat="server" class="dnnSecondaryAction" resourcekey="cmdCancel" />
         </li>
+        <li>
+            <asp:LinkButton ID="cmdUpgradeXml" runat="server" class="dnnSecondaryAction" resourcekey="cmdUpgradeXml" />
+        </li>
     </ul>
 </asp:Panel>

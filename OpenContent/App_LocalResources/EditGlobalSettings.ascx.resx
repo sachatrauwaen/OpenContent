@@ -150,4 +150,7 @@
   <data name="lSaveXml.Text" xml:space="preserve">
     <value>Save Xml</value>
   </data>
+  <data name="cmdUpgradeXml.Text" xml:space="preserve">
+    <value>Generate Xml</value>
+  </data>
 </root>
