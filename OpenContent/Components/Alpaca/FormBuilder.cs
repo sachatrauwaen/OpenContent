@@ -203,6 +203,12 @@ namespace Satrabel.OpenContent.Components.Alpaca
                         Title = propTitle + " : until x days in the future"
                     });
                     fieldLst.Add(propKey);
+                    newProp.Properties.Add("UseTime", new SchemaConfig()
+                    {
+                        Type = "boolean",
+                        Title = propTitle + " Concider time"
+                    });
+
                     /*
                     var newField = new OptionsConfig();
                     newOptionsFilter.Fields.Add(propKey, newField);
@@ -271,7 +277,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
         }
         public FieldConfig BuildIndex(string key)
         {
-            string prefix =  (string.IsNullOrEmpty(key) || key == "Items") ? "" : key + "-";
+            string prefix = (string.IsNullOrEmpty(key) || key == "Items") ? "" : key + "-";
             string cacheKey = _templateUri.UrlFolder + prefix + "index.json";
             FieldConfig newConfig = (FieldConfig)DataCache.GetCache(cacheKey);
             if (newConfig == null)
