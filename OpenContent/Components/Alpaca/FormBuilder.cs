@@ -199,6 +199,12 @@ namespace Satrabel.OpenContent.Components.Alpaca
                         Title = propTitle + " : until x days in the future"
                     });
                     fieldLst.Add(propKey);
+                    newProp.Properties.Add("UseTime", new SchemaConfig()
+                    {
+                        Type = "boolean",
+                        Title = propTitle + " Concider time"
+                    });
+
                     /*
                     var newField = new OptionsConfig();
                     newOptionsFilter.Fields.Add(propKey, newField);
