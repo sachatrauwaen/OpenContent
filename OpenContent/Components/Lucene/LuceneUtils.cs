@@ -38,25 +38,6 @@ namespace Satrabel.OpenContent.Components.Lucene
         }
 
         /// <summary>
-        /// A method to Register all indexable data. This is used by IndexAll()
-        /// </summary>
-        public static void RegisterAllIndexableData(LuceneController lc)
-        {
-            foreach (PortalInfo portal in PortalController.Instance.GetPortals())
-            {
-                var modules = DnnUtils.GetDnnOpenContentModules(portal.PortalID);
-                foreach (var module in modules)
-                {
-                    if (!OpenContentUtils.CheckOpenContentTemplateFiles(module)) { continue; }
-                    if (module.IsListMode() && !module.Settings.IsOtherModule && module.Settings.Manifest.Index)
-                    {
-                        RegisterModuleDataForIndexing(lc, module);
-                    }
-                }
-            }
-        }
-
-        /// <summary>
         /// A helper method to force a Datasource of a module to Reindex itself
         /// </summary>
         public static void ReIndexModuleData(OpenContentModuleConfig module)
@@ -76,6 +57,27 @@ namespace Satrabel.OpenContent.Components.Lucene
         #endregion
 
         #region private helpers
+
+        /// <summary>
+        /// A method to Register all indexable data. This is used by IndexAll()
+        /// </summary>
+        private static void RegisterAllIndexableData(LuceneController lc)
+        {
+            App.Services.Logger.Info("Start Reindexing all OpenContent Data");
+            foreach (PortalInfo portal in PortalController.Instance.GetPortals())
+            {
+                var modules = DnnUtils.GetDnnOpenContentModules(portal.PortalID);
+                foreach (var module in modules)
+                {
+                    if (!OpenContentUtils.CheckOpenContentTemplateFiles(module)) { continue; }
+                    if (module.IsListMode() && !module.Settings.IsOtherModule && module.Settings.Manifest.Index)
+                    {
+                        RegisterModuleDataForIndexing(lc, module);
+                    }
+                }
+            }
+            App.Services.Logger.Info("Finished Reindexing all OpenContent Data");
+        }
 
         private static void RegisterModuleDataForIndexing(LuceneController lc, OpenContentModuleConfig module)
         {

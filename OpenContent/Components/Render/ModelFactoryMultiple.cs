@@ -85,9 +85,8 @@ namespace Satrabel.OpenContent.Components.Render
             {
                 itemsModel["Context"]["RssUrl"] = _module.HostName + "/DesktopModules/OpenContent/API/RssAPI/GetFeed?moduleId=" + _module.ViewModule.ModuleId + "&tabId=" + _detailTabId;
             }
-            JArray items = new JArray(); ;
+            var items = new JArray(); ;
             itemsModel["Items"] = items;
-            //string editRole = Manifest.GetEditRole();
             if (_dataList != null && _dataList.Any())
             {
                 var mainUrl = _module.GetUrl(_detailTabId, GetCurrentCultureCode());
