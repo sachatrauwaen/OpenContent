@@ -20,7 +20,10 @@ namespace Satrabel.OpenContent.Components.Dnn
         {
             return EditUrl(keyName, keyValue, "Edit", moduleId, ps);
         }
-
+        public static string EditAddDataUrl(string keyName, string keyValue, int moduleId, PortalSettings ps)
+        {
+            return EditUrl(keyName, keyValue, "EditAddData", moduleId, ps);
+        }
         private static string EditUrl(string keyName, string keyValue, string controlKey, int moduleId, PortalSettings ps)
         {
             var parameters = new string[] { };

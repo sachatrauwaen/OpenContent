@@ -96,6 +96,11 @@ namespace Satrabel.OpenContent.Components
             return DnnUrlUtils.EditUrl(id, itemId, viewModuleModuleId, _portalSettings);
         }
 
+        public string EditAddDataUrl(string id, string itemId, int viewModuleModuleId)
+        {
+            return DnnUrlUtils.EditAddDataUrl(id, itemId, viewModuleModuleId, _portalSettings);
+        }
+        
         internal string EditUrl(int moduleId)
         {
             return DnnUrlUtils.EditUrl(moduleId, _portalSettings);

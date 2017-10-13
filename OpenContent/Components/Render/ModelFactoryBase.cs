@@ -286,6 +286,14 @@ namespace Satrabel.OpenContent.Components.Render
                             JsonUtils.SimplifyJson(json, GetCurrentCultureCode());
                         }
                         additionalDataJson = json;
+
+                        //optionally add editurl for AdditionalData. Only for Single items (not arrays)
+                        if (json is JObject && IsEditMode)
+                        {
+                            var context = new JObject();
+                            context["EditUrl"] = GetAdditionalDataEditUrl(item.Key);
+                            additionalDataJson["Context"] = context;
+                        }
                     }
                     if (App.Services.CreateGlobalSettingsRepository(_portalId).GetFastHandlebars())
                         _additionalData[(item.Value.ModelKey ?? item.Key)] = additionalDataJson;
@@ -294,6 +302,11 @@ namespace Satrabel.OpenContent.Components.Render
                 }
             }
             return _additionalData;
+        }
+
+        private string GetAdditionalDataEditUrl(string keyValue)
+        {
+            return _module.EditAddDataUrl("key", keyValue, _module.ViewModule.ModuleId);
         }
 
         protected void ExtendSchemaOptions(JObject model, bool onlyData)
