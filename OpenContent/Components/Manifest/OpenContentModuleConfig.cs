@@ -119,7 +119,7 @@ namespace Satrabel.OpenContent.Components
         public int ActiveTabId => _portalSettings.ActiveTab.TabID;
         public bool CanvasUnavailable => _portalSettings == null;
         public string HostName => _portalSettings.PortalAlias.HTTPAlias;
-        public bool PreviewEnabled => (_portalSettings.UserMode == PortalSettings.Mode.View);
+        public bool PreviewEnabled => _portalSettings != null && (_portalSettings.UserMode == PortalSettings.Mode.View);
 
         #endregion
     }
