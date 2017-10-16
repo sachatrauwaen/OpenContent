@@ -401,13 +401,13 @@ namespace Satrabel.OpenContent.Components.Datasource
             ClearUrlRewriterCache(context);
         }
 
-        public void Reindex(DataSourceContext context)
-        {
-            string scope = OpenContentInfo.GetScope(context.ModuleId, context.Collection);
-            var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection); //todo index is being build from schema & options. But they should be provided by the provider, not directly from the files
-            OpenContentController occ = new OpenContentController();
-            LuceneController.Instance.ReIndexData(occ.GetContents(context.ModuleId, context.Collection), indexConfig, scope);
-        }
+        //public void Reindex(DataSourceContext context)
+        //{
+        //    string scope = OpenContentInfo.GetScope(context.ModuleId, context.Collection);
+        //    var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection); //todo index is being build from schema & options. But they should be provided by the provider, not directly from the files
+        //    OpenContentController occ = new OpenContentController();
+        //    LuceneController.Instance.ReIndexData(occ.GetContents(context.ModuleId, context.Collection), indexConfig, scope);
+        //}
 
         public IEnumerable<IIndexableItem> GetIndexableData(DataSourceContext context)
         {
