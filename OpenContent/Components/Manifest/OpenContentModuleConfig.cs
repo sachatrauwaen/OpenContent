@@ -116,7 +116,6 @@ namespace Satrabel.OpenContent.Components
         public IList<UserRoleInfo> UserRoles => _portalSettings.UserInfo.Social.Roles;
         public int PortalId { get; }
         public string HomeDirectory => _portalSettings.HomeDirectory;
-        public int ActiveTabId => _portalSettings.ActiveTab.TabID;
         public bool CanvasUnavailable => _portalSettings == null;
         public string HostName => _portalSettings.PortalAlias.HTTPAlias;
         public bool PreviewEnabled => _portalSettings != null && (_portalSettings.UserMode == PortalSettings.Mode.View);

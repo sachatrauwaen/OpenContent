@@ -59,7 +59,7 @@ namespace Satrabel.OpenContent.Components.Dnn
                 }
             }
             bool blnPreview = ocModuleConfig.PreviewEnabled ;
-            if (Globals.IsHostTab(ocModuleConfig.ActiveTabId))
+            if (Globals.IsHostTab(ocModuleConfig.TabId))
             {
                 blnPreview = false;
             }
