@@ -45,7 +45,7 @@ namespace Satrabel.OpenContent.Components.Render
             ExtendSchemaOptions(enhancedModel, onlyData || onlyMainData);
             ExtendModel(enhancedModel, onlyData || onlyMainData);
             ExtendModelSingle(enhancedModel);
-            EnhanceSelect2(model);
+            EnhanceSelect2(model, onlyData);
             JsonUtils.Merge(model, enhancedModel);
             return model;
         }

@@ -25,6 +25,10 @@ namespace Satrabel.OpenContent.Components.Dnn
             return ocModuleConfig.ViewModule.HasEditRightsOnModule() || HasEditRole(ocModuleConfig, editrole, createdByUserId);
         }
 
+        /// <summary>
+        /// Determines whether current logged in user has edit rights on module.
+        /// </summary>
+        /// <remarks></remarks>
         public static bool HasEditRightsOnModule(this OpenContentModuleInfo activeModule)
         {
             bool blnHasModuleEditPermissions = false;

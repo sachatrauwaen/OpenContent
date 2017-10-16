@@ -66,7 +66,7 @@ namespace Satrabel.OpenContent.Components.Render
                     {
                         JsonUtils.SimplifyJson(model, GetCurrentCultureCode());
                     }
-                    EnhanceSelect2(model);
+                    EnhanceSelect2(model, true);
                     yield return JsonUtils.JsonToDictionary(model.ToString());
                 }
             }
@@ -100,7 +100,7 @@ namespace Satrabel.OpenContent.Components.Render
                     {
                         JsonUtils.SimplifyJson(dyn, GetCurrentCultureCode());
                     }
-                    EnhanceSelect2(dyn);
+                    EnhanceSelect2(dyn, onlyData);
                     EnhanceUser(dyn, item.CreatedByUserId);
                     EnhanceImages(dyn, itemsModel);
 

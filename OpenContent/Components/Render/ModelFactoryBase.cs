@@ -113,13 +113,13 @@ namespace Satrabel.OpenContent.Components.Render
 
         public abstract JToken GetModelAsJson(bool onlyData = false, bool onlyMainData = false);
 
-        protected void EnhanceSelect2(JObject model)
+        protected void EnhanceSelect2(JObject model, bool onlyData)
         {
             string colName = string.IsNullOrEmpty(_collection) ? "Items" : _collection;
             bool addDataEnhance = _manifest.AdditionalDataDefined();
             if (addDataEnhance && _additionalData == null)
             {
-                GetAdditionalData();
+                GetAdditionalData(onlyData);
             }
             bool collectionEnhance = _templateFiles?.Model != null && _templateFiles.Model.ContainsKey(colName);
             bool enhance = addDataEnhance || collectionEnhance || (_templateFiles != null && _templateFiles.LabelsInTemplate);
@@ -175,7 +175,7 @@ namespace Satrabel.OpenContent.Components.Render
                 // include additional data in the Model
                 if (_templateFiles.AdditionalDataInTemplate && _manifest.AdditionalDataDefined())
                 {
-                    model["AdditionalData"] = GetAdditionalData();
+                    model["AdditionalData"] = GetAdditionalData(onlyData);
                 }
                 // include collections
                 if (_templateFiles.Model != null)
@@ -212,7 +212,7 @@ namespace Satrabel.OpenContent.Components.Render
                                     JObject context = new JObject();
                                     json["Context"] = context;
                                     context["Id"] = dataItem.Id;
-                                    EnhanceSelect2(json as JObject);
+                                    EnhanceSelect2(json as JObject, onlyData);
                                 }
                                 colDataJson.Add(json);
                             }
@@ -268,7 +268,7 @@ namespace Satrabel.OpenContent.Components.Render
             }
         }
 
-        private JObject GetAdditionalData()
+        private JObject GetAdditionalData(bool onlyData)
         {
             if (_additionalData == null && _manifest.AdditionalDataDefined())
             {
@@ -288,7 +288,7 @@ namespace Satrabel.OpenContent.Components.Render
                         additionalDataJson = json;
 
                         //optionally add editurl for AdditionalData. Only for Single items (not arrays)
-                        if (json is JObject && IsEditMode)
+                        if (!onlyData && json is JObject && IsEditMode)
                         {
                             var context = new JObject();
                             context["EditUrl"] = GetAdditionalDataEditUrl(item.Key);
@@ -304,6 +304,11 @@ namespace Satrabel.OpenContent.Components.Render
             return _additionalData;
         }
 
+        /// <summary>
+        /// Gets the additional data edit URL.
+        /// </summary>
+        /// <param name="keyValue">The key value.</param>
+        /// <returns></returns>
         private string GetAdditionalDataEditUrl(string keyValue)
         {
             return _module.EditAddDataUrl("key", keyValue, _module.ViewModule.ModuleId);
