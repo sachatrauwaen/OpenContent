@@ -94,7 +94,7 @@ namespace Satrabel.OpenContent.Components.Lucene
                     }
                     else
                     {
-                        string searchstring = QueryParser.Escape(rule.Value.AsString);                        
+                        string searchstring = QueryParser.Escape(rule.Value.AsString);
                         q.Add(new TermQuery(new Term(fieldName, searchstring)), cond);
                     }
                 }
@@ -186,21 +186,30 @@ namespace Satrabel.OpenContent.Components.Lucene
         private SelectQueryDefinition BuildSort(Select select)
         {
             var sort = Sort.RELEVANCE;
-            if (@select.Sort.Any())
+            if (!select.Sort.Any())
             {
-                var sortFields = new List<SortField>();
-                foreach (var rule in @select.Sort)
+                SortRule sortOneCreateDate = new SortRule
                 {
-                    int sortfieldtype;
-                    string sortFieldPrefix = "";
-                    Sortfieldtype(rule.FieldType, out sortfieldtype, ref sortFieldPrefix);
-
-                    if (rule.Field == "createdondate") rule.Field = "$createdondate";
-
-                    sortFields.Add(new SortField(sortFieldPrefix + rule.Field, sortfieldtype, rule.Descending));
-                }
-                sort = new Sort(sortFields.ToArray());
+                    Field = "createdondate",
+                    FieldType = FieldTypeEnum.DATETIME,
+                    Descending = false
+                };
+                select.Sort.Add(sortOneCreateDate);
             }
+
+            var sortFields = new List<SortField>();
+            foreach (var rule in select.Sort)
+            {
+                int sortfieldtype;
+                string sortFieldPrefix = "";
+                Sortfieldtype(rule.FieldType, out sortfieldtype, ref sortFieldPrefix);
+
+                if (rule.Field == "createdondate") rule.Field = "$createdondate";
+
+                sortFields.Add(new SortField(sortFieldPrefix + rule.Field, sortfieldtype, rule.Descending));
+            }
+            sort = new Sort(sortFields.ToArray());
+
             Sort = sort;
             return this;
         }
