@@ -30,7 +30,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 var verLst = new JArray();
                 foreach (var version in content.Versions)
                 {
-                    DateTime VersionDate = getVersionDate(version);
+                    DateTime VersionDate = GetVersionDate(version);
                     var ver = new JObject();
                     ver["text"] = VersionDate.ToShortDateString() + " " + VersionDate.ToShortTimeString();
                     if (verLst.Count == 0) // first
@@ -53,7 +53,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 var verLst = new JArray();
                 foreach (var version in content.Versions)
                 {
-                    DateTime versionDate = getVersionDate(version);
+                    DateTime versionDate = GetVersionDate(version);
                     var ver = new JObject();
                     ver["text"] = versionDate.ToShortDateString() + " " + versionDate.ToShortTimeString();
                     if (verLst.Count == 0) // first
@@ -75,7 +75,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             {
                 if (!string.IsNullOrEmpty(content.VersionsJson))
                 {
-                    var ver = content.Versions.Single(v => getVersionDate(v) == datetime);
+                    var ver = content.Versions.Single(v => GetVersionDate(v) == datetime);
                     if (ver != null)
                     {
                         return ver.Json;
@@ -92,7 +92,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             {
                 if (!string.IsNullOrEmpty(content.VersionsJson))
                 {
-                    var ver = content.Versions.Single(v => getVersionDate(v) == datetime);
+                    var ver = content.Versions.Single(v => GetVersionDate(v) == datetime);
                     if (ver != null)
                     {
                         return ver.Json;
@@ -100,11 +100,6 @@ namespace Satrabel.OpenContent.Components.Datasource
                 }
             }
             return null;
-        }
-
-        private DateTime getVersionDate(OpenContentVersion version)
-        {
-            return version.LastModifiedOnDate == null ? version.CreatedOnDate : version.LastModifiedOnDate;
         }
 
         public virtual IDataItem Get(DataSourceContext context, string id)
@@ -199,7 +194,6 @@ namespace Satrabel.OpenContent.Components.Datasource
                 Total = dataList.Count()
             };
         }
-
 
         public virtual IDataItems GetAll(DataSourceContext context, Select selectQuery)
         {
@@ -423,6 +417,12 @@ namespace Satrabel.OpenContent.Components.Datasource
         {
             return context.Config.GetValue("ModuleId", context.ModuleId);
         }
+
+        private static DateTime GetVersionDate(OpenContentVersion version)
+        {
+            return version.LastModifiedOnDate == null ? version.CreatedOnDate : version.LastModifiedOnDate;
+        }
+
         private static int GetTabId(DataSourceContext context)
         {
             return context.Config.GetValue("TabId", context.TabId);
