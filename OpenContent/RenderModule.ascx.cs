@@ -32,7 +32,7 @@ namespace Satrabel.OpenContent
         {
             base.OnLoad(e);
             int[] hideTabs = new int[1] { TabId };
-            if (string.IsNullOrEmpty(HideOnTabIds))
+            if (!string.IsNullOrEmpty(HideOnTabIds))
             {
                 try
                 {
