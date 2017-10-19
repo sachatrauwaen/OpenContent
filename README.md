@@ -54,3 +54,10 @@ To set up a development environment and build DNN Dev Tools, just follow the ste
 * Log-in as host administrator and browser to the page "Host > Extensions" and install DNN Dev Tools under "Available Extensions > Modules"
 * (optionally) Build the solution in Debug mode to copy the files to the Website folder instead of creating a DNN module zip file
 * (optionally) Open a Powershell console and run \PATH\TO\OpenContent\AutoDeployment.ps1 to automatically copy frontend resources (like scripts or styles) to the Website folder when changing them in the solution
+
+## Licence
+
+MIT
+
+[https://github.com/sachatrauwaen/OpenContent/blob/master/OpenContent/LICENSE]
+
