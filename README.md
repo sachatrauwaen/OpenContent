@@ -55,7 +55,7 @@ To set up a development environment and build DNN Dev Tools, just follow the ste
 * (optionally) Build the solution in Debug mode to copy the files to the Website folder instead of creating a DNN module zip file
 * (optionally) Open a Powershell console and run \PATH\TO\OpenContent\AutoDeployment.ps1 to automatically copy frontend resources (like scripts or styles) to the Website folder when changing them in the solution
 
-## Licence
+## License
 
 MIT
 
