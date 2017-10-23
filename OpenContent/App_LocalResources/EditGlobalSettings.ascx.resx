@@ -147,4 +147,10 @@
   <data name="lFastHandlebars.Text" xml:space="preserve">
     <value>Fast Handlebars. Case sensitive variables ! (Beta)</value>
   </data>
+  <data name="lSaveXml.Text" xml:space="preserve">
+    <value>Save Xml</value>
+  </data>
+  <data name="cmdUpgradeXml.Text" xml:space="preserve">
+    <value>Generate Xml</value>
+  </data>
 </root>

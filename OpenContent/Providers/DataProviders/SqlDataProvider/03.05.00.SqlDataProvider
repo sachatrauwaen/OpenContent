@@ -1,0 +1,18 @@
+﻿/************************************************************/
+/*****              SqlDataProvider                     *****/
+/*****                                                  *****/
+/*****                                                  *****/
+/***** Note: To manually execute this script you must   *****/
+/*****       perform a search and replace operation     *****/
+/*****       for {databaseOwner} and {objectQualifier}  *****/
+/*****                                                  *****/
+/************************************************************/
+
+
+ALTER TABLE {databaseOwner}{objectQualifier}OpenContent_Items 
+	ADD Xml xml
+GO
+
+/************************************************************/
+/*****              SqlDataProvider                     *****/
+/************************************************************/

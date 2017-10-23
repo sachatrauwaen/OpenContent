@@ -58,6 +58,7 @@
                     el.val("");
                 }
                 else {
+                    //if (value) value = value.split("?")[0];
                     el.val(value);
                     $(self.control).parent().find('.alpaca-image-display img').attr('src', value);
                 }

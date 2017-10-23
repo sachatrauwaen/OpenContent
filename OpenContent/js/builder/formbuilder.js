@@ -394,6 +394,7 @@ function getOptions(formdef) {
     var fields = options.fields;
     if (formdef.formtype == "array") {
         options = {
+            "type":"accordion",
             "items": {
                 "type": "object",
                 "fields": {}
@@ -407,8 +408,8 @@ function getOptions(formdef) {
 
             var field = baseFields(index, value, oldOptions);
             fields[value.fieldname] = field;
-        });
-    }
+        });        
+    }    
     return options;
 }
 
