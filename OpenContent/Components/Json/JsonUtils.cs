@@ -301,8 +301,11 @@ namespace Satrabel.OpenContent.Components.Json
                         string val = childProperty.Value.ToString();
                         try
                         {
-                            var obj = GenerateObject(additionalData, dataKey, val, dataMember, valueField, childrenField);                            
-                            LookupJson(obj, additionalData, sch, opt, includelabels, includes, objFromCollection, alpacaForAddData, field);
+                            var obj = GenerateObject(additionalData, dataKey, val, dataMember, valueField, childrenField);
+                            var alpaca = alpacaForAddData(dataKey);
+                            LookupJson(obj, additionalData, alpaca["schema"]?["items"] as JObject, alpaca["options"]?["items"] as JObject, includelabels, includes, objFromCollection, alpacaForAddData, field);
+
+                            //LookupJson(obj, additionalData, sch, opt, includelabels, includes, objFromCollection, alpacaForAddData, field);
                             o[childProperty.Name] = obj;
                         }
                         catch (System.Exception)
