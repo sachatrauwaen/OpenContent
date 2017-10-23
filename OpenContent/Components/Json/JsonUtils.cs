@@ -239,9 +239,9 @@ namespace Satrabel.OpenContent.Components.Json
                                 try
                                 {
                                     var genObj = GenerateObject(additionalData, dataKey, val.ToString(), dataMember, valueField, childrenField);
-                                    newArray.Add(genObj);
                                     var alpaca = alpacaForAddData(dataKey);
                                     LookupJson(genObj, additionalData, alpaca["schema"]?["items"] as JObject, alpaca["options"]?["items"] as JObject, includelabels, includes, objFromCollection, alpacaForAddData, field);
+                                    newArray.Add(genObj);
                                 }
                                 catch (System.Exception)
                                 {
@@ -301,9 +301,9 @@ namespace Satrabel.OpenContent.Components.Json
                         string val = childProperty.Value.ToString();
                         try
                         {
-                            var obj = GenerateObject(additionalData, dataKey, val, dataMember, valueField, childrenField);
-                            o[childProperty.Name] = obj;
+                            var obj = GenerateObject(additionalData, dataKey, val, dataMember, valueField, childrenField);                            
                             LookupJson(obj, additionalData, sch, opt, includelabels, includes, objFromCollection, alpacaForAddData, field);
+                            o[childProperty.Name] = obj;
                         }
                         catch (System.Exception)
                         {
