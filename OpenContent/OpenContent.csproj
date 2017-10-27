@@ -199,12 +199,15 @@
     <Compile Include="Components\App\App.cs" />
     <Compile Include="Components\Common\ObjectId.cs" />
     <Compile Include="Components\Datasource\DataNotValidException.cs" />
+    <Compile Include="Components\FileIndexer\FileIndexerManager.cs" />
     <Compile Include="Components\Datasource\DefaultDataAction.cs" />
     <Compile Include="Components\Datasource\DnnUsersDataSource.cs" />
     <Compile Include="Components\Datasource\IDataAction.cs" />
     <Compile Include="Components\Datasource\IDataActions.cs" />
     <Compile Include="Components\Datasource\IDataIndex.cs" />
     <Compile Include="Components\Dnn\DnnPermissionsUtils.cs" />
+    <Compile Include="Components\FileIndexer\IFileIndexer.cs" />
+    <Compile Include="Components\FileIndexer\TextFileIndexer.cs" />
     <Compile Include="Components\FormAPIController.cs" />
     <Compile Include="Components\Form\FormUtils.cs" />
     <Compile Include="Components\Form\GenSettingsDTO.cs" />
@@ -1146,6 +1149,7 @@
     <Content Include="css\font-awesome\fonts\fontawesome-webfont.woff" />
     <Content Include="css\font-awesome\fonts\fontawesome-webfont.woff2" />
     <Content Include="css\font-awesome\fonts\FontAwesome.otf" />
+    <Content Include="Providers\DataProviders\SqlDataProvider\03.05.00.SqlDataProvider" />
     <None Include="Scripts\_references.js" />
     <Content Include="js\select2\i18n\az.js" />
     <Content Include="js\select2\i18n\bg.js" />

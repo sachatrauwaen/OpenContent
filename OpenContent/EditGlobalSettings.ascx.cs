@@ -30,6 +30,7 @@ namespace Satrabel.OpenContent
             base.OnInit(e);
             hlCancel.NavigateUrl = Globals.NavigateURL();
             cmdSave.Click += cmdSave_Click;
+            cmdUpgradeXml.Click += cmdUpgradeXml_Click;
             //cmdCancel.Click += cmdCancel_Click;
         }
         protected override void OnLoad(EventArgs e)
@@ -71,6 +72,8 @@ namespace Satrabel.OpenContent
                 cbLoadBootstrap.Visible = lLoadBootstrap.Visible = globalSettingsRepository.GetEditLayout() != AlpacaLayoutEnum.DNN;
                 tbGoogleApiKey.Text = globalSettingsRepository.GetGoogleApiKey();
                 cbFastHandlebars.Checked = globalSettingsRepository.GetFastHandlebars();
+                cbSaveXml.Checked = globalSettingsRepository.IsSaveXml();
+                cmdUpgradeXml.Visible = cbSaveXml.Checked;
             }
         }
         protected void cmdSave_Click(object sender, EventArgs e)
@@ -93,9 +96,40 @@ namespace Satrabel.OpenContent
             globalSettingsRepository.SetLoadBootstrap(cbLoadBootstrap.Checked);
             globalSettingsRepository.SetGoogleApiKey(tbGoogleApiKey.Text);
             globalSettingsRepository.SetFastHandlebars(cbFastHandlebars.Checked);
-
+            globalSettingsRepository.SetSaveXml(cbSaveXml.Checked);
 
             Response.Redirect(Globals.NavigateURL(), true);
+        }
+
+        protected void cmdUpgradeXml_Click(object sender, EventArgs e)
+        {
+            var globalSettingsController = App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId);
+            if (globalSettingsController.IsSaveXml())
+            {
+                App.Services.Logger.Info("Updating all OpenContent Xml data for portal " + ModuleContext.PortalId);
+                try
+                {
+                    var ctrl = new OpenContentController();
+                    var modules = DnnUtils.GetDnnOpenContentModules(ModuleContext.PortalId);
+                    foreach (var module in modules)
+                    {
+                        var contents = ctrl.GetContents(module.ModuleId);
+                        foreach (var item in contents)
+                        {
+                            ctrl.UpdateXmlContent(item);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    App.Services.Logger.Error("Error while Updating all OpenContent Xml data for portal " + ModuleContext.PortalId, ex);
+                }
+                finally
+                {
+                }
+                Log.Logger.Info("Finished Updating all OpenContent Xml data for portal " + ModuleContext.PortalId);
+            }
+            //Response.Redirect(Globals.NavigateURL(), true);
         }
         protected void cmdCancel_Click(object sender, EventArgs e)
         {

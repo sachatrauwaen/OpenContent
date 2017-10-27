@@ -27,5 +27,9 @@ namespace Satrabel.OpenContent.Components.Dnn
 
         string GetEditorRoleId();
         void SetEditorRoleId(string value);
+
+        bool IsSaveXml();
+        void SetSaveXml(bool saveXml);
+
     }
 }

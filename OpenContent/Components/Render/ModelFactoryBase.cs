@@ -141,24 +141,29 @@ namespace Satrabel.OpenContent.Components.Render
                 var includelabels = _templateFiles != null && _templateFiles.LabelsInTemplate;
                 var ds = DataSourceManager.GetDataSource(_manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(_module);
-                JsonUtils.LookupJson(model, _additionalData, _schemaJson, _optionsJson, includelabels, includes, (col, id) =>
-                {
-                    // collection enhancement
-                    dsContext.Collection = col;
-                    var dsItem = ds.Get(dsContext, id);
-                    if (dsItem != null && dsItem.Data is JObject)
+                JsonUtils.LookupJson(model, _additionalData, _schemaJson, _optionsJson, includelabels, includes,
+                    (col, id) =>
                     {
-                        return dsItem.Data as JObject;
-                    }
-                    else
+                        // collection enhancement
+                        dsContext.Collection = col;
+                        var dsItem = ds.Get(dsContext, id);
+                        if (dsItem != null && dsItem.Data is JObject)
+                        {
+                            return dsItem.Data as JObject;
+                        }
+                        else
+                        {
+                            JObject res = new JObject();
+                            res["Id"] = id;
+                            res["Collection"] = col;
+                            res["Title"] = "unknow";
+                            return res;
+                        }
+                    },
+                    (key) =>
                     {
-                        JObject res = new JObject();
-                        res["Id"] = id;
-                        res["Collection"] = col;
-                        res["Title"] = "unknow";
-                        return res;
-                    }
-                });
+                        return ds.GetDataAlpaca(dsContext, true, true, false, key);
+                    });
             }
             if (_optionsJson != null)
             {

@@ -212,7 +212,7 @@ namespace Satrabel.OpenContent.Components.Json
             }
         }
 
-        public static void LookupJson(JObject o, JObject additionalData, JObject schema, JObject options, bool includelabels, List<string> includes, Func<string, string, JObject> objFromCollection, string prefix = "")
+        public static void LookupJson(JObject o, JObject additionalData, JObject schema, JObject options, bool includelabels, List<string> includes, Func<string, string, JObject> objFromCollection, Func<string, JObject> alpacaForAddData, string prefix = "")
         {
             if (schema?["properties"] == null)
                 return;
@@ -267,7 +267,7 @@ namespace Satrabel.OpenContent.Components.Json
                         var obj = value as JObject;
                         if (obj != null)
                         {
-                            LookupJson(obj, additionalData, sch["items"] as JObject, opt["items"] as JObject, includelabels, includes, objFromCollection, field);
+                            LookupJson(obj, additionalData, sch["items"] as JObject, opt["items"] as JObject, includelabels, includes, objFromCollection, alpacaForAddData, field);
                         }
                         else if (lookup)
                         {
@@ -276,7 +276,10 @@ namespace Satrabel.OpenContent.Components.Json
                             {
                                 try
                                 {
-                                    newArray.Add(GenerateObject(additionalData, dataKey, val.ToString(), dataMember, valueField, childrenField));
+                                    var genObj = GenerateObject(additionalData, dataKey, val.ToString(), dataMember, valueField, childrenField);
+                                    var alpaca = alpacaForAddData(dataKey);
+                                    LookupJson(genObj, additionalData, alpaca["schema"]?["items"] as JObject, alpaca["options"]?["items"] as JObject, includelabels, includes, objFromCollection, alpacaForAddData, field);
+                                    newArray.Add(genObj);
                                 }
                                 catch (System.Exception)
                                 {
@@ -327,7 +330,7 @@ namespace Satrabel.OpenContent.Components.Json
                 else if (childProperty.Value is JObject)
                 {
                     var obj = childProperty.Value as JObject;
-                    LookupJson(obj, additionalData, sch, opt, includelabels, includes, objFromCollection, field);
+                    LookupJson(obj, additionalData, sch, opt, includelabels, includes, objFromCollection, alpacaForAddData, field);
                 }
                 else if (childProperty.Value is JValue)
                 {
@@ -336,7 +339,12 @@ namespace Satrabel.OpenContent.Components.Json
                         string val = childProperty.Value.ToString();
                         try
                         {
-                            o[childProperty.Name] = GenerateObject(additionalData, dataKey, val, dataMember, valueField, childrenField);
+                            var obj = GenerateObject(additionalData, dataKey, val, dataMember, valueField, childrenField);
+                            var alpaca = alpacaForAddData(dataKey);
+                            LookupJson(obj, additionalData, alpaca["schema"]?["items"] as JObject, alpaca["options"]?["items"] as JObject, includelabels, includes, objFromCollection, alpacaForAddData, field);
+
+                            //LookupJson(obj, additionalData, sch, opt, includelabels, includes, objFromCollection, alpacaForAddData, field);
+                            o[childProperty.Name] = obj;
                         }
                         catch (System.Exception)
                         {

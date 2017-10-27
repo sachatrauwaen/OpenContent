@@ -90,6 +90,9 @@ namespace Satrabel.OpenContent.Components
         public DateTime CreatedOnDate { get; set; }
         public DateTime LastModifiedOnDate { get; set; }
         public string VersionsJson { get; set; }
+
+        public string Xml { get; set; }
+
         [IgnoreColumn]
         public List<OpenContentVersion> Versions
         {

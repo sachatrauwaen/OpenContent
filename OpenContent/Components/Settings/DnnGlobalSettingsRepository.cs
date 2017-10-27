@@ -138,5 +138,21 @@ namespace Satrabel.OpenContent.Components.Settings
             else
                 PortalController.UpdatePortalSetting(_portalId, SETTINGS_EDITOR_ROLE_ID, value, true);
         }
+
+
+        private const string SETTINGS_SAVE_XML = "OpenContent_SaveXml";
+        private const bool SETTINGS_DEFAULT_SAVE_XML = false;
+        public bool IsSaveXml()
+        {
+            var saveXmlSetting = PortalController.GetPortalSetting(SETTINGS_SAVE_XML, _portalId, string.Empty);
+            if (!string.IsNullOrWhiteSpace(saveXmlSetting) && bool.TryParse(saveXmlSetting, out var saveXml))
+                return saveXml;
+            return SETTINGS_DEFAULT_SAVE_XML;
+        }
+
+        public void SetSaveXml(bool saveXml)
+        {
+            PortalController.UpdatePortalSetting(_portalId, SETTINGS_SAVE_XML, saveXml.ToString(), true);
+        }
     }
 }

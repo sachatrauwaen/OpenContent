@@ -427,13 +427,21 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     };
                     newConfig.Fields.Add(prop.Key, newField);
                 }
-
+                //else if (optType == "file" || optType == "file2")
+                //{
+                //    var newField = new FieldConfig()
+                //    {
+                //        IndexType = "file",
+                //        Index = true,
+                //        Sort = false
+                //    };
+                //    newConfig.Fields.Add(prop.Key, newField);
+                //}
             }
             //var json = JObject.FromObject(newConfig);
-            //File.WriteAllText(templateUri.PhysicalFullDirectory + "\\test.json", json.ToString());
+            //File.WriteAllText(_templateUri.PhysicalFullDirectory + "\\test.json", json.ToString());
 
             return newConfig;
-
         }
     }
 }
