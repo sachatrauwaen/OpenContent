@@ -428,12 +428,21 @@ namespace Satrabel.OpenContent.Components.Alpaca
                                 Index = true,
                                 Sort = true
                             };
-                            newConfig.Fields.Add(prop.Key, newField);
+                            newConfig.Fields.Add(prop.Key, newField);   
                         }
-
+                        //else if (optType == "file" || optType == "file2")
+                        //{
+                        //    var newField = new FieldConfig()
+                        //    {
+                        //        IndexType = "file",
+                        //        Index = true,
+                        //        Sort = false
+                        //    };
+                        //    newConfig.Fields.Add(prop.Key, newField);
+                        //}
                     }
                     //var json = JObject.FromObject(newConfig);
-                    //File.WriteAllText(templateUri.PhysicalFullDirectory + "\\test.json", json.ToString());
+                    //File.WriteAllText(_templateUri.PhysicalFullDirectory + "\\test.json", json.ToString());
 
                     var schemaFile = new FileUri(_templateUri.UrlFolder, prefix + "schema.json");
                     var optionsFile = new FileUri(_templateUri.UrlFolder, prefix + "options.json");
