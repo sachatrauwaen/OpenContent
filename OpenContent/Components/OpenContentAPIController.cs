@@ -587,6 +587,8 @@ namespace Satrabel.OpenContent.Components
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
+
+                AddNotifyInfo(dsContext);
                 try
                 {
                     if (dsItem == null)
@@ -632,6 +634,15 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
+        private void AddNotifyInfo(DataSourceContext dsContext)
+        {
+            string jsonSettings = ActiveModule.ModuleSettings["notifications"] as string;
+            if (!string.IsNullOrEmpty(jsonSettings))
+            {
+                dsContext.Options = new JObject();
+                dsContext.Options = JObject.Parse(jsonSettings);
+            }
+        }
 
         [HttpPost]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
@@ -733,7 +744,7 @@ namespace Satrabel.OpenContent.Components
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
-
+                AddNotifyInfo(dsContext);
                 if (content != null)
                 {
                     ds.Delete(dsContext, content);
@@ -824,17 +835,30 @@ namespace Satrabel.OpenContent.Components
                     var schema = json["schema"].ToString();
                     var options = json["options"].ToString();
                     var view = json["view"].ToString();
+                    var index = json["index"].ToString();
                     var data = json["data"].ToString();
                     var datafile = new FileUri(settings.TemplateDir.UrlFolder + prefix + "builder.json");
                     var schemafile = new FileUri(settings.TemplateDir.UrlFolder + prefix + "schema.json");
                     var optionsfile = new FileUri(settings.TemplateDir.UrlFolder + prefix + "options.json");
                     var viewfile = new FileUri(settings.TemplateDir.UrlFolder + prefix + "view.json");
+                    var indexfile = new FileUri(settings.TemplateDir.UrlFolder + prefix + "index.json");
                     try
                     {
                         File.WriteAllText(datafile.PhysicalFilePath, data);
                         File.WriteAllText(schemafile.PhysicalFilePath, schema);
                         File.WriteAllText(optionsfile.PhysicalFilePath, options);
                         File.WriteAllText(viewfile.PhysicalFilePath, view);
+                        if (string.IsNullOrEmpty(index))
+                        {
+                            if (indexfile.FileExists)
+                            {
+                                File.Delete(indexfile.PhysicalFilePath);
+                            }
+                        }
+                        else
+                        {
+                            File.WriteAllText(indexfile.PhysicalFilePath, index);
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -845,7 +869,7 @@ namespace Satrabel.OpenContent.Components
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, new
                 {
-                    isValid = true                 
+                    isValid = true
                 });
             }
             catch (Exception exc)
