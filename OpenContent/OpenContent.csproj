@@ -506,11 +506,12 @@
     <Content Include="alpaca\css\img\Delete_16X16_Gray.png" />
     <Content Include="alpaca\css\img\Dn_16X16_Standard.png" />
     <Content Include="alpaca\css\img\Up_16X16_Standard.png" />
+    <Content Include="alpaca\js\fields\dnn\AccordionField.js" />
     <Content Include="alpaca\js\fields\dnn\dnnfields.js" />
     <Content Include="alpaca\js\fields\dnn\dnnfields.min.js">
       <DependentUpon>dnnfields.js</DependentUpon>
     </Content>
-    <Content Include="alpaca\js\fields\dnn\AccordionField.js" />
+    <Content Include="alpaca\js\fields\dnn\MLSummernoteField.js" />
     <Content Include="alpaca\js\fields\dnn\User2Field.js" />
     <Content Include="alpaca\js\fields\dnn\Folder2Field.js" />
     <Content Include="alpaca\js\fields\dnn\GalleryField.js" />

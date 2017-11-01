@@ -227,7 +227,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/fontIconPicker/themes/grey-theme/jquery.fonticonpicker.grey.min.css", FileOrder.Css.DefaultPriority);
                 ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/css/glyphicons/glyphicons.css", FileOrder.Css.DefaultPriority + 1);
             }
-            if (allFields || fieldTypes.Contains("summernote"))
+            if (allFields || fieldTypes.Contains("summernote") || fieldTypes.Contains("mlsummernote"))
             {
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/summernote/summernote.min.js", FileOrder.Js.DefaultPriority, "DnnPageHeaderProvider");
                 ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/summernote/summernote.css", FileOrder.Css.DefaultPriority);
