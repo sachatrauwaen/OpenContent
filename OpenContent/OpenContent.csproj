@@ -370,6 +370,13 @@
     <Compile Include="Components\Common\Utils.cs" />
     <Compile Include="Components\UrlRewriter\OpenContentUrlRule.cs" />
     <Compile Include="Components\UrlRewriter\OpenContentUrlProvider.cs" />
+    <Compile Include="EditNotifications.ascx.cs">
+      <DependentUpon>EditNotifications.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="EditNotifications.ascx.designer.cs">
+      <DependentUpon>EditNotifications.ascx</DependentUpon>
+    </Compile>
     <Compile Include="GroupedDropDownList.cs" />
     <Compile Include="EditFormSettings.ascx.cs">
       <DependentUpon>EditFormSettings.ascx</DependentUpon>
@@ -566,6 +573,7 @@
     <Content Include="css\glyphicons\fonts\glyphicons-regular.svg" />
     <Content Include="css\glyphicons\fonts\glyphicons-social-regular.svg" />
     <Content Include="css\glyphicons\glyphicons.css" />
+    <Content Include="EditNotifications.ascx" />
     <Content Include="EditFormSettings.ascx" />
     <Content Include="js\bootstrap\css\bootstrap-theme.css" />
     <Content Include="js\bootstrap\css\bootstrap-theme.min.css" />
@@ -1125,6 +1133,8 @@
     <Content Include="css\font-awesome\fonts\fontawesome-webfont.woff2" />
     <Content Include="css\font-awesome\fonts\FontAwesome.otf" />
     <Content Include="Providers\DataProviders\SqlDataProvider\03.05.00.SqlDataProvider" />
+    <Content Include="notifications-schema.json" />
+    <Content Include="notifications-options.json" />
     <None Include="Scripts\_references.js" />
     <Content Include="js\select2\i18n\az.js" />
     <Content Include="js\select2\i18n\bg.js" />

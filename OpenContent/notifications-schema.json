@@ -1,0 +1,110 @@
+﻿{
+  "type": "object",
+  "properties": {
+    "Notifications": {
+      "title": "Email Notifications on add, update and delete",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "default": {
+          "FromNameField": "Name",
+          "FromEmailField": "Email",
+          "ToNameField": "Name",
+          "ToEmailField": "Email",
+          "ReplyToNameField": "Name",
+          "ReplyToEmailField": "Email"
+        },
+        "properties": {
+          "From": {
+            "title": "From",
+            "type": "string",
+            "enum": [ "host", "admin", "form", "custom", "current" ]
+          },
+          "FromName": {
+            "title": "From Name",
+            "type": "string",
+            "dependencies": "From"
+          },
+          "FromEmail": {
+            "title": "From Email",
+            "type": "string",
+            "dependencies": "From"
+          },
+          "FromNameField": {
+            "title": "From Name Field",
+            "type": "string",
+            "dependencies": "From"
+          },
+          "FromEmailField": {
+            "title": "From Email Field",
+            "type": "string",
+            "dependencies": "From"
+          },
+          "To": {
+            "title": "To",
+            "type": "string",
+            "enum": [ "host", "admin", "form", "custom", "current" ]
+          },
+          "ToName": {
+            "title": "To Name",
+            "type": "string",
+            "dependencies": "To"
+          },
+          "ToEmail": {
+            "title": "To Email",
+            "type": "string",
+            "required": true,
+            "dependencies": "To"
+          },
+          "ToNameField": {
+            "title": "To Name Field",
+            "type": "string",
+            "dependencies": "To",
+            "default": "Name"
+          },
+          "ToEmailField": {
+            "title": "To Email Field",
+            "type": "string",
+            "dependencies": "To",
+            "default": "Email"
+          },
+          "ReplyTo": {
+            "title": "ReplyTo",
+            "type": "string",
+            "enum": [ "host", "admin", "form", "custom", "current" ]
+          },
+          "ReplyToName": {
+            "title": "ReplyTo Name",
+            "type": "string",
+            "dependencies": "ReplyTo"
+          },
+          "ReplyToEmail": {
+            "title": "ReplyTo Email",
+            "type": "string",
+            "dependencies": "ReplyTo"
+          },
+          "ReplyToNameField": {
+            "title": "ReplyTo Name Field",
+            "type": "string",
+            "dependencies": "ReplyTo"
+          },
+          "ReplyToEmailField": {
+            "title": "ReplyTo Email Field",
+            "type": "string",
+            "dependencies": "ReplyTo",
+            "default": "Email"
+          },
+          "EmailSubject": {
+            "title": "Email subject",
+            "type": "string"
+          },
+          "EmailBody": {
+            "title": "Email body",
+            "type": "string"
+          }
+        }
+      }
+    }
+
+  }
+}
