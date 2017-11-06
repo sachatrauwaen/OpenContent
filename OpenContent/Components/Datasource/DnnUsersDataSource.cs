@@ -89,6 +89,7 @@ namespace Satrabel.OpenContent.Components.Datasource
 
         public override IDataItems GetAll(DataSourceContext context, Select selectQuery)
         {
+            ReIndexIfNeeded(context.ModuleId, context.TabId, context.PortalId);
             if (context.Index && selectQuery != null)
             {
                 SearchResults docs = LuceneUtils.Search(INDEX_SCOPE, selectQuery);
@@ -377,6 +378,19 @@ namespace Satrabel.OpenContent.Components.Datasource
         }
 
         #region private methods
+
+        private static void ReIndexIfNeeded(int moduleid, int tabid, int portalId)
+        {
+            var currentUserCount = UserController.GetUserCountByPortal(portalId);
+            var indexedUserCount = UserController.GetUserCountByPortal(portalId); //this should be pointing to a saved version of the counter
+            if (currentUserCount != indexedUserCount)
+            {
+                // reindex module data
+                var module = OpenContentModuleConfig.Create(moduleid, tabid, null);
+                LuceneUtils.ReIndexModuleData(module);
+                App.Services.Logger.Info("DnnUsers reindexed");
+            }
+        }
 
         private static void UpdateRoles(DataSourceContext context, JToken data, JObject schema, UserInfo user)
         {
