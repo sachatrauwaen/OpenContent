@@ -34,6 +34,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.UI;
+using DotNetNuke.Services.Localization;
 using Satrabel.OpenContent.Components.Datasource;
 using IDataSource = Satrabel.OpenContent.Components.Datasource.IDataSource;
 using SecurityAccessLevel = DotNetNuke.Security.SecurityAccessLevel;

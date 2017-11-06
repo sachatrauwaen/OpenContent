@@ -280,6 +280,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 LuceneController.Instance.Add(content, indexConfig);
                 LuceneController.Instance.Commit();
             }
+            Notify(context, data, "add");
         }
         public virtual void Update(DataSourceContext context, IDataItem item, JToken data)
         {
@@ -298,7 +299,22 @@ namespace Satrabel.OpenContent.Components.Datasource
                 LuceneController.Instance.Commit();
             }
             ClearUrlRewriterCache(context);
+            Notify(context, data, "update");
         }
+
+        private static void Notify(DataSourceContext context, JToken data, string action)
+        {
+            if (context.Options?["Notifications"] is JArray)
+            {
+                var notifData = new JObject();
+                notifData["form"] = data.DeepClone();
+                notifData["form"]["action"] = action;
+                notifData["formSettings"] = new JObject();
+                notifData["formSettings"] = context.Options;
+                FormUtils.FormSubmit(notifData);
+            }
+        }
+
         public virtual void Delete(DataSourceContext context, IDataItem item)
         {
             OpenContentController ctrl = new OpenContentController();
@@ -310,6 +326,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 LuceneController.Instance.Commit();
             }
             ClearUrlRewriterCache(context);
+            Notify(context, content.JsonAsJToken, "delete");
         }
 
         /// <summary>

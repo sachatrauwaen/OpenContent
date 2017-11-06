@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json.Linq;
-using Satrabel.OpenContent.Components.AppDefinitions;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Dnn;
 using Satrabel.OpenContent.Components.Handlebars;
@@ -18,6 +17,7 @@ using System.Web.Hosting;
 using System.Web.UI;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Portals;
+using Satrabel.OpenContent.Components.AppDefinitions;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.Querying;
 using IDataSource = Satrabel.OpenContent.Components.Datasource.IDataSource;
@@ -772,6 +772,33 @@ namespace Satrabel.OpenContent.Components.Render
                     )
                 );
             }
+
+            ////Edit Notifications Settings
+            if (templateDefined)
+            {
+                actions.Add(
+                    new MenuAction(
+                        App.Services.Localizer.GetString("FormSettings.Action", ResourceFile),
+                        "~/DesktopModules/OpenContent/images/editsettings2.png",
+                        RenderContext.EditUrl("notifications"),
+                        ActionType.Misc,
+                        SecurityAccessLevel.AdminRights
+                    )
+                );
+            }
+            //if (templateDefined)
+            //{
+            //    actions.Add(ModuleContext.GetNextActionID(),
+            //        Localization.GetString("Notifications.Action", LocalResourceFile),
+            //        ModuleActionType.ContentOptions,
+            //        "",
+            //        "~/DesktopModules/OpenContent/images/editsettings2.png",
+            //        ModuleContext.EditUrl("notifications"),
+            //        false,
+            //        SecurityAccessLevel.Admin,
+            //        true,
+            //        false);
+            //}
 
             //Switch Template
             actions.Add(

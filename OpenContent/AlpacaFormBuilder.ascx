@@ -84,6 +84,10 @@
             ContactForm = true;
         }
 
+        if (getData.key == "") {
+            Indexable = true;
+        }
+
         BootstrapForm = <%= AlpacaContext.Bootstrap ? "true" : "false"%>;
         BootstrapHorizontal = <%= AlpacaContext.Horizontal ? "true" : "false"%>;
 
@@ -113,7 +117,8 @@
             var schema = getSchema(data);
             var options = getOptions(data);
             var view = getView(data);
-            var postData = JSON.stringify({ 'data': data, 'schema': schema, 'options': options, 'view': view, 'key': $("#<%=ddlForms.ClientID %>").val() });
+            var index = getIndex(data);
+            var postData = JSON.stringify({ 'data': data, 'schema': schema, 'options': options, 'view': view, 'index': index, 'key': $("#<%=ddlForms.ClientID %>").val() });
             var action = "UpdateBuilder";
             $.ajax({
                 type: "POST",
