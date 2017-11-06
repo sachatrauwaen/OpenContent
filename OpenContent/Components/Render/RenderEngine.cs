@@ -773,12 +773,12 @@ namespace Satrabel.OpenContent.Components.Render
                 );
             }
 
-            ////Edit Notifications Settings
+            //Edit Notifications Settings
             if (templateDefined)
             {
                 actions.Add(
                     new MenuAction(
-                        App.Services.Localizer.GetString("FormSettings.Action", ResourceFile),
+                        App.Services.Localizer.GetString("Notifications.Action", ResourceFile),
                         "~/DesktopModules/OpenContent/images/editsettings2.png",
                         RenderContext.EditUrl("notifications"),
                         ActionType.Misc,
