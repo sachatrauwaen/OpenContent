@@ -32,6 +32,9 @@
                     focus: true
                 };
             }
+            if ( this.options.placeholder) {
+                this.options.summernote = this.options.placeholder;
+            }
         },
 
         afterRenderControl: function (model, callback) {

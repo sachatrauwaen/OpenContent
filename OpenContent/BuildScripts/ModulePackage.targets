@@ -25,7 +25,8 @@
       <InstallInclude Include="**\*.resx" Exclude="packages\**" />
       <InstallInclude Include="**\*.aspx" Exclude="packages\**" />
       <InstallInclude Include="**\*.js" Exclude="packages\**;**\_*.js" />
-      <InstallInclude Include="**\formsettings-*.json" Exclude="packages\**" />
+      <InstallInclude Include="**\*-schema.json" Exclude="packages\**" />
+      <InstallInclude Include="**\*-options.json" Exclude="packages\**" />
       <InstallInclude Include="**\*.txt"  Exclude="**\obj\**;**\_ReSharper*\**;packages\**;**\.git\**;" />
       <InstallInclude Include="**\images\**" Exclude="packages\**;**\*.cs" />
       <InstallInclude Include="**\web.config" Exclude="packages\**" />

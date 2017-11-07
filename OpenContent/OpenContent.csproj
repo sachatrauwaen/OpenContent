@@ -179,12 +179,15 @@
     <Compile Include="Components\AppConfig.cs" />
     <Compile Include="Components\Common\ObjectId.cs" />
     <Compile Include="Components\Datasource\DataNotValidException.cs" />
+    <Compile Include="Components\FileIndexer\FileIndexerManager.cs" />
     <Compile Include="Components\Datasource\DefaultDataAction.cs" />
     <Compile Include="Components\Datasource\DnnUsersDataSource.cs" />
     <Compile Include="Components\Datasource\IDataAction.cs" />
     <Compile Include="Components\Datasource\IDataActions.cs" />
     <Compile Include="Components\Datasource\IDataIndex.cs" />
+    <Compile Include="Components\FileIndexer\IFileIndexer.cs" />
     <Compile Include="Components\Export\ExcelApiController.cs" />
+    <Compile Include="Components\FileIndexer\TextFileIndexer.cs" />
     <Compile Include="Components\FormAPIController.cs" />
     <Compile Include="Components\Form\FormUtils.cs" />
     <Compile Include="Components\Form\GenSettingsDTO.cs" />
@@ -367,6 +370,13 @@
     <Compile Include="Components\Common\Utils.cs" />
     <Compile Include="Components\UrlRewriter\OpenContentUrlRule.cs" />
     <Compile Include="Components\UrlRewriter\OpenContentUrlProvider.cs" />
+    <Compile Include="EditNotifications.ascx.cs">
+      <DependentUpon>EditNotifications.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="EditNotifications.ascx.designer.cs">
+      <DependentUpon>EditNotifications.ascx</DependentUpon>
+    </Compile>
     <Compile Include="GroupedDropDownList.cs" />
     <Compile Include="EditFormSettings.ascx.cs">
       <DependentUpon>EditFormSettings.ascx</DependentUpon>
@@ -496,11 +506,12 @@
     <Content Include="alpaca\css\img\Delete_16X16_Gray.png" />
     <Content Include="alpaca\css\img\Dn_16X16_Standard.png" />
     <Content Include="alpaca\css\img\Up_16X16_Standard.png" />
+    <Content Include="alpaca\js\fields\dnn\AccordionField.js" />
     <Content Include="alpaca\js\fields\dnn\dnnfields.js" />
     <Content Include="alpaca\js\fields\dnn\dnnfields.min.js">
       <DependentUpon>dnnfields.js</DependentUpon>
     </Content>
-    <Content Include="alpaca\js\fields\dnn\AccordionField.js" />
+    <Content Include="alpaca\js\fields\dnn\MLSummernoteField.js" />
     <Content Include="alpaca\js\fields\dnn\User2Field.js" />
     <Content Include="alpaca\js\fields\dnn\Folder2Field.js" />
     <Content Include="alpaca\js\fields\dnn\GalleryField.js" />
@@ -563,6 +574,7 @@
     <Content Include="css\glyphicons\fonts\glyphicons-regular.svg" />
     <Content Include="css\glyphicons\fonts\glyphicons-social-regular.svg" />
     <Content Include="css\glyphicons\glyphicons.css" />
+    <Content Include="EditNotifications.ascx" />
     <Content Include="EditFormSettings.ascx" />
     <Content Include="js\bootstrap\css\bootstrap-theme.css" />
     <Content Include="js\bootstrap\css\bootstrap-theme.min.css" />
@@ -1122,6 +1134,8 @@
     <Content Include="css\font-awesome\fonts\fontawesome-webfont.woff2" />
     <Content Include="css\font-awesome\fonts\FontAwesome.otf" />
     <Content Include="Providers\DataProviders\SqlDataProvider\03.05.00.SqlDataProvider" />
+    <Content Include="notifications-schema.json" />
+    <Content Include="notifications-options.json" />
     <None Include="Scripts\_references.js" />
     <Content Include="js\select2\i18n\az.js" />
     <Content Include="js\select2\i18n\bg.js" />

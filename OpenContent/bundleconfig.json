@@ -26,6 +26,7 @@
       "alpaca/js/fields/dnn/Url2Field.js",
       "alpaca/js/fields/dnn/WysihtmlField.js",
       "alpaca/js/fields/dnn/SummernoteField.js",
+      "alpaca/js/fields/dnn/MLSummernoteField.js",
       "alpaca/js/fields/dnn/MLCKEditorField.js",
       "alpaca/js/fields/dnn/MLFile2Field.js",
       "alpaca/js/fields/dnn/MLFileField.js",
