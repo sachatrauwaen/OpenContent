@@ -62,6 +62,7 @@ namespace Satrabel.OpenForm
                 dynamic o = new ExpandoObject();
                 var dict = (IDictionary<string, object>)o;
                 o.CreatedOnDate = item.CreatedOnDate;
+                o.Title = item.Title;
                 //o.Json = item.Json;
                 dynamic d = JsonUtils.JsonToDynamic(item.Json);
                 //o.Data = d;

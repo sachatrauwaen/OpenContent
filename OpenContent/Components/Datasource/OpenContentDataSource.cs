@@ -367,12 +367,12 @@ namespace Satrabel.OpenContent.Components.Datasource
             if (action == "FormSubmit")
             {
                 OpenContentController ctrl = new OpenContentController();
-                var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), "Submissions");
+                //var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), "Submissions");
                 var content = new OpenContentInfo()
                 {
                     ModuleId = GetModuleId(context),
                     Collection = "Submissions",
-                    Title = "Form",
+                    Title = item.Data["Title"] == null ? "Form" : item.Data["Title"].ToString(),
                     Json = data["form"].ToString(),
                     CreatedByUserId = context.UserId,
                     CreatedOnDate = DateTime.Now,
@@ -382,13 +382,12 @@ namespace Satrabel.OpenContent.Components.Datasource
                 ctrl.AddContent(content);
 
                 //Index the content item
-                if (context.Index)
-                {
-                    LuceneController.Instance.Add(content, indexConfig);
-                    LuceneController.Instance.Store.Commit();
-                }
-
-                return FormUtils.FormSubmit(data as JObject);
+                //if (context.Index)
+                //{
+                //    LuceneController.Instance.Add(content, indexConfig);
+                //    LuceneController.Instance.Store.Commit();
+                //}
+                return FormUtils.FormSubmit(data as JObject, item.Data.DeepClone() as JObject);
             }
             return null;
         }
