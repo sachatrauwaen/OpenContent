@@ -635,6 +635,45 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
+
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public HttpResponseMessage ReOrder(List<string> ids)
+        {
+            try
+            {
+                var module = new OpenContentModuleInfo(ActiveModule);
+                IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
+                var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
+                IDataItem dsItem = null;
+                if (module.IsListMode())
+                {
+                    if (ids != null)
+                    {
+                        int i = 1;
+                        foreach (var id in ids)
+                        {
+                            dsItem = ds.Get(dsContext, id);
+                            var json = dsItem.Data;
+                            json["SortOrder"] = i;
+                            ds.Update(dsContext, dsItem, json);
+                            i++;
+                        }
+                    }
+                }
+                return Request.CreateResponse(HttpStatusCode.OK, new
+                {
+                    isValid = true
+                });
+            }
+            catch (Exception exc)
+            {
+                Log.Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
+
         private void AddNotifyInfo(DataSourceContext dsContext)
         {
             string jsonSettings = ActiveModule.ModuleSettings["notifications"] as string;

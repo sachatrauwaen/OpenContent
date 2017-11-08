@@ -172,6 +172,7 @@ alpacaEngine.engine = function (config) {
 
         var view = self.view;
         if (config.view) {
+            view = config.view;
             view.parent = self.view;
         }
         var selfControl = null;
