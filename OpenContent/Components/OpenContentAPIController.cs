@@ -643,7 +643,7 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
-                var module = new OpenContentModuleInfo(ActiveModule);
+                var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
                 IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
                 IDataItem dsItem = null;
