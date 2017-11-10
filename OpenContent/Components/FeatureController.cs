@@ -57,7 +57,7 @@ namespace Satrabel.OpenContent.Components
         }
         public void ImportModule(int moduleId, string content, string version, int userId)
         {
-            var dataSource = new OpenContentDataSource(PortalSettings.Current.PortalId);
+            var dataSource = new OpenContentDataSource();
             var dsContext = new DataSourceContext
             {
                 ModuleId = moduleId,
