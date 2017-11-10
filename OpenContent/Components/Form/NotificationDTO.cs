@@ -17,6 +17,8 @@
         public string ReplyToEmail { get; set; }
         public string ReplyToNameField { get; set; }
         public string ReplyToEmailField { get; set; }
+        public string CcEmails { get; set; }
+        public string BccEmails { get; set; }
         public string EmailSubject { get; set; }
         public string EmailBody { get; set; }
     }
