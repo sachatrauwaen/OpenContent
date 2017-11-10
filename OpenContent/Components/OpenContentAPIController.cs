@@ -881,7 +881,7 @@ namespace Satrabel.OpenContent.Components
                     var schemafile = new FileUri(settings.TemplateDir, $"{prefix}schema.json");
                     var optionsfile = new FileUri(settings.TemplateDir, $"{prefix}options.json");
                     var viewfile = new FileUri(settings.TemplateDir, $"{prefix}view.json");
-                    var indexfile = new FileUri(settings.TemplateDir + $"{prefix}index.json");
+                    var indexfile = new FileUri(settings.TemplateDir, $"{prefix}index.json");
                     try
                     {
                         File.WriteAllText(datafile.PhysicalFilePath, data);
