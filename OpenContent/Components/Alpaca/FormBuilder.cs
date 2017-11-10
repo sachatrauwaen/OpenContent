@@ -202,7 +202,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     newProp.Properties.Add("UseTime", new SchemaConfig()
                     {
                         Type = "boolean",
-                        Title = propTitle + " Concider time"
+                        Title = propTitle + " Consider time"
                     });
 
                     /*
