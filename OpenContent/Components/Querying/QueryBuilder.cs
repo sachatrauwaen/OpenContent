@@ -94,9 +94,9 @@ namespace Satrabel.OpenContent.Components.Querying
             {
                 foreach (var item in filter.Properties())
                 {
-                    var fieldConfig = FieldConfigUtils.GetField(_indexConfig, item.Name);
                     if (item.Value is JValue) // text, int
                     {
+                        var fieldConfig = FieldConfigUtils.GetField(_indexConfig, item.Name);
                         var val = item.Value.ToString();
                         if (fieldConfig != null && fieldConfig.IndexType == "boolean")
                         {
