@@ -28,6 +28,21 @@ namespace Satrabel.OpenContent.Components
         private const string CACHE_PREFIX = "Satrabel.OpenContent.Components.OpenContentController-";
         private const int CACHE_TIME = 60;
 
+        private int PortalId = -1;
+
+        [Obsolete("Constructor is deprecated, please use OpenContentController(int portalId)")]
+        public OpenContentController()
+        {
+            if (PortalSettings.Current != null)
+            {
+                PortalId = PortalSettings.Current.PortalId;
+            }
+        }
+        public OpenContentController(int portalId)
+        {
+            PortalId = portalId;
+        }
+
         #region Commands
 
         public void AddContent(OpenContentInfo content)
@@ -89,7 +104,7 @@ namespace Satrabel.OpenContent.Components
             if (versions.Count == 0 || versions[0].Json.ToString() != content.Json)
             {
                 versions.Insert(0, ver);
-                if (versions.Count > App.Services.CreateGlobalSettingsRepository().GetMaxVersions())
+                if (versions.Count > (PortalId > 0 ? 5 : App.Services.CreateGlobalSettingsRepository(PortalId).GetMaxVersions()))
                 {
                     versions.RemoveAt(versions.Count - 1);
                 }
@@ -114,23 +129,26 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
-        private static void SynchronizeXml(OpenContentInfo content)
+        private void SynchronizeXml(OpenContentInfo content)
         {
-            if (App.Services.CreateGlobalSettingsRepository(PortalSettings.Current.PortalId).IsSaveXml() && !string.IsNullOrEmpty(content.Json))
+            if (PortalId > 0)
             {
-                try
+                if (App.Services.CreateGlobalSettingsRepository(PortalId).IsSaveXml() && !string.IsNullOrEmpty(content.Json))
                 {
-                    content.Xml = Newtonsoft.Json.JsonConvert.DeserializeXNode(content.Json, "root").ToString();
+                    try
+                    {
+                        content.Xml = Newtonsoft.Json.JsonConvert.DeserializeXNode(content.Json, "root").ToString();
+                    }
+                    catch (Exception ex)
+                    {
+                        App.Services.Logger.Error($"Error while Updating OpenContent Xml data for module {content.ModuleId}, ContentId {content.ContentId}", ex);
+                    }
+
                 }
-                catch (Exception ex)
+                else
                 {
-                    App.Services.Logger.Error($"Error while Updating penContent Xml data for module {content.ModuleId}, ContentId {content.ContentId}", ex);
+                    content.Xml = null;
                 }
-                
-            }
-            else
-            {
-                content.Xml = null;
             }
         }
 

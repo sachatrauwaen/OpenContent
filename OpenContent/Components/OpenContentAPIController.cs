@@ -656,7 +656,7 @@ namespace Satrabel.OpenContent.Components
                         {
                             dsItem = ds.Get(dsContext, id);
                             var json = dsItem.Data;
-                            json["SortOrder"] = i;
+                            json["SortIndex"] = i;
                             ds.Update(dsContext, dsItem, json);
                             i++;
                         }

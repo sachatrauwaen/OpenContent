@@ -19,7 +19,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         #region Queries
         public virtual bool Any(DataSourceContext context)
         {
-            OpenContentController ctrl = new OpenContentController();
+            OpenContentController ctrl = new OpenContentController(context.PortalId);
             return ctrl.GetFirstContent(GetModuleId(context)) != null;
         }
         public virtual JArray GetVersions(DataSourceContext context, IDataItem item)
@@ -104,7 +104,7 @@ namespace Satrabel.OpenContent.Components.Datasource
 
         public virtual IDataItem Get(DataSourceContext context, string id)
         {
-            OpenContentController ctrl = new OpenContentController();
+            OpenContentController ctrl = new OpenContentController(context.PortalId);
             OpenContentInfo content = null;
 
             if (!string.IsNullOrEmpty(id) && id != "-1")
@@ -182,7 +182,7 @@ namespace Satrabel.OpenContent.Components.Datasource
 
         public virtual IDataItems GetAll(DataSourceContext context)
         {
-            OpenContentController ctrl = new OpenContentController();
+            OpenContentController ctrl = new OpenContentController(context.PortalId);
 
             var dataList = ctrl.GetContents(GetModuleId(context), context.Collection)
                 .OrderBy(i => i.CreatedOnDate)
@@ -202,17 +202,10 @@ namespace Satrabel.OpenContent.Components.Datasource
                 return GetAll(context);
             }
 
-            OpenContentController ctrl = new OpenContentController();
-            SearchResults docs = LuceneUtils.Search(OpenContentInfo.GetScope(GetModuleId(context), context.Collection), selectQuery);
-            if (LogContext.IsLogActive)
-            {
-                var logKey = "Lucene query";
-                LogContext.Log(context.ActiveModuleId, logKey, "Filter", docs.ResultDefinition.Filter);
-                LogContext.Log(context.ActiveModuleId, logKey, "Query", docs.ResultDefinition.Query);
-                LogContext.Log(context.ActiveModuleId, logKey, "Sort", docs.ResultDefinition.Sort);
-                LogContext.Log(context.ActiveModuleId, logKey, "PageIndex", docs.ResultDefinition.PageIndex);
-                LogContext.Log(context.ActiveModuleId, logKey, "PageSize", docs.ResultDefinition.PageSize);
-            }
+            SelectQueryDefinition def = BuildQuery(context, selectQuery);
+            OpenContentController ctrl = new OpenContentController(context.PortalId);
+            SearchResults docs = LuceneController.Instance.Search(OpenContentInfo.GetScope(GetModuleId(context), context.Collection), def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
+
             int total = docs.TotalResults;
             var dataList = new List<IDataItem>();
             foreach (string item in docs.ids)
@@ -231,8 +224,25 @@ namespace Satrabel.OpenContent.Components.Datasource
             {
                 Items = dataList,
                 Total = total,
-                DebugInfo = docs.ResultDefinition.Filter + " - " + docs.ResultDefinition.Query + " - " + docs.ResultDefinition.Sort
+                DebugInfo = def.Filter + " - " + def.Query + " - " + def.Sort
             };
+        }
+
+        private static SelectQueryDefinition BuildQuery(DataSourceContext context, Select selectQuery)
+        {
+            SelectQueryDefinition def = new SelectQueryDefinition();
+            def.Build(selectQuery);
+            if (LogContext.IsLogActive)
+            {
+                var logKey = "Lucene query";
+                LogContext.Log(context.ActiveModuleId, logKey, "Filter", def.Filter.ToString());
+                LogContext.Log(context.ActiveModuleId, logKey, "Query", def.Query.ToString());
+                LogContext.Log(context.ActiveModuleId, logKey, "Sort", def.Sort.ToString());
+                LogContext.Log(context.ActiveModuleId, logKey, "PageIndex", def.PageIndex);
+                LogContext.Log(context.ActiveModuleId, logKey, "PageSize", def.PageSize);
+            }
+
+            return def;
         }
 
         #region Query Alpaca info for Edit
@@ -258,7 +268,7 @@ namespace Satrabel.OpenContent.Components.Datasource
 
         public virtual void Add(DataSourceContext context, JToken data)
         {
-            OpenContentController ctrl = new OpenContentController();
+            OpenContentController ctrl = new OpenContentController(context.PortalId);
             var content = new OpenContentInfo()
             {
                 ModuleId = GetModuleId(context),
@@ -284,7 +294,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         }
         public virtual void Update(DataSourceContext context, IDataItem item, JToken data)
         {
-            OpenContentController ctrl = new OpenContentController();
+            OpenContentController ctrl = new OpenContentController(context.PortalId);
             var content = (OpenContentInfo)item.Item;
             content.Title = data["Title"]?.ToString() ?? "";
             content.Json = data.ToString();
@@ -317,7 +327,7 @@ namespace Satrabel.OpenContent.Components.Datasource
 
         public virtual void Delete(DataSourceContext context, IDataItem item)
         {
-            OpenContentController ctrl = new OpenContentController();
+            OpenContentController ctrl = new OpenContentController(context.PortalId);
             var content = (OpenContentInfo)item.Item;
             ctrl.DeleteContent(content);
             if (context.Index)
@@ -342,7 +352,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         {
             if (action == "FormSubmit")
             {
-                OpenContentController ctrl = new OpenContentController();
+                OpenContentController ctrl = new OpenContentController(context.PortalId);
                 //var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), "Submissions");
                 var content = new OpenContentInfo()
                 {
@@ -421,7 +431,7 @@ namespace Satrabel.OpenContent.Components.Datasource
 
         public IEnumerable<IIndexableItem> GetIndexableData(DataSourceContext context)
         {
-            OpenContentController occ = new OpenContentController();
+            OpenContentController occ = new OpenContentController(context.PortalId);
             return occ.GetContents(context.ModuleId, context.Collection);
         }
 

@@ -109,7 +109,7 @@ namespace Satrabel.OpenContent
                 App.Services.Logger.Info("Updating all OpenContent Xml data for portal " + ModuleContext.PortalId);
                 try
                 {
-                    var ctrl = new OpenContentController();
+                    var ctrl = new OpenContentController(ModuleContext.PortalId);
                     var modules = DnnUtils.GetDnnOpenContentModules(ModuleContext.PortalId);
                     foreach (var module in modules)
                     {
