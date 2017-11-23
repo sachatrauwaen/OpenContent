@@ -120,7 +120,7 @@ namespace Satrabel.OpenContent.Components.Logging
                 referrer = context.Request.UrlReferrer == null ? "-unknown-" : context.Request.UrlReferrer.AbsoluteUri;
                 ip = context.Request.UserHostAddress;
             }
-            string retval = $"Called from {url}. Referred by {referrer}. Via IP {ip}";
+            string retval = $"Called from {url}  Referred by {referrer}  Via IP {ip}";
 
             return retval;
         }
