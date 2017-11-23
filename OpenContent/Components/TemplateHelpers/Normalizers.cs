@@ -174,6 +174,15 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
 
             return Normalize.DynamicValue(value.ToString(), defaultValue);
         }
+
+        public static string JsonValue(JToken value, string defaultValue)
+        {
+            if (value == null) return defaultValue;
+            if (value.IsEmpty()) return defaultValue;
+            if ((value as JValue) == null) return defaultValue;
+
+            return Normalize.DynamicValue(value.ToString(), defaultValue);
+        }
         #endregion
     }
 }
