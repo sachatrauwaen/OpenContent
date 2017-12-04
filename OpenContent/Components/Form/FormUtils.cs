@@ -73,19 +73,17 @@ namespace Satrabel.OpenContent.Components.Form
             }
             return PropertyValue;
         }
+
         public static string SendMail(string mailFrom, string mailTo, string replyTo, string subject, string body)
         {
+            return SendMail(mailFrom, mailTo, replyTo, "", "", subject, body);
+        }
+        public static string SendMail(string mailFrom, string mailTo, string replyTo, string cc, string bcc, string subject, string body)
+        {
 
-            //string mailFrom
-            //string mailTo, 
-            string cc = "";
-            string bcc = "";
-            //string replyTo, 
             DotNetNuke.Services.Mail.MailPriority priority = DotNetNuke.Services.Mail.MailPriority.Normal;
-            //string subject, 
             MailFormat bodyFormat = MailFormat.Html;
             Encoding bodyEncoding = Encoding.UTF8;
-            //string body, 
             List<Attachment> attachments = new List<Attachment>();
             string smtpServer = Host.SMTPServer;
             string smtpAuthentication = Host.SMTPAuthentication;
@@ -177,14 +175,14 @@ namespace Satrabel.OpenContent.Components.Form
             return schemaJson;
         }
 
-        public static JObject FormSubmit(JObject formInfo)
+        public static JObject FormSubmit(JObject formInfo, JObject item = null)
         {
             SettingsDTO settings = null;
             if (formInfo["formSettings"] is JObject)
             {
                 settings = (formInfo["formSettings"] as JObject).ToObject<SettingsDTO>();
                 var form = formInfo["form"] as JObject;
-                return FormSubmit(form, settings);
+                return FormSubmit(form, settings, item);
             }
             else
             {
@@ -193,7 +191,7 @@ namespace Satrabel.OpenContent.Components.Form
                 return res;
             }
         }
-        public static JObject FormSubmit(JObject form, SettingsDTO settings)
+        public static JObject FormSubmit(JObject form, SettingsDTO settings, JObject item = null)
         {
             if (form != null)
             {
@@ -215,6 +213,10 @@ namespace Satrabel.OpenContent.Components.Form
                     }
                      */
                     data = FormUtils.GenerateFormData(form.ToString(), out formData);
+                    if (item != null)
+                    {
+                        data.Item = JsonUtils.JsonToDynamic(item.ToString());
+                    }
                 }
                 // Send emails
                 string Message = "Form submitted.";
@@ -225,6 +227,7 @@ namespace Satrabel.OpenContent.Components.Form
                     {
                         try
                         {
+                            ProcessTemplates(hbs, data, notification);
                             MailAddress from = FormUtils.GenerateMailAddress(notification.From, notification.FromEmail, notification.FromName, notification.FromEmailField, notification.FromNameField, form);
                             MailAddress to = FormUtils.GenerateMailAddress(notification.To, notification.ToEmail, notification.ToName, notification.ToEmailField, notification.ToNameField, form);
                             MailAddress reply = null;
@@ -237,8 +240,7 @@ namespace Satrabel.OpenContent.Components.Form
                             {
                                 body = hbs.Execute(notification.EmailBody, data);
                             }
-
-                            string send = FormUtils.SendMail(from.ToString(), to.ToString(), (reply == null ? "" : reply.ToString()), notification.EmailSubject, body);
+                            string send = FormUtils.SendMail(from.ToString(), to.ToString(), (reply == null ? "" : reply.ToString()),notification.CcEmails, notification.BccEmails, notification.EmailSubject, body);
                             if (!string.IsNullOrEmpty(send))
                             {
                                 Errors.Add("From:" + from.ToString() + " - To:" + to.ToString() + " - " + send);
@@ -272,6 +274,47 @@ namespace Satrabel.OpenContent.Components.Form
                 return res;
             }
             return null;
+        }
+
+        private static void ProcessTemplates(HandlebarsEngine hbs, dynamic data, NotificationDTO notification)
+        {
+            if (notification.From == "custom")
+            {
+                if (!string.IsNullOrEmpty(notification.FromEmail) && notification.FromEmail.Contains("{{"))
+                {
+                    notification.FromEmail = hbs.Execute(notification.FromEmail, data);
+                }
+                if (!string.IsNullOrEmpty(notification.FromName) && notification.FromName.Contains("{{"))
+                {
+                    notification.FromName = hbs.Execute(notification.FromName, data);
+                }
+            }
+            if (notification.To == "custom")
+            {
+                if (!string.IsNullOrEmpty(notification.ToEmail) && notification.ToEmail.Contains("{{"))
+                {
+                    notification.ToEmail = hbs.Execute(notification.ToEmail, data);
+                }
+                if (!string.IsNullOrEmpty(notification.ToName) && notification.ToName.Contains("{{"))
+                {
+                    notification.ToName = hbs.Execute(notification.ToName, data);
+                }
+            }
+            if (notification.ReplyTo == "custom")
+            {
+                if (!string.IsNullOrEmpty(notification.ReplyToEmail) && notification.ReplyToEmail.Contains("{{"))
+                {
+                    notification.ReplyToEmail = hbs.Execute(notification.ReplyToEmail, data);
+                }
+                if (!string.IsNullOrEmpty(notification.ReplyToName) && notification.ReplyToName.Contains("{{"))
+                {
+                    notification.ReplyToName = hbs.Execute(notification.ReplyToName, data);
+                }
+            }
+            if (!string.IsNullOrEmpty(notification.EmailSubject) && notification.EmailSubject.Contains("{{"))
+            {
+                notification.EmailSubject = hbs.Execute(notification.EmailSubject, data);
+            }
         }
     }
 }
