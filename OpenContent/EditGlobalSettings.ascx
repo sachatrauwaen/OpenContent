@@ -43,6 +43,10 @@
         <dnn:Label ID="lFastHandlebars" ControlName="cbFastHandlebars" runat="server" />
         <asp:CheckBox ID="cbFastHandlebars" runat="server" />
     </div>
+    <div class="dnnFormItem">
+        <dnn:Label ID="lSaveXml" ControlName="cbSaveXml" runat="server" />
+        <asp:CheckBox ID="cbSaveXml" runat="server" />
+    </div>
 
     <ul class="dnnActions dnnClear" style="display: block; padding-left: 35%">
         <li>
@@ -50,6 +54,9 @@
         </li>
         <li>
             <asp:HyperLink ID="hlCancel" runat="server" class="dnnSecondaryAction" resourcekey="cmdCancel" />
+        </li>
+        <li>
+            <asp:LinkButton ID="cmdUpgradeXml" runat="server" class="dnnSecondaryAction" resourcekey="cmdUpgradeXml" />
         </li>
     </ul>
 </asp:Panel>

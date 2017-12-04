@@ -11,6 +11,7 @@
 
 using DotNetNuke.Web.Api;
 using Satrabel.OpenContent.Components.Datasource;
+using Satrabel.OpenContent.Components.FileIndexer;
 using System.Web.Http;
 
 #endregion
@@ -53,6 +54,7 @@ namespace Satrabel.OpenContent.Components
                );
 
             DataSourceManager.RegisterDataSources();
+            FileIndexerManager.RegisterFileIndexers();
         }
     }
 }

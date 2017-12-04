@@ -470,7 +470,20 @@ namespace Satrabel.OpenContent
                         true,
                         false);
                 }
-
+                //Edit Form Settings
+                if (templateDefined)
+                {
+                    actions.Add(ModuleContext.GetNextActionID(),
+                        Localization.GetString("Notifications.Action", LocalResourceFile),
+                        ModuleActionType.ContentOptions,
+                        "",
+                        "~/DesktopModules/OpenContent/images/editsettings2.png",
+                        ModuleContext.EditUrl("notifications"),
+                        false,
+                        SecurityAccessLevel.Admin,
+                        true,
+                        false);
+                }
                 //Switch Template
                 actions.Add(ModuleContext.GetNextActionID(),
                     Localization.GetString("EditInit.Action", LocalResourceFile),

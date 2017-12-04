@@ -54,7 +54,7 @@ namespace Satrabel.OpenForm
         private List<dynamic> GetDataAsListOfDynamics()
         {
             var module = new OpenContentModuleInfo(this.ModuleConfiguration);
-            OpenContentController ctrl = new OpenContentController();
+            OpenContentController ctrl = new OpenContentController(ModuleContext.PortalId);
             var data = ctrl.GetContents(module.DataModule.ModuleID, "Submissions").OrderByDescending(c => c.CreatedOnDate);
             var dynData = new List<dynamic>();
             foreach (var item in data)
@@ -62,6 +62,7 @@ namespace Satrabel.OpenForm
                 dynamic o = new ExpandoObject();
                 var dict = (IDictionary<string, object>)o;
                 o.CreatedOnDate = item.CreatedOnDate;
+                o.Title = item.Title;
                 //o.Json = item.Json;
                 dynamic d = JsonUtils.JsonToDynamic(item.Json);
                 //o.Data = d;

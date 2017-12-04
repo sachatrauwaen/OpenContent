@@ -203,6 +203,12 @@ namespace Satrabel.OpenContent.Components.Alpaca
                         Title = propTitle + " : until x days in the future"
                     });
                     fieldLst.Add(propKey);
+                    newProp.Properties.Add("UseTime", new SchemaConfig()
+                    {
+                        Type = "boolean",
+                        Title = propTitle + " Concider time"
+                    });
+
                     /*
                     var newField = new OptionsConfig();
                     newOptionsFilter.Fields.Add(propKey, newField);
@@ -271,7 +277,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
         }
         public FieldConfig BuildIndex(string key)
         {
-            string prefix =  (string.IsNullOrEmpty(key) || key == "Items") ? "" : key + "-";
+            string prefix = (string.IsNullOrEmpty(key) || key == "Items") ? "" : key + "-";
             string cacheKey = _templateUri.UrlFolder + prefix + "index.json";
             FieldConfig newConfig = (FieldConfig)DataCache.GetCache(cacheKey);
             if (newConfig == null)
@@ -422,12 +428,21 @@ namespace Satrabel.OpenContent.Components.Alpaca
                                 Index = true,
                                 Sort = true
                             };
-                            newConfig.Fields.Add(prop.Key, newField);
+                            newConfig.Fields.Add(prop.Key, newField);   
                         }
-
+                        //else if (optType == "file" || optType == "file2")
+                        //{
+                        //    var newField = new FieldConfig()
+                        //    {
+                        //        IndexType = "file",
+                        //        Index = true,
+                        //        Sort = false
+                        //    };
+                        //    newConfig.Fields.Add(prop.Key, newField);
+                        //}
                     }
                     //var json = JObject.FromObject(newConfig);
-                    //File.WriteAllText(templateUri.PhysicalFullDirectory + "\\test.json", json.ToString());
+                    //File.WriteAllText(_templateUri.PhysicalFullDirectory + "\\test.json", json.ToString());
 
                     var schemaFile = new FileUri(_templateUri.UrlFolder, prefix + "schema.json");
                     var optionsFile = new FileUri(_templateUri.UrlFolder, prefix + "options.json");

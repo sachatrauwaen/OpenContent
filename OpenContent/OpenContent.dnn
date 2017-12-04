@@ -1,6 +1,6 @@
 <dotnetnuke type="Package" version="5.0">
   <packages>
-    <package name="OpenContent" type="Module" version="03.04.02">
+    <package name="OpenContent" type="Module" version="03.05.00">
       <friendlyName>OpenContent</friendlyName>
       <description>OpenContent module by Satrabel.be</description>
       <iconFile>~/DesktopModules/OpenContent/Images/icon_extensions.png</iconFile>
@@ -40,10 +40,15 @@
               <name>03.02.00.SqlDataProvider</name>
               <version>03.02.00</version>
             </script>
+            <script type="Install">
+              <path>Providers\DataProviders\SqlDataProvider</path>
+              <name>03.05.00.SqlDataProvider</name>
+              <version>03.05.00</version>
+            </script>
             <script type="UnInstall">
               <path>Providers\DataProviders\SqlDataProvider</path>
               <name>Uninstall.SqlDataProvider</name>
-              <version>03.02.00</version>
+              <version>03.05.00</version>
             </script>
           </scripts>
         </component>
@@ -169,6 +174,17 @@
                     <controlSrc>DesktopModules/OpenContent/EditFormSettings.ascx</controlSrc>
                     <supportsPartialRendering>False</supportsPartialRendering>
                     <controlTitle>Form Settings</controlTitle>
+                    <controlType>Admin</controlType>
+                    <iconFile />
+                    <helpUrl />
+                    <viewOrder>0</viewOrder>
+                    <supportsPopUps>True</supportsPopUps>
+                  </moduleControl>
+                  <moduleControl>
+                    <controlKey>Notifications</controlKey>
+                    <controlSrc>DesktopModules/OpenContent/EditNotifications.ascx</controlSrc>
+                    <supportsPartialRendering>False</supportsPartialRendering>
+                    <controlTitle>Notifications</controlTitle>
                     <controlType>Admin</controlType>
                     <iconFile />
                     <helpUrl />

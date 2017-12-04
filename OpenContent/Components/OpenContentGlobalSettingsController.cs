@@ -1,4 +1,5 @@
-﻿using DotNetNuke.Entities.Portals;
+﻿using System;
+using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components.Alpaca;
 
 namespace Satrabel.OpenContent.Components
@@ -15,7 +16,9 @@ namespace Satrabel.OpenContent.Components
         private const bool SettingsDefaultLoadBootstrap = true;
         private const string SettingsGoogleApiKey = "OpenContent_GoogleApiKey";
         private const string SettingsFastHandlebars = "OpenContent_FastHandlebars";
+        private const string SettingsSaveXml = "OpenContent_SaveXml";
         private const bool SettingsDefaultFastHandlebars = false;
+        private const bool SettingsDefaultSaveXml = false;
 
         public OpenContentGlobalSettingsController(int portalId)
         {
@@ -66,6 +69,19 @@ namespace Satrabel.OpenContent.Components
         public string GetGoogleApiKey()
         {
             return PortalController.GetPortalSetting(SettingsGoogleApiKey, _portalId, string.Empty);
+        }
+
+        internal bool IsSaveXml()
+        {
+            var saveXmlSetting = PortalController.GetPortalSetting(SettingsSaveXml, _portalId, string.Empty);
+            bool saveXml;
+            if (!string.IsNullOrWhiteSpace(saveXmlSetting) && bool.TryParse(saveXmlSetting, out saveXml))
+                return saveXml;
+            return SettingsDefaultSaveXml;
+        }
+        public void SetSaveXml(bool saveXml)
+        {
+            PortalController.UpdatePortalSetting(_portalId, SettingsSaveXml, saveXml.ToString(), true);
         }
         public void SetGoogleApiKey(string googleMapsApiKey)
         {

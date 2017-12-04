@@ -172,16 +172,25 @@ namespace Satrabel.OpenContent.Components.Alpaca
                         {
                             var startDate = DateTime.MinValue;
                             var endDate = DateTime.MaxValue;
+                            var useTime = false;
                             try
                             {
-                                startDate = DateTime.Today.AddDays(-(long)startDays.Value);
+                                useTime = (bool)(valObj["UseTime"] as JValue).Value;
+                            }
+                            catch (Exception)
+                            {
+                            }
+                            DateTime currentDateTime = useTime ? DateTime.Now : DateTime.Today;
+                            try
+                            {
+                                startDate = currentDateTime.AddDays(-(long)startDays.Value);
                             }
                             catch (Exception)
                             {
                             }
                             try
                             {
-                                endDate = DateTime.Today.AddDays((long)endDays.Value);
+                                endDate = currentDateTime.AddDays((long)endDays.Value);
                             }
                             catch (Exception)
                             {

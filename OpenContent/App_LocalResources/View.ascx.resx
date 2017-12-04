@@ -214,4 +214,7 @@
 &lt;br&gt;
 &lt;/p&gt;</value>
   </data>
+  <data name="Notifications.Action" xml:space="preserve">
+    <value>Notifications</value>
+  </data>
 </root>

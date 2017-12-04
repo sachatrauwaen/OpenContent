@@ -17,7 +17,6 @@
                             "helper": "Name part of the email address"
                         },
                         "FromEmail": {
-                            "type": "email",
                             "dependencies": {
                                 "From": "custom"
                             }
@@ -46,7 +45,6 @@
                             "helper": "Name part of the email address"
                         },
                         "ToEmail": {
-                            "type": "email",
                             "dependencies": {
                                 "To": "custom"
                             }
@@ -74,7 +72,6 @@
                             "helper": "Name part of the email address"
                         },
                         "ReplyToEmail": {
-                            "type": "email",
                             "dependencies": {
                                 "ReplyTo": "custom"
                             }

@@ -67,6 +67,7 @@
                     el.val("");
                 }
                 else {
+                    //if (value) value = value.split("?")[0];
                     el.val(value);
                 }
             }

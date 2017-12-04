@@ -8,6 +8,8 @@ using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using Lucene.Net.QueryParsers;
+using Satrabel.OpenContent.Components.FileIndexer;
+using System.IO;
 
 namespace Satrabel.OpenContent.Components.Lucene.Mapping
 {
@@ -175,6 +177,26 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
                             if (sort)
                             {
                                 doc.Add(new Field("@" + prefix, HtmlUtils.Clean(Truncate(value.Value.ToString(), 100), true), Field.Store.NO, Field.Index.NOT_ANALYZED));
+                            }
+                        }
+                        else if (fieldconfig != null && fieldconfig.IndexType == "file")
+                        {
+                            var val = value.Value.ToString();
+                            if (!string.IsNullOrEmpty(val))
+                            {
+                                var fileIndexer = FileIndexerManager.GetFileIndexer(val);
+                                if (fileIndexer != null)
+                                {
+                                    var content = fileIndexer.GetContent(val);
+                                    if (index)
+                                    {
+                                        doc.Add(new Field(prefix, content, Field.Store.NO, Field.Index.ANALYZED));
+                                    }
+                                    if (sort)
+                                    {
+                                        doc.Add(new Field("@" + prefix, Truncate(content, 100), Field.Store.NO, Field.Index.NOT_ANALYZED));
+                                    }
+                                }
                             }
                         }
                         else

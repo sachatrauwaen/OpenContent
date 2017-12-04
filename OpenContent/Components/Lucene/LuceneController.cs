@@ -179,7 +179,7 @@ namespace Satrabel.OpenContent.Components.Lucene
                 moduleId = settings.ModuleId;
             }            
             lc.Store.Delete(new TermQuery(new Term("$type", OpenContentInfo.GetScope(moduleId, settings.Template.Collection))));
-            OpenContentController occ = new OpenContentController();
+            OpenContentController occ = new OpenContentController(PortalSettings.Current.PortalId);
             foreach (var item in occ.GetContents(moduleId, settings.Template.Collection))
             {
                 lc.Add(item, indexConfig);
