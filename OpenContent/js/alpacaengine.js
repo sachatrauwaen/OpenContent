@@ -23,7 +23,7 @@ alpacaEngine.engine = function (config) {
     self.data = {};
     self.rootUrl = config.appPath;
     self.bootstrap = config.bootstrap;    
-    var createEdit = config.IsNew ? "create" : "edit";
+    var createEdit = config.isNew ? "create" : "edit";
     self.view = "dnn-"+createEdit;
     if (config.bootstrap) {
         self.view = config.horizontal ? "dnnbootstrap-"+createEdit+"-horizontal" : "dnnbootstrap-"+createEdit;

@@ -16,10 +16,10 @@
             ShortKey = shortKey;
             Extention = extension == "" ? templateKey.Extention : extension;
         }
-        public FolderUri TemplateDir { get { return new FolderUri(_folder); } }
+        public FolderUri TemplateDir => new FolderUri(_folder);
         public string ShortKey { get; private set; }
         public string Extention { get; private set; }
-        public string Folder { get { return _folder; }  }
+        public string Folder => _folder;
 
         public override string ToString()
         {

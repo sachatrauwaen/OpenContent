@@ -90,7 +90,7 @@
     <Reference Include="EPPlus, Version=4.1.0.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ref\EPPlus.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Handlebars, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -176,7 +176,27 @@
       <DependentUpon>AddEdit.ascx</DependentUpon>
     </Compile>
     <Compile Include="Components\Alpaca\AlpacaLayoutEnum.cs" />
-    <Compile Include="Components\AppConfig.cs" />
+    <Compile Include="Components\Datasource\IDataQuery.cs" />
+    <Compile Include="Components\Datasource\IDataQueries.cs" />
+    <Compile Include="Components\Export\ExcelApiController.cs" />
+    <Compile Include="Components\Files\FileUriUtils.cs" />
+    <Compile Include="Components\Localization\LocalizationUtils.cs" />
+    <Compile Include="Components\Logging\Logger.cs" />
+    <Compile Include="Components\Lucene\LuceneUtils.cs" />
+    <Compile Include="Components\Lucene\LuceneController.cs" />
+    <Compile Include="Components\Manifest\OpenContentModuleInfo.cs" />
+    <Compile Include="Components\Querying\UserRoleInfo.cs" />
+    <Compile Include="Components\AppDefinitions\MenuAction.cs" />
+    <Compile Include="Components\AppDefinitions\SecurityAccessLevel.cs" />
+    <Compile Include="Components\Render\DnnRenderContext.cs" />
+    <Compile Include="Components\Files\DnnClientResourceManager.cs" />
+    <Compile Include="Components\Files\IClientResourceManager.cs" />
+    <Compile Include="Components\App\IAppServices.cs" />
+    <Compile Include="Components\App\DnnServices.cs" />
+    <Compile Include="Components\Caching\DnnCacheAdapter.cs" />
+    <Compile Include="Components\Caching\ICacheAdapter.cs" />
+    <Compile Include="Components\App\DnnConfig.cs" />
+    <Compile Include="Components\App\App.cs" />
     <Compile Include="Components\Common\ObjectId.cs" />
     <Compile Include="Components\Datasource\DataNotValidException.cs" />
     <Compile Include="Components\FileIndexer\FileIndexerManager.cs" />
@@ -185,32 +205,42 @@
     <Compile Include="Components\Datasource\IDataAction.cs" />
     <Compile Include="Components\Datasource\IDataActions.cs" />
     <Compile Include="Components\Datasource\IDataIndex.cs" />
+    <Compile Include="Components\Dnn\DnnPermissionsUtils.cs" />
     <Compile Include="Components\FileIndexer\IFileIndexer.cs" />
-    <Compile Include="Components\Export\ExcelApiController.cs" />
     <Compile Include="Components\FileIndexer\TextFileIndexer.cs" />
     <Compile Include="Components\FormAPIController.cs" />
     <Compile Include="Components\Form\FormUtils.cs" />
     <Compile Include="Components\Form\GenSettingsDTO.cs" />
     <Compile Include="Components\Form\NotificationDTO.cs" />
     <Compile Include="Components\Form\SettingsDTO.cs" />
+    <Compile Include="Components\App\IAppConfig.cs" />
+    <Compile Include="Components\Lucene\Config\FieldConfig.cs" />
+    <Compile Include="Components\Lucene\Config\FieldConfigUtils.cs" />
+    <Compile Include="Components\Lucene\SelectQueryDefinition.cs" />
+    <Compile Include="Components\Lucene\Config\IIndexableItem.cs" />
+    <Compile Include="Components\Lucene\Config\IndexExtentions.cs" />
     <Compile Include="Components\Json\NotAuthorizedException.cs" />
-    <Compile Include="Components\Dnn\DnnLocalizationAdapter.cs" />
+    <Compile Include="Components\Localization\DnnLocalizationAdapter.cs" />
     <Compile Include="Components\Localization\ILocalizationAdapter.cs" />
-    <Compile Include="Components\Localization\Localizer.cs" />
     <Compile Include="Components\Logging\DnnLogAdapter.cs" />
     <Compile Include="Components\Logging\ExceptionExtentions.cs" />
     <Compile Include="Components\Logging\ILogAdapter.cs" />
-    <Compile Include="Components\Lucene\Index\IIndexableItem.cs" />
+    <Compile Include="Components\Lucene\Config\ILuceneIndexAdapter.cs" />
     <Compile Include="Components\Manifest\CollectionManifest.cs" />
-    <Compile Include="Components\Manifest\OpenContentModuleInfo.cs" />
+    <Compile Include="Components\Manifest\OpenContentModuleConfig.cs" />
     <Compile Include="Components\Datasource\DnnTabsDataSource.cs" />
     <Compile Include="Components\Render\ModelFactoryBase.cs" />
     <Compile Include="Components\Render\ModelFactoryMultiple.cs" />
     <Compile Include="Components\Render\ModelFactorySingle.cs" />
     <Compile Include="Components\Rest\V2\RestController.cs" />
+    <Compile Include="Components\Settings\DnnGlobalSettingsRepository.cs" />
+    <Compile Include="Components\Settings\IGlobalSettingsRepository.cs" />
+    <Compile Include="Components\Settings\OpenContentSettingsExtentions.cs" />
+    <Compile Include="Components\Settings\ComponentSettingsInfo.cs" />
     <Compile Include="Components\TemplateHelpers\FormHelpers.cs" />
-    <Compile Include="Components\Uri\FileUriUtils.cs" />
+    <Compile Include="Components\TemplateHelpers\RazorUtils.cs" />
     <Compile Include="Components\UrlRewriter\UrlRulesCaching.cs" />
+    <Compile Include="Components\Utils\Requires.cs" />
     <Compile Include="Components\Utils\ExcelUtils.cs" />
     <Compile Include="Components\Dnn\DnnFileUtils.cs" />
     <Compile Include="Components\Dnn\DnnLanguageUtils.cs" />
@@ -232,7 +262,7 @@
     <Compile Include="Components\Alpaca\AlpacaEngine.cs" />
     <Compile Include="Components\Alpaca\FormBuilder.cs" />
     <Compile Include="Components\Alpaca\OptionsConfig.cs" />
-    <Compile Include="Components\Alpaca\QueryBuilder.cs" />
+    <Compile Include="Components\Querying\QueryBuilder.cs" />
     <Compile Include="Components\Common\DateTimeExtensions.cs" />
     <Compile Include="Components\Dnn\DnnUtils.cs" />
     <Compile Include="Components\Common\PageUtils.cs" />
@@ -266,21 +296,14 @@
     <Compile Include="Components\FilesStatus.cs" />
     <Compile Include="Components\FileUploadController.cs" />
     <Compile Include="Components\JPList\JplistQueryBuilder.cs" />
-    <Compile Include="Components\Lucene\Config\FieldConfig.cs" />
-    <Compile Include="Components\Lucene\Config\FieldConfigUtils.cs" />
-    <Compile Include="Components\Lucene\Config\SelectQueryDefinition.cs" />
-    <Compile Include="Components\Lucene\Config\QueryDefinition.cs" />
     <Compile Include="Components\Alpaca\SchemaConfig.cs" />
-    <Compile Include="Components\Lucene\LuceneController.cs" />
-    <Compile Include="Components\Lucene\SearchResults.cs" />
+    <Compile Include="Components\Lucene\Config\SearchResults.cs" />
     <Compile Include="Components\Manifest\AdditionalDataManifest.cs" />
     <Compile Include="Components\Manifest\Manifest.cs" />
     <Compile Include="Components\Manifest\ManifestUtils.cs" />
     <Compile Include="Components\Manifest\TemplateKey.cs" />
     <Compile Include="Components\Manifest\TemplateFiles.cs" />
     <Compile Include="Components\Manifest\PartialTemplate.cs" />
-    <Compile Include="Components\OpenContentControllerFactory.cs" />
-    <Compile Include="Components\OpenContentGlobalSettingsController.cs" />
     <Compile Include="Components\OpenDataController.cs" />
     <Compile Include="Components\Razor\RazorEngine.cs" />
     <Compile Include="Components\Render\RenderEngine.cs" />
@@ -322,11 +345,11 @@
     <Compile Include="Components\TemplateHelpers\RazorExtensions.cs" />
     <Compile Include="Components\TemplateHelpers\StringHtmlExtensions.cs" />
     <Compile Include="Components\TemplateHelpers\UrlHelpers.cs" />
-    <Compile Include="Components\Uri\UriFactory.cs" />
-    <Compile Include="Components\Uri\PortalFolderUri.cs" />
-    <Compile Include="Components\Uri\PortalFileUri.cs" />
-    <Compile Include="Components\Uri\FolderUri.cs" />
-    <Compile Include="Components\Uri\FileUri.cs" />
+    <Compile Include="Components\Files\UriFactory.cs" />
+    <Compile Include="Components\Files\PortalFolderUri.cs" />
+    <Compile Include="Components\Files\PortalFileUri.cs" />
+    <Compile Include="Components\Files\FolderUri.cs" />
+    <Compile Include="Components\Files\FileUri.cs" />
     <Compile Include="Components\Handlebars\HandlebarsEngine.cs" />
     <Compile Include="Components\JPList\FilterDTO.cs" />
     <Compile Include="Components\JPList\JplistAPIController.cs" />
@@ -337,11 +360,9 @@
     <Compile Include="Components\JPList\SortDTO.cs" />
     <Compile Include="Components\JPList\StatusDataDTO.cs" />
     <Compile Include="Components\JPList\StatusDTO.cs" />
-    <Compile Include="Components\Lucene\Index\OpenContentMappingExtensions.cs" />
     <Compile Include="Components\Lucene\LuceneService.cs" />
     <Compile Include="Components\Lucene\Mapping\JsonMappingUtils.cs" />
     <Compile Include="Components\Lucene\Mapping\JsonObjectMapper.cs" />
-    <Compile Include="Components\Lucene\Search\JsonSearchUtils.cs" />
     <Compile Include="Components\TemplateHelpers\Images\ImageHelper.cs" />
     <Compile Include="Components\TemplateHelpers\Images\ImageUri.cs" />
     <Compile Include="Components\TemplateHelpers\Images\Ratio.cs" />
@@ -351,14 +372,12 @@
     <Compile Include="Components\Json\JsonMergeOptions.cs" />
     <Compile Include="Components\Json\JsonUtils.cs" />
     <Compile Include="Components\DnnEntitiesAPIController.cs" />
-    <Compile Include="Components\Lucene\Index\IndexExtentions.cs" />
     <Compile Include="Components\Utils\HttpUtils.cs" />
-    <Compile Include="Components\Logging\Logger.cs" />
     <Compile Include="Components\OpenContentController.cs" />
     <Compile Include="Components\OpenContentInfo.cs" />
     <Compile Include="Components\OpenContentAPIController.cs" />
     <Compile Include="Components\OpenContentRouteMapper.cs" />
-    <Compile Include="Components\OpenContentSettings.cs" />
+    <Compile Include="Components\Settings\OpenContentSettings.cs" />
     <Compile Include="Components\Utils\OpenContentUtils.cs" />
     <Compile Include="Components\OpenContentVersion.cs" />
     <Compile Include="Components\OpenContentWebPage.cs" />
@@ -385,6 +404,8 @@
     <Compile Include="EditFormSettings.ascx.designer.cs">
       <DependentUpon>EditFormSettings.ascx</DependentUpon>
     </Compile>
+    <Compile Include="Components\AppDefinitions\IMenuAction.cs" />
+    <Content Include="js\jplist\jplisthelper.js" />
     <Compile Include="RenderModule.ascx.cs">
       <DependentUpon>RenderModule.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -636,6 +657,9 @@
     <Content Include="js\jplist\jplist.textbox-filter.min.js" />
     <Content Include="js\jplist\jplist.views-control.min.css" />
     <Content Include="js\jplist\jplist.views-control.min.js" />
+    <Content Include="js\jplist\jplisthelper.min.js">
+      <DependentUpon>jplisthelper.js</DependentUpon>
+    </Content>
     <Content Include="js\jplist\list-btn-disabled.png" />
     <Content Include="js\jplist\list-btn.png" />
     <Content Include="js\jplist\rocket.png" />
@@ -1127,6 +1151,7 @@
     <Content Include="formsettings-options.json" />
     <Content Include="formsettings-schema.json" />
     <Content Include="Providers\DataProviders\SqlDataProvider\03.02.00.SqlDataProvider" />
+    <Content Include="README.md" />
     <Content Include="js\oc.codemirror.js" />
     <Content Include="css\font-awesome\fonts\fontawesome-webfont.eot" />
     <Content Include="css\font-awesome\fonts\fontawesome-webfont.ttf" />

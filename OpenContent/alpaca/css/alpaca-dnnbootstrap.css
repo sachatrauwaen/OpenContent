@@ -261,6 +261,8 @@ select.oc-ddl-versions {
 }
 
 
+li.select2-search.select2-search--inline { list-style-type: none; }
+
 .alpaca-field-accordion .panel-title > a {
     font-size:21px;
 }

@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
+using Newtonsoft.Json;
 
 namespace Satrabel.OpenContent.Components.Datasource.Search
 {
@@ -52,6 +52,5 @@ namespace Satrabel.OpenContent.Components.Datasource.Search
                 throw new NotImplementedException();
             }
         }
-
     }
 }

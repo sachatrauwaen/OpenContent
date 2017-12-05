@@ -36,7 +36,7 @@ namespace Satrabel.OpenContent.Components
 
     public class DnnEntitiesAPIController : DnnApiController
     {
-        private static readonly ILogAdapter Logger = AppConfig.Instance.LogAdapter.GetLogAdapter(typeof(DnnEntitiesAPIController));
+        private static readonly ILogAdapter Logger = App.Services.CreateLogger(typeof(DnnEntitiesAPIController));
 
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
@@ -735,6 +735,7 @@ namespace Satrabel.OpenContent.Components
                 {
                     users = users.Where(u => u.Roles.Any(r => roles.Contains(r)));
                 }
+                users = users.Where(u => u.IsSuperUser == false); // exclude the superUsers
                 var res = users.Select(u => new { value = u.UserID.ToString(), text = u.DisplayName });
                 return Request.CreateResponse(HttpStatusCode.OK, res);
             }

@@ -1,10 +1,8 @@
-﻿using DotNetNuke.Common;
-using DotNetNuke.Entities.Portals;
+﻿using System;
 using DotNetNuke.Entities.Users;
 using DotNetNuke.Services.Localization;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Datasource;
-using Satrabel.OpenContent.Components.Dnn;
 using Satrabel.OpenContent.Components.Handlebars;
 using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Manifest;
@@ -12,6 +10,7 @@ using Satrabel.OpenContent.Components.TemplateHelpers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using DotNetNuke.Entities.Portals;
 
 namespace Satrabel.OpenContent.Components.Render
 {
@@ -19,26 +18,34 @@ namespace Satrabel.OpenContent.Components.Render
     {
         private readonly IEnumerable<IDataItem> _dataList = null;
 
-        public ModelFactoryMultiple(IEnumerable<IDataItem> dataList, OpenContentModuleInfo module, PortalSettings portalSettings) :
-            base(module, portalSettings)
+        public ModelFactoryMultiple(IEnumerable<IDataItem> dataList, OpenContentModuleConfig module) :
+            base(module)
         {
             this._dataList = dataList;
         }
-        public ModelFactoryMultiple(IEnumerable<IDataItem> dataList, OpenContentModuleInfo module, PortalSettings portalSettings, string collection) :
-            base(module, portalSettings, collection)
+        public ModelFactoryMultiple(IEnumerable<IDataItem> dataList, OpenContentModuleConfig module, string collection) :
+            base(module, collection)
         {
             this._dataList = dataList;
         }
-        public ModelFactoryMultiple(IEnumerable<IDataItem> dataList, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleInfo module, PortalSettings portalSettings) :
-            base(settingsJson, physicalTemplateFolder, manifest, templateManifest, templateFiles, module, portalSettings)
+        public ModelFactoryMultiple(IEnumerable<IDataItem> dataList, string settingsJson,  Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleConfig module) :
+            base(settingsJson, manifest, templateManifest, templateFiles, module)
         {
             this._dataList = dataList;
         }
-        public ModelFactoryMultiple(IEnumerable<IDataItem> dataList, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleInfo module, int portalId, string cultureCode) :
-            base(settingsJson, physicalTemplateFolder, manifest, templateManifest, templateFiles, module, portalId, cultureCode)
+        public ModelFactoryMultiple(IEnumerable<IDataItem> dataList, string settingsJson, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleConfig module, int portalId, string cultureCode) :
+            base(settingsJson, manifest, templateManifest, templateFiles, module, portalId, cultureCode)
         {
             this._dataList = dataList;
         }
+
+        [Obsolete("This method is obsolete since aug 2017; use another constructor instead")]
+        public ModelFactoryMultiple(IEnumerable<IDataItem> dataList, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleInfo moduleinfo, PortalSettings portalSettings) :
+            base(settingsJson, manifest, templateManifest, templateFiles, OpenContentModuleConfig.Create(moduleinfo.ModuleId, moduleinfo.TabId, portalSettings))
+        {
+            this._dataList = dataList;
+        }
+
         /// <summary>
         /// Gets the model as dictionary list, used by Url Rewriter
         /// </summary>
@@ -59,14 +66,14 @@ namespace Satrabel.OpenContent.Components.Render
                     {
                         JsonUtils.SimplifyJson(model, GetCurrentCultureCode());
                     }
-                    EnhanceSelect2(model);
+                    EnhanceSelect2(model, true);
                     yield return JsonUtils.JsonToDictionary(model.ToString());
                 }
             }
         }
         public override JToken GetModelAsJson(bool onlyData = false, bool onlyMainData = false)
         {
-            if (_portalSettings == null) onlyData = true;
+            if (_module.CanvasUnavailable) onlyData = true;
             JObject model = new JObject();
             var itemsModel = model;
 
@@ -76,15 +83,13 @@ namespace Satrabel.OpenContent.Components.Render
 
             if (!onlyData && !onlyMainData)
             {
-                itemsModel["Context"]["RssUrl"] = _portalSettings.PortalAlias.HTTPAlias +
-                       "/DesktopModules/OpenContent/API/RssAPI/GetFeed?moduleId=" + _module.ViewModule.ModuleID + "&tabId=" + _detailTabId;
+                itemsModel["Context"]["RssUrl"] = _module.HostName + "/DesktopModules/OpenContent/API/RssAPI/GetFeed?moduleId=" + _module.ViewModule.ModuleId + "&tabId=" + _detailTabId;
             }
-            JArray items = new JArray(); ;
+            var items = new JArray(); ;
             itemsModel["Items"] = items;
-            //string editRole = Manifest.GetEditRole();
             if (_dataList != null && _dataList.Any())
             {
-                var mainUrl = Globals.NavigateURL(_detailTabId, false, _portalSettings, "", GetCurrentCultureCode(), "");
+                var mainUrl = _module.GetUrl(_detailTabId, GetCurrentCultureCode());
                 foreach (var item in _dataList)
                 {
                     JObject dyn = item.Data as JObject;
@@ -95,7 +100,7 @@ namespace Satrabel.OpenContent.Components.Render
                     {
                         JsonUtils.SimplifyJson(dyn, GetCurrentCultureCode());
                     }
-                    EnhanceSelect2(dyn);
+                    EnhanceSelect2(dyn, onlyData);
                     EnhanceUser(dyn, item.CreatedByUserId);
                     EnhanceImages(dyn, itemsModel);
 
@@ -117,9 +122,9 @@ namespace Satrabel.OpenContent.Components.Render
                         context["IsEditable"] = editStatus;
                         if (HasEditPermissions(item.CreatedByUserId))
                         {
-                            context["EditUrl"] = DnnUrlUtils.EditUrl("id", item.Id, _module.ViewModule.ModuleID, _portalSettings);
+                            context["EditUrl"] = _module.EditUrl("id", item.Id, _module.ViewModule.ModuleId);
                         }
-                        context["DetailUrl"] = Globals.NavigateURL(_detailTabId, false, _portalSettings, "", GetCurrentCultureCode(), UrlHelpers.CleanupUrl(url), "id=" + item.Id);
+                        context["DetailUrl"] = _module.GetUrl(_detailTabId, url.CleanupUrl(), "id=" + item.Id);
                         context["MainUrl"] = mainUrl;
                     }
                     items.Add(dyn);
@@ -130,7 +135,7 @@ namespace Satrabel.OpenContent.Components.Render
 
         private void ExtendItemsModel(JObject model, bool onlyData)
         {
-            if (_portalSettings == null) onlyData = true;
+            if (_module.CanvasUnavailable) onlyData = true;
 
             if (!onlyData)
             {
@@ -145,7 +150,7 @@ namespace Satrabel.OpenContent.Components.Render
                     context = new JObject();
                     model["Context"] = context;
                 }
-                context["AddUrl"] = DnnUrlUtils.EditUrl(_module.ViewModule.ModuleID, _portalSettings);
+                context["AddUrl"] = _module.EditUrl(_module.ViewModule.ModuleId);
             }
         }
 
@@ -179,6 +184,8 @@ namespace Satrabel.OpenContent.Components.Render
             if (_optionsJson == null)
             {
                 var alpaca = _ds.GetAlpaca(_dsContext, true, true, false);
+
+                if (alpaca != null)
                 {
                     _schemaJson = alpaca["schema"] as JObject; // cache
                     _optionsJson = alpaca["options"] as JObject; // cache

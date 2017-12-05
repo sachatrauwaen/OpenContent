@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
-using System.IO;
+using System.Collections;
 using System.Web.Script.Serialization;
 
 
@@ -8,11 +8,18 @@ namespace Satrabel.OpenContent.Components.Json
 {
     public static class JsonExtensions
     {
+        public static bool EqualsAny(this JToken json, params string[] valueList)
+        {
+            if (json.IsEmpty()) return false;
+            return ((IList)valueList).Contains(json.ToString());
+        }
+
         public static bool IsEmpty(this JObject json)
         {
             if (json == null) return true;
             return !json.HasValues;
         }
+
         public static bool IsEmpty(this JToken jtoken)
         {
             //tried using HasValues, but string value are not detected that way.
@@ -27,6 +34,13 @@ namespace Satrabel.OpenContent.Components.Json
             if (json == "{}") return true;
             return string.IsNullOrEmpty(json);
         }
+
+        public static bool IsNotEmpty(this JToken jtoken)
+        {
+            if (jtoken == null) return false;
+            return !jtoken.IsEmpty();
+        }
+
         public static bool Exists(this JObject json)
         {
             return !json.IsEmpty();
@@ -40,6 +54,17 @@ namespace Satrabel.OpenContent.Components.Json
         {
             return !json.IsEmpty() && json[fieldname] != null;
         }
+
+        public static int GetValue(this JObject json, string fieldname, int defaultvalue)
+        {
+            return json?[fieldname]?.Value<int>() ?? defaultvalue;
+        }
+        public static bool GetValue(this JObject json, string fieldname, bool defaultvalue)
+        {
+            return json?[fieldname]?.Value<bool>() ?? defaultvalue;
+        }
+
+
         public static void MakeSureFieldExists(this JToken jToken, string fieldname, JTokenType jTokenType)
         {
             JToken defaultvalue;
@@ -59,23 +84,8 @@ namespace Satrabel.OpenContent.Components.Json
             if (jToken[fieldname].Type != jTokenType)
                 jToken[fieldname] = defaultvalue;
         }
-        public static JToken ToJObject(this FileUri file)
-        {
-            try
-            {
-                if (!file.FileExists) return null;
-                string fileContent = File.ReadAllText(file.PhysicalFilePath);
-                if (string.IsNullOrWhiteSpace(fileContent)) return null;
-                return JToken.Parse(fileContent);
-            }
-            catch (Exception ex)
-            {
-                string mess = $"Error while parsing file [{file.FilePath}]";
-                Log.Logger.Error(mess, ex);
-                throw new Exception(mess, ex);
-            }
-        }
-        public static JToken ToJObject(this string text, string desc)
+
+        public static JToken ToJObject(this string text, string descRemark)
         {
             try
             {
@@ -84,25 +94,26 @@ namespace Satrabel.OpenContent.Components.Json
             }
             catch (Exception ex)
             {
-                string mess = string.Format("Error while parsing text [{0}]", desc);
-                Log.Logger.Error(mess, ex);
+                string mess = $"Error while parsing text [{descRemark}]";
+                App.Services.Logger.Error(mess, ex);
                 throw new Exception(mess, ex);
             }
         }
-        public static JToken ToJObject(this object obj, string desc)
+        public static JToken ToJObject(this object obj, string descRemark)
         {
             try
             {
                 if (obj == null) return null;
-                return JToken.Parse(obj.ToJson());
+                return JToken.Parse(obj.ToJsonString());
             }
             catch (Exception ex)
             {
-                string mess = string.Format("Error while parsing object [{0}]", desc);
-                Log.Logger.Error(mess, ex);
+                string mess = $"Error while parsing object [{descRemark}]";
+                App.Services.Logger.Error(mess, ex);
                 throw new Exception(mess, ex);
             }
         }
+
 
 
         /// <summary>
@@ -111,12 +122,13 @@ namespace Satrabel.OpenContent.Components.Json
         /// </summary>
         /// <param name = "value"></param>
         /// <returns></returns>
-        public static string ToJsonString(object value)
+        public static string ToJsonString(this object value)
         {
             var ser = SerializerFactory();
             string json = ser.Serialize(value);
             return json;
         }
+
         /// <summary>
         ///   Extension method on object that serializes the value to Json. 
         ///   Note the type must be marked Serializable or include a DataContract attribute.
@@ -127,6 +139,7 @@ namespace Satrabel.OpenContent.Components.Json
         {
             return ToJsonString(value);
         }
+
         /// <summary>
         ///   Deserializes a json string into a specific type. 
         ///   Note that the type specified must be serializable.
@@ -164,6 +177,12 @@ namespace Satrabel.OpenContent.Components.Json
             return result;
         }
 
+        /// <summary>
+        /// Serializers the factory.
+        /// </summary>
+        /// <remarks>
+        /// Needs reference to System.Web.Extentions
+        /// </remarks>
         private static JavaScriptSerializer SerializerFactory()
         {
             // Allow large JSON strings to be serialized and deserialized.

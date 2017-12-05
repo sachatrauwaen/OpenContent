@@ -2,19 +2,17 @@
 using System.Collections;
 using System.Linq;
 using System.Collections.Generic;
-using System.Web;
 using System.Web.UI;
-using DotNetNuke.Common;
 using DotNetNuke.Common.Utilities;
 using DotNetNuke.Entities.Modules;
+using DotNetNuke.Entities.Modules.Actions;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Entities.Tabs;
-using DotNetNuke.Security;
-using DotNetNuke.Security.Permissions;
+using DotNetNuke.Entities.Users;
 using DotNetNuke.Services.Localization;
-using DotNetNuke.Services.Personalization;
 using DotNetNuke.UI.Modules;
 using DotNetNuke.Web.Client.ClientResourceManagement;
+using Satrabel.OpenContent.Components.AppDefinitions;
 
 
 namespace Satrabel.OpenContent.Components
@@ -46,27 +44,20 @@ namespace Satrabel.OpenContent.Components
             return modules.FirstOrDefault();
         }
 
-        public static IEnumerable<OpenContentModuleInfo> GetDnnOpenContentModules(int portalId)
-        {
-            ModuleController mc = new ModuleController();
-            ArrayList modules = mc.GetModulesByDefinition(portalId, AppConfig.OPENCONTENT);
-            return modules.OfType<ModuleInfo>().Select(module => new OpenContentModuleInfo(module));
-        }
-
-        /// <summary>
-        /// Gets the DNN tab by URL and culture.
-        /// </summary>
-        /// <param name="pageUrl">The page URL.</param>
-        /// <param name="culture">The culture.</param>
-        /// <returns></returns>
-        /// <exception cref="System.NotImplementedException"></exception>
-        internal static TabInfo GetDnnTabByUrl(string pageUrl, string culture)
-        {
-            var alternativeLocale = LocaleController.Instance.GetLocale(culture);
-            TabController tc = new TabController();
-            var alternativeTab = tc.GetTabByCulture(PortalSettings.Current.ActiveTab.TabID, PortalSettings.Current.PortalId, alternativeLocale);
-            throw new NotImplementedException();
-        }
+        ///// <summary>
+        ///// Gets the DNN tab by URL and culture.
+        ///// </summary>
+        ///// <param name="pageUrl">The page URL.</param>
+        ///// <param name="culture">The culture.</param>
+        ///// <returns></returns>
+        ///// <exception cref="System.NotImplementedException"></exception>
+        //internal static TabInfo GetDnnTabByUrl(string pageUrl, string culture)
+        //{
+        //    var alternativeLocale = LocaleController.Instance.GetLocale(culture);
+        //    TabController tc = new TabController();
+        //    var alternativeTab = tc.GetTabByCulture(PortalSettings.Current.ActiveTab.TabID, PortalSettings.Current.PortalId, alternativeLocale);
+        //    throw new NotImplementedException();
+        //}
 
         public static int GetTabByCurrentCulture(int portalId, int tabId, string cultureCode)
         {
@@ -92,15 +83,15 @@ namespace Satrabel.OpenContent.Components
 
         public static OpenContentSettings OpenContentSettings(this ModuleInfo module)
         {
-            return new OpenContentSettings(module.ModuleSettings);
+            return new OpenContentSettings(ComponentSettingsInfo.Create(module.ModuleSettings));
         }
         public static OpenContentSettings OpenContentSettings(this ModuleInstanceContext module)
         {
-            return new OpenContentSettings(module.Settings);
+            return new OpenContentSettings(ComponentSettingsInfo.Create(module.Settings));
         }
         public static OpenContentSettings OpenContentSettings(this PortalModuleBase module)
         {
-            return new OpenContentSettings(module.Settings);
+            return new OpenContentSettings(ComponentSettingsInfo.Create(module.Settings));
         }
 
         internal static void RegisterScript(Page page, string sourceFolder, string jsfilename, int jsOrder)
@@ -118,70 +109,90 @@ namespace Satrabel.OpenContent.Components
                 jsfilename = file.UrlFilePath;
             }
             ClientResourceManager.RegisterScript(page, jsfilename, jsOrder);
-            //ClientResourceManager.RegisterScript(page, page.ResolveUrl(jsfilename), jsOrder);
-        }
-
-        public static bool CheckIfEditable(this ModuleInfo activeModule, PortalSettings portalSettings)
-        {
-            bool isEditable;
-            //first check some weird Dnn issue
-            if (HttpContext.Current != null && HttpContext.Current.Request.IsAuthenticated)
-            {
-                var personalization = (PersonalizationInfo)HttpContext.Current.Items["Personalization"];
-                if (personalization != null && personalization.UserId == -1)
-                {
-                    //this should never happen. 
-                    //Let us make sure that the wrong value is no longer cached 
-                    HttpContext.Current.Items.Remove("Personalization");
-                }
-            }
-            bool blnPreview = (portalSettings.UserMode == PortalSettings.Mode.View);
-            if (Globals.IsHostTab(portalSettings.ActiveTab.TabID))
-            {
-                blnPreview = false;
-            }
-
-            bool blnHasModuleEditPermissions = HasEditRightsOnModule(activeModule);
-
-
-            if (blnPreview == false && blnHasModuleEditPermissions)
-            {
-                isEditable = true;
-            }
-            else
-            {
-                isEditable = false;
-            }
-            return isEditable;
-        }
-
-        public static bool HasEditRightsOnModule(this ModuleInfo activeModule)
-        {
-            bool blnHasModuleEditPermissions = false;
-            if (activeModule != null)
-            {
-                //DNN already checks SuperUser and Administrator
-                blnHasModuleEditPermissions = ModulePermissionController.HasModuleAccess(SecurityAccessLevel.Edit, "CONTENT", activeModule);
-            }
-            return blnHasModuleEditPermissions;
-        }
-
-        public static bool HasViewRightsOnModule(this ModuleInfo activeModule)
-        {
-            bool blnHasModuleViewPermissions = false;
-            if (activeModule != null)
-            {
-                //DNN already checks SuperUser and Administrator
-                blnHasModuleViewPermissions = ModulePermissionController.HasModuleAccess(SecurityAccessLevel.View, "CONTENT", activeModule);
-            }
-            return blnHasModuleViewPermissions;
         }
 
         // for openform compatibility
+        [Obsolete("This method is obsolete since dec 2015; use DnnLanguageUtils.GetCurrentCultureCode() instead")]
         public static string GetCurrentCultureCode()
         {
             return DnnLanguageUtils.GetCurrentCultureCode();
         }
+
+        public static DotNetNuke.Security.SecurityAccessLevel ToDnnSecurityAccessLevel(this SecurityAccessLevel level)
+        {
+            switch (level)
+            {
+                case SecurityAccessLevel.View:
+                    return DotNetNuke.Security.SecurityAccessLevel.View;
+                case SecurityAccessLevel.EditRights:
+                    return DotNetNuke.Security.SecurityAccessLevel.Edit;
+                case SecurityAccessLevel.AdminRights:
+                    return DotNetNuke.Security.SecurityAccessLevel.Admin;
+                case SecurityAccessLevel.SuperUserRights:
+                    return DotNetNuke.Security.SecurityAccessLevel.Host;
+                default:
+                    string msg = $"unknown SecurityAccessLevel {level}";
+                    App.Services.Logger.Error(msg);
+                    throw new NotImplementedException(msg);
+            }
+        }
+
+        public static List<Querying.UserRoleInfo> FromDnnRoles(this IEnumerable<UserRoleInfo> userRoles)
+        {
+            var retval = new List<Querying.UserRoleInfo>();
+            foreach (var userRole in userRoles)
+            {
+                retval.Add(new Querying.UserRoleInfo()
+                {
+                    RoleId = userRole.RoleID
+                });
+            }
+            return retval;
+        }
+
+        public static string ToDnnActionType(this ActionType itemActionType)
+        {
+            switch (itemActionType)
+            {
+                case ActionType.Add:
+                    return ModuleActionType.AddContent;
+                case ActionType.Edit:
+                    return ModuleActionType.EditContent;
+                case ActionType.Misc:
+                    return ModuleActionType.ContentOptions;
+                default:
+                    string msg = $"unknown ActionType {itemActionType}";
+                    App.Services.Logger.Error(msg);
+                    throw new NotImplementedException(msg);
+            }
+        }
+
+        public static IEnumerable<OpenContentModuleConfig> GetDnnOpenContentModules(int portalId)
+        {
+            ModuleController mc = new ModuleController();
+            ArrayList modules = mc.GetModulesByDefinition(portalId, App.Config.Opencontent);
+            return modules.OfType<ModuleInfo>().Select(module => OpenContentModuleConfig.Create(module, PortalSettings.Current));
+        }
+
+        public static OpenContentModuleConfig GetDnnOpenContentModule(int portalId, int dataModuleId)
+        {
+            ModuleController mc = new ModuleController();
+            ArrayList modules = mc.GetModulesByDefinition(portalId, App.Config.Opencontent);
+            return modules.OfType<ModuleInfo>().Where(module => module.ModuleID == dataModuleId).Select(module => OpenContentModuleConfig.Create(module, PortalSettings.Current)).FirstOrDefault();
+        }
+
+        public static ModuleInfo GetDnnModule(OpenContentModuleInfo activeModule)
+        {
+            ModuleController mc = new ModuleController();
+            return mc.GetModule(activeModule.ModuleId, activeModule.TabId, false);
+        }
+
+        public static ModuleInfo GetDnnModule(int tabId, int moduleId)
+        {
+            ModuleController mc = new ModuleController();
+            return mc.GetModule(moduleId, tabId, false);
+        }
+        
         public static void UpdateModuleTitle(this ModuleInfo module, string moduleTitle)
         {
             if (module.ModuleTitle != moduleTitle)

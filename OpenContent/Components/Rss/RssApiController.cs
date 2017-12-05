@@ -5,12 +5,12 @@ using System.Web.Http;
 using DotNetNuke.Web.Api;
 using System.Net.Http.Headers;
 using Satrabel.OpenContent.Components.Handlebars;
-using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components.Datasource;
-using Satrabel.OpenContent.Components.Alpaca;
+using Satrabel.OpenContent.Components.Querying;
 using Satrabel.OpenContent.Components.Render;
 using System.Net;
+using Satrabel.OpenContent.Components.Dnn;
 
 namespace Satrabel.OpenContent.Components.Rss
 {
@@ -22,16 +22,16 @@ namespace Satrabel.OpenContent.Components.Rss
         {
             return GetFeed(moduleId, tabId, "rss", "application/rss+xml");
         }
+
         [AllowAnonymous]
         [HttpGet]
         public HttpResponseMessage GetFeed(int moduleId, int tabId, string template, string mediaType)
         {
-            ModuleController mc = new ModuleController();
             IEnumerable<IDataItem> dataList = new List<IDataItem>();
-            var module = new OpenContentModuleInfo(moduleId, tabId);
+            var module = OpenContentModuleConfig.Create(moduleId, tabId, PortalSettings);
             var manifest = module.Settings.Template.Manifest;
 
-            if (!OpenContentUtils.HasAllUsersViewPermissions(PortalSettings, module.ViewModule))
+            if (!module.HasAllUsersViewPermissions())
             {
                 return Request.CreateResponse(HttpStatusCode.Unauthorized);
             }
@@ -45,7 +45,7 @@ namespace Satrabel.OpenContent.Components.Rss
                 var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template);
 
                 QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
-                queryBuilder.Build(module.Settings.Query, PortalSettings.UserMode != PortalSettings.Mode.Edit, UserInfo.UserID, DnnLanguageUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
+                queryBuilder.Build(module.Settings.Query, PortalSettings.UserMode != PortalSettings.Mode.Edit, UserInfo.UserID, DnnLanguageUtils.GetCurrentCultureCode(), UserInfo.Social.Roles.FromDnnRoles());
 
                 IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
@@ -54,7 +54,7 @@ namespace Satrabel.OpenContent.Components.Rss
                 dataList = dsItems.Items;
             }
 
-            var mf = new ModelFactoryMultiple(dataList, null, module.Settings.TemplateDir.PhysicalFullDirectory, manifest, null, null, module, PortalSettings);
+            var mf = new ModelFactoryMultiple(dataList, null, manifest, null, null, module);
             dynamic model = mf.GetModelAsDictionary(true);
             HandlebarsEngine hbEngine = new HandlebarsEngine();
             string res = hbEngine.Execute(source, model);

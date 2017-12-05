@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using Satrabel.OpenContent.Components.Datasource;
+using Satrabel.OpenContent.Components.Dnn;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -19,16 +20,16 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
-                var module = new OpenContentModuleInfo(req.ModuleId, req.TabId);
+                var module = OpenContentModuleConfig.Create(req.ModuleId, req.TabId, PortalSettings);
                 string editRole = module.Settings.Template.Manifest.GetEditRole();
 
                 var dataSource = new OpenContentDataSource();
 
                 if (module.IsListMode())
                 {
-                    if (!OpenContentUtils.HasEditPermissions(PortalSettings, module.ViewModule, editRole, -1))
+                    if (!DnnPermissionsUtils.HasEditPermissions(module, editRole, -1))
                     {
-                        Log.Logger.Warn($"Failed the HasEditPermissions() check");
+                        App.Services.Logger.Warn($"Failed the HasEditPermissions() check");
                         return Request.CreateResponse(HttpStatusCode.Unauthorized, "Failed the HasEditPermissions() check");
                     }
                     var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
@@ -37,7 +38,7 @@ namespace Satrabel.OpenContent.Components
                     JToken data = req.json;
                     data["Title"] = ActiveModule.ModuleTitle;
                     dataSource.Add(dsContext, data);
-
+                    App.Services.CacheAdapter.SyncronizeCache(module);
                     return Request.CreateResponse(HttpStatusCode.OK, "");
                 }
                 else
@@ -47,7 +48,7 @@ namespace Satrabel.OpenContent.Components
             }
             catch (Exception exc)
             {
-                Log.Logger.Error(exc);
+                App.Services.Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }

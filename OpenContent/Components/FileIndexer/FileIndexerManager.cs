@@ -9,7 +9,6 @@ namespace Satrabel.OpenContent.Components.FileIndexer
     public class FileIndexerManager
     {
 
-        private static readonly ILogAdapter Logger = AppConfig.Instance.LogAdapter.GetLogAdapter(typeof(FileIndexerManager));
         private static NaiveLockingList<IFileIndexer> _fileIndexers;
 
         public static void RegisterFileIndexers()
@@ -36,7 +35,7 @@ namespace Satrabel.OpenContent.Components.FileIndexer
                 }
                 catch (Exception e)
                 {
-                    Logger.Error($"Unable to create {filterType.FullName} while GetFileIndexers. {e.Message}");
+                    App.Services.Logger.Error($"Unable to create {filterType.FullName} while GetFileIndexers. {e.Message}");
                     filter = null;
                 }
 

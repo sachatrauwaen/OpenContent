@@ -2,7 +2,6 @@
 using DotNetNuke.Security;
 using DotNetNuke.Web.Api;
 using Newtonsoft.Json.Linq;
-using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Logging;
 using System;
@@ -17,13 +16,14 @@ using Newtonsoft.Json;
 using Satrabel.OpenContent.Components.Render;
 using DotNetNuke.Services.Exceptions;
 using System.Web;
+using Satrabel.OpenContent.Components.Dnn;
+using Satrabel.OpenContent.Components.Querying;
 
 namespace Satrabel.OpenContent.Components.Rest.V2
 {
 
     public class RestController : DnnApiController
     {
-
         //[ValidateAntiForgeryToken]
         [SupportedModules("OpenContent")]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
@@ -32,7 +32,7 @@ namespace Satrabel.OpenContent.Components.Rest.V2
             try
             {
                 var collection = entity;
-                OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
+                OpenContentModuleConfig module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
 
                 JObject reqOptions = null;
                 //if (!string.IsNullOrEmpty(req.options))
@@ -52,10 +52,10 @@ namespace Satrabel.OpenContent.Components.Rest.V2
                     res["meta"] = new JObject();
                     if (dsItem != null)
                     {
-                        var mf = new ModelFactorySingle(dsItem, module, PortalSettings, collection);
+                        var mf = new ModelFactorySingle(dsItem, module, collection);
 
                         string raison = "";
-                        if (!OpenContentUtils.HaveViewPermissions(dsItem, PortalSettings.UserInfo, indexConfig, out raison))
+                        if (!OpenContentUtils.HaveViewPermissions(dsItem, module.UserRoles.FromDnnRoles(), indexConfig, out raison))
                         {
                             Exceptions.ProcessHttpException(new HttpException(404, "No detail view permissions for id=" + id + " (" + raison + ")"));
                             //throw new UnauthorizedAccessException("No detail view permissions for id " + info.DetailItemId);
@@ -63,19 +63,19 @@ namespace Satrabel.OpenContent.Components.Rest.V2
 
                         mf.Options = reqOptions;
                         var model = mf.GetModelAsJson(false);
-                        
+
                         model["id"] = model["Context"]["Id"];
                         res["meta"]["total"] = dsItem == null ? 0 : 1;
                         //JsonUtils.IdJson(model);
                         if (LogContext.IsLogActive)
                         {
                             var logKey = "Query";
-                            LogContext.Log(module.ViewModule.ModuleID, logKey, "model", model);
-                            res["meta"]["logs"] = JToken.FromObject(LogContext.Current.ModuleLogs(module.ViewModule.ModuleID));
+                            LogContext.Log(module.ViewModule.ModuleId, logKey, "model", model);
+                            res["meta"]["logs"] = JToken.FromObject(LogContext.Current.ModuleLogs(module.ViewModule.ModuleId));
                         }
                         res[entity] = model;
                     }
-                    
+
                     return Request.CreateResponse(HttpStatusCode.OK, res);
                 }
                 else
@@ -85,7 +85,7 @@ namespace Satrabel.OpenContent.Components.Rest.V2
             }
             catch (Exception exc)
             {
-                Log.Logger.Error(exc);
+                App.Services.Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
@@ -114,19 +114,19 @@ namespace Satrabel.OpenContent.Components.Rest.V2
                 ModuleInfo activeModule = ActiveModule;
 
                 OpenContentSettings settings = activeModule.OpenContentSettings();
-                OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
+                OpenContentModuleConfig module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
                 JObject reqOptions = null;
 
                 if (module.IsListMode())
                 {
                     var indexConfig = OpenContentUtils.GetIndexConfig(settings.TemplateDir, collection);
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
-                    bool isEditable = ActiveModule.CheckIfEditable(PortalSettings);
-                    queryBuilder.Build(settings.Query, !isEditable, UserInfo.UserID, DnnLanguageUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
+                    bool isEditable = module.ViewModule.CheckIfEditable(module);
+                    queryBuilder.Build(settings.Query, !isEditable, UserInfo.UserID, DnnLanguageUtils.GetCurrentCultureCode(), UserInfo.Social.Roles.FromDnnRoles());
 
                     RestQueryBuilder.MergeQuery(indexConfig, queryBuilder.Select, restSelect, DnnLanguageUtils.GetCurrentCultureCode());
                     IDataItems dsItems;
-                    if (queryBuilder.DefaultNoResults && queryBuilder.Select.IsQueryEmpty)
+                    if (queryBuilder.DefaultNoResults && queryBuilder.Select.IsEmptyQuery)
                     {
                         dsItems = new DefaultDataItems()
                         {
@@ -141,7 +141,7 @@ namespace Satrabel.OpenContent.Components.Rest.V2
                         dsContext.Collection = collection;
                         dsItems = ds.GetAll(dsContext, queryBuilder.Select);
                     }
-                    var mf = new ModelFactoryMultiple(dsItems.Items, module, PortalSettings, collection);
+                    var mf = new ModelFactoryMultiple(dsItems.Items, module, collection);
                     mf.Options = reqOptions;
                     var model = mf.GetModelAsJson(false);
                     var res = new JObject();
@@ -175,7 +175,7 @@ namespace Satrabel.OpenContent.Components.Rest.V2
             }
             catch (Exception exc)
             {
-                Log.Logger.Error(exc);
+                App.Services.Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
@@ -187,18 +187,12 @@ namespace Satrabel.OpenContent.Components.Rest.V2
             try
             {
                 var collection = entity;
-                OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
+                OpenContentModuleConfig module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
 
                 var manifest = module.Settings.Manifest;
-                TemplateManifest templateManifest = module.Settings.Template;
                 if (manifest.AdditionalDataDefined(entity))
                 {
                     var dataManifest = manifest.AdditionalDataDefinition[entity];
-                    //string scope = AdditionalDataUtils.GetScope(dataManifest, PortalSettings.PortalId, ActiveModule.TabID, module.ModuleID, ActiveModule.TabModuleID);
-
-                    //var templateFolder = string.IsNullOrEmpty(dataManifest.TemplateFolder) ? settings.TemplateDir : settings.TemplateDir.ParentFolder.Append(dataManifest.TemplateFolder);
-                    //var fb = new FormBuilder(templateFolder);
-                    //JObject json = fb.BuildForm(entity);
                     var res = new JObject();
 
                     IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
@@ -208,7 +202,6 @@ namespace Satrabel.OpenContent.Components.Rest.V2
                     if (dsItem != null)
                     {
                         var json = dsItem.Data;
-                        //JsonUtils.IdJson(json);
                         res[entity] = json;
                     }
                     return Request.CreateResponse(HttpStatusCode.OK, res);
@@ -221,7 +214,7 @@ namespace Satrabel.OpenContent.Components.Rest.V2
             }
             catch (Exception exc)
             {
-                Log.Logger.Error(exc);
+                App.Services.Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
@@ -234,7 +227,7 @@ namespace Satrabel.OpenContent.Components.Rest.V2
             try
             {
                 var collection = entity;
-                OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
+                OpenContentModuleConfig module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
 
                 string editRole = module.Settings.Template.Manifest.GetEditRole();
                 int createdByUserid = -1;
@@ -260,7 +253,7 @@ namespace Satrabel.OpenContent.Components.Rest.V2
                     if (dsItem != null)
                         createdByUserid = dsItem.CreatedByUserId;
                 }
-                if (!OpenContentUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, createdByUserid))
+                if (!DnnPermissionsUtils.HasEditPermissions(module, editRole, createdByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
@@ -290,7 +283,7 @@ namespace Satrabel.OpenContent.Components.Rest.V2
             }
             catch (Exception exc)
             {
-                Log.Logger.Error(exc);
+                App.Services.Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
@@ -311,7 +304,7 @@ namespace Satrabel.OpenContent.Components.Rest.V2
             try
             {
                 var collection = entity;
-                OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
+                OpenContentModuleConfig module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
                 string editRole = module.Settings.Template.Manifest.GetEditRole();
                 int createdByUserid = -1;
 
@@ -337,7 +330,7 @@ namespace Satrabel.OpenContent.Components.Rest.V2
                     if (dsItem != null)
                         createdByUserid = dsItem.CreatedByUserId;
                 }
-                if (!OpenContentUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, createdByUserid))
+                if (!DnnPermissionsUtils.HasEditPermissions(module, editRole, createdByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
@@ -352,7 +345,7 @@ namespace Satrabel.OpenContent.Components.Rest.V2
             }
             catch (Exception exc)
             {
-                Log.Logger.Error(exc);
+                App.Services.Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
@@ -365,7 +358,7 @@ namespace Satrabel.OpenContent.Components.Rest.V2
             try
             {
                 var collection = entity;
-                OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
+                OpenContentModuleConfig module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
 
                 var manifest = module.Settings.Template.Manifest;
                 string editRole = manifest.GetEditRole();
@@ -373,7 +366,7 @@ namespace Satrabel.OpenContent.Components.Rest.V2
                 IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
                 dsContext.Collection = collection;
-                if (!OpenContentUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, -1))
+                if (!DnnPermissionsUtils.HasEditPermissions(module, editRole, -1))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
@@ -383,7 +376,7 @@ namespace Satrabel.OpenContent.Components.Rest.V2
             }
             catch (Exception exc)
             {
-                Log.Logger.Error(exc);
+                App.Services.Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
@@ -396,7 +389,7 @@ namespace Satrabel.OpenContent.Components.Rest.V2
             try
             {
                 var collection = entity;
-                OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
+                OpenContentModuleConfig module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
                 string editRole = module.Settings.Template.Manifest.GetEditRole();
                 int createdByUserid = -1;
 
@@ -421,11 +414,10 @@ namespace Satrabel.OpenContent.Components.Rest.V2
                     if (dsItem != null)
                         createdByUserid = dsItem.CreatedByUserId;
                 }
-                if (!OpenContentUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, createdByUserid))
+                if (!DnnPermissionsUtils.HasEditPermissions(module, editRole, createdByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
-                //var indexConfig = OpenContentUtils.GetIndexConfig(settings.Template.Key.TemplateDir);
                 if (dsItem != null)
                 {
                     ds.Delete(dsContext, dsItem);
@@ -434,7 +426,7 @@ namespace Satrabel.OpenContent.Components.Rest.V2
             }
             catch (Exception exc)
             {
-                Log.Logger.Error(exc);
+                App.Services.Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }

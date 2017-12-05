@@ -1,11 +1,11 @@
 ﻿using DotNetNuke.Web.Api;
 using Newtonsoft.Json;
-using Satrabel.OpenContent.Components.Json;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using Satrabel.OpenContent.Components.Json;
 
 namespace Satrabel.OpenContent.Components.Rest.Swagger
 {
@@ -30,7 +30,7 @@ namespace Satrabel.OpenContent.Components.Rest.Swagger
         {
             try
             {
-                var module = new OpenContentModuleInfo(moduleId, tabId);
+                var module = OpenContentModuleConfig.Create(moduleId, tabId,PortalSettings);
                 var manifest = module.Settings.Manifest;
                 string templateFolder = module.Settings.TemplateDir.UrlFolder;
 
@@ -90,14 +90,14 @@ namespace Satrabel.OpenContent.Components.Rest.Swagger
                 */
                 {
                     // main item
-                    var schemaJson = JsonUtils.LoadJsonFromFile(templateFolder + "schema.json");
+                    var schemaJson = JsonUtils.LoadJsonFromCacheOrDisk(new FileUri(templateFolder, "schema.json"));
 
                     //var resItems = new List<SchemaObject>();
                     //resItems.Add(new SchemaObject()
                     //{
                     //    Ref = "#/definitions/items"
                     //});
-                    
+
                     // Get()
                     // Get(pageIndex, pageSize, filter, sort)
                     var pi = new PathItem();
@@ -295,7 +295,7 @@ namespace Satrabel.OpenContent.Components.Rest.Swagger
                 {
                     foreach (var entity in manifest.AdditionalDataDefinition.Keys)
                     {
-                        var schemaJson = JsonUtils.LoadJsonFromFile(templateFolder + entity + "-schema.json");
+                        var schemaJson = JsonUtils.LoadJsonFromCacheOrDisk(new FileUri(templateFolder, entity + "-schema.json"));
                         if (schemaJson["items"] != null)
                         {
                             var entityName = entity.ToLower();
@@ -335,7 +335,7 @@ namespace Satrabel.OpenContent.Components.Rest.Swagger
             }
             catch (Exception exc)
             {
-                Log.Logger.Error(exc);
+                App.Services.Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }

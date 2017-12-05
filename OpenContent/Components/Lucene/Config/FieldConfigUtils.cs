@@ -1,18 +1,44 @@
-﻿using Satrabel.OpenContent.Components.Datasource.Search;
+﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using Lucene.Net.Documents;
+using Lucene.Net.QueryParsers;
+using Newtonsoft.Json.Linq;
+using Satrabel.OpenContent.Components.Datasource.Search;
+using Satrabel.OpenContent.Components.FileIndexer;
 
 namespace Satrabel.OpenContent.Components.Lucene.Config
 {
     public class FieldConfigUtils
     {
-        public static FieldConfig GetField(FieldConfig config, string field)
+        internal static FieldConfig GetField(FieldConfig fieldconfig, string field)
         {
-            if (config != null && config.Fields != null && config.Fields.ContainsKey(field))
+            var fieldParts = field.Split('.');
+            while (true)
+            {
+                if (fieldParts.Length == 0) return null;
+
+                var returnConfig = ExtractField(fieldconfig, fieldParts[0]);
+                if (fieldParts.Length == 1)
+                {
+                    return returnConfig;
+                }
+
+                fieldParts = fieldParts.Skip(1).ToArray();
+                fieldconfig = returnConfig;
+            }
+        }
+
+        private static FieldConfig ExtractField(FieldConfig config, string field)
+        {
+            if (config?.Fields != null && config.Fields.ContainsKey(field))
             {
                 return config.Fields[field].Items == null ? config.Fields[field] : config.Fields[field].Items;
             }
             return null;
         }
+
         public static FilterRule CreateFilterRule(FieldConfig config, string cultureCode, string field, OperatorEnum fieldOperator, IEnumerable<RuleValue> multiValue)
         {
             var fieldConfig = GetField(config, field);
@@ -66,7 +92,6 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                 Field = field + cultureSuffix,
                 FieldType = indexType,
                 Descending = descending
-
             };
             return rule;
         }

@@ -58,5 +58,11 @@
       "alpaca/templates/dnn-edit/container-accordion.html",
       "alpaca/templates/dnn-edit/container-accordion-item.html"
     ]
+  },
+  {
+    "outputFileName": "js/jplist/jplisthelper.min.js",
+    "inputFiles": [
+      "js/jplist/jplisthelper.js"
+    ]
   }
 ]

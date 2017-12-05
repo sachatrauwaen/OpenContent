@@ -5,7 +5,6 @@ using System.Linq;
 using System.Web.UI.WebControls;
 using DotNetNuke.Common;
 using DotNetNuke.Entities.Modules;
-using DotNetNuke.Entities.Portals;
 using DotNetNuke.Entities.Tabs;
 using DotNetNuke.Services.Exceptions;
 using DotNetNuke.UI.Modules;
@@ -35,7 +34,7 @@ namespace Satrabel.OpenContent
             if (rblFrom.SelectedIndex == 0) // site
             {
                 var scriptFileSetting = ModuleContext.OpenContentSettings().Template;
-                ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplates(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, AppConfig.OPENCONTENT).ToArray());
+                ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplates(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, App.Config.Opencontent).ToArray());
             }
             else if (rblFrom.SelectedIndex == 1) // web
             {
@@ -78,12 +77,12 @@ namespace Satrabel.OpenContent
             ddlTemplate.Items.Clear();
             if (rblUseTemplate.SelectedIndex == 0) // existing
             {
-                ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplatesFiles(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, AppConfig.OPENCONTENT).ToArray());
+                ddlTemplate.Items.AddRange(OpenContentUtils.ListOfTemplatesFiles(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, App.Config.Opencontent).ToArray());
             }
             else if (rblUseTemplate.SelectedIndex == 1) // new
             {
 
-                ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplates(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, AppConfig.OPENCONTENT).ToArray());
+                ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplates(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, App.Config.Opencontent).ToArray());
             }
             ActivateDetailPage();
         }
@@ -182,11 +181,7 @@ namespace Satrabel.OpenContent
         private void BindTemplates(TemplateManifest template, FileUri otherModuleTemplate)
         {
             ddlTemplate.Items.Clear();
-
-            //var templateUri = template == null ? null : template.Uri;
-            //var otherModuleTemplateUri = otherModuleTemplate == null ? null : otherModuleTemplate.Uri;
-
-            ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplatesFiles(ModuleContext.PortalSettings, ModuleContext.ModuleId, template, AppConfig.OPENCONTENT, otherModuleTemplate).ToArray());
+            ddlTemplate.Items.AddRange(OpenContentUtils.ListOfTemplatesFiles(ModuleContext.PortalSettings, ModuleContext.ModuleId, template, App.Config.Opencontent, otherModuleTemplate).ToArray());
             if (ddlTemplate.Items.Count == 0)
             {
                 rblUseTemplate.Items[0].Enabled = false;
@@ -312,7 +307,7 @@ namespace Satrabel.OpenContent
         private void BindOtherModules(int tabId, int moduleId)
         {
             IEnumerable<ModuleInfo> modules = (new ModuleController()).GetModules(ModuleContext.PortalId).Cast<ModuleInfo>();
-            modules = modules.Where(m => m.ModuleDefinition.DefinitionName == AppConfig.OPENCONTENT && m.IsDeleted == false && !m.OpenContentSettings().IsOtherModule);
+            modules = modules.Where(m => m.ModuleDefinition.DefinitionName == App.Config.Opencontent && m.IsDeleted == false && !m.OpenContentSettings().IsOtherModule);
             rblDataSource.Items[1].Enabled = modules.Any();
             phDataSource.Visible = rblDataSource.SelectedIndex == 1; // other module
             if (rblDataSource.SelectedIndex == 1) // other module
@@ -416,7 +411,7 @@ namespace Satrabel.OpenContent
             if (moduleInfo == null)
             {
                 //This should never happen
-                Log.Logger.Error($"Module {dataModuleId} not found while in GetOtherModuleDetailTabId()");
+                App.Services.Logger.Error($"Module {dataModuleId} not found while in GetOtherModuleDetailTabId()");
                 return 0;
             }
 
@@ -442,7 +437,7 @@ namespace Satrabel.OpenContent
             foreach (var item in tabinfo.ChildModules)
             {
                 ModuleInfo moduleInfo = item.Value;
-                if (moduleInfo.ModuleDefinition.FriendlyName == AppConfig.OPENCONTENT)
+                if (moduleInfo.ModuleDefinition.FriendlyName == App.Config.Opencontent)
                 {
                     if (moduleInfo.OpenContentSettings().GetModuleId(moduleInfo.ModuleID) == datamoduleId)
                     {

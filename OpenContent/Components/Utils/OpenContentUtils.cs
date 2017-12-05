@@ -1,6 +1,5 @@
 ﻿using DotNetNuke.Common.Utilities;
 using DotNetNuke.Entities.Host;
-using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Services.FileSystem;
 using ICSharpCode.SharpZipLib.Zip;
@@ -14,14 +13,12 @@ using System.Web.Hosting;
 using System.Web.UI.WebControls;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Dnn;
-using Satrabel.OpenContent.Components.Localization;
 using Satrabel.OpenContent.Components.Manifest;
-using Satrabel.OpenContent.Components.Lucene.Config;
-using Satrabel.OpenContent.Components.Lucene.Index;
 using Satrabel.OpenContent.Components.TemplateHelpers;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Datasource;
-
+using Satrabel.OpenContent.Components.Lucene.Config;
+using UserRoleInfo = Satrabel.OpenContent.Components.Querying.UserRoleInfo;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -29,26 +26,21 @@ namespace Satrabel.OpenContent.Components
     {
         public static void HydrateDefaultFields(this OpenContentInfo content, FieldConfig indexConfig)
         {
-            if (indexConfig.HasField(AppConfig.FieldNamePublishStartDate)
-                   && content.JsonAsJToken != null && content.JsonAsJToken[AppConfig.FieldNamePublishStartDate] == null)
+            if (indexConfig.HasField(App.Config.FieldNamePublishStartDate)
+                   && content.JsonAsJToken != null && content.JsonAsJToken[App.Config.FieldNamePublishStartDate] == null)
             {
-                content.JsonAsJToken[AppConfig.FieldNamePublishStartDate] = DateTime.MinValue;
+                content.JsonAsJToken[App.Config.FieldNamePublishStartDate] = DateTime.MinValue;
             }
-            if (indexConfig.HasField(AppConfig.FieldNamePublishEndDate)
-                && content.JsonAsJToken != null && content.JsonAsJToken[AppConfig.FieldNamePublishEndDate] == null)
+            if (indexConfig.HasField(App.Config.FieldNamePublishEndDate)
+                && content.JsonAsJToken != null && content.JsonAsJToken[App.Config.FieldNamePublishEndDate] == null)
             {
-                content.JsonAsJToken[AppConfig.FieldNamePublishEndDate] = DateTime.MaxValue;
+                content.JsonAsJToken[App.Config.FieldNamePublishEndDate] = DateTime.MaxValue;
             }
-            if (indexConfig.HasField(AppConfig.FieldNamePublishStatus)
-                && content.JsonAsJToken != null && content.JsonAsJToken[AppConfig.FieldNamePublishStatus] == null)
+            if (indexConfig.HasField(App.Config.FieldNamePublishStatus)
+                && content.JsonAsJToken != null && content.JsonAsJToken[App.Config.FieldNamePublishStatus] == null)
             {
-                content.JsonAsJToken[AppConfig.FieldNamePublishStatus] = "published";
+                content.JsonAsJToken[App.Config.FieldNamePublishStatus] = "published";
             }
-        }
-
-        internal static bool HasAllUsersViewPermissions(PortalSettings portalSettings, ModuleInfo module)
-        {
-            return module.HasViewRightsOnModule();
         }
 
         public static string GetSiteTemplateFolder(PortalSettings portalSettings, string moduleSubDir)
@@ -60,7 +52,7 @@ namespace Satrabel.OpenContent.Components
             return portalSettings.ActiveTab.SkinPath + moduleSubDir + "/Templates/";
         }
 
-        public static List<System.Web.UI.WebControls.ListItem> GetTemplates(PortalSettings portalSettings, int moduleId, string selectedTemplate, string moduleSubDir)
+        public static List<ListItem> GetTemplates(PortalSettings portalSettings, int moduleId, string selectedTemplate, string moduleSubDir)
         {
             return GetTemplates(portalSettings, moduleId, new FileUri(selectedTemplate), moduleSubDir);
         }
@@ -75,9 +67,9 @@ namespace Satrabel.OpenContent.Components
         /// <returns></returns>
         /// <remarks>Used by OpenForms</remarks>
         [Obsolete("This method is obsolete since dec 2015; use GetTemplatesFiles(PortalSettings portalSettings, int moduleId, TemplateManifest selectedTemplate, string moduleSubDir) instead")]
-        public static List<ListItem> GetTemplatesFiles(PortalSettings portalSettings, int moduleId, string selectedTemplate, string moduleSubDir)
+        public static List<ListItem> ListOfTemplatesFiles(PortalSettings portalSettings, int moduleId, string selectedTemplate, string moduleSubDir)
         {
-            return GetTemplatesFiles(portalSettings, moduleId, new FileUri(selectedTemplate).ToTemplateManifest(), moduleSubDir);
+            return ListOfTemplatesFiles(portalSettings, moduleId, new FileUri(selectedTemplate).ToTemplateManifest(), moduleSubDir);
         }
 
         [Obsolete("This method is obsolete since dec 2015; use GetTemplatesFiles(PortalSettings portalSettings, int moduleId, TemplateManifest selectedTemplate, string moduleSubDir) instead")]
@@ -98,14 +90,13 @@ namespace Satrabel.OpenContent.Components
         /// <param name="selectedTemplate">The selected template.</param>
         /// <param name="moduleSubDir">The module sub dir.</param>
         /// <returns></returns>
-        public static List<ListItem> GetTemplatesFiles(PortalSettings portalSettings, int moduleId, TemplateManifest selectedTemplate, string moduleSubDir)
+        public static List<ListItem> ListOfTemplatesFiles(PortalSettings portalSettings, int moduleId, TemplateManifest selectedTemplate, string moduleSubDir)
         {
-            return GetTemplatesFiles(portalSettings, moduleId, selectedTemplate, moduleSubDir, null);
+            return ListOfTemplatesFiles(portalSettings, moduleId, selectedTemplate, moduleSubDir, null);
         }
 
-        public static List<ListItem> GetTemplatesFiles(PortalSettings portalSettings, int moduleId, TemplateManifest selectedTemplate, string moduleSubDir, FileUri otherModuleTemplate)
+        public static List<ListItem> ListOfTemplatesFiles(PortalSettings portalSettings, int moduleId, TemplateManifest selectedTemplate, string moduleSubDir, FileUri otherModuleTemplate)
         {
-            //bool otherModuleSkinTemplate = otherModuleTemplate != null && otherModuleTemplate.PhysicalFilePath.Contains(HostingEnvironment.MapPath(GetSkinTemplateFolder(portalSettings, moduleSubDir)));
             string basePath = HostingEnvironment.MapPath(GetSiteTemplateFolder(portalSettings, moduleSubDir));
             if (!Directory.Exists(basePath))
             {
@@ -128,10 +119,9 @@ namespace Satrabel.OpenContent.Components
             foreach (var dir in dirs)
             {
                 string templateCat = "Site";
-                //string dirName = Path.GetFileNameWithoutExtension(dir);
                 string dirName = dir.Substring(basePath.Length);
                 int modId = -1;
-                if (int.TryParse(dirName, out modId))
+                if (Int32.TryParse(dirName, out modId))
                 {
                     // if numeric directory name --> module template
                     if (modId == moduleId)
@@ -154,7 +144,7 @@ namespace Satrabel.OpenContent.Components
                     foreach (string manifestFile in manifestfiles)
                     {
                         FileUri manifestFileUri = FileUri.FromPath(manifestFile);
-                        var manifest = ManifestUtils.GetFileManifest(manifestFileUri);
+                        var manifest = ManifestUtils.LoadManifestFileFromCacheOrDisk(manifestFileUri);
                         if (manifest != null && manifest.HasTemplates)
                         {
                             manifestTemplateFound = true;
@@ -162,7 +152,7 @@ namespace Satrabel.OpenContent.Components
                             {
                                 FileUri templateUri = new FileUri(manifestFileUri.FolderPath, template.Key);
                                 string templateName = Path.GetDirectoryName(manifestFile).Substring(basePath.Length).Replace("\\", " / ");
-                                if (!string.IsNullOrEmpty(template.Value.Title))
+                                if (!String.IsNullOrEmpty(template.Value.Title))
                                 {
                                     templateName = templateName + " - " + template.Value.Title;
                                 }
@@ -236,7 +226,7 @@ namespace Satrabel.OpenContent.Components
                         foreach (string manifestFile in manifestfiles)
                         {
                             FileUri manifestFileUri = FileUri.FromPath(manifestFile);
-                            var manifest = ManifestUtils.GetFileManifest(manifestFileUri);
+                            var manifest = ManifestUtils.LoadManifestFileFromCacheOrDisk(manifestFileUri);
                             if (manifest != null && manifest.HasTemplates)
                             {
                                 manifestTemplateFound = true;
@@ -244,7 +234,7 @@ namespace Satrabel.OpenContent.Components
                                 {
                                     FileUri templateUri = new FileUri(manifestFileUri.FolderPath, template.Key);
                                     string templateName = Path.GetDirectoryName(manifestFile).Substring(basePath.Length).Replace("\\", " / ");
-                                    if (!string.IsNullOrEmpty(template.Value.Title))
+                                    if (!String.IsNullOrEmpty(template.Value.Title))
                                     {
                                         templateName = templateName + " - " + template.Value.Title;
                                     }
@@ -297,7 +287,7 @@ namespace Satrabel.OpenContent.Components
                 string templateCat = "Site";
                 string dirName = Path.GetFileNameWithoutExtension(dir);
                 int modId = -1;
-                if (int.TryParse(dirName, out modId))
+                if (Int32.TryParse(dirName, out modId))
                 {
                     if (modId == moduleId)
                     {
@@ -373,7 +363,7 @@ namespace Satrabel.OpenContent.Components
                 }
                 if (Path.GetExtension(fileName) == ".zip")
                 {
-                    if (string.IsNullOrEmpty(newTemplateName))
+                    if (String.IsNullOrEmpty(newTemplateName))
                     {
                         newTemplateName = Path.GetFileNameWithoutExtension(fileName);
                     }
@@ -394,24 +384,24 @@ namespace Satrabel.OpenContent.Components
             catch (PermissionsNotMetException)
             {
                 //Logger.Warn(exc);
-                strMessage = string.Format(Localizer.Instance.GetString("InsufficientFolderPermission"), "OpenContent/Templates");
+                strMessage = String.Format(App.Services.Localizer.GetString("InsufficientFolderPermission"), "OpenContent/Templates");
             }
             catch (NoSpaceAvailableException)
             {
                 //Logger.Warn(exc);
-                strMessage = string.Format(Localizer.Instance.GetString("DiskSpaceExceeded"), fileName);
+                strMessage = String.Format(App.Services.Localizer.GetString("DiskSpaceExceeded"), fileName);
             }
             catch (InvalidFileExtensionException)
             {
                 //Logger.Warn(exc);
-                strMessage = string.Format(Localizer.Instance.GetString("RestrictedFileType"), fileName, Host.AllowedExtensionWhitelist.ToDisplayString());
+                strMessage = String.Format(App.Services.Localizer.GetString("RestrictedFileType"), fileName, Host.AllowedExtensionWhitelist.ToDisplayString());
             }
             catch (Exception exc)
             {
                 //Logger.Error(exc);
-                strMessage = string.Format(Localizer.Instance.GetString("SaveFileError") + " - " + exc.Message, fileName);
+                strMessage = String.Format(App.Services.Localizer.GetString("SaveFileError") + " - " + exc.Message, fileName);
             }
-            if (!string.IsNullOrEmpty(strMessage))
+            if (!String.IsNullOrEmpty(strMessage))
             {
                 throw new Exception(strMessage);
             }
@@ -422,7 +412,7 @@ namespace Satrabel.OpenContent.Components
         {
             string template = "";
             FolderUri folder = new FolderUri(FolderUri.ReverseMapPath(physicalFolder));
-            var manifest = ManifestUtils.GetFileManifest(folder);
+            var manifest = ManifestUtils.LoadManifestFileFromCacheOrDisk(folder);
             if (manifest != null && manifest.HasTemplates)
             {
                 //get the requested template key
@@ -458,28 +448,38 @@ namespace Satrabel.OpenContent.Components
             return FileUri.ReverseMapPath(template);
         }
 
-        public static bool CheckOpenContentSettings(OpenContentModuleInfo module)
+        /// <summary>
+        /// Checks the OpenContent settings.
+        /// </summary>
+        public static bool CheckOpenContentTemplateFiles(OpenContentModuleConfig module)
         {
             bool result = true;
             var settings = module.Settings;
             if (settings?.TemplateKey?.TemplateDir != null && !settings.TemplateKey.TemplateDir.FolderExists)
             {
-                var url = DnnUrlUtils.NavigateUrl(module.ViewModule.TabID);
-                Log.Logger.Error($"Error loading OpenContent Template on page [{module.ViewModule.PortalID}-{module.ViewModule.TabID}-{url}] module [{module.ViewModule.ModuleID}-{module.ViewModule.ModuleTitle}]. Reason: Template not found [{settings.TemplateKey}]");
+                var url = DnnUrlUtils.NavigateUrl(module.ViewModule.TabId);
+                App.Services.Logger.Error($"Error loading OpenContent Template on page [{module.ViewModule.PortalId}-{module.ViewModule.TabId}-{url}] module [{module.ViewModule.ModuleId}-{module.ViewModule.ModuleTitle}]. Reason: Template not found [{settings.TemplateKey}]");
                 result = false;
             }
             return result;
         }
 
-        public static DataSourceContext CreateDataContext(OpenContentModuleInfo module, int userId = -1, bool single = false, JObject options = null)
+        [Obsolete("This method is obsolete since aug 2017; use another constructor instead.")]
+        public static DataSourceContext CreateDataContext(OpenContentModuleInfo moduleinfo, int userId = -1, bool single = false, JObject options = null)
+        {
+            var module = OpenContentModuleConfig.Create(moduleinfo.ModuleId, moduleinfo.TabId, PortalSettings.Current);
+            return CreateDataContext(module, userId, single, options);
+        }
+
+        public static DataSourceContext CreateDataContext(OpenContentModuleConfig module, int userId = -1, bool single = false, JObject options = null)
         {
             var dsContext = new DataSourceContext
             {
-                PortalId = module.ViewModule.PortalID,
-                ActiveModuleId = module.ViewModule.ModuleID,
-                TabId = module.ViewModule.TabID,
-                TabModuleId = module.ViewModule.TabModuleID,
-                ModuleId = module.DataModule.ModuleID,
+                PortalId = module.ViewModule.PortalId,
+                ActiveModuleId = module.ViewModule.ModuleId,
+                TabId = module.ViewModule.TabId,
+                TabModuleId = module.ViewModule.TabModuleId,
+                ModuleId = module.DataModule.ModuleId,
                 TemplateFolder = module.Settings.TemplateDir.FolderPath,
                 UserId = userId,
                 Config = module.Settings.Manifest.DataSourceConfig,
@@ -501,17 +501,7 @@ namespace Satrabel.OpenContent.Components
             return FolderUri.ReverseMapPath(path);
         }
 
-        public static bool HasEditPermissions(PortalSettings portalSettings, ModuleInfo module, string editrole, int createdByUserId)
-        {
-            return module.HasEditRightsOnModule() || HasEditRole(portalSettings, editrole, createdByUserId);
-        }
-        public static bool HasEditRole(PortalSettings portalSettings, string editrole, int createdByUserId)
-        {
-            if (string.IsNullOrEmpty(editrole)) return false;
-            if (editrole.ToLower() == "all") return true;
-            if (portalSettings.UserInfo.IsInRole(editrole) && (createdByUserId == -1 || createdByUserId == portalSettings.UserId)) return true;
-            return false;
-        }
+
         public static FieldConfig GetIndexConfig(TemplateManifest template)
         {
             return GetIndexConfig(template.Key.TemplateDir, template.Collection);
@@ -527,7 +517,7 @@ namespace Satrabel.OpenContent.Components
             catch (Exception ex)
             {
                 //we should log this
-                Log.Logger.Error($"Error while parsing json", ex);
+                App.Services.Logger.Error($"Error while parsing json", ex);
                 if (Debugger.IsAttached) Debugger.Break();
                 return null;
             }
@@ -560,56 +550,54 @@ namespace Satrabel.OpenContent.Components
             return false;
         }
 
-
-        internal static bool HaveViewPermissions(Datasource.IDataItem dsItem, DotNetNuke.Entities.Users.UserInfo userInfo, FieldConfig IndexConfig, out string raison)
+        internal static bool HaveViewPermissions(IDataItem dsItem, IList<UserRoleInfo> userRoles, FieldConfig indexConfig, out string raison)
         {
             raison = "";
             if (dsItem?.Data == null) return true;
 
             bool permissions = true;
             //publish status , dates
-            if (IndexConfig?.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishStatus))
+            if (indexConfig?.Fields != null && indexConfig.Fields.ContainsKey(App.Config.FieldNamePublishStatus))
             {
-                permissions = dsItem.Data[AppConfig.FieldNamePublishStatus] != null &&
-                    dsItem.Data[AppConfig.FieldNamePublishStatus].ToString() == "published";
-                if (!permissions) raison = AppConfig.FieldNamePublishStatus + $" being {dsItem.Data[AppConfig.FieldNamePublishStatus]}";
+                permissions = dsItem.Data[App.Config.FieldNamePublishStatus] != null &&
+                    dsItem.Data[App.Config.FieldNamePublishStatus].ToString() == "published";
+                if (!permissions) raison = App.Config.FieldNamePublishStatus + $" being {dsItem.Data[App.Config.FieldNamePublishStatus]}";
             }
-            if (permissions && IndexConfig?.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishStartDate))
+            if (permissions && indexConfig?.Fields != null && indexConfig.Fields.ContainsKey(App.Config.FieldNamePublishStartDate))
             {
-                permissions = dsItem.Data[AppConfig.FieldNamePublishStartDate] != null &&
-                                dsItem.Data[AppConfig.FieldNamePublishStartDate].Type == JTokenType.Date &&
-                                ((DateTime)dsItem.Data[AppConfig.FieldNamePublishStartDate]) <= DateTime.Today;
-                if (!permissions) raison = AppConfig.FieldNamePublishStartDate + $" being {dsItem.Data[AppConfig.FieldNamePublishStartDate]}";
+                permissions = dsItem.Data[App.Config.FieldNamePublishStartDate] != null &&
+                                dsItem.Data[App.Config.FieldNamePublishStartDate].Type == JTokenType.Date &&
+                                ((DateTime)dsItem.Data[App.Config.FieldNamePublishStartDate]) <= DateTime.Today;
+                if (!permissions) raison = App.Config.FieldNamePublishStartDate + $" being {dsItem.Data[App.Config.FieldNamePublishStartDate]}";
             }
-            if (permissions && IndexConfig?.Fields != null && IndexConfig.Fields.ContainsKey(AppConfig.FieldNamePublishEndDate))
+            if (permissions && indexConfig?.Fields != null && indexConfig.Fields.ContainsKey(App.Config.FieldNamePublishEndDate))
             {
-                permissions = dsItem.Data[AppConfig.FieldNamePublishEndDate] != null &&
-                                dsItem.Data[AppConfig.FieldNamePublishEndDate].Type == JTokenType.Date &&
-                                ((DateTime)dsItem.Data[AppConfig.FieldNamePublishEndDate]) >= DateTime.Today;
-                if (!permissions) raison = AppConfig.FieldNamePublishEndDate + $" being {dsItem.Data[AppConfig.FieldNamePublishEndDate]}";
+                permissions = dsItem.Data[App.Config.FieldNamePublishEndDate] != null &&
+                                dsItem.Data[App.Config.FieldNamePublishEndDate].Type == JTokenType.Date &&
+                                ((DateTime)dsItem.Data[App.Config.FieldNamePublishEndDate]) >= DateTime.Today;
+                if (!permissions) raison = App.Config.FieldNamePublishEndDate + $" being {dsItem.Data[App.Config.FieldNamePublishEndDate]}";
             }
             if (permissions)
             {
                 // Roles                
                 string fieldName = "";
-                if (IndexConfig?.Fields != null && IndexConfig.Fields.ContainsKey("userrole"))
+                if (indexConfig?.Fields != null && indexConfig.Fields.ContainsKey("userrole"))
                 {
                     fieldName = "userrole";
                 }
-                else if (IndexConfig?.Fields != null && IndexConfig.Fields.ContainsKey("userroles"))
+                else if (indexConfig?.Fields != null && indexConfig.Fields.ContainsKey("userroles"))
                 {
                     fieldName = "userroles";
                 }
-                if (!string.IsNullOrEmpty(fieldName))
+                if (!String.IsNullOrEmpty(fieldName))
                 {
                     permissions = false;
-                    string[] dataRoles = null;
+                    string[] dataRoles = { };
                     if (dsItem.Data[fieldName] != null)
                     {
                         if (dsItem.Data[fieldName].Type == JTokenType.Array)
                         {
                             dataRoles = ((JArray)dsItem.Data[fieldName]).Select(d => d.ToString()).ToArray();
-
                         }
                         else
                         {
@@ -622,10 +610,10 @@ namespace Satrabel.OpenContent.Components
                     }
                     else
                     {
-                        var roles = userInfo.Social.Roles;
+                        var roles = userRoles;
                         if (roles.Any())
                         {
-                            permissions = roles.Any(r => dataRoles.Contains(r.RoleID.ToString()));
+                            permissions = roles.Any(r => dataRoles.Contains(r.RoleId.ToString()));
                         }
                         else
                         {

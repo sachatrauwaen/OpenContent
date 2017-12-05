@@ -1,7 +1,7 @@
-﻿using Satrabel.OpenContent.Components.Datasource.Search;
-using Satrabel.OpenContent.Components.Lucene.Config;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Satrabel.OpenContent.Components.Datasource.Search;
+using Satrabel.OpenContent.Components.Lucene.Config;
 
 namespace Satrabel.OpenContent.Components.JPList
 {
@@ -106,10 +106,7 @@ namespace Satrabel.OpenContent.Components.JPList
                     case "sort":
                         {
                             select.Sort.Clear();
-                            select.Sort.Add(FieldConfigUtils.CreateSortRule(config, cultureCode,
-                                status.data.path,
-                                status.data.order == "desc"
-                            ));
+                            select.Sort.Add(FieldConfigUtils.CreateSortRule(config, cultureCode, status.data.path, status.data.order == "desc"));
                             break;
                         }
                 }

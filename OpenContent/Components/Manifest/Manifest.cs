@@ -45,8 +45,14 @@ namespace Satrabel.OpenContent.Components.Manifest
         [JsonProperty(PropertyName = "additionalData")]
         public Dictionary<string, AdditionalDataManifest> AdditionalDataDefinition
         {
-            get { return _additionalData; }
-            set { _additionalData = new Dictionary<string, AdditionalDataManifest>(value, StringComparer.OrdinalIgnoreCase); }
+            get
+            {
+                return _additionalData;
+            }
+            set
+            {
+                _additionalData = new Dictionary<string, AdditionalDataManifest>(value, StringComparer.OrdinalIgnoreCase);
+            }
         }
 
         [JsonProperty(PropertyName = "dataSource")]
@@ -58,7 +64,10 @@ namespace Satrabel.OpenContent.Components.Manifest
         [JsonProperty(PropertyName = "disableEdit")]
         public bool DisableEdit { get; set; }
 
-        public bool HasTemplates { get { return (Templates != null); } }
+        [JsonProperty(PropertyName = "permissions")]
+        public JObject Permissions { get; set; }
+
+        public bool HasTemplates => (Templates != null);
         public FolderUri ManifestDir { get; set; }
 
         public TemplateManifest GetTemplateManifest(FileUri template)

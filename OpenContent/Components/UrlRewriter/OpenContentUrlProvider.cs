@@ -18,23 +18,25 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
             lock (padlock)
             {
                 List<OpenContentUrlRule> rules = new List<OpenContentUrlRule>();
-//#if DEBUG
-//                decimal speed;
-//                string mess;
-//                var stopwatch = new System.Diagnostics.Stopwatch();
-//                stopwatch.Start();
-//#endif
+                //#if DEBUG
+                //                decimal speed;
+                //                string mess;
+                //                var stopwatch = new System.Diagnostics.Stopwatch();
+                //                stopwatch.Start();
+                //#endif
                 var purgeResult = UrlRulesCaching.PurgeExpiredItems(portalId);
+
                 var portalCacheKey = UrlRulesCaching.GeneratePortalCacheKey(portalId, null);
                 var portalRules = UrlRulesCaching.GetCache(portalId, portalCacheKey, purgeResult.ValidCacheItems);
                 if (portalRules != null && portalRules.Count > 0)
                 {
-//#if DEBUG
-//                    stopwatch.Stop();
-//                    speed = stopwatch.Elapsed.Milliseconds;
-//                    mess = $"PortalId: {portalId}. Time elapsed: {stopwatch.Elapsed.Milliseconds}ms. All Cached. PurgedItems: {purgeResult.PurgedItemCount}. Speed: {speed}";
-//                    Log.Logger.Error(mess);
-//#endif
+                    //#if DEBUG
+                    //   App.Services.Logger.Debug($"GetRules {portalId} CachedRuleCount: {portalRules.Count}");
+                    //   stopwatch.Stop();
+                    //   speed = stopwatch.Elapsed.Milliseconds;
+                    //   mess = $"PortalId: {portalId}. Time elapsed: {stopwatch.Elapsed.Milliseconds}ms. All Cached. PurgedItems: {purgeResult.PurgedItemCount}. Speed: {speed}";
+                    //   App.Services.Logger.Error(mess);
+                    //#endif
                     return portalRules;
                 }
 
@@ -45,14 +47,14 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                 var nonCached = 0;
 
                 foreach (var module in modules)
-                {                    
+                {
                     try
                     {
-                        if (module.IsListMode() && module.Settings.Template.Detail != null &&
-                                ((!module.Settings.IsOtherModule && module.Settings.DetailTabId <= 0) ||
-                                    (module.Settings.DetailTabId == module.TabId)
-                                )
-                            )
+                        //Urls are generated for every detailmodule of a list-template
+                        var isDetailTemplate = (module.Settings.DetailTabId == module.TabId) || (module.Settings.DetailTabId <= 0 && !module.Settings.IsOtherModule);
+                        var partofListTemplateWithDetailTemplate = module.IsListMode() && module.Settings.Template.Detail != null;
+
+                        if (isDetailTemplate && partofListTemplateWithDetailTemplate)
                         {
                             var dsContext = OpenContentUtils.CreateDataContext(module);
                             dsContext.Agent = "OpenContentUrlProvider.GetRules()";
@@ -61,20 +63,22 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                             List<OpenContentUrlRule> moduleRules = UrlRulesCaching.GetCache(portalId, cacheKey, purgeResult.ValidCacheItems);
                             if (moduleRules != null && moduleRules.Count > 0)
                             {
+                                //App.Services.Logger.Error($"GetRules {portalId}/{module.TabId}/{module.ModuleId} count: {moduleRules.Count}");
                                 rules.AddRange(moduleRules);
                                 cachedModules += 1;
                                 continue;
                             }
+
                             nonCached += 1;
                             moduleRules = new List<OpenContentUrlRule>();
                             IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
+
                             var dataList = ds.GetAll(dsContext, null).Items.ToList();
                             if (dataList.Count() > 1000)
                             {
-                                Log.Logger.Warn($"Module {module.DataModule.ModuleID} (portal/tab {module.DataModule.PortalID}/{module.DataModule.TabID}) has >1000 items. We are not making sluggs for them as this would be too inefficient");
+                                App.Services.Logger.Warn($"Module {module.DataModule.ModuleId} (portal/tab {module.DataModule.PortalId}/{module.DataModule.TabId}) has >1000 items. We are not making sluggs for them as this would be too inefficient");
                                 continue;
                             }
-                            var physicalTemplateFolder = module.Settings.TemplateDir.PhysicalFullDirectory + "\\";
                             HandlebarsEngine hbEngine = new HandlebarsEngine();
                             if (!string.IsNullOrEmpty(module.Settings.Manifest.DetailUrl))
                             {
@@ -84,12 +88,9 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                             {
                                 string cultureCode = key.Value.Code;
                                 string ruleCultureCode = (dicLocales.Count > 1 ? cultureCode : null);
-                                ModelFactoryMultiple mf = new ModelFactoryMultiple(dataList, module.Settings.Data, physicalTemplateFolder, module.Settings.Template.Manifest, module.Settings.Template, module.Settings.Template.Main, module, portalId, cultureCode);
-                                //dynamic model = mf.GetModelAsDynamic(true);
-                                //dynamic items = model.Items;
+                                ModelFactoryMultiple mf = new ModelFactoryMultiple(dataList, module.Settings.Data, module.Settings.Template.Manifest, module.Settings.Template, module.Settings.Template.Main, module, portalId, cultureCode);
                                 IEnumerable<Dictionary<string, object>> items = mf.GetModelAsDictionaryList();
-                                //Log.Logger.Debug("OCUR/" + PortalId + "/" + module.TabID + "/" + MainTabId + "/" + module.ModuleID + "/" + MainModuleId + "/" + CultureCode + "/" + dataList.Count() + "/" + module.ModuleTitle);
-                                //foreach (IDataItem content in dataList)
+                                //App.Services.Logger.Debug("OCUR/" + PortalId + "/" + module.TabID + "/" + MainTabId + "/" + module.ModuleID + "/" + MainModuleId + "/" + CultureCode + "/" + dataList.Count() + "/" + module.ModuleTitle);
                                 foreach (Dictionary<string, object> content in items)
                                 {
                                     string id = (content["Context"] as Dictionary<string, object>)["Id"].ToString();
@@ -98,14 +99,12 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                                     {
                                         try
                                         {
-                                            //ModelFactory mf = new ModelFactory(content, settings.Data, physicalTemplateFolder, settings.Template.Manifest, settings.Template, settings.Template.Main, module, PortalId, CultureCode, MainTabId, MainModuleId);
-                                            //dynamic model = mf.GetModelAsDynamic(true);
                                             url = hbEngine.Execute(content);
-                                            url = HttpUtility.HtmlDecode(url).CleanupUrl();
+                                            url = HttpUtility.HtmlDecode(url).StripHtml("-").CleanupUrl();
                                         }
                                         catch (Exception ex)
                                         {
-                                            Log.Logger.Error("Failed to generate url for opencontent item " + id, ex);
+                                            App.Services.Logger.Error("Failed to generate url for opencontent item " + id, ex);
                                         }
                                     }
 
@@ -133,22 +132,23 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                                 }
                             }
                             UrlRulesCaching.SetCache(portalId, UrlRulesCaching.GenerateModuleCacheKey(module.TabId, module.ModuleId, dsContext.ModuleId,  null), new TimeSpan(1, 0, 0, 0), moduleRules);
+                            //App.Services.Logger.Error($"GetRules {portalId}/{module.TabId}/{module.ModuleId} NewCount: {moduleRules.Count}");
                         }
                     }
                     catch (Exception ex)
                     {
-                        Log.Logger.Error("Failed to generate url for opencontent module " + module.ViewModule.ModuleID, ex);
+                        App.Services.Logger.Error("Failed to generate url for opencontent module " + module.ViewModule.ModuleId, ex);
                     }
 
                 }
                 UrlRulesCaching.SetCache(portalId, portalCacheKey, new TimeSpan(1, 0, 0, 0), rules);
-//#if DEBUG
-//                stopwatch.Stop();
-//                speed = (cachedModules + nonCached) == 0 ? -1 : stopwatch.Elapsed.Milliseconds / (cachedModules + nonCached);
-//                mess = $"PortalId: {portalId}. Time elapsed: {stopwatch.Elapsed.Milliseconds}ms. Module Count: {modules.Count()}. Relevant Modules: {cachedModules + nonCached}. CachedModules: {cachedModules}. PurgedItems: {purgeResult.PurgedItemCount}. Speed: {speed}";
-//                Log.Logger.Error(mess);
-//                Console.WriteLine(mess);
-//#endif
+                //#if DEBUG
+                //                stopwatch.Stop();
+                //                speed = (cachedModules + nonCached) == 0 ? -1 : stopwatch.Elapsed.Milliseconds / (cachedModules + nonCached);
+                //                mess = $"PortalId: {portalId}. Time elapsed: {stopwatch.Elapsed.Milliseconds}ms. Module Count: {modules.Count()}. Relevant Modules: {cachedModules + nonCached}. CachedModules: {cachedModules}. PurgedItems: {purgeResult.PurgedItemCount}. Speed: {speed}";
+                //                App.Services.Logger.Error(mess);
+                //                Console.WriteLine(mess);
+                //#endif
                 return rules;
             }
         }

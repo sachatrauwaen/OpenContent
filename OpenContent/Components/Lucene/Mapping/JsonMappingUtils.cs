@@ -1,33 +1,37 @@
-﻿using Lucene.Net.Analysis;
+﻿using System;
+using Lucene.Net.Analysis;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.Search;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Lucene.Config;
-using System;
 
 namespace Satrabel.OpenContent.Components.Lucene.Mapping
 {
     public static class JsonMappingUtils
     {
         #region Consts
+
         /// <summary>
         /// The name of the field which holds the type.
         /// </summary>
-        public static readonly string FieldType = "$type";
+        public const string FIELD_TYPE = "$type";
+
         /// <summary>
         /// The name of the field which holds the JSON-serialized source of the object.
         /// </summary>
-        public static readonly string FieldSource = "$source";
+        public const string FIELD_SOURCE = "$source";
 
         /// <summary>
         /// The name of the field which holds the timestamp when the document was created.
         /// </summary>
-        public static readonly string FieldTimestamp = "$timestamp";
-        public static readonly string FieldId = "$id";
-        public static readonly string FieldUserId = "$userid";
-        public static readonly string FieldCreatedOnDate = "$createdondate";
+        public const string FIELD_TIMESTAMP = "$timestamp";
+
+        public const string FIELD_ID = "$id";
+        public const string FIELD_USER_ID = "$userid";
+        public const string FIELD_CREATED_ON_DATE = "$createdondate";
+
         #endregion
 
         public static Document JsonToDocument(string type, string id, string userId, DateTime createdOnDate, JToken json, string source, FieldConfig config, bool storeSource = false)
@@ -35,22 +39,22 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
             var objectMapper = new JsonObjectMapper();
             Document doc = new Document();
 
-            doc.Add(new Field(FieldType, type, Field.Store.YES, Field.Index.NOT_ANALYZED));
-            doc.Add(new Field(FieldId, id, Field.Store.YES, Field.Index.NOT_ANALYZED));
-            doc.Add(new Field(FieldUserId, userId, Field.Store.NO, Field.Index.NOT_ANALYZED));
+            doc.Add(new Field(FIELD_TYPE, type, Field.Store.YES, Field.Index.NOT_ANALYZED));
+            doc.Add(new Field(FIELD_ID, id, Field.Store.YES, Field.Index.NOT_ANALYZED));
+            doc.Add(new Field(FIELD_USER_ID, userId, Field.Store.NO, Field.Index.NOT_ANALYZED));
             if (storeSource)
             {
-                doc.Add(new Field(FieldSource, source, Field.Store.YES, Field.Index.NO));
+                doc.Add(new Field(FIELD_SOURCE, source, Field.Store.YES, Field.Index.NO));
             }
-            doc.Add(new NumericField(FieldTimestamp, Field.Store.YES, true).SetLongValue(DateTime.UtcNow.Ticks));
-            doc.Add(new NumericField(FieldCreatedOnDate, Field.Store.NO, true).SetLongValue(createdOnDate.Ticks));
+            doc.Add(new NumericField(FIELD_TIMESTAMP, Field.Store.YES, true).SetLongValue(DateTime.UtcNow.Ticks));
+            doc.Add(new NumericField(FIELD_CREATED_ON_DATE, Field.Store.NO, true).SetLongValue(createdOnDate.Ticks));
             objectMapper.AddJsonToDocument(json, doc, config);
             return doc;
         }
 
         public static Filter GetTypeFilter(string type)
         {
-            var typeTermQuery = new TermQuery(new Term(FieldType, type));
+            var typeTermQuery = new TermQuery(new Term(FIELD_TYPE, type));
             BooleanQuery query = new BooleanQuery();
             query.Add(typeTermQuery, Occur.MUST);
             Filter filter = new QueryWrapperFilter(query);
@@ -58,7 +62,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
         }
         public static Filter GetTypeFilter(string type, Query filter)
         {
-            var typeTermQuery = new TermQuery(new Term(FieldType, type));
+            var typeTermQuery = new TermQuery(new Term(FIELD_TYPE, type));
             BooleanQuery query = new BooleanQuery();
             query.Add(typeTermQuery, Occur.MUST);
             query.Add(filter, Occur.MUST);

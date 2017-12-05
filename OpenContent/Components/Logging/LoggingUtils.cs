@@ -11,31 +11,17 @@ namespace Satrabel.OpenContent.Components.Logging
 {
     public static class LoggingUtils
     {
-        private static string PrepareErrorMessage(RenderEngine module, Exception exc)
+        private static string PrepareErrorMessage(RenderEngine renderEngine, Exception exc)
         {
             var ps = PortalSettings.Current;
             string friendlyMessage;
             if (ps == null)
             {
-                friendlyMessage = string.Format("Alias: {3} \nTab: {4} - {5} \nModule: {0} \nContext: {2} \nError: {1}",
-                    module.ModuleContext.ModuleId,
-                    exc.Message,
-                    LoggingUtils.HttpRequestLogInfo(HttpContext.Current),
-                    "unknown",
-                    "unknown",
-                    DnnUrlUtils.NavigateUrl(module.ModuleContext.TabId)
-                );
+                friendlyMessage = $"Alias: unknown \nTab: unknown - {DnnUrlUtils.NavigateUrl(renderEngine.ModuleConfig.TabId)} \nModule: {renderEngine.ModuleConfig.ModuleId} \nContext: {HttpRequestLogInfo(HttpContext.Current)} \nError: {exc.Message}";
             }
             else
             {
-                friendlyMessage = string.Format("Alias: {3} \nTab: {4} - {5} \nModule: {0} \nContext: {2} \nError: {1}",
-                   module?.ModuleContext?.ModuleId,
-                   exc.Message,
-                   LoggingUtils.HttpRequestLogInfo(HttpContext.Current),
-                   ps.PortalAlias.HTTPAlias,
-                   ps.ActiveTab.TabID,
-                   DnnUrlUtils.NavigateUrl(ps.ActiveTab.TabID)
-                   );
+                friendlyMessage = $"Alias: {ps.PortalAlias.HTTPAlias} \nTab: {ps.ActiveTab.TabID} - {DnnUrlUtils.NavigateUrl(ps.ActiveTab.TabID)} \nModule: {renderEngine.ModuleConfig.ModuleId} \nContext: {HttpRequestLogInfo(HttpContext.Current)} \nError: {exc.Message}";
             }
             Exception lastExc = exc;
             while (lastExc.InnerException != null)
@@ -51,14 +37,7 @@ namespace Satrabel.OpenContent.Components.Logging
         private static string PrepareErrorMessage(ModuleInfo module, Exception exc)
         {
             var ps = PortalSettings.Current;
-            string friendlyMessage = string.Format("Alias: {3} \nTab: {4} - {5} \nModule: {0} \nContext: {2} \nError: {1}",
-                module.ModuleID,
-                exc.Message,
-                LoggingUtils.HttpRequestLogInfo(HttpContext.Current),
-                ps.PortalAlias.HTTPAlias,
-                ps.ActiveTab.TabID,
-                DnnUrlUtils.NavigateUrl(ps.ActiveTab.TabID)
-                );
+            var friendlyMessage = $"Alias: {ps.PortalAlias.HTTPAlias} \nTab: {ps.ActiveTab.TabID} - {DnnUrlUtils.NavigateUrl(ps.ActiveTab.TabID)} \nModule: {module.ModuleID} \nContext: {LoggingUtils.HttpRequestLogInfo(HttpContext.Current)} \nError: {exc.Message}";
             Exception lastExc = exc;
             while (lastExc.InnerException != null)
             {
@@ -69,14 +48,7 @@ namespace Satrabel.OpenContent.Components.Logging
         }
         private static string PrepareErrorMessage(DotNetNuke.Web.Razor.RazorModuleBase ctrl, Exception exc)
         {
-            string friendlyMessage = string.Format("\n{1} \n\nAlias: {3} \nTab: {4} - {5} \nModule: {0} \n{2} ",
-                ctrl.ModuleContext.ModuleId,
-                exc.Message,
-                LoggingUtils.HttpRequestLogInfo(HttpContext.Current),
-                ctrl.ModuleContext.PortalAlias.HTTPAlias,
-                ctrl.ModuleContext.TabId,
-                DnnUrlUtils.NavigateUrl(ctrl.ModuleContext.TabId)
-                );
+            string friendlyMessage = $"\n{exc.Message} \n\nAlias: {ctrl.ModuleContext.PortalAlias.HTTPAlias} \nTab: {ctrl.ModuleContext.TabId} - {DnnUrlUtils.NavigateUrl(ctrl.ModuleContext.TabId)} \nModule: {ctrl.ModuleContext.ModuleId} \n{LoggingUtils.HttpRequestLogInfo(HttpContext.Current)} ";
             Exception lastExc = exc;
             while (lastExc.InnerException != null)
             {
@@ -87,14 +59,15 @@ namespace Satrabel.OpenContent.Components.Logging
         }
         private static string PrepareErrorMessage(DnnApiController ctrl, Exception exc)
         {
-            string friendlyMessage = string.Format("\n{1} \n\n PortalId: {3} \nTab: {4} - {5} \nModule: {0} \n{2} ",
-                ctrl.ActiveModule.ModuleID,
-                exc.Message,
-                LoggingUtils.HttpRequestLogInfo(HttpContext.Current),
-                ctrl.ActiveModule.PortalID,
-                ctrl.ActiveModule.TabID,
-                DnnUrlUtils.NavigateUrl(ctrl.ActiveModule.TabID)
-                );
+            string friendlyMessage;
+            if (ctrl?.ActiveModule == null)
+            {
+                friendlyMessage = $"\n{exc.Message} \n{LoggingUtils.HttpRequestLogInfo(HttpContext.Current)} ";
+            }
+            else
+            {
+                friendlyMessage = $"\n{exc.Message} \n\n PortalId: {ctrl.ActiveModule.PortalID} \nTab: {ctrl.ActiveModule.TabID} - {DnnUrlUtils.NavigateUrl(ctrl.ActiveModule.TabID)} \nModule: {ctrl.ActiveModule.ModuleID} \n{LoggingUtils.HttpRequestLogInfo(HttpContext.Current)} ";
+            }
             Exception lastExc = exc;
             while (lastExc.InnerException != null)
             {
@@ -107,23 +80,23 @@ namespace Satrabel.OpenContent.Components.Logging
         public static void ProcessLogFileException(DotNetNuke.Web.Razor.RazorModuleBase ctrl, Exception exc)
         {
             string friendlyMessage = PrepareErrorMessage(ctrl, exc);
-            Log.Logger.Error(friendlyMessage);
+            App.Services.Logger.Error(friendlyMessage);
         }
         public static void ProcessLogFileException(Control ctrl, ModuleInfo module, Exception exc)
         {
             string friendlyMessage = PrepareErrorMessage(module, exc);
-            Log.Logger.Error(friendlyMessage);
+            App.Services.Logger.Error(friendlyMessage);
         }
 
         public static void ProcessApiLoadException(DnnApiController ctrl, Exception exc)
         {
             string friendlyMessage = PrepareErrorMessage(ctrl, exc);
-            Log.Logger.Error(friendlyMessage);
+            App.Services.Logger.Error(friendlyMessage);
         }
         public static void RenderEngineException(RenderEngine ctrl, Exception exc)
         {
             string friendlyMessage = PrepareErrorMessage(ctrl, exc);
-            Log.Logger.Error(friendlyMessage);
+            App.Services.Logger.Error(friendlyMessage);
         }
 
         public static void ProcessModuleLoadException(DotNetNuke.Web.Razor.RazorModuleBase ctrl, Exception exc)
@@ -140,12 +113,14 @@ namespace Satrabel.OpenContent.Components.Logging
         {
             string url = "-unknown-";
             string referrer = "-unknown-";
+            string ip = "-unknown-";
             if (context != null)
             {
                 url = context.Request.Url.AbsoluteUri;
-                referrer = context.Request.UrlReferrer == null ? "" : "\nReferrer: " + context.Request.UrlReferrer.AbsoluteUri;
+                referrer = context.Request.UrlReferrer == null ? "-unknown-" : context.Request.UrlReferrer.AbsoluteUri;
+                ip = context.Request.UserHostAddress;
             }
-            string retval = $"Called from {url}. {referrer}.";
+            string retval = $"Called from {url}  Referred by {referrer}  Via IP {ip}";
 
             return retval;
         }

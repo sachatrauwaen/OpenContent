@@ -15,7 +15,7 @@ using DotNetNuke.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
-using Satrabel.OpenContent.Components.Lucene.Index;
+using Satrabel.OpenContent.Components.Lucene.Config;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -44,7 +44,7 @@ namespace Satrabel.OpenContent.Components
         {
             get
             {
-                if (Collection == AppConfig.DEFAULT_COLLECTION)
+                if (Collection == App.Config.DefaultCollection)
                     return ContentId.ToString();
                 else
                     return Key;
@@ -76,7 +76,7 @@ namespace Satrabel.OpenContent.Components
                     _jsonAsJToken = JToken.Parse(this.Json);
                 }
                 // JsonAsJToken is modified (to remove other cultures)
-                return _jsonAsJToken != null ? _jsonAsJToken.DeepClone() : null;
+                return _jsonAsJToken?.DeepClone();
             }
             set
             {
