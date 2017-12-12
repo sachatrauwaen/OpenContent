@@ -104,7 +104,7 @@ namespace Satrabel.OpenContent.Components
             if (versions.Count == 0 || versions[0].Json.ToString() != content.Json)
             {
                 versions.Insert(0, ver);
-                if (versions.Count > (PortalId > 0 ? 5 : OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController(PortalId).GetMaxVersions()))
+                if (versions.Count > (PortalId > -1 ? 5 : OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController(PortalId).GetMaxVersions()))
                 {
                     versions.RemoveAt(versions.Count - 1);
                 }
@@ -132,7 +132,7 @@ namespace Satrabel.OpenContent.Components
 
         private void SynchronizeXml(OpenContentInfo content)
         {
-            if (PortalId > 0)
+            if (PortalId > -1)
             {
                 if (OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController(PortalId).IsSaveXml()
                                 && !string.IsNullOrEmpty(content.Json))

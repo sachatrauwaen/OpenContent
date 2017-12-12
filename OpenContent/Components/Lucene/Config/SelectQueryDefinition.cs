@@ -93,7 +93,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                 }
                 else if (rule.FieldOperator == OperatorEnum.NOT_EQUAL)
                 {
-                    q.Add(new TermQuery(new Term(fieldName, rule.Value.AsString)), Occur.MUST_NOT);
+                    q.Add(new TermQuery(new Term(fieldName, QueryParser.Escape(rule.Value.AsString))), Occur.MUST_NOT);
                 }
                 else if (rule.FieldOperator == OperatorEnum.START_WITH)
                 {
@@ -103,7 +103,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
                     }
                     else
                     {
-                        q.Add(new WildcardQuery(new Term(fieldName, rule.Value.AsString + "*")), cond);
+                        q.Add(new WildcardQuery(new Term(fieldName, QueryParser.Escape(rule.Value.AsString) + "*")), cond);
                     }
                 }
                 else if (rule.FieldOperator == OperatorEnum.IN)
