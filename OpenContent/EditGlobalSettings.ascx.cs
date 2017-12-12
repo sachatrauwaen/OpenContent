@@ -119,6 +119,7 @@ namespace Satrabel.OpenContent
                     var modules = DnnUtils.GetDnnOpenContentModules(ModuleContext.PortalId);
                     foreach (var module in modules)
                     {
+                        Log.Logger.Info("Updating all OpenContent Xml data for module " + module.ModuleId);
                         var contents = ctrl.GetContents(module.ModuleId);
                         foreach (var item in contents)
                         {

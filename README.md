@@ -33,6 +33,7 @@ Templates download : [url:http://www.openextensions.net/templates/open-content]
 [![Build by AppVeyor](https://ci.appveyor.com/api/projects/status/github/sachatrauwaen/OpenContent?branch=master&svg=true)](https://ci.appveyor.com/project/sachatrauwaen/opencontent/)
 https://ci.appveyor.com/project/sachatrauwaen/opencontent
 
+[![GitHub Analitycs - OpenContent](http://github-analytics.apphb.com/badges/RepositoryDownloads/34470375.svg)](http://github-analytics.apphb.com/) 
 
 ### Contributions
 
@@ -53,3 +54,10 @@ To set up a development environment and build DNN Dev Tools, just follow the ste
 * Log-in as host administrator and browser to the page "Host > Extensions" and install DNN Dev Tools under "Available Extensions > Modules"
 * (optionally) Build the solution in Debug mode to copy the files to the Website folder instead of creating a DNN module zip file
 * (optionally) Open a Powershell console and run \PATH\TO\OpenContent\AutoDeployment.ps1 to automatically copy frontend resources (like scripts or styles) to the Website folder when changing them in the solution
+
+## License
+
+MIT
+
+[https://github.com/sachatrauwaen/OpenContent/blob/master/OpenContent/LICENSE]
+
