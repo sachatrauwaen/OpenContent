@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Runtime.Serialization.Formatters;
-using DotNetNuke.Common.Utilities;
+using System.Text.RegularExpressions;
+using System.Web;
 using Lucene.Net.Documents;
+using Lucene.Net.QueryParsers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Lucene.Config;
-using Lucene.Net.QueryParsers;
+using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.FileIndexer;
-using System.IO;
 
 namespace Satrabel.OpenContent.Components.Lucene.Mapping
 {
@@ -25,7 +25,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
         /// <summary>
         /// The JsonSerializer to use.
         /// </summary>
-        private static readonly JsonSerializer serializer = new JsonSerializer()
+        private static readonly JsonSerializer Serializer = new JsonSerializer()
         {
             TypeNameAssemblyFormat = FormatterAssemblyStyle.Simple,
             TypeNameHandling = TypeNameHandling.Auto,
@@ -38,9 +38,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
         /// <summary>
         /// Adds the given source object to the specified Document.
         /// </summary>
-        /// <param name="source">
-        /// The source object to add.
-        /// </param>
+        /// <param name="json"></param>
         /// <param name="doc">
         /// The Document to add the object to.
         /// </param>
@@ -172,11 +170,11 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
                         {
                             if (index)
                             {
-                                doc.Add(new Field(prefix, HtmlUtils.Clean(value.Value.ToString(), true), Field.Store.NO, Field.Index.ANALYZED));
+                                doc.Add(new Field(prefix, CleanHtml(value.Value.ToString(), true), Field.Store.NO, Field.Index.ANALYZED));
                             }
                             if (sort)
                             {
-                                doc.Add(new Field("@" + prefix, HtmlUtils.Clean(Truncate(value.Value.ToString(), 100), true), Field.Store.NO, Field.Index.NOT_ANALYZED));
+                                doc.Add(new Field("@" + prefix, CleanHtml(Truncate(value.Value.ToString(), 100), true), Field.Store.NO, Field.Index.NOT_ANALYZED));
                             }
                         }
                         else if (fieldconfig != null && fieldconfig.IndexType == "file")
@@ -310,6 +308,142 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
         {
             return !string.IsNullOrEmpty(prefix) ? $"{prefix}.{add}" : add.ToString();
         }
+
+        #region CleanHtml helpers
+
+        private static readonly Regex StripWhiteSpaceRegex = new Regex("\\s+", RegexOptions.Compiled);
+        private static readonly Regex StripTagsRegex = new Regex("<[^>]*>", RegexOptions.Compiled);
+
+        /// -----------------------------------------------------------------------------
+        /// <summary>
+        /// Clean removes any HTML Tags, Entities (and optionally any punctuation) from
+        /// a string
+        /// </summary>
+        /// <remarks>
+        /// Encoded Tags are getting decoded, as they are part of the content!
+        /// </remarks>
+        /// <param name="html">The Html to clean</param>
+        /// <param name="removePunctuation">A flag indicating whether to remove punctuation</param>
+        /// <returns>The cleaned up string</returns>
+        /// <history>
+        ///		[cnurse]	11/16/2004	created
+        ///     [galatrash] 05/31/2013  added fix for double html-encoding
+        /// </history>
+        /// -----------------------------------------------------------------------------
+        private static string CleanHtml(string html, bool removePunctuation)
+        {
+            if (string.IsNullOrWhiteSpace(html))
+            {
+                return string.Empty;
+            }
+
+            if (html.Contains("&lt;"))
+            {
+                // Fix when it is a double-encoded document
+                html = HttpUtility.HtmlDecode(html);
+            }
+
+            //First remove any HTML Tags ("<....>")
+            html = StripTags(html, true);
+
+            //Second replace any HTML entities (&nbsp; &lt; etc) through their char symbol
+            html = HttpUtility.HtmlDecode(html);
+
+            //Thirdly remove any punctuation
+            if (removePunctuation)
+            {
+                html = StripPunctuation(html, true);
+                // When RemovePunctuation is false, HtmlDecode() would have already had removed these
+                //Finally remove extra whitespace
+                html = StripWhiteSpace(html, true);
+            }
+
+            return html;
+        }
+
+        /// -----------------------------------------------------------------------------
+        /// <summary>
+        /// StripTags removes the HTML Tags from the content
+        /// </summary>
+        /// <remarks>
+        /// </remarks>
+        /// <param name="html">The HTML content to clean up</param>
+        /// <param name="retainSpace">Indicates whether to replace the Tag by a space (true) or nothing (false)</param>
+        /// <returns>The cleaned up string</returns>
+        /// <history>
+        ///		[cnurse]	11/16/2004	documented
+        /// </history>
+        /// -----------------------------------------------------------------------------
+        private static string StripTags(string html, bool retainSpace)
+        {
+            string repString = retainSpace ? " " : "";
+            return StripTagsRegex.Replace(html, repString);
+        }
+
+        /// -----------------------------------------------------------------------------
+        /// <summary>
+        /// StripWhiteSpace removes the WhiteSpace from the content
+        /// </summary>
+        /// <remarks>
+        /// </remarks>
+        /// <param name="html">The HTML content to clean up</param>
+        /// <param name="retainSpace">Indicates whether to replace the WhiteSpace by a space (true) or nothing (false)</param>
+        /// <returns>The cleaned up string</returns>
+        /// <history>
+        ///		[cnurse]	12/13/2004	documented
+        /// </history>
+        /// -----------------------------------------------------------------------------
+        private static string StripWhiteSpace(string html, bool retainSpace)
+        {
+            if (string.IsNullOrWhiteSpace(html))
+                return string.Empty;
+
+            return StripWhiteSpaceRegex.Replace(html, retainSpace ? " " : "");
+        }
+
+        /// -----------------------------------------------------------------------------
+        /// <summary>
+        /// StripPunctuation removes the Punctuation from the content
+        /// </summary>
+        /// <remarks>
+        /// </remarks>
+        /// <param name="html">The HTML content to clean up</param>
+        /// <param name="retainSpace">Indicates whether to replace the Punctuation by a space (true) or nothing (false)</param>
+        /// <returns>The cleaned up string</returns>
+        /// <history>
+        ///		[cnurse]	11/16/2004	documented
+        /// </history>
+        /// -----------------------------------------------------------------------------
+        private static string StripPunctuation(string html, bool retainSpace)
+        {
+            if (string.IsNullOrWhiteSpace(html))
+            {
+                return string.Empty;
+            }
+
+            //Create Regular Expression objects
+            const string PUNCTUATION_MATCH = "[~!#\\$%\\^&*\\(\\)-+=\\{\\[\\}\\]\\|;:\\x22'<,>\\.\\?\\\\\\t\\r\\v\\f\\n]";
+            var afterRegEx = new Regex(PUNCTUATION_MATCH + "\\s");
+            var beforeRegEx = new Regex("\\s" + PUNCTUATION_MATCH);
+
+            //Define return string
+            string retHtml = html + " "; //Make sure any punctuation at the end of the String is removed
+
+            //Set up Replacement String
+            var repString = retainSpace ? " " : "";
+            while (beforeRegEx.IsMatch(retHtml))
+            {
+                retHtml = beforeRegEx.Replace(retHtml, repString);
+            }
+            while (afterRegEx.IsMatch(retHtml))
+            {
+                retHtml = afterRegEx.Replace(retHtml, repString);
+            }
+            // Return modified string after trimming leading and ending quotation marks
+            return retHtml.Trim('"');
+        }
+
+        #endregion
 
         #endregion
 

@@ -26,7 +26,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             }
             catch (Exception ex)
             {
-                Log.Logger.Error($"Error while trying to create ImageUri from dynamic string [{Convert.ToString(imageInfo) }].  Error: {ex}" );
+                App.Services.Logger.Error($"Error while trying to create ImageUri from dynamic string [{Convert.ToString(imageInfo) }].  Error: {ex}" );
             }
             return retval;
         }
@@ -45,7 +45,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
                 }
                 catch (Exception)
                 {
-                    Log.Logger.Error($"Failed to create ImageUri with parameter {imageId}" );
+                    App.Services.Logger.Error($"Failed to create ImageUri with parameter {imageId}" );
                 }
             }
             return retval;
@@ -60,7 +60,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             }
             catch (Exception ex)
             {
-                Log.Logger.Error($"Error while trying to create ImageUri with id {imageId}: ", ex);
+                App.Services.Logger.Error($"Error while trying to create ImageUri with id {imageId}: ", ex);
             }
             return retval;
         }

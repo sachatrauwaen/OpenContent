@@ -24,9 +24,8 @@ namespace Satrabel.OpenContent
         protected override void OnInit(EventArgs e)
         {
             base.OnInit(e);
-            var globalSettingsController = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController(ModuleContext.PortalId);
-            var bootstrap = globalSettingsController.GetEditLayout() != AlpacaLayoutEnum.DNN;
-            bool loadBootstrap = bootstrap && globalSettingsController.GetLoadBootstrap();
+            var bootstrap = App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetEditLayout() != AlpacaLayoutEnum.DNN;
+            bool loadBootstrap = bootstrap && App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetLoadBootstrap();
             hlCancel.NavigateUrl = Globals.NavigateURL();
             cmdSave.NavigateUrl = Globals.NavigateURL();
             cmdCopy.NavigateUrl = Globals.NavigateURL();
@@ -39,7 +38,7 @@ namespace Satrabel.OpenContent
             string itemId = Request.QueryString["id"];
             AlpacaContext = new AlpacaContext(PortalId, ModuleId, itemId, ScopeWrapper.ClientID, hlCancel.ClientID, cmdSave.ClientID, cmdCopy.ClientID, hlDelete.ClientID, ddlVersions.ClientID);
             AlpacaContext.Bootstrap = bootstrap;
-            AlpacaContext.Horizontal = globalSettingsController.GetEditLayout() == AlpacaLayoutEnum.BootstrapHorizontal;
+            AlpacaContext.Horizontal = App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetEditLayout() == AlpacaLayoutEnum.BootstrapHorizontal;
             AlpacaContext.IsNew = settings.Template.IsListTemplate && string.IsNullOrEmpty(itemId);
         }
         public AlpacaContext AlpacaContext { get; private set; }

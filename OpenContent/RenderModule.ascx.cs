@@ -1,12 +1,9 @@
 ﻿using DotNetNuke.Entities.Modules;
-using DotNetNuke.Services.Exceptions;
 using DotNetNuke.UI.Skins;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.UI;
-using System.Web.UI.WebControls;
+using Satrabel.OpenContent.Components;
 using Satrabel.OpenContent.Components.Render;
 using Satrabel.OpenContent.Components.Logging;
 using Satrabel.OpenContent.Components.Json;
@@ -35,7 +32,7 @@ namespace Satrabel.OpenContent
         {
             base.OnLoad(e);
             int[] hideTabs = new int[1] { TabId };
-            if (string.IsNullOrEmpty(HideOnTabIds))
+            if (!string.IsNullOrEmpty(HideOnTabIds))
             {
                 try
                 {
@@ -71,7 +68,7 @@ namespace Satrabel.OpenContent
                 moduleClone.ModuleSettings["template"] = Template;
                 module = moduleClone;
             }
-            var engine = new RenderEngine(module);
+            var engine = new RenderEngine(OpenContentModuleConfig.Create(module, PortalSettings));
             try
             {
                 engine.Render(Page);

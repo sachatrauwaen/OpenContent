@@ -10,6 +10,7 @@
 ' 
 */
 
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using DotNetNuke.Common.Utilities;
@@ -17,14 +18,15 @@ using DotNetNuke.Data;
 using DotNetNuke.Entities.Modules;
 using Satrabel.OpenContent.Components.Common;
 using DotNetNuke.Entities.Portals;
-using System;
+using Satrabel.OpenContent.Components.Dnn;
+using Satrabel.OpenContent.Components.Json;
 
 namespace Satrabel.OpenContent.Components
 {
     public class OpenContentController
     {
-        private const string CachePrefix = "Satrabel.OpenContent.Components.OpenContentController-";
-        private const int CacheTime = 60;
+        private const string CACHE_PREFIX = "Satrabel.OpenContent.Components.OpenContentController-";
+        private const int CACHE_TIME = 60;
 
         private int PortalId = -1;
 
@@ -54,7 +56,7 @@ namespace Satrabel.OpenContent.Components
             }
             if (string.IsNullOrEmpty(content.Collection))
             {
-                content.Collection = AppConfig.DEFAULT_COLLECTION;
+                content.Collection = App.Config.DefaultCollection;
             }
             OpenContentVersion ver = new OpenContentVersion()
             {
@@ -71,7 +73,6 @@ namespace Satrabel.OpenContent.Components
             {
                 var rep = ctx.GetRepository<OpenContentInfo>();
                 rep.Insert(content);
-                ModuleController.SynchronizeModule(content.ModuleId);
             }
         }
 
@@ -83,7 +84,6 @@ namespace Satrabel.OpenContent.Components
             {
                 var rep = ctx.GetRepository<OpenContentInfo>();
                 rep.Delete(content);
-                ModuleController.SynchronizeModule(content.ModuleId);
             }
         }
 
@@ -104,7 +104,7 @@ namespace Satrabel.OpenContent.Components
             if (versions.Count == 0 || versions[0].Json.ToString() != content.Json)
             {
                 versions.Insert(0, ver);
-                if (versions.Count > (PortalId > -1 ? 5 : OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController(PortalId).GetMaxVersions()))
+                if (versions.Count > (PortalId > -1 ? 5 : App.Services.CreateGlobalSettingsRepository(PortalId).GetMaxVersions()))
                 {
                     versions.RemoveAt(versions.Count - 1);
                 }
@@ -114,7 +114,6 @@ namespace Satrabel.OpenContent.Components
             {
                 var rep = ctx.GetRepository<OpenContentInfo>();
                 rep.Update(content);
-                ModuleController.SynchronizeModule(content.ModuleId);
             }
         }
 
@@ -134,8 +133,7 @@ namespace Satrabel.OpenContent.Components
         {
             if (PortalId > -1)
             {
-                if (OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController(PortalId).IsSaveXml()
-                                && !string.IsNullOrEmpty(content.Json))
+                if (App.Services.CreateGlobalSettingsRepository(PortalId).IsSaveXml() && !string.IsNullOrEmpty(content.Json))
                 {
                     try
                     {
@@ -143,7 +141,7 @@ namespace Satrabel.OpenContent.Components
                     }
                     catch (Exception ex)
                     {
-                        Log.Logger.Error($"Error while Updating OpenContent Xml data for module {content.ModuleId}, ContentId {content.ContentId}", ex);
+                        App.Services.Logger.Error($"Error while Updating OpenContent Xml data for module {content.ModuleId}, ContentId {content.ContentId}", ex);
                     }
 
                 }
@@ -160,7 +158,7 @@ namespace Satrabel.OpenContent.Components
 
         internal IEnumerable<OpenContentInfo> GetContents(int moduleId)
         {
-            var cacheArgs = new CacheItemArgs(GetModuleIdCacheKey(moduleId, "GetContents"), CacheTime);
+            var cacheArgs = new CacheItemArgs(GetModuleIdCacheKey(moduleId, "GetContents"), CACHE_TIME);
             return DataCache.GetCachedData<IEnumerable<OpenContentInfo>>(cacheArgs, args =>
                 {
                     IEnumerable<OpenContentInfo> content;
@@ -176,7 +174,7 @@ namespace Satrabel.OpenContent.Components
 
         public OpenContentInfo GetContent(int contentId)
         {
-            var cacheArgs = new CacheItemArgs(GetContentIdCacheKey(contentId), CacheTime);
+            var cacheArgs = new CacheItemArgs(GetContentIdCacheKey(contentId), CACHE_TIME);
             return DataCache.GetCachedData<OpenContentInfo>(cacheArgs, args =>
                 {
                     OpenContentInfo content;
@@ -192,7 +190,7 @@ namespace Satrabel.OpenContent.Components
 
         public OpenContentInfo GetFirstContent(int moduleId)
         {
-            var cacheArgs = new CacheItemArgs(GetModuleIdCacheKey(moduleId) + "GetFirstContent", CacheTime);
+            var cacheArgs = new CacheItemArgs(GetModuleIdCacheKey(moduleId) + "GetFirstContent", CACHE_TIME);
             return DataCache.GetCachedData<OpenContentInfo>(cacheArgs, args =>
                 {
                     OpenContentInfo content;
@@ -208,7 +206,7 @@ namespace Satrabel.OpenContent.Components
 
         public OpenContentInfo GetContent(int moduleId, string collection, string id)
         {
-            if (collection == AppConfig.DEFAULT_COLLECTION)
+            if (collection == App.Config.DefaultCollection)
             {
                 int intid = 0;
                 if (int.TryParse(id, out intid))
@@ -259,21 +257,20 @@ namespace Satrabel.OpenContent.Components
 
         private static string GetContentIdCacheKey(int contentId)
         {
-            return string.Concat(CachePrefix, "C-", contentId);
+            return string.Concat(CACHE_PREFIX, "C-", contentId);
         }
 
         private static string GetModuleIdCacheKey(int moduleId, string suffix = null)
         {
-            return string.Concat(CachePrefix, "M-", moduleId, string.IsNullOrEmpty(suffix) ? string.Empty : string.Concat("-", suffix));
+            return string.Concat(CACHE_PREFIX, "M-", moduleId, string.IsNullOrEmpty(suffix) ? string.Empty : string.Concat("-", suffix));
         }
 
         private static void ClearDataCache(OpenContentInfo content)
         {
-            if (content.ContentId > 0) DataCache.ClearCache(GetContentIdCacheKey(content.ContentId));
-            if (content.ModuleId > 0) DataCache.ClearCache(GetModuleIdCacheKey(content.ModuleId));
+            if (content.ContentId > 0) App.Services.CacheAdapter.ClearCache(GetContentIdCacheKey(content.ContentId));
+            if (content.ModuleId > 0) App.Services.CacheAdapter.ClearCache(GetModuleIdCacheKey(content.ModuleId));
         }
 
         #endregion
-
     }
 }

@@ -1,6 +1,4 @@
-﻿using DotNetNuke.Common.Utilities;
-using DotNetNuke.Entities.Modules.Definitions;
-using DotNetNuke.Services.FileSystem;
+﻿using DotNetNuke.Services.FileSystem;
 using Satrabel.OpenContent.Components.TemplateHelpers;
 
 namespace Satrabel.OpenContent.Components.Dnn

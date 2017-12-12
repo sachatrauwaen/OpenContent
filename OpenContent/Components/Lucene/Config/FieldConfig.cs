@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
+using Newtonsoft.Json;
 
 namespace Satrabel.OpenContent.Components.Lucene.Config
 {
@@ -14,6 +14,10 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
             }
         }
 
+        /// <summary>
+        /// Gets or sets the type of the index.
+        /// Can be any of text, date, time, datetime, boolean, float, int, double, html, key(used for: url, file or folder name, image)
+        /// </summary>
         [JsonProperty(PropertyName = "indexType", NullValueHandling = NullValueHandling.Ignore)]
         public string IndexType { get; set; }
 

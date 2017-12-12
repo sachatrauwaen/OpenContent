@@ -9,7 +9,6 @@ using System.Web.Compilation;
 using System.Web.WebPages;
 using DotNetNuke.Services.Exceptions;
 using DotNetNuke.UI.Modules;
-using DotNetNuke.Web.Razor.Helpers;
 
 #endregion
 
@@ -17,10 +16,10 @@ namespace Satrabel.OpenContent.Components.Razor
 {
     public class RazorEngine
     {
-        public RazorEngine(string razorScriptFile, ModuleInstanceContext moduleContext, string localResourceFile)
+        public RazorEngine(string razorScriptFile, IRenderContext renderContext, string localResourceFile)
         {
             RazorScriptFile = razorScriptFile;
-            ModuleContext = moduleContext;
+            RenderContext = renderContext;
             LocalResourceFile = localResourceFile ?? Path.Combine(Path.GetDirectoryName(razorScriptFile), DotNetNuke.Services.Localization.Localization.LocalResourceDirectory, Path.GetFileName(razorScriptFile) + ".resx");
 
             try
@@ -41,15 +40,17 @@ namespace Satrabel.OpenContent.Components.Razor
             }
         }
 
-        protected string RazorScriptFile { get; set; }
-        protected ModuleInstanceContext ModuleContext { get; set; }
+        [Obsolete("This method is obsolete since aug 2017; use different constructor instead")]
+        public RazorEngine(string razorScriptFile, ModuleInstanceContext moduleContext, string localResourceFile) : this(razorScriptFile, new DnnRenderContext(moduleContext), localResourceFile)
+        {
+        }
+
+        protected string RazorScriptFile { get;  }
+        protected IRenderContext RenderContext { get; set; }
         protected string LocalResourceFile { get; set; }
         public OpenContentWebPage Webpage { get; set; }
 
-        protected HttpContextBase HttpContextBase
-        {
-            get { return new HttpContextWrapper(System.Web.HttpContext.Current); }
-        }
+        protected HttpContextBase HttpContextBase => new HttpContextWrapper(System.Web.HttpContext.Current);
 
         public Type RequestedModelType()
         {
@@ -99,18 +100,9 @@ namespace Satrabel.OpenContent.Components.Razor
             return objectValue;
         }
 
-        private void InitHelpers(OpenContentWebPage webPage)
-        {
-            if (ModuleContext != null)
-            {
-                webPage.Dnn = new DnnHelper(ModuleContext);
-                webPage.Html = new HtmlHelper(ModuleContext, LocalResourceFile);
-                webPage.Url = new UrlHelper(ModuleContext);
-            }
-        }
-
         private void InitWebpage()
         {
+
             if (!string.IsNullOrEmpty(RazorScriptFile))
             {
                 var objectValue = RuntimeHelpers.GetObjectValue(CreateWebPageInstance());
@@ -125,7 +117,8 @@ namespace Satrabel.OpenContent.Components.Razor
                 }
                 Webpage.Context = HttpContextBase;
                 Webpage.VirtualPath = VirtualPathUtility.GetDirectory(RazorScriptFile);
-                InitHelpers(Webpage);
+                if (RenderContext != null) //called from a skin object?  todo: can we improve this? Inithelpers not initialized now.
+                    RenderContext.InitHelpers(Webpage, LocalResourceFile);
             }
         }
     }

@@ -4,7 +4,6 @@ namespace Satrabel.OpenContent.Components
 {
     public interface ILogAdapter
     {
-        ILogAdapter GetLogAdapter(Type type);
         void Error(string message);
         void Error(Exception message);
         void Error(string message, Exception exception);

@@ -24,7 +24,7 @@ namespace Satrabel.OpenContent
         protected override void OnInit(EventArgs e)
         {
             base.OnInit(e);
-            var globalSettingsController = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController(ModuleContext.PortalId);
+            var globalSettingsController = App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId);
             var bootstrap = globalSettingsController.GetEditLayout() != AlpacaLayoutEnum.DNN;
             bool loadBootstrap = bootstrap && globalSettingsController.GetLoadBootstrap();
             Key = Request.QueryString["key"];

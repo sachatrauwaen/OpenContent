@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Satrabel.OpenContent.Components.TemplateHelpers
 {
@@ -26,7 +29,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
 
         public static string CaseIncensistiveReplace(this string source, string search, string replaceWith)
         {
-            if (source == null) return source;
+            if (source == null) return null;
             if (search == null) return source;
 
             var pos = source.ToLowerInvariant().IndexOf(search.ToLowerInvariant());
@@ -36,6 +39,13 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             return source.Replace(word, replaceWith);
         }
 
-
+        public static bool EqualsAny<T>(this T x, params T[] args)
+        {
+            return ((IList) args).Contains(x);
+        }
+        public static bool ContainsAny<T>(this List<T> x, params T[] args)
+        {
+            return args.Any(item => x.Contains(item));
+        }
     }
 }

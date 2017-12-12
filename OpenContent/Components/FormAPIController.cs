@@ -57,18 +57,16 @@ namespace Satrabel.OpenContent.Components
                 {
                     data["formSettings"] = JObject.Parse(jsonSettings);
                 }
-                var module = new OpenContentModuleInfo(ActiveModule);
-                Manifest.Manifest manifest = module.Settings.Manifest;
+                var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
                 IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
-                //var source = req.form["Source"].ToString();
                 var dsItem = ds.Get(dsContext, req.id);
                 var res = ds.Action(dsContext, string.IsNullOrEmpty(req.action) ? "FormSubmit" : req.action, dsItem, data);
                 return Request.CreateResponse(HttpStatusCode.OK, res);
             }
             catch (Exception exc)
             {
-                Log.Logger.Error(exc);
+                App.Services.Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }

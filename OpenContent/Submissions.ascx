@@ -1,4 +1,4 @@
-﻿<%@ Control Language="C#" AutoEventWireup="True" CodeBehind="Submissions.ascx.cs" Inherits="Satrabel.OpenForm.Submissions" %>
+﻿<%@ Control Language="C#" AutoEventWireup="True" CodeBehind="Submissions.ascx.cs" Inherits="Satrabel.OpenContent.Submissions" %>
 
 <div class="dnnForm dnnEditBasicSettings" id="dnnEditBasicSettings">
     <p><asp:LinkButton ID="excelDownload" runat="server" Text="Download as Excel" OnClick="ExcelDownload_Click"/></p>
@@ -12,10 +12,7 @@
                 <AlternatingRowStyle CssClass="dnnGridAltItem" />
                 <FooterStyle CssClass="dnnGridFooter" />
                 <PagerStyle CssClass="dnnGridPager" />
-                
             </asp:GridView>
         </div>
     </fieldset>
 </div>
-
-

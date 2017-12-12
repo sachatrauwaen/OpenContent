@@ -125,14 +125,31 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             );
             return retval;
         }
+
+        /// <summary>
+        /// Normalizes an array. Return null if array is empty.
+        /// </summary>
+        public static dynamic NormalizeArray(dynamic array)
+        {
+            if (array == null)
+            {
+                return null;
+            }
+            if (string.IsNullOrEmpty(array.ToString()))
+            {
+                return null;
+            }
+            return array;
+        }
         #endregion
 
-        #region NormalizeDynamic
+        #region NormalizeJson
 
         public static JObject JsonObject(JObject value, string key, JObject defaultValue)
         {
             if (value == null) return defaultValue;
-            if (string.IsNullOrEmpty(key)) return defaultValue;
+            if (string.IsNullOrEmpty(key) && value.IsEmpty()) return defaultValue;
+            if (string.IsNullOrEmpty(key)) return value;
 
             var extract = value[key] as JObject;
             if (extract == null) return defaultValue;
@@ -141,6 +158,24 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         }
 
         public static int JsonValue(JToken value, int defaultValue)
+        {
+            if (value == null) return defaultValue;
+            if (value.IsEmpty()) return defaultValue;
+            if ((value as JValue) == null) return defaultValue;
+
+            return Normalize.DynamicValue(value.ToString(), defaultValue);
+        }
+
+        public static bool JsonValue(JToken value, bool defaultValue)
+        {
+            if (value == null) return defaultValue;
+            if (value.IsEmpty()) return defaultValue;
+            if ((value as JValue) == null) return defaultValue;
+
+            return Normalize.DynamicValue(value.ToString(), defaultValue);
+        }
+
+        public static string JsonValue(JToken value, string defaultValue)
         {
             if (value == null) return defaultValue;
             if (value.IsEmpty()) return defaultValue;

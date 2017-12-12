@@ -1,29 +1,13 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Net.Http;
-
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+          
 namespace Satrabel.OpenContent.Components
 {
-    /// <summary>
-    /// Utility class containing several commonly used procedures by Stefan Kamphuis
-    /// </summary>
-    public static class Log
-    {
-        public static ILogAdapter Logger => AppConfig.Instance.LogAdapter;
-
-        public static void LogServiceResult(HttpResponseMessage response, string responsemessage = "")
+        public static class Log
         {
-            if (Logger.IsDebugEnabled)
-            {
-                StackTrace st = new StackTrace();
-
-                string method = st.GetFrame(1).GetMethod().Name == "CreateResponse"
-                    ? st.GetFrame(2).GetMethod().Name
-                    : st.GetFrame(1).GetMethod().Name;
-
-                var emp = string.IsNullOrEmpty(responsemessage) ? "<empty>" : responsemessage;
-                Logger.Debug($"Result from '{method}' with status '{response.StatusCode}': {emp} \r\n");
-            }
+            [Obsolete("This method is obsolete since aug 2017; use App.Services.Logger instead")]
+            public static ILogAdapter Logger => App.Services.Logger;
         }
-    }
 }

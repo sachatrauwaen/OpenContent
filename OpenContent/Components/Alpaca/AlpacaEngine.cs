@@ -12,6 +12,7 @@ using DotNetNuke.Framework;
 using DotNetNuke.Framework.JavaScriptLibraries;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Json;
+using Satrabel.OpenContent.Components.TemplateHelpers;
 
 
 namespace Satrabel.OpenContent.Components.Alpaca
@@ -147,19 +148,15 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
             if (allFields || fieldTypes.Contains("address"))
             {
-                string apikey = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController(PortalId).GetGoogleApiKey();
+                string apikey = App.Services.CreateGlobalSettingsRepository(PortalId).GetGoogleApiKey();
                 ClientResourceManager.RegisterScript(Page, "//maps.googleapis.com/maps/api/js?v=3.exp&libraries=places" + (string.IsNullOrEmpty(apikey) ? "" : "&key=" + apikey), FileOrder.Js.DefaultPriority);
             }
-            if (allFields || fieldTypes.Contains("imagecropper") || fieldTypes.Contains("imagecrop") || fieldTypes.Contains("imagecrop2"))
+            if (allFields || fieldTypes.ContainsAny("imagecropper", "imagecrop", "imagecrop2"))
             {
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/cropper/cropper.js", FileOrder.Js.DefaultPriority);
                 ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/cropper/cropper.css", FileOrder.Css.DefaultPriority);
             }
-            if (allFields ||
-                    fieldTypes.Contains("select2") || fieldTypes.Contains("image2") || fieldTypes.Contains("file2") || fieldTypes.Contains("url2") ||
-                    fieldTypes.Contains("mlimage2") || fieldTypes.Contains("mlfile2") || fieldTypes.Contains("mlurl2") || fieldTypes.Contains("mlfolder2") ||
-                    fieldTypes.Contains("imagecrop2") || fieldTypes.Contains("role2") || fieldTypes.Contains("user2")
-                )
+            if (allFields || fieldTypes.ContainsAny("select2", "image2", "file2", "url2", "mlimage2", "mlfile2", "mlurl2", "mlfolder2", "imagecrop2", "role2", "user2"))
             {
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/select2/select2.js", FileOrder.Js.DefaultPriority);
                 ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/select2/select2.css", FileOrder.Css.DefaultPriority);
@@ -185,7 +182,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 //var form = Page.FindControl("Form");
                 //if (form.FindControl("CKDNNporid") == null)
                 {
-                    if (CKEditorIngoThaWatchaIsInstalled())
+                    if (CKEditorIngoThaWatchaIsInstalled)
                     {
                         ClientResourceManager.RegisterScript(Page, "~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js", FileOrder.Js.DefaultPriority);
                         DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "PortalId", PortalId.ToString(), true);
@@ -196,10 +193,10 @@ namespace Satrabel.OpenContent.Components.Alpaca
                         form.Controls.Add(CKDNNporid);
                         CKDNNporid.Value = PortalId.ToString();
                         */
-                        RegisterStartupScript("oc-ckdnnporid", string.Format(@"<input type=""hidden"" id=""CKDNNporid"" value=""{0}"">", PortalId), false);
+                        RegisterStartupScript("oc-ckdnnporid", $@"<input type=""hidden"" id=""CKDNNporid"" value=""{PortalId}"">", false);
                         GenerateEditorLoadScript(PortalId);
                     }
-                    else if (CKEditorDnnConnectIsInstalled())
+                    else if (CKEditorDnnConnectIsInstalled)
                     {
                         ClientResourceManager.RegisterScript(Page, "~/Providers/HtmlEditorProviders/DNNConnect.CKE/js/ckeditor/4.5.3/ckeditor.js", FileOrder.Js.DefaultPriority);
                         DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "PortalId", PortalId.ToString(), true);
@@ -211,12 +208,12 @@ namespace Satrabel.OpenContent.Components.Alpaca
                         form.Controls.Add(CKDNNporid);
                         CKDNNporid.Value = PortalId.ToString();
                         */
-                        RegisterStartupScript("oc-ckdnnporid", string.Format(@"<input type=""hidden"" id=""CKDNNporid"" value=""{0}"">", PortalId), false);
+                        RegisterStartupScript("oc-ckdnnporid", $@"<input type=""hidden"" id=""CKDNNporid"" value=""{PortalId}"">", false);
                         GenerateEditorLoadScript(PortalId);
                     }
                     else
                     {
-                        Log.Logger.Warn("Failed to load CKEeditor. Please install a DNN CKEditor Provider.");
+                        App.Services.Logger.Warn("Failed to load CKEeditor. Please install a DNN CKEditor Provider.");
                     }
                 }
             }
@@ -231,53 +228,32 @@ namespace Satrabel.OpenContent.Components.Alpaca
             {
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/summernote/summernote.min.js", FileOrder.Js.DefaultPriority, "DnnPageHeaderProvider");
                 ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/summernote/summernote.css", FileOrder.Css.DefaultPriority);
-
             }
         }
 
-        private bool CKEditorDnnConnectIsInstalled()
-        {
-            return File.Exists(HostingEnvironment.MapPath("~/Providers/HtmlEditorProviders/DNNConnect.CKE/js/ckeditor/4.5.3/ckeditor.js"));
-        }
+        private static bool CKEditorDnnConnectIsInstalled => File.Exists(HostingEnvironment.MapPath("~/Providers/HtmlEditorProviders/DNNConnect.CKE/js/ckeditor/4.5.3/ckeditor.js"));
 
-        private bool CKEditorIngoThaWatchaIsInstalled()
-        {
-            return File.Exists(HostingEnvironment.MapPath("~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js"));
-        }
+        private static bool CKEditorIngoThaWatchaIsInstalled => File.Exists(HostingEnvironment.MapPath("~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js"));
 
         private JToken GetOptions()
         {
+            string prefix = (string.IsNullOrEmpty(Prefix) ? "" : $"{Prefix}-");
             string physicalDirectory = HostingEnvironment.MapPath("~/" + VirtualDirectory);
-            JToken optionsJson = null;
+            string optionsFilename = physicalDirectory + "\\" + $"{prefix}options.json";
             // default options
-            string optionsFilename = physicalDirectory + "\\" + (string.IsNullOrEmpty(Prefix) ? "" : Prefix + "-") + "options.json";
-            if (File.Exists(optionsFilename))
-            {
-                string fileContent = File.ReadAllText(optionsFilename);
-                if (!string.IsNullOrWhiteSpace(fileContent))
-                {
-                    optionsJson = JObject.Parse(fileContent);
-                }
-            }
+            JToken optionsJson = JsonUtils.LoadJsonFileFromDisk(optionsFilename);
+
             // language options
-            optionsFilename = physicalDirectory + "\\" + (string.IsNullOrEmpty(Prefix) ? "" : Prefix + "-") + "options." + DnnLanguageUtils.GetCurrentCultureCode() + ".json";
-            if (File.Exists(optionsFilename))
-            {
-                string fileContent = File.ReadAllText(optionsFilename);
-                if (!string.IsNullOrWhiteSpace(fileContent))
-                {
-                    if (optionsJson == null)
-                        optionsJson = JObject.Parse(fileContent);
-                    else
-                        optionsJson = optionsJson.JsonMerge(JObject.Parse(fileContent));
-                }
-            }
+            optionsFilename = physicalDirectory + "\\" + $"{prefix}options.{DnnLanguageUtils.GetCurrentCultureCode()}.json";
+            JToken languageOptionsJson = JsonUtils.LoadJsonFileFromDisk(optionsFilename);
+            optionsJson = optionsJson.JsonMerge(languageOptionsJson);
+
             return optionsJson;
         }
 
-        private List<string> FieldTypes(JToken options)
+        private static List<string> FieldTypes(JToken options)
         {
-            List<string> types = new List<string>();
+            var types = new List<string>();
             var fields = options["fields"];
             if (fields != null)
             {
@@ -306,10 +282,10 @@ namespace Satrabel.OpenContent.Components.Alpaca
             return types;
         }
 
-        public static string AlpacaCulture(string CultureCode)
+        public static string AlpacaCulture(string cultureCode)
         {
             string[] alpacaLocales = { "zh_CN", "hr_HR", "fr_FR", "de_AT", "it_IT", "ja_JP", "pl_PL", "pt_BR", "es_ES" };
-            string lang = CultureCode.Replace("-", "_");
+            string lang = cultureCode.Replace("-", "_");
             foreach (var item in alpacaLocales)
             {
                 if (item == lang)
@@ -452,7 +428,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
             //editorScript.Append("}");
 
             //ClientResourceManager.RegisterScript(string.Format(@"{0}_CKE_Config", editorFixedId), editorConfigScript.ToString(), true);
-            RegisterStartupScript(string.Format(@"{0}_CKE_Startup", editorFixedId), editorScript.ToString(), true);
+            RegisterStartupScript($@"{editorFixedId}_CKE_Startup", editorScript.ToString(), true);
         }
 
         private string EnableConfigHelper()

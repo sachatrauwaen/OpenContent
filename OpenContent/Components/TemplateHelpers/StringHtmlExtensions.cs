@@ -163,10 +163,10 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         /// Strips all HTML tags from a string
         /// </summary>
         /// <returns></returns>
-        public static string StripHtml(this string html)
+        public static string StripHtml(this string html, string replaceWith = "")
         {
             if (string.IsNullOrEmpty(html)) return html;
-            return HtmlRegex.Replace(html, string.Empty);
+            return HtmlRegex.Replace(html, replaceWith);
         }
 
         public static string HtmlDecodeIfNeeded(this string html)

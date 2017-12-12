@@ -1,11 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Lucene.Config;
-using Newtonsoft.Json;
-using DotNetNuke.Common.Utilities;
-using DotNetNuke.Services.Cache;
 
 namespace Satrabel.OpenContent.Components.Alpaca
 {
@@ -121,7 +117,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 string propTitle = prefix + prop.Value.Title;
                 var opts = optionsConfig?.Fields != null && optionsConfig.Fields.ContainsKey(prop.Key) ? optionsConfig.Fields[prop.Key] : null;
                 var idxs = indexConfig?.Fields != null && indexConfig.Fields.ContainsKey(prop.Key) ? indexConfig.Fields[prop.Key] : null;
-                if (prop.Key == AppConfig.FieldNamePublishStatus || prop.Key == AppConfig.FieldNamePublishStartDate || prop.Key == AppConfig.FieldNamePublishEndDate)
+                if (prop.Key == App.Config.FieldNamePublishStatus || prop.Key == App.Config.FieldNamePublishStartDate || prop.Key == App.Config.FieldNamePublishEndDate)
                 {
                     fieldLst.Add(propKey);
                     continue;
@@ -163,7 +159,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
 
                     fieldLst.Add(propKey);
                 }
-                else if (optType == "text" || optType == "mltext" || optType == "checkbox" || optType == "select" || optType == "select2")
+                else if (optType == "text" || optType == "mltext" || optType == "checkbox" || optType == "select" || optType == "select2" || optType == "radio")
                 {
                     var newProp = new SchemaConfig()
                     {
@@ -184,7 +180,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     {
                         newProp.Type = "array";
                         newField.Type = "select2";
-                        newField.DataService = opts == null ? null : opts.DataService;
+                        newField.DataService = opts?.DataService;
                     }
                     fieldLst.Add(propKey);
                 }
@@ -206,7 +202,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     newProp.Properties.Add("UseTime", new SchemaConfig()
                     {
                         Type = "boolean",
-                        Title = propTitle + " Concider time"
+                        Title = propTitle + " Consider time"
                     });
 
                     /*
@@ -246,209 +242,204 @@ namespace Satrabel.OpenContent.Components.Alpaca
             // schema
             if (schema)
             {
-                var schemaJson = JsonUtils.LoadJsonFromFile(_templateUri.UrlFolder + prefix + "schema.json");
+                var schemaJson = JsonUtils.LoadJsonFromCacheOrDisk(new FileUri(_templateUri, $"{prefix}schema.json"));
                 if (schemaJson != null)
                     json["schema"] = schemaJson;
             }
             // default options
             if (options)
             {
-                var optionsJson = JsonUtils.LoadJsonFromFile(_templateUri.UrlFolder + prefix + "options.json");
+                var optionsJson = JsonUtils.LoadJsonFromCacheOrDisk(new FileUri(_templateUri, $"{prefix}options.json"));
                 if (optionsJson != null)
                 {
                     json["options"] = optionsJson;
                     if (translations)
                     {
                         // language options
-                        optionsJson = JsonUtils.LoadJsonFromFile(_templateUri.UrlFolder + prefix + "options." + currentCultureCode + ".json");
-                        if (optionsJson != null)
-                            json["options"] = json["options"].JsonMerge(optionsJson);
+                        optionsJson = JsonUtils.LoadJsonFromCacheOrDisk(new FileUri(_templateUri, $"{prefix}options.{currentCultureCode}.json"));
+                        json["options"] = json["options"].JsonMerge(optionsJson);
                     }
                 }
             }
             // view
             if (view)
             {
-                var viewJson = JsonUtils.LoadJsonFromFile(_templateUri.UrlFolder + prefix + "view.json");
+                var viewJson = JsonUtils.LoadJsonFromCacheOrDisk(new FileUri(_templateUri, $"{prefix}view.json"));
                 if (viewJson != null)
                     json["view"] = viewJson;
             }
             return json;
         }
+
         public FieldConfig BuildIndex(string key)
         {
             string prefix = (string.IsNullOrEmpty(key) || key == "Items") ? "" : key + "-";
-            string cacheKey = _templateUri.UrlFolder + prefix + "index.json";
-            FieldConfig newConfig = (FieldConfig)DataCache.GetCache(cacheKey);
+            var file = new FileUri(_templateUri, $"{prefix}index.json");
+            FieldConfig newConfig = JsonUtils.LoadJsonFileFromCacheOrDisk<FieldConfig>(file);
             if (newConfig == null)
             {
-                var file = new FileUri(_templateUri.UrlFolder, prefix + "index.json");
-                if (file.FileExists)
-                {
-                    string content = File.ReadAllText(file.PhysicalFilePath);
-                    newConfig = JsonConvert.DeserializeObject<FieldConfig>(content);
-                    DataCache.SetCache(cacheKey, newConfig, new DNNCacheDependency(file.PhysicalFilePath));
-                    return newConfig;
-                }
-                else
-                {
-                    newConfig = new FieldConfig(true);
-                    var jsonEdit = Build(key, DnnLanguageUtils.GetCurrentCultureCode(), true, true, false, false);
-                    SchemaConfig schemaConfig = new SchemaConfig();
-                    var schemaJson = jsonEdit["schema"];
-                    if (schemaJson != null)
-                    {
-                        schemaConfig = schemaJson.ToObject<SchemaConfig>();
-                    }
-                    OptionsConfig optionsConfig = new OptionsConfig();
-                    JToken optionsJson = jsonEdit["options"];
-                    if (optionsJson != null)
-                    {
-                        optionsConfig = optionsJson.ToObject<OptionsConfig>();
-                    }
-                    foreach (var prop in schemaConfig.Properties)
-                    {
-                        OptionsConfig opts = null;
-                        if (optionsConfig.Fields != null)
-                        {
-                            opts = optionsConfig.Fields.ContainsKey(prop.Key) ? optionsConfig.Fields[prop.Key] : null;
-                        }
-                        string optType = (opts == null) ? "text" : opts.Type ?? "text";
-                        if (prop.Value.Type == "array" && (prop.Value.Enum != null || optType == "select" || optType == "select2" || optType == "role2"))
-                        {
-                            var newField = new FieldConfig()
-                            {
-                                Items = new FieldConfig()
-                                {
-                                    IndexType = "key",
-                                    Index = true,
-                                    Sort = true
-                                }
-                            };
-                            newConfig.Fields.Add(prop.Key, newField);
-                        }
-                        else if (prop.Value.Enum != null || optType == "select" || optType == "select2" || optType == "role2")
-                        {
-                            var newField = new FieldConfig()
-                            {
-                                IndexType = "key",
-                                Index = true,
-                                Sort = true
-                            };
-                            newConfig.Fields.Add(prop.Key, newField);
-                        }
-                        else if (prop.Value.Type == "boolean")
-                        {
-                            var newField = new FieldConfig()
-                            {
-                                IndexType = "boolean",
-                                Index = true,
-                                Sort = true
-                            };
-                            newConfig.Fields.Add(prop.Key, newField);
-                        }
-                        else if (prop.Value.Type == "number")
-                        {
-                            var newField = new FieldConfig()
-                            {
-                                IndexType = "float",
-                                Index = true,
-                                Sort = true
-                            };
-                            newConfig.Fields.Add(prop.Key, newField);
-                        }
-                        else if (optType == "text" || optType == "textarea" || optType == "email")
-                        {
-                            var newField = new FieldConfig()
-                            {
-                                IndexType = "text",
-                                Index = true,
-                                Sort = true
-                            };
-                            newConfig.Fields.Add(prop.Key, newField);
-                        }
-                        else if (optType == "wysihtml")
-                        {
-                            var newField = new FieldConfig()
-                            {
-                                IndexType = "html",
-                                Index = true,
-                                Sort = true
-                            };
-                            newConfig.Fields.Add(prop.Key, newField);
-                        }
-                        else if (optType == "ckeditor")
-                        {
-                            var newField = new FieldConfig()
-                            {
-                                IndexType = "html",
-                                Index = true,
-                                Sort = true
-                            };
-                            newConfig.Fields.Add(prop.Key, newField);
-                        }
-                        else if (optType == "mltext")
-                        {
-                            var newField = new FieldConfig()
-                            {
-                                IndexType = "text",
-                                Index = true,
-                                Sort = true,
-                                MultiLanguage = true
-                            };
-                            newConfig.Fields.Add(prop.Key, newField);
-                        }
-                        else if (optType == "mlwysihtml")
-                        {
-                            var newField = new FieldConfig()
-                            {
-                                IndexType = "html",
-                                Index = true,
-                                Sort = true,
-                                MultiLanguage = true
-                            };
-                            newConfig.Fields.Add(prop.Key, newField);
-                        }
-                        else if (optType == "mlckeditor")
-                        {
-                            var newField = new FieldConfig()
-                            {
-                                IndexType = "html",
-                                Index = true,
-                                Sort = true,
-                                MultiLanguage = true
-                            };
-                            newConfig.Fields.Add(prop.Key, newField);
-                        }
-                        else if (optType == "date" || optType == "datetime" || optType == "time")
-                        {
-                            var newField = new FieldConfig()
-                            {
-                                IndexType = "datetime",
-                                Index = true,
-                                Sort = true
-                            };
-                            newConfig.Fields.Add(prop.Key, newField);   
-                        }
-                        //else if (optType == "file" || optType == "file2")
-                        //{
-                        //    var newField = new FieldConfig()
-                        //    {
-                        //        IndexType = "file",
-                        //        Index = true,
-                        //        Sort = false
-                        //    };
-                        //    newConfig.Fields.Add(prop.Key, newField);
-                        //}
-                    }
-                    //var json = JObject.FromObject(newConfig);
-                    //File.WriteAllText(_templateUri.PhysicalFullDirectory + "\\test.json", json.ToString());
+                newConfig = CreateFieldConfigFromSchemaAndOptionFile(key);
+                var schemaFile = new FileUri(_templateUri, $"{prefix}schema.json");
+                var optionsFile = new FileUri(_templateUri, $"{prefix}options.json");
 
-                    var schemaFile = new FileUri(_templateUri.UrlFolder, prefix + "schema.json");
-                    var optionsFile = new FileUri(_templateUri.UrlFolder, prefix + "options.json");
-                    DataCache.SetCache(cacheKey, newConfig, new DNNCacheDependency(new[] { schemaFile.PhysicalFilePath, optionsFile.PhysicalFilePath }));
-                }
+                App.Services.CacheAdapter.SetCache(file.FilePath, newConfig, new[] { schemaFile.PhysicalFilePath, optionsFile.PhysicalFilePath });
             }
+            return newConfig;
+        }
+
+        private FieldConfig CreateFieldConfigFromSchemaAndOptionFile(string key)
+        {
+            var newConfig = new FieldConfig(true);
+            var jsonEdit = Build(key, DnnLanguageUtils.GetCurrentCultureCode(), true, true, false, false);
+            SchemaConfig schemaConfig = new SchemaConfig();
+            var schemaJson = jsonEdit["schema"];
+            if (schemaJson != null)
+            {
+                schemaConfig = schemaJson.ToObject<SchemaConfig>();
+            }
+            OptionsConfig optionsConfig = new OptionsConfig();
+            JToken optionsJson = jsonEdit["options"];
+            if (optionsJson != null)
+            {
+                optionsConfig = optionsJson.ToObject<OptionsConfig>();
+            }
+            foreach (var prop in schemaConfig.Properties)
+            {
+                OptionsConfig opts = null;
+                if (optionsConfig.Fields != null)
+                {
+                    opts = optionsConfig.Fields.ContainsKey(prop.Key) ? optionsConfig.Fields[prop.Key] : null;
+                }
+                string optType = (opts == null) ? "text" : opts.Type ?? "text";
+                if (prop.Value.Type == "array" && (prop.Value.Enum != null || optType == "select" || optType == "select2" || optType == "role2"))
+                {
+                    var newField = new FieldConfig()
+                    {
+                        Items = new FieldConfig()
+                        {
+                            IndexType = "key",
+                            Index = true,
+                            Sort = true
+                        }
+                    };
+                    newConfig.Fields.Add(prop.Key, newField);
+                }
+                else if (prop.Value.Enum != null || optType == "select" || optType == "select2" || optType == "role2")
+                {
+                    var newField = new FieldConfig()
+                    {
+                        IndexType = "key",
+                        Index = true,
+                        Sort = true
+                    };
+                    newConfig.Fields.Add(prop.Key, newField);
+                }
+                else if (prop.Value.Type == "boolean")
+                {
+                    var newField = new FieldConfig()
+                    {
+                        IndexType = "boolean",
+                        Index = true,
+                        Sort = true
+                    };
+                    newConfig.Fields.Add(prop.Key, newField);
+                }
+                else if (prop.Value.Type == "number")
+                {
+                    var newField = new FieldConfig()
+                    {
+                        IndexType = "float",
+                        Index = true,
+                        Sort = true
+                    };
+                    newConfig.Fields.Add(prop.Key, newField);
+                }
+                else if (optType == "text" || optType == "textarea" || optType == "email")
+                {
+                    var newField = new FieldConfig()
+                    {
+                        IndexType = "text",
+                        Index = true,
+                        Sort = true
+                    };
+                    newConfig.Fields.Add(prop.Key, newField);
+                }
+                else if (optType == "wysihtml")
+                {
+                    var newField = new FieldConfig()
+                    {
+                        IndexType = "html",
+                        Index = true,
+                        Sort = true
+                    };
+                    newConfig.Fields.Add(prop.Key, newField);
+                }
+                else if (optType == "ckeditor")
+                {
+                    var newField = new FieldConfig()
+                    {
+                        IndexType = "html",
+                        Index = true,
+                        Sort = true
+                    };
+                    newConfig.Fields.Add(prop.Key, newField);
+                }
+                else if (optType == "mltext")
+                {
+                    var newField = new FieldConfig()
+                    {
+                        IndexType = "text",
+                        Index = true,
+                        Sort = true,
+                        MultiLanguage = true
+                    };
+                    newConfig.Fields.Add(prop.Key, newField);
+                }
+                else if (optType == "mlwysihtml")
+                {
+                    var newField = new FieldConfig()
+                    {
+                        IndexType = "html",
+                        Index = true,
+                        Sort = true,
+                        MultiLanguage = true
+                    };
+                    newConfig.Fields.Add(prop.Key, newField);
+                }
+                else if (optType == "mlckeditor")
+                {
+                    var newField = new FieldConfig()
+                    {
+                        IndexType = "html",
+                        Index = true,
+                        Sort = true,
+                        MultiLanguage = true
+                    };
+                    newConfig.Fields.Add(prop.Key, newField);
+                }
+                else if (optType == "date" || optType == "datetime" || optType == "time")
+                {
+                    var newField = new FieldConfig()
+                    {
+                        IndexType = "datetime",
+                        Index = true,
+                        Sort = true
+                    };
+                    newConfig.Fields.Add(prop.Key, newField);
+                }
+                //else if (optType == "file" || optType == "file2")
+                //{
+                //    var newField = new FieldConfig()
+                //    {
+                //        IndexType = "file",
+                //        Index = true,
+                //        Sort = false
+                //    };
+                //    newConfig.Fields.Add(prop.Key, newField);
+                //}
+            }
+            //var json = JObject.FromObject(newConfig);
+            //File.WriteAllText(_templateUri.PhysicalFullDirectory + "\\test.json", json.ToString());
 
             return newConfig;
         }
