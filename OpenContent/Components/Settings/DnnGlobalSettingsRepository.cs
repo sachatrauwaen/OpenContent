@@ -145,7 +145,8 @@ namespace Satrabel.OpenContent.Components.Settings
         public bool IsSaveXml()
         {
             var saveXmlSetting = PortalController.GetPortalSetting(SETTINGS_SAVE_XML, _portalId, string.Empty);
-            if (!string.IsNullOrWhiteSpace(saveXmlSetting) && bool.TryParse(saveXmlSetting, out var saveXml))
+            bool saveXml;
+            if (!string.IsNullOrWhiteSpace(saveXmlSetting) && bool.TryParse(saveXmlSetting, out saveXml))
                 return saveXml;
             return SETTINGS_DEFAULT_SAVE_XML;
         }

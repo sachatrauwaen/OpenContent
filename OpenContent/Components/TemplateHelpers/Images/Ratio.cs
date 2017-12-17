@@ -18,7 +18,9 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             var elements = ratioString.ToLowerInvariant().Split('x');
             if (elements.Length == 2)
             {
-                if (int.TryParse(elements[0], out var leftPart) && int.TryParse(elements[1], out var rightPart))
+                int leftPart;
+                int rightPart;
+                if (int.TryParse(elements[0], out leftPart) && int.TryParse(elements[1], out rightPart))
                 {
                     Width = leftPart;
                     Height = rightPart;
