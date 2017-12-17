@@ -17,6 +17,7 @@ using Satrabel.OpenContent.Components.Datasource.Search;
 using Satrabel.OpenContent.Components.Logging;
 using Satrabel.OpenContent.Components.Lucene;
 using Satrabel.OpenContent.Components.Lucene.Config;
+using Satrabel.OpenContent.Components.Form;
 
 namespace Satrabel.OpenContent.Components.Datasource
 {
@@ -252,6 +253,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 }, indexConfig);
                 LuceneController.Instance.Commit();
             }
+            Notify(context, data, "add");
         }
 
         public override void Update(DataSourceContext context, IDataItem item, Newtonsoft.Json.Linq.JToken data)
@@ -318,13 +320,14 @@ namespace Satrabel.OpenContent.Components.Datasource
                 }, indexConfig);
                 LuceneController.Instance.Commit();
             }
+            Notify(context, data, "update");
         }
 
         public override void Delete(DataSourceContext context, IDataItem item)
         {
             var user = (UserInfo)item.Item;
             UserController.DeleteUser(ref user, true, false);
-
+            Notify(context, item.Data, "delete");
         }
 
         public List<IDataAction> GetActions(DataSourceContext context, IDataItem item)
@@ -513,6 +516,19 @@ namespace Satrabel.OpenContent.Components.Datasource
             if (schema == null || !(schema["properties"] is JObject)) return false;
 
             return ((JObject)schema["properties"]).Properties().Any(p => p.Name == property);
+        }
+
+        private static void Notify(DataSourceContext context, JToken data, string action)
+        {
+            if (context.Options?["Notifications"] is JArray)
+            {
+                var notifData = new JObject();
+                notifData["form"] = data.DeepClone();
+                notifData["form"]["action"] = action;
+                notifData["formSettings"] = new JObject();
+                notifData["formSettings"] = context.Options;
+                FormUtils.FormSubmit(notifData);
+            }
         }
 
         #endregion
