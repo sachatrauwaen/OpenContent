@@ -44,6 +44,10 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
             var fieldConfig = GetField(config, field);
             var cultureSuffix = fieldConfig != null && fieldConfig.MultiLanguage ? "." + cultureCode : string.Empty;
             var indexType = GetFieldType(fieldConfig != null ? fieldConfig.IndexType : string.Empty);
+            if (fieldConfig == null || fieldConfig.Index == false)
+            {
+                throw new Exception($"You want me to search in field {field} but it is not indexed. Please fix your index.json.");
+            }
             var rule = new FilterRule()
             {
                 Field = field + cultureSuffix,
@@ -58,6 +62,10 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
             var fieldConfig = GetField(config, field);
             var cultureSuffix = fieldConfig != null && fieldConfig.MultiLanguage ? "." + cultureCode : string.Empty;
             var indexType = GetFieldType(fieldConfig != null ? fieldConfig.IndexType : string.Empty);
+            if (fieldConfig == null || fieldConfig.Index == false)
+            {
+                throw new Exception($"You want me to search in field {field} but it is not indexed. Please fix your index.json.");
+            }
             var rule = new FilterRule()
             {
                 Field = field + cultureSuffix,
@@ -72,6 +80,10 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
             var fieldConfig = GetField(config, field);
             var cultureSuffix = fieldConfig != null && fieldConfig.MultiLanguage ? "." + cultureCode : string.Empty;
             var indexType = GetFieldType(fieldConfig != null ? fieldConfig.IndexType : string.Empty);
+            if (fieldConfig == null || fieldConfig.Index == false)
+            {
+                throw new Exception($"You want me to search in field {field} but it is not indexed. Please fix your index.json.");
+            }
             var rule = new FilterRule()
             {
                 Field = field + cultureSuffix,
