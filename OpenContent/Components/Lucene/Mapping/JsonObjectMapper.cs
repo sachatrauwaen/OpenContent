@@ -75,7 +75,17 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
             }
             else if (token is JArray)
             {
-                AddArray(doc, prefix, token as JArray, fieldconfig?.Items);
+                var itemsConfig = fieldconfig?.Items;
+                if (fieldconfig != null && fieldconfig.Index && itemsConfig == null)
+                {
+                    App.Services.Logger.Error($"Error indexing Array field {prefix}. No 'Items' section defined in index.json. Presuming root level config if specified or indexable as 'key'");
+                    itemsConfig = fieldconfig;
+                    if (string.IsNullOrWhiteSpace(fieldconfig.IndexType))
+                    {
+                        fieldconfig.IndexType = "key";
+                    }
+                }
+                AddArray(doc, prefix, token as JArray, itemsConfig);
             }
             else if (token is JValue)
             {
