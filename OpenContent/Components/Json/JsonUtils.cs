@@ -57,7 +57,7 @@ namespace Satrabel.OpenContent.Components.Json
             catch (Exception ex)
             {
                 App.Services.Logger.Error($"Failed to load json file {file.FilePath}. Error: {ex}");
-                throw;
+                throw new Exception($"Failed to load file {file.FilePath}. See log for more info.", ex);
             }
         }
 
