@@ -24,13 +24,13 @@ namespace Satrabel.OpenContent.Components.Json
             return jsonData.Trim().Substring(0, 1).IndexOfAny(new[] { '[', '{' }) == 0;
         }
 
-        [Obsolete("This method is obsolete since aug 2017; use LoadJsonFromCacheOrDisk() instead")]
+        [Obsolete("This method is obsolete since aug 2017; use LoadJsonFromCacheOrDisk() or consider using LoadJsonFileFromCacheOrDisk() instead")]
         public static JToken LoadJsonFromFile(string filename)
         {
             return LoadJsonFromCacheOrDisk(new FileUri(filename));
         }
 
-        [Obsolete("This method is obsolete since aug 2017; use LoadJsonFileFromDisk() instead")]
+        [Obsolete("This method is obsolete since aug 2017; use LoadJsonFileFromDisk() or consider using LoadJsonFileFromCacheOrDisk() instead")]
         public static JObject GetJsonFromFile(string filename)
         {
             return LoadJsonFileFromDisk(filename) as JObject;

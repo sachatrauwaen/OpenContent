@@ -138,11 +138,11 @@ namespace Satrabel.OpenContent
                     Response.Redirect(Globals.NavigateURL(), true);
                 }
                 else
-                {                    
+                {
                     rblUseTemplate.SelectedIndex = 0;
                     phTemplateName.Visible = rblUseTemplate.SelectedIndex == 1;
                     phFrom.Visible = rblUseTemplate.SelectedIndex == 1;
-                    rblFrom.SelectedIndex = 0;                    
+                    rblFrom.SelectedIndex = 0;
                     BindTemplates(Settings.Template, null);
                     Renderinfo.Template = Settings.Template;
                     BindButtons(Settings, Renderinfo);
@@ -266,7 +266,7 @@ namespace Satrabel.OpenContent
             {
                 rblDataSource.SelectedIndex = (Settings.IsOtherModule ? 1 : 0);
                 BindOtherModules(Settings.TabId, Settings.ModuleId);
-                
+
                 BindTemplates(Settings.Template, (Renderinfo.IsOtherModule ? Renderinfo.Template.MainTemplateUri() : null));
                 BindDetailPage(Settings.DetailTabId, Settings.TabId, Settings.GetModuleId(ModuleContext.ModuleId));
             }
@@ -407,7 +407,7 @@ namespace Satrabel.OpenContent
             //If tab<0 then the data does not come from an other module
             if (othermoduleTabId < 0) return 0;
 
-            ModuleInfo moduleInfo = ModuleController.Instance.GetModule(dataModuleId, othermoduleTabId, false);
+            var moduleInfo = DnnUtils.GetDnnModule(othermoduleTabId, dataModuleId);
             if (moduleInfo == null)
             {
                 //This should never happen

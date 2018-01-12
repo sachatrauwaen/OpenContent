@@ -1,6 +1,7 @@
 using System;
 using System.Web;
 using DotNetNuke.Common;
+using DotNetNuke.Entities.Modules;
 using DotNetNuke.Security;
 using DotNetNuke.Security.Permissions;
 using DotNetNuke.Services.Personalization;
@@ -35,11 +36,17 @@ namespace Satrabel.OpenContent.Components.Dnn
             if (activeModule != null)
             {
                 //DNN already checks SuperUser and Administrator
-                blnHasModuleEditPermissions = ModulePermissionController.HasModuleAccess(SecurityAccessLevel.Edit, "CONTENT", DnnUtils.GetDnnModule(activeModule));
+                var moduleInfo = DnnUtils.GetDnnModule(activeModule);
+                if (moduleInfo == null)
+                {
+                    App.Services.Logger.Error($"Module {activeModule.ModuleId} of tab {activeModule.TabId} was not found while in HasEditRightsOnModule(). StackTrace: {Environment.StackTrace}");
+                    throw new Exception($"(Other)Module was not found. Check your Switch Template config. See log for more info.");
+                }
+                blnHasModuleEditPermissions = ModulePermissionController.HasModuleAccess(SecurityAccessLevel.Edit, "CONTENT", moduleInfo);
             }
             return blnHasModuleEditPermissions;
         }
-
+        
         public static bool HasEditRole(OpenContentModuleConfig ocModuleConfig, string editrole, int createdByUserId)
         {
             if (String.IsNullOrEmpty(editrole)) return false;
@@ -62,7 +69,7 @@ namespace Satrabel.OpenContent.Components.Dnn
                     HttpContext.Current.Items.Remove("Personalization");
                 }
             }
-            bool blnPreview = ocModuleConfig.PreviewEnabled ;
+            bool blnPreview = ocModuleConfig.PreviewEnabled;
             if (Globals.IsHostTab(ocModuleConfig.TabId))
             {
                 blnPreview = false;

@@ -183,8 +183,7 @@ namespace Satrabel.OpenContent.Components
 
         public static ModuleInfo GetDnnModule(OpenContentModuleInfo activeModule)
         {
-            ModuleController mc = new ModuleController();
-            return mc.GetModule(activeModule.ModuleId, activeModule.TabId, false);
+            return GetDnnModule(activeModule.TabId, activeModule.ModuleId);
         }
 
         public static ModuleInfo GetDnnModule(int tabId, int moduleId)
