@@ -39,14 +39,14 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
             return null;
         }
 
-        public static FilterRule CreateFilterRule(FieldConfig config, string cultureCode, string field, OperatorEnum fieldOperator, IEnumerable<RuleValue> multiValue)
+        public static FilterRule CreateFilterRule(FieldConfig parentFieldConfig, string cultureCode, string field, OperatorEnum fieldOperator, IEnumerable<RuleValue> multiValue)
         {
-            var fieldConfig = GetField(config, field);
+            var fieldConfig = GetField(parentFieldConfig, field);
             var cultureSuffix = fieldConfig != null && fieldConfig.MultiLanguage ? "." + cultureCode : string.Empty;
             var indexType = GetFieldType(fieldConfig != null ? fieldConfig.IndexType : string.Empty);
             if (fieldConfig == null || fieldConfig.Index == false)
             {
-                throw new Exception($"You want me to search in field {field} but it is not indexed. Please fix your index.json.");
+                // throw new Exception($"You want me to search in field {field} but it is not indexed. Please fix your index.json.");
             }
             var rule = new FilterRule()
             {
@@ -57,14 +57,14 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
             };
             return rule;
         }
-        public static FilterRule CreateFilterRule(FieldConfig config, string cultureCode, string field, OperatorEnum fieldOperator, RuleValue value)
+        public static FilterRule CreateFilterRule(FieldConfig parentFieldConfig, string cultureCode, string field, OperatorEnum fieldOperator, RuleValue value)
         {
-            var fieldConfig = GetField(config, field);
+            var fieldConfig = GetField(parentFieldConfig, field);
             var cultureSuffix = fieldConfig != null && fieldConfig.MultiLanguage ? "." + cultureCode : string.Empty;
             var indexType = GetFieldType(fieldConfig != null ? fieldConfig.IndexType : string.Empty);
             if (fieldConfig == null || fieldConfig.Index == false)
             {
-                throw new Exception($"You want me to search in field {field} but it is not indexed. Please fix your index.json.");
+                // throw new Exception($"You want me to search in field {field} but it is not indexed. Please fix your index.json.");
             }
             var rule = new FilterRule()
             {
@@ -75,14 +75,14 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
             };
             return rule;
         }
-        public static FilterRule CreateFilterRule(FieldConfig config, string cultureCode, string field, OperatorEnum fieldOperator, RuleValue lowerValue, RuleValue upperValue)
+        public static FilterRule CreateFilterRule(FieldConfig parentFieldConfig, string cultureCode, string field, OperatorEnum fieldOperator, RuleValue lowerValue, RuleValue upperValue)
         {
-            var fieldConfig = GetField(config, field);
+            var fieldConfig = GetField(parentFieldConfig, field);
             var cultureSuffix = fieldConfig != null && fieldConfig.MultiLanguage ? "." + cultureCode : string.Empty;
             var indexType = GetFieldType(fieldConfig != null ? fieldConfig.IndexType : string.Empty);
             if (fieldConfig == null || fieldConfig.Index == false)
             {
-                throw new Exception($"You want me to search in field {field} but it is not indexed. Please fix your index.json.");
+                // throw new Exception($"You want me to search in field {field} but it is not indexed. Please fix your index.json.");
             }
             var rule = new FilterRule()
             {
@@ -94,9 +94,9 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
             };
             return rule;
         }
-        public static SortRule CreateSortRule(FieldConfig config, string cultureCode, string field, bool descending)
+        public static SortRule CreateSortRule(FieldConfig parentFieldConfig, string cultureCode, string field, bool descending)
         {
-            var fieldConfig = GetField(config, field);
+            var fieldConfig = GetField(parentFieldConfig, field);
             var cultureSuffix = fieldConfig != null && fieldConfig.MultiLanguage ? "." + cultureCode : string.Empty;
             var indexType = GetFieldType(fieldConfig != null ? fieldConfig.IndexType : string.Empty);
             var rule = new SortRule()
