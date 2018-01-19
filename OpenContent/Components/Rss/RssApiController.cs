@@ -53,9 +53,8 @@ namespace Satrabel.OpenContent.Components.Rss
                 var dsItems = ds.GetAll(dsContext, queryBuilder.Select);
                 dataList = dsItems.Items;
             }
-
             var mf = new ModelFactoryMultiple(dataList, null, manifest, null, null, module);
-            dynamic model = mf.GetModelAsDictionary(true);
+            dynamic model = mf.GetModelAsDictionary(false, true);
             HandlebarsEngine hbEngine = new HandlebarsEngine();
             string res = hbEngine.Execute(source, model);
             var response = new HttpResponseMessage();
