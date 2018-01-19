@@ -46,7 +46,7 @@ namespace Satrabel.OpenContent.Components.Render
         public IEnumerable<Dictionary<string, object>> GetModelAsDictionaryList()
         {
             var completeModel = new JObject();
-            ExtendModel(completeModel, true);
+            ExtendModel(completeModel, true, false);
             if (_dataList != null)
             {
                 foreach (var item in _dataList)
@@ -70,7 +70,7 @@ namespace Satrabel.OpenContent.Components.Render
             JObject model = new JObject();
             var itemsModel = model;
 
-            ExtendModel(model, onlyData || onlyMainData);
+            ExtendModel(model, onlyData, onlyMainData);
             ExtendSchemaOptions(itemsModel, onlyData || onlyMainData);
             ExtendItemsModel(itemsModel, onlyData || onlyMainData);
 
