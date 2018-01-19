@@ -114,7 +114,7 @@ namespace Satrabel.OpenContent.Components
                 var lst = rep.Get(scope);
                 if (lst != null)
                 {
-                    content = lst.SingleOrDefault(d => d.DataKey == key);
+                    content = lst.SingleOrDefault(d => d.DataKey == key.ToLowerInvariant());
                 }
             }
             return content;
