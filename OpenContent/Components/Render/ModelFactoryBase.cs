@@ -115,11 +115,11 @@ namespace Satrabel.OpenContent.Components.Render
             JToken model = GetModelAsJson(onlyData);
             return JsonUtils.JsonToDynamic(model.ToString());
         }
-        public Dictionary<string, object> GetModelAsDictionary(bool onlyData = false)
+        public Dictionary<string, object> GetModelAsDictionary(bool onlyData = false, bool onlyMainData = false)
         {
             if (_portalSettings == null) onlyData = true;
 
-            JToken model = GetModelAsJson(onlyData);
+            JToken model = GetModelAsJson(onlyData, onlyMainData);
             return JsonUtils.JsonToDictionary(model.ToString());
         }
 
@@ -180,7 +180,7 @@ namespace Satrabel.OpenContent.Components.Render
             }
         }
 
-        protected void ExtendModel(JObject model, bool onlyData)
+        protected void ExtendModel(JObject model, bool onlyData, bool onlyMainData)
         {
             if (_portalSettings == null) onlyData = true;
 
@@ -238,7 +238,7 @@ namespace Satrabel.OpenContent.Components.Render
                 }
             }
             // include settings in the Model
-            if (!onlyData && _templateManifest.SettingsNeeded() && !string.IsNullOrEmpty(_settingsJson))
+            if (!onlyMainData && _templateManifest.SettingsNeeded() && !string.IsNullOrEmpty(_settingsJson))
             {
                 try
                 {
@@ -256,7 +256,7 @@ namespace Satrabel.OpenContent.Components.Render
             }
 
             // include static localization in the Model
-            if (!onlyData)
+            if (!onlyMainData)
             {
                 JToken localizationJson = null;
                 string localizationFilename = _physicalTemplateFolder + GetCurrentCultureCode() + ".json";

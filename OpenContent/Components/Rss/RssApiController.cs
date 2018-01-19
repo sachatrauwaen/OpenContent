@@ -55,7 +55,7 @@ namespace Satrabel.OpenContent.Components.Rss
             }
 
             var mf = new ModelFactoryMultiple(dataList, null, module.Settings.TemplateDir.PhysicalFullDirectory, manifest, null, null, module, PortalSettings);
-            dynamic model = mf.GetModelAsDictionary(true);
+            dynamic model = mf.GetModelAsDictionary(false, true);
             HandlebarsEngine hbEngine = new HandlebarsEngine();
             string res = hbEngine.Execute(source, model);
             var response = new HttpResponseMessage();
