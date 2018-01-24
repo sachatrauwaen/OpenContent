@@ -473,6 +473,12 @@ namespace Satrabel.OpenContent.Components
 
         public static DataSourceContext CreateDataContext(OpenContentModuleConfig module, int userId = -1, bool single = false, JObject options = null)
         {
+            var template = module.Settings.Template; 
+            if (template == null)
+            {
+                App.Services.Logger.Error($"Template [{module.Settings.TemplateDir}] not found"); // are you importing and forgot to install the files?
+            }
+
             var dsContext = new DataSourceContext
             {
                 PortalId = module.ViewModule.PortalId,
@@ -483,10 +489,10 @@ namespace Satrabel.OpenContent.Components
                 TemplateFolder = module.Settings.TemplateDir.FolderPath,
                 UserId = userId,
                 Config = module.Settings.Manifest.DataSourceConfig,
-                Index = module.Settings.Template.Manifest.Index,
+                Index = template?.Manifest.Index ?? false,
                 Options = options,
                 Single = single,
-                Collection = module.Settings.Template.Collection
+                Collection = template?.Collection ?? ""
             };
             if (PortalSettings.Current != null)
             {
