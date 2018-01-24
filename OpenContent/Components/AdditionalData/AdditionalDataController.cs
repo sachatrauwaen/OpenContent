@@ -10,6 +10,7 @@
 ' 
 */
 
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using DotNetNuke.Data;
@@ -114,7 +115,7 @@ namespace Satrabel.OpenContent.Components
                 var lst = rep.Get(scope);
                 if (lst != null)
                 {
-                    content = lst.SingleOrDefault(d => d.DataKey == key.ToLowerInvariant());
+                    content = lst.SingleOrDefault(d => string.Equals(d.DataKey, key, StringComparison.InvariantCultureIgnoreCase));
                 }
             }
             return content;
