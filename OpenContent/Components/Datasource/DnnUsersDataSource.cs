@@ -205,6 +205,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 user.Membership.Password = data["Password"]?.ToString() ?? "";
             }
             FillUser(data, schema, user);
+            FillProfile(data, schema, user, false);
             UpdateDisplayName(context, user);
             if (string.IsNullOrEmpty(user.DisplayName))
             {
@@ -235,7 +236,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                     //don't throw error, otherwise item does not get indexed.
                     //throw new Exception($"Error sending notification email: {strMessage}"); 
                 }
-                FillProfile(data, schema, user);
+                FillProfile(data, schema, user, true);
                 UpdateRoles(context, data, schema, user);
             }
             else
@@ -307,7 +308,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                     }
                 }
             }
-            FillProfile(data, schema, user);
+            FillProfile(data, schema, user, true);
             UpdateRoles(context, data, schema, user);
 
             var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection);
@@ -399,7 +400,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         {
             if (HasProperty(schema, "", "Roles"))
             {
-                List<string> rolesToRemove = new List<string>(user.Roles);
+                List<string> rolesToRemove = new List<string>(user.Roles); //@todo : enkel deze van het schema
                 var roles = data["Roles"] as JArray;
                 foreach (var role in roles)
                 {
@@ -445,7 +446,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             UserController.ResetAndChangePassword(user, password);
         }
 
-        private static void FillProfile(JToken data, JObject schema, UserInfo user)
+        private static void FillProfile(JToken data, JObject schema, UserInfo user, bool withUpdate)
         {
             if (HasProperty(schema, "", "Profile"))
             {
@@ -473,7 +474,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                         }
                     }
                 }
-                ProfileController.UpdateUserProfile(user);
+                if (withUpdate) ProfileController.UpdateUserProfile(user);
             }
         }
 
@@ -494,6 +495,10 @@ namespace Satrabel.OpenContent.Components.Datasource
             if (HasProperty(schema, "", "Email"))
             {
                 user.Email = data["Email"]?.ToString() ?? "";
+            }
+            if (HasProperty(schema, "", "PreferredLocale") && data["PreferredLocale"] != null)
+            {
+                user.Profile.PreferredLocale = data["PreferredLocale"].ToString();
             }
         }
 
