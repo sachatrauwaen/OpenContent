@@ -191,7 +191,18 @@ namespace Satrabel.OpenContent.Components
             ModuleController mc = new ModuleController();
             return mc.GetModule(moduleId, tabId, false);
         }
-        
+
+        public static int GetPortalSetting(string key, int defaultValue)
+        {
+            var val = PortalController.GetPortalSettingAsInteger($"OpenContent_{key}", PortalSettings.Current.PortalId, defaultValue);
+            return val;
+        }
+
+        public static void SetPortalSetting(string key, int value)
+        {
+            PortalController.UpdatePortalSetting(PortalSettings.Current.PortalId, $"OpenContent_{key}", value.ToString());
+        }
+
         public static void UpdateModuleTitle(this ModuleInfo module, string moduleTitle)
         {
             if (module.ModuleTitle != moduleTitle)

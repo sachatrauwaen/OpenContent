@@ -358,19 +358,6 @@ namespace Satrabel.OpenContent.Components.Datasource
             return null;
         }
 
-        //public void Reindex(DataSourceContext context)
-        //{
-        //    string scope = INDEX_SCOPE;
-        //    var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection); //todo index is being build from schema & options. But they should be provided by the provider, not directly from the files
-        //    IEnumerable<IIndexableItem> indexData = UserController.GetUsers(true, false, context.PortalId).Cast<UserInfo>().
-        //        Where(u => !u.IsInRole("Administrators")).Select(u => new IndexableItemUser()
-        //        {
-        //            Data = ToData(u).Data,
-        //            User = u
-        //        });
-        //    LuceneController.Instance.ReIndexData(indexData, indexConfig);
-        //}
-
         public IEnumerable<IIndexableItem> GetIndexableData(DataSourceContext context)
         {
             return UserController.GetUsers(true, false, context.PortalId).Cast<UserInfo>().
@@ -386,12 +373,13 @@ namespace Satrabel.OpenContent.Components.Datasource
         private static void ReIndexIfNeeded(int moduleid, int tabid, int portalId)
         {
             var currentUserCount = UserController.GetUserCountByPortal(portalId);
-            var indexedUserCount = UserController.GetUserCountByPortal(portalId); //this should be pointing to a saved version of the counter
-            if (currentUserCount != indexedUserCount)
+            var userCountAtLastIndex = DnnUtils.GetPortalSetting("UserCountAtLastIndex", 0);
+            if (currentUserCount != userCountAtLastIndex)
             {
                 // reindex module data
                 var module = OpenContentModuleConfig.Create(moduleid, tabid, null);
                 LuceneUtils.ReIndexModuleData(module);
+                DnnUtils.SetPortalSetting("UserCountAtLastIndex", currentUserCount);
                 App.Services.Logger.Info("DnnUsers reindexed");
             }
         }
@@ -422,7 +410,6 @@ namespace Satrabel.OpenContent.Components.Datasource
                 }
             }
         }
-
 
         private static void ChangePassword(UserInfo user, string password)
         {
