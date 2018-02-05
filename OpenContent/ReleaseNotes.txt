@@ -1,5 +1,4 @@
 ﻿<h3>OpenContent</h3>
 <p class="Contributor">
-	<a href="https://opencontent.codeplex.com/releases">opencontent.codeplex.com</a><br />
+	<a href="https://github.com/sachatrauwaen/OpenContent/releases">github.com/sachatrauwaen/OpenContent/releases</a>
 </p>
-
