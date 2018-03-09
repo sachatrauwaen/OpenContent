@@ -36,6 +36,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 RegisterFormatNumberHelper(hbs);
                 RegisterFormatDateTimeHelper(hbs);
                 RegisterImageUrlHelper(hbs);
+                RegisterEmailHelper(hbs);
                 RegisterArrayIndexHelper(hbs);
                 RegisterArrayTranslateHelper(hbs);
                 RegisterIfAndHelper(hbs);
@@ -105,6 +106,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterFormatNumberHelper(hbs);
             RegisterFormatDateTimeHelper(hbs);
             RegisterImageUrlHelper(hbs);
+            RegisterEmailHelper(hbs);
             RegisterArrayIndexHelper(hbs);
             RegisterArrayTranslateHelper(hbs);
             RegisterArrayLookupHelper(hbs);
@@ -493,6 +495,32 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 }
             });
 
+        }
+
+        private static void RegisterEmailHelper(HandlebarsDotNet.IHandlebars hbs)
+        {
+            hbs.RegisterHelper("protectemail", (writer, context, parameters) =>
+            {
+                try
+                {
+                    string email = parameters[0].ToString();
+                    string subject = "";
+                    string visibleText = "";
+                    if (parameters.Length >1)
+                    {
+                        subject = parameters[1].ToString();
+                    }
+                    if (parameters.Length > 2)
+                    {
+                        visibleText = parameters[2].ToString();
+                    }
+                    writer.WriteSafeString(RazorUtils.ProtectEmail(email, subject, visibleText));
+                }
+                catch (Exception)
+                {
+                    writer.WriteSafeString("");
+                }
+            });
         }
 
         /// <summary>
