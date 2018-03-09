@@ -108,7 +108,7 @@ namespace Satrabel.OpenContent.Components.Render
                     {
                         RemoveNoData(itemsModel);
                     }
-                    else
+                    else 
                     {
                         string url = "";
                         if (!string.IsNullOrEmpty(_manifest.DetailUrl))
@@ -157,7 +157,7 @@ namespace Satrabel.OpenContent.Components.Render
         private void EnhanceUser(JObject model, int createdByUserId)
         {
             string colName = string.IsNullOrEmpty(_collection) ? "Items" : _collection;
-            if (_templateManifest != null && !string.IsNullOrEmpty(colName) && _templateFiles.Model != null && _templateFiles.Model.ContainsKey(colName))
+            if (_templateManifest != null && !string.IsNullOrEmpty(colName) && _templateFiles?.Model != null && _templateFiles.Model.ContainsKey(colName))
             {
                 var colManifest = _templateFiles.Model[colName];
                 if (colManifest != null)
