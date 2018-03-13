@@ -228,7 +228,7 @@ namespace Satrabel.OpenContent.Components.Render
                 }
             }
             // include settings in the Model
-            if (!onlyMainData && _templateManifest.SettingsNeeded() && !string.IsNullOrEmpty(_settingsJson))
+            if (!onlyMainData && _templateManifest != null && _templateManifest.SettingsNeeded() && !string.IsNullOrEmpty(_settingsJson))
             {
                 try
                 {
