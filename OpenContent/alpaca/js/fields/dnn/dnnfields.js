@@ -743,6 +743,249 @@
 })(jQuery);
 (function ($) {
 
+    var Alpaca = $.alpaca;
+
+    Alpaca.Fields.CheckBoxField = Alpaca.Fields.ListField.extend(
+        /**
+         * @lends Alpaca.Fields.CheckBoxField.prototype
+         */
+        {
+            /**
+             * @see Alpaca.Field#getFieldType
+             */
+            getFieldType: function () {
+                return "checkbox";
+            },
+
+            /**
+             * @see Alpaca.Field#setup
+             */
+            setup: function () {
+
+                var self = this;
+
+                self.base();
+
+                if (typeof (self.options.multiple) === "undefined") {
+                    self.options.multiple = false;
+
+                    if (self.schema.type === "array") {
+                        self.options.multiple = true;
+                    }
+                    else if (typeof (self.schema["enum"]) !== "undefined") {
+                        self.options.multiple = true;
+                    }
+                }
+
+                // in single mode, blank out rightlabel
+                if (!self.options.multiple) {
+                    if (!this.options.rightLabel) {
+                        this.options.rightLabel = "";
+                    }
+                }
+            },
+
+            prepareControlModel: function (callback) {
+                var self = this;
+
+                this.base(function (model) {
+                    callback(model);
+                });
+            },
+
+            afterRenderControl: function (model, callback) {
+                var self = this;
+
+                this.base(model, function () {
+
+                    var afterChangeHandler = function () {
+                        var newData = [];
+
+                        if (self.options.multiple) {
+                            $(self.getFieldEl()).find("input:checkbox").each(function () {
+
+                                var value = $(this).attr("data-checkbox-value");
+
+                                if (Alpaca.checked(this)) {
+                                    for (var i = 0; i < self.selectOptions.length; i++) {
+                                        if (self.selectOptions[i].value === value) {
+                                            newData.push(self.selectOptions[i].value);
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                        else {
+                            var checkbox = $(self.getFieldEl()).find("input:checkbox");
+                            if (Alpaca.checked(checkbox)) {
+                                newData = true;
+                            }
+                        }
+
+                        // set value silently
+                        self.setValue(newData, true);
+
+                        self.refreshValidationState();
+                        self.triggerWithPropagation("change");
+                    };
+
+                    // whenever the state of one of our input:checkbox controls is changed (either via a click or programmatically),
+                    // we signal to the top-level field to fire up a change
+                    //
+                    // this allows the dependency system to recalculate and such
+                    //
+                    $(self.getFieldEl()).find("input:checkbox").change(function (evt) {
+                        afterChangeHandler();
+                    });
+                    /*
+                    var label = $(self.getFieldEl()).find("input:checkbox").parent();
+                    var checkbox = $(self.getFieldEl()).find("input:checkbox");
+                    if ($(label).length > 0) {
+                        $('<span class="alpaca-icon-required glyphicon glyphicon-star"></span>').prependTo(label);
+                        //$(label).append("<span class='alpaca-icon-required glyphicon glyphicon-star'></span>")
+                    }
+                    */
+                    callback();
+                });
+            },
+
+            afterSetValue: function () {
+                var self = this;
+
+                // uncheck everything
+                Alpaca.checked($(self.getFieldEl()).find("input:checkbox"), false);
+
+                // check those that are selected
+                if (self.options.multiple) {
+                    for (var i = 0; i < self.data.length; i++) {
+                        var checkbox = $(self.getFieldEl()).find("input:checkbox[data-checkbox-value='" + self.data[i].value + "']");
+                        Alpaca.checked(checkbox, true);
+                    }
+                }
+                else {
+                    var checkbox = $(self.getFieldEl()).find("input:checkbox");
+                    if (self.data.length > 0) {
+                        Alpaca.checked(checkbox, true);
+                    }
+                }
+            },
+
+            /**
+             * @see Alpaca.Field#disable
+             */
+            disable: function () {
+                $(this.control).addClass("disabled");
+
+                $(this.control).find("input").each(function () {
+                    $(this).disabled = true;
+                    $(this).prop("disabled", true);
+                });
+            },
+
+            /**
+             * @see Alpaca.Field#enable
+             */
+            enable: function () {
+                $(this.control).removeClass("disabled");
+
+                $(this.control).find("input").each(function () {
+                    $(this).disabled = false;
+                    $(this).prop("disabled", false);
+                });
+            },
+            isEmpty: function () {
+                var self = this;
+                var checkbox = $(self.getFieldEl()).find("input:checkbox");
+                return !Alpaca.checked(checkbox);
+            },
+           
+            /**
+             * @see Alpaca.Field#getType
+             */
+            getType: function () {
+                return "boolean"; // or string, or array of strings or array of objects
+            }
+
+            /* builder_helpers */
+
+            ,
+
+            /**
+             * @see Alpaca.Field#getTitle
+             */
+            getTitle: function () {
+                return "Checkbox Field";
+            },
+
+            /**
+             * @see Alpaca.Field#getDescription
+             */
+            getDescription: function () {
+                return "Checkbox Field for boolean (true/false), string ('true', 'false' or comma-delimited string of values) or data array.";
+            },
+
+            /**
+             * @private
+             * @see Alpaca.ControlField#getSchemaOfOptions
+             */
+            getSchemaOfOptions: function () {
+                return Alpaca.merge(this.base(), {
+                    "properties": {
+                        "rightLabel": {
+                            "title": "Option Label",
+                            "description": "Optional right-hand side label for single checkbox field.",
+                            "type": "string"
+                        },
+                        "multiple": {
+                            "title": "Multiple",
+                            "description": "Whether to render multiple checkboxes for multi-valued type (such as an array or a comma-delimited string)",
+                            "type": "boolean"
+                        },
+                        "dataSource": {
+                            "title": "Option DataSource",
+                            "description": "Data source for generating list of options.  This can be a string or a function.  If a string, it is considered to be a URI to a service that produces a object containing key/value pairs or an array of elements of structure {'text': '', 'value': ''}.  This can also be a function that is called to produce the same list.",
+                            "type": "string"
+                        },
+                        "useDataSourceAsEnum": {
+                            "title": "Use Data Source as Enumerated Values",
+                            "description": "Whether to constrain the field's schema enum property to the values that come back from the data source.",
+                            "type": "boolean",
+                            "default": true
+                        }
+                    }
+                });
+            },
+
+            /**
+             * @private
+             * @see Alpaca.ControlField#getOptionsForOptions
+             */
+            getOptionsForOptions: function () {
+                return Alpaca.merge(this.base(), {
+                    "fields": {
+                        "rightLabel": {
+                            "type": "text"
+                        },
+                        "multiple": {
+                            "type": "checkbox"
+                        },
+                        "dataSource": {
+                            "type": "text"
+                        }
+                    }
+                });
+            }
+
+            /* end_builder_helpers */
+
+        });
+
+    Alpaca.registerFieldClass("checkbox", Alpaca.Fields.CheckBoxField);
+    Alpaca.registerDefaultSchemaFieldMapping("boolean", "checkbox");
+
+})(jQuery);
+(function ($) {
+
     // NOTE: this requires bootstrap-datetimepicker.js
     // NOTE: this requires moment.js
 
@@ -6593,6 +6836,498 @@
         "social-ios"
     ];
 
+
+})(jQuery);
+(function ($) {
+    var Alpaca = $.alpaca;
+    Alpaca.Fields.ImageXField = Alpaca.Fields.ListField.extend(
+    {
+        constructor: function (container, data, options, schema, view, connector) {
+            var self = this;
+            this.base(container, data, options, schema, view, connector);
+            this.sf = connector.servicesFramework;
+            this.dataSource = {};
+        },
+        getFieldType: function () {
+            return "imagex";
+        },
+        setup: function () {
+            var self = this;
+            if (!this.options.uploadfolder) {
+                this.options.uploadfolder = "";
+            }
+            if (!this.options.uploadhidden) {
+                this.options.uploadhidden = false;
+            }
+            if (this.options.showCropper === undefined) {
+                this.options.showCropper = true;
+            }
+            if (this.options.showCropper) {
+                this.options.showImage = true;
+            }
+            if (this.options.showImage === undefined) {
+                this.options.showImage = true;
+            }
+            if (this.options.showCropper) {
+                if (!this.options.cropfolder) {
+                    this.options.cropfolder = this.options.uploadfolder;
+                }
+                if (!this.options.cropper) {
+                    this.options.cropper = {};
+                }
+                if (this.options.width && this.options.height) {
+                    this.options.cropper.aspectRatio = this.options.width / this.options.height;
+                }
+                this.options.cropper.responsive = false;
+                if (!this.options.cropper.autoCropArea) {
+                    this.options.cropper.autoCropArea = 1;
+                }
+                 if (!this.options.cropper.viewMode) {
+                    this.options.cropper.viewMode = 1;
+                }
+                if (!this.options.cropper.zoomOnWheel) {
+                    this.options.cropper.zoomOnWheel = false;
+                }
+                if (!this.options.cropButtonHidden) {
+                    this.options.cropButtonHidden = false;
+                }
+                if (!this.options.cropButtonHidden) {
+                    this.options.buttons = {
+                        "check": {
+                            "value": "Crop Image",
+                            "click": function () {
+                                this.cropImage();
+                            }
+                        }
+                    };
+                }
+            }
+            this.base();
+        },
+        getValue: function () {
+            var self = this;
+            if (this.control && this.control.length > 0) {
+                var value = null;
+                $image = self.getImage();
+                value = {};
+                if (this.options.showCropper) {
+                    if (self.cropperExist())
+                        value = $image.cropper('getData', { rounded: true });
+                }
+                value.url = $(this.control).find('select').val();
+                if (value.url) {
+                    if (this.dataSource && this.dataSource[value.url]) {
+                        value.id = this.dataSource[value.url].id;
+                        value.filename = this.dataSource[value.url].filename;
+                    }
+                    if (this.options.showCropper) {
+                        value.cropUrl = $(self.getControlEl()).attr('data-cropurl');
+                    }
+                }
+                return value;
+            }
+        },
+        setValue: function (val) {
+            var self = this;
+            if (val !== this.getValue()) {
+                if (this.control && typeof (val) != "undefined" && val != null) {
+                    //this.base(val); ???
+                    if (Alpaca.isEmpty(val)) {
+                        $image.attr('src', url);
+                        if (this.options.showCropper) {
+                            self.cropper("");
+                            $(self.getControlEl()).attr('data-cropurl', '');
+                        }
+                        $(this.control).find('select').val("");
+                    }
+                    else if (Alpaca.isObject(val)) {
+                        // Fix for OC data that still has the Cachebuster SQ parameter
+                        if (val.url) val.url = val.url.split("?")[0];
+                        $image.attr('src', val.url);
+                        if (this.options.showCropper) {
+                            if (val.cropUrl) val.cropUrl = val.cropUrl.split("?")[0];
+                            if (val.cropdata && Object.keys(val.cropdata).length > 0) { // compatibility with imagecropper
+                                var firstcropdata = val.cropdata[Object.keys(val.cropdata)[0]];
+                                self.cropper(val.url, firstcropdata.cropper);
+                                $(self.getControlEl()).attr('data-cropurl', firstcropdata.url);
+                            } else {
+                                self.cropper(val.url, val);
+                                $(self.getControlEl()).attr('data-cropurl', val.cropUrl);
+                            }
+                        }
+                         $(this.control).find('select').val(val.url);
+                    }
+                    else {
+                        $image.attr('src', val);
+                        if (this.options.showCropper) {
+                            self.cropper(val);
+                            $(self.getControlEl()).attr('data-cropurl', '');
+                        }
+                        $(this.control).find('select').val(val);
+                    }
+                    $(this.control).find('select').trigger('change.select2');
+                }
+            }
+        },
+        beforeRenderControl: function (model, callback) {
+            var self = this;
+            this.base(model, function () {
+                self.selectOptions = [];
+                if (self.sf) {
+                    var completionFunction = function () {
+                        self.schema.enum = [];
+                        self.options.optionLabels = [];
+                        for (var i = 0; i < self.selectOptions.length; i++) {
+                            self.schema.enum.push(self.selectOptions[i].value);
+                            self.options.optionLabels.push(self.selectOptions[i].text);
+                        }
+                        // push back to model
+                        model.selectOptions = self.selectOptions;
+                        callback();
+                    };
+                    var postData = { q: "*", folder: self.options.uploadfolder };
+                    $.ajax({
+                        url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "ImagesLookupExt",
+                        beforeSend: self.sf.setModuleHeaders,
+                        type: "get",
+                        dataType: "json",
+                        //contentType: "application/json; charset=utf-8",
+                        data: postData,
+                        success: function (jsonDocument) {
+                            var ds = jsonDocument;
+                            if (self.options.dsTransformer && Alpaca.isFunction(self.options.dsTransformer)) {
+                                ds = self.options.dsTransformer(ds);
+                            }
+                            if (ds) {
+                                if (Alpaca.isArray(ds)) {
+                                    // for arrays, we walk through one index at a time
+                                    // the insertion order is dictated by the order of the indices into the array
+                                    // this preserves order
+                                    $.each(ds, function (index, value) {
+                                        self.selectOptions.push({
+                                            "value": value.url,
+                                            "thumbUrl": value.thumbUrl,
+                                            "id": value.id,
+                                            "text": value.text,
+                                            "filename": value.filename,
+                                        });
+                                        self.dataSource[value.url] = value;
+                                    });
+                                    completionFunction();
+                                }
+                            }
+                        },
+                        "error": function (jqXHR, textStatus, errorThrown) {
+                            self.errorCallback({
+                                "message": "Unable to load data from uri : " + self.options.dataSource,
+                                "stage": "DATASOURCE_LOADING_ERROR",
+                                "details": {
+                                    "jqXHR": jqXHR,
+                                    "textStatus": textStatus,
+                                    "errorThrown": errorThrown
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    callback();
+                }
+            });
+        },
+
+        prepareControlModel: function (callback) {
+            var self = this;
+            this.base(function (model) {
+                model.selectOptions = self.selectOptions;
+                callback(model);
+            });
+        },
+
+        afterRenderControl: function (model, callback) {
+            var self = this;
+            this.base(model, function () {
+                // if emptySelectFirst and nothing currently checked, then pick first item in the value list
+                // set data and visually select it
+                if (Alpaca.isUndefined(self.data) && self.options.emptySelectFirst && self.selectOptions && self.selectOptions.length > 0) {
+                    self.data = self.selectOptions[0].value;
+                }
+                // do this little trick so that if we have a default value, it gets set during first render
+                // this causes the state of the control
+                if (self.data) {
+                    self.setValue(self.data);
+                }
+
+                if ($.fn.select2) {
+                    var settings = null;
+                    if (self.options.select2) {
+                        settings = self.options.select2;
+                    }
+                    else {
+                        settings = {};
+                    }
+                    settings.templateResult = function (state) {
+                        if (!state.id) { return state.text; }
+
+                        var $state = $(
+                          '<span><img src="' + self.dataSource[state.id].thumbUrl + '" style="height: 45px;width: 54px;"  /> ' + state.text + '</span>'
+                        );
+                        return $state;
+                    };
+
+                    settings.templateSelection = function (state) {
+                        if (!state.id) { return state.text; }
+
+                        var $state = $(
+                          '<span><img src="' + self.dataSource[state.id].thumbUrl + '" style="height: 15px;width: 18px;"  /> ' + state.text + '</span>'
+                        );
+                        return $state;
+                    };
+
+                    $(self.getControlEl().find('select')).select2(settings);
+                }
+                if (self.options.uploadhidden) {
+                    $(self.getControlEl()).find('input[type=file]').hide();
+                } else {
+                    if (self.sf) {
+                        $(self.getControlEl()).find('input[type=file]').fileupload({
+                            dataType: 'json',
+                            url: self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
+                            maxFileSize: 25000000,
+                            formData: { uploadfolder: self.options.uploadfolder },
+                            beforeSend: self.sf.setModuleHeaders,
+                            add: function (e, data) {
+                                self.showAlert('File uploading...');
+                                //data.context = $(opts.progressContextSelector);
+                                //data.context.find($(opts.progressFileNameSelector)).html(data.files[0].name);
+                                //data.context.show('fade');
+                                data.submit();
+                            },
+                            progress: function (e, data) {
+                                if (data.context) {
+                                    var progress = parseInt(data.loaded / data.total * 100, 10);
+                                    data.context.find(opts.progressBarSelector).css('width', progress + '%').find('span').html(progress + '%');
+                                }
+                            },
+                            done: function (e, data) {
+                                if (data.result) {
+                                    $.each(data.result, function (index, file) {
+                                        self.refresh(function () {
+                                            self.setValue(file.url);
+                                            self.showAlert('File uploaded', true);
+                                        });                                       
+                                    });
+                                }
+                                
+                            }
+                        }).data('loaded', true);
+                    }
+                }
+                callback();
+            });
+        },
+        cropImage: function () {
+            var self = this;
+            var data = self.getValue();
+            var postData = { url: data.url, cropfolder: self.options.cropfolder, crop: data, id: "crop" };
+            if (self.options.width && self.options.height) {
+                postData.resize = { width: self.options.width, height: self.options.height };
+            }
+            $(self.getControlEl()).css('cursor', 'wait');
+            self.showAlert('Image cropping...');
+            $.ajax({
+                type: "POST",
+                url: self.sf.getServiceRoot('OpenContent') + "DnnEntitiesAPI/CropImage",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(postData),
+                beforeSend: self.sf.setModuleHeaders
+            }).done(function (res) {
+
+                $(self.getControlEl()).attr('data-cropurl', res.url);
+                self.showAlert('Image cropped', true);
+                setTimeout(function () {
+                    $(self.getControlEl()).css('cursor', 'initial');
+                }, 500);
+            }).fail(function (xhr, result, status) {
+                alert("Uh-oh, something broke: " + status);
+                $(self.getControlEl()).css('cursor', 'initial');
+            });
+        },
+        getFileUrl: function (fileid) {
+            var self = this;
+            if (self.sf) {
+                var postData = { fileid: fileid };
+                $.ajax({
+                    url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "FileUrl",
+                    beforeSend: self.sf.setModuleHeaders,
+                    type: "get",
+                    asych: false,
+                    dataType: "json",
+                    //contentType: "application/json; charset=utf-8",
+                    data: postData,
+                    success: function (data) {
+                        return data;
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        return "";
+                    }
+                });
+            }
+        },
+        cropper: function (url, data) {
+            var self = this;
+            $image = self.getImage();
+            
+            var cropperExist = $image.data('cropper');
+            if (url) {
+                $image.show();
+                if (!cropperExist) {
+                    var config = $.extend({}, {
+                        aspectRatio: 16 / 9,
+                        checkOrientation: false,
+                        autoCropArea: 0.90,
+                        minContainerHeight: 200,
+                        minContainerWidth: 400,
+                        toggleDragModeOnDblclick: false
+                    }, self.options.cropper);
+                    if (data) {
+                        config.data = data;
+                    }
+                    $image.cropper(config);
+                } else {
+                    if (url != cropperExist.originalUrl || (cropperExist.url && url != cropperExist.url)) {
+                        $image.cropper('replace', url);
+                    }
+                    //$image.cropper('reset');
+                    if (data) {
+                        $image.cropper('setData', data);
+                    }
+                }
+            } else {
+                $image.hide();
+                if (!cropperExist) {
+
+                } else {
+                    $image.cropper('destroy');
+                }
+            }
+        },
+        cropperExist: function () {
+            var self = this;
+            $image = self.getImage();
+            var cropperData = $image.data('cropper');
+
+            return cropperData;
+        },
+        getImage: function () {
+            var self = this;
+            return $(self.control).parent().find('#' + self.id + '-image'); //.find('.alpaca-image-display > img');
+
+        },
+        /**
+         * Validate against enum property.
+         *
+         * @returns {Boolean} True if the element value is part of the enum list, false otherwise.
+         */
+        _validateEnum: function () {
+            var _this = this;
+
+            if (this.schema["enum"]) {
+                var val = this.data ? this.data.url : "";
+
+                if (!this.isRequired() && Alpaca.isValEmpty(val)) {
+                    return true;
+                }
+
+                if (this.options.multiple) {
+                    var isValid = true;
+
+                    if (!val) {
+                        val = [];
+                    }
+
+                    if (!Alpaca.isArray(val) && !Alpaca.isObject(val)) {
+                        val = [val];
+                    }
+
+                    $.each(val, function (i, v) {
+
+                        if ($.inArray(v, _this.schema["enum"]) <= -1) {
+                            isValid = false;
+                            return false;
+                        }
+
+                    });
+
+                    return isValid;
+                }
+                else {
+                    return ($.inArray(val, this.schema["enum"]) > -1);
+                }
+            }
+            else {
+                return true;
+            }
+        },
+
+        /**
+         * @see Alpaca.Field#onChange
+         */
+        onChange: function (e) {
+            this.base(e);
+            var _this = this;
+            Alpaca.later(25, this, function () {
+                var v = _this.getValue();
+                _this.setValue(v);
+                _this.refreshValidationState();
+            });
+        },
+
+        /**
+         * @see Alpaca.Field#focus
+         */
+        focus: function (onFocusCallback) {
+            if (this.control && this.control.length > 0) {
+                // set focus onto the select
+                var el = $(this.control).find('select');
+
+                el.focus();
+
+                if (onFocusCallback) {
+                    onFocusCallback(this);
+                }
+            }
+        }
+
+        /* builder_helpers */
+        ,
+
+        /**
+         * @see Alpaca.Field#getTitle
+         */
+        getTitle: function () {
+            return "Image Crop 2 Field";
+        },
+
+        /**
+         * @see Alpaca.Field#getDescription
+         */
+        getDescription: function () {
+            return "Image Crop 2 Field";
+        },
+        showAlert: function (text, time) {
+            var self =this;
+            $('#' + self.id + '-alert').text(text);
+            $('#' + self.id + '-alert').show();
+            if(time){
+                setTimeout( function (text) {
+                    $('#' + self.id + '-alert').hide();
+                }, 2000);
+            }
+        },
+    });
+
+    Alpaca.registerFieldClass("imagex", Alpaca.Fields.ImageXField);
 
 })(jQuery);
 (function ($) {

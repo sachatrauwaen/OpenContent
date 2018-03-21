@@ -42,39 +42,6 @@
         {{/if}}
     </div>
 
-</script><script type=text/x-handlebars-template id=dnn-edit-control-checkbox>
-
-    {{#if options.multiple}}
-    <div>
-        {{#each checkboxOptions}}
-
-
-
-        <label>
-
-            <input type="checkbox" data-checkbox-index="{{@index}}" data-checkbox-value="{{value}}" {{#if ../../options.readonly}} readonly="readonly" {{/if}} {{#if name}} name="{{name}}" {{/if}} {{#each ../../options.data}} data-{{@key}}="{{value}}" {{/each}} />
-            {{{text}}}
-
-        </label>
-
-
-        {{/each}}
-    </div>
-    {{else}}
-
-    <div>
-
-        <label>
-
-            <input type="checkbox" {{#if options.readonly}} readonly="readonly" {{/if}} {{#if name}} name="{{name}}" {{/if}} {{#each options.data}} data-{{@key}}="{{value}}" {{/each}} />
-
-            {{{options.rightLabel}}}
-        </label>
-
-    </div>
-
-    {{/if}}
-
 </script><script type=text/x-handlebars-template id=dnn-edit-control-ckeditor>
     
     <textarea id="{{id}}" {{#if options.placeholder}} placeholder="{{options.placeholder}}" {{/if}} cols="80" rows="10"></textarea>
@@ -195,6 +162,44 @@
         <div class="alpaca-image-display">
             <img id="{{id}}-image" src="{{data.url}}" class="image">
         </div>
+    </div>
+</script><script type=text/x-handlebars-template id=dnn-edit-control-imagex>
+    <div class="alpaca-control-container">
+        <input type="file" id="{{id}}-file" {{#if options.size}} size="{{options.size}}" {{/if}} {{#if options.readonly}} readonly="readonly" {{/if}} style="margin-bottom:5px;" />
+        
+        <select id="{{id}}" {{#if options.readonly}} readonly="readonly" {{/if}} {{#if options.multiple}} multiple="multiple" {{/if}} {{#if options.size}} size="{{options.size}}" {{/if}} {{#if name}} name="{{name}}" {{/if}}>
+
+            {{#if options.multiple}}
+
+            {{#if options.hideNone}}
+            {{else}}
+            <option value="">{{{options.noneLabel}}}</option>
+            {{/if}}
+
+            {{#each selectOptions}}
+            <option value="{{{value}}}" {{#if selected}} selected="selected" {{/if}}>{{text}}</option>
+            {{/each}}
+
+            {{else}}
+
+            {{#if options.hideNone}}
+            {{else}}
+            <option value="">{{{options.noneLabel}}}</option>
+            {{/if}}
+
+            {{#each selectOptions}}
+            <option value="{{{value}}}" {{#if selected}} selected="selected" {{/if}}>{{text}}</option>
+            {{/each}}
+
+            {{/if}}
+
+        </select>
+        {{#if options.showImage}}
+        <div class="alpaca-image-display">
+            <img id="{{id}}-image" src="{{data.url}}" class="image">
+        </div>
+        {{/if}}
+        <div id="{{id}}-alert" class="alert alert-success" role="alert" style="display:none">File Uploaded</div>
     </div>
 </script><script type=text/x-handlebars-template id=dnn-edit-control-wysihtml>
     <div>
