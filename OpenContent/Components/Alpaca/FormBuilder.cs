@@ -310,133 +310,131 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 {
                     opts = optionsConfig.Fields.ContainsKey(prop.Key) ? optionsConfig.Fields[prop.Key] : null;
                 }
-                string optType = (opts == null) ? "text" : opts.Type ?? "text";
-                if (prop.Value.Type == "array" && (prop.Value.Enum != null || optType == "select" || optType == "select2" || optType == "role2"))
+
+                if (prop.Value.Type == "array")
                 {
-                    var newField = new FieldConfig()
+                    string optType = (opts == null) ? "array" : opts.Type ?? "array";
+                    if (prop.Value.Enum != null || optType == "select" || optType == "select2" || optType == "role2")
                     {
-                        Items = new FieldConfig()
+                        var newField = new FieldConfig()
+                        {
+                            Items = new FieldConfig()
+                            {
+                                IndexType = "key",
+                                Index = true,
+                                Sort = true
+                            }
+                        };
+                        newConfig.Fields.Add(prop.Key, newField);
+                    }
+                }
+                else
+                {
+                    string optType = (opts == null) ? "text" : opts.Type ?? "text";
+                    if (prop.Value.Enum != null || optType == "select" || optType == "select2" || optType == "role2")
+                    {
+                        var newField = new FieldConfig()
                         {
                             IndexType = "key",
                             Index = true,
                             Sort = true
-                        }
-                    };
-                    newConfig.Fields.Add(prop.Key, newField);
-                }
-                else if (prop.Value.Enum != null || optType == "select" || optType == "select2" || optType == "role2")
-                {
-                    var newField = new FieldConfig()
+                        };
+                        newConfig.Fields.Add(prop.Key, newField);
+                    }
+                    else if (prop.Value.Type == "boolean")
                     {
-                        IndexType = "key",
-                        Index = true,
-                        Sort = true
-                    };
-                    newConfig.Fields.Add(prop.Key, newField);
-                }
-                else if (prop.Value.Type == "boolean")
-                {
-                    var newField = new FieldConfig()
+                        var newField = new FieldConfig()
+                        {
+                            IndexType = "boolean",
+                            Index = true,
+                            Sort = true
+                        };
+                        newConfig.Fields.Add(prop.Key, newField);
+                    }
+                    else if (prop.Value.Type == "number")
                     {
-                        IndexType = "boolean",
-                        Index = true,
-                        Sort = true
-                    };
-                    newConfig.Fields.Add(prop.Key, newField);
-                }
-                else if (prop.Value.Type == "number")
-                {
-                    var newField = new FieldConfig()
+                        var newField = new FieldConfig()
+                        {
+                            IndexType = "float",
+                            Index = true,
+                            Sort = true
+                        };
+                        newConfig.Fields.Add(prop.Key, newField);
+                    }
+                    else if (optType == "text" || optType == "textarea" || optType == "email")
                     {
-                        IndexType = "float",
-                        Index = true,
-                        Sort = true
-                    };
-                    newConfig.Fields.Add(prop.Key, newField);
-                }
-                else if (optType == "text" || optType == "textarea" || optType == "email")
-                {
-                    var newField = new FieldConfig()
+                        var newField = new FieldConfig()
+                        {
+                            IndexType = "text",
+                            Index = true,
+                            Sort = true
+                        };
+                        newConfig.Fields.Add(prop.Key, newField);
+                    }
+                    else if (optType == "wysihtml")
                     {
-                        IndexType = "text",
-                        Index = true,
-                        Sort = true
-                    };
-                    newConfig.Fields.Add(prop.Key, newField);
-                }
-                else if (optType == "wysihtml")
-                {
-                    var newField = new FieldConfig()
+                        var newField = new FieldConfig()
+                        {
+                            IndexType = "html",
+                            Index = true,
+                            Sort = true
+                        };
+                        newConfig.Fields.Add(prop.Key, newField);
+                    }
+                    else if (optType == "ckeditor")
                     {
-                        IndexType = "html",
-                        Index = true,
-                        Sort = true
-                    };
-                    newConfig.Fields.Add(prop.Key, newField);
-                }
-                else if (optType == "ckeditor")
-                {
-                    var newField = new FieldConfig()
+                        var newField = new FieldConfig()
+                        {
+                            IndexType = "html",
+                            Index = true,
+                            Sort = true
+                        };
+                        newConfig.Fields.Add(prop.Key, newField);
+                    }
+                    else if (optType == "mltext")
                     {
-                        IndexType = "html",
-                        Index = true,
-                        Sort = true
-                    };
-                    newConfig.Fields.Add(prop.Key, newField);
-                }
-                else if (optType == "mltext")
-                {
-                    var newField = new FieldConfig()
+                        var newField = new FieldConfig()
+                        {
+                            IndexType = "text",
+                            Index = true,
+                            Sort = true,
+                            MultiLanguage = true
+                        };
+                        newConfig.Fields.Add(prop.Key, newField);
+                    }
+                    else if (optType == "mlwysihtml")
                     {
-                        IndexType = "text",
-                        Index = true,
-                        Sort = true,
-                        MultiLanguage = true
-                    };
-                    newConfig.Fields.Add(prop.Key, newField);
-                }
-                else if (optType == "mlwysihtml")
-                {
-                    var newField = new FieldConfig()
+                        var newField = new FieldConfig()
+                        {
+                            IndexType = "html",
+                            Index = true,
+                            Sort = true,
+                            MultiLanguage = true
+                        };
+                        newConfig.Fields.Add(prop.Key, newField);
+                    }
+                    else if (optType == "mlckeditor")
                     {
-                        IndexType = "html",
-                        Index = true,
-                        Sort = true,
-                        MultiLanguage = true
-                    };
-                    newConfig.Fields.Add(prop.Key, newField);
-                }
-                else if (optType == "mlckeditor")
-                {
-                    var newField = new FieldConfig()
+                        var newField = new FieldConfig()
+                        {
+                            IndexType = "html",
+                            Index = true,
+                            Sort = true,
+                            MultiLanguage = true
+                        };
+                        newConfig.Fields.Add(prop.Key, newField);
+                    }
+                    else if (optType == "date" || optType == "datetime" || optType == "time")
                     {
-                        IndexType = "html",
-                        Index = true,
-                        Sort = true,
-                        MultiLanguage = true
-                    };
-                    newConfig.Fields.Add(prop.Key, newField);
+                        var newField = new FieldConfig()
+                        {
+                            IndexType = "datetime",
+                            Index = true,
+                            Sort = true
+                        };
+                        newConfig.Fields.Add(prop.Key, newField);
+                    }
                 }
-                else if (optType == "date" || optType == "datetime" || optType == "time")
-                {
-                    var newField = new FieldConfig()
-                    {
-                        IndexType = "datetime",
-                        Index = true,
-                        Sort = true
-                    };
-                    newConfig.Fields.Add(prop.Key, newField);
-                }
-                //else if (optType == "file" || optType == "file2")
-                //{
-                //    var newField = new FieldConfig()
-                //    {
-                //        IndexType = "file",
-                //        Index = true,
-                //        Sort = false
-                //    };
-                //    newConfig.Fields.Add(prop.Key, newField);
-                //}
             }
             //var json = JObject.FromObject(newConfig);
             //File.WriteAllText(_templateUri.PhysicalFullDirectory + "\\test.json", json.ToString());
