@@ -47,6 +47,7 @@
     "outputFileName": "alpaca/templates/dnn-edit/dnntemplates.html",
     "inputFiles": [
       "alpaca/templates/dnn-edit/container.html",
+      "alpaca/templates/dnn-edit/control-checkbox.html",
       "alpaca/templates/dnn-edit/control-ckeditor.html",
       "alpaca/templates/dnn-edit/control-file.html",
       "alpaca/templates/dnn-edit/control-file2.html",
