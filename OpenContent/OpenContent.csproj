@@ -117,11 +117,6 @@
       <HintPath>..\ref\dnn732\Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="SharpZipLib, Version=0.81.0.1407, Culture=neutral">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ref\dnn732\SharpZipLib.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -370,6 +365,7 @@
     <Compile Include="Components\Common\Utils.cs" />
     <Compile Include="Components\UrlRewriter\OpenContentUrlRule.cs" />
     <Compile Include="Components\UrlRewriter\OpenContentUrlProvider.cs" />
+    <Compile Include="Components\Utils\ZipUtils.cs" />
     <Compile Include="EditNotifications.ascx.cs">
       <DependentUpon>EditNotifications.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

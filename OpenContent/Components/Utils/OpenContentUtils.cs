@@ -3,7 +3,7 @@ using DotNetNuke.Entities.Host;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Services.FileSystem;
-using ICSharpCode.SharpZipLib.Zip;
+//using ICSharpCode.SharpZipLib.Zip;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -386,8 +386,12 @@ namespace Satrabel.OpenContent.Components
                     folder = FolderManager.Instance.AddFolder(portalId, folderName);
                     var req = (HttpWebRequest)WebRequest.Create(fileName);
                     Stream stream = req.GetResponse().GetResponseStream();
+                    //var file = FileManager.Instance.AddFile(folder, fileName, stream, true);
+                    //FileManager.Instance.UnzipFile(file);
 
-                    FileSystemUtils.UnzipResources(new ZipInputStream(stream), folder.PhysicalPath);
+                    //FileSystemUtils.UnzipResources(new ZipInputStream(stream), folder.PhysicalPath);
+                    var zip = new ZipUtils();
+                    zip.UnzipFiles(stream, folder.PhysicalPath);
                     return GetDefaultTemplate(folder.PhysicalPath);
                 }
             }
