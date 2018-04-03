@@ -1,0 +1,2 @@
+"%programfiles(x86)%\Microsoft Visual Studio\2017\Enterprise\MSBuild\15.0\Bin\MSBuild.exe" OpenContent\OpenContent92.csproj /p:Configuration=Debug,Platform=AnyCPU,SolutionDir=Solution,ReferencePath="ref;ref\dnn920" /t:Rebuild >build-local-dnn920.log
+pause
