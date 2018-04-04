@@ -299,10 +299,7 @@ namespace Satrabel.OpenContent
         private void SaveData()
         {
             var module = OpenContentModuleConfig.Create(this.ModuleConfiguration, PortalSettings);
-            var manifest = module.Settings.Manifest;
             TemplateManifest template = module.Settings.Template;
-            string editRole = manifest.GetEditRole();
-            bool listMode = template != null && template.IsListTemplate;
 
             IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
             var dsContext = OpenContentUtils.CreateDataContext(module);
