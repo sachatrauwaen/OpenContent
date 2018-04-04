@@ -201,8 +201,17 @@
     </div>
 </script><script type=text/x-handlebars-template id=dnn-edit-control-imagex>
     <div class="alpaca-control-container">
-        <input type="file" id="{{id}}-file" {{#if options.size}} size="{{options.size}}" {{/if}} {{#if options.readonly}} readonly="readonly" {{/if}} style="margin-bottom:5px;" />
-        
+        <div class="row">
+            <div class="col-md-4">
+                <input type="file" id="{{id}}-file" {{#if options.size}} size="{{options.size}}" {{/if}} {{#if options.readonly}} readonly="readonly" {{/if}} style="margin-bottom:5px;" />
+            </div>
+            <div class="col-md-4">
+                <input type="checkbox" {{#if selected}} checked{{/if}} /> Overwrite existing image
+            </div>
+            <div class="col-md-4">
+                <div id="{{id}}-alert" class="_alert _alert-success" role="alert" style="border-radius:3px;padding:2px 5px ;background-color:dimgrey;color:#fff;display:none">File Uploaded</div>
+            </div>
+        </div>
         <select id="{{id}}" {{#if options.readonly}} readonly="readonly" {{/if}} {{#if options.multiple}} multiple="multiple" {{/if}} {{#if options.size}} size="{{options.size}}" {{/if}} {{#if name}} name="{{name}}" {{/if}}>
 
             {{#if options.multiple}}
@@ -235,7 +244,7 @@
             <img id="{{id}}-image" src="{{data.url}}" class="image">
         </div>
         {{/if}}
-        <div id="{{id}}-alert" class="alert alert-success" role="alert" style="display:none">File Uploaded</div>
+        
     </div>
 </script><script type=text/x-handlebars-template id=dnn-edit-control-wysihtml>
     <div>

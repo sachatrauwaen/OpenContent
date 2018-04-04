@@ -18,7 +18,7 @@ using Satrabel.OpenContent.Components;
 using DotNetNuke.Services.FileSystem;
 using DotNetNuke.Entities.Host;
 using DotNetNuke.Common.Utilities;
-using ICSharpCode.SharpZipLib.Zip;
+//using ICSharpCode.SharpZipLib.Zip;
 using System.Web;
 using Satrabel.OpenContent.Components.Rss;
 using Satrabel.OpenContent.Components.Manifest;
@@ -129,7 +129,9 @@ namespace Satrabel.OpenContent
                     {
                         folder = FolderManager.Instance.AddFolder(PortalId, FolderName);
                     }
-                    FileSystemUtils.UnzipResources(new ZipInputStream(fuFile.FileContent), folder.PhysicalPath);
+                    //FileSystemUtils.UnzipResources(new ZipInputStream(fuFile.FileContent), folder.PhysicalPath);
+                    var zip = new ZipUtils();
+                    zip.UnzipFiles(fuFile.FileContent, folder.PhysicalPath);
                 }
             }
             catch (PermissionsNotMetException)
@@ -237,11 +239,15 @@ namespace Satrabel.OpenContent
             int CompressionLevel = 9;
             var zipFile = new System.IO.FileInfo(zipFileName);
             FileStream strmZipFile = null;
+            
             //Log.StartJob(Util.WRITER_CreatingPackage);
             try
             {
                 //Log.AddInfo(string.Format(Util.WRITER_CreateArchive, ZipFileShortName));
                 strmZipFile = File.Create(zipFileName);
+                var zip = new ZipUtils();
+                zip.ZipFiles(CompressionLevel, strmZipFile, Directory.GetFiles(Folder));
+                /*
                 ZipOutputStream strmZipStream = null;
                 try
                 {
@@ -266,6 +272,8 @@ namespace Satrabel.OpenContent
                     }
                 }
                 //Log.EndJob(Util.WRITER_CreatedPackage);
+                
+                */
                 WriteFileToHttpContext(zipFileName, ContentDisposition.Attachment);
             }
             catch (Exception ex)
@@ -280,6 +288,11 @@ namespace Satrabel.OpenContent
                     strmZipFile.Close();
                 }
             }
+            
+           
+               
+               
+            
         }
         private void WriteFileToHttpContext(string FileName, ContentDisposition contentDisposition)
         {
