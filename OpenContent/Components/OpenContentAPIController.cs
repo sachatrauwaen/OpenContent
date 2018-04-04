@@ -790,6 +790,7 @@ namespace Satrabel.OpenContent.Components
                 {
                     ds.Delete(dsContext, content);
                 }
+                App.Services.CacheAdapter.SyncronizeCache(module);
                 return Request.CreateResponse(HttpStatusCode.OK, "");
             }
             catch (Exception exc)

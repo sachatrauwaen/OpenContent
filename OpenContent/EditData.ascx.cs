@@ -317,6 +317,7 @@ namespace Satrabel.OpenContent
                         if (dsItem != null)
                         {
                             ds.Delete(dsContext, dsItem);
+                            App.Services.CacheAdapter.SyncronizeCache(module);
                         }
                     }
                     else
@@ -330,6 +331,8 @@ namespace Satrabel.OpenContent
                         {
                             ds.Update(dsContext, dsItem, json);
                         }
+                        App.Services.CacheAdapter.SyncronizeCache(module);
+
                         if (json["ModuleTitle"] != null && json["ModuleTitle"].Type == JTokenType.String)
                         {
                             string moduleTitle = json["ModuleTitle"].ToString();

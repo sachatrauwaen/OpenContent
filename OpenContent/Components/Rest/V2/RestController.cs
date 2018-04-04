@@ -266,6 +266,8 @@ namespace Satrabel.OpenContent.Components.Rest.V2
                 {
                     ds.Update(dsContext, dsItem, value.Properties().First().Value as JObject);
                 }
+                App.Services.CacheAdapter.SyncronizeCache(module);
+
                 //if (json["form"]["ModuleTitle"] != null && json["form"]["ModuleTitle"].Type == JTokenType.String)
                 //{
                 //    string moduleTitle = json["form"]["ModuleTitle"].ToString();
