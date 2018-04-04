@@ -261,6 +261,7 @@ namespace Satrabel.OpenContent
 
         private void SaveAdditionalData(string key)
         {
+            var module = OpenContentModuleConfig.Create(this.ModuleConfiguration, PortalSettings);
             OpenContentSettings settings = this.OpenContentSettings();
             int modId = settings.IsOtherModule ? settings.ModuleId : ModuleId;
             var manifest = settings.Manifest;
@@ -287,6 +288,7 @@ namespace Satrabel.OpenContent
             {
                 ds.UpdateData(dsContext, dsItem, JToken.Parse(txtSource.Text));
             }
+            App.Services.CacheAdapter.SyncronizeCache(module);
         }
 
         private void SaveFilter()
