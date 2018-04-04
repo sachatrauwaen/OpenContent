@@ -406,7 +406,7 @@ namespace Satrabel.OpenContent
                 }
                 if (template.Detail != null)
                 {
-                    scriptList.Items.Add(NewListItem(Path.GetFileNameWithoutExtension(template.Detail.Template), template.Detail.Template, "Template", template));
+                    scriptList.Items.Add(NewListItem("Detail template", template.Detail.Template, "Template", template));
                     if (template.Detail.PartialTemplates != null)
                     {
                         foreach (var part in template.Detail.PartialTemplates)
@@ -415,8 +415,13 @@ namespace Satrabel.OpenContent
                         }
                     }
                 }
-                scriptList.Items.Add(NewListItem("Stylesheet", template.Key.ShortKey + ".css", "Template", template));
-                scriptList.Items.Add(NewListItem("Javascript", template.Key.ShortKey + ".js", "Template", template));
+                if (template.Main != null)
+                    scriptList.Items.Add(NewListItem("Stylesheet", Path.ChangeExtension(template.Main.Template, "css"), "Template", template));
+                if (template.Detail != null)
+                    scriptList.Items.Add(NewListItem("Detail Stylesheet", Path.ChangeExtension(template.Detail.Template, "css"), "Template", template));
+                if (template.Main != null)
+                    scriptList.Items.Add(NewListItem("Javascript", Path.ChangeExtension(template.Main.Template, "js"), "Template", template));
+
                 scriptList.Items.Add(NewListItem("Manifest", "manifest.json", "Template", template));
                 if (!OpenContentUtils.BuilderExist(settings.Template.ManifestFolderUri))
                 {
