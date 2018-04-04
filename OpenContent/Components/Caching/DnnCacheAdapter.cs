@@ -70,7 +70,6 @@ namespace Satrabel.OpenContent.Components
         /// Synchronizes the cache.
         /// </summary>
         /// <param name="moduleId">The module identifier.</param>
-        /// <param name="currentPortal"></param>
         /// <remarks>
         /// The original code comes from DNN, SynchronizeModule(int moduleID)
         /// But we modified it to be more efficient

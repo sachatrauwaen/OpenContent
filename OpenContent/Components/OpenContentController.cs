@@ -48,7 +48,7 @@ namespace Satrabel.OpenContent.Components
         public void AddContent(OpenContentInfo content)
         {
             SynchronizeXml(content);
-            ClearDataCache(content);
+            ClearDataCache(content); 
             var json = content.JsonAsJToken;
             if (string.IsNullOrEmpty(content.Key))
             {
@@ -143,7 +143,6 @@ namespace Satrabel.OpenContent.Components
                     {
                         App.Services.Logger.Error($"Error while Updating OpenContent Xml data for module {content.ModuleId}, ContentId {content.ContentId}", ex);
                     }
-
                 }
                 else
                 {

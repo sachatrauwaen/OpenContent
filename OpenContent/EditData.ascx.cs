@@ -228,7 +228,7 @@ namespace Satrabel.OpenContent
             sourceList.Items.Add(new ListItem(DATATYPE_DATA, DATATYPE_DATA));
             sourceList.Items.Add(new ListItem(DATATYPE_SETTINGS, DATATYPE_SETTINGS));
             sourceList.Items.Add(new ListItem(DATATYPE_FILTER, DATATYPE_FILTER));
-            if (template != null && template.Manifest != null && template.Manifest.AdditionalDataDefined())
+            if (template?.Manifest != null && template.Manifest.AdditionalDataDefined())
             {
                 foreach (var addData in template.Manifest.AdditionalDataDefinition)
                 {
@@ -306,8 +306,6 @@ namespace Satrabel.OpenContent
 
             IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
             var dsContext = OpenContentUtils.CreateDataContext(module);
-
-
 
             if (template != null && template.IsListTemplate)
             {
