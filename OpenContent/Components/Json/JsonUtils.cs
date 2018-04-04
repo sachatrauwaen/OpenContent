@@ -61,6 +61,11 @@ namespace Satrabel.OpenContent.Components.Json
             }
         }
 
+        /// <summary>
+        /// Tries to load Json file from cache.
+        /// </summary>
+        /// <param name="fileUri"></param>
+        /// <returns></returns>
         public static JToken LoadJsonFromCacheOrDisk(FileUri fileUri)
         {
             string cacheKey = fileUri.FilePath;

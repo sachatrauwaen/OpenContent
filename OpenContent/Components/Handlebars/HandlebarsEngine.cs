@@ -506,7 +506,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     string email = parameters[0].ToString();
                     string subject = "";
                     string visibleText = "";
-                    if (parameters.Length >1)
+                    if (parameters.Length > 1)
                     {
                         subject = parameters[1].ToString();
                     }
