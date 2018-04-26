@@ -199,6 +199,14 @@ namespace Satrabel.OpenContent.Components
                 var folderManager = FolderManager.Instance;
                 var fileManager = FileManager.Instance;
                 var portalFolder = folderManager.GetFolder(PortalSettings.PortalId, d ?? "");
+                if (portalFolder == null)
+                {
+                    // next three lines are new, but commented out because we need to decide if we realy want to do this as this input is not cleaned
+                    //if (d != null)
+                    //    portalFolder = FolderManager.Instance.AddFolder(PortalSettings.PortalId, d);
+                    //else
+                        throw new Exception($"folder {d ?? ""} does not exist");
+                }
                 var files = folderManager.GetFiles(portalFolder, true);
                 if (q != "*" && !string.IsNullOrEmpty(q))
                 {
@@ -209,7 +217,7 @@ namespace Satrabel.OpenContent.Components
                     var rx = new Regex(filter, RegexOptions.IgnoreCase);
                     files = files.Where(f => rx.IsMatch(f.FileName));
                 }
-                int folderLength = (d == null) ? 0 : d.Length;
+                int folderLength = d?.Length ?? 0;
                 var res = files.Select(f => new { value = f.FileId.ToString(), url = fileManager.GetUrl(f), text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName /*+ (string.IsNullOrEmpty(f.Folder) ? "" : " (" + f.Folder.Trim('/') + ")")*/ });
                 return Request.CreateResponse(HttpStatusCode.OK, res);
             }
