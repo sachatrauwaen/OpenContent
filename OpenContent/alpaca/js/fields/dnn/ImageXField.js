@@ -19,6 +19,12 @@
             if (!this.options.uploadhidden) {
                 this.options.uploadhidden = false;
             }
+            if (!this.options.overwrite) {
+                this.options.overwrite = false;
+            }
+            if (!this.options.showOverwrite) {
+                this.options.showOverwrite = false;
+            }
             if (this.options.showCropper === undefined) {
                 this.options.showCropper = true;
             }
@@ -202,7 +208,6 @@
                 callback(model);
             });
         },
-
         afterRenderControl: function (model, callback) {
             var self = this;
             this.base(model, function () {
@@ -249,11 +254,12 @@
                     $(self.getControlEl()).find('input[type=file]').hide();
                 } else {
                     if (self.sf) {
+                        
                         $(self.getControlEl()).find('input[type=file]').fileupload({
                             dataType: 'json',
                             url: self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
                             maxFileSize: 25000000,
-                            formData: { uploadfolder: self.options.uploadfolder },
+                            formData: { uploadfolder: self.options.uploadfolder, overwrite : self.options.showOverwrite ? self.isOverwrite() : "" },
                             beforeSend: self.sf.setModuleHeaders,
                             add: function (e, data) {
                                 self.showAlert('File uploading...');
@@ -383,6 +389,11 @@
             var self = this;
             return $(self.control).parent().find('#' + self.id + '-image'); //.find('.alpaca-image-display > img');
 
+        },
+        isOverwrite: function () {
+            var self = this;
+            var checkbox = $(self.control).parent().find('#' + self.id + '-overwrite'); 
+            return Alpaca.checked(checkbox);
         },
         /**
          * Validate against enum property.

@@ -98,8 +98,12 @@ namespace Satrabel.OpenContent.Components
 
                 if (IsAllowedExtension(fileName))
                 {
+                    bool? overwrite = null;
+                    if (!string.IsNullOrEmpty(context.Request.Form["overwrite"]))
+                    {
+                        overwrite = context.Request.Form["overwrite"] == "true";
+                    }
                     string uploadfolder = "OpenContent/Files/" + ActiveModule.ModuleID;
-
                     if (!string.IsNullOrEmpty(context.Request.Form["uploadfolder"]))
                     {
                         uploadfolder = context.Request.Form["uploadfolder"];
@@ -113,13 +117,31 @@ namespace Satrabel.OpenContent.Components
                     string baseFileName = Path.GetFileNameWithoutExtension(fileName);
                     string extension = Path.GetExtension(fileName);
                     var fileInfo = _fileManager.GetFile(userFolder, fileName);
-                    while (fileInfo != null)
+                    if (fileInfo != null && overwrite.HasValue && overwrite.Value)
                     {
-                        suffix++;
-                        fileName = baseFileName + "-" + suffix + extension;
-                        fileInfo = _fileManager.GetFile(userFolder, fileName);
+                        fileInfo = _fileManager.UpdateFile(fileInfo, file.InputStream);
                     }
-                    fileInfo = _fileManager.AddFile(userFolder, fileName, file.InputStream, true);
+                    else if (fileInfo != null && overwrite.HasValue && !overwrite.Value)
+                    {
+                        statuses.Add(new FilesStatus
+                        {
+                            success = false,
+                            name = fileName,
+                            message = "File exist already."
+                        });
+                        return;
+                    }
+                    else
+                    {
+                        while (fileInfo != null)
+                        {
+                            suffix++;
+                            fileName = baseFileName + "-" + suffix + extension;
+                            fileInfo = _fileManager.GetFile(userFolder, fileName);
+                        }
+                        fileInfo = _fileManager.AddFile(userFolder, fileName, file.InputStream, true);
+                    }
+
                     var fileIcon = IconController.IconURL("Ext" + fileInfo.Extension, "32x32");
                     if (!File.Exists(context.Server.MapPath(fileIcon)))
                     {
@@ -151,7 +173,7 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
-        
+
 
         public static string CleanUpFileName(string filename)
         {
