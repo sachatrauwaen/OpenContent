@@ -477,10 +477,10 @@ namespace Satrabel.OpenContent.Components
 
         public static DataSourceContext CreateDataContext(OpenContentModuleConfig module, int userId = -1, bool single = false, JObject options = null)
         {
-            var template = module.Settings.Template; 
+            var template = module.Settings.Template;
             if (template == null)
             {
-                App.Services.Logger.Error($"Template [{module.Settings.TemplateDir}] not found"); // are you importing and forgot to install the files?
+                App.Services.Logger.Error($"Template [{(module.Settings.TemplateAvailable ? module.Settings.TemplateKey.ToString() : "???")}] not found"); // are you importing and forgot to install the files?
             }
 
             var dsContext = new DataSourceContext
@@ -493,7 +493,7 @@ namespace Satrabel.OpenContent.Components
                 TemplateFolder = module.Settings.TemplateDir.FolderPath,
                 UserId = userId,
                 Config = module.Settings.Manifest.DataSourceConfig,
-                Index = template?.Manifest.Index ?? false,
+                Index = template?.Manifest?.Index ?? false,
                 Options = options,
                 Single = single,
                 Collection = template?.Collection ?? ""
