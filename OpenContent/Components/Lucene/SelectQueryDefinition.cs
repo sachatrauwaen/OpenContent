@@ -136,12 +136,27 @@ namespace Satrabel.OpenContent.Components.Lucene
                         var endDate = rule.UpperValue.AsDateTime;
                         q.Add(NumericRangeQuery.NewLongRange(fieldName, startDate.Ticks, endDate.Ticks, true, true), cond);
                     }
+                    else if (rule.FieldType == FieldTypeEnum.FLOAT)
+                    {
+                        var startValue = rule.LowerValue.AsFloat;
+                        var endValue = rule.UpperValue.AsFloat;
+                        q.Add(NumericRangeQuery.NewFloatRange(fieldName, startValue, endValue, true, true), cond);
+                    }
                 }
                 else if (rule.FieldOperator == OperatorEnum.GREATER_THEN_OR_EQUALS)
                 {
-                    DateTime startDate = rule.Value.AsDateTime;
-                    DateTime endDate = DateTime.MaxValue;
-                    q.Add(NumericRangeQuery.NewLongRange(fieldName, startDate.Ticks, endDate.Ticks, true, true), cond);
+                    if (rule.FieldType == FieldTypeEnum.DATETIME)
+                    {
+                        DateTime startDate = rule.Value.AsDateTime;
+                        DateTime endDate = DateTime.MaxValue;
+                        q.Add(NumericRangeQuery.NewLongRange(fieldName, startDate.Ticks, endDate.Ticks, true, true), cond);
+                    }
+                    else if (rule.FieldType == FieldTypeEnum.FLOAT)
+                    {
+                        var startValue = rule.Value.AsFloat;
+                        var endValue = float.MaxValue;
+                        q.Add(NumericRangeQuery.NewFloatRange(fieldName, startValue, endValue, true, true), cond);
+                    }
                 }
                 else if (rule.FieldOperator == OperatorEnum.LESS_THEN_OR_EQUALS)
                 {
@@ -150,6 +165,12 @@ namespace Satrabel.OpenContent.Components.Lucene
                         DateTime startDate = DateTime.MinValue;
                         DateTime endDate = rule.Value.AsDateTime;
                         q.Add(NumericRangeQuery.NewLongRange(fieldName, startDate.Ticks, endDate.Ticks, true, true), cond);
+                    }
+                    else if (rule.FieldType == FieldTypeEnum.FLOAT)
+                    {
+                        var startValue = float.MinValue;
+                        var endValue = rule.Value.AsFloat;
+                        q.Add(NumericRangeQuery.NewFloatRange(fieldName, startValue, endValue, true, true), cond);
                     }
                 }
                 else if (rule.FieldOperator == OperatorEnum.GREATER_THEN)

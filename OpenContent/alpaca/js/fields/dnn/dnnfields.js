@@ -14563,7 +14563,13 @@
         getFieldType: function () {
             return "accordion";
         },
-            
+        constructor: function (container, data, options, schema, view, connector) {
+            var self = this;
+            this.base(container, data, options, schema, view, connector);
+            this.culture = connector.culture;
+            this.defaultCulture = connector.defaultCulture;
+            this.rootUrl = connector.rootUrl;
+        },
         setup: function()
         {
             var self = this;
@@ -14608,10 +14614,20 @@
                 var field = control.childrenByPropertyId[self.options.titleField];                
                 if (field) {
                     var val = field.getValue();
+
+                    // multi language
+                    if (Alpaca.isObject(val)) {             
+                        val = val[self.culture];
+                    } 
+
                     val = val ? val : label;
                     control.getContainerEl().closest('.panel').find('.panel-title a').first().text(val);
                     field.on("keyup", function () {
                         var val = this.getValue();
+                        // multi language
+                        if (Alpaca.isObject(val)) {             
+                            val = val[self.culture];
+                        } 
                         val = val ? val : label;
                         $(this.getControlEl()).closest('.panel').find('.panel-title a').first().text(val);
                     });
