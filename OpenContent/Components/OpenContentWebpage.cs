@@ -44,6 +44,16 @@ namespace Satrabel.OpenContent.Components
             DnnUtils.RegisterScript((Page)HttpContext.Current.CurrentHandler, VirtualPath, jsfilename, JSOrder);
             JSOrder++;
         }
+
+        /// <summary>
+        /// Register Script in Page Header tag
+        /// </summary>
+        /// <param name="jsfilename">name of the script file to register</param>
+        public void RegisterScriptInPageHeader(string jsfilename)
+        {
+            DnnUtils.RegisterScript((Page)HttpContext.Current.CurrentHandler, VirtualPath, jsfilename, JSOrder, "DnnPageHeaderProvider");
+            JSOrder++;
+        }
         public void RegisterForm(string view = "bootstrap")
         {
             var page = (Page)HttpContext.Current.CurrentHandler;

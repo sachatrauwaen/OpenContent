@@ -94,7 +94,7 @@ namespace Satrabel.OpenContent.Components
             return new OpenContentSettings(ComponentSettingsInfo.Create(module.Settings));
         }
 
-        internal static void RegisterScript(Page page, string sourceFolder, string jsfilename, int jsOrder)
+        internal static void RegisterScript(Page page, string sourceFolder, string jsfilename, int jsOrder, string provider = "DnnBodyProvider")
         {
             if (page == null) return;
             if (string.IsNullOrEmpty(jsfilename)) return;
@@ -108,7 +108,7 @@ namespace Satrabel.OpenContent.Components
                 var file = new FileUri(jsfilename);
                 jsfilename = file.UrlFilePath;
             }
-            ClientResourceManager.RegisterScript(page, jsfilename, jsOrder);
+            ClientResourceManager.RegisterScript(page, jsfilename, jsOrder, provider);
         }
 
         // for openform compatibility
