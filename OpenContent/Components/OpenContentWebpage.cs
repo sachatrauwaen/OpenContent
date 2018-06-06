@@ -21,7 +21,7 @@ namespace Satrabel.OpenContent.Components
         protected internal UrlHelper Url { get; internal set; }
 
         int JSOrder = (int)FileOrder.Js.DefaultPriority;
-        int CSSOrder = (int)FileOrder.Css.ModuleCss;
+        int CSSOrder = (int)FileOrder.Css.ModuleCss; 
 
         public void RegisterStyleSheet(string filePath)
         {
@@ -39,6 +39,10 @@ namespace Satrabel.OpenContent.Components
             CSSOrder++;
         }
 
+        /// <summary>
+        /// Register Script in Page Body tag
+        /// </summary>
+        /// <param name="jsfilename">name of the script file to register</param>
         public void RegisterScript(string jsfilename)
         {
             DnnUtils.RegisterScript((Page)HttpContext.Current.CurrentHandler, VirtualPath, jsfilename, JSOrder);
