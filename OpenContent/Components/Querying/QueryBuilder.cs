@@ -346,10 +346,13 @@ namespace Satrabel.OpenContent.Components.Querying
                 }
             }
             else
-            {
-                const string FIELD_NAME = "createdondate";
-                const string FIELD_ORDER = "desc";
-                sort.Add(FieldConfigUtils.CreateSortRule(_indexConfig, cultureCode, FIELD_NAME, FIELD_ORDER == "desc"));
+            {                
+                sort.Add(new SortRule()
+                {
+                    Field = "createdondate",
+                    FieldType = FieldTypeEnum.DATETIME,
+                    Descending = true
+                });
             }
             return this;
         }
