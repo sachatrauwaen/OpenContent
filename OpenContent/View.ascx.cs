@@ -195,33 +195,34 @@ namespace Satrabel.OpenContent
 
         private void AutoAttachLocalizedModule(ref ModuleInfo module)
         {
-            if (module.DefaultLanguageModule != null) //if module is not on a default language page
+            var defaultModule = module.DefaultLanguageModule;
+            if (defaultModule == null) return;  //if module is not localized, return
+            if (ModuleContext.ModuleId == defaultModule.ModuleID) return;  //if module is already attached, return
+
+            if (ModuleHasValidConfig(module) && ModuleHasAlreadyData(module))
             {
-                var defaultModule = module.DefaultLanguageModule;
-                if (ModuleContext.ModuleId != defaultModule.ModuleID) //not yet attached
-                {
-                    if (ModuleHasAlreadyData(module))
-                    {
-                        // this module is in another language but has already data.
-                        // Therefor we will not AutoAttach it, because otherwise all data will be deleted.
-                        App.Services.Logger.Info($"Module {module.ModuleID} on Tab {module.TabID} has not been AutoAttached because it already contains data.");
-                        return;
-                    }
-
-                    var mc = (new ModuleController());
-                    mc.DeLocalizeModule(module);
-
-                    mc.ClearCache(defaultModule.TabID);
-                    mc.ClearCache(module.TabID);
-                    const string MODULE_SETTINGS_CACHE_KEY = "ModuleSettings{0}"; // to be compatible with dnn 7.2
-                    DataCache.RemoveCache(string.Format(MODULE_SETTINGS_CACHE_KEY, defaultModule.TabID));
-                    DataCache.RemoveCache(string.Format(MODULE_SETTINGS_CACHE_KEY, module.TabID));
-
-                    //DataCache.ClearCache();
-                    module = mc.GetModule(defaultModule.ModuleID, ModuleContext.TabId, true);
-                    //_settings = module.OpenContentSettings();
-                }
+                // this module is in another language but has already data.
+                // Therefor we will not AutoAttach it, because otherwise all data will be deleted.
+                App.Services.Logger.Info($"Module {module.ModuleID} on Tab {module.TabID} has not been AutoAttached because it already contains data.");
+                return;
             }
+
+            var mc = (new ModuleController());
+            mc.DeLocalizeModule(module);
+
+            mc.ClearCache(defaultModule.TabID);
+            mc.ClearCache(module.TabID);
+            const string MODULE_SETTINGS_CACHE_KEY = "ModuleSettings{0}"; // to be compatible with dnn 7.2
+            DataCache.RemoveCache(string.Format(MODULE_SETTINGS_CACHE_KEY, defaultModule.TabID));
+            DataCache.RemoveCache(string.Format(MODULE_SETTINGS_CACHE_KEY, module.TabID));
+
+            module = mc.GetModule(defaultModule.ModuleID, ModuleContext.TabId, true);
+        }
+
+        private static bool ModuleHasValidConfig(ModuleInfo moduleInfo)
+        {
+            OpenContentModuleConfig ocModuleConfig = OpenContentModuleConfig.Create(moduleInfo, PortalSettings.Current);
+            return ocModuleConfig.Settings.Manifest != null;
         }
 
         private static bool ModuleHasAlreadyData(ModuleInfo moduleInfo)
