@@ -104,7 +104,7 @@ namespace Satrabel.OpenContent.Components.Lucene
                 using (var lc = LuceneController.Instance)
                 {
                     lc.Store.DeleteAll();
-                    funcRegisterAllIndexableData(lc); 
+                    funcRegisterAllIndexableData(lc);
                     lc.Store.Commit();
                     lc.Store.OptimizeSearchIndex(true);
                 }
