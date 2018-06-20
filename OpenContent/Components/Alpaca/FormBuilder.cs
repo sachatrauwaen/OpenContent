@@ -122,94 +122,99 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     fieldLst.Add(propKey);
                     continue;
                 }
+
                 if (prop.Value.Type == "object" && idxs != null)
                 {
                     GetFields(newSchemaFilter, newOptionsFilter, prop.Value, opts, fieldLst, idxs, propKey + ".");
                     continue;
                 }
-                string optType = opts == null ? "text" : opts.Type ?? "text";
 
-                if (prop.Value.Type == "boolean")
+                if (idxs != null && idxs.Index) // if indexfile or autogen indexfile exists and field is marked as indexable, continue
                 {
-                    var newProp = new SchemaConfig()
+                    string optType = opts == null ? "text" : opts.Type ?? "text";
+
+                    if (prop.Value.Type == "boolean")
                     {
-                        //Type = prop.Value.Type,
-                        Title = prop.Value.Title,
-                        Enum = new List<string>(new[] { "true", "false" })
-                    };
-                    newSchemaFilter.Properties.Add(propKey, newProp);
+                        var newProp = new SchemaConfig()
+                        {
+                            //Type = prop.Value.Type,
+                            Title = prop.Value.Title,
+                            Enum = new List<string>(new[] { "true", "false" })
+                        };
+                        newSchemaFilter.Properties.Add(propKey, newProp);
 
-                    var newField = new OptionsConfig();
-                    newOptionsFilter.Fields.Add(propKey, newField);
-                    newField.Type = "select";
+                        var newField = new OptionsConfig();
+                        newOptionsFilter.Fields.Add(propKey, newField);
+                        newField.Type = "select";
 
-                    fieldLst.Add(propKey);
-                }
-                else if (prop.Value.Type == "number")
-                {
-                    var newProp = new SchemaConfig()
-                    {
-                        Type = prop.Value.Type,
-                        Title = prop.Value.Title
-                    };
-                    newSchemaFilter.Properties.Add(propKey, newProp);
-
-                    var newField = new OptionsConfig();
-                    newOptionsFilter.Fields.Add(propKey, newField);
-
-                    fieldLst.Add(propKey);
-                }
-                else if (optType == "text" || optType == "mltext" || optType == "checkbox" || optType == "select" || optType == "select2" || optType == "radio")
-                {
-                    var newProp = new SchemaConfig()
-                    {
-                        Type = prop.Value.Type,
-                        Title = propTitle,
-                        Enum = prop.Value.Enum
-                    };
-                    newSchemaFilter.Properties.Add(propKey, newProp);
-
-                    var newField = new OptionsConfig();
-                    newOptionsFilter.Fields.Add(propKey, newField);
-                    if (prop.Value.Enum != null)
-                    {
-                        newProp.Type = "array";
-                        newField.Type = "checkbox";
+                        fieldLst.Add(propKey);
                     }
-                    if (optType == "select2")
+                    else if (prop.Value.Type == "number")
                     {
-                        newProp.Type = "array";
-                        newField.Type = "select2";
-                        newField.DataService = opts?.DataService;
-                    }
-                    fieldLst.Add(propKey);
-                }
-                else if (optType == "date" || optType == "datetime" || optType == "time")
-                {
-                    var newProp = new SchemaConfig(true);
-                    newSchemaFilter.Properties.Add(propKey, newProp);
-                    newProp.Properties.Add("StartDays", new SchemaConfig()
-                    {
-                        Type = "number",
-                        Title = propTitle + " : from x days in the past"
-                    });
-                    newProp.Properties.Add("EndDays", new SchemaConfig()
-                    {
-                        Type = "number",
-                        Title = propTitle + " : until x days in the future"
-                    });
-                    fieldLst.Add(propKey);
-                    newProp.Properties.Add("UseTime", new SchemaConfig()
-                    {
-                        Type = "boolean",
-                        Title = propTitle + " Consider time"
-                    });
+                        var newProp = new SchemaConfig()
+                        {
+                            Type = prop.Value.Type,
+                            Title = prop.Value.Title
+                        };
+                        newSchemaFilter.Properties.Add(propKey, newProp);
 
-                    /*
-                    var newField = new OptionsConfig();
-                    newOptionsFilter.Fields.Add(propKey, newField);
-                    newField.Helper = "Use 0 for today";
-                    */
+                        var newField = new OptionsConfig();
+                        newOptionsFilter.Fields.Add(propKey, newField);
+
+                        fieldLst.Add(propKey);
+                    }
+                    else if (optType == "text" || optType == "mltext" || optType == "checkbox" || optType == "select" || optType == "select2" || optType == "radio")
+                    {
+                        var newProp = new SchemaConfig()
+                        {
+                            Type = prop.Value.Type,
+                            Title = propTitle,
+                            Enum = prop.Value.Enum
+                        };
+                        newSchemaFilter.Properties.Add(propKey, newProp);
+
+                        var newField = new OptionsConfig();
+                        newOptionsFilter.Fields.Add(propKey, newField);
+                        if (prop.Value.Enum != null)
+                        {
+                            newProp.Type = "array";
+                            newField.Type = "checkbox";
+                        }
+                        if (optType == "select2")
+                        {
+                            newProp.Type = "array";
+                            newField.Type = "select2";
+                            newField.DataService = opts?.DataService;
+                        }
+                        fieldLst.Add(propKey);
+                    }
+                    else if (optType == "date" || optType == "datetime" || optType == "time")
+                    {
+                        var newProp = new SchemaConfig(true);
+                        newSchemaFilter.Properties.Add(propKey, newProp);
+                        newProp.Properties.Add("StartDays", new SchemaConfig()
+                        {
+                            Type = "number",
+                            Title = propTitle + " : from x days in the past"
+                        });
+                        newProp.Properties.Add("EndDays", new SchemaConfig()
+                        {
+                            Type = "number",
+                            Title = propTitle + " : until x days in the future"
+                        });
+                        fieldLst.Add(propKey);
+                        newProp.Properties.Add("UseTime", new SchemaConfig()
+                        {
+                            Type = "boolean",
+                            Title = propTitle + " Consider time"
+                        });
+
+                        /*
+                        var newField = new OptionsConfig();
+                        newOptionsFilter.Fields.Add(propKey, newField);
+                        newField.Helper = "Use 0 for today";
+                        */
+                    }
                 }
             }
         }
