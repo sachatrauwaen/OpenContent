@@ -56,7 +56,13 @@ namespace Satrabel.OpenContent.Components.FileIndexer
             if (string.IsNullOrEmpty(file))
                 return null;
 
-            var fileIndexer = _fileIndexers.SingleOrDefault(ds => ds.CanIndex(file));
+            if (_fileIndexers == null)
+                return null;
+
+            if(!_fileIndexers.Any())
+                return null;
+
+            var fileIndexer = _fileIndexers.FirstOrDefault(indexer => indexer.CanIndex(file));
             return fileIndexer;
         }
     }

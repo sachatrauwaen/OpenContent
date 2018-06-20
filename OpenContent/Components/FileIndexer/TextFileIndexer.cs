@@ -16,11 +16,13 @@ namespace Satrabel.OpenContent.Components.FileIndexer
             if (int.TryParse(file, out fileId))
             {
                 var f = FileManager.Instance.GetFile(fileId);
+                if (f == null) return false;
                 return f.Extension == "txt";
             }
             else
             {
                 var f = FileUri.FromPath(file);
+                if (f == null) return false;
                 return f.Extension == ".txt";
             }
         }
