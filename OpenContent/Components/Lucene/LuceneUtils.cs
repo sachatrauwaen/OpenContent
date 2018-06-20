@@ -43,10 +43,12 @@ namespace Satrabel.OpenContent.Components.Lucene
         public static void ReIndexModuleData(OpenContentModuleConfig module)
         {
             var indexableData = GetModuleIndexableData(module);
-            if (indexableData == null || !indexableData.Any()) return;
+            var dataExample = indexableData?.ToList().FirstOrDefault();
+            if (dataExample == null) return;
 
             var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template); //todo index is being build from schema & options. But they should be provided by the provider, not directly from the files
-            string scope = indexableData.ToList().First().GetScope();
+
+            string scope = dataExample.GetScope();
 
             LuceneController.Instance.ReIndexData(indexableData, indexConfig, scope);
         }
@@ -82,8 +84,10 @@ namespace Satrabel.OpenContent.Components.Lucene
             var dataExample = indexableData?.ToList().FirstOrDefault();
             if (dataExample == null) return;
 
-            string scope = dataExample.GetScope();
             var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template); //todo index is being build from schema & options. But they should be provided by the provider, not directly from the files
+
+            string scope = dataExample.GetScope();
+
             lc.AddList(indexableData, indexConfig, scope);
         }
 
