@@ -199,7 +199,7 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         private static void DeleteAllOfType(LuceneController lc, string scope)
         {
-            var selection = new TermQuery(new Term("$type", scope));
+            var selection = JsonMappingUtils.CreateTypeQuery(scope);
             lc.Store.Delete(selection);
         }
 

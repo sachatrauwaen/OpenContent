@@ -3,6 +3,7 @@ using Lucene.Net.Analysis;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
+using Lucene.Net.QueryParsers;
 using Lucene.Net.Search;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Lucene.Config;
@@ -54,7 +55,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
 
         public static Filter GetTypeFilter(string type)
         {
-            var typeTermQuery = new TermQuery(new Term(FIELD_TYPE, type));
+            var typeTermQuery = CreateTypeQuery(type);
             BooleanQuery query = new BooleanQuery();
             query.Add(typeTermQuery, Occur.MUST);
             Filter filter = new QueryWrapperFilter(query);
@@ -62,7 +63,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
         }
         public static Filter GetTypeFilter(string type, Query filter)
         {
-            var typeTermQuery = new TermQuery(new Term(FIELD_TYPE, type));
+            var typeTermQuery = CreateTypeQuery(type);
             BooleanQuery query = new BooleanQuery();
             query.Add(typeTermQuery, Occur.MUST);
             query.Add(filter, Occur.MUST);
@@ -74,6 +75,11 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
         {
             var analyser = new StandardAnalyzer(global::Lucene.Net.Util.Version.LUCENE_30);
             return analyser;
+        }
+
+        public static TermQuery CreateTypeQuery(string type)
+        {
+            return new TermQuery(new Term(FIELD_TYPE, type));
         }
     }
 }
