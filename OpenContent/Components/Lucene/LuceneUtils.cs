@@ -69,7 +69,7 @@ namespace Satrabel.OpenContent.Components.Lucene
                 foreach (var module in modules)
                 {
                     if (!OpenContentUtils.CheckOpenContentTemplateFiles(module)) { continue; }
-                    if (module.IsListMode() && !module.Settings.IsOtherModule && module.Settings.Manifest.Index)
+                    if (module.IsListMode() &&  module.Settings.Manifest.Index)
                     {
                         RegisterModuleDataForIndexing(lc, module);
                     }
