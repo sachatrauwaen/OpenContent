@@ -28,11 +28,12 @@ namespace Satrabel.OpenContent
             hlCancel.NavigateUrl = Globals.NavigateURL();
             cmdSave.NavigateUrl = Globals.NavigateURL();
             OpenContentSettings settings = this.OpenContentSettings();
-            AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext.PortalId, "~/DeskTopModules/OpenContent", "formsettings");
+            AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext.PortalId, "DeskTopModules/OpenContent", "formsettings");
             //AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, "", "");
-            alpaca.RegisterAll();
+            alpaca.RegisterAll(true, true);
             string itemId = null;
             AlpacaContext = new AlpacaContext(PortalId, ModuleId, itemId, ScopeWrapper.ClientID, hlCancel.ClientID, cmdSave.ClientID, null, null, null);
+            AlpacaContext.Bootstrap = true;
         }
 
         public AlpacaContext AlpacaContext { get; private set; }
