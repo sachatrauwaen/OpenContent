@@ -218,7 +218,7 @@ namespace Satrabel.OpenContent.Components.Render
                             {
                                 var json = dataItem.Data;
 
-                                if (json != null && LocaleController.Instance.GetLocales(_portalId).Count > 1)
+                                if (json != null /*&& LocaleController.Instance.GetLocales(_portalId).Count > 1*/)
                                 {
                                     JsonUtils.SimplifyJson(json, GetCurrentCultureCode());
                                 }
@@ -243,7 +243,7 @@ namespace Satrabel.OpenContent.Components.Render
                 try
                 {
                     var jsonSettings = JToken.Parse(_settingsJson);
-                    if (LocaleController.Instance.GetLocales(_portalId).Count > 1)
+                    //if (LocaleController.Instance.GetLocales(_portalId).Count > 1)
                     {
                         JsonUtils.SimplifyJson(jsonSettings, GetCurrentCultureCode());
                     }
@@ -304,7 +304,7 @@ namespace Satrabel.OpenContent.Components.Render
                     var json = dataItem?.Data;
                     if (json != null)
                     {
-                        if (LocaleController.Instance.GetLocales(_portalId).Count > 1)
+                        //if (LocaleController.Instance.GetLocales(_portalId).Count > 1)
                         {
                             JsonUtils.SimplifyJson(json, GetCurrentCultureCode());
                         }

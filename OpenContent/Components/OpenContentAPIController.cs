@@ -362,7 +362,7 @@ namespace Satrabel.OpenContent.Components
                     }
                     if (json is JArray)
                     {
-                        if (LocaleController.Instance.GetLocales(PortalSettings.PortalId).Count > 1)
+                        //if (LocaleController.Instance.GetLocales(PortalSettings.PortalId).Count > 1)
                         {
                             JsonUtils.SimplifyJson(json, DnnLanguageUtils.GetCurrentCultureCode());
                         }
