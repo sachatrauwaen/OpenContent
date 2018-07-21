@@ -40,7 +40,7 @@ namespace Satrabel.OpenContent.Components.Render
         public override JToken GetModelAsJson(bool onlyData = false, bool onlyMainData = false)
         {
             var model = _dataJson as JObject;
-            if (LocaleController.Instance.GetLocales(_portalId).Count > 1)
+            //if (LocaleController.Instance.GetLocales(_portalId).Count > 1)
             {
                 JsonUtils.SimplifyJson(model, GetCurrentCultureCode());
             }

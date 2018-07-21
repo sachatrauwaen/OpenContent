@@ -55,7 +55,7 @@ namespace Satrabel.OpenContent.Components.Render
                     JObject context = new JObject();
                     model["Context"] = context;
                     context["Id"] = item.Id;
-                    if (LocaleController.Instance.GetLocales(_portalId).Count > 1)
+                    //if (LocaleController.Instance.GetLocales(_portalId).Count > 1)
                     {
                         JsonUtils.SimplifyJson(model, GetCurrentCultureCode());
                     }
@@ -91,7 +91,7 @@ namespace Satrabel.OpenContent.Components.Render
                     JObject context = new JObject();
                     dyn["Context"] = context;
                     context["Id"] = item.Id;
-                    if (LocaleController.Instance.GetLocales(_portalId).Count > 1)
+                    //if (LocaleController.Instance.GetLocales(_portalId).Count > 1)
                     {
                         JsonUtils.SimplifyJson(dyn, GetCurrentCultureCode());
                     }
