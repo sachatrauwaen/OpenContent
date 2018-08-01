@@ -175,7 +175,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
 
                         var newField = new OptionsConfig();
                         newOptionsFilter.Fields.Add(propKey, newField);
-                        if (prop.Value.Enum != null)
+                        if (prop.Value.Enum != null) /* If Enum, create multi-select */
                         {
                             newProp.Type = "array";
                             newField.Type = "checkbox";

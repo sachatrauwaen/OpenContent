@@ -319,7 +319,7 @@ namespace Satrabel.OpenContent.Components
                 OpenContentSettings settings = ActiveModule.OpenContentSettings();
                 var fb = new FormBuilder(settings.TemplateDir);
                 JObject json = fb.BuildQuerySettings(settings.Template.Collection);
-                var dataJson = data.ToJObject("quey settings json");
+                var dataJson = data.ToJObject("query settings json");
                 if (dataJson != null)
                     json["data"] = dataJson;
 
