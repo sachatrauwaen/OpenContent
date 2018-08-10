@@ -651,21 +651,34 @@ namespace Satrabel.OpenContent.Components.Handlebars
             {
                 try
                 {
-                    decimal? number = parameters[0] as decimal?;
-                    string format = parameters[1].ToString();
-                    string provider = parameters[2].ToString();
-
-                    IFormatProvider formatprovider = null;
-                    if (provider.ToLower() == "invariant")
+                    //decimal? number = parameters[0] as decimal?;
+                    string res = "";
+                    string format = "0.00";
+                    decimal number = decimal.Parse(parameters[0].ToString());
+                    if (parameters.Count() > 1)
                     {
-                        formatprovider = CultureInfo.InvariantCulture;
+                        format = parameters[1].ToString();
                     }
-                    else if (!string.IsNullOrWhiteSpace(provider))
+                    if (parameters.Count() > 2 && !string.IsNullOrWhiteSpace(parameters[2].ToString()))
                     {
-                        formatprovider = CultureInfo.CreateSpecificCulture(provider);
+                        string provider = parameters[2].ToString();
+                        IFormatProvider formatprovider = null;
+                        if (provider.ToLower() == "invariant")
+                        {
+                            formatprovider = CultureInfo.InvariantCulture;
+                        }
+                        else
+                        {
+                            formatprovider = CultureInfo.CreateSpecificCulture(provider);
+                        }
+                        res = number.ToString(format, formatprovider);
                     }
-
-                    string res = number.Value.ToString(format, formatprovider);
+                    else
+                    {
+                        res = number.ToString(format);
+                    }
+                    //string provider = parameters[2].ToString();
+                    //string res = number.Value.ToString(format, formatprovider);
                     HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, res);
                 }
                 catch (Exception)
