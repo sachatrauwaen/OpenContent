@@ -12305,7 +12305,7 @@
                     height: null,
                     minHeight: null,
                     maxHeight: null,
-                    focus: true
+                    //focus: true
                 };
             }
             if ( this.options.placeholder) {
