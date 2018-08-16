@@ -7410,7 +7410,13 @@
                             dataType: 'json',
                             url: self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
                             maxFileSize: 25000000,
-                            formData: { uploadfolder: self.options.uploadfolder, overwrite : self.options.showOverwrite ? self.isOverwrite() : "" },
+                            formData: function () {
+                                return [
+                                    { name: 'uploadfolder', value: self.options.uploadfolder },
+                                    { name: 'overwrite', value: self.isOverwrite() },
+                                ]
+                                //{ uploadfolder: self.options.uploadfolder, overwrite: self.isOverwrite() }
+                            },
                             beforeSend: self.sf.setModuleHeaders,
                             add: function (e, data) {
                                 self.showAlert('File uploading...');
@@ -7428,16 +7434,24 @@
                             done: function (e, data) {
                                 if (data.result) {
                                     $.each(data.result, function (index, file) {
-                                        self.refresh(function () {
-                                            self.setValue(file.url);
-                                            self.showAlert('File uploaded', true);
-                                        });                                       
+                                        if (file.success) {
+                                            self.refresh(function () {
+                                                self.setValue(file.url);
+                                                self.showAlert('File uploaded', true);
+                                            }); 
+                                        } else {
+                                            self.showAlert(file.message, true);
+                                        }
                                     });
                                 }
                                 
                             }
                         }).data('loaded', true);
                     }
+                }
+
+                if (!self.options.showOverwrite) {
+                    $(self.control).parent().find('#' + self.id + '-overwrite').hide();
                 }
                 callback();
             });
@@ -7543,8 +7557,12 @@
         },
         isOverwrite: function () {
             var self = this;
-            var checkbox = $(self.control).parent().find('#' + self.id + '-overwrite'); 
-            return Alpaca.checked(checkbox);
+            if (this.options.showOverwrite) {
+                var checkbox = $(self.control).parent().find('#' + self.id + '-overwrite');
+                return Alpaca.checked(checkbox);
+            } else {
+                return this.options.overwrite;
+            }
         },
         /**
          * Validate against enum property.
