@@ -14,6 +14,7 @@ using Satrabel.OpenContent.Components.Dynamic;
 using System.Collections;
 using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components.Logging;
+using Newtonsoft.Json.Linq;
 
 namespace Satrabel.OpenContent.Components.Handlebars
 {
@@ -42,6 +43,8 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 RegisterConvertHtmlToTextHelper(hbs);
                 RegisterConvertToJsonHelper(hbs);
                 RegisterTruncateWordsHelper(hbs);
+                RegisterReplaceHelper(hbs);
+                RegisterReplaceNewlineHelper(hbs);
                 _template = hbs.Compile(source);
             }
             catch (Exception ex)
@@ -113,6 +116,8 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterConvertHtmlToTextHelper(hbs);
             RegisterConvertToJsonHelper(hbs);
             RegisterTruncateWordsHelper(hbs);
+            RegisterReplaceHelper(hbs);
+            RegisterReplaceNewlineHelper(hbs);
         }
 
         private void RegisterTruncateWordsHelper(HandlebarsDotNet.IHandlebars hbs)
@@ -130,6 +135,39 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     }
                     string res = html.TruncateWords(maxCharacters, trailingText);
                     HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, res);
+                }
+                catch (Exception)
+                {
+                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "");
+                }
+            });
+        }
+        private void RegisterReplaceHelper(HandlebarsDotNet.IHandlebars hbs)
+        {
+            hbs.RegisterHelper("replace", (writer, context, parameters) =>
+            {
+                try
+                {
+                    string text = parameters[0].ToString();
+                    string oldString = parameters[1].ToString().Replace("\\n", "\n");
+                    text = text.Replace(oldString, parameters[2].ToString());                    
+                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, text);
+                }
+                catch (Exception)
+                {
+                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "");
+                }
+            });
+        }
+        private void RegisterReplaceNewlineHelper(HandlebarsDotNet.IHandlebars hbs)
+        {
+            hbs.RegisterHelper("replacenewline", (writer, context, parameters) =>
+            {
+                try
+                {
+                    string text = parameters[0].ToString();                    
+                    text = text.Replace("\n", parameters[1].ToString());
+                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, text);
                 }
                 catch (Exception)
                 {
@@ -165,7 +203,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 string source = File.ReadAllText(sourceFileUri.PhysicalFilePath);
                 string sourceFolder = sourceFileUri.UrlFolder;
                 var hbs = HandlebarsDotNet.Handlebars.Create();
-                
+
                 RegisterHelpers(hbs);
                 RegisterScriptHelper(hbs);
                 RegisterHandlebarsHelper(hbs);
@@ -292,7 +330,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 }
             });
             hbs.RegisterHelper("equaldate", (writer, options, context, arguments) =>
-            {                
+            {
                 try
                 {
                     DateTime datetime1 = DateTime.Parse(arguments[0].ToString(), null, System.Globalization.DateTimeStyles.RoundtripKind);
@@ -490,7 +528,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     writer.WriteSafeString(imageUrl);
                 }
             });
-           
+
         }
 
         /// <summary>
@@ -871,7 +909,15 @@ namespace Satrabel.OpenContent.Components.Handlebars
             {
                 try
                 {
-                    var res = System.Web.Helpers.Json.Encode(parameters[0]);
+                    string res;
+                    if (parameters[0] is JToken)
+                    {
+                        res = ((JToken)parameters[0]).ToString();
+                    }
+                    else
+                    {
+                        res = System.Web.Helpers.Json.Encode(parameters[0]);
+                    }
                     HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, res);
                 }
                 catch (Exception)
