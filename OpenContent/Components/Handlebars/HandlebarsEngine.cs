@@ -150,7 +150,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 {
                     string text = parameters[0].ToString();
                     string oldString = parameters[1].ToString().Replace("\\n", "\n");
-                    text = text.Replace(oldString, parameters[2].ToString());                    
+                    text = text.Replace(oldString, parameters[2].ToString());
                     HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, text);
                 }
                 catch (Exception)
@@ -165,7 +165,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             {
                 try
                 {
-                    string text = parameters[0].ToString();                    
+                    string text = parameters[0].ToString();
                     text = text.Replace("\n", parameters[1].ToString());
                     HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, text);
                 }
@@ -689,10 +689,23 @@ namespace Satrabel.OpenContent.Components.Handlebars
             {
                 try
                 {
-                    //decimal? number = parameters[0] as decimal?;
+                    decimal number;
+                    if (parameters[0] is decimal?)
+                    {
+                        number = (parameters[0] as decimal?).Value;
+                    }
+                    else if (parameters[0] is decimal)
+                    {
+                        number = (decimal)parameters[0];
+                    }
+                    else
+                    {
+                        number = decimal.Parse(parameters[0].ToString());
+                    }
+
                     string res = "";
                     string format = "0.00";
-                    decimal number = decimal.Parse(parameters[0].ToString());
+
                     if (parameters.Count() > 1)
                     {
                         format = parameters[1].ToString();
