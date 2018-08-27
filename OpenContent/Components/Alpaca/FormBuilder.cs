@@ -328,7 +328,9 @@ namespace Satrabel.OpenContent.Components.Alpaca
                                 IndexType = "key",
                                 Index = true,
                                 Sort = true
-                            }
+                            },
+                            Index = true,
+                            Sort = true
                         };
                         newConfig.Fields.Add(prop.Key, newField);
                     }
