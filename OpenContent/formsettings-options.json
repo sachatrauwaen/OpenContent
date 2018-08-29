@@ -1,98 +1,98 @@
 ﻿{
     "fields": {
         "Notifications": {
-            "fields": {
-                "item": {
-                    "fields": {
-                        "From": {
-                            "title": "From",
-                            "type": "select",
-                            "optionLabels": [ "Host", "Site Admin", "Form Field", "Custom", "Current Dnn user" ],
-                            "removeDefaultNone": true
+            "type": "accordion",
+            "titleField": "EmailSubject",
+            "items": {
+                "fields": {
+                    "From": {
+                        "title": "From",
+                        "type": "select",
+                        "optionLabels": [ "Host", "Site Admin", "Form Field", "Custom", "Current Dnn user" ],
+                        "removeDefaultNone": true
+                    },
+                    "FromName": {
+                        "dependencies": {
+                            "From": "custom"
                         },
-                        "FromName": {
-                            "dependencies": {
-                                "From": "custom"
-                            },
-                            "helper": "Name part of the email address"
-                        },
-                        "FromEmail": {
-                            "dependencies": {
-                                "From": "custom"
-                            }
-                        },
-                        "FromNameField": {
-                            "dependencies": {
-                                "From": "form"
-                            },
-                            "helper": "Form field where the name is extracted"
-                        },
-                        "FromEmailField": {
-                            "dependencies": {
-                                "From": "form"
-                            },
-                            "helper": "Form field where the email is extracted"
-                        },
-                        "To": {
-                            "type": "select",
-                            "optionLabels": [ "Host", "Site Admin", "Form Field", "Custom" , "Current Dnn user"],
-                            "removeDefaultNone": true
-                        },
-                        "ToName": {
-                            "dependencies": {
-                                "To": "custom"
-                            },
-                            "helper": "Name part of the email address"
-                        },
-                        "ToEmail": {
-                            "dependencies": {
-                                "To": "custom"
-                            }
-                        },
-                        "ToNameField": {
-                            "dependencies": {
-                                "To": "form"
-                            },
-                            "helper": "Form field where the name is extracted"
-                        },
-                        "ToEmailField": {
-                            "dependencies": {
-                                "To": "form"
-                            },
-                            "helper": "Form field where the email is extracted"
-                        },
-                        "ReplyTo": {
-                            "type": "select",
-                            "optionLabels": [ "Host", "Site Admin", "Form Field", "Custom", "Current Dnn user" ]
-                        },
-                        "ReplyToName": {
-                            "dependencies": {
-                                "ReplyTo": "custom"
-                            },
-                            "helper": "Name part of the email address"
-                        },
-                        "ReplyToEmail": {
-                            "dependencies": {
-                                "ReplyTo": "custom"
-                            }
-                        },
-                        "ReplyToNameField": {
-                            "dependencies": {
-                                "ReplyTo": "form"
-                            },
-                            "helper": "Form field where the name is extracted"
-                        },
-                        "ReplyToEmailField": {
-                            "dependencies": {
-                                "ReplyTo": "form"
-                            },
-                            "helper": "Form field where the email is extracted"
-                        },
-                        "EmailSubject": {
-                        },
-                        "EmailBody": {
-                            "type": "wysihtml"
+                        "helper": "Name part of the email address"
+                    },
+                    "FromEmail": {
+                        "dependencies": {
+                            "From": "custom"
                         }
+                    },
+                    "FromNameField": {
+                        "dependencies": {
+                            "From": "form"
+                        },
+                        "helper": "Form field where the name is extracted"
+                    },
+                    "FromEmailField": {
+                        "dependencies": {
+                            "From": "form"
+                        },
+                        "helper": "Form field where the email is extracted"
+                    },
+                    "To": {
+                        "type": "select",
+                        "optionLabels": [ "Host", "Site Admin", "Form Field", "Custom", "Current Dnn user" ],
+                        "removeDefaultNone": true
+                    },
+                    "ToName": {
+                        "dependencies": {
+                            "To": "custom"
+                        },
+                        "helper": "Name part of the email address"
+                    },
+                    "ToEmail": {
+                        "dependencies": {
+                            "To": "custom"
+                        }
+                    },
+                    "ToNameField": {
+                        "dependencies": {
+                            "To": "form"
+                        },
+                        "helper": "Form field where the name is extracted"
+                    },
+                    "ToEmailField": {
+                        "dependencies": {
+                            "To": "form"
+                        },
+                        "helper": "Form field where the email is extracted"
+                    },
+                    "ReplyTo": {
+                        "type": "select",
+                        "optionLabels": [ "Host", "Site Admin", "Form Field", "Custom", "Current Dnn user" ]
+                    },
+                    "ReplyToName": {
+                        "dependencies": {
+                            "ReplyTo": "custom"
+                        },
+                        "helper": "Name part of the email address"
+                    },
+                    "ReplyToEmail": {
+                        "dependencies": {
+                            "ReplyTo": "custom"
+                        }
+                    },
+                    "ReplyToNameField": {
+                        "dependencies": {
+                            "ReplyTo": "form"
+                        },
+                        "helper": "Form field where the name is extracted"
+                    },
+                    "ReplyToEmailField": {
+                        "dependencies": {
+                            "ReplyTo": "form"
+                        },
+                        "helper": "Form field where the email is extracted"
+                    },
+                    "EmailSubject": {
+                    },
+                    "EmailBody": {
+                        "type": "wysihtml"
                     }
                 }
             }
@@ -106,10 +106,10 @@
                     "type": "textarea",
                     "hidden": true
                 },
-                 "SiteKey": { 
+                "SiteKey": {
                     "hidden": true
                 },
-                "SecretKey": { 
+                "SecretKey": {
                     "hidden": true
                 }
             }
