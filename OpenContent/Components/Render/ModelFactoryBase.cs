@@ -217,17 +217,13 @@ namespace Satrabel.OpenContent.Components.Render
                             foreach (var dataItem in dataItems.Items)
                             {
                                 var json = dataItem.Data;
-
-                                if (json != null /*&& LocaleController.Instance.GetLocales(_portalId).Count > 1*/)
-                                {
-                                    JsonUtils.SimplifyJson(json, GetCurrentCultureCode());
-                                }
                                 if (json is JObject)
                                 {
                                     JObject context = new JObject();
                                     json["Context"] = context;
                                     context["Id"] = dataItem.Id;
                                     EnhanceSelect2(json as JObject);
+                                    JsonUtils.SimplifyJson(json, GetCurrentCultureCode());
                                 }
                                 colDataJson.Add(json);
                             }
@@ -243,10 +239,7 @@ namespace Satrabel.OpenContent.Components.Render
                 try
                 {
                     var jsonSettings = JToken.Parse(_settingsJson);
-                    //if (LocaleController.Instance.GetLocales(_portalId).Count > 1)
-                    {
-                        JsonUtils.SimplifyJson(jsonSettings, GetCurrentCultureCode());
-                    }
+                    JsonUtils.SimplifyJson(jsonSettings, GetCurrentCultureCode());
                     model["Settings"] = jsonSettings;
                 }
                 catch (Exception ex)

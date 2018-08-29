@@ -54,12 +54,9 @@ namespace Satrabel.OpenContent.Components.Render
                     var model = item.Data as JObject;
                     JObject context = new JObject();
                     model["Context"] = context;
-                    context["Id"] = item.Id;
-                    //if (LocaleController.Instance.GetLocales(_portalId).Count > 1)
-                    {
-                        JsonUtils.SimplifyJson(model, GetCurrentCultureCode());
-                    }
+                    context["Id"] = item.Id;                    
                     EnhanceSelect2(model);
+                    JsonUtils.SimplifyJson(model, GetCurrentCultureCode());
                     yield return JsonUtils.JsonToDictionary(model.ToString());
                 }
             }
@@ -91,14 +88,10 @@ namespace Satrabel.OpenContent.Components.Render
                     JObject context = new JObject();
                     dyn["Context"] = context;
                     context["Id"] = item.Id;
-                    //if (LocaleController.Instance.GetLocales(_portalId).Count > 1)
-                    {
-                        JsonUtils.SimplifyJson(dyn, GetCurrentCultureCode());
-                    }
                     EnhanceSelect2(dyn);
+                    JsonUtils.SimplifyJson(dyn, GetCurrentCultureCode());
                     EnhanceUser(dyn, item.CreatedByUserId);
                     EnhanceImages(dyn, itemsModel);
-
                     if (onlyData)
                     {
                         RemoveNoData(itemsModel);
