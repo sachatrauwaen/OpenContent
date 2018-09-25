@@ -41,10 +41,10 @@ namespace Satrabel.OpenContent.Components.JPList
                                     else
                                     {
                                         var group = new FilterGroup() { Condition = ConditionEnum.OR };
-                                        foreach (var n in names)
+                                        foreach (var name in names)
                                         {
                                             group.AddRule(FieldConfigUtils.CreateFilterRule(config, cultureCode,
-                                                n,
+                                                name,
                                                 OperatorEnum.START_WITH,
                                                 new StringRuleValue(status.data.value)
                                             ));

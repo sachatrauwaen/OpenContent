@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Datasource.Search;
 using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Lucene.Config;
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Linq;
 
 namespace Satrabel.OpenContent.Components.Querying
 {
@@ -148,7 +148,6 @@ namespace Satrabel.OpenContent.Components.Querying
                         else if (queryString?[item.Name] != null)
                         {
                             workFlowFilter.AddRule(FieldConfigUtils.CreateFilterRule(_indexConfig, cultureCode,
-
                                 item.Name,
                                 OperatorEnum.EQUAL,
                                 new StringRuleValue(queryString[item.Name])
@@ -339,7 +338,7 @@ namespace Satrabel.OpenContent.Components.Querying
                 }
             }
             else
-            {                
+            {
                 sort.Add(new SortRule()
                 {
                     Field = "createdondate",

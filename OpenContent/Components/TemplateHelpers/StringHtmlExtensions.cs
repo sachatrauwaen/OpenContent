@@ -81,8 +81,10 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
                 }
 
                 if (html.Length > charCount)
+                {
                     // add the trailing text
                     trunc.Append(trailingText);
+                }
 
                 // pop the rest off the stack to close remainder of tags
                 while (tags.Count > 0)
