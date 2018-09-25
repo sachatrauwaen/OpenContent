@@ -134,22 +134,15 @@ namespace Satrabel.OpenContent.Components.Querying
                     else if (item.Value is JArray) // enum
                     {
                         var arr = (JArray)item.Value;
-                        if (arr.Children().Any())
+                        if (arr.Children().Any(i => i is JValue))
                         {
                             var arrGroup = new FilterGroup();
 
-                            foreach (var arrItem in arr.Children())
-                            {
-                                if (arrItem is JValue)
-                                {
-                                    var val = (JValue)arrItem;
-                                    arrGroup.AddRule(FieldConfigUtils.CreateFilterRule(_indexConfig, cultureCode,
-                                        item.Name,
-                                        OperatorEnum.EQUAL,
-                                        new StringRuleValue(val.ToString())
-                                    ));
-                                }
-                            }
+                            arrGroup.AddRule(FieldConfigUtils.CreateFilterRule(_indexConfig, cultureCode,
+                                item.Name,
+                                OperatorEnum.IN,
+                                arr.Children().Where(i => i is JValue).Select(s => new StringRuleValue(s.ToString()))
+                            ));
                             workFlowFilter.FilterGroups.Add(arrGroup);
                         }
                         else if (queryString?[item.Name] != null)
