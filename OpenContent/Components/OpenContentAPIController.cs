@@ -362,11 +362,8 @@ namespace Satrabel.OpenContent.Components
                     }
                     if (json is JArray)
                     {
-                        if (LocaleController.Instance.GetLocales(PortalSettings.PortalId).Count > 1)
-                        {
-                            JsonUtils.SimplifyJson(json, DnnLanguageUtils.GetCurrentCultureCode());
-                        }
                         AddLookupItems(req.valueField, req.textField, req.childrenField, res, json as JArray);
+                        JsonUtils.SimplifyJson(json, DnnLanguageUtils.GetCurrentCultureCode());
                     }
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, res);

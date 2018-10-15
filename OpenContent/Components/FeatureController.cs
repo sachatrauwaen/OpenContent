@@ -41,7 +41,7 @@ namespace Satrabel.OpenContent.Components
         public string ExportModule(int moduleId)
         {
             string xml = "";
-            OpenContentController ctrl = new OpenContentController(PortalSettings.Current.PortalId);
+            OpenContentController ctrl = new OpenContentController();
             var items = ctrl.GetContents(moduleId);
             xml += "<opencontent>";
             foreach (var item in items)

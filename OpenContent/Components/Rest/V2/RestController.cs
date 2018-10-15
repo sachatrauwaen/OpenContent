@@ -164,7 +164,7 @@ namespace Satrabel.OpenContent.Components.Rest.V2
                         item["id"] = item["Context"]["Id"];
                         JsonUtils.IdJson(item);
                     }
-                    res[entity] = model[collection];
+                    res[entity] = model["Items"];
                     res["meta"]["total"] = dsItems.Total;
                     return Request.CreateResponse(HttpStatusCode.OK, res);
                 }

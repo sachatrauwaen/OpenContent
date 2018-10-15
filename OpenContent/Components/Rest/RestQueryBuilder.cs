@@ -34,10 +34,28 @@ namespace Satrabel.OpenContent.Components.Rest
                     {
                         if (rule.Value != null)
                         {
+                            RuleValue val;
+                            if(rule.Value.Type == Newtonsoft.Json.Linq.JTokenType.Boolean)
+                            {
+                                val = new BooleanRuleValue((bool)rule.Value.Value);
+                            }
+                            else if (rule.Value.Type == Newtonsoft.Json.Linq.JTokenType.Integer)
+                            {
+                                val = new IntegerRuleValue((int)rule.Value.Value);
+                            }
+                            else if (rule.Value.Type == Newtonsoft.Json.Linq.JTokenType.Float)
+                            {
+                                val = new FloatRuleValue((float)rule.Value.Value);
+                            }
+                            else
+                            {
+                                val = new StringRuleValue(rule.Value.ToString());
+                            }
+
                             query.AddRule(FieldConfigUtils.CreateFilterRule(config, cultureCode,
                                 rule.Field,
                                 rule.FieldOperator,
-                                new StringRuleValue(rule.Value.ToString())
+                                val
                             ));
                         }
                     }

@@ -14,6 +14,7 @@ using Satrabel.OpenContent.Components.Dynamic;
 using System.Collections;
 using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components.Logging;
+using Newtonsoft.Json.Linq;
 
 namespace Satrabel.OpenContent.Components.Handlebars
 {
@@ -39,9 +40,12 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 RegisterArrayIndexHelper(hbs);
                 RegisterArrayTranslateHelper(hbs);
                 RegisterIfAndHelper(hbs);
+                RegisterIfOrHelper(hbs);
                 RegisterConvertHtmlToTextHelper(hbs);
                 RegisterConvertToJsonHelper(hbs);
                 RegisterTruncateWordsHelper(hbs);
+                RegisterReplaceHelper(hbs);
+                RegisterReplaceNewlineHelper(hbs);
                 _template = hbs.Compile(source);
             }
             catch (Exception ex)
@@ -108,11 +112,14 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterArrayTranslateHelper(hbs);
             RegisterArrayLookupHelper(hbs);
             RegisterIfAndHelper(hbs);
+            RegisterIfOrHelper(hbs);
             RegisterIfInHelper(hbs);
             RegisterEachPublishedHelper(hbs);
             RegisterConvertHtmlToTextHelper(hbs);
             RegisterConvertToJsonHelper(hbs);
             RegisterTruncateWordsHelper(hbs);
+            RegisterReplaceHelper(hbs);
+            RegisterReplaceNewlineHelper(hbs);
         }
 
         private void RegisterTruncateWordsHelper(HandlebarsDotNet.IHandlebars hbs)
@@ -130,6 +137,39 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     }
                     string res = html.TruncateWords(maxCharacters, trailingText);
                     HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, res);
+                }
+                catch (Exception)
+                {
+                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "");
+                }
+            });
+        }
+        private void RegisterReplaceHelper(HandlebarsDotNet.IHandlebars hbs)
+        {
+            hbs.RegisterHelper("replace", (writer, context, parameters) =>
+            {
+                try
+                {
+                    string text = parameters[0].ToString();
+                    string oldString = parameters[1].ToString().Replace("\\n", "\n");
+                    text = text.Replace(oldString, parameters[2].ToString());
+                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, text);
+                }
+                catch (Exception)
+                {
+                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "");
+                }
+            });
+        }
+        private void RegisterReplaceNewlineHelper(HandlebarsDotNet.IHandlebars hbs)
+        {
+            hbs.RegisterHelper("replacenewline", (writer, context, parameters) =>
+            {
+                try
+                {
+                    string text = parameters[0].ToString();
+                    text = text.Replace("\n", parameters[1].ToString());
+                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, text);
                 }
                 catch (Exception)
                 {
@@ -165,7 +205,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 string source = File.ReadAllText(sourceFileUri.PhysicalFilePath);
                 string sourceFolder = sourceFileUri.UrlFolder;
                 var hbs = HandlebarsDotNet.Handlebars.Create();
-                
+
                 RegisterHelpers(hbs);
                 RegisterScriptHelper(hbs);
                 RegisterHandlebarsHelper(hbs);
@@ -292,7 +332,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 }
             });
             hbs.RegisterHelper("equaldate", (writer, options, context, arguments) =>
-            {                
+            {
                 try
                 {
                     DateTime datetime1 = DateTime.Parse(arguments[0].ToString(), null, System.Globalization.DateTimeStyles.RoundtripKind);
@@ -490,7 +530,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     writer.WriteSafeString(imageUrl);
                 }
             });
-           
+
         }
 
         /// <summary>
@@ -651,21 +691,47 @@ namespace Satrabel.OpenContent.Components.Handlebars
             {
                 try
                 {
-                    decimal? number = parameters[0] as decimal?;
-                    string format = parameters[1].ToString();
-                    string provider = parameters[2].ToString();
-
-                    IFormatProvider formatprovider = null;
-                    if (provider.ToLower() == "invariant")
+                    decimal number;
+                    if (parameters[0] is decimal?)
                     {
-                        formatprovider = CultureInfo.InvariantCulture;
+                        number = (parameters[0] as decimal?).Value;
                     }
-                    else if (!string.IsNullOrWhiteSpace(provider))
+                    else if (parameters[0] is decimal)
                     {
-                        formatprovider = CultureInfo.CreateSpecificCulture(provider);
+                        number = (decimal)parameters[0];
+                    }
+                    else
+                    {
+                        number = decimal.Parse(parameters[0].ToString());
                     }
 
-                    string res = number.Value.ToString(format, formatprovider);
+                    string res = "";
+                    string format = "0.00";
+
+                    if (parameters.Count() > 1)
+                    {
+                        format = parameters[1].ToString();
+                    }
+                    if (parameters.Count() > 2 && !string.IsNullOrWhiteSpace(parameters[2].ToString()))
+                    {
+                        string provider = parameters[2].ToString();
+                        IFormatProvider formatprovider = null;
+                        if (provider.ToLower() == "invariant")
+                        {
+                            formatprovider = CultureInfo.InvariantCulture;
+                        }
+                        else
+                        {
+                            formatprovider = CultureInfo.CreateSpecificCulture(provider);
+                        }
+                        res = number.ToString(format, formatprovider);
+                    }
+                    else
+                    {
+                        res = number.ToString(format);
+                    }
+                    //string provider = parameters[2].ToString();
+                    //string res = number.Value.ToString(format, formatprovider);
                     HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, res);
                 }
                 catch (Exception)
@@ -814,6 +880,26 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 }
             });
         }
+
+        private void RegisterIfOrHelper(IHandlebars hbs)
+        {
+            hbs.RegisterHelper("ifor", (writer, options, context, arguments) =>
+            {
+                bool res = false;
+                foreach (var arg in arguments)
+                {
+                    res = res || HandlebarsUtils.IsTruthyOrNonEmpty(arg);
+                }
+                if (res)
+                {
+                    options.Template(writer, (object)context);
+                }
+                else
+                {
+                    options.Inverse(writer, (object)context);
+                }
+            });
+        }
         private void RegisterIfInHelper(IHandlebars hbs)
         {
             hbs.RegisterHelper("ifin", (writer, options, context, arguments) =>
@@ -858,7 +944,15 @@ namespace Satrabel.OpenContent.Components.Handlebars
             {
                 try
                 {
-                    var res = System.Web.Helpers.Json.Encode(parameters[0]);
+                    string res;
+                    if (parameters[0] is JToken)
+                    {
+                        res = ((JToken)parameters[0]).ToString();
+                    }
+                    else
+                    {
+                        res = System.Web.Helpers.Json.Encode(parameters[0]);
+                    }
                     HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, res);
                 }
                 catch (Exception)
