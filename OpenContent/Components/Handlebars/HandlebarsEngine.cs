@@ -40,6 +40,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 RegisterArrayIndexHelper(hbs);
                 RegisterArrayTranslateHelper(hbs);
                 RegisterIfAndHelper(hbs);
+                RegisterIfOrHelper(hbs);
                 RegisterConvertHtmlToTextHelper(hbs);
                 RegisterConvertToJsonHelper(hbs);
                 RegisterTruncateWordsHelper(hbs);
@@ -111,6 +112,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterArrayTranslateHelper(hbs);
             RegisterArrayLookupHelper(hbs);
             RegisterIfAndHelper(hbs);
+            RegisterIfOrHelper(hbs);
             RegisterIfInHelper(hbs);
             RegisterEachPublishedHelper(hbs);
             RegisterConvertHtmlToTextHelper(hbs);
@@ -867,6 +869,26 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 foreach (var arg in arguments)
                 {
                     res = res && HandlebarsUtils.IsTruthyOrNonEmpty(arg);
+                }
+                if (res)
+                {
+                    options.Template(writer, (object)context);
+                }
+                else
+                {
+                    options.Inverse(writer, (object)context);
+                }
+            });
+        }
+
+        private void RegisterIfOrHelper(IHandlebars hbs)
+        {
+            hbs.RegisterHelper("ifor", (writer, options, context, arguments) =>
+            {
+                bool res = false;
+                foreach (var arg in arguments)
+                {
+                    res = res || HandlebarsUtils.IsTruthyOrNonEmpty(arg);
                 }
                 if (res)
                 {
