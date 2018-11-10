@@ -4,6 +4,7 @@
             "type": "accordion",
             "titleField": "EmailSubject",
             "items": {
+
                 "fields": {
                     "From": {
                         "title": "From",
@@ -92,15 +93,16 @@
                     "EmailSubject": {
                     },
                     "EmailBody": {
-                        "type": "wysihtml"
+                        "type": "summernote"
                     }
+
                 }
             }
         },
         "Settings": {
             "fields": {
                 "Message": {
-                    "type": "wysihtml"
+                    "type": "summernote"
                 },
                 "Tracking": {
                     "type": "textarea",

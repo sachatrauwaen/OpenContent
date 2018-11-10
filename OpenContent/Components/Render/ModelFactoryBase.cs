@@ -208,10 +208,12 @@ namespace Satrabel.OpenContent.Components.Render
                             foreach (var dataItem in dataItems.Items)
                             {
                                 var json = dataItem.Data;
+
                                 if (json != null && DnnLanguageUtils.GetPortalLocales(_portalId).Count > 1)
                                 {
                                     JsonUtils.SimplifyJson(json, GetCurrentCultureCode());
                                 }
+
                                 if (json is JObject)
                                 {
                                     JObject context = new JObject();
@@ -286,7 +288,7 @@ namespace Satrabel.OpenContent.Components.Render
                     var json = dataItem?.Data;
                     if (json != null)
                     {
-                        if (DnnLanguageUtils.GetPortalLocales(_portalId).Count > 1)
+                        //if (DnnLanguageUtils.GetPortalLocales(_portalId).Count > 1)
                         {
                             JsonUtils.SimplifyJson(json, GetCurrentCultureCode());
                         }

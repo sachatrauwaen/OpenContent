@@ -37,16 +37,13 @@ namespace Satrabel.OpenContent.Components.Render
         public override JToken GetModelAsJson(bool onlyData = false, bool onlyMainData = false)
         {
             var model = _dataJson as JObject;
-            if (LocaleController.Instance.GetLocales(_portalId).Count > 1)
-            {
-                JsonUtils.SimplifyJson(model, GetCurrentCultureCode());
-            }
             var enhancedModel = new JObject();
             ExtendSchemaOptions(enhancedModel, onlyData || onlyMainData);
             ExtendModel(enhancedModel, onlyData, onlyMainData);
             ExtendModelSingle(enhancedModel);
             EnhanceSelect2(model, onlyData);
             JsonUtils.Merge(model, enhancedModel);
+            JsonUtils.SimplifyJson(model, GetCurrentCultureCode());
             return model;
         }
 

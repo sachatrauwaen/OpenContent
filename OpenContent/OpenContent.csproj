@@ -531,6 +531,7 @@
     <Content Include="alpaca\css\img\Dn_16X16_Standard.png" />
     <Content Include="alpaca\css\img\Up_16X16_Standard.png" />
     <Content Include="alpaca\js\fields\dnn\AccordionField.js" />
+    <Content Include="alpaca\js\fields\dnn\CheckboxField.js" />
     <Content Include="alpaca\js\fields\dnn\dnnfields.js" />
     <Content Include="alpaca\js\fields\dnn\dnnfields.min.js">
       <DependentUpon>dnnfields.js</DependentUpon>

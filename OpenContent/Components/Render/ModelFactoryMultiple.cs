@@ -58,7 +58,7 @@ namespace Satrabel.OpenContent.Components.Render
             {
                 foreach (var item in _dataList)
                 {
-                    var model = item.Data as JObject;
+                    var model = item.Data.DeepClone() as JObject;
                     JObject context = new JObject();
                     model["Context"] = context;
                     context["Id"] = item.Id;
@@ -103,7 +103,6 @@ namespace Satrabel.OpenContent.Components.Render
                     EnhanceSelect2(dyn, onlyData);
                     EnhanceUser(dyn, item.CreatedByUserId);
                     EnhanceImages(dyn, itemsModel);
-
                     if (onlyData)
                     {
                         RemoveNoData(itemsModel);
