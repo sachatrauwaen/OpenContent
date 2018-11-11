@@ -69,7 +69,6 @@
       <Output TaskParameter="Include" ItemName="PackageTxtFiles" />
     </CreateItem>
 
-
     <CreateItem Include="**\*.sqldataprovider">
       <Output TaskParameter="Include" ItemName="SqlDataProviderFiles" />
     </CreateItem>
@@ -100,11 +99,7 @@
     <!-- Copy the Install package to the Packages folder -->
     <Copy SourceFiles="$(MSBuildProjectDirectory)\$(PackageName)_$(Version)_Install.$(Extension)" DestinationFolder="$(WebsitePath)/Install/Module" />
 	<Copy SourceFiles="$(MSBuildProjectDirectory)\$(PackageName)_$(Version)_Install.$(Extension)" DestinationFolder="../Install" />
-    
-    <RemoveDir Directories ="$(MSBuildProjectDirectory)\Package" />
-    <RemoveDir Directories ="$(MSBuildProjectDirectory)\ResourcesZip" />
 
-    
     <Copy SourceFiles="bin\Release\$(AssemblyName).dll" DestinationFolder="$(MSBuildProjectDirectory)\Package\bin"/>
     <Copy SourceFiles="bin\Release\Handlebars.dll" DestinationFolder="$(MSBuildProjectDirectory)\Package\bin"/>
     <Copy SourceFiles="bin\Release\EPPlus.dll" DestinationFolder="$(MSBuildProjectDirectory)\Package\bin"/>
@@ -135,9 +130,9 @@
 
     <Delete Files="$(MSBuildProjectDirectory)\Resources.Zip" />
     
-
+	<RemoveDir Directories ="$(MSBuildProjectDirectory)\Package" ContinueOnError="True"/>
     <RemoveDir Directories ="$(MSBuildProjectDirectory)\Package" />
-
+	<RemoveDir Directories ="$(MSBuildProjectDirectory)\ResourcesZip" ContinueOnError="True"/>
     <RemoveDir Directories ="$(MSBuildProjectDirectory)\ResourcesZip" />
     
   </Target>
