@@ -57,15 +57,7 @@ namespace Satrabel.OpenContent.Components.Render
                 var context = model["Context"];
                 if (Detail)
                 {
-                    string url = "";
-                    if (!string.IsNullOrEmpty(_manifest?.DetailUrl))
-                    {
-                        HandlebarsEngine hbEngine = new HandlebarsEngine();
-                        var dynForHBS = JsonUtils.JsonToDictionary(model.ToString());
-                        url = hbEngine.Execute(_manifest.DetailUrl, dynForHBS);
-                        url = HttpUtility.HtmlDecode(url);
-                    }
-                    context["DetailUrl"] = Globals.NavigateURL(_detailTabId, false, _portalSettings, "", GetCurrentCultureCode(), url.CleanupUrl(), "id=" + _data.Id);
+                    context["DetailUrl"] = GenerateDetailUrl(_data, model, _manifest, _detailTabId);
                     context["Id"] = _data.Id;
                     var editIsAllowed = !_manifest.DisableEdit && IsEditAllowed(_data.CreatedByUserId);
                     context["EditUrl"] = editIsAllowed ? DnnUrlUtils.EditUrl("id", _data.Id, _module.ViewModule.ModuleID, _portalSettings) : "";

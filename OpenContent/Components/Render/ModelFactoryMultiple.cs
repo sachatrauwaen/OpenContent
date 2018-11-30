@@ -98,21 +98,14 @@ namespace Satrabel.OpenContent.Components.Render
                     }
                     else
                     {
-                        string url = "";
-                        if (!string.IsNullOrEmpty(_manifest.DetailUrl))
-                        {
-                            HandlebarsEngine hbEngine = new HandlebarsEngine();
-                            var dynForHBS = JsonUtils.JsonToDictionary(dyn.ToString());
-                            url = hbEngine.Execute(_manifest.DetailUrl, dynForHBS);
-                            url = HttpUtility.HtmlDecode(url);
-                        }
+                        
                         var editStatus = !_manifest.DisableEdit && IsEditAllowed(item.CreatedByUserId);
                         context["IsEditable"] = editStatus;
                         if (HasEditPermissions(item.CreatedByUserId))
                         {
                             context["EditUrl"] = DnnUrlUtils.EditUrl("id", item.Id, _module.ViewModule.ModuleID, _portalSettings);
                         }
-                        context["DetailUrl"] = Globals.NavigateURL(_detailTabId, false, _portalSettings, "", GetCurrentCultureCode(), UrlHelpers.CleanupUrl(url), "id=" + item.Id);
+                        context["DetailUrl"] = GenerateDetailUrl(item, dyn, _manifest, _detailTabId);
                         context["MainUrl"] = mainUrl;
                     }
                     items.Add(dyn);
@@ -120,6 +113,8 @@ namespace Satrabel.OpenContent.Components.Render
             }
             return model;
         }
+
+        
 
         private void ExtendItemsModel(JObject model, bool onlyData)
         {
