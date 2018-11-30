@@ -812,7 +812,51 @@ var fieldSchema =
                     "folder": {
                         "type": "string",
                         "title": "Folder"
-                    }
+                    },
+                    "advanced": {
+                        "type": "boolean",
+                        "title": "Advanced"
+                    },
+                    "fileExtensions": {
+                        "type": "string",
+                        "title": "fileExtensions"
+                    },
+                    "fileMaxSize": {
+                        "type": "number",
+                        "title": "fileMaxSize"
+                    },
+                    "uploadhidden": {
+                        "type": "number",
+                        "title": "uploadhidden"
+                    },
+                    "overwrite": {
+                        "type": "number",
+                        "title": "overwrite"
+                    },
+                    "showOverwrite": {
+                        "type": "number",
+                        "title": "showOverwrite"
+                    },
+                    "showCropper": {
+                        "type": "number",
+                        "title": "showCropper"
+                    },
+                    "showImage": {
+                        "type": "number",
+                        "title": "showImage"
+                    },
+                    "cropfolder": {
+                        "type": "number",
+                        "title": "cropfolder"
+                    },
+                    "cropButtonHidden": {
+                        "type": "boolean",
+                        "title": "cropButtonHidden"
+                    },
+                    "ratio": {
+                        "type": "number",
+                        "title": "ratio"
+                    },
                 }
             },
             "image2options": {

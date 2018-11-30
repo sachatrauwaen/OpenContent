@@ -7705,825 +7705,590 @@
 })(jQuery);
 (function ($) {
     var Alpaca = $.alpaca;
-    Alpaca.Fields.ImageXField = Alpaca.Fields.ListField.extend(
-    {
-        constructor: function (container, data, options, schema, view, connector) {
-            var self = this;
-            this.base(container, data, options, schema, view, connector);
-            this.sf = connector.servicesFramework;
-            this.dataSource = {};
-        },
-        getFieldType: function () {
-            return "imagex";
-        },
-        setup: function () {
-            var self = this;
-            if (!this.options.uploadfolder) {
-                this.options.uploadfolder = "";
-            }
-            if (!this.options.uploadhidden) {
-                this.options.uploadhidden = false;
-            }
-            if (!this.options.overwrite) {
-                this.options.overwrite = false;
-            }
-            if (!this.options.showOverwrite) {
-                this.options.showOverwrite = false;
-            }
-            if (this.options.showCropper === undefined) {
-                this.options.showCropper = true;
-            }
-            if (this.options.showCropper) {
-                this.options.showImage = true;
-            }
-            if (this.options.showImage === undefined) {
-                this.options.showImage = true;
-            }
-            if (this.options.showCropper) {
-                if (!this.options.cropfolder) {
-                    this.options.cropfolder = this.options.uploadfolder;
+    Alpaca.Fields.ImageField = Alpaca.Fields.ListField.extend(
+        {
+            constructor: function (container, data, options, schema, view, connector) {
+                var self = this;
+                this.base(container, data, options, schema, view, connector);
+                this.sf = connector.servicesFramework;
+                this.dataSource = {};
+            },
+            getFieldType: function () {
+                return "imagex";
+            },
+            setup: function () {
+                var self = this;
+                if (this.options.advanced === undefined) {
+                    this.options.advanced = false;
                 }
-                if (!this.options.cropper) {
-                    this.options.cropper = {};
+                if (!this.options.fileExtensions) {
+                    this.options.fileExtensions = 'gif|jpg|jpeg|tiff|png';
                 }
-                if (this.options.width && this.options.height) {
-                    this.options.cropper.aspectRatio = this.options.width / this.options.height;
+                if (!this.options.fileMaxSize) {
+                    this.options.fileMaxSize = 2000000;
                 }
-                this.options.cropper.responsive = false;
-                if (!this.options.cropper.autoCropArea) {
-                    this.options.cropper.autoCropArea = 1;
+                if (!this.options.uploadfolder) {
+                    this.options.uploadfolder = "";
                 }
-                 if (!this.options.cropper.viewMode) {
-                    this.options.cropper.viewMode = 1;
+                if (!this.options.uploadhidden) {
+                    this.options.uploadhidden = false;
                 }
-                if (!this.options.cropper.zoomOnWheel) {
-                    this.options.cropper.zoomOnWheel = false;
+                if (!this.options.overwrite) {
+                    this.options.overwrite = false;
                 }
-                if (!this.options.cropButtonHidden) {
-                    this.options.cropButtonHidden = false;
+                if (!this.options.showOverwrite) {
+                    this.options.showOverwrite = false;
                 }
-                if (!this.options.cropButtonHidden) {
-                    this.options.buttons = {
-                        "check": {
-                            "value": "Crop Image",
-                            "click": function () {
-                                this.cropImage();
-                            }
-                        }
-                    };
+                if (this.options.showCropper === undefined) {
+                    this.options.showCropper = false;                    
                 }
-            }
-            this.base();
-        },
-        getValue: function () {
-            var self = this;
-            if (this.control && this.control.length > 0) {
-                var value = null;
-                $image = self.getImage();
-                value = {};
                 if (this.options.showCropper) {
-                    if (self.cropperExist())
-                        value = $image.cropper('getData', { rounded: true });
+                    this.options.showImage = true;
+                    this.options.advanced = true;
                 }
-                value.url = $(this.control).find('select').val();
-                if (value.url) {
-                    if (this.dataSource && this.dataSource[value.url]) {
-                        value.id = this.dataSource[value.url].id;
-                        value.filename = this.dataSource[value.url].filename;
-                    }
-                    if (this.options.showCropper) {
-                        value.cropUrl = $(self.getControlEl()).attr('data-cropurl');
-                    }
+                if (this.options.showImage === undefined) {
+                    this.options.showImage = true;
                 }
-                return value;
-            }
-        },
-        setValue: function (val) {
-            var self = this;
-            if (val !== this.getValue()) {
-                if (this.control && typeof (val) != "undefined" && val != null) {
-                    //this.base(val); ???
-                    if (Alpaca.isEmpty(val)) {
-                        $image.attr('src', url);
-                        if (this.options.showCropper) {
-                            self.cropper("");
-                            $(self.getControlEl()).attr('data-cropurl', '');
-                        }
-                        $(this.control).find('select').val("");
+                if (this.options.showCropper) {
+                    if (!this.options.cropfolder) {
+                        this.options.cropfolder = this.options.uploadfolder;
                     }
-                    else if (Alpaca.isObject(val)) {
-                        // Fix for OC data that still has the Cachebuster SQ parameter
-                        if (val.url) val.url = val.url.split("?")[0];
-                        $image.attr('src', val.url);
-                        if (this.options.showCropper) {
-                            if (val.cropUrl) val.cropUrl = val.cropUrl.split("?")[0];
-                            if (val.cropdata && Object.keys(val.cropdata).length > 0) { // compatibility with imagecropper
-                                var firstcropdata = val.cropdata[Object.keys(val.cropdata)[0]];
-                                self.cropper(val.url, firstcropdata.cropper);
-                                $(self.getControlEl()).attr('data-cropurl', firstcropdata.url);
-                            } else {
-                                self.cropper(val.url, val);
-                                $(self.getControlEl()).attr('data-cropurl', val.cropUrl);
+                    if (!this.options.cropper) {
+                        this.options.cropper = {};
+                    }
+                    if (this.options.width && this.options.height) {
+                        this.options.cropper.aspectRatio = this.options.width / this.options.height;
+                    }
+                    this.options.cropper.responsive = false;
+                    if (!this.options.cropper.autoCropArea) {
+                        this.options.cropper.autoCropArea = 1;
+                    }
+                    if (!this.options.cropper.viewMode) {
+                        this.options.cropper.viewMode = 1;
+                    }
+                    if (!this.options.cropper.zoomOnWheel) {
+                        this.options.cropper.zoomOnWheel = false;
+                    }
+                    if (!this.options.cropButtonHidden) {
+                        this.options.cropButtonHidden = false;
+                    }
+                    if (!this.options.cropButtonHidden) {
+                        this.options.buttons = {
+                            "check": {
+                                "value": "Crop Image",
+                                "click": function () {
+                                    this.cropImage();
+                                }
                             }
-                        }
-                         $(this.control).find('select').val(val.url);
+                        };
                     }
-                    else {
-                        $image.attr('src', val);
-                        if (this.options.showCropper) {
-                            self.cropper(val);
-                            $(self.getControlEl()).attr('data-cropurl', '');
-                        }
-                        $(this.control).find('select').val(val);
-                    }
-                    $(this.control).find('select').trigger('change.select2');
                 }
-            }
-        },
-        beforeRenderControl: function (model, callback) {
-            var self = this;
-            this.base(model, function () {
-                self.selectOptions = [];
-                if (self.sf) {
-                    var completionFunction = function () {
-                        self.schema.enum = [];
-                        self.options.optionLabels = [];
-                        for (var i = 0; i < self.selectOptions.length; i++) {
-                            self.schema.enum.push(self.selectOptions[i].value);
-                            self.options.optionLabels.push(self.selectOptions[i].text);
+                this.base();
+            },
+            getValue: function () {
+                var self = this;
+                if (this.control && this.control.length > 0) {
+                    var value = null;
+                    $image = self.getImage();
+                    value = {};
+                    if (this.options.showCropper) {
+                        if (self.cropperExist()) {
+                            value.crop = $image.cropper('getData', { rounded: true });
                         }
-                        // push back to model
-                        model.selectOptions = self.selectOptions;
+                    }
+                    var url = $(this.control).find('select').val();
+                    if (self.options.advanced) {
+                        value.url = url;
+                    } else {
+                        value = url; // compatibility mode
+                    }
+                    if (value.url) {
+                        if (this.dataSource && this.dataSource[value.url]) {
+                            value.id = this.dataSource[value.url].id;
+                            value.filename = this.dataSource[value.url].filename;
+                            value.width = this.dataSource[value.url].width;
+                            value.height = this.dataSource[value.url].height;
+                        }
+                        if (this.options.showCropper) {
+                            value.cropUrl = this.getCropUrl();
+                        }
+                    }
+                    return value;
+                }
+            },
+            setValue: function (val) {
+                var self = this;
+                if (val !== this.getValue()) {
+                    if (this.control && typeof (val) != "undefined" && val != null) {
+                        //this.base(val); ???
+                        if (Alpaca.isEmpty(val)) {
+                            $image.attr('src', url);
+                            if (this.options.showCropper) {
+                                self.cropper("");
+                                self.setCropUrl('');
+                                
+                            }
+                            $(this.control).find('select').val("");
+                        }
+                        else if (Alpaca.isObject(val)) {
+                            // Fix for OC data that still has the Cachebuster SQ parameter
+                            if (val.url) val.url = val.url.split("?")[0];
+                            $image.attr('src', val.url);
+                            if (this.options.showCropper) {
+                                if (val.cropUrl) val.cropUrl = val.cropUrl.split("?")[0];
+                                if (val.cropdata && Object.keys(val.cropdata).length > 0) { // compatibility with imagecropper
+                                    var firstcropdata = val.cropdata[Object.keys(val.cropdata)[0]];
+                                    self.cropper(val.url, firstcropdata.cropper);
+                                    self.setCropUrl(firstcropdata.url);
+                                } else if (val.crop) {
+                                    self.cropper(val.url, val.crop);
+                                    self.setCropUrl( val.cropUrl);
+                                } else {
+                                    self.cropper(val.url, val.crop);
+                                    self.setCropUrl( val.cropUrl);
+                                }
+                            }
+                            $(this.control).find('select').val(val.url);
+                        }
+                        else {
+                            $image.attr('src', val);
+                            if (this.options.showCropper) {
+                                self.cropper(val);
+                                self.setCropUrl( '');
+                            }
+                            $(this.control).find('select').val(val);
+                        }
+                        $(this.control).find('select').trigger('change.select2');
+                    }
+                }
+            },
+            beforeRenderControl: function (model, callback) {
+                var self = this;
+                this.base(model, function () {
+                    self.selectOptions = [];
+                    if (self.sf) {
+                        var completionFunction = function () {
+                            self.schema.enum = [];
+                            self.options.optionLabels = [];
+                            for (var i = 0; i < self.selectOptions.length; i++) {
+                                self.schema.enum.push(self.selectOptions[i].value);
+                                self.options.optionLabels.push(self.selectOptions[i].text);
+                            }
+                            // push back to model
+                            model.selectOptions = self.selectOptions;
+                            callback();
+                        };
+                        var postData = { q: "*", folder: self.options.uploadfolder };
+                        $.ajax({
+                            url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "ImagesLookupExt",
+                            beforeSend: self.sf.setModuleHeaders,
+                            type: "get",
+                            dataType: "json",
+                            //contentType: "application/json; charset=utf-8",
+                            data: postData,
+                            success: function (jsonDocument) {
+                                var ds = jsonDocument;
+                                if (self.options.dsTransformer && Alpaca.isFunction(self.options.dsTransformer)) {
+                                    ds = self.options.dsTransformer(ds);
+                                }
+                                if (ds) {
+                                    if (Alpaca.isArray(ds)) {
+                                        // for arrays, we walk through one index at a time
+                                        // the insertion order is dictated by the order of the indices into the array
+                                        // this preserves order
+                                        $.each(ds, function (index, value) {
+                                            self.selectOptions.push({
+                                                "value": value.url,
+                                                "thumbUrl": value.thumbUrl,
+                                                "id": value.id,
+                                                "text": value.text,
+                                                "filename": value.filename,
+                                                "width": value.width,
+                                                "height": value.height,
+                                            });
+                                            self.dataSource[value.url] = value;
+                                        });
+                                        completionFunction();
+                                    }
+                                }
+                            },
+                            "error": function (jqXHR, textStatus, errorThrown) {
+                                self.errorCallback({
+                                    "message": "Unable to load data from uri : " + self.options.dataSource,
+                                    "stage": "DATASOURCE_LOADING_ERROR",
+                                    "details": {
+                                        "jqXHR": jqXHR,
+                                        "textStatus": textStatus,
+                                        "errorThrown": errorThrown
+                                    }
+                                });
+                            }
+                        });
+                    } else {
                         callback();
-                    };
-                    var postData = { q: "*", folder: self.options.uploadfolder };
+                    }
+                });
+            },
+
+            prepareControlModel: function (callback) {
+                var self = this;
+                this.base(function (model) {
+                    model.selectOptions = self.selectOptions;
+                    callback(model);
+                });
+            },
+            afterRenderControl: function (model, callback) {
+                var self = this;
+                this.base(model, function () {
+                    // if emptySelectFirst and nothing currently checked, then pick first item in the value list
+                    // set data and visually select it
+                    if (Alpaca.isUndefined(self.data) && self.options.emptySelectFirst && self.selectOptions && self.selectOptions.length > 0) {
+                        self.data = self.selectOptions[0].value;
+                    }
+                    // do this little trick so that if we have a default value, it gets set during first render
+                    // this causes the state of the control
+                    if (self.data) {
+                        self.setValue(self.data);
+                    }
+
+                    if ($.fn.select2) {
+                        var settings = null;
+                        if (self.options.select2) {
+                            settings = self.options.select2;
+                        }
+                        else {
+                            settings = {};
+                        }
+                        settings.templateResult = function (state) {
+                            if (!state.id) { return state.text; }
+
+                            var $state = $(
+                                '<span><img src="' + self.dataSource[state.id].thumbUrl + '" style="height: 45px;width: 54px;"  /> ' + state.text + '</span>'
+                            );
+                            return $state;
+                        };
+
+                        settings.templateSelection = function (state) {
+                            if (!state.id) { return state.text; }
+
+                            var $state = $(
+                                '<span><img src="' + self.dataSource[state.id].thumbUrl + '" style="height: 15px;width: 18px;"  /> ' + state.text + '</span>'
+                            );
+                            return $state;
+                        };
+
+                        $(self.getControlEl().find('select')).select2(settings);
+                    }
+                    if (self.options.uploadhidden) {
+                        $(self.getControlEl()).find('input[type=file]').hide();
+                    } else {
+                        if (self.sf) {
+
+                            $(self.getControlEl()).find('input[type=file]').fileupload({
+                                dataType: 'json',
+                                url: self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
+                                maxFileSize: 25000000,
+                                formData: function () {
+                                    var formData = [{ name: 'uploadfolder', value: self.options.uploadfolder }];
+                                    if (self.options.showOverwrite) {
+                                        formData.push({ name: 'overwrite', value: self.isOverwrite() });
+                                    } else if (self.options.overwrite) {
+                                        formData.push({ name: 'overwrite', value: true });
+                                    }
+                                    return formData;
+                                    //{ uploadfolder: self.options.uploadfolder, overwrite: self.isOverwrite() }
+                                },
+                                beforeSend: self.sf.setModuleHeaders,
+                                add: function (e, data) {
+                                    var goUpload = true;
+                                    var uploadFile = data.files[0];        
+                                    var regex = new RegExp('\\.(' + self.options.fileExtensions + ')$');
+                                    if (!(regex).test(uploadFile.name)) {
+                                        self.showAlert('You must select an image file only (' + self.options.fileExtensions+')');
+                                        goUpload = false;
+                                    }
+                                    if (uploadFile.size > self.options.fileMaxSize) { 
+                                        self.showAlert('Please upload a smaller image, max size is ' + self.options.fileMaxSize+ ' bytes');
+                                        goUpload = false;
+                                    }
+                                    if (goUpload == true) {
+                                        self.showAlert('File uploading...');
+                                        data.submit();
+                                    }
+                                    //data.context = $(opts.progressContextSelector);
+                                    //data.context.find($(opts.progressFileNameSelector)).html(data.files[0].name);
+                                    //data.context.show('fade');
+                                    //data.submit();
+                                },
+                                progress: function (e, data) {
+                                    if (data.context) {
+                                        var progress = parseInt(data.loaded / data.total * 100, 10);
+                                        data.context.find(opts.progressBarSelector).css('width', progress + '%').find('span').html(progress + '%');
+                                    }
+                                },
+                                done: function (e, data) {
+                                    if (data.result) {
+                                        $.each(data.result, function (index, file) {
+                                            if (file.success) {
+                                                self.refresh(function () {
+                                                    self.setValue(file.url);
+                                                    self.showAlert('File uploaded', true);
+                                                });
+                                            } else {
+                                                self.showAlert(file.message, true);
+                                            }
+                                        });
+                                    }
+
+                                }
+                            }).data('loaded', true);
+                        }
+                    }
+                    if (!self.options.showOverwrite) {
+                        $(self.control).parent().find('#' + self.id + '-overwriteLabel').hide();
+                    }
+                    callback();
+                });
+            },
+            cropImage: function () {
+                var self = this;
+                var data = self.getValue();
+                var postData = { url: data.url, cropfolder: self.options.cropfolder, crop: data, id: "crop" };
+                if (self.options.width && self.options.height) {
+                    postData.resize = { width: self.options.width, height: self.options.height };
+                }
+                $(self.getControlEl()).css('cursor', 'wait');
+                self.showAlert('Image cropping...');
+                $.ajax({
+                    type: "POST",
+                    url: self.sf.getServiceRoot('OpenContent') + "DnnEntitiesAPI/CropImage",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify(postData),
+                    beforeSend: self.sf.setModuleHeaders
+                }).done(function (res) {
+                    self.setCropUrl( res.url);
+                    self.showAlert('Image cropped', true);
+                    setTimeout(function () {
+                        $(self.getControlEl()).css('cursor', 'initial');
+                    }, 500);
+                }).fail(function (xhr, result, status) {
+                    alert("Uh-oh, something broke: " + status);
+                    $(self.getControlEl()).css('cursor', 'initial');
+                });
+            },
+            getFileUrl: function (fileid) {
+                var self = this;
+                if (self.sf) {
+                    var postData = { fileid: fileid };
                     $.ajax({
-                        url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "ImagesLookupExt",
+                        url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "FileUrl",
                         beforeSend: self.sf.setModuleHeaders,
                         type: "get",
+                        asych: false,
                         dataType: "json",
                         //contentType: "application/json; charset=utf-8",
                         data: postData,
-                        success: function (jsonDocument) {
-                            var ds = jsonDocument;
-                            if (self.options.dsTransformer && Alpaca.isFunction(self.options.dsTransformer)) {
-                                ds = self.options.dsTransformer(ds);
-                            }
-                            if (ds) {
-                                if (Alpaca.isArray(ds)) {
-                                    // for arrays, we walk through one index at a time
-                                    // the insertion order is dictated by the order of the indices into the array
-                                    // this preserves order
-                                    $.each(ds, function (index, value) {
-                                        self.selectOptions.push({
-                                            "value": value.url,
-                                            "thumbUrl": value.thumbUrl,
-                                            "id": value.id,
-                                            "text": value.text,
-                                            "filename": value.filename,
-                                        });
-                                        self.dataSource[value.url] = value;
-                                    });
-                                    completionFunction();
-                                }
-                            }
+                        success: function (data) {
+                            return data;
                         },
-                        "error": function (jqXHR, textStatus, errorThrown) {
-                            self.errorCallback({
-                                "message": "Unable to load data from uri : " + self.options.dataSource,
-                                "stage": "DATASOURCE_LOADING_ERROR",
-                                "details": {
-                                    "jqXHR": jqXHR,
-                                    "textStatus": textStatus,
-                                    "errorThrown": errorThrown
-                                }
-                            });
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            return "";
                         }
                     });
+                }
+            },
+            cropper: function (url, data) {
+                var self = this;
+                $image = self.getImage();
+
+                var cropperExist = $image.data('cropper');
+                if (url) {
+                    $image.show();
+                    if (!cropperExist) {
+                        var config = $.extend({}, {
+                            aspectRatio: 16 / 9,
+                            checkOrientation: false,
+                            autoCropArea: 0.90,
+                            minContainerHeight: 200,
+                            minContainerWidth: 400,
+                            toggleDragModeOnDblclick: false
+                        }, self.options.cropper);
+                        if (data) {
+                            config.data = data;
+                        }
+                        $image.cropper(config);
+                    } else {
+                        if (url != cropperExist.originalUrl || (cropperExist.url && url != cropperExist.url)) {
+                            $image.cropper('replace', url);
+                        }
+                        //$image.cropper('reset');
+                        if (data) {
+                            $image.cropper('setData', data);
+                        }
+                    }
                 } else {
-                    callback();
-                }
-            });
-        },
+                    $image.hide();
+                    if (!cropperExist) {
 
-        prepareControlModel: function (callback) {
-            var self = this;
-            this.base(function (model) {
-                model.selectOptions = self.selectOptions;
-                callback(model);
-            });
-        },
-        afterRenderControl: function (model, callback) {
-            var self = this;
-            this.base(model, function () {
-                // if emptySelectFirst and nothing currently checked, then pick first item in the value list
-                // set data and visually select it
-                if (Alpaca.isUndefined(self.data) && self.options.emptySelectFirst && self.selectOptions && self.selectOptions.length > 0) {
-                    self.data = self.selectOptions[0].value;
+                    } else {
+                        $image.cropper('destroy');
+                    }
                 }
-                // do this little trick so that if we have a default value, it gets set during first render
-                // this causes the state of the control
-                if (self.data) {
-                    self.setValue(self.data);
-                }
+            },
+            cropperExist: function () {
+                var self = this;
+                $image = self.getImage();
+                var cropperData = $image.data('cropper');
 
-                if ($.fn.select2) {
-                    var settings = null;
-                    if (self.options.select2) {
-                        settings = self.options.select2;
+                return cropperData;
+            },
+            getImage: function () {
+                var self = this;
+                return $(self.control).parent().find('#' + self.id + '-image'); //.find('.alpaca-image-display > img');
+
+            },
+            isOverwrite: function () {
+                var self = this;
+                if (this.options.showOverwrite) {
+                    var checkbox = $(self.control).parent().find('#' + self.id + '-overwrite');
+                    return Alpaca.checked(checkbox);
+                } else {
+                    return this.options.overwrite;
+                }
+            },
+            getCropUrl: function () {
+                var self = this;
+                return $(self.getControlEl()).attr('data-cropurl');
+            },
+            setCropUrl: function (url) {
+                var self = this;
+                $(self.getControlEl()).attr('data-cropurl', url);
+                self.refreshValidationState();
+            },
+
+            handleValidate: function () {
+                var baseStatus = this.base();
+                var valInfo = this.validation;
+
+                var status = !this.options.showCropper || this.options.cropButtonHidden || this.getCropUrl();
+                
+                valInfo["cropMissing"] = {
+                    "message": status ? "" : this.getMessage("cropMissing"),
+                    "status": status
+                };
+
+                return baseStatus && valInfo["cropMissing"]["status"];
+            },
+
+            /**
+             * Validate against enum property.
+             *
+             * @returns {Boolean} True if the element value is part of the enum list, false otherwise.
+             */
+            _validateEnum: function () {
+                var _this = this;
+                
+                if (this.schema["enum"]) {
+                    var val = this.data ? this.data.url : "";
+
+                    if (!this.isRequired() && Alpaca.isValEmpty(val)) {
+                        return true;
+                    }
+
+                    if (this.options.multiple) {
+                        var isValid = true;
+
+                        if (!val) {
+                            val = [];
+                        }
+
+                        if (!Alpaca.isArray(val) && !Alpaca.isObject(val)) {
+                            val = [val];
+                        }
+
+                        $.each(val, function (i, v) {
+
+                            if ($.inArray(v, _this.schema["enum"]) <= -1) {
+                                isValid = false;
+                                return false;
+                            }
+
+                        });
+
+                        return isValid;
                     }
                     else {
-                        settings = {};
-                    }
-                    settings.templateResult = function (state) {
-                        if (!state.id) { return state.text; }
-
-                        var $state = $(
-                          '<span><img src="' + self.dataSource[state.id].thumbUrl + '" style="height: 45px;width: 54px;"  /> ' + state.text + '</span>'
-                        );
-                        return $state;
-                    };
-
-                    settings.templateSelection = function (state) {
-                        if (!state.id) { return state.text; }
-
-                        var $state = $(
-                          '<span><img src="' + self.dataSource[state.id].thumbUrl + '" style="height: 15px;width: 18px;"  /> ' + state.text + '</span>'
-                        );
-                        return $state;
-                    };
-
-                    $(self.getControlEl().find('select')).select2(settings);
-                }
-                if (self.options.uploadhidden) {
-                    $(self.getControlEl()).find('input[type=file]').hide();
-                } else {
-                    if (self.sf) {
-                        
-                        $(self.getControlEl()).find('input[type=file]').fileupload({
-                            dataType: 'json',
-                            url: self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
-                            maxFileSize: 25000000,
-                            formData: function () {
-                                return [
-                                    { name: 'uploadfolder', value: self.options.uploadfolder },
-                                    { name: 'overwrite', value: self.isOverwrite() },
-                                ]
-                                //{ uploadfolder: self.options.uploadfolder, overwrite: self.isOverwrite() }
-                            },
-                            beforeSend: self.sf.setModuleHeaders,
-                            add: function (e, data) {
-                                self.showAlert('File uploading...');
-                                //data.context = $(opts.progressContextSelector);
-                                //data.context.find($(opts.progressFileNameSelector)).html(data.files[0].name);
-                                //data.context.show('fade');
-                                data.submit();
-                            },
-                            progress: function (e, data) {
-                                if (data.context) {
-                                    var progress = parseInt(data.loaded / data.total * 100, 10);
-                                    data.context.find(opts.progressBarSelector).css('width', progress + '%').find('span').html(progress + '%');
-                                }
-                            },
-                            done: function (e, data) {
-                                if (data.result) {
-                                    $.each(data.result, function (index, file) {
-                                        if (file.success) {
-                                            self.refresh(function () {
-                                                self.setValue(file.url);
-                                                self.showAlert('File uploaded', true);
-                                            }); 
-                                        } else {
-                                            self.showAlert(file.message, true);
-                                        }
-                                    });
-                                }
-                                
-                            }
-                        }).data('loaded', true);
+                        return ($.inArray(val, this.schema["enum"]) > -1);
                     }
                 }
-
-                if (!self.options.showOverwrite) {
-                    $(self.control).parent().find('#' + self.id + '-overwrite').hide();
-                }
-                callback();
-            });
-        },
-        cropImage: function () {
-            var self = this;
-            var data = self.getValue();
-            var postData = { url: data.url, cropfolder: self.options.cropfolder, crop: data, id: "crop" };
-            if (self.options.width && self.options.height) {
-                postData.resize = { width: self.options.width, height: self.options.height };
-            }
-            $(self.getControlEl()).css('cursor', 'wait');
-            self.showAlert('Image cropping...');
-            $.ajax({
-                type: "POST",
-                url: self.sf.getServiceRoot('OpenContent') + "DnnEntitiesAPI/CropImage",
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                data: JSON.stringify(postData),
-                beforeSend: self.sf.setModuleHeaders
-            }).done(function (res) {
-
-                $(self.getControlEl()).attr('data-cropurl', res.url);
-                self.showAlert('Image cropped', true);
-                setTimeout(function () {
-                    $(self.getControlEl()).css('cursor', 'initial');
-                }, 500);
-            }).fail(function (xhr, result, status) {
-                alert("Uh-oh, something broke: " + status);
-                $(self.getControlEl()).css('cursor', 'initial');
-            });
-        },
-        getFileUrl: function (fileid) {
-            var self = this;
-            if (self.sf) {
-                var postData = { fileid: fileid };
-                $.ajax({
-                    url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "FileUrl",
-                    beforeSend: self.sf.setModuleHeaders,
-                    type: "get",
-                    asych: false,
-                    dataType: "json",
-                    //contentType: "application/json; charset=utf-8",
-                    data: postData,
-                    success: function (data) {
-                        return data;
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        return "";
-                    }
-                });
-            }
-        },
-        cropper: function (url, data) {
-            var self = this;
-            $image = self.getImage();
-            
-            var cropperExist = $image.data('cropper');
-            if (url) {
-                $image.show();
-                if (!cropperExist) {
-                    var config = $.extend({}, {
-                        aspectRatio: 16 / 9,
-                        checkOrientation: false,
-                        autoCropArea: 0.90,
-                        minContainerHeight: 200,
-                        minContainerWidth: 400,
-                        toggleDragModeOnDblclick: false
-                    }, self.options.cropper);
-                    if (data) {
-                        config.data = data;
-                    }
-                    $image.cropper(config);
-                } else {
-                    if (url != cropperExist.originalUrl || (cropperExist.url && url != cropperExist.url)) {
-                        $image.cropper('replace', url);
-                    }
-                    //$image.cropper('reset');
-                    if (data) {
-                        $image.cropper('setData', data);
-                    }
-                }
-            } else {
-                $image.hide();
-                if (!cropperExist) {
-
-                } else {
-                    $image.cropper('destroy');
-                }
-            }
-        },
-        cropperExist: function () {
-            var self = this;
-            $image = self.getImage();
-            var cropperData = $image.data('cropper');
-
-            return cropperData;
-        },
-        getImage: function () {
-            var self = this;
-            return $(self.control).parent().find('#' + self.id + '-image'); //.find('.alpaca-image-display > img');
-
-        },
-        isOverwrite: function () {
-            var self = this;
-            if (this.options.showOverwrite) {
-                var checkbox = $(self.control).parent().find('#' + self.id + '-overwrite');
-                return Alpaca.checked(checkbox);
-            } else {
-                return this.options.overwrite;
-            }
-        },
-        /**
-         * Validate against enum property.
-         *
-         * @returns {Boolean} True if the element value is part of the enum list, false otherwise.
-         */
-        _validateEnum: function () {
-            var _this = this;
-
-            if (this.schema["enum"]) {
-                var val = this.data ? this.data.url : "";
-
-                if (!this.isRequired() && Alpaca.isValEmpty(val)) {
+                else {
                     return true;
                 }
+            },
 
-                if (this.options.multiple) {
-                    var isValid = true;
-
-                    if (!val) {
-                        val = [];
-                    }
-
-                    if (!Alpaca.isArray(val) && !Alpaca.isObject(val)) {
-                        val = [val];
-                    }
-
-                    $.each(val, function (i, v) {
-
-                        if ($.inArray(v, _this.schema["enum"]) <= -1) {
-                            isValid = false;
-                            return false;
-                        }
-
-                    });
-
-                    return isValid;
-                }
-                else {
-                    return ($.inArray(val, this.schema["enum"]) > -1);
-                }
-            }
-            else {
-                return true;
-            }
-        },
-
-        /**
-         * @see Alpaca.Field#onChange
-         */
-        onChange: function (e) {
-            this.base(e);
-            var _this = this;
-            Alpaca.later(25, this, function () {
-                var v = _this.getValue();
-                _this.setValue(v);
-                _this.refreshValidationState();
-            });
-        },
-
-        /**
-         * @see Alpaca.Field#focus
-         */
-        focus: function (onFocusCallback) {
-            if (this.control && this.control.length > 0) {
-                // set focus onto the select
-                var el = $(this.control).find('select');
-
-                el.focus();
-
-                if (onFocusCallback) {
-                    onFocusCallback(this);
-                }
-            }
-        }
-
-        /* builder_helpers */
-        ,
-
-        /**
-         * @see Alpaca.Field#getTitle
-         */
-        getTitle: function () {
-            return "Image Crop 2 Field";
-        },
-
-        /**
-         * @see Alpaca.Field#getDescription
-         */
-        getDescription: function () {
-            return "Image Crop 2 Field";
-        },
-        showAlert: function (text, time) {
-            var self =this;
-            $('#' + self.id + '-alert').text(text);
-            $('#' + self.id + '-alert').show();
-            if(time){
-                setTimeout( function (text) {
-                    $('#' + self.id + '-alert').hide();
-                }, 2000);
-            }
-        },
-    });
-
-    Alpaca.registerFieldClass("imagex", Alpaca.Fields.ImageXField);
-
-})(jQuery);
-(function ($) {
-
-    var Alpaca = $.alpaca;
-    
-    Alpaca.Fields.ImageField = Alpaca.Fields.TextField.extend(
-    /**
-     * @lends Alpaca.Fields.ImageField.prototype
-     */
-    {
-        constructor: function(container, data, options, schema, view, connector)
-        {
-            var self = this;
-            this.base(container, data, options, schema, view, connector);
-            this.sf = connector.servicesFramework;
-        },
-
-        /**
-         * @see Alpaca.Fields.TextField#getFieldType
-         */
-        getFieldType: function () {
-            return "image";
-        }
-        ,
-        setup: function () {
-            if (!this.options.uploadfolder) {
-                this.options.uploadfolder = "";
-            }
-            if (!this.options.uploadhidden) {
-                this.options.uploadhidden = false;
-            }
-            this.base();
-        },
-
-        /**
-         * @see Alpaca.Fields.TextField#getTitle
-         */
-        getTitle: function () {
-            return "Image Field";
-        },
-
-        /**
-         * @see Alpaca.Fields.TextField#getDescription
-         */
-        getDescription: function () {
-            return "Image Field.";
-        },
-        getTextControlEl: function () {
-            return $(this.control.get(0)).find('input[type=text]#' + this.id);
-        },
-        setValue: function (value) {
-            var self = this;
-            //var el = $( this.control).filter('#'+this.id);
-            //var el = $(this.control.get(0)).find('input[type=text]');
-            var el = this.getTextControlEl();
-
-            if (el && el.length > 0) {
-                if (Alpaca.isEmpty(value)) {
-                    el.val("");
-                }
-                else {
-                    //if (value) value = value.split("?")[0];
-                    el.val(value);
-                    $(self.control).parent().find('.alpaca-image-display img').attr('src', value);
-                }
-            }
-            
-            // be sure to call into base method
-            //this.base(value);
-
-            // if applicable, update the max length indicator
-            this.updateMaxLengthIndicator();
-        },
-
-        getValue: function () {
-            var value = null;
-
-            //var el = $(this.control).filter('#' + this.id);
-            //var el = $(this.control.get(0)).find('input[type=text]');
-            var el = this.getTextControlEl();
-            if (el && el.length > 0) {
-                    value = el.val();
-            }
-            return value;
-        },
-
-        afterRenderControl: function (model, callback) {
-            var self = this;
-            this.base(model, function () {
-                self.handlePostRender(function () {
-                    callback();
+            /**
+             * @see Alpaca.Field#onChange
+             */
+            onChange: function (e) {
+                this.base(e);
+                var _this = this;
+                _this.setCropUrl('');
+                Alpaca.later(25, this, function () {
+                    var v = _this.getValue();
+                    _this.setValue(v);
+                    _this.refreshValidationState();
                 });
-            });
-        },
-        handlePostRender: function (callback) {
-            var self = this;
-            
+            },
 
-            //var el = this.control;
-            var el = this.getTextControlEl();
+            /**
+             * @see Alpaca.Field#focus
+             */
+            focus: function (onFocusCallback) {
+                if (this.control && this.control.length > 0) {
+                    // set focus onto the select
+                    var el = $(this.control).find('select');
 
-            if (self.options.uploadhidden) {
-                $(this.control.get(0)).find('input[type=file]').hide();
-            } else {
-                if (self.sf){
-                $(this.control.get(0)).find('input[type=file]').fileupload({
-                    dataType: 'json',
-                    url: self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
-                    maxFileSize: 25000000,
-                    formData: { uploadfolder : self.options.uploadfolder },
-                    beforeSend: self.sf.setModuleHeaders,
-                    add: function (e, data) {
-                        //data.context = $(opts.progressContextSelector);
-                        //data.context.find($(opts.progressFileNameSelector)).html(data.files[0].name);
-                        //data.context.show('fade');
-                        data.submit();
-                    },
-                    progress: function (e, data) {
-                        if (data.context) {
-                            var progress = parseInt(data.loaded / data.total * 100, 10);
-                            data.context.find(opts.progressBarSelector).css('width', progress + '%').find('span').html(progress + '%');
-                        }
-                    },
-                    done: function (e, data) {
-                        if (data.result) {
-                            $.each(data.result, function (index, file) {
-                                self.setValue(file.url);
-                                $(el).change();
-                                //$(el).change();
-                                //$(e.target).parent().find('input[type=text]').val(file.url);
-                                //el.val(file.url);
-                                //$(e.target).parent().find('.alpaca-image-display img').attr('src', file.url);
-                            });
-                        }
+                    el.focus();
+
+                    if (onFocusCallback) {
+                        onFocusCallback(this);
                     }
-                }).data('loaded', true);
                 }
             }
-            $(el).change(function () {
 
-                var value = $(this).val();
+            /* builder_helpers */
+            ,
 
-                //var newValue = $(el).typeahead('val');
-                //if (newValue !== value) {
-                    $(self.control).parent().find('.alpaca-image-display img').attr('src', value);
-                //}
+            /**
+             * @see Alpaca.Field#getTitle
+             */
+            getTitle: function () {
+                return "Image Crop 2 Field";
+            },
 
-            });
-
-            if (self.options.manageurl) {
-                var manageButton = $('<a href="' + self.options.manageurl + '" target="_blank" class="alpaca-form-button">Manage files</a>').appendTo($(el).parent());
-            }
-            
-            callback();
-        },
-        applyTypeAhead: function () {
-            var self = this;
-
-            if (self.control.typeahead && self.options.typeahead && !Alpaca.isEmpty(self.options.typeahead) && self.sf) {
-
-                var tConfig = self.options.typeahead.config;
-                if (!tConfig) {
-                    tConfig = {};
+            /**
+             * @see Alpaca.Field#getDescription
+             */
+            getDescription: function () {
+                return "Image Crop 2 Field";
+            },
+            showAlert: function (text, time) {
+                var self = this;
+                $('#' + self.id + '-alert').text(text);
+                $('#' + self.id + '-alert').show();
+                if (time) {
+                    setTimeout(function (text) {
+                        $('#' + self.id + '-alert').hide();
+                    }, 4000);
                 }
-                
-                var tDatasets = self.options.typeahead.datasets;
-                if (!tDatasets) {
-                    tDatasets = {};
-                }
-
-                if (!tDatasets.name) {
-                    tDatasets.name = self.getId();
-                }
-
-                var tFolder = self.options.typeahead.Folder;
-                if (!tFolder) {
-                    tFolder = "";
-                }
-
-                var tEvents = tEvents = {};
-
-                var bloodHoundConfig = {
-                    datumTokenizer: function (d) {
-                        return Bloodhound.tokenizers.whitespace(d.value);
-                    },
-                    queryTokenizer: Bloodhound.tokenizers.whitespace
-                };
-
-                /*
-                if (tDatasets.type === "prefetch") {
-                    bloodHoundConfig.prefetch = {
-                        url: tDatasets.source,
-                        ajax: {
-                            //url: sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
-                            beforeSend: connector.servicesFramework.setModuleHeaders,
-        
-                        }
-                    };
-        
-                    if (tDatasets.filter) {
-                        bloodHoundConfig.prefetch.filter = tDatasets.filter;
-                    }
-                }
-                */
-
-                bloodHoundConfig.remote = {
-                    url: self.sf.getServiceRoot('OpenContent') + "DnnEntitiesAPI/Images?q=%QUERY&d=" + tFolder,
-                    ajax: {
-                        beforeSend: self.sf.setModuleHeaders,
-
-                    }
-                };
-
-                if (tDatasets.filter) {
-                    bloodHoundConfig.remote.filter = tDatasets.filter;
-                }
-
-                if (tDatasets.replace) {
-                    bloodHoundConfig.remote.replace = tDatasets.replace;
-                }
-
-
-                var engine = new Bloodhound(bloodHoundConfig);
-                engine.initialize();
-                tDatasets.source = engine.ttAdapter();
-
-                tDatasets.templates = {
-                    "empty": "Nothing found...",
-                    "suggestion": "<div style='width:20%;display:inline-block;background-color:#fff;padding:2px;'><img src='{{value}}' style='height:40px' /></div> {{name}}"
-                };
-
-                // compile templates
-                if (tDatasets.templates) {
-                    for (var k in tDatasets.templates) {
-                        var template = tDatasets.templates[k];
-                        if (typeof (template) === "string") {
-                            tDatasets.templates[k] = Handlebars.compile(template);
-                        }
-                    }
-                }
-
-                //var el = $(this.control.get(0)).find('input[type=text]');
-                var el = this.getTextControlEl();
-                // process typeahead
-                $(el).typeahead(tConfig, tDatasets);
-
-                // listen for "autocompleted" event and set the value of the field
-                $(el).on("typeahead:autocompleted", function (event, datum) {
-                    self.setValue(datum.value);
-                    $(el).change();
-                    //$(self.control).parent().find('input[type=text]').val(datum.value);
-                    //$(self.control).parent().find('.alpaca-image-display img').attr('src', datum.value);
-                });
-
-                // listen for "selected" event and set the value of the field
-                $(el).on("typeahead:selected", function (event, datum) {
-                    self.setValue(datum.value);
-                    $(el).change();
-                    //$(self.control).parent().find('input[type=text]').val(datum.value);
-                    //$(self.control).parent().find('.alpaca-image-display img').attr('src', datum.value);
-                });
-
-                // custom events
-                if (tEvents) {
-                    if (tEvents.autocompleted) {
-                        $(el).on("typeahead:autocompleted", function (event, datum) {
-                            tEvents.autocompleted(event, datum);
-                        });
-                    }
-                    if (tEvents.selected) {
-                        $(el).on("typeahead:selected", function (event, datum) {
-                            tEvents.selected(event, datum);
-                        });
-                    }
-                }
-
-                // when the input value changes, change the query in typeahead
-                // this is to keep the typeahead control sync'd with the actual dom value
-                // only do this if the query doesn't already match
-                //var fi = $(self.control);
-                $(el).change(function () {
-
-                    var value = $(this).val();
-
-                    var newValue = $(el).typeahead('val');
-                    if (newValue !== value) {
-                        $(el).typeahead('val', value);
-                    }
-
-                });
-
-                // some UI cleanup (we don't want typeahead to restyle)
-                $(self.field).find("span.twitter-typeahead").first().css("display", "block"); // SPAN to behave more like DIV, next line
-                $(self.field).find("span.twitter-typeahead input.tt-input").first().css("background-color", "");
-            }
-        }
-
-        /* end_builder_helpers */
-    });
+            },
+        });
 
     Alpaca.registerFieldClass("image", Alpaca.Fields.ImageField);
+    Alpaca.registerMessages({
+        "cropMissing": "Crop missing (click the crop button)"
+    });
 
 })(jQuery);
 (function($) {

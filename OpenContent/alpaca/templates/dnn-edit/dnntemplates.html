@@ -215,7 +215,9 @@
                 <input type="file" id="{{id}}-file" {{#if options.size}} size="{{options.size}}" {{/if}} {{#if options.readonly}} readonly="readonly" {{/if}} style="margin-bottom:5px;" />
             </div>
             <div class="col-md-4">
-                <input id="{{id}}-overwrite" type="checkbox" {{#if selected}} checked{{/if}} /> Overwrite existing image
+                <label id="{{id}}-overwriteLabel">
+                    <input id="{{id}}-overwrite" type="checkbox" {{#if selected}} checked{{/if}} /> Overwrite existing image
+                </label>
             </div>
             <div class="col-md-4">
                 <div id="{{id}}-alert" class="_alert _alert-success" role="alert" style="border-radius:3px;padding:2px 5px ;background-color:dimgrey;color:#fff;display:none">File Uploaded</div>

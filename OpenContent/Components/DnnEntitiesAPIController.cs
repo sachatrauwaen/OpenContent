@@ -176,7 +176,9 @@ namespace Satrabel.OpenContent.Components
                     thumbUrl = ImageHelper.GetImageUrl(f, new Ratio(40, 40)),  //todo for install in application folder is dat niet voldoende ???
                     url = FileManager.Instance.GetUrl(f).RemoveCachebuster(),
                     text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName,
-                    filename = f.FileName
+                    filename = f.FileName,
+                    width = f.Width,
+                    height = f.Height
                 }).Take(1000);
 
                 return Request.CreateResponse(HttpStatusCode.OK, res);
