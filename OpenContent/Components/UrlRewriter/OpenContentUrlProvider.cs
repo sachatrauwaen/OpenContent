@@ -2,11 +2,11 @@
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Handlebars;
 using Satrabel.OpenContent.Components.Render;
+using Satrabel.OpenContent.Components.TemplateHelpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Satrabel.OpenContent.Components.TemplateHelpers;
 
 namespace Satrabel.OpenContent.Components.UrlRewriter
 {
@@ -43,8 +43,10 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                 Dictionary<string, Locale> dicLocales = LocaleController.Instance.GetLocales(portalId);
                 var modules = DnnUtils.GetDnnOpenContentModules(portalId).ToList();
 
-                var cachedModules = 0;
-                var nonCached = 0;
+                //#if DEBUG
+                //var cachedModules = 0;
+                //var nonCached = 0;
+                //#endif
 
                 foreach (var module in modules)
                 {
@@ -65,11 +67,15 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                             {
                                 //App.Services.Logger.Error($"GetRules {portalId}/{module.TabId}/{module.ModuleId} count: {moduleRules.Count}");
                                 rules.AddRange(moduleRules);
-                                cachedModules += 1;
+                                //#if DEBUG
+                                //cachedModules += 1;
+                                //#endif
                                 continue;
                             }
 
-                            nonCached += 1;
+                            //#if DEBUG
+                            //nonCached += 1;
+                            //#endif
                             moduleRules = new List<OpenContentUrlRule>();
                             IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
 
@@ -131,7 +137,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                                     }
                                 }
                             }
-                            UrlRulesCaching.SetCache(portalId, UrlRulesCaching.GenerateModuleCacheKey(module.TabId, module.ModuleId, dsContext.ModuleId,  null), new TimeSpan(1, 0, 0, 0), moduleRules);
+                            UrlRulesCaching.SetCache(portalId, UrlRulesCaching.GenerateModuleCacheKey(module.TabId, module.ModuleId, dsContext.ModuleId, null), new TimeSpan(1, 0, 0, 0), moduleRules);
                             //App.Services.Logger.Error($"GetRules {portalId}/{module.TabId}/{module.ModuleId} NewCount: {moduleRules.Count}");
                         }
                     }
