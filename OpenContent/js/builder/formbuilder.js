@@ -268,10 +268,8 @@ var baseFields = function (index, value, oldOptions) {
     } else if (value.fieldtype == "folder2" && value.folder2options) {
         field.folder = value.folder2options.folder;
         field.filter = value.folder2options.filter;
-    } else if (value.fieldtype == "image" && value.imageoptions && value.imageoptions.folder) {
-        field.uploadfolder = value.imageoptions.folder;
-        field.typeahead = {};
-        field.typeahead.Folder = value.imageoptions.folder;
+    } else if (value.fieldtype == "image" && value.imageoptions) {
+        $.extend(field, value.imageoptions);
     } else if (value.fieldtype == "image2" && value.image2options) {
         field.folder = value.image2options.folder;
         field.filter = value.image2options.filter;
@@ -815,11 +813,12 @@ var fieldSchema =
                     },
                     "advanced": {
                         "type": "boolean",
-                        "title": "Advanced"
+                        "title": "Save file id"
                     },                                        
                     "showImage": {
                         "type": "boolean",
-                        "title": "Show Image"
+                        "title": "Show Image",
+                        "dependencies": "showCropper"
                     },
                     "uploadhidden": {
                         "type": "boolean",
@@ -847,7 +846,7 @@ var fieldSchema =
                         "title": "Show Cropper"
                     },                    
                     "cropfolder": {
-                        "type": "boolean",
+                        "type": "string",
                         "title": "Crop Folder",
                         "dependencies": "showCropper"
                     },
