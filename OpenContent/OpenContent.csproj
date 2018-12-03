@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -18,7 +18,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Satrabel.OpenContent</RootNamespace>
     <AssemblyName>OpenContent</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
@@ -126,10 +126,7 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Net.Http">
-      <HintPath>..\ref\dnn732\System.Net.Http.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ref\dnn732\System.Net.Http.Formatting.dll</HintPath>
@@ -179,6 +176,7 @@
     <Compile Include="Components\Datasource\IDataQueries.cs" />
     <Compile Include="Components\Export\ExcelApiController.cs" />
     <Compile Include="Components\Files\FileUriUtils.cs" />
+    <Compile Include="Components\Github\GithubDtos.cs" />
     <Compile Include="Components\Localization\LocalizationUtils.cs" />
     <Compile Include="Components\Logging\Logger.cs" />
     <Compile Include="Components\Lucene\LuceneUtils.cs" />
@@ -239,6 +237,7 @@
     <Compile Include="Components\TemplateHelpers\FormHelpers.cs" />
     <Compile Include="Components\TemplateHelpers\RazorUtils.cs" />
     <Compile Include="Components\UrlRewriter\UrlRulesCaching.cs" />
+    <Compile Include="Components\Github\GithubTemplateUtils.cs" />
     <Compile Include="Components\Utils\Requires.cs" />
     <Compile Include="Components\Utils\ExcelUtils.cs" />
     <Compile Include="Components\Dnn\DnnFileUtils.cs" />

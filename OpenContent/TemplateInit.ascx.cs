@@ -39,10 +39,20 @@ namespace Satrabel.OpenContent
             else if (rblFrom.SelectedIndex == 1) // web
             {
                 FeedParser parser = new FeedParser();
-                var items = parser.Parse("http://www.openextensions.net/templates?agentType=rss&PropertyTypeID=9", FeedType.RSS);
-                foreach (var item in items.OrderBy(t => t.Title))
+                //var items = parser.Parse("http://www.openextensions.net/templates?agentType=rss&PropertyTypeID=9", FeedType.RSS);
+                //foreach (var item in items.OrderBy(t => t.Title))
+                //{
+                //    ddlTemplate.Items.Add(new ListItem(item.Title, item.ZipEnclosure));
+                //}
+                //if (ddlTemplate.Items.Count > 0)
+                //{
+                //    tbTemplateName.Text = Path.GetFileNameWithoutExtension(ddlTemplate.Items[0].Value);
+                //}
+
+                
+                foreach (var item in GithubTemplateUtils.GetTemplateList(ModuleContext.PortalId).Where(t=> t.Type == Components.Github.TypeEnum.Dir).OrderBy(t => t.Name))
                 {
-                    ddlTemplate.Items.Add(new ListItem(item.Title, item.ZipEnclosure));
+                    ddlTemplate.Items.Add(new ListItem(item.Name, item.Path));
                 }
                 if (ddlTemplate.Items.Count > 0)
                 {
@@ -120,8 +130,12 @@ namespace Satrabel.OpenContent
                     }
                     else if (rblFrom.SelectedIndex == 1) // web
                     {
-                        string fileName = ddlTemplate.SelectedValue;
-                        string template = OpenContentUtils.ImportFromWeb(ModuleContext.PortalId, fileName, tbTemplateName.Text);
+                        //string fileName = ddlTemplate.SelectedValue;
+                        //string template = OpenContentUtils.ImportFromWeb(ModuleContext.PortalId, fileName, tbTemplateName.Text);
+                        //mc.UpdateModuleSetting(ModuleContext.ModuleId, "template", template);
+                        //ModuleContext.Settings["template"] = template;
+                        //string fileName = ddlTemplate.SelectedValue;
+                        string template = GithubTemplateUtils.ImportFromGithub(ModuleContext.PortalId, ddlTemplate.SelectedItem.Text, ddlTemplate.SelectedValue, tbTemplateName.Text);
                         mc.UpdateModuleSetting(ModuleContext.ModuleId, "template", template);
                         ModuleContext.Settings["template"] = template;
                     }
@@ -294,7 +308,7 @@ namespace Satrabel.OpenContent
             {
                 if (!string.IsNullOrEmpty(ddlTemplate.SelectedValue))
                 {
-                    Renderinfo.Template = new FileUri(ddlTemplate.SelectedValue).ToTemplateManifest();
+                    //Renderinfo.Template = new FileUri(ddlTemplate.SelectedValue).ToTemplateManifest();
                     if (rblFrom.SelectedIndex == 0) // site
                     {
                         //todo RenderDemoData();

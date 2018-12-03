@@ -71,8 +71,9 @@ namespace Satrabel.OpenContent
                 cbLoadBootstrap.Checked = globalSettingsRepository.GetLoadBootstrap();
                 cbLoadBootstrap.Visible = lLoadBootstrap.Visible = globalSettingsRepository.GetEditLayout() != AlpacaLayoutEnum.DNN;
                 tbGoogleApiKey.Text = globalSettingsRepository.GetGoogleApiKey();
-                cbFastHandlebars.Checked = globalSettingsRepository.GetFastHandlebars();
+                cbLegacyHandlebars.Checked = globalSettingsRepository.GetLegacyHandlebars();
                 cbSaveXml.Checked = globalSettingsRepository.IsSaveXml();
+                tbGithubRepository.Text = globalSettingsRepository.GetGithubRepository();
                 cmdUpgradeXml.Visible = cbSaveXml.Checked;
             }
         }
@@ -95,8 +96,9 @@ namespace Satrabel.OpenContent
             }
             globalSettingsRepository.SetLoadBootstrap(cbLoadBootstrap.Checked);
             globalSettingsRepository.SetGoogleApiKey(tbGoogleApiKey.Text);
-            globalSettingsRepository.SetFastHandlebars(cbFastHandlebars.Checked);
+            globalSettingsRepository.SetLegacyHandlebars(cbLegacyHandlebars.Checked);
             globalSettingsRepository.SetSaveXml(cbSaveXml.Checked);
+            globalSettingsRepository.SetGithubRepository(tbGithubRepository.Text);
 
             Response.Redirect(Globals.NavigateURL(), true);
         }

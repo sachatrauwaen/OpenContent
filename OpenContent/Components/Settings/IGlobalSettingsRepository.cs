@@ -16,8 +16,8 @@ namespace Satrabel.OpenContent.Components.Dnn
         string GetGoogleApiKey();
         void SetGoogleApiKey(string text);
 
-        bool GetFastHandlebars();
-        void SetFastHandlebars(bool @checked);
+        bool GetLegacyHandlebars();
+        void SetLegacyHandlebars(bool @checked);
 
         bool GetAutoAttach();
         void SetAutoAttach(string value);
@@ -30,6 +30,9 @@ namespace Satrabel.OpenContent.Components.Dnn
 
         bool IsSaveXml();
         void SetSaveXml(bool saveXml);
+
+        string GetGithubRepository();
+        void SetGithubRepository(string value);
 
     }
 }

@@ -16,8 +16,10 @@ namespace Satrabel.OpenContent.Components.Settings
         private const string SETTINGS_LOAD_BOOTSTRAP = "OpenContent_LoadBootstrap";
         private const bool SETTINGS_DEFAULT_LOAD_BOOTSTRAP = true;
         private const string SETTINGS_GOOGLE_API_KEY = "OpenContent_GoogleApiKey";
-        private const string SETTINGS_FAST_HANDLEBARS = "OpenContent_FastHandlebars";
-        private const bool SETTINGS_DEFAULT_FAST_HANDLEBARS = false;
+        private const string SETTINGS_LEGACY_HANDLEBARS = "OpenContent_LegacyHandlebars";
+        private const bool SETTINGS_DEFAULT_LEGACY_HANDLEBARS = false;
+        private const string SETTINGS_GITHUB_REPOSITORY = "OpenContent_GithubRepository";
+        private const string DEFAULT_GITHUB_REPOSITORY = "sachatrauwaen/OpenContent-Templates";
 
         public DnnGlobalSettingsRepository(int portalId)
         {
@@ -78,19 +80,19 @@ namespace Satrabel.OpenContent.Components.Settings
             PortalController.UpdatePortalSetting(_portalId, SETTINGS_GOOGLE_API_KEY, googleMapsApiKey, true);
         }
 
-        public bool GetFastHandlebars()
+        public bool GetLegacyHandlebars()
         {
-            if (_portalId == -1) return SETTINGS_DEFAULT_FAST_HANDLEBARS;
-            var fastHandlebarsSetting = PortalController.GetPortalSetting(SETTINGS_FAST_HANDLEBARS, _portalId, string.Empty);
-            bool fastHandlebars;
-            if (!string.IsNullOrWhiteSpace(fastHandlebarsSetting) && bool.TryParse(fastHandlebarsSetting, out fastHandlebars))
-                return fastHandlebars;
-            return SETTINGS_DEFAULT_FAST_HANDLEBARS;
+            if (_portalId == -1) return SETTINGS_DEFAULT_LEGACY_HANDLEBARS;
+            var LegacyHandlebarsSetting = PortalController.GetPortalSetting(SETTINGS_LEGACY_HANDLEBARS, _portalId, string.Empty);
+            bool LegacyHandlebars;
+            if (!string.IsNullOrWhiteSpace(LegacyHandlebarsSetting) && bool.TryParse(LegacyHandlebarsSetting, out LegacyHandlebars))
+                return LegacyHandlebars;
+            return SETTINGS_DEFAULT_LEGACY_HANDLEBARS;
         }
 
-        public void SetFastHandlebars(bool fastHandlebars)
+        public void SetLegacyHandlebars(bool LegacyHandlebars)
         {
-            PortalController.UpdatePortalSetting(_portalId, SETTINGS_FAST_HANDLEBARS, fastHandlebars.ToString(), true);
+            PortalController.UpdatePortalSetting(_portalId, SETTINGS_LEGACY_HANDLEBARS, LegacyHandlebars.ToString(), true);
         }
 
         private const string SETTINGS_AUTO_ATTACH = "OpenContent_AutoAttach";
@@ -154,6 +156,20 @@ namespace Satrabel.OpenContent.Components.Settings
         public void SetSaveXml(bool saveXml)
         {
             PortalController.UpdatePortalSetting(_portalId, SETTINGS_SAVE_XML, saveXml.ToString(), true);
+        }
+
+        public string GetGithubRepository()
+        {
+            if (_portalId == -1) return "";
+            return PortalController.GetPortalSetting(SETTINGS_GITHUB_REPOSITORY, _portalId, DEFAULT_GITHUB_REPOSITORY);
+        }
+
+        public void SetGithubRepository(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+                PortalController.DeletePortalSetting(_portalId, SETTINGS_GITHUB_REPOSITORY);
+            else
+                PortalController.UpdatePortalSetting(_portalId, SETTINGS_GITHUB_REPOSITORY, value, true);
         }
     }
 }
