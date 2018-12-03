@@ -302,7 +302,7 @@ namespace Satrabel.OpenContent.Components.Render
                             additionalDataJson["Context"] = context;
                         }
                     }
-                    if (App.Services.CreateGlobalSettingsRepository(_portalId).GetFastHandlebars())
+                    if (!App.Services.CreateGlobalSettingsRepository(_portalId).GetLegacyHandlebars())
                         _additionalData[(item.Value.ModelKey ?? item.Key)] = additionalDataJson;
                     else
                         _additionalData[(item.Value.ModelKey ?? item.Key).ToLowerInvariant()] = additionalDataJson;
