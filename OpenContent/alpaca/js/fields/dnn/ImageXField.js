@@ -113,8 +113,9 @@
             },
             setValue: function (val) {
                 var self = this;
-                if (val !== this.getValue()) {
-                    if (this.control && typeof (val) != "undefined" && val != null) {
+                //if (val !== this.getValue()) {
+                if (this.control && typeof (val) != "undefined" && val != null) {
+                    $image = self.getImage();
                         //this.base(val); ???
                         if (Alpaca.isEmpty(val)) {
                             $image.attr('src', url);
@@ -144,6 +145,7 @@
                                 }
                             }
                             $(this.control).find('select').val(val.url);
+
                         }
                         else {
                             $image.attr('src', val);
@@ -152,10 +154,11 @@
                                 self.setCropUrl( '');
                             }
                             $(this.control).find('select').val(val);
+
                         }
                         $(this.control).find('select').trigger('change.select2');
                     }
-                }
+                //}
             },
             beforeRenderControl: function (model, callback) {
                 var self = this;
@@ -407,11 +410,15 @@
                             autoCropArea: 0.90,
                             minContainerHeight: 200,
                             minContainerWidth: 400,
-                            toggleDragModeOnDblclick: false
+                            toggleDragModeOnDblclick: false,
+                            crop(event) {
+                                self.setCropUrl('');
+                            }
                         }, self.options.cropper);
                         if (data) {
                             config.data = data;
-                        }
+                        };
+
                         $image.cropper(config);
                     } else {
                         if (url != cropperExist.originalUrl || (cropperExist.url && url != cropperExist.url)) {
@@ -529,8 +536,10 @@
                 this.base(e);
                 var _this = this;
                 _this.setCropUrl('');
+                
+
                 Alpaca.later(25, this, function () {
-                    var v = _this.getValue();
+                    var v = _this.getValue();                    
                     _this.setValue(v);
                     _this.refreshValidationState();
                 });
@@ -582,7 +591,7 @@
 
     Alpaca.registerFieldClass("image", Alpaca.Fields.ImageField);
     Alpaca.registerMessages({
-        "cropMissing": "Crop missing (click the crop button)"
+        "cropMissing": "Cropped image missing (click the crop button)"
     });
 
 })(jQuery);

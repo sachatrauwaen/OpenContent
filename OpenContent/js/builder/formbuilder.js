@@ -816,46 +816,51 @@ var fieldSchema =
                     "advanced": {
                         "type": "boolean",
                         "title": "Advanced"
+                    },                                        
+                    "showImage": {
+                        "type": "boolean",
+                        "title": "Show Image"
+                    },
+                    "uploadhidden": {
+                        "type": "boolean",
+                        "title": "Upload Hidden"
                     },
                     "fileExtensions": {
                         "type": "string",
-                        "title": "fileExtensions"
+                        "title": "File Extensions"
                     },
                     "fileMaxSize": {
                         "type": "number",
-                        "title": "fileMaxSize"
-                    },
-                    "uploadhidden": {
-                        "type": "number",
-                        "title": "uploadhidden"
+                        "title": "File Max Size"
+                    },                    
+                    "showOverwrite": {
+                        "type": "boolean",
+                        "title": "Show Overwrite"
                     },
                     "overwrite": {
-                        "type": "number",
-                        "title": "overwrite"
-                    },
-                    "showOverwrite": {
-                        "type": "number",
-                        "title": "showOverwrite"
+                        "type": "boolean",
+                        "title": "Overwrite",
+                        "dependencies": "showOverwrite"
                     },
                     "showCropper": {
-                        "type": "number",
-                        "title": "showCropper"
-                    },
-                    "showImage": {
-                        "type": "number",
-                        "title": "showImage"
-                    },
+                        "type": "boolean",
+                        "title": "Show Cropper"
+                    },                    
                     "cropfolder": {
-                        "type": "number",
-                        "title": "cropfolder"
+                        "type": "boolean",
+                        "title": "Crop Folder",
+                        "dependencies": "showCropper"
                     },
                     "cropButtonHidden": {
                         "type": "boolean",
-                        "title": "cropButtonHidden"
+                        "title": "Crop Button Hidden"
+                        ,
+                        "dependencies": "showCropper"
                     },
                     "ratio": {
                         "type": "number",
-                        "title": "ratio"
+                        "title": "Crop Ratio",
+                        "dependencies": "showCropper"
                     },
                 }
             },
@@ -1100,6 +1105,7 @@ var fieldOptions =
         },
         "imageoptions": {
             "collapsible": true,
+
             "dependencies": {
                 "fieldtype": ["image"]
             }
