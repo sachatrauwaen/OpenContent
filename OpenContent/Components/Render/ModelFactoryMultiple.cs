@@ -55,7 +55,7 @@ namespace Satrabel.OpenContent.Components.Render
                     JObject context = new JObject();
                     model["Context"] = context;
                     context["Id"] = item.Id;                    
-                    EnhanceSelect2(model);
+                    EnhanceSelect2(model, true);
                     JsonUtils.SimplifyJson(model, GetCurrentCultureCode());
                     yield return JsonUtils.JsonToDictionary(model.ToString());
                 }
@@ -88,7 +88,7 @@ namespace Satrabel.OpenContent.Components.Render
                     JObject context = new JObject();
                     dyn["Context"] = context;
                     context["Id"] = item.Id;
-                    EnhanceSelect2(dyn);
+                    EnhanceSelect2(dyn, onlyData);
                     JsonUtils.SimplifyJson(dyn, GetCurrentCultureCode());
                     EnhanceUser(dyn, item.CreatedByUserId);
                     EnhanceImages(dyn, itemsModel);

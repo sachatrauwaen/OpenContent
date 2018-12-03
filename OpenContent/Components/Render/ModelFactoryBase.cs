@@ -129,7 +129,7 @@ namespace Satrabel.OpenContent.Components.Render
 
         public abstract JToken GetModelAsJson(bool onlyData = false, bool onlyMainData = false);
 
-        protected void EnhanceSelect2(JObject model)
+        protected void EnhanceSelect2(JObject model, bool onlyData)
         {
             string colName = string.IsNullOrEmpty(_collection) ? "Items" : _collection;
             bool addDataEnhance = _manifest.AdditionalDataDefined();
@@ -180,7 +180,7 @@ namespace Satrabel.OpenContent.Components.Render
             }
             if (_optionsJson != null)
             {
-                LookupSelect2InOtherModule(model, _optionsJson);
+                LookupSelect2InOtherModule(model, _optionsJson, onlyData);
             }
         }
 
@@ -228,7 +228,7 @@ namespace Satrabel.OpenContent.Components.Render
                                     JObject context = new JObject();
                                     json["Context"] = context;
                                     context["Id"] = dataItem.Id;
-                                    EnhanceSelect2(json as JObject);
+                                    EnhanceSelect2(json as JObject, onlyData);
                                     JsonUtils.SimplifyJson(json, GetCurrentCultureCode());
                                 }
                                 colDataJson.Add(json);
@@ -388,7 +388,7 @@ namespace Satrabel.OpenContent.Components.Render
             }
         }
 
-        protected void LookupSelect2InOtherModule(JObject model, JObject options)
+        protected void LookupSelect2InOtherModule(JObject model, JObject options, bool onlyData)
         {
 
             foreach (var child in model.Children<JProperty>().ToList())
@@ -428,7 +428,7 @@ namespace Satrabel.OpenContent.Components.Render
                         var obj = value as JObject;
                         if (obj != null)
                         {
-                            LookupSelect2InOtherModule(obj, opt["items"] as JObject);
+                            LookupSelect2InOtherModule(obj, opt["items"] as JObject, onlyData);
                         }
                         else if (lookup)
                         {
@@ -437,7 +437,7 @@ namespace Satrabel.OpenContent.Components.Render
                             {
                                 try
                                 {
-                                    newArray.Add(GenerateObject(val.ToString(), int.Parse(tabId), int.Parse(moduleId)));
+                                    newArray.Add(GenerateObject(val.ToString(), int.Parse(tabId), int.Parse(moduleId), onlyData));
                                 }
                                 catch (System.Exception)
                                 {
@@ -454,7 +454,7 @@ namespace Satrabel.OpenContent.Components.Render
                 else if (childProperty.Value is JObject)
                 {
                     var obj = childProperty.Value as JObject;
-                    LookupSelect2InOtherModule(obj, opt);
+                    LookupSelect2InOtherModule(obj, opt, onlyData);
                 }
                 else if (childProperty.Value is JValue)
                 {
@@ -463,7 +463,7 @@ namespace Satrabel.OpenContent.Components.Render
                         string val = childProperty.Value.ToString();
                         try
                         {                            
-                            model[childProperty.Name] = GenerateObject(val, int.Parse(tabId), int.Parse(moduleId));
+                            model[childProperty.Name] = GenerateObject(val, int.Parse(tabId), int.Parse(moduleId), onlyData);
                         }
                         catch (System.Exception ex)
                         {
@@ -474,7 +474,7 @@ namespace Satrabel.OpenContent.Components.Render
             }
         }
 
-        private JToken GenerateObject(string id, int tabId, int moduleId)
+        private JToken GenerateObject(string id, int tabId, int moduleId, bool onlyData)
         {
             var module = moduleId> 0 ? new OpenContentModuleInfo(moduleId , tabId) : _module;
             var ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
@@ -490,10 +490,13 @@ namespace Satrabel.OpenContent.Components.Render
                 if (json != null)
                 {
                     JsonUtils.SimplifyJson(json, GetCurrentCultureCode());
-                    var context = new JObject();
-                    json["Context"] = context;
-                    context["Id"] = dataItem.Id;
-                    context["DetailUrl"] = GenerateDetailUrl(dataItem, json, module.Settings.Manifest, tabId > 0 ? tabId : _detailTabId);
+                    if (!onlyData)
+                    {
+                        var context = new JObject();
+                        json["Context"] = context;
+                        context["Id"] = dataItem.Id;
+                        context["DetailUrl"] = GenerateDetailUrl(dataItem, json, module.Settings.Manifest, tabId > 0 ? tabId : _detailTabId);
+                    }
                     return json;
                 }
             }
