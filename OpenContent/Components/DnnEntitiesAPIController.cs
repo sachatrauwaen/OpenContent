@@ -466,7 +466,7 @@ namespace Satrabel.OpenContent.Components
                 }
                 rawImageUrl = rawImageUrl.Replace(PortalSettings.HomeDirectory, "");
                 var file = fileManager.GetFile(ActiveModule.PortalID, rawImageUrl);
-                string cropfolder = "OpenContent/Files/" + ActiveModule.ModuleID;
+                string cropfolder = "OpenContent/Cropped/" + ActiveModule.ModuleID;
                 if (!string.IsNullOrEmpty(cropData.cropfolder))
                 {
                     cropfolder = cropData.cropfolder;

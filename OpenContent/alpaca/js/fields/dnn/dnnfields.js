@@ -7759,6 +7759,9 @@
                     if (this.options.width && this.options.height) {
                         this.options.cropper.aspectRatio = this.options.width / this.options.height;
                     }
+                    if (this.options.ratio) {
+                        this.options.cropper.aspectRatio = this.options.ratio;
+                    }
                     this.options.cropper.responsive = false;
                     if (!this.options.cropper.autoCropArea) {
                         this.options.cropper.autoCropArea = 1;
@@ -10345,7 +10348,7 @@
         constructor: function (container, data, options, schema, view, connector) {
             var self = this;
             this.base(container, data, options, schema, view, connector);
-            this.numberDecimalSeparator = connector.numberDecimalSeparator;
+            this.numberDecimalSeparator = connector.numberDecimalSeparator || ".";
         },
         /**
          * @see Alpaca.Fields.TextField#setup

@@ -54,6 +54,9 @@
                     if (this.options.width && this.options.height) {
                         this.options.cropper.aspectRatio = this.options.width / this.options.height;
                     }
+                    if (this.options.ratio) {
+                        this.options.cropper.aspectRatio = this.options.ratio;
+                    }
                     this.options.cropper.responsive = false;
                     if (!this.options.cropper.autoCropArea) {
                         this.options.cropper.autoCropArea = 1;
