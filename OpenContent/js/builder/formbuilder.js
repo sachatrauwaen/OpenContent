@@ -806,9 +806,9 @@ var fieldSchema =
                 "title": "Image Options",
                 "dependencies": "fieldtype",
                 "properties": {
-                    "folder": {
+                    "uploadfolder": {
                         "type": "string",
-                        "title": "Folder"
+                        "title": "Upload Folder"
                     },
                     "advanced": {
                         "type": "boolean",

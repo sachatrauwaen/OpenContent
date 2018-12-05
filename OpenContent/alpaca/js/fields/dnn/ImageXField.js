@@ -353,8 +353,10 @@
             },
             cropImage: function () {
                 var self = this;
+                $image = self.getImage();
+                var crop = $image.cropper('getData', { rounded: true }); 
                 var data = self.getValue();
-                var postData = { url: data.url, cropfolder: self.options.cropfolder, crop: data, id: "crop" };
+                var postData = { url: data.url, cropfolder: self.options.cropfolder, crop: crop, id: "crop" };
                 if (self.options.width && self.options.height) {
                     postData.resize = { width: self.options.width, height: self.options.height };
                 }
@@ -414,7 +416,7 @@
                             minContainerHeight: 200,
                             minContainerWidth: 400,
                             toggleDragModeOnDblclick: false,
-                            crop(event) {
+                            cropmove: function(event) {
                                 self.setCropUrl('');
                             }
                         }, self.options.cropper);
