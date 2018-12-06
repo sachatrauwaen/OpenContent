@@ -402,8 +402,8 @@ namespace Satrabel.OpenContent.Components.Render
                 bool lookup =
                     opt["type"] != null &&
                     opt["type"].ToString() == "select2" &&
-                    opt["action"] != null &&
-                    opt["action"].ToString() == "Lookup";
+                    opt["dataService"]?["action"] != null &&
+                    opt["dataService"]?["action"].ToString() == "Lookup";
  
                     //opt["dataService"]?["data"]?["moduleId"] != null &&
                     //opt["dataService"]?["data"]?["tabId"] != null;
