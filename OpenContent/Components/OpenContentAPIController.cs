@@ -363,8 +363,10 @@ namespace Satrabel.OpenContent.Components
                     }
                     if (json is JArray)
                     {
-                        AddLookupItems(req.valueField, req.textField, req.childrenField, res, json as JArray);
+                        json = json.DeepClone();
                         JsonUtils.SimplifyJson(json, DnnLanguageUtils.GetCurrentCultureCode());
+                        AddLookupItems(req.valueField, req.textField, req.childrenField, res, json as JArray);
+
                     }
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, res);
@@ -403,6 +405,8 @@ namespace Satrabel.OpenContent.Components
                             {
                                 json = json[req.dataMember];
                             }
+                            json = json.DeepClone();
+                            JsonUtils.SimplifyJson(json, DnnLanguageUtils.GetCurrentCultureCode());
 
                             var array = json as JArray;
                             if (array != null)
@@ -437,6 +441,9 @@ namespace Satrabel.OpenContent.Components
                         if (!string.IsNullOrEmpty(req.dataMember))
                         {
                             json = json[req.dataMember];
+                            json = json.DeepClone();
+                            JsonUtils.SimplifyJson(json, DnnLanguageUtils.GetCurrentCultureCode());
+
                             if (json is JArray)
                             {
                                 foreach (JToken item in (JArray)json)
@@ -482,6 +489,8 @@ namespace Satrabel.OpenContent.Components
                         foreach (var item in items)
                         {
                             var json = item.Data as JObject;
+                            json = json.DeepClone() as JObject;
+                            JsonUtils.SimplifyJson(json, DnnLanguageUtils.GetCurrentCultureCode());
                             if (json?[req.textField] != null)
                             {
                                 res.Add(new LookupResultDTO()
