@@ -99,6 +99,7 @@ function getSchema(formdef) {
         "file": "string",
         "url": "string",
         "image": "string",
+        "imagex": "string",
         "icon": "string",
         "guid": "string",
         "wysihtml": "string",
@@ -268,8 +269,12 @@ var baseFields = function (index, value, oldOptions) {
     } else if (value.fieldtype == "folder2" && value.folder2options) {
         field.folder = value.folder2options.folder;
         field.filter = value.folder2options.filter;
-    } else if (value.fieldtype == "image" && value.imageoptions) {
-        $.extend(field, value.imageoptions);
+    } else if (value.fieldtype == "image" && value.imageoptions && value.imageoptions.folder) {
+        field.uploadfolder = value.imageoptions.folder;
+        field.typeahead = {};
+        field.typeahead.Folder = value.imageoptions.folder;
+    } else if (value.fieldtype == "imagex" && value.imagexoptions) {
+        $.extend(field, value.imagexoptions);
     } else if (value.fieldtype == "image2" && value.image2options) {
         field.folder = value.image2options.folder;
         field.filter = value.image2options.filter;
@@ -428,6 +433,7 @@ var baseIndexFields = function (index, value, oldOptions) {
         "file": "file",
         "url": "text",
         "image": "text",
+        "imagex": "text",
         "icon": "text",
         "guid": "text",
         "wysihtml": "html",
@@ -684,12 +690,12 @@ var fieldSchema =
                 "required": true,
                 "title": "Type",
                 "enum": ["text", "checkbox", "multicheckbox", "select", "radio", "textarea", "email", "date", "number",
-                    "image", "file", "url", "icon", "guid", "address",
+                    "image", "imagex", "file", "url", "icon", "guid", "address",
                     "array", "table", "accordion", "relation",
-                    "folder2", "file2", "url2", "role2", "image2",
-                    "imagecrop",
-                    "wysihtml", "summernote", "ckeditor", "gallery", "documents", "object" /*,
-                        "publishstatus", "publishstartdate", "publishenddate"*/]
+                    "folder2", "file2", "url2", "role2", 
+                    "wysihtml", "summernote", "ckeditor", "gallery", "documents", "object",
+                    "image2", "imagecrop",
+                    /*, "publishstatus", "publishstartdate", "publishenddate"*/]
             },
             "vertical": {
                 "type": "boolean",
@@ -806,30 +812,34 @@ var fieldSchema =
                 "title": "Image Options",
                 "dependencies": "fieldtype",
                 "properties": {
+                    "folder": {
+                        "type": "string",
+                        "title": "Folder"
+                    }
+                }
+            },
+            "imagexoptions": {
+                "type": "object",
+                "title": "Image Options",
+                "dependencies": "fieldtype",
+                "properties": {
+                    "uploadhidden": {
+                        "type": "boolean",
+                        "title": "Hide Upload"
+                    },
                     "uploadfolder": {
                         "type": "string",
                         "title": "Upload Folder"
-                    },
-                    "advanced": {
-                        "type": "boolean",
-                        "title": "Save file id"
-                    },                                        
-                    "showImage": {
-                        "type": "boolean",
-                        "title": "Show Image",
-                        "dependencies": "showCropper"
-                    },
-                    "uploadhidden": {
-                        "type": "boolean",
-                        "title": "Upload Hidden"
-                    },
+                    },                    
                     "fileExtensions": {
                         "type": "string",
-                        "title": "File Extensions"
+                        "title": "File Extensions",
+                        "default":"gif|jpg|jpeg|tiff|png"
                     },
                     "fileMaxSize": {
                         "type": "number",
-                        "title": "File Max Size"
+                        "title": "File Max Size",
+                        "default": 2000000
                     },                    
                     "showOverwrite": {
                         "type": "boolean",
@@ -849,16 +859,22 @@ var fieldSchema =
                         "title": "Crop Folder",
                         "dependencies": "showCropper"
                     },
-                    "cropButtonHidden": {
+                    "saveCropFile": {
                         "type": "boolean",
-                        "title": "Crop Button Hidden"
-                        ,
+                        "title": "Save Crop file",
                         "dependencies": "showCropper"
                     },
-                    "ratio": {
+                    "width": {
                         "type": "number",
-                        "title": "Crop Ratio",
-                        "dependencies": "showCropper"
+                        "title": "Crop width",
+                        "dependencies": "showCropper",
+                        "default": 2000
+                    },
+                    "height": {
+                        "type": "number",
+                        "title": "Crop height",
+                        "dependencies": "showCropper",
+                        "default": 1500
                     },
                 }
             },
@@ -1003,12 +1019,12 @@ var fieldOptions =
         },
         "fieldtype": {
             "optionLabels": ["Text", "Checkbox", "Multi checkbox", "Dropdown list (select)", "Radio buttons", "Text area", "Email address", "Date", "Number",
-                "Image (upload & autocomplete)", "File (upload & autocomplete)", "Url (autocomplete for pages)", "Font Awesome Icons", "Guid (auto id)", "Address (autocomplete & geocode)",
+                "Image (upload & autocomplete)", "ImageX (cropper, overwrite, ...)", "File (upload & autocomplete)", "Url (autocomplete for pages)", "Font Awesome Icons", "Guid (auto id)", "Address (autocomplete & geocode)",
                 "List (Panels)", "List (Table)", "List (Accordion)", "Relation (Additional Data)",
-                "Folder2 (folderID)", "File2 (fileID)", "Url2 (tabID)", "Role2 (roleID)", "Image2 (fileID)",
-                "Image (with croppper)",
-                "Html (Wysihtml)", "Html (Summernote)", "Html (CK Editor)", "Image Gallery", "Documents", "Group (object)" /*,
-                            "Publish status", "Publish start date", "Publish end date"*/]
+                "Folder2 (folderID)", "File2 (fileID)", "Url2 (tabID)", "Role2 (roleID)", 
+                "Html (Wysihtml)", "Html (Summernote)", "Html (CK Editor)", "Image Gallery", "Documents", "Group (object)",
+                "_Legacy - Image2 (fileID)", "_Legacy - Image (with croppper)",
+                /*,"Publish status", "Publish start date", "Publish end date"*/]
         },
         "fieldoptions": {
             "type": "table",
@@ -1103,9 +1119,14 @@ var fieldOptions =
         },
         "imageoptions": {
             "collapsible": true,
-
             "dependencies": {
                 "fieldtype": ["image"]
+            }
+        },
+        "imagexoptions": {
+            "collapsible": true,
+            "dependencies": {
+                "fieldtype": ["imagex"]
             }
         },
         "image2options": {

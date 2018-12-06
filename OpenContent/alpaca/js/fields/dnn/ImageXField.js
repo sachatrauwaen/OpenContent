@@ -1,6 +1,6 @@
 ﻿(function ($) {
     var Alpaca = $.alpaca;
-    Alpaca.Fields.ImageField = Alpaca.Fields.ListField.extend(
+    Alpaca.Fields.ImageXField = Alpaca.Fields.ListField.extend(
         {
             constructor: function (container, data, options, schema, view, connector) {
                 var self = this;
@@ -13,9 +13,9 @@
             },
             setup: function () {
                 var self = this;
-                if (this.options.advanced === undefined) {
-                    this.options.advanced = false;
-                }
+                //if (this.options.advanced === undefined) {
+                    this.options.advanced = true;
+                //}
                 if (!this.options.fileExtensions) {
                     this.options.fileExtensions = 'gif|jpg|jpeg|tiff|png';
                 }
@@ -32,6 +32,9 @@
                     this.options.overwrite = false;
                 }
                 if (!this.options.showOverwrite) {
+                    this.options.showOverwrite = false;
+                }
+                if (this.options.uploadhidden) {
                     this.options.showOverwrite = false;
                 }
                 if (this.options.showCropper === undefined) {
@@ -67,10 +70,10 @@
                     if (!this.options.cropper.zoomOnWheel) {
                         this.options.cropper.zoomOnWheel = false;
                     }
-                    if (!this.options.cropButtonHidden) {
-                        this.options.cropButtonHidden = false;
+                    if (!this.options.saveCropFile) {
+                        this.options.saveCropFile = false;
                     }
-                    if (!this.options.cropButtonHidden) {
+                    if (this.options.saveCropFile) {
                         this.options.buttons = {
                             "check": {
                                 "value": "Crop Image",
@@ -478,7 +481,7 @@
                 var baseStatus = this.base();
                 var valInfo = this.validation;
 
-                var status = !this.options.showCropper || this.options.cropButtonHidden || this.getCropUrl();
+                var status = !this.options.showCropper || !this.options.saveCropFile || this.getCropUrl();
                 
                 valInfo["cropMissing"] = {
                     "message": status ? "" : this.getMessage("cropMissing"),
@@ -594,7 +597,7 @@
             },
         });
 
-    Alpaca.registerFieldClass("image", Alpaca.Fields.ImageField);
+    Alpaca.registerFieldClass("imagex", Alpaca.Fields.ImageXField);
     Alpaca.registerMessages({
         "cropMissing": "Cropped image missing (click the crop button)"
     });
