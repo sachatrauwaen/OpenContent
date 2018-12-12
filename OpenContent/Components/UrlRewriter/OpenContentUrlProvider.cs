@@ -121,7 +121,8 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                                             CultureCode = ruleCultureCode,
                                             TabId = module.GetDetailTabId(),
                                             Parameters = "id=" + id,
-                                            Url = url
+                                            Url = url,
+                                            InSitemap = true
                                         };
                                         var reducedRules = rules.Where(r => r.CultureCode == rule.CultureCode && r.TabId == rule.TabId).ToList();
                                         bool ruleExist = reducedRules.Any(r => r.Parameters == rule.Parameters);
