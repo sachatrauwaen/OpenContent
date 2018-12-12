@@ -107,6 +107,7 @@ function getSchema(formdef) {
         "ckeditor": "string",
         "address": "object",
         "relation": "string",
+        "related": "string",
         "gallery": "array",
         "documents": "array",
         "object": "object",
@@ -137,6 +138,9 @@ function getSchema(formdef) {
             prop.title = value.title;
         }
         if (value.fieldtype == "relation" && value.relationoptions && value.relationoptions.many) {
+            prop.type = "array";
+        }
+        if (value.fieldtype == "related" && value.relatedoptions && value.relatedoptions.many) {
             prop.type = "array";
         }
         if (value.fieldtype == "role2" && value.many) {
@@ -255,6 +259,15 @@ var baseFields = function (index, value, oldOptions) {
                 "dataKey": value.relationoptions.datakey,
                 "valueField": value.relationoptions.valuefield,
                 "textField": value.relationoptions.textfield
+            }
+        };
+    } else if (value.fieldtype == "related") {
+        field.type = "select2";
+        field.dataService = {
+            "action": "Lookup",
+            "data": {                
+                "valueField": "Id",
+                "textField": value.relatedoptions.textfield
             }
         };
     } else if (value.fieldtype == "date" && value.dateoptions) {
@@ -441,6 +454,7 @@ var baseIndexFields = function (index, value, oldOptions) {
         "ckeditor": "html",
         "address": "object",
         "relation": "key",
+        "related": "key",
         "gallery": "array",
         "documents": "array",
         "object": "object",
@@ -464,6 +478,16 @@ var baseIndexFields = function (index, value, oldOptions) {
         field.multilanguage = true;
     }
     if (value.fieldtype == "relation" && value.relationoptions && value.relationoptions.many) {
+        if (value.index) {
+            field.type = "array";
+            field.items = {
+                "indexType": "key",
+                "index": true,
+                "sort": true
+            };
+        }
+    }
+    else if (value.fieldtype == "related" && value.relatedoptions && value.relatedoptions.many) {
         if (value.index) {
             field.type = "array";
             field.items = {
@@ -691,7 +715,7 @@ var fieldSchema =
                 "title": "Type",
                 "enum": ["text", "checkbox", "multicheckbox", "select", "radio", "textarea", "email", "date", "number",
                     "image", "imagex", "file", "url", "icon", "guid", "address",
-                    "array", "table", "accordion", "relation",
+                    "array", "table", "accordion", "relation", "related",
                     "folder2", "file2", "url2", "role2", 
                     "wysihtml", "summernote", "ckeditor", "gallery", "documents", "object",
                     "image2", "imagecrop",
@@ -741,6 +765,21 @@ var fieldSchema =
                         "type": "string",
                         "title": "Value Field"
                     },
+                    "textfield": {
+                        "type": "string",
+                        "title": "Text Field"
+                    },
+                }
+            },
+            "relatedoptions": {
+                "type": "object",
+                "title": "Relation Options",
+                "dependencies": "fieldtype",
+                "properties": {
+                    "many": {
+                        "type": "boolean",
+                        "title": "Many"
+                    },                    
                     "textfield": {
                         "type": "string",
                         "title": "Text Field"
@@ -1003,7 +1042,7 @@ var fieldOptions =
             "dependencies": {
                 "advanced": [true],
                 "fieldtype": ["text", "checkbox", "multicheckbox", "select", "radio", "textarea", "email", "date", "number",
-                "file", "url", "icon", "guid", "address", "relation", "file2", "url2", "role2",
+                    "file", "url", "icon", "guid", "address", "relation", "related", "file2", "url2", "role2",
                 "wysihtml", "summernote", "ckeditor", "documents"]
             }
         },
@@ -1019,8 +1058,9 @@ var fieldOptions =
         },
         "fieldtype": {
             "optionLabels": ["Text", "Checkbox", "Multi checkbox", "Dropdown list (select)", "Radio buttons", "Text area", "Email address", "Date", "Number",
+
                 "Image (upload & autocomplete)", "ImageX (cropper, overwrite, ...)", "File (upload & autocomplete)", "Url (autocomplete for pages)", "Font Awesome Icons", "Guid (auto id)", "Address (autocomplete & geocode)",
-                "List (Panels)", "List (Table)", "List (Accordion)", "Relation (Additional Data)",
+                "List (Panels)", "List (Table)", "List (Accordion)", "Relation (Additional Data)", "Related",
                 "Folder2 (folderID)", "File2 (fileID)", "Url2 (tabID)", "Role2 (roleID)", 
                 "Html (Wysihtml)", "Html (Summernote)", "Html (CK Editor)", "Image Gallery", "Documents", "Group (object)",
                 "_Legacy - Image2 (fileID)", "_Legacy - Image (with croppper)",
@@ -1077,6 +1117,17 @@ var fieldOptions =
                 "valuefield": {
 
                 },
+                "textfield": {
+
+                }
+            }
+        },
+        "relatedoptions": {
+            "collapsible": true,
+            "dependencies": {
+                "fieldtype": ["related"]
+            },
+            "fields": {
                 "textfield": {
 
                 }
