@@ -5,12 +5,16 @@ using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Datasource.Search;
+using Satrabel.OpenContent.Components.Handlebars;
 using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Manifest;
+using Satrabel.OpenContent.Components.TemplateHelpers;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Web;
 
 namespace Satrabel.OpenContent.Components.Render
 {
@@ -125,7 +129,7 @@ namespace Satrabel.OpenContent.Components.Render
 
         public abstract JToken GetModelAsJson(bool onlyData = false, bool onlyMainData = false);
 
-        protected void EnhanceSelect2(JObject model)
+        protected void EnhanceSelect2(JObject model, bool onlyData)
         {
             string colName = string.IsNullOrEmpty(_collection) ? "Items" : _collection;
             bool addDataEnhance = _manifest.AdditionalDataDefined();
@@ -176,9 +180,11 @@ namespace Satrabel.OpenContent.Components.Render
             }
             if (_optionsJson != null)
             {
-                JsonUtils.LookupSelect2InOtherModule(model, _optionsJson);
+                LookupSelect2InOtherModule(model, _optionsJson, onlyData);
             }
         }
+
+        
 
         protected void ExtendModel(JObject model, bool onlyData, bool onlyMainData)
         {
@@ -222,7 +228,7 @@ namespace Satrabel.OpenContent.Components.Render
                                     JObject context = new JObject();
                                     json["Context"] = context;
                                     context["Id"] = dataItem.Id;
-                                    EnhanceSelect2(json as JObject);
+                                    EnhanceSelect2(json as JObject, onlyData);
                                     JsonUtils.SimplifyJson(json, GetCurrentCultureCode());
                                 }
                                 colDataJson.Add(json);
@@ -272,6 +278,7 @@ namespace Satrabel.OpenContent.Components.Render
                 JObject context = new JObject();
                 model["Context"] = context;
                 context["ModuleId"] = _module.ViewModule.ModuleID;
+                context["TabId"] = _module.ViewModule.TabID;
                 context["GoogleApiKey"] = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController(_portalId).GetGoogleApiKey();
                 context["ModuleTitle"] = _module.ViewModule.ModuleTitle;
                 var editIsAllowed = !_manifest.DisableEdit && IsEditAllowed(-1);
@@ -381,5 +388,139 @@ namespace Satrabel.OpenContent.Components.Render
             }
         }
 
+        protected void LookupSelect2InOtherModule(JObject model, JObject options, bool onlyData)
+        {
+
+            foreach (var child in model.Children<JProperty>().ToList())
+            {
+                JObject opt = null;
+                if (options?["fields"] != null)
+                {
+                    opt = options["fields"][child.Name] as JObject;
+                }
+                if (opt == null) continue;
+                bool lookup =
+                    opt["type"] != null &&
+                    opt["type"].ToString() == "select2" &&
+                    opt["dataService"]?["action"] != null &&
+                    opt["dataService"]?["action"].ToString() == "Lookup";
+ 
+                    //opt["dataService"]?["data"]?["moduleId"] != null &&
+                    //opt["dataService"]?["data"]?["tabId"] != null;
+
+                string dataMember = "";
+                string valueField = "Id";
+                string moduleId = "";
+                string tabId = "";
+                if (lookup)
+                {
+                    dataMember = opt["dataService"]["data"]["dataMember"]?.ToString() ?? "";
+                    valueField = opt["dataService"]["data"]["valueField"]?.ToString() ?? "Id";
+                    moduleId = opt["dataService"]["data"]["moduleId"]?.ToString() ?? "0";
+                    tabId = opt["dataService"]["data"]["tabId"]?.ToString() ?? "0";
+                }
+
+                var childProperty = child;
+
+                if (childProperty.Value is JArray)
+                {
+                    var array = childProperty.Value as JArray;
+                    JArray newArray = new JArray();
+                    foreach (var value in array)
+                    {
+                        var obj = value as JObject;
+                        if (obj != null)
+                        {
+                            LookupSelect2InOtherModule(obj, opt["items"] as JObject, onlyData);
+                        }
+                        else if (lookup)
+                        {
+                            var val = value as JValue;
+                            if (val != null)
+                            {
+                                try
+                                {
+                                    newArray.Add(GenerateObject(val.ToString(), int.Parse(tabId), int.Parse(moduleId), onlyData));
+                                }
+                                catch (System.Exception)
+                                {
+                                    Debugger.Break();
+                                }
+                            }
+                        }
+                    }
+                    if (lookup)
+                    {
+                        childProperty.Value = newArray;
+                    }
+                }
+                else if (childProperty.Value is JObject)
+                {
+                    var obj = childProperty.Value as JObject;
+                    LookupSelect2InOtherModule(obj, opt, onlyData);
+                }
+                else if (childProperty.Value is JValue)
+                {
+                    if (lookup)
+                    {
+                        string val = childProperty.Value.ToString();
+                        try
+                        {                            
+                            model[childProperty.Name] = GenerateObject(val, int.Parse(tabId), int.Parse(moduleId), onlyData);
+                        }
+                        catch (System.Exception ex)
+                        {
+                            Debugger.Break();
+                        }
+                    }
+                }
+            }
+        }
+
+        private JToken GenerateObject(string id, int tabId, int moduleId, bool onlyData)
+        {
+            var module = moduleId> 0 ? new OpenContentModuleInfo(moduleId , tabId) : _module;
+            var ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
+            var dsContext = OpenContentUtils.CreateDataContext(module);
+            IDataItem dataItem = ds.Get(dsContext, id);
+            if (dataItem != null)
+            {
+                var json = dataItem?.Data?.DeepClone() as JObject;
+                //if (!string.IsNullOrEmpty(dataMember))
+                //{
+                //    json = json[dataMember];
+                //}
+                if (json != null)
+                {
+                    JsonUtils.SimplifyJson(json, GetCurrentCultureCode());
+                    if (!onlyData)
+                    {
+                        var context = new JObject();
+                        json["Context"] = context;
+                        context["Id"] = dataItem.Id;
+                        context["DetailUrl"] = GenerateDetailUrl(dataItem, json, module.Settings.Manifest, tabId > 0 ? tabId : _detailTabId);
+                    }
+                    return json;
+                }
+            }
+            JObject res = new JObject();
+            res["Id"] = id;
+            res["Title"] = "unknow";
+            return res;
+        }
+
+        protected string GenerateDetailUrl(IDataItem item, JObject dyn, Manifest.Manifest manifest, int detailTabId)
+        {
+            string url = "";
+            if (!string.IsNullOrEmpty(manifest.DetailUrl))
+            {
+                HandlebarsEngine hbEngine = new HandlebarsEngine();
+                var dynForHBS = JsonUtils.JsonToDictionary(dyn.ToString());
+
+                url = hbEngine.Execute(manifest.DetailUrl, dynForHBS);
+                url = HttpUtility.HtmlDecode(url);
+            }
+            return Globals.NavigateURL(detailTabId, false, _portalSettings, "", GetCurrentCultureCode(), UrlHelpers.CleanupUrl(url), "id=" + item.Id);
+        }
     }
 }
