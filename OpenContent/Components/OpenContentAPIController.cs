@@ -363,8 +363,9 @@ namespace Satrabel.OpenContent.Components
                     }
                     if (json is JArray)
                     {
-                        AddLookupItems(req.valueField, req.textField, req.childrenField, res, json as JArray);
+                        json = json.DeepClone();
                         JsonUtils.SimplifyJson(json, DnnLanguageUtils.GetCurrentCultureCode());
+                        AddLookupItems(req.valueField, req.textField, req.childrenField, res, json as JArray);                        
                     }
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, res);
@@ -381,7 +382,9 @@ namespace Satrabel.OpenContent.Components
         [HttpPost]
         public HttpResponseMessage Lookup(LookupRequestDTO req)
         {
-            var module = OpenContentModuleConfig.Create(req.moduleid, req.tabid, PortalSettings);
+            int moduleid = req.moduleid > 0 ? req.moduleid : ActiveModule.ModuleID;
+            int tabid = req.tabid > 0 ? req.tabid : ActiveModule.TabID;
+            var module = OpenContentModuleConfig.Create(moduleid, tabid, PortalSettings);
             if (module == null) throw new Exception($"Can not find ModuleInfo (tabid:{req.tabid}, moduleid:{req.moduleid})");
 
             List<LookupResultDTO> res = new List<LookupResultDTO>();
@@ -403,6 +406,9 @@ namespace Satrabel.OpenContent.Components
                             {
                                 json = json[req.dataMember];
                             }
+
+                            json = json.DeepClone();
+                            JsonUtils.SimplifyJson(json, DnnLanguageUtils.GetCurrentCultureCode());
 
                             var array = json as JArray;
                             if (array != null)
@@ -437,6 +443,8 @@ namespace Satrabel.OpenContent.Components
                         if (!string.IsNullOrEmpty(req.dataMember))
                         {
                             json = json[req.dataMember];
+                            json = json.DeepClone();
+                            JsonUtils.SimplifyJson(json, DnnLanguageUtils.GetCurrentCultureCode());
                             if (json is JArray)
                             {
                                 foreach (JToken item in (JArray)json)

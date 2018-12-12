@@ -273,7 +273,7 @@
             var date = null;
             try {
                 if (self.picker) {
-                    date = (self.picker.date() ? self.picker.date().format() : null);
+                    date = (self.picker.date() ? self.picker.date().format("YYYY-MM-DDTHH:mm:ss") : null);
                 }
                 else {
                     date = this.base();
