@@ -366,45 +366,89 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 else
                 {
                     var lst = new List<dynamic>();
-                    foreach (dynamic item in parameters[0] as IEnumerable)
+                    foreach (object obj in parameters[0] as IEnumerable)
                     {
                         bool show = true;
-                        try
+                        if (obj is Dictionary<string,object>)
                         {
-                            if (item.publishstatus != "published")
+                            var item = obj as Dictionary<string, object>;
+                            try
                             {
-                                show = false;
+                                if (item["publishstatus"].ToString() != "published")
+                                {
+                                    show = false;
+                                }
+                            }
+                            catch (Exception)
+                            {
+                            }
+                            try
+                            {
+                                DateTime publishstartdate = DateTime.Parse(item["publishstartdate"].ToString(), null, System.Globalization.DateTimeStyles.RoundtripKind);
+                                if (publishstartdate.Date >= DateTime.Today)
+                                {
+                                    show = false;
+                                }
+                            }
+                            catch (Exception)
+                            {
+                            }
+                            try
+                            {
+                                DateTime publishenddate = DateTime.Parse(item["publishenddate"].ToString(), null, System.Globalization.DateTimeStyles.RoundtripKind);
+                                if (publishenddate.Date <= DateTime.Today)
+                                {
+                                    show = false;
+                                }
+                            }
+                            catch (Exception)
+                            {
+                            }
+                            if (show)
+                            {
+                                lst.Add(item);
+                            }
+                        } else {
+                            dynamic item = obj as dynamic;
+                            
+                            try
+                            {
+                                if (item.publishstatus != "published")
+                                {
+                                    show = false;
+                                }
+                            }
+                            catch (Exception)
+                            {
+                            }
+                            try
+                            {
+                                DateTime publishstartdate = DateTime.Parse(item.publishstartdate, null, System.Globalization.DateTimeStyles.RoundtripKind);
+                                if (publishstartdate.Date >= DateTime.Today)
+                                {
+                                    show = false;
+                                }
+                            }
+                            catch (Exception)
+                            {
+                            }
+                            try
+                            {
+                                DateTime publishenddate = DateTime.Parse(item.publishenddate, null, System.Globalization.DateTimeStyles.RoundtripKind);
+                                if (publishenddate.Date <= DateTime.Today)
+                                {
+                                    show = false;
+                                }
+                            }
+                            catch (Exception)
+                            {
+                            }
+                            if (show)
+                            {
+                                lst.Add(item);
                             }
                         }
-                        catch (Exception)
-                        {
-                        }
-                        try
-                        {
-                            DateTime publishstartdate = DateTime.Parse(item.publishstartdate, null, System.Globalization.DateTimeStyles.RoundtripKind);
-                            if (publishstartdate.Date >= DateTime.Today)
-                            {
-                                show = false;
-                            }
-                        }
-                        catch (Exception)
-                        {
-                        }
-                        try
-                        {
-                            DateTime publishenddate = DateTime.Parse(item.publishenddate, null, System.Globalization.DateTimeStyles.RoundtripKind);
-                            if (publishenddate.Date <= DateTime.Today)
-                            {
-                                show = false;
-                            }
-                        }
-                        catch (Exception)
-                        {
-                        }
-                        if (show)
-                        {
-                            lst.Add(item);
-                        }
+                        
 
                     }
                     options.Template(writer, lst);
