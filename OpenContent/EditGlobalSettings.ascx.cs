@@ -17,6 +17,7 @@ using System.Web.UI.WebControls;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Security.Roles;
 using Satrabel.OpenContent.Components.Alpaca;
+using Satrabel.OpenContent.Components.UrlRewriter;
 
 #endregion
 
@@ -31,8 +32,15 @@ namespace Satrabel.OpenContent
             hlCancel.NavigateUrl = Globals.NavigateURL();
             cmdSave.Click += cmdSave_Click;
             cmdUpgradeXml.Click += cmdUpgradeXml_Click;
+            cmdPurgeUrlCache.Click += cmdPurgeUrlCache_Click;
             //cmdCancel.Click += cmdCancel_Click;
         }
+
+        private void cmdPurgeUrlCache_Click(object sender, EventArgs e)
+        {
+            UrlRulesCaching.PurgeCache(PortalId);
+        }
+
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);

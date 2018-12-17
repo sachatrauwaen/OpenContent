@@ -156,4 +156,7 @@
   <data name="lGithubRepository.Text" xml:space="preserve">
     <value>Github Templates Repository</value>
   </data>
+  <data name="cmdPurgeUrlCache.Text" xml:space="preserve">
+    <value>Purge Url Cache</value>
+  </data>
 </root>

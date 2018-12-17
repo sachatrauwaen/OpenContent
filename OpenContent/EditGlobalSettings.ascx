@@ -61,5 +61,8 @@
         <li>
             <asp:LinkButton ID="cmdUpgradeXml" runat="server" class="dnnSecondaryAction" resourcekey="cmdUpgradeXml" />
         </li>
+        <li>
+            <asp:LinkButton ID="cmdPurgeUrlCache" runat="server" class="dnnSecondaryAction" resourcekey="cmdPurgeUrlCache" />
+        </li>
     </ul>
 </asp:Panel>
