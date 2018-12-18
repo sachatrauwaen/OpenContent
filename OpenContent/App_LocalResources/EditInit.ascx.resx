@@ -174,4 +174,10 @@
   <data name="lDetailPage.Text" xml:space="preserve">
     <value>Detail Page</value>
   </data>
+  <data name="cmdCheckAll.Text" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="cmdCheckNone.Text" xml:space="preserve">
+    <value>None</value>
+  </data>
 </root>

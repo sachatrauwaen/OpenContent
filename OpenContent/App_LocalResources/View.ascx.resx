@@ -169,7 +169,7 @@
     <value>Filter Settings</value>
   </data>
   <data name="EditInit.Action" xml:space="preserve">
-    <value>Switch Template</value>
+    <value>Module Settings</value>
   </data>
   <data name="lDetailPage.Text" xml:space="preserve">
     <value>Detail Page</value>
