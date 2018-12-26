@@ -882,7 +882,8 @@ var fieldSchema =
                     },                    
                     "showOverwrite": {
                         "type": "boolean",
-                        "title": "Show Overwrite"
+                        "title": "Show Overwrite",
+                        "default": true
                     },
                     "overwrite": {
                         "type": "boolean",
@@ -891,7 +892,8 @@ var fieldSchema =
                     },
                     "showCropper": {
                         "type": "boolean",
-                        "title": "Show Cropper"
+                        "title": "Show Cropper",
+                        "default": true
                     },                    
                     "cropfolder": {
                         "type": "string",
@@ -901,7 +903,8 @@ var fieldSchema =
                     "saveCropFile": {
                         "type": "boolean",
                         "title": "Save Crop file",
-                        "dependencies": "showCropper"
+                        "dependencies": "showCropper",
+                        "default": true
                     },
                     "width": {
                         "type": "number",
@@ -1034,7 +1037,7 @@ var fieldOptions =
             "label": "Multi language",
             "dependencies": {
                 "advanced": [true],
-                "fieldtype": ["text", "textarea", "ckeditor", "file", "image", "url", "wysihtml", "summernote", "file2", "url2", "role2", "image2"]
+                "fieldtype": ["text", "textarea", "ckeditor", "file", "image", "url", "wysihtml", "summernote", "file2", "url2", "role2", "image2", "imagex"]
             }
         },
         "index": {

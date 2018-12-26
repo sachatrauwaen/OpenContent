@@ -35,6 +35,7 @@
       "alpaca/js/fields/dnn/MLFileField.js",
       "alpaca/js/fields/dnn/MLFolder2Field.js",
       "alpaca/js/fields/dnn/MLImage2Field.js",
+      "alpaca/js/fields/dnn/MLImageXField.js",
       "alpaca/js/fields/dnn/MLImageField.js",
       "alpaca/js/fields/dnn/MLTextAreaField.js",
       "alpaca/js/fields/dnn/MLTextField.js",

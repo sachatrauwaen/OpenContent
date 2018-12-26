@@ -87,35 +87,7 @@
                 this.base();
             },
             getValue: function () {
-                var self = this;
-                if (this.control && this.control.length > 0) {
-                    var value = null;
-                    $image = self.getImage();
-                    value = {};
-                    if (this.options.showCropper) {
-                        if (self.cropperExist()) {
-                            value.crop = $image.cropper('getData', { rounded: true });
-                        }
-                    }
-                    var url = $(this.control).find('select').val();
-                    if (self.options.advanced) {
-                        value.url = url;
-                    } else {
-                        value = url; // compatibility mode
-                    }
-                    if (value.url) {
-                        if (this.dataSource && this.dataSource[value.url]) {
-                            value.id = this.dataSource[value.url].id;
-                            value.filename = this.dataSource[value.url].filename;
-                            value.width = this.dataSource[value.url].width;
-                            value.height = this.dataSource[value.url].height;
-                        }
-                        if (this.options.showCropper) {
-                            value.cropUrl = this.getCropUrl();
-                        }
-                    }
-                    return value;
-                }
+                return this.getBaseValue();
             },
             setValue: function (val) {
                 var self = this;
@@ -165,6 +137,37 @@
                         $(this.control).find('select').trigger('change.select2');
                     }
                 //}
+            },
+            getBaseValue: function () {
+                var self = this;
+                if (this.control && this.control.length > 0) {
+                    var value = null;
+                    $image = self.getImage();
+                    value = {};
+                    if (this.options.showCropper) {
+                        if (self.cropperExist()) {
+                            value.crop = $image.cropper('getData', { rounded: true });
+                        }
+                    }
+                    var url = $(this.control).find('select').val();
+                    if (self.options.advanced) {
+                        value.url = url;
+                    } else {
+                        value = url; // compatibility mode
+                    }
+                    if (value.url) {
+                        if (this.dataSource && this.dataSource[value.url]) {
+                            value.id = this.dataSource[value.url].id;
+                            value.filename = this.dataSource[value.url].filename;
+                            value.width = this.dataSource[value.url].width;
+                            value.height = this.dataSource[value.url].height;
+                        }
+                        if (this.options.showCropper) {
+                            value.cropUrl = this.getCropUrl();
+                        }
+                    }
+                    return value;
+                }        
             },
             beforeRenderControl: function (model, callback) {
                 var self = this;
@@ -358,7 +361,7 @@
                 var self = this;
                 $image = self.getImage();
                 var crop = $image.cropper('getData', { rounded: true }); 
-                var data = self.getValue();
+                var data = self.getBaseValue();
                 var postData = { url: data.url, cropfolder: self.options.cropfolder, crop: crop, id: "crop" };
                 if (self.options.width && self.options.height) {
                     postData.resize = { width: self.options.width, height: self.options.height };

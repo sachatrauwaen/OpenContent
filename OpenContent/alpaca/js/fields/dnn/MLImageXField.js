@@ -2,22 +2,20 @@
 
     var Alpaca = $.alpaca;
         
-    Alpaca.Fields.MLImage2Field = Alpaca.Fields.Image2Field.extend(
+    Alpaca.Fields.MLImageXField = Alpaca.Fields.ImageXField.extend(
     /**
-     * @lends Alpaca.Fields.Image2Field.prototype
+     * @lends Alpaca.Fields.MLImageXField.prototype
      */
     {
         constructor: function (container, data, options, schema, view, connector) {
             var self = this;
             this.base(container, data, options, schema, view, connector);
-            //this.sf = connector.servicesFramework;
-            //this.dataSource = {};
             this.culture = connector.culture;
             this.defaultCulture = connector.defaultCulture;
             this.rootUrl = connector.rootUrl;
         },
         /**
-         * @see Alpaca.Fields.Image2Field#setup
+         * @see Alpaca.Fields.MLImageXField#setup
          */
         setup: function()
         {
@@ -28,7 +26,6 @@
                 this.olddata = {};
                 this.olddata[this.defaultCulture] = this.data;
             }
-            
             this.base();
         },
 
@@ -53,8 +50,10 @@
                 return o;
         },
 
+
+
         /**
-         * @see Alpaca.Field#setValue
+         * @see Alpaca.MLImageXField#setValue
          */
         setValue: function(val)
         {
@@ -90,15 +89,12 @@
         handlePostRender2: function (callback) {
             var self = this;
             var el = this.getControlEl();
-
-            
             callback();
-
             $(this.control).parent().find('.select2').after('<img src="' + self.rootUrl + 'images/Flags/' + this.culture + '.gif" class="flag" />');
             
         },
     });
 
-    Alpaca.registerFieldClass("mlimage2", Alpaca.Fields.MLImage2Field);
+    Alpaca.registerFieldClass("mlimagex", Alpaca.Fields.MLImageXField);
 
 })(jQuery);
