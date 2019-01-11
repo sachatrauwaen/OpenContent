@@ -1,4 +1,4 @@
-﻿<h3>OpenForm</h3>
+﻿<h3>OpenContent</h3>
 <p class="Contributor">
 	Satrabel.be <br />
 	<a href="mailto:info@satrabel.be">info@satrabel.be</a><br />

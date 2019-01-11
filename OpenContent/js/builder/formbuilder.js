@@ -877,7 +877,7 @@ var fieldSchema =
                     },
                     "fileMaxSize": {
                         "type": "number",
-                        "title": "File Max Size",
+                        "title": "File Max Size (bytes)",
                         "default": 2000000
                     },                    
                     "showOverwrite": {

@@ -8127,6 +8127,7 @@
                             minContainerHeight: 200,
                             minContainerWidth: 400,
                             toggleDragModeOnDblclick: false,
+                            zoomOnWheel: false,
                             cropmove: function(event) {
                                 self.setCropUrl('');
                             }
