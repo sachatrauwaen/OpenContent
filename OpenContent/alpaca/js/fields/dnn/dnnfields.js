@@ -8064,9 +8064,11 @@
             },
             cropImage: function () {
                 var self = this;
+                var data = self.getBaseValue();
+                if (!data.url) return;
                 $image = self.getImage();
                 var crop = $image.cropper('getData', { rounded: true }); 
-                var data = self.getBaseValue();
+                
                 var postData = { url: data.url, cropfolder: self.options.cropfolder, crop: crop, id: "crop" };
                 if (self.options.width && self.options.height) {
                     postData.resize = { width: self.options.width, height: self.options.height };
@@ -8190,7 +8192,9 @@
                 var baseStatus = this.base();
                 var valInfo = this.validation;
 
-                var status = !this.options.showCropper || !this.options.saveCropFile || this.getCropUrl();
+                var url = $(this.control).find('select').val();
+
+                var status = !url || !this.options.showCropper || !this.options.saveCropFile || this.getCropUrl();
                 
                 valInfo["cropMissing"] = {
                     "message": status ? "" : this.getMessage("cropMissing"),
