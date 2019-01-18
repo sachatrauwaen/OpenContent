@@ -319,7 +319,7 @@ namespace Satrabel.OpenContent
             {
                 ModulePermissionController.SaveModulePermissions(objModule);
             }
-            catch (Exception ex)
+            catch (Exception )
             {
                 //App.Services.Logger.Error($"Failed to automaticly set the permission. It already exists? tab={0}, moduletitle={1} ", objModule.TabID ,objModule.ModuleTitle);
             }

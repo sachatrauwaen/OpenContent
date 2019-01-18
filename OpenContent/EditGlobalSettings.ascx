@@ -40,6 +40,10 @@
         <asp:CheckBox ID="cbLoadBootstrap" runat="server" />
     </div>
     <div class="dnnFormItem">
+        <dnn:Label ID="lLoadGlyphicons" ControlName="cbLoadGlyphicons" runat="server" />
+        <asp:CheckBox ID="cbLoadGlyphicons" runat="server" />
+    </div>
+    <div class="dnnFormItem">
         <dnn:Label ID="lLegacyHandlebars" ControlName="cbLegacyHandlebars" runat="server" />
         <asp:CheckBox ID="cbLegacyHandlebars" runat="server" />
     </div>

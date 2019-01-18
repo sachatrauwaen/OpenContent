@@ -211,15 +211,17 @@
 <script type="text/x-handlebars-template" id="dnn-edit-control-imagex">
     <div class="alpaca-control-container">
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <input type="file" id="{{id}}-file" {{#if options.size}} size="{{options.size}}" {{/if}} {{#if options.readonly}} readonly="readonly" {{/if}} style="margin-bottom:5px;" />
             </div>
-            <div class="col-md-4">
+            <div class="col-md-5">
                 <label id="{{id}}-overwriteLabel">
                     <input id="{{id}}-overwrite" type="checkbox" {{#if selected}} checked{{/if}} /> Overwrite existing image
                 </label>
             </div>
-            <div class="col-md-4">
+        </div>
+        <div class="row">
+            <div class="col-md-12">
                 <div id="{{id}}-alert" class="_alert _alert-success" role="alert" style="border-radius:3px;padding:2px 5px ;background-color:dimgrey;color:#fff;display:none">File Uploaded</div>
             </div>
         </div>
@@ -255,7 +257,7 @@
             <img id="{{id}}-image" src="{{data.url}}" class="image">
         </div>
         {{/if}}
-        
+
     </div>
 </script>
 <script type="text/x-handlebars-template" id="dnn-edit-control-wysihtml">

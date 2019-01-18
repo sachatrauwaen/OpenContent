@@ -148,6 +148,24 @@ namespace Satrabel.OpenContent {
         protected global::System.Web.UI.WebControls.CheckBox cbLoadBootstrap;
         
         /// <summary>
+        /// Contrôle lLoadGlyphicons.
+        /// </summary>
+        /// <remarks>
+        /// Champ généré automatiquement.
+        /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.UserControl lLoadGlyphicons;
+        
+        /// <summary>
+        /// Contrôle cbLoadGlyphicons.
+        /// </summary>
+        /// <remarks>
+        /// Champ généré automatiquement.
+        /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox cbLoadGlyphicons;
+        
+        /// <summary>
         /// Contrôle lLegacyHandlebars.
         /// </summary>
         /// <remarks>

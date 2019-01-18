@@ -477,7 +477,7 @@ namespace Satrabel.OpenContent.Components.Render
                         {                            
                             model[childProperty.Name] = GenerateObject(val, int.Parse(tabId), int.Parse(moduleId), onlyData);
                         }
-                        catch (System.Exception ex)
+                        catch (System.Exception )
                         {
                             Debugger.Break();
                         }

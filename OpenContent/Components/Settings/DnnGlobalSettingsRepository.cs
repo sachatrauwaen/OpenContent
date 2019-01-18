@@ -8,7 +8,8 @@ namespace Satrabel.OpenContent.Components.Settings
     public class DnnGlobalSettingsRepository : IGlobalSettingsRepository
     {
         private readonly int _portalId;
-
+        private const string SETTINGS_LOAD_GLYPHICONS= "OpenContent_LoadGlyphicons";
+        private const bool SETTINGS_DEFAULT_LOAD_GLYPHICONS= false;
         private const string SETTINGS_KEY_MAX_VERSIONS = "OpenContent_MaxVersions";
         private const int SETTINGS_DEFAULT_MAX_VERSIONS = 5;
         private const string SETTINGS_EDIT_LAYOUT = "OpenContent_EditLayout";
@@ -68,6 +69,21 @@ namespace Satrabel.OpenContent.Components.Settings
         public void SetLoadBootstrap(bool loadBootstrap)
         {
             PortalController.UpdatePortalSetting(_portalId, SETTINGS_LOAD_BOOTSTRAP, loadBootstrap.ToString(), true);
+        }
+
+        public bool GetLoadGlyphicons()
+        {
+            if (_portalId == -1) return SETTINGS_DEFAULT_LOAD_GLYPHICONS;
+            var loadGlyphiconsSetting = PortalController.GetPortalSetting(SETTINGS_LOAD_GLYPHICONS, _portalId, string.Empty);
+            bool loadGlyphicons;
+            if (!string.IsNullOrWhiteSpace(loadGlyphiconsSetting) && bool.TryParse(loadGlyphiconsSetting, out loadGlyphicons))
+                return loadGlyphicons;
+            return SETTINGS_DEFAULT_LOAD_GLYPHICONS;
+        }
+
+        public void SetLoadGlyphicons(bool loadGlyphicons)
+        {
+            PortalController.UpdatePortalSetting(_portalId, SETTINGS_LOAD_BOOTSTRAP, loadGlyphicons.ToString(), true);
         }
 
         public string GetGoogleApiKey()

@@ -159,4 +159,7 @@
   <data name="cmdPurgeUrlCache.Text" xml:space="preserve">
     <value>Clear Url Cache</value>
   </data>
+  <data name="lLoadGlyphicons.Text" xml:space="preserve">
+    <value>Load Glyphicons on Edit Form (for bootstrap 4)</value>
+  </data>
 </root>

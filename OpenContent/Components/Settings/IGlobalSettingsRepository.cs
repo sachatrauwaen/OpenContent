@@ -13,6 +13,9 @@ namespace Satrabel.OpenContent.Components.Dnn
         bool GetLoadBootstrap();
         void SetLoadBootstrap(bool @checked);
 
+        void SetLoadGlyphicons(bool @checked);
+        bool GetLoadGlyphicons();
+
         string GetGoogleApiKey();
         void SetGoogleApiKey(string text);
 
@@ -30,7 +33,7 @@ namespace Satrabel.OpenContent.Components.Dnn
 
         bool IsSaveXml();
         void SetSaveXml(bool saveXml);
-
+        
         string GetGithubRepository();
         void SetGithubRepository(string value);
 

@@ -57,29 +57,34 @@ namespace Satrabel.OpenContent.Components.Alpaca
 
         public void RegisterAll() // for openform
         {
-            RegisterAll(false, false);
+            RegisterAll(false, false, false);
         }
 
         public void RegisterAll(bool bootstrap) // for openform
         {
-            RegisterAll(bootstrap, false);
+            RegisterAll(bootstrap, false, false);
         }
 
-        public void RegisterAll(bool bootstrapLayoutEnabled, bool loadBootstrap)
+        public void RegisterAll(bool bootstrapLayoutEnabled, bool loadBootstrap, bool loadGlyphicons)
         {
-            RegisterAlpaca(bootstrapLayoutEnabled, loadBootstrap);
+            RegisterAlpaca(bootstrapLayoutEnabled, loadBootstrap, loadGlyphicons);
             RegisterTemplates();
             RegisterScripts(bootstrapLayoutEnabled);
             RegisterFields(bootstrapLayoutEnabled);
         }
 
-        private void RegisterAlpaca(bool bootstrap, bool loadBootstrap)
+        private void RegisterAlpaca(bool bootstrap, bool loadBootstrap, bool loadGlyphicons)
         {
             if (loadBootstrap)
             {
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/bootstrap/js/bootstrap.min.js", FileOrder.Js.DefaultPriority);
-                ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/bootstrap/css/bootstrap.min.css", FileOrder.Css.DefaultPriority);
+                ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/bootstrap/css/bootstrap.min.css", FileOrder.Css.DefaultPriority);                
             }
+            if (loadGlyphicons)
+            {
+                ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/bootstrap/css/glyphicons.css", FileOrder.Css.DefaultPriority);
+            }
+            //ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/css/font-awesome/css/font-awesome.min.css", FileOrder.Css.DefaultPriority);
             ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/lib/handlebars/handlebars.js", FileOrder.Js.DefaultPriority);
             ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/lib/typeahead.js/dist/typeahead.bundle.min.js", FileOrder.Js.DefaultPriority);
 

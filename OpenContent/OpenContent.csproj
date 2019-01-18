@@ -408,6 +408,7 @@
     <Content Include="alpaca\js\fields\dnn\ImageXField.js" />
     <Content Include="alpaca\js\fields\dnn\MLImageXField.js" />
     <Content Include="alpaca\templates\dnn-edit\control-imagex.html" />
+    <Content Include="js\bootstrap\css\glyphicons.css" />
     <Content Include="js\jplist\jplisthelper.js" />
     <Compile Include="Providers\SitemapProviders\OpenContentSitemapProvider\OpenContentSitemapProvider.cs" />
     <Compile Include="Providers\SitemapProviders\OpenContentSitemapProvider\OpenSitemapUrl.cs" />

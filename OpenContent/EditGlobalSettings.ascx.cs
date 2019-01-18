@@ -103,6 +103,7 @@ namespace Satrabel.OpenContent
                 globalSettingsRepository.SetEditLayout((AlpacaLayoutEnum)editLayout);
             }
             globalSettingsRepository.SetLoadBootstrap(cbLoadBootstrap.Checked);
+            globalSettingsRepository.SetLoadGlyphicons(cbLoadBootstrap.Checked);
             globalSettingsRepository.SetGoogleApiKey(tbGoogleApiKey.Text);
             globalSettingsRepository.SetLegacyHandlebars(cbLegacyHandlebars.Checked);
             globalSettingsRepository.SetSaveXml(cbSaveXml.Checked);

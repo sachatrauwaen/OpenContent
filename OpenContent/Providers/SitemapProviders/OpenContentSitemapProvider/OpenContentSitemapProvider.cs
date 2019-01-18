@@ -184,11 +184,10 @@ namespace Satrabel.OpenContent.Providers.SitemapProviders
             string Url = "";
             Locale newLocale = LocaleController.Instance.GetLocale(newLanguage);
             //Ensure that the current ActiveTab is the culture of the new language
-            bool islocalized = false;
+            //bool islocalized = false;
             TabInfo localizedTab = new TabController().GetTabByCulture(tabId, ps.PortalId, newLocale);
             if (localizedTab != null)
             {
-                islocalized = true;
                 tabId = localizedTab.TabID;
                 if (localizedTab.IsDeleted || localizedTab.TabType != TabType.Normal || !IsTabPublic(localizedTab.TabPermissions))
                 {
