@@ -83,7 +83,7 @@ namespace Satrabel.OpenContent.Components.Settings
 
         public void SetLoadGlyphicons(bool loadGlyphicons)
         {
-            PortalController.UpdatePortalSetting(_portalId, SETTINGS_LOAD_BOOTSTRAP, loadGlyphicons.ToString(), true);
+            PortalController.UpdatePortalSetting(_portalId, SETTINGS_LOAD_GLYPHICONS, loadGlyphicons.ToString(), true);
         }
 
         public string GetGoogleApiKey()
