@@ -203,8 +203,9 @@ namespace Satrabel.OpenContent
             {
                 // this module is in another language but has already data.
                 // Therefor we will not AutoAttach it, because otherwise all data will be deleted.
-                App.Services.Logger.Info($"Module {module.ModuleID} on Tab {module.TabID} has not been AutoAttached because it already contains data.");
-                return;
+                
+                //App.Services.Logger.Info($"Module {module.ModuleID} on Tab {module.TabID} has not been AutoAttached because it already contains data.");
+                //return;
             }
 
             var mc = (new ModuleController());
