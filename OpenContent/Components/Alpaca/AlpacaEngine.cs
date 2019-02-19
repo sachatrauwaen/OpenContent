@@ -65,6 +65,11 @@ namespace Satrabel.OpenContent.Components.Alpaca
             RegisterAll(bootstrap, false, false);
         }
 
+        public void RegisterAll(bool bootstrapLayoutEnabled, bool loadBootstrap) // for openform
+        {
+            RegisterAll(bootstrapLayoutEnabled, loadBootstrap, false);
+        }
+
         public void RegisterAll(bool bootstrapLayoutEnabled, bool loadBootstrap, bool loadGlyphicons)
         {
             RegisterAlpaca(bootstrapLayoutEnabled, loadBootstrap, loadGlyphicons);
