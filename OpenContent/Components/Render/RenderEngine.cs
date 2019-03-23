@@ -878,6 +878,17 @@ namespace Satrabel.OpenContent.Components.Render
                 )
             );
 
+            //Clone Module
+            actions.Add(
+                new MenuAction(
+                App.Services.Localizer.GetString("CloneModule.Action", ResourceFile),
+                "~/DesktopModules/OpenContent/images/editinit.png",
+                RenderContext.EditUrl("CloneModule"),
+                ActionType.Misc,
+                SecurityAccessLevel.AdminRights
+                )
+            );
+
             //Edit Global Settings
             actions.Add(
                 new MenuAction(

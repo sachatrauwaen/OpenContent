@@ -80,6 +80,7 @@ namespace Satrabel.OpenContent
             ti.ModuleContext = ModuleContext;
             ti.Settings = _settings;
             ti.Renderinfo = _renderinfo;
+            ti.ResourceFile = LocalResourceFile;
         }
 
         protected override void OnLoad(EventArgs e)

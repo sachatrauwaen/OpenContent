@@ -22,11 +22,13 @@ namespace Satrabel.OpenContent
         public OpenContentSettings Settings { get; set; }
         public RenderInfo Renderinfo { get; set; }
         public bool RenderOnlySaveButton { get; set; }
+        public string ResourceFile { get; set; }
 
         protected void Page_Load(object sender, EventArgs e)
         {
             pHelp.Visible = false;
             phCurrentTemplate.Visible = false;
+            
         }
         protected void rblFrom_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -270,6 +272,14 @@ namespace Satrabel.OpenContent
                 //bSave.Enabled = false;
                 //hlEditSettings.CssClass = "dnnSecondaryAction";
                 //hlEditContent.CssClass = "dnnPrimaryAction";
+
+                var template = new FileUri(ddlTemplate.SelectedValue);
+                var manifest = template.ToTemplateManifest();
+                hlEditContent.Text = App.Services.Localizer.GetString(manifest.IsListTemplate ? "Add.Action" : "Edit.Action", ResourceFile);
+                if (!string.IsNullOrEmpty(manifest.Title))
+                {
+                    hlEditContent.Text = hlEditContent.Text + " " + manifest.Title;
+                }
             }
         }
         public void RenderInitForm()

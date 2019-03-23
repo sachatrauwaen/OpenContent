@@ -169,7 +169,7 @@
     <value>Filter Settings</value>
   </data>
   <data name="EditInit.Action" xml:space="preserve">
-    <value>Module Settings</value>
+    <value>Switch Template</value>
   </data>
   <data name="lDetailPage.Text" xml:space="preserve">
     <value>Detail Page</value>
@@ -216,5 +216,8 @@
   </data>
   <data name="Notifications.Action" xml:space="preserve">
     <value>Notifications</value>
+  </data>
+  <data name="CloneModule.Action" xml:space="preserve">
+    <value>Clone Module</value>
   </data>
 </root>
