@@ -8014,7 +8014,7 @@
                                 add: function (e, data) {
                                     var goUpload = true;
                                     var uploadFile = data.files[0];        
-                                    var regex = new RegExp('\\.(' + self.options.fileExtensions + ')$');
+                                    var regex = new RegExp('\\.(' + self.options.fileExtensions + ')$', 'i');
                                     if (!(regex).test(uploadFile.name)) {
                                         self.showAlert('You must select an image file only (' + self.options.fileExtensions+')');
                                         goUpload = false;
