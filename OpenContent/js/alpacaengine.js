@@ -98,9 +98,9 @@ alpacaEngine.engine = function (config) {
                 var href = $("#" + self.saveButton).attr('href');
                 var windowTop = parent; //needs to be assign to a varaible for Opera compatibility issues.
                 var popup = windowTop.jQuery("#iPopUp");
-                if (popup.length > 0) {
-                    //windowTop.__doPostBack('dnn_ctr' + self.moduleId + '_View__UP', '');
-                    $('#'+'dnn_ctr' + self.moduleId + '_View__UP').click();
+                if (popup.length > 0 && windowTop.WebForm_GetElementById('dnn_ctr' + self.moduleId + '_View__UP')) {
+                    windowTop.__doPostBack('dnn_ctr' + self.moduleId + '_View__UP', '');
+                    //$('#'+'dnn_ctr' + self.moduleId + '_View__UP').click();
                     dnnModal.closePopUp(false, "");
                 }
                 else {
@@ -272,9 +272,9 @@ alpacaEngine.engine = function (config) {
             if (data.isValid) {
                 var windowTop = parent; //needs to be assign to a varaible for Opera compatibility issues.
                 var popup = windowTop.jQuery("#iPopUp");
-                if (popup.length > 0) {
-                    //windowTop.__doPostBack('dnn_ctr' + self.moduleId + '_View__UP', '');
-                    $('#' + 'dnn_ctr' + self.moduleId + '_View__UP').click();
+                if (popup.length > 0 && windowTop.WebForm_GetElementById('dnn_ctr' + self.moduleId + '_View__UP')) {
+                    windowTop.__doPostBack('dnn_ctr' + self.moduleId + '_View__UP', '');
+                    //$('#' + 'dnn_ctr' + self.moduleId + '_View__UP').click();
                     dnnModal.closePopUp(false, href);
                 }
                 else {
