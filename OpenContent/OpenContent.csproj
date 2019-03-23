@@ -388,6 +388,13 @@
     <Compile Include="Components\UrlRewriter\OpenContentUrlRule.cs" />
     <Compile Include="Components\UrlRewriter\OpenContentUrlProvider.cs" />
     <Compile Include="Components\Utils\ZipUtils.cs" />
+    <Compile Include="CloneModule.ascx.cs">
+      <DependentUpon>CloneModule.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="CloneModule.ascx.designer.cs">
+      <DependentUpon>CloneModule.ascx</DependentUpon>
+    </Compile>
     <Compile Include="EditNotifications.ascx.cs">
       <DependentUpon>EditNotifications.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -408,6 +415,7 @@
     <Content Include="alpaca\js\fields\dnn\ImageXField.js" />
     <Content Include="alpaca\js\fields\dnn\MLImageXField.js" />
     <Content Include="alpaca\templates\dnn-edit\control-imagex.html" />
+    <Content Include="CloneModule.ascx" />
     <Content Include="js\bootstrap\css\glyphicons.css" />
     <Content Include="js\jplist\jplisthelper.js" />
     <Compile Include="Providers\SitemapProviders\OpenContentSitemapProvider\OpenContentSitemapProvider.cs" />
