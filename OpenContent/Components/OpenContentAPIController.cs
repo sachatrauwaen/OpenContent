@@ -606,7 +606,7 @@ namespace Satrabel.OpenContent.Components
                     {
                         ds.Update(dsContext, dsItem, json["form"] as JObject);
                     }
-                    //App.Services.CacheAdapter.SyncronizeCache(module);
+                    App.Services.CacheAdapter.SyncronizeCache(module);
                 }
                 catch (DataNotValidException ex)
                 {
