@@ -144,13 +144,22 @@
   <data name="lGoogleApiKey.Text" xml:space="preserve">
     <value>Google Api Key</value>
   </data>
-  <data name="lFastHandlebars.Text" xml:space="preserve">
-    <value>Fast Handlebars. Case sensitive variables ! (Beta)</value>
+  <data name="lLegacyHandlebars.Text" xml:space="preserve">
+    <value>Legacy Handlebars. Case unsensitive variables. Slower.</value>
   </data>
   <data name="lSaveXml.Text" xml:space="preserve">
     <value>Save Xml</value>
   </data>
   <data name="cmdUpgradeXml.Text" xml:space="preserve">
     <value>Generate Xml</value>
+  </data>
+  <data name="lGithubRepository.Text" xml:space="preserve">
+    <value>Github Templates Repository</value>
+  </data>
+  <data name="cmdPurgeUrlCache.Text" xml:space="preserve">
+    <value>Clear Url Cache</value>
+  </data>
+  <data name="lLoadGlyphicons.Text" xml:space="preserve">
+    <value>Load Glyphicons on Edit Form (for bootstrap 4)</value>
   </data>
 </root>

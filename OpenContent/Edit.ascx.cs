@@ -26,6 +26,7 @@ namespace Satrabel.OpenContent
             base.OnInit(e);
             var bootstrap = App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetEditLayout() != AlpacaLayoutEnum.DNN;
             bool loadBootstrap = bootstrap && App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetLoadBootstrap();
+            bool loadGlyphicons = bootstrap && App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetLoadGlyphicons();
             hlCancel.NavigateUrl = Globals.NavigateURL();
             cmdSave.NavigateUrl = Globals.NavigateURL();
             cmdCopy.NavigateUrl = Globals.NavigateURL();
@@ -34,7 +35,7 @@ namespace Satrabel.OpenContent
             string prefix = (string.IsNullOrEmpty(settings.Template.Collection) || settings.Template.Collection == "Items") ? "" : settings.Template.Collection;
 
             AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext.PortalId, settings.Template.ManifestFolderUri.FolderPath, prefix);
-            alpaca.RegisterAll(bootstrap, loadBootstrap);
+            alpaca.RegisterAll(bootstrap, loadBootstrap, loadGlyphicons);
             string itemId = Request.QueryString["id"];
             AlpacaContext = new AlpacaContext(PortalId, ModuleId, itemId, ScopeWrapper.ClientID, hlCancel.ClientID, cmdSave.ClientID, cmdCopy.ClientID, hlDelete.ClientID, ddlVersions.ClientID);
             AlpacaContext.Bootstrap = bootstrap;

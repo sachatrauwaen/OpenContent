@@ -365,7 +365,8 @@ namespace Satrabel.OpenContent.Components
                     {
                         json = json.DeepClone();
                         JsonUtils.SimplifyJson(json, DnnLanguageUtils.GetCurrentCultureCode());
-                        AddLookupItems(req.valueField, req.textField, req.childrenField, res, json as JArray);                        
+                        AddLookupItems(req.valueField, req.textField, req.childrenField, res, json as JArray);
+
                     }
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, res);
@@ -382,9 +383,7 @@ namespace Satrabel.OpenContent.Components
         [HttpPost]
         public HttpResponseMessage Lookup(LookupRequestDTO req)
         {
-            int moduleid = req.moduleid > 0 ? req.moduleid : ActiveModule.ModuleID;
-            int tabid = req.tabid > 0 ? req.tabid : ActiveModule.TabID;
-            var module = OpenContentModuleConfig.Create(moduleid, tabid, PortalSettings);
+            var module = OpenContentModuleConfig.Create(req.moduleid, req.tabid, PortalSettings);
             if (module == null) throw new Exception($"Can not find ModuleInfo (tabid:{req.tabid}, moduleid:{req.moduleid})");
 
             List<LookupResultDTO> res = new List<LookupResultDTO>();
@@ -406,7 +405,6 @@ namespace Satrabel.OpenContent.Components
                             {
                                 json = json[req.dataMember];
                             }
-
                             json = json.DeepClone();
                             JsonUtils.SimplifyJson(json, DnnLanguageUtils.GetCurrentCultureCode());
 
@@ -445,6 +443,7 @@ namespace Satrabel.OpenContent.Components
                             json = json[req.dataMember];
                             json = json.DeepClone();
                             JsonUtils.SimplifyJson(json, DnnLanguageUtils.GetCurrentCultureCode());
+
                             if (json is JArray)
                             {
                                 foreach (JToken item in (JArray)json)
@@ -490,6 +489,8 @@ namespace Satrabel.OpenContent.Components
                         foreach (var item in items)
                         {
                             var json = item.Data as JObject;
+                            json = json.DeepClone() as JObject;
+                            JsonUtils.SimplifyJson(json, DnnLanguageUtils.GetCurrentCultureCode());
                             if (json?[req.textField] != null)
                             {
                                 res.Add(new LookupResultDTO()

@@ -80,6 +80,7 @@ namespace Satrabel.OpenContent
             ti.ModuleContext = ModuleContext;
             ti.Settings = _settings;
             ti.Renderinfo = _renderinfo;
+            ti.ResourceFile = LocalResourceFile;
         }
 
         protected override void OnLoad(EventArgs e)
@@ -203,8 +204,9 @@ namespace Satrabel.OpenContent
             {
                 // this module is in another language but has already data.
                 // Therefor we will not AutoAttach it, because otherwise all data will be deleted.
-                App.Services.Logger.Info($"Module {module.ModuleID} on Tab {module.TabID} has not been AutoAttached because it already contains data.");
-                return;
+                
+                //App.Services.Logger.Info($"Module {module.ModuleID} on Tab {module.TabID} has not been AutoAttached because it already contains data.");
+                //return;
             }
 
             var mc = (new ModuleController());
@@ -319,7 +321,7 @@ namespace Satrabel.OpenContent
             {
                 ModulePermissionController.SaveModulePermissions(objModule);
             }
-            catch (Exception ex)
+            catch (Exception )
             {
                 //App.Services.Logger.Error($"Failed to automaticly set the permission. It already exists? tab={0}, moduletitle={1} ", objModule.TabID ,objModule.ModuleTitle);
             }

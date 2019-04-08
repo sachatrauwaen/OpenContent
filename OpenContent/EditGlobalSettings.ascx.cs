@@ -17,6 +17,7 @@ using System.Web.UI.WebControls;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Security.Roles;
 using Satrabel.OpenContent.Components.Alpaca;
+using Satrabel.OpenContent.Components.UrlRewriter;
 
 #endregion
 
@@ -31,8 +32,15 @@ namespace Satrabel.OpenContent
             hlCancel.NavigateUrl = Globals.NavigateURL();
             cmdSave.Click += cmdSave_Click;
             cmdUpgradeXml.Click += cmdUpgradeXml_Click;
+            cmdPurgeUrlCache.Click += cmdPurgeUrlCache_Click;
             //cmdCancel.Click += cmdCancel_Click;
         }
+
+        private void cmdPurgeUrlCache_Click(object sender, EventArgs e)
+        {
+            UrlRulesCaching.PurgeCache(PortalId);
+        }
+
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
@@ -70,9 +78,12 @@ namespace Satrabel.OpenContent
 
                 cbLoadBootstrap.Checked = globalSettingsRepository.GetLoadBootstrap();
                 cbLoadBootstrap.Visible = lLoadBootstrap.Visible = globalSettingsRepository.GetEditLayout() != AlpacaLayoutEnum.DNN;
+                cbLoadGlyphicons.Checked = globalSettingsRepository.GetLoadGlyphicons();
+                cbLoadGlyphicons.Visible = cbLoadBootstrap.Visible;
                 tbGoogleApiKey.Text = globalSettingsRepository.GetGoogleApiKey();
-                cbFastHandlebars.Checked = globalSettingsRepository.GetFastHandlebars();
+                cbLegacyHandlebars.Checked = globalSettingsRepository.GetLegacyHandlebars();
                 cbSaveXml.Checked = globalSettingsRepository.IsSaveXml();
+                tbGithubRepository.Text = globalSettingsRepository.GetGithubRepository();
                 cmdUpgradeXml.Visible = cbSaveXml.Checked;
             }
         }
@@ -94,9 +105,11 @@ namespace Satrabel.OpenContent
                 globalSettingsRepository.SetEditLayout((AlpacaLayoutEnum)editLayout);
             }
             globalSettingsRepository.SetLoadBootstrap(cbLoadBootstrap.Checked);
+            globalSettingsRepository.SetLoadGlyphicons(cbLoadGlyphicons.Checked);
             globalSettingsRepository.SetGoogleApiKey(tbGoogleApiKey.Text);
-            globalSettingsRepository.SetFastHandlebars(cbFastHandlebars.Checked);
+            globalSettingsRepository.SetLegacyHandlebars(cbLegacyHandlebars.Checked);
             globalSettingsRepository.SetSaveXml(cbSaveXml.Checked);
+            globalSettingsRepository.SetGithubRepository(tbGithubRepository.Text);
 
             Response.Redirect(Globals.NavigateURL(), true);
         }
@@ -140,6 +153,7 @@ namespace Satrabel.OpenContent
         protected void ddlEditLayout_SelectedIndexChanged(object sender, EventArgs e)
         {
             cbLoadBootstrap.Visible = lLoadBootstrap.Visible = ddlEditLayout.SelectedValue != "1"; // DNN
+            cbLoadGlyphicons.Visible = cbLoadBootstrap.Visible;
         }
 
 

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -18,7 +18,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Satrabel.OpenContent</RootNamespace>
     <AssemblyName>OpenContent</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
@@ -126,10 +126,7 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Net.Http">
-      <HintPath>..\ref\dnn732\System.Net.Http.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ref\dnn732\System.Net.Http.Formatting.dll</HintPath>
@@ -179,6 +176,7 @@
     <Compile Include="Components\Datasource\IDataQueries.cs" />
     <Compile Include="Components\Export\ExcelApiController.cs" />
     <Compile Include="Components\Files\FileUriUtils.cs" />
+    <Compile Include="Components\Github\GithubDtos.cs" />
     <Compile Include="Components\Localization\LocalizationUtils.cs" />
     <Compile Include="Components\Logging\Logger.cs" />
     <Compile Include="Components\Lucene\LuceneUtils.cs" />
@@ -239,6 +237,7 @@
     <Compile Include="Components\TemplateHelpers\FormHelpers.cs" />
     <Compile Include="Components\TemplateHelpers\RazorUtils.cs" />
     <Compile Include="Components\UrlRewriter\UrlRulesCaching.cs" />
+    <Compile Include="Components\Github\GithubTemplateUtils.cs" />
     <Compile Include="Components\Utils\Requires.cs" />
     <Compile Include="Components\Utils\ExcelUtils.cs" />
     <Compile Include="Components\Dnn\DnnFileUtils.cs" />
@@ -389,6 +388,13 @@
     <Compile Include="Components\UrlRewriter\OpenContentUrlRule.cs" />
     <Compile Include="Components\UrlRewriter\OpenContentUrlProvider.cs" />
     <Compile Include="Components\Utils\ZipUtils.cs" />
+    <Compile Include="CloneModule.ascx.cs">
+      <DependentUpon>CloneModule.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="CloneModule.ascx.designer.cs">
+      <DependentUpon>CloneModule.ascx</DependentUpon>
+    </Compile>
     <Compile Include="EditNotifications.ascx.cs">
       <DependentUpon>EditNotifications.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -407,7 +413,10 @@
     <Compile Include="Components\AppDefinitions\IMenuAction.cs" />
     <Content Include="alpaca\js\fields\dnn\CheckboxField.js" />
     <Content Include="alpaca\js\fields\dnn\ImageXField.js" />
+    <Content Include="alpaca\js\fields\dnn\MLImageXField.js" />
     <Content Include="alpaca\templates\dnn-edit\control-imagex.html" />
+    <Content Include="CloneModule.ascx" />
+    <Content Include="js\bootstrap\css\glyphicons.css" />
     <Content Include="js\jplist\jplisthelper.js" />
     <Compile Include="Providers\SitemapProviders\OpenContentSitemapProvider\OpenContentSitemapProvider.cs" />
     <Compile Include="Providers\SitemapProviders\OpenContentSitemapProvider\OpenSitemapUrl.cs" />
@@ -1176,6 +1185,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_LocalResources\View.ascx.de-AT.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_LocalResources\CloneModule.ascx.resx" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

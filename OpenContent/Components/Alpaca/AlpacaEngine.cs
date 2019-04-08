@@ -57,29 +57,39 @@ namespace Satrabel.OpenContent.Components.Alpaca
 
         public void RegisterAll() // for openform
         {
-            RegisterAll(false, false);
+            RegisterAll(false, false, false);
         }
 
         public void RegisterAll(bool bootstrap) // for openform
         {
-            RegisterAll(bootstrap, false);
+            RegisterAll(bootstrap, false, false);
         }
 
-        public void RegisterAll(bool bootstrapLayoutEnabled, bool loadBootstrap)
+        public void RegisterAll(bool bootstrapLayoutEnabled, bool loadBootstrap) // for openform
         {
-            RegisterAlpaca(bootstrapLayoutEnabled, loadBootstrap);
+            RegisterAll(bootstrapLayoutEnabled, loadBootstrap, false);
+        }
+
+        public void RegisterAll(bool bootstrapLayoutEnabled, bool loadBootstrap, bool loadGlyphicons)
+        {
+            RegisterAlpaca(bootstrapLayoutEnabled, loadBootstrap, loadGlyphicons);
             RegisterTemplates();
             RegisterScripts(bootstrapLayoutEnabled);
             RegisterFields(bootstrapLayoutEnabled);
         }
 
-        private void RegisterAlpaca(bool bootstrap, bool loadBootstrap)
+        private void RegisterAlpaca(bool bootstrap, bool loadBootstrap, bool loadGlyphicons)
         {
             if (loadBootstrap)
             {
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/bootstrap/js/bootstrap.min.js", FileOrder.Js.DefaultPriority);
-                ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/bootstrap/css/bootstrap.min.css", FileOrder.Css.DefaultPriority);
+                ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/bootstrap/css/bootstrap.min.css", FileOrder.Css.DefaultPriority);                
             }
+            if (loadGlyphicons)
+            {
+                ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/bootstrap/css/glyphicons.css", FileOrder.Css.DefaultPriority);
+            }
+            //ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/css/font-awesome/css/font-awesome.min.css", FileOrder.Css.DefaultPriority);
             ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/lib/handlebars/handlebars.js", FileOrder.Js.DefaultPriority);
             ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/lib/typeahead.js/dist/typeahead.bundle.min.js", FileOrder.Js.DefaultPriority);
 
@@ -151,12 +161,12 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 string apikey = App.Services.CreateGlobalSettingsRepository(PortalId).GetGoogleApiKey();
                 ClientResourceManager.RegisterScript(Page, "//maps.googleapis.com/maps/api/js?v=3.exp&libraries=places" + (string.IsNullOrEmpty(apikey) ? "" : "&key=" + apikey), FileOrder.Js.DefaultPriority);
             }
-            if (allFields || fieldTypes.ContainsAny("imagecropper", "imagecrop", "imagecrop2"))
+            if (allFields || fieldTypes.ContainsAny("imagecropper", "imagecrop", "imagecrop2", "imagex"))
             {
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/cropper/cropper.js", FileOrder.Js.DefaultPriority);
                 ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/cropper/cropper.css", FileOrder.Css.DefaultPriority);
             }
-            if (allFields || fieldTypes.ContainsAny("select2", "image2", "file2", "url2", "mlimage2", "mlfile2", "mlurl2", "mlfolder2", "imagecrop2", "role2", "user2"))
+            if (allFields || fieldTypes.ContainsAny("select2", "image2", "file2", "url2", "mlimage2", "mlfile2", "mlurl2", "mlfolder2", "imagecrop2", "role2", "user2", "imagex"))
             {
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/select2/select2.js", FileOrder.Js.DefaultPriority);
                 ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/select2/select2.css", FileOrder.Css.DefaultPriority);

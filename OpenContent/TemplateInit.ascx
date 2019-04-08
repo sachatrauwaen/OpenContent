@@ -30,7 +30,7 @@
                 <asp:RadioButtonList runat="server" ID="rblFrom" AutoPostBack="true" OnSelectedIndexChanged="rblFrom_SelectedIndexChanged"
                     RepeatDirection="Horizontal" CssClass="dnnFormRadioButtons">
                     <asp:ListItem Text="Site" Selected="True" />
-                    <asp:ListItem Text="Web (openextensions.net)" />
+                    <asp:ListItem Text="Web (Github)" />
                 </asp:RadioButtonList>
             </div>
         </asp:PlaceHolder>

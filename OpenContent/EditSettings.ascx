@@ -138,7 +138,8 @@
                 var popup = windowTop.jQuery("#iPopUp");
                 if (popup.length > 0) {
                     if (href) {
-                        windowTop.__doPostBack('dnn_ctr<%=ModuleId %>_View__UP', '');
+                        //windowTop.__doPostBack('dnn_ctr<%=ModuleId %>_View__UP', '');
+                        $('#dnn_ctr<%=ModuleId %>_View__UP').click();
                         dnnModal.closePopUp(false, href);
                     }
                 }

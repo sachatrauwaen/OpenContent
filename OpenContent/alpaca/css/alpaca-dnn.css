@@ -205,6 +205,10 @@
     position: relative;
 }
 
+.alpaca-container-item {
+    position: relative;
+}
+
 .alpaca-array-actionbar {
     /* padding-left:32%; */
     /*

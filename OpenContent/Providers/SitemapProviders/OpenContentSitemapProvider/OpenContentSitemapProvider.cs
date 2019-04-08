@@ -35,6 +35,7 @@ using DotNetNuke.Security.Permissions;
 using DotNetNuke.Services.Localization;
 using DotNetNuke.Services.Sitemap;
 using Satrabel.OpenContent.Components.UrlRewriter;
+using DotNetNuke.Instrumentation;
 
 #endregion
 
@@ -42,6 +43,9 @@ namespace Satrabel.OpenContent.Providers.SitemapProviders
 {
     public class OpenContentSitemapProvider : SitemapProvider
     {
+
+        private static readonly ILog Logger = LoggerSource.Instance.GetLogger(typeof(OpenContentSitemapProvider));
+
         private bool includeHiddenPages;
         private float minPagePriority;
 
@@ -60,7 +64,11 @@ namespace Satrabel.OpenContent.Providers.SitemapProviders
         /// </remarks>
         public override List<SitemapUrl> GetUrls(int portalId, PortalSettings ps, string version)
         {
-            var objTabs = new TabController();
+            //Logger.Error("Opencontent sitemap generation page : start");
+
+
+
+            //var objTabs = new TabController();
             OpenSitemapUrl pageUrl = null;
             var urls = new List<SitemapUrl>();
 
@@ -68,59 +76,58 @@ namespace Satrabel.OpenContent.Providers.SitemapProviders
             minPagePriority = float.Parse(PortalController.GetPortalSetting("SitemapMinPriority", portalId, "0.1"), CultureInfo.InvariantCulture);
             includeHiddenPages = bool.Parse(PortalController.GetPortalSetting("SitemapIncludeHidden", portalId, "False"));
 
-            PortalController portalController = new PortalController();
-            PortalInfo objPortal = new PortalController().GetPortal(portalId);
-
             this.ps = ps;
-
             var Locales = ps.ContentLocalizationEnabled ?
                                     LocaleController.Instance.GetPublishedLocales(ps.PortalId).Values :
                                     LocaleController.Instance.GetLocales(ps.PortalId).Values;
 
             bool MultiLanguage = Locales.Count > 1;
 
-            foreach (Locale loc in Locales)
-            {
-                foreach (TabInfo objTab in objTabs.GetTabsByPortal(portalId).Values)
-                {
-                    if (objTab.CultureCode == loc.Code || objTab.IsNeutralCulture)
-                    {
-                        if (MultiLanguage)
-                        {
-                            objPortal = new PortalController().GetPortal(portalId, loc.Code);
-                        }
-                        if (!objTab.IsDeleted && !objTab.DisableLink && objTab.TabType == TabType.Normal && (Null.IsNull(objTab.StartDate) || objTab.StartDate < DateTime.Now) &&
-                            (Null.IsNull(objTab.EndDate) || objTab.EndDate > DateTime.Now) && IsTabPublic(objTab.TabPermissions) &&
-                            objTab.TabID != objPortal.SearchTabId && objTab.TabID != objPortal.UserTabId && (objPortal.UserTabId == Null.NullInteger || objTab.ParentId != objPortal.UserTabId) && objTab.TabID != objPortal.LoginTabId && objTab.TabID != objPortal.RegisterTabId)
-                        {
-                            var allowIndex = true;
-                            if ((!objTab.TabSettings.ContainsKey("AllowIndex") || !bool.TryParse(objTab.TabSettings["AllowIndex"].ToString(), out allowIndex) || allowIndex) &&
-                                 (includeHiddenPages || objTab.IsVisible))
-                            {
-                                // page url
-                                pageUrl = GetPageUrl(objTab, MultiLanguage ? loc.Code : null);
-                                pageUrl.Alternates.AddRange(GetAlternates(objTab.TabID));
-                                urls.Add(pageUrl);
 
-                                // modules urls
-                                //var rules = UrlRuleConfiguration.GetConfig(portalId).Rules;
-                                var rules = OpenContentUrlProvider.GetRules(portalId);
-                                foreach (var rule in rules.Where(r => r.TabId == objTab.TabID && r.InSitemap == true))
+            var currentLanguage = ps.CultureCode;
+            if (string.IsNullOrEmpty(currentLanguage))
+            {
+                currentLanguage = Localization.GetPageLocale(ps).Name;
+            }
+            var languagePublished = LocaleController.Instance.GetLocale(ps.PortalId, currentLanguage).IsPublished;
+            var tabs = TabController.Instance.GetTabsByPortal(portalId).Values
+                        .Where(t => /* !t.IsSystem && */ !ps.ContentLocalizationEnabled || (languagePublished && t.CultureCode.Equals(currentLanguage, StringComparison.InvariantCultureIgnoreCase)));
+            foreach (TabInfo objTab in tabs)
+            {
+                if (objTab.CultureCode == currentLanguage || objTab.IsNeutralCulture)
+                {
+                    if (!objTab.IsDeleted && !objTab.DisableLink && objTab.TabType == TabType.Normal
+                        && (Null.IsNull(objTab.StartDate) || objTab.StartDate < DateTime.Now)
+                        && (Null.IsNull(objTab.EndDate) || objTab.EndDate > DateTime.Now)
+                        && IsTabPublic(objTab.TabPermissions)
+                        )
+                    {
+                        var allowIndex = true;
+                        if ((!objTab.TabSettings.ContainsKey("AllowIndex") || !bool.TryParse(objTab.TabSettings["AllowIndex"].ToString(), out allowIndex) || allowIndex) &&
+                             (includeHiddenPages || objTab.IsVisible))
+                        {
+
+                            // modules urls
+                            var rules = OpenContentUrlProvider.GetRules(portalId);
+                            foreach (var rule in rules.Where(r => r.TabId == objTab.TabID && r.InSitemap == true))
+                            {
+
+                                if (rule.CultureCode == null || rule.CultureCode == currentLanguage)
                                 {
-                                    if (rule.CultureCode == null || rule.CultureCode == loc.Code)
-                                    {
-                                        string[] pars = rule.Parameters.Split('&');
-                                        pageUrl = GetPageUrl(objTab, MultiLanguage ? loc.Code : null, pars);
-                                        // if module support ML
-                                        //pageUrl.Alternates.AddRange(GetAlternates(objTab.TabID, pars));                                            
-                                        urls.Add(pageUrl);
-                                    }
+                                    string[] pars = rule.Parameters.Split('&');
+                                    pageUrl = GetPageUrl(objTab, MultiLanguage ? currentLanguage : null, pars);
+                                    // if module support ML
+                                    //pageUrl.Alternates.AddRange(GetAlternates(objTab.TabID, pars));                                            
+                                    urls.Add(pageUrl);
+                                    //Logger.Error("Opencontent sitemap generation page : " + pageUrl.Url);
                                 }
                             }
                         }
                     }
                 }
             }
+
+
             return urls;
         }
 
@@ -177,11 +184,10 @@ namespace Satrabel.OpenContent.Providers.SitemapProviders
             string Url = "";
             Locale newLocale = LocaleController.Instance.GetLocale(newLanguage);
             //Ensure that the current ActiveTab is the culture of the new language
-            bool islocalized = false;
+            //bool islocalized = false;
             TabInfo localizedTab = new TabController().GetTabByCulture(tabId, ps.PortalId, newLocale);
             if (localizedTab != null)
             {
-                islocalized = true;
                 tabId = localizedTab.TabID;
                 if (localizedTab.IsDeleted || localizedTab.TabType != TabType.Normal || !IsTabPublic(localizedTab.TabPermissions))
                 {
@@ -264,24 +270,26 @@ namespace Satrabel.OpenContent.Providers.SitemapProviders
         protected float GetPriority(TabInfo objTab)
         {
             float priority = objTab.SiteMapPriority;
+            //if (useLevelBasedPagePriority)
+            //{
+            //    if (objTab.Level >= 9)
+            //    {
+            //        priority = 0.1F;
+            //    }
+            //    else
+            //    {
+            //        priority = Convert.ToSingle(1 - (objTab.Level * 0.1));
+            //    }
+            //    if (priority < minPagePriority)
+            //    {
+            //        priority = minPagePriority;
+            //    }
+            //}
 
-            if (useLevelBasedPagePriority)
+            if (priority < 0.1)
             {
-                if (objTab.Level >= 9)
-                {
-                    priority = 0.1F;
-                }
-                else
-                {
-                    priority = Convert.ToSingle(1 - (objTab.Level * 0.1));
-                }
-
-                if (priority < minPagePriority)
-                {
-                    priority = minPagePriority;
-                }
+                priority = 0.1F;
             }
-
             return priority;
         }
 
@@ -296,7 +304,7 @@ namespace Satrabel.OpenContent.Providers.SitemapProviders
             if ((roles != null))
             {
                 // permissions strings are encoded with Deny permissions at the beginning and Grant permissions at the end for optimal performance
-                foreach (string role in roles.Split(new[] {';'}))
+                foreach (string role in roles.Split(new[] { ';' }))
                 {
                     if (!string.IsNullOrEmpty(role))
                     {

@@ -119,7 +119,8 @@ namespace Satrabel.OpenContent.Components
                     var fileInfo = _fileManager.GetFile(userFolder, fileName);
                     if (fileInfo != null && overwrite.HasValue && overwrite.Value)
                     {
-                        fileInfo = _fileManager.UpdateFile(fileInfo, file.InputStream);
+                        //fileInfo = _fileManager.UpdateFile(fileInfo, file.InputStream);
+                        fileInfo = _fileManager.AddFile(userFolder, fileName, file.InputStream, true);
                     }
                     else if (fileInfo != null && overwrite.HasValue && !overwrite.Value)
                     {

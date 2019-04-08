@@ -1005,7 +1005,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     var res = hbs2.Execute(html, parameters[1]);
                     writer.WriteSafeString(res);
                 }
-                catch (Exception ex)
+                catch (Exception )
                 {
                     writer.WriteSafeString("");
                 }

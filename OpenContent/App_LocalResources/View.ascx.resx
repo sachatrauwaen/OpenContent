@@ -217,4 +217,7 @@
   <data name="Notifications.Action" xml:space="preserve">
     <value>Notifications</value>
   </data>
+  <data name="CloneModule.Action" xml:space="preserve">
+    <value>Clone Module</value>
+  </data>
 </root>

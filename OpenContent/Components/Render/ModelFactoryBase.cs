@@ -310,7 +310,7 @@ namespace Satrabel.OpenContent.Components.Render
                             additionalDataJson["Context"] = context;
                         }
                     }
-                    if (App.Services.CreateGlobalSettingsRepository(_portalId).GetFastHandlebars())
+                    if (!App.Services.CreateGlobalSettingsRepository(_portalId).GetLegacyHandlebars())
                         _additionalData[(item.Value.ModelKey ?? item.Key)] = additionalDataJson;
                     else
                         _additionalData[(item.Value.ModelKey ?? item.Key).ToLowerInvariant()] = additionalDataJson;
@@ -477,7 +477,7 @@ namespace Satrabel.OpenContent.Components.Render
                         {                            
                             model[childProperty.Name] = GenerateObject(val, int.Parse(tabId), int.Parse(moduleId), onlyData);
                         }
-                        catch (System.Exception ex)
+                        catch (System.Exception )
                         {
                             Debugger.Break();
                         }

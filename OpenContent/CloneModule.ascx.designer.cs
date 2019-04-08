@@ -10,16 +10,16 @@
 namespace Satrabel.OpenContent {
     
     
-    public partial class EditSettings {
+    public partial class CloneModule {
         
         /// <summary>
-        /// Contrôle ScopeWrapper.
+        /// Contrôle cblPages.
         /// </summary>
         /// <remarks>
         /// Champ généré automatiquement.
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel ScopeWrapper;
+        protected global::System.Web.UI.WebControls.CheckBoxList cblPages;
         
         /// <summary>
         /// Contrôle cmdSave.
@@ -28,24 +28,24 @@ namespace Satrabel.OpenContent {
         /// Champ généré automatiquement.
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.HyperLink cmdSave;
+        protected global::System.Web.UI.WebControls.LinkButton cmdSave;
         
         /// <summary>
-        /// Contrôle cmdSaveClose.
+        /// Contrôle hlCheckAll.
         /// </summary>
         /// <remarks>
         /// Champ généré automatiquement.
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.HyperLink cmdSaveClose;
+        protected global::System.Web.UI.WebControls.HyperLink hlCheckAll;
         
         /// <summary>
-        /// Contrôle hlCancel.
+        /// Contrôle hlCheckNone.
         /// </summary>
         /// <remarks>
         /// Champ généré automatiquement.
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.HyperLink hlCancel;
+        protected global::System.Web.UI.WebControls.HyperLink hlCheckNone;
     }
 }

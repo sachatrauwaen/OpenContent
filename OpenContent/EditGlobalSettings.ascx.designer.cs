@@ -148,22 +148,40 @@ namespace Satrabel.OpenContent {
         protected global::System.Web.UI.WebControls.CheckBox cbLoadBootstrap;
         
         /// <summary>
-        /// Contrôle lFastHandlebars.
+        /// Contrôle lLoadGlyphicons.
         /// </summary>
         /// <remarks>
         /// Champ généré automatiquement.
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
-        protected global::System.Web.UI.UserControl lFastHandlebars;
+        protected global::System.Web.UI.UserControl lLoadGlyphicons;
         
         /// <summary>
-        /// Contrôle cbFastHandlebars.
+        /// Contrôle cbLoadGlyphicons.
         /// </summary>
         /// <remarks>
         /// Champ généré automatiquement.
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox cbFastHandlebars;
+        protected global::System.Web.UI.WebControls.CheckBox cbLoadGlyphicons;
+        
+        /// <summary>
+        /// Contrôle lLegacyHandlebars.
+        /// </summary>
+        /// <remarks>
+        /// Champ généré automatiquement.
+        /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.UserControl lLegacyHandlebars;
+        
+        /// <summary>
+        /// Contrôle cbLegacyHandlebars.
+        /// </summary>
+        /// <remarks>
+        /// Champ généré automatiquement.
+        /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox cbLegacyHandlebars;
         
         /// <summary>
         /// Contrôle lSaveXml.
@@ -182,6 +200,24 @@ namespace Satrabel.OpenContent {
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
         protected global::System.Web.UI.WebControls.CheckBox cbSaveXml;
+        
+        /// <summary>
+        /// Contrôle lGithubRepository.
+        /// </summary>
+        /// <remarks>
+        /// Champ généré automatiquement.
+        /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.UserControl lGithubRepository;
+        
+        /// <summary>
+        /// Contrôle tbGithubRepository.
+        /// </summary>
+        /// <remarks>
+        /// Champ généré automatiquement.
+        /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox tbGithubRepository;
         
         /// <summary>
         /// Contrôle cmdSave.
@@ -209,5 +245,14 @@ namespace Satrabel.OpenContent {
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
         protected global::System.Web.UI.WebControls.LinkButton cmdUpgradeXml;
+        
+        /// <summary>
+        /// Contrôle cmdPurgeUrlCache.
+        /// </summary>
+        /// <remarks>
+        /// Champ généré automatiquement.
+        /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton cmdPurgeUrlCache;
     }
 }

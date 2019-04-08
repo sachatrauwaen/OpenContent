@@ -248,9 +248,9 @@ select.oc-ddl-versions {
     padding-left: 15px;
 }
 
-.cropper-container {
- margin-top:5px;
- margin-bottom:5px;
+.alpaca-image-display {
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
 
 
