@@ -882,7 +882,7 @@ namespace Satrabel.OpenContent.Components.Render
             actions.Add(
                 new MenuAction(
                 App.Services.Localizer.GetString("CloneModule.Action", ResourceFile),
-                "~/DesktopModules/OpenContent/images/editinit.png",
+                "~/DesktopModules/OpenContent/images/clonemodule.png",
                 RenderContext.EditUrl("CloneModule"),
                 ActionType.Misc,
                 SecurityAccessLevel.AdminRights

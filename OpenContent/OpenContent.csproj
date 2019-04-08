@@ -1186,6 +1186,9 @@
   <ItemGroup>
     <Content Include="App_LocalResources\View.ascx.de-AT.resx" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_LocalResources\CloneModule.ascx.resx" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
   </PropertyGroup>

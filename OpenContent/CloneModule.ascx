@@ -1,7 +1,6 @@
 <%@ Control Language="C#" AutoEventWireup="false" Inherits="Satrabel.OpenContent.CloneModule" CodeBehind="CloneModule.ascx.cs" %>
-<%@ Register Src="~/DesktopModules/OpenContent/TemplateInit.ascx" TagPrefix="uc1" TagName="TemplateInit" %>
 <div class="dnnForm">
-    <asp:CheckBoxList ID="cblPages" runat="server" CssClass="TreeView" RepeatLayout="Table" RepeatColumns="4" RepeatDirection="Vertical">
+    <asp:CheckBoxList ID="cblPages" ClientIDMode="Static" runat="server" RepeatLayout="Table" RepeatColumns="4" RepeatDirection="Vertical" Width="100%">
     </asp:CheckBoxList>
     <ul class="dnnActions dnnClear" style="display: block; padding-left: 35%">
         <li>
@@ -19,11 +18,11 @@
 <script type="text/javascript">
     jQuery(function ($) {
         $('#hlCheckAll').click(function () {
-            $("#CloneModule input:checkbox:not(:disabled)").prop('checked', true);
+            $("#cblPages input:checkbox:not(:disabled)").prop('checked', true);
             return false;
         });
         $('#hlCheckNone').click(function () {
-            $("#CloneModule input:checkbox:not(:disabled)").prop('checked', false);
+            $("#cblPages input:checkbox:not(:disabled)").prop('checked', false);
             return false;
         });
     });
