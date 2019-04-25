@@ -189,43 +189,19 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
             if (allFields || fieldTypes.Contains("ckeditor") || fieldTypes.Contains("mlckeditor"))
             {
-                //var form = Page.FindControl("Form");
-                //if (form.FindControl("CKDNNporid") == null)
-                {
-                    if (CKEditorIngoThaWatchaIsInstalled)
-                    {
-                        ClientResourceManager.RegisterScript(Page, "~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js", FileOrder.Js.DefaultPriority);
-                        DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "PortalId", PortalId.ToString(), true);
-                        /*
-                        var CKDNNporid = new HiddenField();
-                        CKDNNporid.ID = "CKDNNporid";
-                        CKDNNporid.ClientIDMode = ClientIDMode.Static;
-                        form.Controls.Add(CKDNNporid);
-                        CKDNNporid.Value = PortalId.ToString();
-                        */
-                        RegisterStartupScript("oc-ckdnnporid", $@"<input type=""hidden"" id=""CKDNNporid"" value=""{PortalId}"">", false);
-                        GenerateEditorLoadScript(PortalId);
-                    }
-                    else if (CKEditorDnnConnectIsInstalled)
-                    {
-                        ClientResourceManager.RegisterScript(Page, "~/Providers/HtmlEditorProviders/DNNConnect.CKE/js/ckeditor/4.5.3/ckeditor.js", FileOrder.Js.DefaultPriority);
-                        DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "PortalId", PortalId.ToString(), true);
-                        /*
-                        var CKDNNporid = new HiddenField();
-                        CKDNNporid.ID = "CKDNNporid";
-                        CKDNNporid.ClientIDMode = ClientIDMode.Static;
+                ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/CKEditor/ckeditor.js", FileOrder.Js.DefaultPriority);
+                DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "PortalId", PortalId.ToString(), true);
+                /*
+                var CKDNNporid = new HiddenField();
+                CKDNNporid.ID = "CKDNNporid";
+                CKDNNporid.ClientIDMode = ClientIDMode.Static;
+                form.Controls.Add(CKDNNporid);
+                CKDNNporid.Value = PortalId.ToString();
+                */
+                RegisterStartupScript("oc-ckdnnporid", $@"<input type=""hidden"" id=""CKDNNporid"" value=""{PortalId}"">", false);
+                GenerateEditorLoadScript(PortalId);
 
-                        form.Controls.Add(CKDNNporid);
-                        CKDNNporid.Value = PortalId.ToString();
-                        */
-                        RegisterStartupScript("oc-ckdnnporid", $@"<input type=""hidden"" id=""CKDNNporid"" value=""{PortalId}"">", false);
-                        GenerateEditorLoadScript(PortalId);
-                    }
-                    else
-                    {
-                        App.Services.Logger.Warn("Failed to load CKEeditor. Please install a DNN CKEditor Provider.");
-                    }
-                }
+                
             }
             if (allFields || fieldTypes.Contains("icon"))
             {
@@ -430,6 +406,13 @@ namespace Satrabel.OpenContent.Components.Alpaca
             editorScript.Append("if(CKEDITOR && CKEDITOR.config){");
             editorScript.Append("  CKEDITOR.config.portalId = " + portalId + ";");
             editorScript.Append("  CKEDITOR.config.enableConfigHelper = " + EnableConfigHelper() + ";");
+
+            editorScript.Append("  CKEDITOR.config.cloudServices_uploadUrl= 'https://33333.cke-cs.com/easyimage/upload/';");
+
+            editorScript.Append("  CKEDITOR.config.cloudServices_tokenUrl= 'https://33333.cke-cs.com/token/dev/ijrDsqFix838Gh3wGO3F77FSW94BwcLXprJ4APSp3XQ26xsUHTi0jcb1hoBt';");
+
+
+
             editorScript.Append("};");
 
             //if(CKEDITOR && CKEDITOR.config && CKEDITOR.config.plugins ))

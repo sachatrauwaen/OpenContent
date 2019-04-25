@@ -411,6 +411,12 @@
             return "ckeditor";
         },
 
+        constructor: function (container, data, options, schema, view, connector) {
+            var self = this;
+            this.base(container, data, options, schema, view, connector);
+            this.sf = connector.servicesFramework;
+        },
+
         /**
          * @see Alpaca.Fields.TextAreaField#setup
          */
@@ -528,11 +534,10 @@
                         };
                     } else if (self.options.configset == "full") {
                         defaultConfig = {
-                            toolbar: [
-                                { name: 'document', items: ['Save', 'NewPage', 'DocProps', 'Preview', 'Print', '-', 'Templates'] },
+                            toolbar: [                                
                                 { name: 'clipboard', items: ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'] },
                                 { name: 'editing', items: ['Find', 'Replace', '-', 'SelectAll', '-', 'SpellChecker', 'Scayt'] },
-                                { name: 'forms', items: ['Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton', 'HiddenField'] },
+                                { name: 'insert', items: ['EasyImageUpload', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe'] },
                                 '/',
                                 { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'] },
                                 {
@@ -540,7 +545,7 @@
                                     '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl']
                                 },
                                 { name: 'links', items: ['Link', 'Unlink', 'Anchor'] },
-                                { name: 'insert', items: ['Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe'] },
+                                
                                 '/',
                                 { name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize'] },
                                 { name: 'colors', items: ['TextColor', 'BGColor'] },
@@ -549,11 +554,11 @@
                             // Set the most common block elements.
                             format_tags: 'p;h1;h2;h3;pre;div',
                             //http://docs.ckeditor.com/#!/api/CKEDITOR.config-cfg-allowedContent
-                            allowedContentRules: true,
+                            allowedContentRules: true, 
                             // Simplify the dialog windows.
                             removeDialogTabs: 'image:advanced;link:advanced',
                             // Remove one plugin.
-                            removePlugins: 'elementspath',
+                            removePlugins: 'elementspath,link',
                             extraPlugins: 'dnnpages',
                             //autoGrow_onStartup : true,
                             //autoGrow_minHeight : 100,
@@ -561,18 +566,20 @@
                             height: 150,
                             //skin : 'flat',
                             customConfig: '',
-                            stylesSet: []
+                            stylesSet: [],
+                            //easyimage_toolbar :['EasyImageAlignLeft', 'EasyImageAlignCenter', 'EasyImageAlignRight']
                         };
                     }
                     var config = $.extend({}, defaultConfig, self.options.ckeditor);
 
-
-
                     // wait for Alpaca to declare the DOM swapped and ready before we attempt to do anything with CKEditor
                     self.on("ready", function () {
                         if (!self.editor) {
+                            if (self.sf) {
+                                config.cloudServices_uploadUrl = self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadEasyImage";
+                                config.cloudServices_tokenUrl = self.sf.getServiceRoot('OpenContent') + "FileUpload/EasyImageToken";
+                            }
                             self.editor = CKEDITOR.replace($(self.control)[0], config);
-
                             self.initCKEditorEvents();
                         }
                     });
@@ -643,6 +650,10 @@
                  self.trigger("keydown", e);
                  });
                  */
+
+                self.editor.on('fileUploadRequest', function (evt) {
+                    self.sf.setModuleHeaders(evt.data.fileLoader.xhr);
+                });
             }
         },
 

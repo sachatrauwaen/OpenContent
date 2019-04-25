@@ -22,7 +22,9 @@
     <ItemGroup>
       <DeployInclude Include="**\*.ascx" Exclude="packages\**" />
       <DeployInclude Include="**\*.asmx" Exclude="packages\**" />
+      <DeployInclude Include="**\*.ashx" Exclude="packages\**" />
       <DeployInclude Include="**\*.css" Exclude="packages\**" />
+      <DeployInclude Include="**\*.png" Exclude="packages\**" />
       <DeployInclude Include="**\*.html" Exclude="packages\**" />
       <DeployInclude Include="**\*.htm" Exclude="packages\**" />
       <DeployInclude Include="**\*.resx" Exclude="packages\**" />

@@ -14,3 +14,27 @@
     color: #585858;
     /*margin-bottom: 5px;*/
 }
+
+.easyimage {
+    background: transparent;
+    border: none;
+    outline: 0px;
+    display: block;
+    padding: 0;
+    clear: both;
+    text-align: center;
+}
+
+.easyimage img {
+    display: block;
+    height: auto;
+    margin: 0 auto;
+    max-width: 100%;
+}
+
+.easyimage.easyimage-side {
+    float: right;
+    max-width: 50%;
+    min-width: 10em;
+    margin-left: 1.5em;
+}

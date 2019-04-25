@@ -36,6 +36,7 @@ using DotNetNuke.Entities.Icons;
 using System.Text;
 using System.Globalization;
 using Satrabel.OpenContent.Components.Dnn;
+using System.Net;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -60,8 +61,38 @@ namespace Satrabel.OpenContent.Components
             {
                 Logger.Error(exc);
             }
-
             return IframeSafeJson(statuses);
+        }
+
+        [DnnAuthorize]
+        [HttpPost]
+        [IFrameSupportedValidateAntiForgeryToken]
+        public HttpResponseMessage UploadEasyImage()
+        {
+            var statuses = new List<FilesStatus>();
+            try
+            {
+                //todo can we eliminate the HttpContext here
+                UploadWholeFile(HttpContextSource.Current, statuses);
+            }
+            catch (Exception exc)
+            {
+                Logger.Error(exc);
+            }
+            return new HttpResponseMessage
+            {
+                Content = new StringContent(JsonConvert.SerializeObject(new ImageStatus{
+                    Default = statuses[0].url
+                }))
+            };
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        public HttpResponseMessage EasyImageToken()
+        {
+
+            return Request.CreateResponse(HttpStatusCode.OK, "faketoken");
         }
 
         private HttpResponseMessage IframeSafeJson(List<FilesStatus> statuses)
