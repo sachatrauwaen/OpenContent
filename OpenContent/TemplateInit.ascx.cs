@@ -12,6 +12,7 @@ using Satrabel.OpenContent.Components;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.Rss;
 using Satrabel.OpenContent.Components.Logging;
+using DotNetNuke.Services.Localization;
 
 namespace Satrabel.OpenContent
 {
@@ -28,7 +29,31 @@ namespace Satrabel.OpenContent
         {
             pHelp.Visible = false;
             phCurrentTemplate.Visible = false;
-            
+
+            foreach (ListItem item in rblDataSource.Items)
+            {
+                string key = item.Attributes["ResourceKey"];
+                if (key != null)
+                {
+                    item.Text = Localization.GetString(key+".Text", ResourceFile);
+                }
+            }
+            foreach (ListItem item in rblUseTemplate.Items)
+            {
+                string key = item.Attributes["ResourceKey"];
+                if (key != null)
+                {
+                    item.Text = Localization.GetString(key + ".Text", ResourceFile);
+                }
+            }
+            foreach (ListItem item in rblFrom.Items)
+            {
+                string key = item.Attributes["ResourceKey"];
+                if (key != null)
+                {
+                    item.Text = Localization.GetString(key + ".Text", ResourceFile);
+                }
+            }
         }
         protected void rblFrom_SelectedIndexChanged(object sender, EventArgs e)
         {

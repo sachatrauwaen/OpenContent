@@ -117,24 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AddContent.Action" xml:space="preserve">
-    <value>Inhalt hinzufügen</value>
-  </data>
-  <data name="EditData.Action" xml:space="preserve">
-    <value>Rohdaten bearbeiten</value>
-  </data>
-  <data name="EditGlobalSettings.Action" xml:space="preserve">
-    <value>Globale Einstellungen bearbeiten</value>
-  </data>
-  <data name="EditSettings.Action" xml:space="preserve">
-    <value>Einstellungen für Vorlagen</value>
-  </data>
-  <data name="EditTemplate.Action" xml:space="preserve">
-    <value>Vorlagen bearbeiten</value>
-  </data>
-  <data name="Help.Action" xml:space="preserve">
-    <value>Hilfe</value>
-  </data>
   <data name="lTemplate.Text" xml:space="preserve">
     <value>Vorlage</value>
   </data>
@@ -144,17 +126,11 @@
   <data name="ShareTemplate.Action" xml:space="preserve">
     <value>Vorlagenaustausch</value>
   </data>
-  <data name="Intro.Text" xml:space="preserve">
-    <value>Einleitung</value>
-  </data>
   <data name="lFrom.Text" xml:space="preserve">
     <value>Zugrundeliegende Vorlage</value>
   </data>
   <data name="lTemplateName.Text" xml:space="preserve">
     <value>Name der neuen Vorlage</value>
-  </data>
-  <data name="EditContent.Action" xml:space="preserve">
-    <value>Inhalt bearbeiten</value>
   </data>
   <data name="lUseContent.Text" xml:space="preserve">
     <value>Inhaltsquelle</value>
@@ -164,12 +140,6 @@
   </data>
   <data name="cmdSave.Text" xml:space="preserve">
     <value>Speichern</value>
-  </data>
-  <data name="EditQuery.Action" xml:space="preserve">
-    <value>Einstellungen für Filter</value>
-  </data>
-  <data name="EditInit.Action" xml:space="preserve">
-    <value>Vorlage initialisieren</value>
   </data>
   <data name="lDetailPage.Text" xml:space="preserve">
     <value>Detailseite</value>
