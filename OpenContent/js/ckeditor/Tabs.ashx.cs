@@ -6,7 +6,7 @@ using DotNetNuke.Entities.Portals;
 using DotNetNuke.Entities.Tabs;
 using Globals = DotNetNuke.Common.Globals;
 
-namespace Satrabel.CKEditorProvider
+namespace Satrabel.CKEditor
 {
     /// <summary>
     /// Renders the Tab Java Script
