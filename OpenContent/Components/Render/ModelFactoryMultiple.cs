@@ -103,7 +103,6 @@ namespace Satrabel.OpenContent.Components.Render
                     }
                     else
                     {
-
                         var editStatus = !_manifest.DisableEdit && IsEditAllowed(item.CreatedByUserId);
                         context["IsEditable"] = editStatus;
                         if (HasEditPermissions(item.CreatedByUserId))
@@ -118,8 +117,6 @@ namespace Satrabel.OpenContent.Components.Render
             }
             return model;
         }
-
-
 
         private void ExtendItemsModel(JObject model, bool onlyData)
         {
