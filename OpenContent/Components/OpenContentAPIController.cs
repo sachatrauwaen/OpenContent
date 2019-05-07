@@ -383,9 +383,11 @@ namespace Satrabel.OpenContent.Components
         [HttpPost]
         public HttpResponseMessage Lookup(LookupRequestDTO req)
         {
-            var module = OpenContentModuleConfig.Create(req.moduleid, req.tabid, PortalSettings);
+            int moduleid = req.moduleid > 0 ? req.moduleid : ActiveModule.ModuleID;
+            int tabid = req.tabid > 0 ? req.tabid : ActiveModule.TabID;
+            var module = OpenContentModuleConfig.Create(moduleid, tabid, PortalSettings);
             if (module == null) throw new Exception($"Can not find ModuleInfo (tabid:{req.tabid}, moduleid:{req.moduleid})");
-
+            
             List<LookupResultDTO> res = new List<LookupResultDTO>();
             try
             {
