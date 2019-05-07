@@ -183,6 +183,7 @@
     <Compile Include="Components\Lucene\LuceneUtils.cs" />
     <Compile Include="Components\Lucene\LuceneController.cs" />
     <Compile Include="Components\Manifest\OpenContentModuleInfo.cs" />
+    <Compile Include="Components\InitAPIController.cs" />
     <Compile Include="Components\Querying\UserRoleInfo.cs" />
     <Compile Include="Components\AppDefinitions\MenuAction.cs" />
     <Compile Include="Components\AppDefinitions\SecurityAccessLevel.cs" />
@@ -1373,7 +1374,9 @@
     <Content Include="js\ckeditor\plugins\wsc\README.md" />
     <Content Include="js\ckeditor\skins\moono-lisa\readme.md" />
     <Content Include="js\ckeditor\Tabs.ashx" />
-    <Compile Include="js\ckeditor\Tabs.ashx.cs" />
+    <Compile Include="js\ckeditor\Tabs.ashx.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <None Include="packages.config" />
     <None Include="Scripts\_references.js" />
     <Content Include="js\select2\i18n\az.js" />
@@ -1510,6 +1513,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Components\Images\" />
+    <Folder Include="js\vue\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_LocalResources\EditSettings.ascx.de-DE.resx" />

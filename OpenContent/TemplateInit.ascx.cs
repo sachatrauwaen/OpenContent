@@ -55,6 +55,11 @@ namespace Satrabel.OpenContent
                 }
             }
         }
+
+        public string Resource(string key)
+        {
+            return Localization.GetString(key + ".Text", ResourceFile);
+        }
         protected void rblFrom_SelectedIndexChanged(object sender, EventArgs e)
         {
             ddlTemplate.Items.Clear();
@@ -351,6 +356,13 @@ namespace Satrabel.OpenContent
                     }
                 }
             }
+
+            Templates = new Dictionary<string, string>();
+            foreach (ListItem item in ddlTemplate.Items)
+            {
+                Templates.Add(item.Value, item.Text);
+            }
+
         }
 
         private void BindOtherModules(int tabId, int moduleId)
@@ -510,6 +522,8 @@ namespace Satrabel.OpenContent
                 }
             }
         }
+
+        public Dictionary<string,string> Templates { get; set; }
 
     }
 }
