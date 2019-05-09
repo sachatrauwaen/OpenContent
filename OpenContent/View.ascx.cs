@@ -365,10 +365,15 @@ namespace Satrabel.OpenContent
 
         private void RenderInitForm()
         {
-            TemplateInit ti = (TemplateInit)TemplateInitControl;
-            ti.RenderInitForm();
-        }
+            //TemplateInit ti = (TemplateInit)TemplateInitControl;
+            //ti.RenderInitForm();
+            pInit.Visible = true;
 
+        }
+        public string Resource(string key)
+        {
+            return Localization.GetString(key + ".Text", LocalResourceFile);
+        }
         #endregion
 
         #region IActionable
