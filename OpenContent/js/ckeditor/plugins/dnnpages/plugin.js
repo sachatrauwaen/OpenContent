@@ -110,7 +110,7 @@
 
 						// Pass the link to be selected along with event data.
 						evt.data.link = element;
-					} else if ( CKEDITOR.plugins.dnnpages.tryRestoreFakeAnchor( editor, element ) ) {
+					} else if ( CKEDITOR.link.dnnpages.tryRestoreFakeAnchor( editor, element ) ) {
 						evt.data.dialog = 'anchor';
 					}
 				}
@@ -162,9 +162,9 @@
 					if ( !element || element.isReadOnly() )
 						return null;
 
-					var anchor = CKEDITOR.plugins.dnnpages.tryRestoreFakeAnchor( editor, element );
+					var anchor = CKEDITOR.plugins.link.tryRestoreFakeAnchor( editor, element );
 
-					if ( !anchor && !( anchor = CKEDITOR.plugins.dnnpages.getSelectedLink( editor ) ) )
+                    if (!anchor && !(anchor = CKEDITOR.plugins.link.getSelectedLink( editor ) ) )
 						return null;
 
 					var menu = {};
@@ -202,7 +202,7 @@
 			if ( pathFilters ) {
 				pathFilters.push( function( element, name ) {
 					if ( name == 'a' ) {
-						if ( CKEDITOR.plugins.dnnpages.tryRestoreFakeAnchor( editor, element ) || ( element.getAttribute( 'name' ) && ( !element.getAttribute( 'href' ) || !element.getChildCount() ) ) )
+						if ( CKEDITOR.plugins.link.tryRestoreFakeAnchor( editor, element ) || ( element.getAttribute( 'name' ) && ( !element.getAttribute( 'href' ) || !element.getChildCount() ) ) )
 							return 'anchor';
 					}
 				} );
