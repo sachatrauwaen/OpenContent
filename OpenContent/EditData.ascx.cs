@@ -37,6 +37,7 @@ namespace Satrabel.OpenContent
         {
             base.OnInit(e);
             cmdSave.Click += cmdSave_Click;
+            cmdSaveDefault.Click += cmdSaveDefault_Click;
             cmdSaveClose.Click += cmdSaveClose_Click;
             cmdCancel.Click += cmdCancel_Click;
             cmdImport.Click += cmdImport_Click;
@@ -255,6 +256,63 @@ namespace Satrabel.OpenContent
             else
             {
                 SaveAdditionalData(sourceList.SelectedValue);
+            }
+
+        }
+
+        protected void cmdSaveDefault_Click(object sender, EventArgs e)
+        {
+            if (sourceList.SelectedValue == DATATYPE_DATA)
+            {
+                var module = OpenContentModuleConfig.Create(this.ModuleConfiguration, PortalSettings);
+                TemplateManifest template = module.Settings.Template;
+                
+                if (template != null)
+                {
+                    var dataFilename = template.MainTemplateUri().PhysicalFullDirectory + "\\data.json";
+                    if (template.IsListTemplate)
+                    {
+                        string itemId = Request.QueryString["id"];
+                        if (!string.IsNullOrEmpty(itemId))
+                        {
+                            File.WriteAllText(dataFilename, txtSource.Text);
+                        }
+                        else
+                        {
+                            JArray lst = null;
+                            if (!string.IsNullOrEmpty(txtSource.Text))
+                            {
+                                lst = JArray.Parse(txtSource.Text);
+                                if (lst.Count > 0)
+                                {
+                                    File.WriteAllText(dataFilename, lst[0].ToString());
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        File.WriteAllText(dataFilename, txtSource.Text);
+                    }
+                }
+                    
+            }
+            else if (sourceList.SelectedValue == DATATYPE_SETTINGS)
+            {
+                
+                var module = OpenContentModuleConfig.Create(this.ModuleConfiguration, PortalSettings);
+                TemplateManifest template = module.Settings.Template;
+                var settingsFilename = template.MainTemplateUri().PhysicalFullDirectory + "\\" + template.Key.ShortKey + "-data.json";
+                File.WriteAllText(settingsFilename, txtSource.Text);
+
+            }
+            else if (sourceList.SelectedValue == DATATYPE_FILTER)
+            {
+                //SaveFilter();
+            }
+            else
+            {
+                //SaveAdditionalData(sourceList.SelectedValue);
             }
 
         }

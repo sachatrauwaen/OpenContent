@@ -39,29 +39,3 @@
     margin-left: 1.5em;
 }
 
-.dnnFormItem input[type="checkbox"], .dnnFormItem input[type="radio"] {
-    display: inline-block;
-    width: auto;
-    margin: 6px 5px 6px 5px;
-}
-
-a.template {
-    display: block;
-    float: left;
-    width: 150px;
-    height: 50px;
-    background-color: #3D3C3C;
-    padding: 3px;
-    margin: 3px;
-    color: #ffffff;
-    overflow: hidden;
-}
-
-a.advanced {
-    background-color: #1DAFE5;
-}
-
-a.template:visited,
-a.template:hover {
-color:#ffffff;
-}

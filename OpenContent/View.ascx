@@ -3,13 +3,60 @@
 <uc1:TemplateInit runat="server" ID="TemplateInitControl" />
 
 <asp:Panel ID="pInit" runat="server" Visible="false">
+    <style>
+        .dnnFormItem input[type="checkbox"], .dnnFormItem input[type="radio"] {
+            display: inline-block;
+            width: auto;
+            margin: 6px 5px 6px 5px;
+        }
+
+        .octemplate {
+            float: left;
+            width: 190px;
+        }
+
+            .octemplate a {
+                background-color: #3D3C3C;
+                display: block;
+                height: 50px;
+                padding: 3px;
+                margin: 3px;
+                color: #ffffff;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+
+                .octemplate a.advanced {
+                    background-color: #1DAFE5;
+                }
+
+                    .octemplate a.advanced:hover {
+                        color: #3D3C3C;
+                    }
+
+
+
+                .octemplate a:visited {
+                    color: #ffffff;
+                }
+
+                .octemplate a:hover {
+                    color: #1DAFE5;
+                }
+    </style>
+
 <asp:Panel ID="pVue" runat="server" >
     <div v-if="step==1">
         <div v-if ="!advanced ">
             <p style="text-align:center">Choose a template</p>
-            <a v-for="(val, index) in templates" v-if="index < 11" :value="val.Value" @click.prevent="selectTemplate(val.Value)" href="#" class="template">{{val.Text}}</a>
-            <a href="#" @click.prevent="advanced=true" class="template advanced" >More...</a>
-                <div style="clear:both"></div>
+            <div class="octemplate" v-for="(val, index) in templates" v-if="index < 23">
+                <a  :value="val.Value" @click.prevent="selectTemplate(val.Value)" href="#" :title="val.Text" >{{val.Text}}</a>
+            </div>
+            <div class="octemplate">
+                <a href="#" @click.prevent="advanced=true" class="advanced" >More...</a>
+            </div>
+            <div style="clear:both"></div>
         </div>
         <div v-else class="dnnForm">
             <fieldset>
@@ -30,7 +77,7 @@
                         <option v-for="mod in modules" :value="mod.TabModuleId">{{mod.Text}}</option>
                     </select>
                 </div>
-                <div v-if="advanced" class="dnnFormItem">
+                <div v-if="advanced && !otherModule" class="dnnFormItem">
                     <label class="dnnLabel"><%= Resource("lUseTemplate") %></label>
                     <table class="dnnFormRadioButtons">
                         <tr>
@@ -52,7 +99,7 @@
                         </tr>
                     </table>
                 </div>
-                <div class="dnnFormItem" style="padding-left: 32%; margin-left: 38px; width: auto;">
+                <div v-if="false" class="dnnFormItem" style="padding-left: 32%; margin-left: 38px; width: auto;">
                     <label runat="server" />
                 </div>
                 <div class="dnnFormItem">
@@ -63,9 +110,9 @@
                 </div>
                 <div v-if="UseTemplate=='1'" class="dnnFormItem">
                     <label class="dnnLabel"><%= Resource("lTemplateName") %></label>
-                    <input type="text" runat="server" />
+                    <input v-model="templateName" type="text" runat="server" />
                 </div>
-                <div v-if="advanced && existingTemplate && Template" class="dnnFormItem">
+                <div v-if="advanced && existingTemplate && Template && detailPages.length" class="dnnFormItem">
                     <label class="dnnLabel"><%= Resource("lDetailPage") %></label>
                     <select v-model="detailPage">
                         <option v-for="page in detailPages" :value="page.TabId">{{page.Text}}</option>
@@ -74,10 +121,10 @@
             </fieldset>
             <ul class="dnnActions dnnClear" style="padding-left: 32%; margin-left: 38px;">
                 <li>
-                    <a href="" @click.prevent="save" class="dnnPrimaryAction"><%= Resource("Save") %></a>
+                    <a href="" @click.prevent="save" class="dnnPrimaryAction" :disabled="loading"><%= Resource("Save") %></a>
                 </li>
                 <li>
-                    <a href="#" @click.prevent="advanced=!advanced" class="dnnSecondaryAction" >{{advanced ? 'Basic' : 'Advanced'}}</a>
+                    <a href="#" @click.prevent="basic" class="dnnSecondaryAction" :disabled="loading" >{{advanced ? 'Basic' : 'Advanced'}}</a>
                 </li>
             </ul>
         </div>
@@ -89,13 +136,13 @@
                     <select v-model="tabModuleId" disabled>
                         <option v-for="mod in modules" :value="mod.TabModuleId">{{mod.Text}}</option>
                     </select>
-                </div>
+            </div>
             <div class="dnnFormItem">
                 <label class="dnnLabel"><%= Resource("lTemplate") %></label>
-                <select v-model="Template" disabled>
-                    <option v-for="template in templates" :value="template.Value">{{template.Text}}</option>
-                </select>
-                <a @click.prevent="templateDefined=false" href="#" class="dnnSecondaryAction">Change</a>
+               <span style="height:30px;">
+                {{templateTitle}}
+                </span>
+                <a @click.prevent="templateDefined=false" href="#" class="dnnSecondaryAction" :disabled="loading">Change</a>
             </div>
             <div class="dnnFormItem">
                 <label class="dnnLabel">Settings</label>
@@ -113,9 +160,9 @@
                 </div>
             <div class="dnnFormItem" @click="templateDefined=false">
                 <label class="dnnLabel"><%= Resource("lTemplate") %></label>
-                <select v-model="Template" disabled>
-                    <option v-for="template in templates" :value="template.Value">{{template.Text}}</option>
-                </select>
+               <span style="height:30px;">
+                {{templateTitle}}
+                </span>
                 <a @click.prevent="templateDefined=false" href="#" class="dnnSecondaryAction">Change</a>
             </div>
             <div class="dnnFormItem" v-if="settingsNeeded">
@@ -127,185 +174,265 @@
                 <a :href="editUrl" class="dnnPrimaryAction">Edit Content</a>
             </div>
         </fieldset>
+        
     </div>
+    <p v-if="message" style="color:#ff0000">{{message}}</p>
+    <div v-if="loading" style="background-color:rgba(255, 255, 255, 0.70);color:#0094ff;text-align:center;position:absolute;width:100%;height:100%;top:0;left:0;padding-top:200px;text-align:center;font-size:20px;">Loading...</div>
 </asp:Panel>
-<script src="https://unpkg.com/vue"></script>
+
 <script>
-    $(document).ready(function () {
-        var sf = $.ServicesFramework(<%= ModuleContext.ModuleId %>);
-        var app = new Vue({
-            el: '#<%= pVue.ClientID %>',
-            data: {
-                templateDefined: false,
-                settingsNeeded: false,
-                settingsDefined: false,
-                dataNeeded: false,
-                dataDefined: false,
-                UseContent: '0',
-                UseTemplate: '0',
-                Template: "",
-                from: "0",
-                advanced: false,
-                templates: [],
-                tabModuleId: 0,
-                modules: [],
-                detailPages: [],
-                detailPage: -1,
-                settingsUrl:"<%= ModuleContext.EditUrl("EditSettings") %>",
-                editUrl:"<%= ModuleContext.EditUrl("Edit") %>"
-            },
-            computed: {
-                existingTemplate: function () {
-                    return this.UseTemplate == '0';
+    /*globals jQuery, window, Sys */
+    (function ($, Sys) {
+        $(document).ready(function () {
+            var sf = $.ServicesFramework(<%= ModuleContext.ModuleId %>);
+            var app = new Vue({
+                el: '#<%= pVue.ClientID %>',
+                data: {
+                    templateDefined: false,
+                    settingsNeeded: false,
+                    settingsDefined: false,
+                    dataNeeded: false,
+                    dataDefined: false,
+                    UseContent: '0',
+                    UseTemplate: '0',
+                    Template: "",
+                    from: "0",
+                    advanced: false,
+                    templates: [],
+                    tabModuleId: 0,
+                    modules: [],
+                    detailPages: [],
+                    detailPage: -1,
+                    templateName: '',
+                    settingsUrl:"<%= ModuleContext.EditUrl("EditSettings") %>",
+                    editUrl: "<%= ModuleContext.EditUrl("Edit") %>",
+                    message: '',
+                    loading: false
                 },
-                otherModule: function () {
-                    return this.UseContent == '1';
+                computed: {
+                    existingTemplate: function () {
+                        return this.UseTemplate == '0';
+                    },
+                    newTemplate: function () {
+                        return this.UseTemplate == '1';
+                    },
+                    otherModule: function () {
+                        return this.UseContent == '1';
+                    },
+                    fromWeb: function () {
+                        return this.from == '1';
+                    },
+                    step: function () {
+                        if (!this.templateDefined)
+                            return 1;
+                        else if (this.settingsNeeded && !this.settingsDefined)
+                            return 2;
+                        else
+                            return 3
+                    },
+                    templateTitle: function () {
+                        for (var i = 0; i < this.templates.length; i++) {
+                            if (this.templates[i].Value == this.Template) return this.templates[i].Text;
+                        }
+                        return this.Template;
+                    }
                 },
-                fromWeb: function () {
-                    return this.from == '1';
-                },
-                step: function () {
-                    if (!this.templateDefined)
-                        return 1;
-                    else if (this.settingsNeeded && !this.settingsDefined)
-                        return 2;
-                    else
-                        return 3
-                }
-            },
-            mounted: function () {
-                var self = this;
-                this.apiGet('GetTemplateState', {}, function (data) {
-                    self.templateDefined = data.Template;
-                    self.Template = data.Template;
-                    self.settingsNeeded = data.SettingsNeeded;
-                    self.settingsDefined = data.SettingsDefined;
-                    self.dataNeeded = data.DataNeeded;
-                    self.dataDefined = data.DataDefined;
-                });
-                this.apiGet('GetTemplates', {}, function (data) {
-                    self.templates = data;
-                });
-            },
-            methods: {
-                thisModuleChange: function () {
+                mounted: function () {
                     var self = this;
-                    this.apiGet('GetTemplates', {}, function (data) {
-                        self.templates = data;
-                    });
-                },
-                otherModuleChange: function () {
-                    this.UseTemplate = "0";
-                    this.tabModuleId = 0;
-                    var self = this;
-                    this.apiGet('GetModules', {}, function (data) {
-                        self.modules = data;
-                    });
-                },
-                moduleChange: function () {
-                    var self = this;
-                    this.apiGet('GetTemplates', { tabModuleId: this.tabModuleId }, function (data) {
-                        self.templates = data;
-                    });
-                },
-                existingTemplateChange: function () {
-                    this.thisModuleChange();
-                },
-                newTemplateChange: function () {
-                    this.from = "0";
-                    this.fromSiteChange();
-                },
-                fromWebChange: function () {
-                    var self = this;
-                    this.apiGet('GetTemplates', { web: true }, function (data) {
-                        self.templates = data;
-                    });
-                },
-                fromSiteChange: function () {
-                    var self = this;
-                    this.apiGet('GetTemplates', { web: false }, function (data) {
-                        self.templates = data;
-                    });
-                },
-                templateChange: function () {
-                    var self = this;
-                    this.apiGet('GetDetailPages', { template: this.Template, tabModuleId: this.tabModuleId }, function (data) {
-                        self.detailPages = data;
-                    });
-                },
-                selectTemplate: function (template) {
-                    this.Template = template;
-                    this.templateChange();
-                    this.save();
-                },
-                save: function () {
-                    var self = this;
-                    this.apiPost('SaveTemplate', {
-                        template: self.Template,
-                        otherModule: self.otherModule,
-                        tabModuleId: self.tabModuleId,
-                        newTemplate: false,
-                        fromWeb: false,
-                        templateName: ''
-                    }, function (data) {
-                        self.templateDefined = true;
+                    this.apiGet('GetTemplateState', {}, function (data) {
+                        self.templateDefined = data.Template;
+                        self.Template = data.Template;
                         self.settingsNeeded = data.SettingsNeeded;
                         self.settingsDefined = data.SettingsDefined;
                         self.dataNeeded = data.DataNeeded;
                         self.dataDefined = data.DataDefined;
                     });
-                },
-                settings: function () {
-                    this.settingsDefined = true;
-                },
-                apiGet: function (action, data, success) {
-                    $.ajax({
-                        type: "GET",
-                        url: sf.getServiceRoot('OpenContent') + "InitAPI/" + action,
-                        contentType: "application/json; charset=utf-8",
-                        dataType: "json",
-                        data: data,
-                        beforeSend: sf.setModuleHeaders
-                    }).done(function (data) {
-                        if (success) success(data);
-                    }).fail(function (xhr, result, status) {
-                        if (fail) fail(xhr, result, status);
-                        else console.error("Uh-oh, something broke: " + status);
+                    this.apiGet('GetTemplates', {}, function (data) {                        
+                        self.templates = data;                        
                     });
                 },
-                apiPost: function (action, data, success) {
-                    $.ajax({
-                        type: "POST",
-                        url: sf.getServiceRoot('OpenContent') + "InitAPI/" + action,
-                        contentType: "application/json; charset=utf-8",
-                        dataType: "json",
-                        data: JSON.stringify(data),
-                        beforeSend: sf.setModuleHeaders
-                    }).done(function (data) {
-                        if (success) success(data);
-                    }).fail(function (xhr, result, status) {
-                        if (fail) fail(xhr, result, status);
-                        else console.error("Uh-oh, something broke: " + status);
-                    });
-                }
-            },
-            components: {
-                modal: {
-                    template: '<div v-show="showModal" class="oc-modal"><div class="oc-modal-content"><span class="close">&times;</span><slot></slot></div></div>',
-                    data: function () {
-                        return {
-                            showModal: true
-                        };
+                watch: {
+                    templates: function (val, oldval) {
+                        if (val.length) {
+                            if (!this.Template) {
+                                this.Template = val[0].Value;
+                                this.templateChange();
+                            }
+                        }
                     },
-                    methods: {
-                        show: function () {
-                            this.showModal = true;
+                    modules: function (val, oldval) {
+                        if (val.length) {
+                            this.tabModuleId = val[0].TabModuleId;
+                            this.moduleChange();
+                        }
+                    },
+                    detailPages: function (val, oldval) {
+                        if (val.length) {
+                            this.detailPage = val[0].TabId;
                         }
                     }
                 },
-            }
-        })
-    });
+                methods: {
+                    basic: function () {
+                        this.advanced = false;
+                        this.existingTemplateChange();
+                    },
+                    thisModuleChange: function () {
+                        this.UseTemplate = "0";
+                        this.tabModuleId = 0;
+                        this.Template = '';
+                        var self = this;
+                        this.apiGet('GetTemplates', {}, function (data) {
+                            self.templates = data;
+                        });
+                    },
+                    otherModuleChange: function () {
+                        this.UseTemplate = "0";
+                        this.tabModuleId = 0;
+                        this.Template = '';
+                        var self = this;
+                        this.apiGet('GetModules', {}, function (data) {
+                            self.modules = data;
+                        });
+                    },
+                    moduleChange: function () {
+                        var self = this;
+                        this.Template = '';
+                        this.apiGet('GetTemplates', { tabModuleId: this.tabModuleId }, function (data) {
+                            self.templates = data;
+                        });
+                    },
+                    existingTemplateChange: function () {
+                        this.thisModuleChange();
+                    },
+                    newTemplateChange: function () {
+                        this.from = "0";
+                        this.Template = '';
+                        this.fromSiteChange();
+                    },
+                    fromWebChange: function () {
+                        var self = this;
+                        this.Template = '';
+                        this.apiGet('GetTemplates', { web: true }, function (data) {
+                            self.templates = data;
+                        });
+                    },
+                    fromSiteChange: function () {
+                        var self = this;
+                        this.Template = '';
+                        this.apiGet('GetTemplates', { web: false }, function (data) {
+                            self.templates = data;
+                        });
+                    },
+                    templateChange: function () {
+                        var self = this;
+                        if (this.existingTemplate) {
+                            this.apiGet('GetDetailPages', { template: this.Template, tabModuleId: this.tabModuleId }, function (data) {
+                                self.detailPages = data;
+                            });
+                        } else {
+                            self.detailPages = [];
+                        }
+                    },
+                    selectTemplate: function (template) {
+                        this.Template = template;
+                        this.templateChange();
+                        this.save();
+                    },
+                    save: function () {
+                        var self = this;
+                        self.message = "";
+                        this.apiPost('SaveTemplate', {
+                            template: self.Template,
+                            otherModule: self.otherModule,
+                            tabModuleId: self.tabModuleId,
+                            newTemplate: this.newTemplate,
+                            fromWeb: this.fromWeb,
+                            templateName: this.templateName
+                        }, function (data) {
+                            if (data.Error) {
+                                self.message = data.Error;
+                                return;
+                            }
+                            if (!data.DataNeeded) {
+                                location.reload(true);
+                                return;
+                            }
+                            self.templateDefined = true;
+                            self.settingsNeeded = data.SettingsNeeded;
+                            self.settingsDefined = data.SettingsDefined;
+                            self.dataNeeded = data.DataNeeded;
+                            self.dataDefined = data.DataDefined;
+                            self.Template = data.Template;
+                            if (self.newTemplate) {
+                                self.apiGet('GetTemplates', {}, function (dataTemplates) {
+                                    self.templates = dataTemplates;
+                                    self.Template = data.Template;
+                                });
+                                self.UseTemplate = "0";
+                            }
+                        });
+                    },
+                    settings: function () {
+                        this.settingsDefined = true;
+                    },
+                    apiGet: function (action, data, success) {
+                        var self = this;
+                        self.loading = true;
+                        $.ajax({
+                            type: "GET",
+                            url: sf.getServiceRoot('OpenContent') + "InitAPI/" + action,
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            data: data,
+                            beforeSend: sf.setModuleHeaders
+                        }).done(function (data) {
+                            if (success) success(data);
+                            self.loading = false;
+                        }).fail(function (xhr, result, status) {
+                            if (fail) fail(xhr, result, status);
+                            else console.error("Uh-oh, something broke: " + status);
+                            self.loading = false;
+                        });
+                    },
+                    apiPost: function (action, data, success) {
+                        var self = this;
+                        self.loading = true;
+                        $.ajax({
+                            type: "POST",
+                            url: sf.getServiceRoot('OpenContent') + "InitAPI/" + action,
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            data: JSON.stringify(data),
+                            beforeSend: sf.setModuleHeaders
+                        }).done(function (data) {
+                            if (success) success(data);
+                            self.loading = false;
+                        }).fail(function (xhr, result, status) {
+                            if (fail) fail(xhr, result, status);
+                            else console.error("Uh-oh, something broke: " + status);
+                            self.loading = false;
+                        });
+                    }
+                },
+                components: {
+                    modal: {
+                        template: '<div v-show="showModal" class="oc-modal"><div class="oc-modal-content"><span class="close">&times;</span><slot></slot></div></div>',
+                        data: function () {
+                            return {
+                                showModal: true
+                            };
+                        },
+                        methods: {
+                            show: function () {
+                                this.showModal = true;
+                            }
+                        }
+                    },
+                }
+            })
+        });
+    }(jQuery, window.Sys));
 </script>
 
 </asp:Panel>

@@ -280,6 +280,7 @@ namespace Satrabel.OpenContent.Components.Render
                 context["MainUrl"] = _module.GetUrl(_detailTabId, GetCurrentCultureCode());
                 context["HomeDirectory"] = _module.HomeDirectory;
                 context["HTTPAlias"] = _module.HostName;
+                context["PortalName"] = _module.PortalName;
             }
         }
 

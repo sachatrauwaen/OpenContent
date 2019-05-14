@@ -246,7 +246,7 @@ namespace Satrabel.OpenContent
                     if (defaultMode == PortalSettings.Mode.Edit)
                     {
                         string setting = Convert.ToString(Personalization.GetProfile("Usability", "UserMode" + PortalSettings.Current.PortalId));
-                        if (!IsPageAdmin() & IsModuleAdmin())
+                        //if (!IsPageAdmin() & IsModuleAdmin())
                         {
                             if (setting != "EDIT")
                             {
@@ -368,7 +368,8 @@ namespace Satrabel.OpenContent
             //TemplateInit ti = (TemplateInit)TemplateInitControl;
             //ti.RenderInitForm();
             pInit.Visible = true;
-
+            //App.Services.ClientResourceManager.RegisterStyleSheet(page, cssfilename.UrlFilePath);
+            App.Services.ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/vue/vue.js");
         }
         public string Resource(string key)
         {
