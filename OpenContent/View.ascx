@@ -135,7 +135,7 @@
             </div>
             <div class="dnnFormItem">
                 <label class="dnnLabel"><%= Resource("lTemplate") %></label>
-               <span style="height:30px;">
+               <span style="height:30px;white-space: normal;">
                 {{templateTitle}}
                 </span>
                 <a @click.prevent="templateDefined=false" href="#" class="dnnSecondaryAction" :disabled="loading">Change</a>
@@ -156,7 +156,7 @@
                 </div>
             <div class="dnnFormItem" @click="templateDefined=false">
                 <label class="dnnLabel"><%= Resource("lTemplate") %></label>
-               <span style="height:30px;">
+               <span style="height:30px;white-space: normal;">
                 {{templateTitle}}
                 </span>
                 <a @click.prevent="templateDefined=false" href="#" class="dnnSecondaryAction">Change</a>
@@ -172,7 +172,7 @@
         </fieldset>
         
     </div>
-    <p v-if="message" style="color:#ff0000">{{message}}</p>
+    <p v-if="message" style="color:#ff0000" v-cloak>{{message}}</p>
     <div v-if="loading" style="background-color:rgba(255, 255, 255, 0.70);color:#0094ff;text-align:center;position:absolute;width:100%;height:100%;top:0;left:0;padding-top:200px;text-align:center;font-size:20px;">Loading...</div>
 </asp:Panel>
 
