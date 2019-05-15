@@ -37,10 +37,13 @@
         .octemplate a:hover {
             color: #1DAFE5;
         }
+        [v-cloak] {
+            display: none;
+        }
     </style>
 
-<asp:Panel ID="pVue" runat="server" >
-    <div v-if="step==1">
+<asp:Panel ID="pVue" runat="server"  >
+    <div v-if="step==1" v-cloak>
         <div v-if ="!advanced ">
             <p style="text-align:center">Choose a template</p>
             <div class="octemplate" v-for="(val, index) in templates" v-if="index < 23">
@@ -122,7 +125,7 @@
             </ul>
         </div>
     </div>
-    <div v-else-if="step==2">
+    <div v-else-if="step==2" v-cloak>
         <fieldset>
              <div v-if="otherModule" class="dnnFormItem">
                     <label class="dnnLabel"><%= Resource("lUseContent") %></label>
@@ -143,7 +146,7 @@
             </div>
         </fieldset>
     </div>
-    <div v-else-if="step==3">
+    <div v-else-if="step==3" v-cloak>
         <fieldset>
             <div v-if="otherModule" class="dnnFormItem">
                     <label class="dnnLabel"><%= Resource("lUseContent") %></label>
@@ -232,6 +235,7 @@
                 },
                 mounted: function () {
                     var self = this;
+                    self.loading = true;
                     this.apiGet('GetTemplateState', {}, function (data) {
                         self.templateDefined = data.Template;
                         self.Template = data.Template;
@@ -242,6 +246,7 @@
                     });
                     this.apiGet('GetTemplates', {}, function (data) {                        
                         self.templates = data;                        
+                        self.loading = false;
                     });
                 },
                 watch: {
