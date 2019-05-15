@@ -133,13 +133,23 @@ namespace Satrabel.OpenContent.Components
             //var templateManifest = new FileUri(template).ToTemplateManifest();
             var settings = ActiveModule.OpenContentSettings();
             var templateManifest = settings.Template;
-            return new ModuleStateDto()
+            if (templateManifest == null)
             {
-                Template = settings.TemplateKey.ToString(),
-                SettingsNeeded = templateManifest.SettingsNeeded(),
-                //templateDefined = templateDefined && (!ddlTemplate.Visible || (settings.Template.Key.ToString() == ddlTemplate.SelectedValue));
-                SettingsDefined = !string.IsNullOrEmpty(settings.Data)
-            };
+                return new ModuleStateDto()
+                {
+                    Template = ""
+                };
+            }
+            else
+            {
+                return new ModuleStateDto()
+                {
+                    Template = settings.TemplateKey.ToString(),
+                    SettingsNeeded = templateManifest.SettingsNeeded(),
+                    //templateDefined = templateDefined && (!ddlTemplate.Visible || (settings.Template.Key.ToString() == ddlTemplate.SelectedValue));
+                    SettingsDefined = !string.IsNullOrEmpty(settings.Data)
+                };
+            }
         }
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Admin)]
