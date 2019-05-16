@@ -250,9 +250,10 @@
                     this.apiGet('GetTemplates', {}, function (data) {                        
                         self.templates = data;
                         self.loading = false;
-                        if (this.templates.length == 0) {
-                            this.UseTemplate = '1';
-                            this.from = '1';
+                        if (self.templates.length == 0) {
+                            self.advanced = true;
+                            self.UseTemplate = '1';
+                            self.from = '1';
                         }
                     });
                 },
