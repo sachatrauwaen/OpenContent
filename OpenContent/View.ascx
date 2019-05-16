@@ -212,6 +212,9 @@
                     newTemplate: function () {
                         return this.UseTemplate == '1';
                     },
+                    thisModule: function () {
+                        return this.UseContent == '1';
+                    },
                     otherModule: function () {
                         return this.UseContent == '1';
                     },
@@ -245,8 +248,12 @@
                         self.dataDefined = data.DataDefined;
                     });
                     this.apiGet('GetTemplates', {}, function (data) {                        
-                        self.templates = data;                        
+                        self.templates = data;
                         self.loading = false;
+                        if (this.templates.length == 0) {
+                            this.UseTemplate = '1';
+                            this.from = '1';
+                        }
                     });
                 },
                 watch: {

@@ -421,6 +421,8 @@
     <Content Include="js\bootstrap\css\glyphicons.css" />
     <Content Include="js\ckeditor\adapters\jquery.js" />
     <Content Include="js\ckeditor\ckeditor.js" />
+    <Content Include="js\ckeditor\config.js" />
+    <Content Include="js\ckeditor\contents.css" />
     <Content Include="js\ckeditor\lang\af.js" />
     <Content Include="js\ckeditor\lang\ar.js" />
     <Content Include="js\ckeditor\lang\az.js" />
@@ -785,6 +787,7 @@
     <Content Include="js\ckeditor\skins\moono-lisa\images\lock.png" />
     <Content Include="js\ckeditor\skins\moono-lisa\images\refresh.png" />
     <Content Include="js\ckeditor\skins\moono-lisa\images\spinner.gif" />
+    <Content Include="js\ckeditor\styles.js" />
     <Content Include="js\jplist\jplisthelper.js" />
     <Compile Include="Providers\SitemapProviders\OpenContentSitemapProvider\OpenContentSitemapProvider.cs" />
     <Compile Include="Providers\SitemapProviders\OpenContentSitemapProvider\OpenSitemapUrl.cs" />
