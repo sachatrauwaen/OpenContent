@@ -460,7 +460,7 @@
 		 */
 		parseLinkAttributes: function( editor, element ) {
 			var href = ( element && ( element.data( 'cke-saved-href' ) || element.getAttribute( 'href' ) ) ) || '',
-				compiledProtectionFunction = editor.plugins.dnnpages.compiledProtectionFunction,
+				compiledProtectionFunction = editor.plugins.link.compiledProtectionFunction,
 				emailProtection = editor.config.emailProtection,
 				javascriptMatch, emailMatch, anchorMatch, urlMatch, telMatch,
 				retval = {};
@@ -851,10 +851,10 @@
 			var sel = editor.getSelection(),
 				bms = sel.createBookmarks(),
 				anchor;
-			if ( sel && ( anchor = sel.getSelectedElement() ) && ( !anchor.getChildCount() ? CKEDITOR.plugins.dnnpages.tryRestoreFakeAnchor( editor, anchor ) : anchor.is( 'a' ) ) )
+			if ( sel && ( anchor = sel.getSelectedElement() ) && ( !anchor.getChildCount() ? CKEDITOR.plugins.link.tryRestoreFakeAnchor( editor, anchor ) : anchor.is( 'a' ) ) )
 				anchor.remove( 1 );
 			else {
-				if ( ( anchor = CKEDITOR.plugins.dnnpages.getSelectedLink( editor ) ) ) {
+				if ( ( anchor = CKEDITOR.plugins.link.getSelectedLink( editor ) ) ) {
 					if ( anchor.hasAttribute( 'href' ) ) {
 						anchor.removeAttributes( { name: 1, 'data-cke-saved-name': 1 } );
 						anchor.removeClass( 'cke_anchor' );
