@@ -255,7 +255,7 @@
                             self.UseTemplate = '1';
                             self.from = '1';
                             self.loading = true;
-                            this.apiGet('GetTemplates', { web: true }, function (data) {
+                            self.apiGet('GetTemplates', { web: true }, function (data) {
                                 self.templates = data;
                                 self.loading = false;
                             });
