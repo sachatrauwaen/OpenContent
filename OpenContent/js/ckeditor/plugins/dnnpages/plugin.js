@@ -460,7 +460,7 @@
 		 */
 		parseLinkAttributes: function( editor, element ) {
 			var href = ( element && ( element.data( 'cke-saved-href' ) || element.getAttribute( 'href' ) ) ) || '',
-				compiledProtectionFunction = editor.plugins.link.compiledProtectionFunction,
+				compiledProtectionFunction = editor.plugins.dnnpages.compiledProtectionFunction,
 				emailProtection = editor.config.emailProtection,
 				javascriptMatch, emailMatch, anchorMatch, urlMatch, telMatch,
 				retval = {};
