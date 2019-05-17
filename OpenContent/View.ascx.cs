@@ -133,6 +133,7 @@ namespace Satrabel.OpenContent
         {
             //base.OnPreRender(e);
             //pHelp.Visible = false;
+            pInit.Visible = false;
             GenerateAndRenderDemoData();
             if (_renderinfo.Template != null && !string.IsNullOrEmpty(_renderinfo.OutputString))
             {

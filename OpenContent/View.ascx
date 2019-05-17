@@ -9,34 +9,41 @@
             width: auto;
             margin: 6px 5px 6px 5px;
         }
+
         .octemplate {
             float: left;
             width: 160px;
         }
-        .octemplate a {
-            background-color: #3D3C3C;
-            display: block;
-            height: 30px;
-            padding: 3px;
-            margin: 3px;
-            color: #ffffff;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            border-radius:3px;
-        }
-        .octemplate a.advanced {
-            background-color: #1DAFE5;
-        }
-        .octemplate a.advanced:hover {
-            color: #3D3C3C;
-        }
-        .octemplate a:visited {
-            color: #ffffff;
-        }
-        .octemplate a:hover {
-            color: #1DAFE5;
-        }
+
+            .octemplate a {
+                background-color: #3D3C3C;
+                display: block;
+                height: 30px;
+                padding: 3px;
+                margin: 3px;
+                color: #ffffff;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                border-radius: 3px;
+            }
+
+                .octemplate a.advanced {
+                    background-color: #1DAFE5;
+                }
+
+                    .octemplate a.advanced:hover {
+                        color: #3D3C3C;
+                    }
+
+                .octemplate a:visited {
+                    color: #ffffff;
+                }
+
+                .octemplate a:hover {
+                    color: #1DAFE5;
+                }
+
         [v-cloak] {
             display: none;
         }
@@ -172,7 +179,7 @@
         </fieldset>
         
     </div>
-    <p style="text-align:center" v-if="noTemplates">Start by creating a new template based on one available from the web.</p>
+    <p style="text-align:center" v-if="noTemplates"><%= Resource("CreateHelp") %></p>
     <p v-if="message" style="color:#ff0000" v-cloak>{{message}}</p>
     <div v-if="loading" style="background-color:rgba(255, 255, 255, 0.70);color:#0094ff;text-align:center;position:absolute;width:100%;height:100%;top:0;left:0;padding-top:200px;text-align:center;font-size:20px;">Loading...</div>
 </asp:Panel>
@@ -205,7 +212,7 @@
                     editUrl: "<%= ModuleContext.EditUrl("Edit") %>",
                     message: '',
                     loading: false,
-                    noTemplates:false
+                    noTemplates: false
                 },
                 computed: {
                     existingTemplate: function () {
@@ -249,7 +256,7 @@
                         self.dataNeeded = data.DataNeeded;
                         self.dataDefined = data.DataDefined;
                     });
-                    this.apiGet('GetTemplates', {}, function (data) {                        
+                    this.apiGet('GetTemplates', {}, function (data) {
                         self.templates = data;
                         self.loading = false;
                         if (self.templates.length == 0) {
@@ -369,22 +376,51 @@
                                 return;
                             }
                             if (!data.DataNeeded) {
-                                location.reload(true);
-                                return;
-                            }
-                            self.templateDefined = true;
-                            self.settingsNeeded = data.SettingsNeeded;
-                            self.settingsDefined = data.SettingsDefined;
-                            self.dataNeeded = data.DataNeeded;
-                            self.dataDefined = data.DataDefined;
-                            self.Template = data.Template;
-                            if (self.newTemplate) {
-                                self.apiGet('GetTemplates', {}, function (dataTemplates) {
-                                    self.templates = dataTemplates;
-                                    self.Template = data.Template;
-                                });
-                                self.UseTemplate = "0";
-                            }
+                                <%--
+                                self.loading = false;
+                                var paneId= 'dnn_<%=ModuleContext.Configuration.PaneName%>';
+                                    var pane = $('#' + paneId);
+                                    var parentPane = pane.data('parentpane');
+                                    if (parentPane) {
+                                        //this.refreshPane(parentPane, args, callback);
+                                        return;
+                                    }
+                                    //set module manager to current refresh pane.
+                                    this._moduleManager = pane.data('dnnModuleManager');
+                                    var ajaxPanel = $('#' + paneId + "_SyncPanel");
+                                    if (ajaxPanel.length) {
+                                        //remove action menus from DOM bbefore fresh pane.
+                                        var handler = this;
+                                        pane.find('div.DnnModule').each(function () {
+                                            var moduleId = handler._moduleManager._findModuleId($(this));
+                                            $('#moduleActions-' + moduleId).remove();
+                                        });
+
+                                        //Sys.WebForms.PageRequestManager.getInstance().add_endRequest(this._refreshCompleteHandler);
+                                        //this._refreshPaneId = paneId;
+                                        //this._refreshCallback = callback;
+                                        var args = {};
+                                        window.setTimeout(function () { __doPostBack(ajaxPanel.attr('id'), args); }, 100);
+                                    } else {
+                                        location.reload(true);
+                                    }
+                                    --%>
+                                    location.reload(true);
+                                    return;
+                                }
+                                self.templateDefined = true;
+                                self.settingsNeeded = data.SettingsNeeded;
+                                self.settingsDefined = data.SettingsDefined;
+                                self.dataNeeded = data.DataNeeded;
+                                self.dataDefined = data.DataDefined;
+                                self.Template = data.Template;
+                                if (self.newTemplate) {
+                                    self.apiGet('GetTemplates', {}, function (dataTemplates) {
+                                        self.templates = dataTemplates;
+                                        self.Template = data.Template;
+                                    });
+                                    self.UseTemplate = "0";
+                                }
                             });
                         self.noTemplates = false;
                     },
