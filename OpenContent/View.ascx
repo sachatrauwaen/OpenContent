@@ -63,7 +63,7 @@
                             <td>
                                 <input type="radio" v-model="UseContent" @input="thisModuleChange" value="0" class="dnnRadiobutton" /><label><%= Resource("liThisModule") %></label></td>
                             <td >
-                                <input type="radio" v-model="UseContent" @input="otherModuleChange" value="1" class="dnnRadiobutton" /><label><%=Resource("liOtherModule")%></label></td>
+                                <input type="radio" v-model="UseContent" @input="otherModuleChange" value="1" class="dnnRadiobutton" :disabled="noTemplates" /><label><%=Resource("liOtherModule")%></label></td>
                         </tr>
                     </table>
                 </div>
@@ -78,9 +78,9 @@
                     <table class="dnnFormRadioButtons">
                         <tr>
                             <td>
-                                <input type="radio" v-model="UseTemplate" value="0" @input="existingTemplateChange" /><label><%=Resource("liUseExistingTemplate")%></label></td>
+                                <input type="radio" v-model="UseTemplate" value="0" @input="existingTemplateChange" :disabled="noTemplates" /><label><%=Resource("liUseExistingTemplate")%></label></td>
                             <td :class="{dnnDisabled:otherModule}">
-                                <input type="radio" v-model="UseTemplate" value="1" @input="newTemplateChange" :disabled="otherModule"/><%=Resource("liCreateNewTemplate")%></td>
+                                <input type="radio" v-model="UseTemplate" value="1" @input="newTemplateChange" :disabled="otherModule"/><label><%=Resource("liCreateNewTemplate")%></label></td>
                         </tr>
                     </table>
                 </div>
@@ -89,9 +89,9 @@
                     <table class="dnnFormRadioButtons">
                         <tr>
                             <td>
-                                <input type="radio" v-model="from" value="0"  @input="fromSiteChange" /><%= Resource("liFromSite")%></td>
+                                <input type="radio" v-model="from" value="0"  @input="fromSiteChange" :disabled="noTemplates" /><label><%= Resource("liFromSite")%></label></td>
                             <td>
-                                <input type="radio" v-model="from" value="1" @input="fromWebChange" /><%= Resource("liFromWeb")%></td>
+                                <input type="radio" v-model="from" value="1" @input="fromWebChange" /><label><%= Resource("liFromWeb")%></label></td>
                         </tr>
                     </table>
                 </div>
@@ -117,10 +117,10 @@
             </fieldset>
             <ul class="dnnActions dnnClear" style="padding-left: 32%; margin-left: 38px;">
                 <li>
-                    <a href="" @click.prevent="save" class="dnnPrimaryAction" :disabled="loading"><%= Resource("Save") %></a>
+                    <a href="" @click.prevent="save" class="dnnPrimaryAction" :disabled="loading">{{newTemplate ? '<%= Resource("Create") %>' : '<%= Resource("Save") %>'}}</a>
                 </li>
                 <li>
-                    <a href="#" @click.prevent="basic" class="dnnSecondaryAction" :disabled="loading" >{{advanced ? 'Basic' : 'Advanced'}}</a>
+                    <a href="#" v-if="existingTemplate && thisModule" @click.prevent="basic" class="dnnSecondaryAction" :disabled="loading" >Basic</a>
                 </li>
             </ul>
         </div>
@@ -172,6 +172,7 @@
         </fieldset>
         
     </div>
+    <p style="text-align:center" v-if="noTemplates">Start by creating a new template based on one available from the web.</p>
     <p v-if="message" style="color:#ff0000" v-cloak>{{message}}</p>
     <div v-if="loading" style="background-color:rgba(255, 255, 255, 0.70);color:#0094ff;text-align:center;position:absolute;width:100%;height:100%;top:0;left:0;padding-top:200px;text-align:center;font-size:20px;">Loading...</div>
 </asp:Panel>
@@ -203,7 +204,8 @@
                     settingsUrl:"<%= ModuleContext.EditUrl("EditSettings") %>",
                     editUrl: "<%= ModuleContext.EditUrl("Edit") %>",
                     message: '',
-                    loading: false
+                    loading: false,
+                    noTemplates:false
                 },
                 computed: {
                     existingTemplate: function () {
@@ -251,6 +253,7 @@
                         self.templates = data;
                         self.loading = false;
                         if (self.templates.length == 0) {
+                            self.noTemplates = true;
                             self.advanced = true;
                             self.UseTemplate = '1';
                             self.from = '1';
@@ -382,7 +385,8 @@
                                 });
                                 self.UseTemplate = "0";
                             }
-                        });
+                            });
+                        self.noTemplates = false;
                     },
                     settings: function () {
                         this.settingsDefined = true;
