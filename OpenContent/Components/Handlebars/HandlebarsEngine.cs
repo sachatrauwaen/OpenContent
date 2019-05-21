@@ -435,6 +435,14 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 writer.WriteSafeString("</script>");
             });
         }
+
+        private static void RegisterRawHelper(HandlebarsDotNet.IHandlebars hbs)
+        {
+            hbs.RegisterHelper("raw", (writer, options, context, parameters) => {
+                options.Template(writer, null);
+            });
+        }
+
         private void RegisterRegisterScriptHelper(HandlebarsDotNet.IHandlebars hbs, Page page, string sourceFolder)
         {
             hbs.RegisterHelper("registerscript", (writer, context, parameters) =>
