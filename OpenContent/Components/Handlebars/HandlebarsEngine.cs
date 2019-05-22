@@ -48,6 +48,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 RegisterReplaceHelper(hbs);
                 RegisterReplaceNewlineHelper(hbs);
                 RegisterTemplateHelper(hbs);
+                RegisterRawHelper(hbs);
                 _template = hbs.Compile(source);
             }
             catch (Exception ex)
@@ -124,6 +125,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterReplaceHelper(hbs);
             RegisterReplaceNewlineHelper(hbs);
             RegisterTemplateHelper(hbs);
+            RegisterRawHelper(hbs);
         }
 
         private static void RegisterTruncateWordsHelper(HandlebarsDotNet.IHandlebars hbs)
@@ -441,6 +443,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             hbs.RegisterHelper("raw", (writer, options, context, parameters) => {
                 options.Template(writer, null);
             });
+
         }
 
         private void RegisterRegisterScriptHelper(HandlebarsDotNet.IHandlebars hbs, Page page, string sourceFolder)
