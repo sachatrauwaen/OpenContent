@@ -222,7 +222,7 @@
                         return this.UseTemplate == '1';
                     },
                     thisModule: function () {
-                        return this.UseContent == '1';
+                        return this.UseContent == '0';
                     },
                     otherModule: function () {
                         return this.UseContent == '1';
@@ -376,8 +376,9 @@
                                 return;
                             }
                             if (!data.DataNeeded) {
-                                <%--
+
                                 self.loading = false;
+                                <%--
                                 var paneId= 'dnn_<%=ModuleContext.Configuration.PaneName%>';
                                     var pane = $('#' + paneId);
                                     var parentPane = pane.data('parentpane');
@@ -391,10 +392,10 @@
                                     if (ajaxPanel.length) {
                                         //remove action menus from DOM bbefore fresh pane.
                                         var handler = this;
-                                        pane.find('div.DnnModule').each(function () {
-                                            var moduleId = handler._moduleManager._findModuleId($(this));
-                                            $('#moduleActions-' + moduleId).remove();
-                                        });
+                                        //pane.find('div.DnnModule').each(function () {
+                                        //    var moduleId = handler._moduleManager._findModuleId($(this));
+                                        //    $('#moduleActions-' + moduleId).remove();
+                                        //});
 
                                         //Sys.WebForms.PageRequestManager.getInstance().add_endRequest(this._refreshCompleteHandler);
                                         //this._refreshPaneId = paneId;
@@ -404,7 +405,7 @@
                                     } else {
                                         location.reload(true);
                                     }
-                                    --%>
+                                     --%>
                                     location.reload(true);
                                     return;
                                 }
