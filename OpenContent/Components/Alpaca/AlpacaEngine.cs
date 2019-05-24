@@ -189,7 +189,17 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
             if (allFields || fieldTypes.Contains("ckeditor") || fieldTypes.Contains("mlckeditor"))
             {
-                ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/CKEditor/ckeditor.js", FileOrder.Js.DefaultPriority);
+                //ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/CKEditor/ckeditor.js", FileOrder.Js.DefaultPriority);
+
+                ClientScriptManager cs = Page.ClientScript;
+                Type csType = GetType();
+                const string CsName = "CKEdScript";
+                if (!cs.IsClientScriptIncludeRegistered(csType, CsName))
+                {
+                    cs.RegisterClientScriptInclude(
+                        csType, CsName, Page.ResolveUrl("~/DesktopModules/OpenContent/js/CKEditor/ckeditor.js"));
+                }
+
                 DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "PortalId", PortalId.ToString(), true);
                 /*
                 var CKDNNporid = new HiddenField();
