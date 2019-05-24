@@ -205,9 +205,12 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
             if (allFields || fieldTypes.Contains("icon"))
             {
-                ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/fontIconPicker/jquery.fonticonpicker.min.js", FileOrder.Js.DefaultPriority, "DnnPageHeaderProvider");
-                ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/fontIconPicker/css/jquery.fonticonpicker.min.css", FileOrder.Css.DefaultPriority);
-                ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/fontIconPicker/themes/grey-theme/jquery.fonticonpicker.grey.min.css", FileOrder.Css.DefaultPriority);
+                ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/fontIconPicker/js/jquery.fonticonpicker.js", FileOrder.Js.DefaultPriority, "DnnPageHeaderProvider");
+                ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/fontIconPicker/css/base/jquery.fonticonpicker.min.css", FileOrder.Css.DefaultPriority);
+                //if (bootstrap)
+                //    ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/fontIconPicker/css/themes/bootstrap-theme/jquery.fonticonpicker.bootstrap.min.css", FileOrder.Css.DefaultPriority);
+                //else
+                    ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/fontIconPicker/css/themes/grey-theme/jquery.fonticonpicker.grey.min.css", FileOrder.Css.DefaultPriority);
                 ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/css/glyphicons/glyphicons.css", FileOrder.Css.DefaultPriority + 1);
             }
             if (allFields || fieldTypes.Contains("summernote") || fieldTypes.Contains("mlsummernote"))
