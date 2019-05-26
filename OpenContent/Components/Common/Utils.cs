@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Web;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -14,6 +15,13 @@ namespace Satrabel.OpenContent.Components
             return url;
         }
 
+        public static string GetFullUrl(HttpRequest request, string relativeUrl)
+        {
+            return String.Format("{0}://{1}{2}",
+                            request.Url.Scheme,
+                            request.Url.Authority,
+                            VirtualPathUtility.ToAbsolute(relativeUrl));
+        }
 
         #endregion
 

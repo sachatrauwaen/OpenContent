@@ -22,6 +22,10 @@ namespace Satrabel.OpenContent.Components.Dnn
         bool GetLegacyHandlebars();
         void SetLegacyHandlebars(bool @checked);
 
+        bool GetCompositeCss();
+        void SetCompositeCss(bool @checked);
+        
+
         bool GetAutoAttach();
         void SetAutoAttach(string value);
 

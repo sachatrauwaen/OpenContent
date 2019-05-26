@@ -48,6 +48,10 @@
         <asp:CheckBox ID="cbLegacyHandlebars" runat="server" />
     </div>
     <div class="dnnFormItem">
+        <dnn:Label ID="lCompositeCss" ControlName="cbCompositeCss" runat="server" />
+        <asp:CheckBox ID="cbCompositeCss" runat="server" />
+    </div>
+    <div class="dnnFormItem">
         <dnn:Label ID="lSaveXml" ControlName="cbSaveXml" runat="server" />
         <asp:CheckBox ID="cbSaveXml" runat="server" />
     </div>

@@ -1,0 +1,68 @@
+#region Copyright
+
+// 
+// Copyright (c) 2015-2017
+// by Satrabel
+// 
+
+#endregion
+
+#region Using Statements
+
+using System;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Web.Http;
+using DotNetNuke.Web.Api;
+using Newtonsoft.Json.Linq;
+using System.IO;
+using DotNetNuke.Security;
+using Satrabel.OpenContent.Components.Json;
+using DotNetNuke.Entities.Modules;
+using System.Collections.Generic;
+using DotNetNuke.Services.Localization;
+using Satrabel.OpenContent.Components.Alpaca;
+using Satrabel.OpenContent.Components.Manifest;
+using Satrabel.OpenContent.Components.Datasource;
+using Satrabel.OpenContent.Components.Dnn;
+using DotNetNuke.Entities.Tabs;
+using System.Web.Hosting;
+using Satrabel.OpenContent.Components.Logging;
+using System.Text;
+using ClientDependency.Core.CompositeFiles;
+
+#endregion
+
+namespace Satrabel.OpenContent.Components
+{
+    public class ResourceController : DnnApiController
+    {
+        [AllowAnonymous]
+        [HttpGet]
+        public HttpResponseMessage Css(int tabid, int portalid)
+        {
+            StringBuilder css = new StringBuilder();
+            var tab = TabController.Instance.GetTab(tabid, portalid);
+            foreach (ModuleInfo module in tab.Modules.Cast<ModuleInfo>().Where(m => m.ModuleDefinition.DefinitionName == App.Config.Opencontent && !m.IsDeleted))
+            {
+                var moduleSettings = module.OpenContentSettings();
+                if (moduleSettings.Template != null){
+                    var cssfilename = new FileUri(Path.ChangeExtension(moduleSettings.Template.MainTemplateUri().FilePath, "css"));
+                    if (cssfilename.FileExists)
+                    {
+                        if (App.Services.CreateGlobalSettingsRepository(portalid).GetLoggingScope() != "none")
+                        {
+                            css.Append("/*").Append((cssfilename.FilePath)).AppendLine("*/");
+                        }
+                        css.AppendLine(CssMin.CompressCSS(File.ReadAllText(cssfilename.PhysicalFilePath)));
+                    }
+                }
+            }
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(css.ToString(), Encoding.UTF8, "text/css")
+            };
+        }
+    }
+}
