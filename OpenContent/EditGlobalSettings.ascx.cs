@@ -82,7 +82,7 @@ namespace Satrabel.OpenContent
                 cbLoadGlyphicons.Visible = cbLoadBootstrap.Visible;
                 tbGoogleApiKey.Text = globalSettingsRepository.GetGoogleApiKey();
                 cbLegacyHandlebars.Checked = globalSettingsRepository.GetLegacyHandlebars();
-                cbCompositeCss.Checked = globalSettingsRepository.GetCompositeCss();
+                //cbCompositeCss.Checked = globalSettingsRepository.GetCompositeCss();
                 cbSaveXml.Checked = globalSettingsRepository.IsSaveXml();
                 tbGithubRepository.Text = globalSettingsRepository.GetGithubRepository();
                 cmdUpgradeXml.Visible = cbSaveXml.Checked;
@@ -109,7 +109,7 @@ namespace Satrabel.OpenContent
             globalSettingsRepository.SetLoadGlyphicons(cbLoadGlyphicons.Checked);
             globalSettingsRepository.SetGoogleApiKey(tbGoogleApiKey.Text);
             globalSettingsRepository.SetLegacyHandlebars(cbLegacyHandlebars.Checked);
-            globalSettingsRepository.SetCompositeCss(cbCompositeCss.Checked);
+            //globalSettingsRepository.SetCompositeCss(cbCompositeCss.Checked);
             globalSettingsRepository.SetSaveXml(cbSaveXml.Checked);
             globalSettingsRepository.SetGithubRepository(tbGithubRepository.Text);
 
