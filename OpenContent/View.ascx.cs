@@ -127,6 +127,12 @@ namespace Satrabel.OpenContent
                     DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, ex.Message, DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
                 }
             }
+            if (App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetCompositeCss())
+            {
+                //var absUrl = Utils.GetFullUrl(Request, Page.ResolveUrl($"~/DesktopModules/OpenContent/API/Resource/Css?tabid={activeTab.TabID}&portalid={activeTab.PortalID}"));
+                var absUrl = Utils.GetFullUrl(Request, Page.ResolveUrl($"~/API/OpenContent/Resource/Css?tabid={ModuleContext.TabId}&portalid={ModuleContext.PortalId}"));
+                App.Services.ClientResourceManager.RegisterStyleSheet(Page, absUrl);
+            }
         }
 
         protected override void OnPreRender(EventArgs e)

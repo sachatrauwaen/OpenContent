@@ -42,20 +42,26 @@ namespace Satrabel.OpenContent.Components
         [HttpGet]
         public HttpResponseMessage Css(int tabid, int portalid)
         {
+            List<string> templates = new List<string>();
             StringBuilder css = new StringBuilder();
             var tab = TabController.Instance.GetTab(tabid, portalid);
             foreach (ModuleInfo module in tab.Modules.Cast<ModuleInfo>().Where(m => m.ModuleDefinition.DefinitionName == App.Config.Opencontent && !m.IsDeleted))
             {
                 var moduleSettings = module.OpenContentSettings();
                 if (moduleSettings.Template != null){
-                    var cssfilename = new FileUri(Path.ChangeExtension(moduleSettings.Template.MainTemplateUri().FilePath, "css"));
-                    if (cssfilename.FileExists)
+                    var filePath = moduleSettings.Template.MainTemplateUri().FilePath;
+                    if (!templates.Contains(filePath))
                     {
-                        if (App.Services.CreateGlobalSettingsRepository(portalid).GetLoggingScope() != "none")
+                        var cssfilename = new FileUri(Path.ChangeExtension(filePath, "css"));
+                        if (cssfilename.FileExists)
                         {
-                            css.Append("/*").Append((cssfilename.FilePath)).AppendLine("*/");
+                            if (UserInfo.IsSuperUser)
+                            {
+                                css.Append("/*").Append((cssfilename.FilePath)).AppendLine("*/");
+                            }
+                            css.AppendLine(CssMin.CompressCSS(File.ReadAllText(cssfilename.PhysicalFilePath)));
                         }
-                        css.AppendLine(CssMin.CompressCSS(File.ReadAllText(cssfilename.PhysicalFilePath)));
+                        templates.Add(filePath);
                     }
                 }
             }

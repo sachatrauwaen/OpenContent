@@ -15,34 +15,34 @@
             width: 160px;
         }
 
-            .octemplate a {
-                background-color: #3D3C3C;
-                display: block;
-                height: 30px;
-                padding: 3px;
-                margin: 3px;
-                color: #ffffff;
-                overflow: hidden;
-                white-space: nowrap;
-                text-overflow: ellipsis;
-                border-radius: 3px;
-            }
+        .octemplate a {
+            background-color: #3D3C3C;
+            display: block;
+            height: 30px;
+            padding: 3px;
+            margin: 3px;
+            color: #ffffff;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            border-radius: 3px;
+        }
 
-                .octemplate a.advanced {
-                    background-color: #1DAFE5;
-                }
+        .octemplate a.advanced {
+            background-color: #1DAFE5;
+        }
 
-                    .octemplate a.advanced:hover {
-                        color: #3D3C3C;
-                    }
+        .octemplate a.advanced:hover {
+            color: #3D3C3C;
+        }
 
-                .octemplate a:visited {
-                    color: #ffffff;
-                }
+        .octemplate a:visited {
+            color: #ffffff;
+        }
 
-                .octemplate a:hover {
-                    color: #1DAFE5;
-                }
+        .octemplate a:hover {
+            color: #1DAFE5;
+        }
 
         [v-cloak] {
             display: none;

@@ -163,6 +163,6 @@
     <value>Load Glyphicons on Edit Form (for bootstrap 4)</value>
   </data>
   <data name="lCompositeCss.Text" xml:space="preserve">
-    <value>Composite &amp; Minify Template Css</value>
+    <value>Composite &amp; Minify Template Css (require DNN 8 or greater)</value>
   </data>
 </root>

@@ -101,7 +101,8 @@ namespace Satrabel.OpenContent
             }
             if (App.Services.CreateGlobalSettingsRepository(activeTab.PortalID).GetCompositeCss())
             {
-                var absUrl = Utils.GetFullUrl(Request, Page.ResolveUrl($"~/DesktopModules/OpenContent/API/Resource/Css?tabid={activeTab.TabID}&portalid={activeTab.PortalID}"));
+                //var absUrl = Utils.GetFullUrl(Request, Page.ResolveUrl($"~/DesktopModules/OpenContent/API/Resource/Css?tabid={activeTab.TabID}&portalid={activeTab.PortalID}"));
+                var absUrl = Utils.GetFullUrl(Request, Page.ResolveUrl($"~/API/OpenContent/Resource/Css?tabid={activeTab.TabID}&portalid={activeTab.PortalID}"));
                 App.Services.ClientResourceManager.RegisterStyleSheet(Page, absUrl);
             }
         }
