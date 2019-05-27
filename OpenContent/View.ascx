@@ -9,12 +9,10 @@
             width: auto;
             margin: 6px 5px 6px 5px;
         }
-
         .octemplate {
             float: left;
             width: 160px;
         }
-
         .octemplate a {
             background-color: #3D3C3C;
             display: block;
@@ -27,23 +25,18 @@
             text-overflow: ellipsis;
             border-radius: 3px;
         }
-
         .octemplate a.advanced {
             background-color: #1DAFE5;
         }
-
         .octemplate a.advanced:hover {
             color: #3D3C3C;
         }
-
         .octemplate a:visited {
             color: #ffffff;
         }
-
         .octemplate a:hover {
             color: #1DAFE5;
         }
-
         [v-cloak] {
             display: none;
         }
@@ -68,9 +61,9 @@
                     <table class="dnnFormRadioButtons">
                         <tr>
                             <td>
-                                <input type="radio" v-model="UseContent" @input="thisModuleChange" value="0" class="dnnRadiobutton" /><label><%= Resource("liThisModule") %></label></td>
+                                <input type="radio" v-model="UseContent" @change="thisModuleChange" value="0" class="dnnRadiobutton" /><label><%= Resource("liThisModule") %></label></td>
                             <td >
-                                <input type="radio" v-model="UseContent" @input="otherModuleChange" value="1" class="dnnRadiobutton" :disabled="noTemplates" /><label><%=Resource("liOtherModule")%></label></td>
+                                <input type="radio" v-model="UseContent" @change="otherModuleChange" value="1" class="dnnRadiobutton" :disabled="noTemplates" /><label><%=Resource("liOtherModule")%></label></td>
                         </tr>
                     </table>
                 </div>
@@ -85,9 +78,9 @@
                     <table class="dnnFormRadioButtons">
                         <tr>
                             <td>
-                                <input type="radio" v-model="UseTemplate" value="0" @input="existingTemplateChange" :disabled="noTemplates" /><label><%=Resource("liUseExistingTemplate")%></label></td>
+                                <input type="radio" v-model="UseTemplate" value="0" @change="existingTemplateChange" :disabled="noTemplates" /><label><%=Resource("liUseExistingTemplate")%></label></td>
                             <td :class="{dnnDisabled:otherModule}">
-                                <input type="radio" v-model="UseTemplate" value="1" @input="newTemplateChange" :disabled="otherModule"/><label><%=Resource("liCreateNewTemplate")%></label></td>
+                                <input type="radio" v-model="UseTemplate" value="1" @change="newTemplateChange" :disabled="otherModule"/><label><%=Resource("liCreateNewTemplate")%></label></td>
                         </tr>
                     </table>
                 </div>
@@ -96,9 +89,9 @@
                     <table class="dnnFormRadioButtons">
                         <tr>
                             <td>
-                                <input type="radio" v-model="from" value="0"  @input="fromSiteChange" :disabled="noTemplates" /><label><%= Resource("liFromSite")%></label></td>
+                                <input type="radio" v-model="from" value="0"  @change="fromSiteChange" :disabled="noTemplates" /><label><%= Resource("liFromSite")%></label></td>
                             <td>
-                                <input type="radio" v-model="from" value="1" @input="fromWebChange" /><label><%= Resource("liFromWeb")%></label></td>
+                                <input type="radio" v-model="from" value="1" @change="fromWebChange" /><label><%= Resource("liFromWeb")%></label></td>
                         </tr>
                     </table>
                 </div>
