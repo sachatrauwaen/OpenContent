@@ -19,6 +19,7 @@ using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using UserRoleInfo = Satrabel.OpenContent.Components.Querying.UserRoleInfo;
+using DotNetNuke.UI.Skins;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -49,7 +50,14 @@ namespace Satrabel.OpenContent.Components
         }
         public static string GetSkinTemplateFolder(PortalSettings portalSettings, string moduleSubDir)
         {
-            return portalSettings.ActiveTab.SkinPath + moduleSubDir + "/Templates/";
+            var SkinPath = portalSettings.ActiveTab.SkinPath;
+            if (string.IsNullOrEmpty(SkinPath))
+            {
+                var SkinSrc = SkinController.FormatSkinSrc(!string.IsNullOrEmpty(portalSettings.ActiveTab.SkinSrc) ? portalSettings.ActiveTab.SkinSrc : portalSettings.DefaultPortalSkin, portalSettings);
+                SkinPath = SkinController.FormatSkinPath(SkinSrc);
+                //SkinPath = DotNetNuke.Entities.Tabs.TabController.Instance.GetTab(portalSettings.ActiveTab.TabID, portalSettings.PortalId).SkinPath;
+            }
+            return SkinPath + moduleSubDir + "/Templates/";
         }
 
         public static List<ListItem> GetTemplates(PortalSettings portalSettings, int moduleId, string selectedTemplate, string moduleSubDir)
@@ -196,7 +204,7 @@ namespace Satrabel.OpenContent.Components
                 }
             }
             // skin
-            if (!string.IsNullOrEmpty(portalSettings.ActiveTab.SkinPath))
+            //if (!string.IsNullOrEmpty(portalSettings.ActiveTab.SkinPath))
             {
                 basePath = HostingEnvironment.MapPath(GetSkinTemplateFolder(portalSettings, moduleSubDir));
                 if (Directory.Exists(basePath))
@@ -316,7 +324,7 @@ namespace Satrabel.OpenContent.Components
                 lst.Add(item);
             }
             // skin
-            if (!string.IsNullOrEmpty(portalSettings.ActiveTab.SkinPath))
+            //if (!string.IsNullOrEmpty(portalSettings.ActiveTab.SkinPath))
             {
                 basePath = HostingEnvironment.MapPath(GetSkinTemplateFolder(portalSettings, moduleSubDir));
                 if (Directory.Exists(basePath))

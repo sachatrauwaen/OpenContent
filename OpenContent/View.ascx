@@ -18,9 +18,9 @@
         .octemplate a {
             background-color: #3D3C3C;
             display: block;
-            height: 30px;
-            padding: 3px;
-            margin: 3px;
+            height: 2em;
+            padding: 0.3em 0.5em;
+            margin: 0.3em;
             color: #ffffff;
             overflow: hidden;
             white-space: nowrap;
@@ -57,7 +57,7 @@
                 <a  :value="val.Value" @click.prevent="selectTemplate(val.Value)" href="#" :title="val.Text" >{{val.Text}}</a>
             </div>
             <div class="octemplate">
-                <a href="#" @click.prevent="advanced=true" class="advanced" >More...</a>
+                <a href="#" @click.prevent="advanced=true" class="advanced" ><%=Resource("Advanced")%></a>
             </div>
             <div style="clear:both"></div>
         </div>

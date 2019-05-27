@@ -205,4 +205,7 @@
   <data name="CretateHelp.Text" xml:space="preserve">
     <value>Start by creating a new template based on one available from the web.</value>
   </data>
+  <data name="Advanced.Text" xml:space="preserve">
+    <value>Advanced...</value>
+  </data>
 </root>
