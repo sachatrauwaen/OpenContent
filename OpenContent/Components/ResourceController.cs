@@ -31,6 +31,7 @@ using System.Web.Hosting;
 using Satrabel.OpenContent.Components.Logging;
 using System.Text;
 using ClientDependency.Core.CompositeFiles;
+using System.Net.Http.Headers;
 
 #endregion
 
@@ -48,7 +49,8 @@ namespace Satrabel.OpenContent.Components
             foreach (ModuleInfo module in tab.Modules.Cast<ModuleInfo>().Where(m => m.ModuleDefinition.DefinitionName == App.Config.Opencontent && !m.IsDeleted))
             {
                 var moduleSettings = module.OpenContentSettings();
-                if (moduleSettings.Template != null){
+                if (moduleSettings.Template != null)
+                {
                     var filePath = moduleSettings.Template.MainTemplateUri().FilePath;
                     if (!templates.Contains(filePath))
                     {
@@ -65,10 +67,12 @@ namespace Satrabel.OpenContent.Components
                     }
                 }
             }
-            return new HttpResponseMessage(HttpStatusCode.OK)
+            var res = new HttpResponseMessage(HttpStatusCode.OK)
             {
                 Content = new StringContent(css.ToString(), Encoding.UTF8, "text/css")
             };
+            res.Headers.CacheControl = new CacheControlHeaderValue { MaxAge = new TimeSpan(365, 0, 0, 0), Public=true, Private=false };
+            return res;
         }
     }
 }

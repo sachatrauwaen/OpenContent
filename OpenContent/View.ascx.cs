@@ -130,8 +130,19 @@ namespace Satrabel.OpenContent
             if (App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetCompositeCss())
             {
                 //var absUrl = Utils.GetFullUrl(Request, Page.ResolveUrl($"~/DesktopModules/OpenContent/API/Resource/Css?tabid={activeTab.TabID}&portalid={activeTab.PortalID}"));
-                var absUrl = Utils.GetFullUrl(Request, Page.ResolveUrl($"~/API/OpenContent/Resource/Css?tabid={ModuleContext.TabId}&portalid={ModuleContext.PortalId}"));
-                App.Services.ClientResourceManager.RegisterStyleSheet(Page, absUrl);
+                //var absUrl = Utils.GetFullUrl(Request, Page.ResolveUrl($"~/API/OpenContent/Resource/Css?tabid={ModuleContext.TabId}&portalid={ModuleContext.PortalId}"));
+                //App.Services.ClientResourceManager.RegisterStyleSheet(Page, absUrl);
+
+                //var cssControl = Page.Header.FindControl("OpenContentCss");
+                //if (cssControl == null)
+                //{                    
+                //    System.Web.UI.HtmlControls.HtmlLink css = new System.Web.UI.HtmlControls.HtmlLink();
+                //    css.Href = Page.ResolveUrl($"~/API/OpenContent/Resource/Css?tabid={ModuleContext.TabId}&portalid={ModuleContext.PortalId}&cdv={ModuleContext.PortalSettings.CdfVersion}");
+                //    css.Attributes["rel"] = "stylesheet";
+                //    css.Attributes["type"] = "text/css";
+                //    css.ID = "OpenContentCss";
+                //    Page.Header.Controls.Add(css);
+                //}
             }
         }
 
@@ -160,7 +171,7 @@ namespace Satrabel.OpenContent
                 StringBuilder logScript = new StringBuilder();
                 //logScript.AppendLine("<script type=\"text/javascript\"> ");
                 logScript.AppendLine("$(document).ready(function () { ");
-                logScript.AppendLine("var logs = " + JsonConvert.SerializeObject(LogContext.Current.ModuleLogs(ModuleContext.ModuleId)) + "; ");
+                logScript.AppendLine("var logs = " + System.Web.HttpUtility.HtmlEncode(JsonConvert.SerializeObject(LogContext.Current.ModuleLogs(ModuleContext.ModuleId))) + "; " );
                 logScript.AppendLine("$.fn.openContent.printLogs(\"Module " + ModuleContext.ModuleId + " - " + ModuleContext.Configuration.ModuleTitle + "\", logs);");
                 logScript.AppendLine("});");
                 //logScript.AppendLine("</script>");
