@@ -38,6 +38,8 @@ using DotNetNuke.Services.Localization;
 using Satrabel.OpenContent.Components.Datasource;
 using IDataSource = Satrabel.OpenContent.Components.Datasource.IDataSource;
 using SecurityAccessLevel = DotNetNuke.Security.SecurityAccessLevel;
+using Newtonsoft.Json.Serialization;
+using System.Reflection;
 
 #endregion
 
@@ -168,10 +170,13 @@ namespace Satrabel.OpenContent
             if (LogContext.IsLogActive && !Debugger.IsAttached)
             {
                 ClientResourceManager.RegisterScript(Page, Page.ResolveUrl("~/DesktopModules/OpenContent/js/opencontent.js"), FileOrder.Js.DefaultPriority);
+                var json = JsonConvert.SerializeObject(LogContext.Current.ModuleLogs(ModuleContext.ModuleId));
+                json = json.Replace("<script>", "*script*");
+                json = json.Replace("</script>", "*/script*");
                 StringBuilder logScript = new StringBuilder();
                 //logScript.AppendLine("<script type=\"text/javascript\"> ");
                 logScript.AppendLine("$(document).ready(function () { ");
-                logScript.AppendLine("var logs = " + System.Web.HttpUtility.HtmlEncode(JsonConvert.SerializeObject(LogContext.Current.ModuleLogs(ModuleContext.ModuleId))) + "; " );
+                logScript.AppendLine("var logs = " + json + "; " );
                 logScript.AppendLine("$.fn.openContent.printLogs(\"Module " + ModuleContext.ModuleId + " - " + ModuleContext.Configuration.ModuleTitle + "\", logs);");
                 logScript.AppendLine("});");
                 //logScript.AppendLine("</script>");
@@ -471,5 +476,7 @@ namespace Satrabel.OpenContent
         }
         #endregion
     }
+
+   
 
 }
