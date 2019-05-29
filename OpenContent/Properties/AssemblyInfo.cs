@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Satrabel")]
 [assembly: AssemblyProduct("OpenContent")]
-[assembly: AssemblyCopyright("Copyright © 2015-2017")]
+[assembly: AssemblyCopyright("Copyright © 2015-2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -30,5 +30,5 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("04.00.00.0")]
-[assembly: AssemblyFileVersion("04.00.00.0")]
+[assembly: AssemblyVersion("04.02.00.0")]
+[assembly: AssemblyFileVersion("04.02.00.0")]
