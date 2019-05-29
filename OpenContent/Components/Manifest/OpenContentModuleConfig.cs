@@ -120,6 +120,7 @@ namespace Satrabel.OpenContent.Components
         public string HostName => _portalSettings.PortalAlias.HTTPAlias;
         public bool PreviewEnabled => _portalSettings != null && (_portalSettings.UserMode == PortalSettings.Mode.View);
 
+        public string PortalName => _portalSettings.PortalName;
         #endregion
     }
 

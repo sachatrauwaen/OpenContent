@@ -189,7 +189,17 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
             if (allFields || fieldTypes.Contains("ckeditor") || fieldTypes.Contains("mlckeditor"))
             {
-                ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/CKEditor/ckeditor.js", FileOrder.Js.DefaultPriority);
+                //ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/CKEditor/ckeditor.js", FileOrder.Js.DefaultPriority);
+
+                ClientScriptManager cs = Page.ClientScript;
+                Type csType = GetType();
+                const string CsName = "CKEdScript";
+                if (!cs.IsClientScriptIncludeRegistered(csType, CsName))
+                {
+                    cs.RegisterClientScriptInclude(
+                        csType, CsName, Page.ResolveUrl("~/DesktopModules/OpenContent/js/CKEditor/ckeditor.js"));
+                }
+
                 DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "PortalId", PortalId.ToString(), true);
                 /*
                 var CKDNNporid = new HiddenField();
@@ -205,9 +215,12 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
             if (allFields || fieldTypes.Contains("icon"))
             {
-                ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/fontIconPicker/jquery.fonticonpicker.min.js", FileOrder.Js.DefaultPriority, "DnnPageHeaderProvider");
-                ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/fontIconPicker/css/jquery.fonticonpicker.min.css", FileOrder.Css.DefaultPriority);
-                ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/fontIconPicker/themes/grey-theme/jquery.fonticonpicker.grey.min.css", FileOrder.Css.DefaultPriority);
+                ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/fontIconPicker/js/jquery.fonticonpicker.js", FileOrder.Js.DefaultPriority, "DnnPageHeaderProvider");
+                ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/fontIconPicker/css/base/jquery.fonticonpicker.min.css", FileOrder.Css.DefaultPriority);
+                //if (bootstrap)
+                //    ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/fontIconPicker/css/themes/bootstrap-theme/jquery.fonticonpicker.bootstrap.min.css", FileOrder.Css.DefaultPriority);
+                //else
+                    ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/fontIconPicker/css/themes/grey-theme/jquery.fonticonpicker.grey.min.css", FileOrder.Css.DefaultPriority);
                 ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/css/glyphicons/glyphicons.css", FileOrder.Css.DefaultPriority + 1);
             }
             if (allFields || fieldTypes.Contains("summernote") || fieldTypes.Contains("mlsummernote"))

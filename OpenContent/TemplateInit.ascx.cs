@@ -55,6 +55,11 @@ namespace Satrabel.OpenContent
                 }
             }
         }
+
+        public string Resource(string key)
+        {
+            return Localization.GetString(key + ".Text", ResourceFile);
+        }
         protected void rblFrom_SelectedIndexChanged(object sender, EventArgs e)
         {
             ddlTemplate.Items.Clear();
@@ -351,6 +356,7 @@ namespace Satrabel.OpenContent
                     }
                 }
             }
+
         }
 
         private void BindOtherModules(int tabId, int moduleId)
@@ -510,6 +516,8 @@ namespace Satrabel.OpenContent
                 }
             }
         }
+
+        
 
     }
 }

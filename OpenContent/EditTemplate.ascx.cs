@@ -21,6 +21,7 @@ using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Localization;
 using DotNetNuke.Framework.JavaScriptLibraries;
+using DotNetNuke.Entities.Controllers;
 
 #endregion
 
@@ -559,6 +560,12 @@ namespace Satrabel.OpenContent
             {
                 File.WriteAllText(srcFile, txtSource.Text);
             }
+
+            if (Path.GetExtension(srcFile)==".css" || Path.GetExtension(srcFile) == ".js")
+            {
+                HostController.Instance.IncrementCrmVersion(true);
+            }
+
             return true;
             //DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "Save Successful", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.GreenSuccess);
         }

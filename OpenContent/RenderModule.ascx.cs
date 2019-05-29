@@ -99,7 +99,14 @@ namespace Satrabel.OpenContent
                     DotNetNuke.UI.Skins.Skin.AddPageMessage(Page, "OpenContent RenderModule SkinObject", ex.Message, DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
                 }
             }
+            if (App.Services.CreateGlobalSettingsRepository(activeTab.PortalID).GetCompositeCss())
+            {
+                //var absUrl = Utils.GetFullUrl(Request, Page.ResolveUrl($"~/DesktopModules/OpenContent/API/Resource/Css?tabid={activeTab.TabID}&portalid={activeTab.PortalID}"));
+                var absUrl = Utils.GetFullUrl(Request, Page.ResolveUrl($"~/API/OpenContent/Resource/Css?tabid={activeTab.TabID}&portalid={activeTab.PortalID}"));
+                App.Services.ClientResourceManager.RegisterStyleSheet(Page, absUrl);
+            }
         }
+        
         private void RenderTemplateException(TemplateException ex, ModuleInfo module)
         {
             DotNetNuke.UI.Skins.Skin.AddPageMessage(Page, "OpenContent RenderModule SkinObject", "<p><b>Template error</b></p>" + ex.MessageAsHtml(), DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);

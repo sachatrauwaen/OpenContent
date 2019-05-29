@@ -29,7 +29,7 @@
         <li>
             <asp:LinkButton ID="cmdSave" resourcekey="cmdSave" runat="server" CssClass="dnnPrimaryAction" />
         </li>
-         <li>
+        <li>
             <asp:LinkButton ID="cmdSaveClose" resourcekey="cmdSaveClose" runat="server" CssClass="dnnSecondaryAction" /></li>
         <li>
             <asp:LinkButton ID="cmdCancel" resourcekey="cmdCancel" runat="server" CssClass="dnnSecondaryAction" CausesValidation="False" />
@@ -46,6 +46,10 @@
         <li>
             <asp:HyperLink ID="cmdRestApi" resourcekey="cmdRestApi" runat="server" CssClass="dnnSecondaryAction" CausesValidation="False" Target="_blank" />
         </li>
+        <li>
+            <asp:LinkButton ID="cmdSaveDefault" resourcekey="cmdSaveDefault" runat="server" CssClass="dnnSecondaryAction" />
+        </li>
+
     </ul>
 </div>
 <script type="text/javascript">

@@ -127,12 +127,30 @@ namespace Satrabel.OpenContent
                     DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, ex.Message, DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
                 }
             }
+            if (App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetCompositeCss())
+            {
+                //var absUrl = Utils.GetFullUrl(Request, Page.ResolveUrl($"~/DesktopModules/OpenContent/API/Resource/Css?tabid={activeTab.TabID}&portalid={activeTab.PortalID}"));
+                //var absUrl = Utils.GetFullUrl(Request, Page.ResolveUrl($"~/API/OpenContent/Resource/Css?tabid={ModuleContext.TabId}&portalid={ModuleContext.PortalId}"));
+                //App.Services.ClientResourceManager.RegisterStyleSheet(Page, absUrl);
+
+                //var cssControl = Page.Header.FindControl("OpenContentCss");
+                //if (cssControl == null)
+                //{                    
+                //    System.Web.UI.HtmlControls.HtmlLink css = new System.Web.UI.HtmlControls.HtmlLink();
+                //    css.Href = Page.ResolveUrl($"~/API/OpenContent/Resource/Css?tabid={ModuleContext.TabId}&portalid={ModuleContext.PortalId}&cdv={ModuleContext.PortalSettings.CdfVersion}");
+                //    css.Attributes["rel"] = "stylesheet";
+                //    css.Attributes["type"] = "text/css";
+                //    css.ID = "OpenContentCss";
+                //    Page.Header.Controls.Add(css);
+                //}
+            }
         }
 
         protected override void OnPreRender(EventArgs e)
         {
             //base.OnPreRender(e);
             //pHelp.Visible = false;
+            pInit.Visible = false;
             GenerateAndRenderDemoData();
             if (_renderinfo.Template != null && !string.IsNullOrEmpty(_renderinfo.OutputString))
             {
@@ -153,7 +171,7 @@ namespace Satrabel.OpenContent
                 StringBuilder logScript = new StringBuilder();
                 //logScript.AppendLine("<script type=\"text/javascript\"> ");
                 logScript.AppendLine("$(document).ready(function () { ");
-                logScript.AppendLine("var logs = " + JsonConvert.SerializeObject(LogContext.Current.ModuleLogs(ModuleContext.ModuleId)) + "; ");
+                logScript.AppendLine("var logs = " + System.Web.HttpUtility.HtmlEncode(JsonConvert.SerializeObject(LogContext.Current.ModuleLogs(ModuleContext.ModuleId))) + "; " );
                 logScript.AppendLine("$.fn.openContent.printLogs(\"Module " + ModuleContext.ModuleId + " - " + ModuleContext.Configuration.ModuleTitle + "\", logs);");
                 logScript.AppendLine("});");
                 //logScript.AppendLine("</script>");
@@ -246,7 +264,7 @@ namespace Satrabel.OpenContent
                     if (defaultMode == PortalSettings.Mode.Edit)
                     {
                         string setting = Convert.ToString(Personalization.GetProfile("Usability", "UserMode" + PortalSettings.Current.PortalId));
-                        if (!IsPageAdmin() & IsModuleAdmin())
+                        //if (!IsPageAdmin() & IsModuleAdmin())
                         {
                             if (setting != "EDIT")
                             {
@@ -365,10 +383,16 @@ namespace Satrabel.OpenContent
 
         private void RenderInitForm()
         {
-            TemplateInit ti = (TemplateInit)TemplateInitControl;
-            ti.RenderInitForm();
+            //TemplateInit ti = (TemplateInit)TemplateInitControl;
+            //ti.RenderInitForm();
+            pInit.Visible = true;
+            //App.Services.ClientResourceManager.RegisterStyleSheet(page, cssfilename.UrlFilePath);
+            App.Services.ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/vue/vue.js");
         }
-
+        public string Resource(string key)
+        {
+            return Localization.GetString(key + ".Text", LocalResourceFile);
+        }
         #endregion
 
         #region IActionable

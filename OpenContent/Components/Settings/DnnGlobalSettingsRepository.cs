@@ -19,6 +19,8 @@ namespace Satrabel.OpenContent.Components.Settings
         private const string SETTINGS_GOOGLE_API_KEY = "OpenContent_GoogleApiKey";
         private const string SETTINGS_LEGACY_HANDLEBARS = "OpenContent_LegacyHandlebars";
         private const bool SETTINGS_DEFAULT_LEGACY_HANDLEBARS = false;
+        private const string SETTINGS_COMPOSITE_CSS = "OpenContent_CompositeCss";
+        private const bool SETTINGS_DEFAULT_COMPOSITE_CSS = false;
         private const string SETTINGS_GITHUB_REPOSITORY = "OpenContent_GithubRepository";
         private const string DEFAULT_GITHUB_REPOSITORY = "sachatrauwaen/OpenContent-Templates";
 
@@ -104,6 +106,21 @@ namespace Satrabel.OpenContent.Components.Settings
             if (!string.IsNullOrWhiteSpace(LegacyHandlebarsSetting) && bool.TryParse(LegacyHandlebarsSetting, out LegacyHandlebars))
                 return LegacyHandlebars;
             return SETTINGS_DEFAULT_LEGACY_HANDLEBARS;
+        }
+
+        public void SetCompositeCss(bool compositeCss)
+        {
+            PortalController.UpdatePortalSetting(_portalId, SETTINGS_COMPOSITE_CSS, compositeCss.ToString(), true);
+        }
+
+        public bool GetCompositeCss()
+        {
+            if (_portalId == -1) return SETTINGS_DEFAULT_COMPOSITE_CSS;
+            var LegacyHandlebarsSetting = PortalController.GetPortalSetting(SETTINGS_COMPOSITE_CSS, _portalId, string.Empty);
+            bool LegacyHandlebars;
+            if (!string.IsNullOrWhiteSpace(LegacyHandlebarsSetting) && bool.TryParse(LegacyHandlebarsSetting, out LegacyHandlebars))
+                return LegacyHandlebars;
+            return SETTINGS_DEFAULT_COMPOSITE_CSS;
         }
 
         public void SetLegacyHandlebars(bool LegacyHandlebars)

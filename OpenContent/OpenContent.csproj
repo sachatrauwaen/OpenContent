@@ -92,9 +92,9 @@
       <HintPath>..\ref\EPPlus.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Handlebars, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Handlebars, Version=1.10.1.0, Culture=neutral, PublicKeyToken=22225d0bf33cd661, processorArchitecture=MSIL">
       <HintPath>..\ref\Handlebars.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Lucene.Net, Version=3.0.3.0, Culture=neutral, PublicKeyToken=85089178b9ac3181, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -178,11 +178,13 @@
     <Compile Include="Components\Files\FileUriUtils.cs" />
     <Compile Include="Components\Github\GithubDtos.cs" />
     <Compile Include="Components\ImageStatus.cs" />
+    <Compile Include="Components\ResourceController.cs" />
     <Compile Include="Components\Localization\LocalizationUtils.cs" />
     <Compile Include="Components\Logging\Logger.cs" />
     <Compile Include="Components\Lucene\LuceneUtils.cs" />
     <Compile Include="Components\Lucene\LuceneController.cs" />
     <Compile Include="Components\Manifest\OpenContentModuleInfo.cs" />
+    <Compile Include="Components\InitAPIController.cs" />
     <Compile Include="Components\Querying\UserRoleInfo.cs" />
     <Compile Include="Components\AppDefinitions\MenuAction.cs" />
     <Compile Include="Components\AppDefinitions\SecurityAccessLevel.cs" />
@@ -420,6 +422,8 @@
     <Content Include="js\bootstrap\css\glyphicons.css" />
     <Content Include="js\ckeditor\adapters\jquery.js" />
     <Content Include="js\ckeditor\ckeditor.js" />
+    <Content Include="js\ckeditor\config.js" />
+    <Content Include="js\ckeditor\contents.css" />
     <Content Include="js\ckeditor\lang\af.js" />
     <Content Include="js\ckeditor\lang\ar.js" />
     <Content Include="js\ckeditor\lang\az.js" />
@@ -784,6 +788,14 @@
     <Content Include="js\ckeditor\skins\moono-lisa\images\lock.png" />
     <Content Include="js\ckeditor\skins\moono-lisa\images\refresh.png" />
     <Content Include="js\ckeditor\skins\moono-lisa\images\spinner.gif" />
+    <Content Include="js\ckeditor\styles.js" />
+    <Content Include="js\fontIconPicker\css\base\jquery.fonticonpicker.min.css" />
+    <Content Include="js\fontIconPicker\css\themes\bootstrap-theme\jquery.fonticonpicker.bootstrap.min.css" />
+    <Content Include="js\fontIconPicker\css\themes\dark-grey-theme\jquery.fonticonpicker.darkgrey.min.css" />
+    <Content Include="js\fontIconPicker\css\themes\grey-theme\jquery.fonticonpicker.grey.min.css" />
+    <Content Include="js\fontIconPicker\css\themes\inverted-theme\jquery.fonticonpicker.inverted.min.css" />
+    <Content Include="js\fontIconPicker\js\jquery.fonticonpicker.js" />
+    <Content Include="js\fontIconPicker\js\jquery.fonticonpicker.min.js" />
     <Content Include="js\jplist\jplisthelper.js" />
     <Compile Include="Providers\SitemapProviders\OpenContentSitemapProvider\OpenContentSitemapProvider.cs" />
     <Compile Include="Providers\SitemapProviders\OpenContentSitemapProvider\OpenSitemapUrl.cs" />
@@ -1284,11 +1296,6 @@
     <Content Include="js\cropper\cropper.js" />
     <Content Include="js\cropper\cropper.min.css" />
     <Content Include="js\cropper\cropper.min.js" />
-    <Content Include="js\fontIconPicker\css\iconpicker.svg" />
-    <Content Include="js\fontIconPicker\css\jquery.fonticonpicker.css" />
-    <Content Include="js\fontIconPicker\css\jquery.fonticonpicker.min.css" />
-    <Content Include="js\fontIconPicker\jquery.fonticonpicker.js" />
-    <Content Include="js\fontIconPicker\jquery.fonticonpicker.min.js" />
     <Content Include="js\fontIconPicker\themes\bootstrap-theme\jquery.fonticonpicker.bootstrap.css" />
     <Content Include="js\fontIconPicker\themes\bootstrap-theme\jquery.fonticonpicker.bootstrap.min.css" />
     <Content Include="js\fontIconPicker\themes\dark-grey-theme\jquery.fonticonpicker.darkgrey.css" />
@@ -1317,9 +1324,6 @@
     <Content Include="js\opencontent.js" />
     <Content Include="Providers\DataProviders\SqlDataProvider\01.04.01.SqlDataProvider" />
     <Content Include="Providers\DataProviders\SqlDataProvider\02.00.03.SqlDataProvider" />
-    <Content Include="js\fontIconPicker\css\iconpicker.eot" />
-    <Content Include="js\fontIconPicker\css\iconpicker.ttf" />
-    <Content Include="js\fontIconPicker\css\iconpicker.woff" />
     <Content Include="js\alpaca-1.5.8\lib\handlebars\README.md" />
     <Content Include="js\alpaca-1.5.8\lib\moment\CHANGELOG.md" />
     <Content Include="js\alpaca-1.5.8\lib\moment\LICENSE" />
@@ -1373,7 +1377,19 @@
     <Content Include="js\ckeditor\plugins\wsc\README.md" />
     <Content Include="js\ckeditor\skins\moono-lisa\readme.md" />
     <Content Include="js\ckeditor\Tabs.ashx" />
-    <Compile Include="js\ckeditor\Tabs.ashx.cs" />
+    <Compile Include="js\ckeditor\Tabs.ashx.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Content Include="js\fontIconPicker\fonts\iconpicker.eot" />
+    <Content Include="js\fontIconPicker\fonts\iconpicker.svg" />
+    <Content Include="js\fontIconPicker\fonts\iconpicker.ttf" />
+    <Content Include="js\fontIconPicker\fonts\iconpicker.woff" />
+    <Content Include="js\fontIconPicker\js\jquery.fonticonpicker.js.map" />
+    <Content Include="js\fontIconPicker\css\base\jquery.fonticonpicker.css.map" />
+    <Content Include="js\fontIconPicker\css\themes\bootstrap-theme\jquery.fonticonpicker.bootstrap.css.map" />
+    <Content Include="js\fontIconPicker\css\themes\dark-grey-theme\jquery.fonticonpicker.darkgrey.css.map" />
+    <Content Include="js\fontIconPicker\css\themes\grey-theme\jquery.fonticonpicker.grey.css.map" />
+    <Content Include="js\fontIconPicker\css\themes\inverted-theme\jquery.fonticonpicker.inverted.css.map" />
     <None Include="packages.config" />
     <None Include="Scripts\_references.js" />
     <Content Include="js\select2\i18n\az.js" />
@@ -1510,6 +1526,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Components\Images\" />
+    <Folder Include="js\vue\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_LocalResources\EditSettings.ascx.de-DE.resx" />

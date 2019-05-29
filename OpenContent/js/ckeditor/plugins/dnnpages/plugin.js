@@ -110,7 +110,7 @@
 
 						// Pass the link to be selected along with event data.
 						evt.data.link = element;
-					} else if ( CKEDITOR.link.dnnpages.tryRestoreFakeAnchor( editor, element ) ) {
+					} else if ( CKEDITOR.plugins.link.tryRestoreFakeAnchor( editor, element ) ) {
 						evt.data.dialog = 'anchor';
 					}
 				}
@@ -164,7 +164,7 @@
 
 					var anchor = CKEDITOR.plugins.link.tryRestoreFakeAnchor( editor, element );
 
-                    if (!anchor && !(anchor = CKEDITOR.plugins.link.getSelectedLink( editor ) ) )
+					if ( !anchor && !( anchor = CKEDITOR.plugins.link.getSelectedLink( editor ) ) )
 						return null;
 
 					var menu = {};
@@ -460,7 +460,7 @@
 		 */
 		parseLinkAttributes: function( editor, element ) {
 			var href = ( element && ( element.data( 'cke-saved-href' ) || element.getAttribute( 'href' ) ) ) || '',
-				compiledProtectionFunction = editor.plugins.link.compiledProtectionFunction,
+				compiledProtectionFunction = editor.plugins.dnnpages.compiledProtectionFunction,
 				emailProtection = editor.config.emailProtection,
 				javascriptMatch, emailMatch, anchorMatch, urlMatch, telMatch,
 				retval = {};

@@ -223,10 +223,13 @@ namespace Satrabel.OpenContent.Components.Render
             {
                 if (template.MainTemplateUri() != null)
                 {
-                    var cssfilename = new FileUri(Path.ChangeExtension(template.MainTemplateUri().FilePath, "css"));
-                    if (cssfilename.FileExists)
+                    if (!App.Services.CreateGlobalSettingsRepository(PortalSettings.Current.PortalId).GetCompositeCss())
                     {
-                        App.Services.ClientResourceManager.RegisterStyleSheet(page, cssfilename.UrlFilePath);
+                        var cssfilename = new FileUri(Path.ChangeExtension(template.MainTemplateUri().FilePath, "css"));
+                        if (cssfilename.FileExists)
+                        {
+                            App.Services.ClientResourceManager.RegisterStyleSheet(page, cssfilename.UrlFilePath);
+                        }
                     }
                     var jsfilename = new FileUri(Path.ChangeExtension(template.MainTemplateUri().FilePath, "js"));
                     if (jsfilename.FileExists)

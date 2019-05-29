@@ -1,4 +1,5 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="TemplateInit.ascx.cs" Inherits="Satrabel.OpenContent.TemplateInit" %>
+<%@ Import Namespace="Newtonsoft.Json" %>
 <asp:Panel ID="pHelp" runat="server" Visible="false" CssClass="dnnForm">
     <fieldset>
         <div class="dnnFormItem">
@@ -20,7 +21,7 @@
             <asp:Label ID="lUseTemplate" runat="server" ControlName="rblUseTemplate" ResourceKey="lUseTemplate" CssClass="dnnLabel" />
             <asp:RadioButtonList runat="server" ID="rblUseTemplate" AutoPostBack="true" OnSelectedIndexChanged="rblUseTemplate_SelectedIndexChanged"
                 RepeatDirection="Horizontal" CssClass="dnnFormRadioButtons">
-                <asp:ListItem Text="Use a existing template" Selected="True"  ResourceKey="liUseExistingTemplate" />
+                <asp:ListItem Text="Use a existing template" Selected="True" ResourceKey="liUseExistingTemplate" />
                 <asp:ListItem Text="Create a new template" ResourceKey="liCreateNewTemplate" />
             </asp:RadioButtonList>
         </div>
@@ -36,8 +37,8 @@
         </asp:PlaceHolder>
         <asp:PlaceHolder ID="phCurrentTemplate" runat="server">
 
-            <div class="dnnFormItem" style="padding-left:32%;margin-left:38px;width:auto;">
-                <asp:Label ID="lCurrentTemplate" runat="server"   />
+            <div class="dnnFormItem" style="padding-left: 32%; margin-left: 38px; width: auto;">
+                <asp:Label ID="lCurrentTemplate" runat="server" />
             </div>
         </asp:PlaceHolder>
         <asp:PlaceHolder ID="phTemplate" runat="server">
@@ -79,3 +80,4 @@
         <asp:HyperLink ID="hlEditContent2" runat="server" Visible="false">Edit Content</asp:HyperLink>
     </p>
 </asp:Panel>
+

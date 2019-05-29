@@ -199,4 +199,13 @@
   <data name="CloneModule.Action" xml:space="preserve">
     <value>Clone Module</value>
   </data>
+  <data name="Create.Text" xml:space="preserve">
+    <value>Create</value>
+  </data>
+  <data name="CretateHelp.Text" xml:space="preserve">
+    <value>Start by creating a new template based on one available from the web.</value>
+  </data>
+  <data name="Advanced.Text" xml:space="preserve">
+    <value>Advanced...</value>
+  </data>
 </root>
