@@ -1,6 +1,6 @@
-﻿using Satrabel.OpenContent.Components.Datasource.Search;
+﻿using System.Linq;
+using Satrabel.OpenContent.Components.Datasource.Search;
 using Satrabel.OpenContent.Components.Lucene.Config;
-using System.Linq;
 
 namespace Satrabel.OpenContent.Components.Rest
 {
@@ -11,7 +11,7 @@ namespace Satrabel.OpenContent.Components.Rest
             var query = select.Query;
             select.PageSize = restSelect.PageSize;
             select.PageIndex = restSelect.PageIndex;
-            if (restSelect.Query != null && restSelect.Query.FilterRules != null)
+            if (restSelect.Query?.FilterRules != null)
             {
                 foreach (var rule in restSelect.Query.FilterRules)
                 {

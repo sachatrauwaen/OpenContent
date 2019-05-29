@@ -2,24 +2,12 @@
 {
     public class LongRuleValue : RuleValue
     {
-        private long Value;
+        private readonly long _value;
         public LongRuleValue(long value)
         {
-            Value = value;
+            _value = value;
         }
-        public override long AsLong
-        {
-            get
-            {
-                return Value;
-            }
-        }
-        public override string AsString
-        {
-            get
-            {
-                return Value.ToString();
-            }
-        }
+        public override long AsLong => _value;
+        public override string AsString => _value.ToString();
     }
 }

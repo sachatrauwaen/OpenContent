@@ -27,9 +27,9 @@ namespace Satrabel.OpenContent
 
     public partial class EditData : PortalModuleBase
     {
-        private const string cData = "Data";
-        private const string cSettings = "Settings";
-        private const string cFilter = "Filter";
+        private const string DATATYPE_DATA = "Data";
+        private const string DATATYPE_SETTINGS = "Settings";
+        private const string DATATYPE_FILTER = "Filter";
 
         #region Event Handlers
 
@@ -37,6 +37,7 @@ namespace Satrabel.OpenContent
         {
             base.OnInit(e);
             cmdSave.Click += cmdSave_Click;
+            cmdSaveDefault.Click += cmdSaveDefault_Click;
             cmdSaveClose.Click += cmdSaveClose_Click;
             cmdCancel.Click += cmdCancel_Click;
             cmdImport.Click += cmdImport_Click;
@@ -59,7 +60,7 @@ namespace Satrabel.OpenContent
 
             switch (sourceList.SelectedValue)
             {
-                case cData:
+                case DATATYPE_DATA:
                     {
                         txtSource.Text = File.ReadAllText(settings.TemplateDir.PhysicalFullDirectory + "\\data.json");
                     }
@@ -101,7 +102,7 @@ namespace Satrabel.OpenContent
         private void InitEditor()
         {
             LoadFiles();
-            DisplayFile(cData);
+            DisplayFile(DATATYPE_DATA);
         }
 
         private void DisplayFile(string selectedDataType)
@@ -110,10 +111,10 @@ namespace Satrabel.OpenContent
             string json = string.Empty;
             switch (selectedDataType)
             {
-                case cData:
+                case DATATYPE_DATA:
                     {
                         TemplateManifest template = null;
-                        var module = new OpenContentModuleInfo(this.ModuleConfiguration);
+                        var module = OpenContentModuleConfig.Create(this.ModuleConfiguration, PortalSettings);
                         var manifest = module.Settings.Manifest;
                         TemplateManifest templateManifest = module.Settings.Template;
                         string editRole = manifest.GetEditRole();
@@ -126,7 +127,7 @@ namespace Satrabel.OpenContent
                         {
                             template = settings.Template;
                         }
-                        
+
                         if (template != null && template.IsListTemplate)
                         {
                             ddlVersions.Visible = false;
@@ -194,15 +195,15 @@ namespace Satrabel.OpenContent
                     }
 
                     break;
-                case cSettings:
+                case DATATYPE_SETTINGS:
                     json = ModuleContext.Settings["data"] as string;
                     break;
-                case cFilter:
+                case DATATYPE_FILTER:
                     json = ModuleContext.Settings["query"] as string;
                     break;
                 default:
                     {
-                        var module = new OpenContentModuleInfo(this.ModuleConfiguration);
+                        var module = OpenContentModuleConfig.Create(this.ModuleConfiguration, PortalSettings);
                         var manifest = module.Settings.Manifest;
                         TemplateManifest templateManifest = module.Settings.Template;
                         string editRole = manifest.GetEditRole();
@@ -212,7 +213,7 @@ namespace Satrabel.OpenContent
                         var dsContext = OpenContentUtils.CreateDataContext(module);
                         string key = selectedDataType;
                         var dataManifest = manifest.GetAdditionalData(key);
-                        
+
                         var dsItem = ds.GetData(dsContext, dataManifest.ScopeType, dataManifest.StorageKey ?? key);
                         json = dsItem == null ? "" : dsItem.Data.ToString();
                         break;
@@ -225,10 +226,10 @@ namespace Satrabel.OpenContent
         {
             TemplateManifest template = ModuleContext.OpenContentSettings().Template;
             sourceList.Items.Clear();
-            sourceList.Items.Add(new ListItem(cData, cData));
-            sourceList.Items.Add(new ListItem(cSettings, cSettings));
-            sourceList.Items.Add(new ListItem(cFilter, cFilter));
-            if (template != null && template.Manifest != null && template.Manifest.AdditionalDataDefined())
+            sourceList.Items.Add(new ListItem(DATATYPE_DATA, DATATYPE_DATA));
+            sourceList.Items.Add(new ListItem(DATATYPE_SETTINGS, DATATYPE_SETTINGS));
+            sourceList.Items.Add(new ListItem(DATATYPE_FILTER, DATATYPE_FILTER));
+            if (template?.Manifest != null && template.Manifest.AdditionalDataDefined())
             {
                 foreach (var addData in template.Manifest.AdditionalDataDefinition)
                 {
@@ -240,15 +241,15 @@ namespace Satrabel.OpenContent
 
         protected void cmdSave_Click(object sender, EventArgs e)
         {
-            if (sourceList.SelectedValue == cData)
+            if (sourceList.SelectedValue == DATATYPE_DATA)
             {
                 SaveData();
             }
-            else if (sourceList.SelectedValue == cSettings)
+            else if (sourceList.SelectedValue == DATATYPE_SETTINGS)
             {
                 SaveSettings();
             }
-            else if (sourceList.SelectedValue == cFilter)
+            else if (sourceList.SelectedValue == DATATYPE_FILTER)
             {
                 SaveFilter();
             }
@@ -256,11 +257,69 @@ namespace Satrabel.OpenContent
             {
                 SaveAdditionalData(sourceList.SelectedValue);
             }
-            
+
+        }
+
+        protected void cmdSaveDefault_Click(object sender, EventArgs e)
+        {
+            if (sourceList.SelectedValue == DATATYPE_DATA)
+            {
+                var module = OpenContentModuleConfig.Create(this.ModuleConfiguration, PortalSettings);
+                TemplateManifest template = module.Settings.Template;
+                
+                if (template != null)
+                {
+                    var dataFilename = template.MainTemplateUri().PhysicalFullDirectory + "\\data.json";
+                    if (template.IsListTemplate)
+                    {
+                        string itemId = Request.QueryString["id"];
+                        if (!string.IsNullOrEmpty(itemId))
+                        {
+                            File.WriteAllText(dataFilename, txtSource.Text);
+                        }
+                        else
+                        {
+                            JArray lst = null;
+                            if (!string.IsNullOrEmpty(txtSource.Text))
+                            {
+                                lst = JArray.Parse(txtSource.Text);
+                                if (lst.Count > 0)
+                                {
+                                    File.WriteAllText(dataFilename, lst[0].ToString());
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        File.WriteAllText(dataFilename, txtSource.Text);
+                    }
+                }
+                    
+            }
+            else if (sourceList.SelectedValue == DATATYPE_SETTINGS)
+            {
+                
+                var module = OpenContentModuleConfig.Create(this.ModuleConfiguration, PortalSettings);
+                TemplateManifest template = module.Settings.Template;
+                var settingsFilename = template.MainTemplateUri().PhysicalFullDirectory + "\\" + template.Key.ShortKey + "-data.json";
+                File.WriteAllText(settingsFilename, txtSource.Text);
+
+            }
+            else if (sourceList.SelectedValue == DATATYPE_FILTER)
+            {
+                //SaveFilter();
+            }
+            else
+            {
+                //SaveAdditionalData(sourceList.SelectedValue);
+            }
+
         }
 
         private void SaveAdditionalData(string key)
         {
+            var module = OpenContentModuleConfig.Create(this.ModuleConfiguration, PortalSettings);
             OpenContentSettings settings = this.OpenContentSettings();
             int modId = settings.IsOtherModule ? settings.ModuleId : ModuleId;
             var manifest = settings.Manifest;
@@ -287,6 +346,7 @@ namespace Satrabel.OpenContent
             {
                 ds.UpdateData(dsContext, dsItem, JToken.Parse(txtSource.Text));
             }
+            App.Services.CacheAdapter.SyncronizeCache(module);
         }
 
         private void SaveFilter()
@@ -298,17 +358,12 @@ namespace Satrabel.OpenContent
 
         private void SaveData()
         {
-            var module = new OpenContentModuleInfo(this.ModuleConfiguration);
-            var manifest = module.Settings.Manifest;
+            var module = OpenContentModuleConfig.Create(this.ModuleConfiguration, PortalSettings);
             TemplateManifest template = module.Settings.Template;
-            string editRole = manifest.GetEditRole();
-            bool listMode = template != null && template.IsListTemplate;
 
             IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
             var dsContext = OpenContentUtils.CreateDataContext(module);
 
-     
-            
             if (template != null && template.IsListTemplate)
             {
                 string itemId = Request.QueryString["id"];
@@ -320,6 +375,7 @@ namespace Satrabel.OpenContent
                         if (dsItem != null)
                         {
                             ds.Delete(dsContext, dsItem);
+                            App.Services.CacheAdapter.SyncronizeCache(module);
                         }
                     }
                     else
@@ -333,6 +389,8 @@ namespace Satrabel.OpenContent
                         {
                             ds.Update(dsContext, dsItem, json);
                         }
+                        App.Services.CacheAdapter.SyncronizeCache(module);
+
                         if (json["ModuleTitle"] != null && json["ModuleTitle"].Type == JTokenType.String)
                         {
                             string moduleTitle = json["ModuleTitle"].ToString();
@@ -415,7 +473,7 @@ namespace Satrabel.OpenContent
         }
         private void sourceList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            phVersions.Visible = sourceList.SelectedValue == cData;
+            phVersions.Visible = sourceList.SelectedValue == DATATYPE_DATA;
             DisplayFile(sourceList.SelectedValue);
         }
         #endregion

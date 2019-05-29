@@ -202,10 +202,10 @@
             "control-image": "#dnn-edit-control-image",
             "control-imagecrop": "#dnn-edit-control-imagecrop",
             "control-imagecrop2": "#dnn-edit-control-imagecrop2",
+            "control-imagex": "#dnn-edit-control-imagex",
             "control-imagecropper": "#dnn-edit-control-imagecropper",
             "control-file": "#dnn-edit-control-file",
             "control-wysihtml": "#dnn-edit-control-wysihtml",
-            "control-checkbox": "#dnn-edit-control-checkbox",
             "control-ckeditor": "#dnn-edit-control-ckeditor",
             "control-file2": "#dnn-edit-control-file2"
         }

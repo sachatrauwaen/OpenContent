@@ -27,10 +27,13 @@ namespace Satrabel.OpenContent
             base.OnInit(e);
             hlCancel.NavigateUrl = Globals.NavigateURL();
             cmdSave.NavigateUrl = Globals.NavigateURL();
+            var bootstrap = App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetEditLayout() != AlpacaLayoutEnum.DNN;
+            bool loadBootstrap = bootstrap && App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetLoadBootstrap();
+            bool loadGlyphicons = bootstrap && App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetLoadGlyphicons();
             OpenContentSettings settings = this.OpenContentSettings();
             AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext.PortalId, "DeskTopModules/OpenContent", "notifications");
             //AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, "", "");
-            alpaca.RegisterAll(true, true);
+            alpaca.RegisterAll(bootstrap, loadBootstrap, loadGlyphicons);
             string itemId = null;
             AlpacaContext = new AlpacaContext(PortalId, ModuleId, itemId, ScopeWrapper.ClientID, hlCancel.ClientID, cmdSave.ClientID, null, null, null);
             AlpacaContext.Bootstrap = true;

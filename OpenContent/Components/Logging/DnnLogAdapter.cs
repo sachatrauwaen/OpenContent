@@ -1,4 +1,7 @@
 using System;
+using System.Diagnostics;
+using System.Net.Http;
+using System.Web;
 using DotNetNuke.Instrumentation;
 
 namespace Satrabel.OpenContent.Components.Logging
@@ -11,28 +14,18 @@ namespace Satrabel.OpenContent.Components.Logging
 
         #region Constructors
 
-        private DnnLogAdapter(Type type)
+        public DnnLogAdapter(Type type)
         {
             _dnnILog = LoggerSource.Instance.GetLogger(type);
         }
 
-        private DnnLogAdapter(string name)
+        public DnnLogAdapter(string name)
         {
             _dnnILog = LoggerSource.Instance.GetLogger(name);
         }
 
         #endregion
-
-        public ILogAdapter GetLogAdapter(Type type)
-        {
-            return new DnnLogAdapter(type);
-        }
-
-        public static ILogAdapter GetLogAdapter(string name)
-        {
-            return new DnnLogAdapter(name);
-        }
-
+       
         public void Error(string message)
         {
             _dnnILog.Error(message);
@@ -45,7 +38,7 @@ namespace Satrabel.OpenContent.Components.Logging
 
         public void Error(string message, Exception exception)
         {
-            _dnnILog.Error(message, exception);
+            _dnnILog.Error(Enrich(message), exception);
         }
 
         public void Warn(string message)
@@ -69,5 +62,27 @@ namespace Satrabel.OpenContent.Components.Logging
         }
 
         public bool IsDebugEnabled => _dnnILog.IsDebugEnabled;
+
+        private static string Enrich(string message)
+        {
+            if (HttpContext.Current?.Request != null)
+                message = $"{message}{Environment.NewLine}{LoggingUtils.HttpRequestLogInfo(HttpContext.Current)}";
+            return message;
+        }
+
+        public void LogServiceResult(HttpResponseMessage response, string responsemessage = "")
+        {
+            if (IsDebugEnabled)
+            {
+                StackTrace st = new StackTrace();
+
+                string method = st.GetFrame(1).GetMethod().Name == "CreateResponse"
+                    ? st.GetFrame(2).GetMethod().Name
+                    : st.GetFrame(1).GetMethod().Name;
+
+                var emp = string.IsNullOrEmpty(responsemessage) ? "<empty>" : responsemessage;
+                Debug($"Result from '{method}' with status '{response.StatusCode}': {emp} \r\n");
+            }
+        }
     }
 }

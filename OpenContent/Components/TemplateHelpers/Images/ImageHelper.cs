@@ -91,7 +91,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
 
             if (ModuleDefinitionController.GetModuleDefinitionByFriendlyName("OpenFiles") == null)
             {
-                return file.ToUrl();
+                return DnnFileUtils.ToUrl(file);
             }
             var url = file.ToLinkClickSafeUrl();
             url = url.RemoveQueryParams(); //imageprocessor does not tolerate unknow querystrings (for security reasons). Remove them
@@ -120,19 +120,20 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
                                 int left = int.Parse(cropper["x"].ToString());
                                 int top = int.Parse(cropper["y"].ToString());
 
-                                //crop first then resize (order defined by the processors definition order in the config file)
-                                return url.AppendQueryParams($"crop={left},{top},{w},{h}&width={requestedCropRatio.Width}&height={requestedCropRatio.Height}");
+                                // crop first then resize (order defined by the processors definition order in the config file)
+                                // don't specify new Height, otherwise you might end up with black lines under your image. The height will be automaticly calculated based on the width and the crop ratio.
+                                return url.AppendQueryParams($"crop={left},{top},{w},{h}&width={requestedCropRatio.Width}");
                             }
                         }
                         catch (Exception ex)
                         {
-                            Log.Logger.Warn($"Warning for page {HttpContext.Current.Request.RawUrl}. Error processing croppers for {url} in {content}. Error: {ex.Message}");
+                            App.Services.Logger.Warn($"Warning for page {HttpContext.Current.Request.RawUrl}. Error processing croppers for {url} in {content}. Error: {ex.Message}");
                         }
                     }
                 }
                 else
                 {
-                    //Log.Logger.Debug(string.Format("Warning for page {0}. Can't find croppers in {1}. ", HttpContext.Current.Request.RawUrl, contentItem.Content));
+                    //App.Services.Logger.Debug(string.Format("Warning for page {0}. Can't find croppers in {1}. ", HttpContext.Current.Request.RawUrl, contentItem.Content));
                 }
 
             }

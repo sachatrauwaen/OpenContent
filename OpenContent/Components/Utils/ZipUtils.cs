@@ -19,7 +19,7 @@ namespace Satrabel.OpenContent.Components
             {
                 ZipInputStreamType = Type.GetType("ICSharpCode.SharpZipLib.Zip.ZipInputStream, SharpZipLib");
             }
-            ZipOutputStreamType = Type.GetType("ICSharpCode.SharpZipLib.Zip.ZipInputStream, ICSharpCode.SharpZipLib");
+            ZipOutputStreamType = Type.GetType("ICSharpCode.SharpZipLib.Zip.ZipOutputStream, ICSharpCode.SharpZipLib");
             if (ZipOutputStreamType == null)
             {
                 ZipOutputStreamType = Type.GetType("ICSharpCode.SharpZipLib.Zip.ZipOutputStream, SharpZipLib");

@@ -10,6 +10,7 @@
 ' 
 */
 
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using DotNetNuke.Data;
@@ -64,7 +65,7 @@ namespace Satrabel.OpenContent.Components
             if (versions.Count == 0 || versions[0].Json.ToString() != data.Json)
             {
                 versions.Insert(0, ver);
-                if (versions.Count > OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController(PortalSettings.Current.PortalId).GetMaxVersions())
+                if (versions.Count > App.Services.CreateGlobalSettingsRepository().GetMaxVersions())
                 {
                     versions.RemoveAt(versions.Count - 1);
                 }
@@ -114,7 +115,7 @@ namespace Satrabel.OpenContent.Components
                 var lst = rep.Get(scope);
                 if (lst != null)
                 {
-                    content = lst.SingleOrDefault(d => d.DataKey == key);
+                    content = lst.SingleOrDefault(d => string.Equals(d.DataKey, key, StringComparison.InvariantCultureIgnoreCase));
                 }
             }
             return content;

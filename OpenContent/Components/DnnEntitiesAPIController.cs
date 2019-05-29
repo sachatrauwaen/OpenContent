@@ -36,7 +36,7 @@ namespace Satrabel.OpenContent.Components
 
     public class DnnEntitiesAPIController : DnnApiController
     {
-        private static readonly ILogAdapter Logger = AppConfig.Instance.LogAdapter.GetLogAdapter(typeof(DnnEntitiesAPIController));
+        private static readonly ILogAdapter Logger = App.Services.CreateLogger(typeof(DnnEntitiesAPIController));
 
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
@@ -175,7 +175,10 @@ namespace Satrabel.OpenContent.Components
                     id = f.FileId.ToString(),
                     thumbUrl = ImageHelper.GetImageUrl(f, new Ratio(40, 40)),  //todo for install in application folder is dat niet voldoende ???
                     url = FileManager.Instance.GetUrl(f).RemoveCachebuster(),
-                    text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName
+                    text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName,
+                    filename = f.FileName,
+                    width = f.Width,
+                    height = f.Height
                 }).Take(1000);
 
                 return Request.CreateResponse(HttpStatusCode.OK, res);
@@ -198,6 +201,14 @@ namespace Satrabel.OpenContent.Components
                 var folderManager = FolderManager.Instance;
                 var fileManager = FileManager.Instance;
                 var portalFolder = folderManager.GetFolder(PortalSettings.PortalId, d ?? "");
+                if (portalFolder == null)
+                {
+                    // next three lines are new, but commented out because we need to decide if we realy want to do this as this input is not cleaned
+                    //if (d != null)
+                    //    portalFolder = FolderManager.Instance.AddFolder(PortalSettings.PortalId, d);
+                    //else
+                        throw new Exception($"folder {d ?? ""} does not exist");
+                }
                 var files = folderManager.GetFiles(portalFolder, true);
                 if (q != "*" && !string.IsNullOrEmpty(q))
                 {
@@ -208,7 +219,7 @@ namespace Satrabel.OpenContent.Components
                     var rx = new Regex(filter, RegexOptions.IgnoreCase);
                     files = files.Where(f => rx.IsMatch(f.FileName));
                 }
-                int folderLength = (d == null) ? 0 : d.Length;
+                int folderLength = d?.Length ?? 0;
                 var res = files.Select(f => new { value = f.FileId.ToString(), url = fileManager.GetUrl(f), text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName /*+ (string.IsNullOrEmpty(f.Folder) ? "" : " (" + f.Folder.Trim('/') + ")")*/ });
                 return Request.CreateResponse(HttpStatusCode.OK, res);
             }
@@ -455,7 +466,7 @@ namespace Satrabel.OpenContent.Components
                 }
                 rawImageUrl = rawImageUrl.Replace(PortalSettings.HomeDirectory, "");
                 var file = fileManager.GetFile(ActiveModule.PortalID, rawImageUrl);
-                string cropfolder = "OpenContent/Files/" + ActiveModule.ModuleID;
+                string cropfolder = "OpenContent/Cropped/" + ActiveModule.ModuleID;
                 if (!string.IsNullOrEmpty(cropData.cropfolder))
                 {
                     cropfolder = cropData.cropfolder;
@@ -522,7 +533,7 @@ namespace Satrabel.OpenContent.Components
                         message = "success",
                         id = newFile.FileId,
                     };
-                    res.url = fs.url;
+                    res.url = fs.url.RemoveCachebuster();
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, res);
             }
@@ -735,6 +746,7 @@ namespace Satrabel.OpenContent.Components
                 {
                     users = users.Where(u => u.Roles.Any(r => roles.Contains(r)));
                 }
+                users = users.Where(u => u.IsSuperUser == false); // exclude the superUsers
                 var res = users.Select(u => new { value = u.UserID.ToString(), text = u.DisplayName });
                 return Request.CreateResponse(HttpStatusCode.OK, res);
             }

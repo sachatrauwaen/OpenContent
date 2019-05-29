@@ -54,6 +54,7 @@
 .CodeMirror{    
     border: 1px solid #eee;
     height: 500px;
+    width:100%;
 }
 
 </style>

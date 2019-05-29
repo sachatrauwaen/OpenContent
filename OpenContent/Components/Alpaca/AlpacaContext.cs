@@ -82,6 +82,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
         public bool Bootstrap { get; set; }
         [JsonProperty(PropertyName = "horizontal")]
         public bool Horizontal { get; set; }
+        [JsonProperty(PropertyName = "isNew")]
         public bool IsNew { get; set; }
     }
 }

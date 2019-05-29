@@ -4,6 +4,7 @@
     "inputFiles": [
       "alpaca/js/fields/dnn/AddressField.js",
       "alpaca/js/fields/dnn/CKEditorField.js",
+      "alpaca/js/fields/dnn/CheckboxField.js",
       "alpaca/js/fields/dnn/DateField.js",
       "alpaca/js/fields/dnn/CheckboxField.js",
       "alpaca/js/fields/dnn/MultiUploadField.js",
@@ -14,6 +15,7 @@
       "alpaca/js/fields/dnn/GalleryField.js",
       "alpaca/js/fields/dnn/GuidField.js",
       "alpaca/js/fields/dnn/IconField.js",
+      "alpaca/js/fields/dnn/ImageXField.js",
       "alpaca/js/fields/dnn/ImageField.js",
       "alpaca/js/fields/dnn/Image2Field.js",
       "alpaca/js/fields/dnn/ImageCrop2Field.js",
@@ -33,6 +35,7 @@
       "alpaca/js/fields/dnn/MLFileField.js",
       "alpaca/js/fields/dnn/MLFolder2Field.js",
       "alpaca/js/fields/dnn/MLImage2Field.js",
+      "alpaca/js/fields/dnn/MLImageXField.js",
       "alpaca/js/fields/dnn/MLImageField.js",
       "alpaca/js/fields/dnn/MLTextAreaField.js",
       "alpaca/js/fields/dnn/MLTextField.js",
@@ -54,10 +57,17 @@
       "alpaca/templates/dnn-edit/control-imagecrop.html",
       "alpaca/templates/dnn-edit/control-imagecrop2.html",
       "alpaca/templates/dnn-edit/control-imagecropper.html",
+      "alpaca/templates/dnn-edit/control-imagex.html",
       "alpaca/templates/dnn-edit/control-wysihtml.html",
       "alpaca/templates/dnn-edit/control.html",
       "alpaca/templates/dnn-edit/container-accordion.html",
       "alpaca/templates/dnn-edit/container-accordion-item.html"
+    ]
+  },
+  {
+    "outputFileName": "js/jplist/jplisthelper.min.js",
+    "inputFiles": [
+      "js/jplist/jplisthelper.js"
     ]
   }
 ]

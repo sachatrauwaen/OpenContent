@@ -25,12 +25,12 @@ using System.IO;
 using System.Web;
 using System.Web.Hosting;
 using DotNetNuke.Common.Internal;
-using DotNetNuke.Entities.Users;
 using DotNetNuke.Services.Search.Controllers;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Dnn;
 using Satrabel.OpenContent.Components.Handlebars;
 using Satrabel.OpenContent.Components.Json;
+using Satrabel.OpenContent.Components.Lucene;
 using Satrabel.OpenContent.Components.TemplateHelpers;
 
 namespace Satrabel.OpenContent.Components
@@ -57,64 +57,68 @@ namespace Satrabel.OpenContent.Components
         }
         public void ImportModule(int moduleId, string content, string version, int userId)
         {
+            var module = OpenContentModuleConfig.Create(moduleId, Null.NullInteger, PortalSettings.Current);
             var dataSource = new OpenContentDataSource();
-            var dsContext = new DataSourceContext
-            {
-                ModuleId = moduleId,
-                UserId = userId,
-            };
+            var dsContext = OpenContentUtils.CreateDataContext(module, userId);
             XmlNode xml = Globals.GetContent(content, "opencontent");
-            foreach (XmlNode item in xml.SelectNodes("item"))
+            var items = xml.SelectNodes("item");
+            if (items != null)
             {
-                XmlNode json = item.SelectSingleNode("json");
-                XmlNode collection = item.SelectSingleNode("collection");
-                XmlNode key = item.SelectSingleNode("key");
-                dsContext.Collection = collection?.InnerText ?? "";
-                JToken data = JToken.Parse(json.InnerText);
-                /*
-                if (!string.IsNullOrEmpty(key?.InnerText))
+                foreach (XmlNode item in items)
                 {
-                    data["_id"] = new JValue(key.InnerText);
+                    XmlNode json = item.SelectSingleNode("json");
+                    XmlNode collection = item.SelectSingleNode("collection");
+                    XmlNode key = item.SelectSingleNode("key");
+                    try
+                    {
+                        JToken data = JToken.Parse(json.InnerText);
+                        dsContext.Collection = collection?.InnerText ?? "";
+                        dataSource.Add(dsContext, data);
+                        App.Services.CacheAdapter.SyncronizeCache(module);
+                    }
+                    catch (Exception e)
+                    {
+                        App.Services.Logger.Error($"Failed to parse imported json. Item key: {key}. Collection: {collection}. Error: {e.Message}. Stacktrace: {e.StackTrace}");
+                        throw;
+                    }
                 }
-                */
-                dataSource.Add(dsContext, data);
             }
         }
 
         #region ModuleSearchBase
         public override IList<SearchDocument> GetModifiedSearchDocuments(ModuleInfo modInfo, DateTime beginDateUtc)
         {
-            Log.Logger.Trace($"Indexing content Module {modInfo.ModuleID} - Tab {modInfo.TabID} - Culture {modInfo.CultureCode}- indexing from {beginDateUtc}");
+            App.Services.Logger.Trace($"Indexing content Module {modInfo.ModuleID} - Tab {modInfo.TabID} - Culture {modInfo.CultureCode}- indexing from {beginDateUtc}");
             var searchDocuments = new List<SearchDocument>();
 
             //If module is marked as "don't index" then return no results
             if (modInfo.ModuleSettings.GetValue("AllowIndex", "True") == "False")
             {
-                Log.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} - NOT - MODULE Indexing disabled");
+                App.Services.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} - NOT - MODULE Indexing disabled");
                 return searchDocuments;
             }
 
             //If tab of the module is marked as "don't index" then return no results
             if (modInfo.ParentTab.TabSettings.GetValue("AllowIndex", "True") == "False")
             {
-                Log.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} - NOT - TAB Indexing disabled");
+                App.Services.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} - NOT - TAB Indexing disabled");
                 return searchDocuments;
             }
 
             //If tab is marked as "inactive" then return no results
             if (modInfo.ParentTab.DisableLink)
             {
-                Log.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} - NOT - TAB is inactive");
+                App.Services.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} - NOT - TAB is inactive");
                 return searchDocuments;
             }
 
-            var module = new OpenContentModuleInfo(modInfo);
-            OpenContentSettings settings = modInfo.OpenContentSettings();
-            if (settings.Template?.Main == null || !settings.Template.Main.DnnSearch)
+            var module = OpenContentModuleConfig.Create(modInfo, PortalSettings.Current);
+
+            if (module.Settings.Template?.Main == null || !module.Settings.Template.Main.DnnSearch)
             {
                 return searchDocuments;
             }
-            if (settings.IsOtherModule)
+            if (module.Settings.IsOtherModule)
             {
                 return searchDocuments;
             }
@@ -125,13 +129,13 @@ namespace Satrabel.OpenContent.Components
             IDataItems contentList = ds.GetAll(dsContext, null);
             if (!contentList.Items.Any())
             {
-                Log.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} - NOT - No content found");
+                App.Services.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} - NOT - No content found");
             }
             foreach (IDataItem content in contentList.Items)
             {
                 if (content == null)
                 {
-                    Log.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} - NOT - Content is Null");
+                    App.Services.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} - NOT - Content is Null");
                 }
                 else if (content.LastModifiedOnDate.ToUniversalTime() > beginDateUtc
                       && content.LastModifiedOnDate.ToUniversalTime() < DateTime.UtcNow)
@@ -142,9 +146,9 @@ namespace Satrabel.OpenContent.Components
                         // first process the default language module
                         var culture = modInfo.CultureCode;
                         var localizedData = GetLocalizedContent(content.Data, culture);
-                        searchDoc = CreateSearchDocument(modInfo, settings, localizedData, content.Id, culture, content.Title, content.LastModifiedOnDate.ToUniversalTime());
+                        searchDoc = CreateSearchDocument(modInfo, module.Settings, localizedData, content.Id, culture, content.Title, content.LastModifiedOnDate.ToUniversalTime());
                         searchDocuments.Add(searchDoc);
-                        Log.Logger.Trace($"Indexing content {modInfo.ModuleID}|{culture} -  OK!  {searchDoc.Title} ({modInfo.TabID}) of {content.LastModifiedOnDate.ToUniversalTime()}");
+                        App.Services.Logger.Trace($"Indexing content {modInfo.ModuleID}|{culture} -  OK!  {searchDoc.Title} ({modInfo.TabID}) of {content.LastModifiedOnDate.ToUniversalTime()}");
 
                         // now do the same with any linked localized instances of this module
                         if (modInfo.LocalizedModules != null)
@@ -152,21 +156,21 @@ namespace Satrabel.OpenContent.Components
                             {
                                 culture = localizedModule.Value.CultureCode;
                                 localizedData = GetLocalizedContent(content.Data, culture);
-                                searchDoc = CreateSearchDocument(modInfo, settings, localizedData, content.Id, culture, content.Title, content.LastModifiedOnDate.ToUniversalTime());
+                                searchDoc = CreateSearchDocument(modInfo, module.Settings, localizedData, content.Id, culture, content.Title, content.LastModifiedOnDate.ToUniversalTime());
                                 searchDocuments.Add(searchDoc);
-                                Log.Logger.Trace($"Indexing content {modInfo.ModuleID}|{culture} -  OK!  {searchDoc.Title} ({modInfo.TabID}) of {content.LastModifiedOnDate.ToUniversalTime()}");
+                                App.Services.Logger.Trace($"Indexing content {modInfo.ModuleID}|{culture} -  OK!  {searchDoc.Title} ({modInfo.TabID}) of {content.LastModifiedOnDate.ToUniversalTime()}");
                             }
                     }
                     else
                     {
-                        searchDoc = CreateSearchDocument(modInfo, settings, content.Data, content.Id, "", content.Title, content.LastModifiedOnDate.ToUniversalTime());
+                        searchDoc = CreateSearchDocument(modInfo, module.Settings, content.Data, content.Id, "", content.Title, content.LastModifiedOnDate.ToUniversalTime());
                         searchDocuments.Add(searchDoc);
-                        Log.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} -  OK!  {searchDoc.Title} ({modInfo.TabID}) of {content.LastModifiedOnDate.ToUniversalTime()}");
+                        App.Services.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} -  OK!  {searchDoc.Title} ({modInfo.TabID}) of {content.LastModifiedOnDate.ToUniversalTime()}");
                     }
                 }
                 else
                 {
-                    Log.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} - NOT - No need to index: lastmod {content.LastModifiedOnDate.ToUniversalTime()} ");
+                    App.Services.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} - NOT - No need to index: lastmod {content.LastModifiedOnDate.ToUniversalTime()} ");
                 }
             }
             return searchDocuments;
@@ -200,7 +204,7 @@ namespace Satrabel.OpenContent.Components
                 url = TestableGlobals.Instance.NavigateURL(modInfo.TabID, ps, "");
             }
 
-            // instanciate the seearch document
+            // instanciate the search document
             var retval = new SearchDocument
             {
                 UniqueKey = modInfo.ModuleID + "-" + itemId + "-" + culture,
@@ -241,8 +245,7 @@ namespace Satrabel.OpenContent.Components
             {
                 var dicForHbs = JsonUtils.JsonToDictionary(contentData.ToString());
                 var hbEngine = new HandlebarsEngine();
-                retval.Body = hbEngine.ExecuteWithoutFaillure(settings.Template.Main.DnnSearchText, dicForHbs,
-                    modInfo.ModuleTitle);
+                retval.Body = hbEngine.ExecuteWithoutFaillure(settings.Template.Main.DnnSearchText, dicForHbs, modInfo.ModuleTitle);
             }
             else if (contentData["Description"] != null)
             {
@@ -259,8 +262,7 @@ namespace Satrabel.OpenContent.Components
             {
                 var dicForHbs = JsonUtils.JsonToDictionary(contentData.ToString());
                 var hbEngine = new HandlebarsEngine();
-                retval.Description = hbEngine.ExecuteWithoutFaillure(settings.Template.Main.DnnSearchDescription, dicForHbs,
-                    modInfo.ModuleTitle);
+                retval.Description = hbEngine.ExecuteWithoutFaillure(settings.Template.Main.DnnSearchDescription, dicForHbs, modInfo.ModuleTitle);
             }
             else
             {
@@ -349,7 +351,7 @@ namespace Satrabel.OpenContent.Components
         /// -----------------------------------------------------------------------------
         //public string UpgradeModule(string Version)
         //{
-        //	throw new System.NotImplementedException("The method or operation is not implemented.");
+        //    throw new System.NotImplementedException("The method or operation is not implemented.");
         //}
         #endregion
 
@@ -375,7 +377,7 @@ namespace Satrabel.OpenContent.Components
             }
             else if (version == "03.02.00")
             {
-                Lucene.LuceneController.Instance.IndexAll();
+                LuceneUtils.IndexAll();
             }
             return version + res;
         }

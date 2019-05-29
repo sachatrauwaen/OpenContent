@@ -5,7 +5,6 @@ using System.Linq;
 using System.Web.UI.WebControls;
 using DotNetNuke.Common;
 using DotNetNuke.Entities.Modules;
-using DotNetNuke.Entities.Portals;
 using DotNetNuke.Entities.Tabs;
 using DotNetNuke.Services.Exceptions;
 using DotNetNuke.UI.Modules;
@@ -13,6 +12,7 @@ using Satrabel.OpenContent.Components;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.Rss;
 using Satrabel.OpenContent.Components.Logging;
+using DotNetNuke.Services.Localization;
 
 namespace Satrabel.OpenContent
 {
@@ -23,11 +23,42 @@ namespace Satrabel.OpenContent
         public OpenContentSettings Settings { get; set; }
         public RenderInfo Renderinfo { get; set; }
         public bool RenderOnlySaveButton { get; set; }
+        public string ResourceFile { get; set; }
 
         protected void Page_Load(object sender, EventArgs e)
         {
             pHelp.Visible = false;
             phCurrentTemplate.Visible = false;
+
+            foreach (ListItem item in rblDataSource.Items)
+            {
+                string key = item.Attributes["ResourceKey"];
+                if (key != null)
+                {
+                    item.Text = Localization.GetString(key+".Text", ResourceFile);
+                }
+            }
+            foreach (ListItem item in rblUseTemplate.Items)
+            {
+                string key = item.Attributes["ResourceKey"];
+                if (key != null)
+                {
+                    item.Text = Localization.GetString(key + ".Text", ResourceFile);
+                }
+            }
+            foreach (ListItem item in rblFrom.Items)
+            {
+                string key = item.Attributes["ResourceKey"];
+                if (key != null)
+                {
+                    item.Text = Localization.GetString(key + ".Text", ResourceFile);
+                }
+            }
+        }
+
+        public string Resource(string key)
+        {
+            return Localization.GetString(key + ".Text", ResourceFile);
         }
         protected void rblFrom_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -35,15 +66,25 @@ namespace Satrabel.OpenContent
             if (rblFrom.SelectedIndex == 0) // site
             {
                 var scriptFileSetting = ModuleContext.OpenContentSettings().Template;
-                ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplates(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, AppConfig.OPENCONTENT).ToArray());
+                ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplates(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, App.Config.Opencontent).ToArray());
             }
             else if (rblFrom.SelectedIndex == 1) // web
             {
                 FeedParser parser = new FeedParser();
-                var items = parser.Parse("http://www.openextensions.net/templates?agentType=rss&PropertyTypeID=9", FeedType.RSS);
-                foreach (var item in items.OrderBy(t => t.Title))
+                //var items = parser.Parse("http://www.openextensions.net/templates?agentType=rss&PropertyTypeID=9", FeedType.RSS);
+                //foreach (var item in items.OrderBy(t => t.Title))
+                //{
+                //    ddlTemplate.Items.Add(new ListItem(item.Title, item.ZipEnclosure));
+                //}
+                //if (ddlTemplate.Items.Count > 0)
+                //{
+                //    tbTemplateName.Text = Path.GetFileNameWithoutExtension(ddlTemplate.Items[0].Value);
+                //}
+
+                
+                foreach (var item in GithubTemplateUtils.GetTemplateList(ModuleContext.PortalId).Where(t=> t.Type == Components.Github.TypeEnum.Dir).OrderBy(t => t.Name))
                 {
-                    ddlTemplate.Items.Add(new ListItem(item.Title, item.ZipEnclosure));
+                    ddlTemplate.Items.Add(new ListItem(item.Name, item.Path));
                 }
                 if (ddlTemplate.Items.Count > 0)
                 {
@@ -78,12 +119,12 @@ namespace Satrabel.OpenContent
             ddlTemplate.Items.Clear();
             if (rblUseTemplate.SelectedIndex == 0) // existing
             {
-                ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplatesFiles(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, AppConfig.OPENCONTENT).ToArray());
+                ddlTemplate.Items.AddRange(OpenContentUtils.ListOfTemplatesFiles(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, App.Config.Opencontent).ToArray());
             }
             else if (rblUseTemplate.SelectedIndex == 1) // new
             {
 
-                ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplates(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, AppConfig.OPENCONTENT).ToArray());
+                ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplates(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, App.Config.Opencontent).ToArray());
             }
             ActivateDetailPage();
         }
@@ -121,8 +162,12 @@ namespace Satrabel.OpenContent
                     }
                     else if (rblFrom.SelectedIndex == 1) // web
                     {
-                        string fileName = ddlTemplate.SelectedValue;
-                        string template = OpenContentUtils.ImportFromWeb(ModuleContext.PortalId, fileName, tbTemplateName.Text);
+                        //string fileName = ddlTemplate.SelectedValue;
+                        //string template = OpenContentUtils.ImportFromWeb(ModuleContext.PortalId, fileName, tbTemplateName.Text);
+                        //mc.UpdateModuleSetting(ModuleContext.ModuleId, "template", template);
+                        //ModuleContext.Settings["template"] = template;
+                        //string fileName = ddlTemplate.SelectedValue;
+                        string template = GithubTemplateUtils.ImportFromGithub(ModuleContext.PortalId, ddlTemplate.SelectedItem.Text, ddlTemplate.SelectedValue, tbTemplateName.Text);
                         mc.UpdateModuleSetting(ModuleContext.ModuleId, "template", template);
                         ModuleContext.Settings["template"] = template;
                     }
@@ -139,11 +184,11 @@ namespace Satrabel.OpenContent
                     Response.Redirect(Globals.NavigateURL(), true);
                 }
                 else
-                {                    
+                {
                     rblUseTemplate.SelectedIndex = 0;
                     phTemplateName.Visible = rblUseTemplate.SelectedIndex == 1;
                     phFrom.Visible = rblUseTemplate.SelectedIndex == 1;
-                    rblFrom.SelectedIndex = 0;                    
+                    rblFrom.SelectedIndex = 0;
                     BindTemplates(Settings.Template, null);
                     Renderinfo.Template = Settings.Template;
                     BindButtons(Settings, Renderinfo);
@@ -182,11 +227,7 @@ namespace Satrabel.OpenContent
         private void BindTemplates(TemplateManifest template, FileUri otherModuleTemplate)
         {
             ddlTemplate.Items.Clear();
-
-            //var templateUri = template == null ? null : template.Uri;
-            //var otherModuleTemplateUri = otherModuleTemplate == null ? null : otherModuleTemplate.Uri;
-
-            ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplatesFiles(ModuleContext.PortalSettings, ModuleContext.ModuleId, template, AppConfig.OPENCONTENT, otherModuleTemplate).ToArray());
+            ddlTemplate.Items.AddRange(OpenContentUtils.ListOfTemplatesFiles(ModuleContext.PortalSettings, ModuleContext.ModuleId, template, App.Config.Opencontent, otherModuleTemplate).ToArray());
             if (ddlTemplate.Items.Count == 0)
             {
                 rblUseTemplate.Items[0].Enabled = false;
@@ -261,6 +302,14 @@ namespace Satrabel.OpenContent
                 //bSave.Enabled = false;
                 //hlEditSettings.CssClass = "dnnSecondaryAction";
                 //hlEditContent.CssClass = "dnnPrimaryAction";
+
+                var template = new FileUri(ddlTemplate.SelectedValue);
+                var manifest = template.ToTemplateManifest();
+                hlEditContent.Text = App.Services.Localizer.GetString(manifest.IsListTemplate ? "Add.Action" : "Edit.Action", ResourceFile);
+                if (!string.IsNullOrEmpty(manifest.Title))
+                {
+                    hlEditContent.Text = hlEditContent.Text + " " + manifest.Title;
+                }
             }
         }
         public void RenderInitForm()
@@ -271,7 +320,7 @@ namespace Satrabel.OpenContent
             {
                 rblDataSource.SelectedIndex = (Settings.IsOtherModule ? 1 : 0);
                 BindOtherModules(Settings.TabId, Settings.ModuleId);
-                
+
                 BindTemplates(Settings.Template, (Renderinfo.IsOtherModule ? Renderinfo.Template.MainTemplateUri() : null));
                 BindDetailPage(Settings.DetailTabId, Settings.TabId, Settings.GetModuleId(ModuleContext.ModuleId));
             }
@@ -299,7 +348,7 @@ namespace Satrabel.OpenContent
             {
                 if (!string.IsNullOrEmpty(ddlTemplate.SelectedValue))
                 {
-                    Renderinfo.Template = new FileUri(ddlTemplate.SelectedValue).ToTemplateManifest();
+                    //Renderinfo.Template = new FileUri(ddlTemplate.SelectedValue).ToTemplateManifest();
                     if (rblFrom.SelectedIndex == 0) // site
                     {
                         //todo RenderDemoData();
@@ -307,12 +356,13 @@ namespace Satrabel.OpenContent
                     }
                 }
             }
+
         }
 
         private void BindOtherModules(int tabId, int moduleId)
         {
             IEnumerable<ModuleInfo> modules = (new ModuleController()).GetModules(ModuleContext.PortalId).Cast<ModuleInfo>();
-            modules = modules.Where(m => m.ModuleDefinition.DefinitionName == AppConfig.OPENCONTENT && m.IsDeleted == false && !m.OpenContentSettings().IsOtherModule);
+            modules = modules.Where(m => m.ModuleDefinition.DefinitionName == App.Config.Opencontent && m.IsDeleted == false && !m.OpenContentSettings().IsOtherModule);
             rblDataSource.Items[1].Enabled = modules.Any();
             phDataSource.Visible = rblDataSource.SelectedIndex == 1; // other module
             if (rblDataSource.SelectedIndex == 1) // other module
@@ -412,11 +462,11 @@ namespace Satrabel.OpenContent
             //If tab<0 then the data does not come from an other module
             if (othermoduleTabId < 0) return 0;
 
-            ModuleInfo moduleInfo = ModuleController.Instance.GetModule(dataModuleId, othermoduleTabId, false);
+            var moduleInfo = DnnUtils.GetDnnModule(othermoduleTabId, dataModuleId);
             if (moduleInfo == null)
             {
                 //This should never happen
-                Log.Logger.Error($"Module {dataModuleId} not found while in GetOtherModuleDetailTabId()");
+                App.Services.Logger.Error($"Module {dataModuleId} not found while in GetOtherModuleDetailTabId()");
                 return 0;
             }
 
@@ -442,7 +492,7 @@ namespace Satrabel.OpenContent
             foreach (var item in tabinfo.ChildModules)
             {
                 ModuleInfo moduleInfo = item.Value;
-                if (moduleInfo.ModuleDefinition.FriendlyName == AppConfig.OPENCONTENT)
+                if (moduleInfo.ModuleDefinition.FriendlyName == App.Config.Opencontent)
                 {
                     if (moduleInfo.OpenContentSettings().GetModuleId(moduleInfo.ModuleID) == datamoduleId)
                     {
@@ -466,6 +516,8 @@ namespace Satrabel.OpenContent
                 }
             }
         }
+
+        
 
     }
 }

@@ -27,19 +27,22 @@ namespace Satrabel.OpenContent
         protected override void OnInit(EventArgs e)
         {
             base.OnInit(e);
-            var globalSettingsController = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController(ModuleContext.PortalId);
+            var globalSettingsController = App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId);
             hlCancel.NavigateUrl = Globals.NavigateURL();
             cmdSave.NavigateUrl = Globals.NavigateURL();
+
             var editLayout = globalSettingsController.GetEditLayout();
             var bootstrap = globalSettingsController.GetEditLayout() != AlpacaLayoutEnum.DNN;
             bool loadBootstrap = bootstrap && globalSettingsController.GetLoadBootstrap();
+            bool loadGlyphicons = bootstrap && App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetLoadGlyphicons();
 
             OpenContentSettings settings = this.OpenContentSettings();
             AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext.PortalId, "" /*settings.Template.Uri().FolderPath*/, "builder");
-            alpaca.RegisterAll(bootstrap, loadBootstrap);
+            alpaca.RegisterAll(bootstrap, loadBootstrap, loadGlyphicons);
+
             //string ItemId = Request.QueryString["id"];
             //AlpacaContext = new AlpacaContext(PortalId, ModuleId, ItemId, ScopeWrapper.ClientID, null, cmdSave.ClientID, null, null);
-            ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/builder/formbuilder.js", FileOrder.Js.DefaultPriority+10);
+            ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/builder/formbuilder.js", FileOrder.Js.DefaultPriority + 10);
             ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/builder/formbuilder.css", FileOrder.Css.DefaultPriority);
             //ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/bootstrap/js/bootstrap.min.js", FileOrder.Js.DefaultPriority);
             //ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/bootstrap/css/bootstrap.min.css", FileOrder.Css.DefaultPriority);

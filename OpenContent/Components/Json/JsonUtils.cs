@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.TemplateHelpers;
@@ -8,13 +7,12 @@ using DotNetNuke.Services.FileSystem;
 using Satrabel.OpenContent.Components.Datasource;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using DotNetNuke.Common.Utilities;
-using DotNetNuke.Services.Cache;
 using DotNetNuke.Entities.Portals;
-using Satrabel.OpenContent.Components.Manifest;
-using Satrabel.OpenContent.Components.Handlebars;
-using System.Web;
-using DotNetNuke.Common;
+using DotNetNuke.Services.Cache;
+using Newtonsoft.Json;
+using Satrabel.OpenContent.Components.Files;
 
 namespace Satrabel.OpenContent.Components.Json
 {
@@ -26,34 +24,75 @@ namespace Satrabel.OpenContent.Components.Json
             return jsonData.Trim().Substring(0, 1).IndexOfAny(new[] { '[', '{' }) == 0;
         }
 
+        [Obsolete("This method is obsolete since aug 2017; use LoadJsonFromCacheOrDisk() or consider using LoadJsonFileFromCacheOrDisk() instead")]
         public static JToken LoadJsonFromFile(string filename)
         {
-            string cacheKey = filename;
-            var json = (JToken)DataCache.GetCache(cacheKey);
+            return LoadJsonFromCacheOrDisk(new FileUri(filename));
+        }
+
+        [Obsolete("This method is obsolete since aug 2017; use LoadJsonFileFromDisk() or consider using LoadJsonFileFromCacheOrDisk() instead")]
+        public static JObject GetJsonFromFile(string filename)
+        {
+            return LoadJsonFileFromDisk(filename) as JObject;
+        }
+
+        public static T LoadJsonFileFromCacheOrDisk<T>(FileUri file)
+        {
+            try
+            {
+                T jsonObject = default(T);
+                if (file.FileExists)
+                {
+                    string cacheKey = file.FilePath;
+                    jsonObject = App.Services.CacheAdapter.GetCache<T>(cacheKey);
+                    if (jsonObject == null)
+                    {
+                        string content = File.ReadAllText(file.PhysicalFilePath);
+                        jsonObject = JsonConvert.DeserializeObject<T>(content);
+                        App.Services.CacheAdapter.SetCache(cacheKey, jsonObject, file.PhysicalFilePath);
+                    }
+                }
+                return jsonObject;
+            }
+            catch (Exception ex)
+            {
+                App.Services.Logger.Error($"Failed to load json file {file.FilePath}. Error: {ex}");
+                throw new Exception($"Failed to load file {file.FilePath}. See log for more info.", ex);
+            }
+        }
+
+        /// <summary>
+        /// Tries to load Json file from cache.
+        /// </summary>
+        /// <param name="fileUri"></param>
+        /// <returns></returns>
+        public static JToken LoadJsonFromCacheOrDisk(FileUri fileUri)
+        {
+            string cacheKey = fileUri.FilePath;
+            var json = App.Services.CacheAdapter.GetCache<JObject>(cacheKey);
             if (json == null)
             {
-                var fileUri = new FileUri(filename);
-                json = fileUri.ToJObject();
+                var fileContent = FileUriUtils.ReadFileFromDisk(fileUri);
+                json = fileContent.ToJObject($"file [{fileUri.FilePath}]") as JObject;
                 if (json != null)
                 {
-                    DataCache.SetCache(cacheKey, json, new DNNCacheDependency(fileUri.PhysicalFilePath));
+                    App.Services.CacheAdapter.SetCache(cacheKey, json, fileUri.PhysicalFilePath);
                 }
             }
             return json;
         }
 
-        public static JObject GetJsonFromFile(string filename)
+        public static JToken LoadJsonFileFromDisk(string filename)
         {
-            JObject retval;
-            try
+            if (!File.Exists(filename)) return null;
+
+            JToken json = null;
+            string fileContent = File.ReadAllText(filename);
+            if (!string.IsNullOrWhiteSpace(fileContent))
             {
-                retval = JObject.Parse(File.ReadAllText(filename));
+                json = fileContent.ToJObject($"file [{filename}]") as JObject;
             }
-            catch (Exception ex)
-            {
-                throw new InvalidJsonFileException($"Invalid json in file {filename}", ex, filename);
-            }
-            return retval;
+            return json;
         }
 
         public static dynamic JsonToDynamic(string json)
@@ -103,15 +142,15 @@ namespace Satrabel.OpenContent.Components.Json
             }
         }
 
-        public static string SimplifyJson(string json, string culture)
-        {
-            JObject obj = JObject.Parse(json);
-            SimplifyJson(obj, culture);
-            return obj.ToString();
-        }
+        //public static string SimplifyJson(string json, string culture)
+        //{
+        //    JObject obj = JObject.Parse(json);
+        //    SimplifyJson(obj, culture);
+        //    return obj.ToString();
+        //}
+
         public static void SimplifyJson(JObject o, string culture)
         {
-
             foreach (var child in o.Children<JProperty>().ToList())
             {
                 var childProperty = child;
@@ -180,21 +219,20 @@ namespace Satrabel.OpenContent.Components.Json
 
         public static void LookupJson(JObject o, JObject additionalData, JObject schema, JObject options, bool includelabels, List<string> includes, Func<string, string, JObject> objFromCollection, Func<string, JObject> alpacaForAddData, string prefix = "")
         {
+            if (schema?["properties"] == null)
+                return;
+            if (options?["fields"] == null)
+                return;
+
             foreach (var child in o.Children<JProperty>().ToList())
             {
                 JObject sch = null;
                 JObject opt = null;
 
-                if (schema?["properties"] != null)
-                {
-                    sch = schema["properties"][child.Name] as JObject;
-                }
+                sch = schema["properties"][child.Name] as JObject;
                 if (sch == null) continue;
 
-                if (options?["fields"] != null)
-                {
-                    opt = options["fields"][child.Name] as JObject;
-                }
+                opt = options["fields"][child.Name] as JObject;
                 if (opt == null) continue;
 
                 // additionalData enhancement
@@ -221,14 +259,14 @@ namespace Satrabel.OpenContent.Components.Json
                 string collection = opt["dataService"]?["data"]?["collection"] != null ? opt["dataService"]?["data"]?["collection"].ToString() : "";
 
                 // enum enhancement
-                var enums = sch["enum"] is JArray ? (sch["enum"] as JArray).Select(l => l.ToString()).ToArray() : null;
-                var labels = opt["optionLabels"] is JArray ? (opt["optionLabels"] as JArray).Select(l => l.ToString()).ToArray() : null;
+                var enums = (sch["enum"] as JArray)?.Select(l => l.ToString()).ToArray();
+                var labels = (opt["optionLabels"] as JArray)?.Select(l => l.ToString()).ToArray();
 
                 var childProperty = child;
                 if (childProperty.Value is JArray)
                 {
                     var array = childProperty.Value as JArray;
-                    JArray newArray = new JArray();
+                    var newArray = new JArray();
                     foreach (var value in array)
                     {
                         var obj = value as JObject;
@@ -349,12 +387,9 @@ namespace Satrabel.OpenContent.Components.Json
                 }
             }
         }
-
-       
-
         
         /// <summary>
-        /// Enhance data for all alpaca fields of type 'image2'
+        /// Enhance data for all alpaca fields of type 'image2' and 'mlimage2'
         /// </summary>
         public static void ImagesJson(JObject o, JObject requestOptions, JObject options, bool isEditable)
         {
@@ -371,7 +406,7 @@ namespace Satrabel.OpenContent.Components.Json
                     reqOpt = requestOptions["fields"][child.Name] as JObject;
                 }
 
-                bool image = opt?["type"] != null && opt["type"].ToString() == "image2";
+                bool image = (opt?["type"]).EqualsAny("image2", "mlimage2");
 
                 if (image && reqOpt != null)
                 {
@@ -512,7 +547,7 @@ namespace Satrabel.OpenContent.Components.Json
                 foreach (var obj in array)
                 {
                     var objid = obj[valueField]?.ToString();
-                    if (objid!= null && id.Equals(objid))
+                    if (objid != null && id.Equals(objid))
                     {
                         return obj as JObject;
                     }
@@ -607,7 +642,6 @@ namespace Satrabel.OpenContent.Components.Json
                 }
             }
         }
-        
     }
     class DictionaryNoCase : Dictionary<string, object>
     {

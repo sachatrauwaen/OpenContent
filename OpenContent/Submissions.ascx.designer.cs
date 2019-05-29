@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Satrabel.OpenForm {
+namespace Satrabel.OpenContent {
     
     
     public partial class Submissions {

@@ -20,7 +20,6 @@ using DotNetNuke.Entities.Host;
 using DotNetNuke.Common.Utilities;
 //using ICSharpCode.SharpZipLib.Zip;
 using System.Web;
-using Satrabel.OpenContent.Components.Localization;
 using Satrabel.OpenContent.Components.Rss;
 using Satrabel.OpenContent.Components.Manifest;
 
@@ -138,22 +137,22 @@ namespace Satrabel.OpenContent
             catch (PermissionsNotMetException)
             {
                 //Logger.Warn(exc);
-                strMessage += "<br />" + string.Format(Localizer.Instance.GetString("InsufficientFolderPermission"), GetModuleSubDir() + "/Templates");
+                strMessage += "<br />" + string.Format(App.Services.Localizer.GetString("InsufficientFolderPermission"), GetModuleSubDir() + "/Templates");
             }
             catch (NoSpaceAvailableException)
             {
                 //Logger.Warn(exc);
-                strMessage += "<br />" + string.Format(Localizer.Instance.GetString("DiskSpaceExceeded"), fuFile.FileName);
+                strMessage += "<br />" + string.Format(App.Services.Localizer.GetString("DiskSpaceExceeded"), fuFile.FileName);
             }
             catch (InvalidFileExtensionException)
             {
                 //Logger.Warn(exc);
-                strMessage += "<br />" + string.Format(Localizer.Instance.GetString("RestrictedFileType"), fuFile.FileName, Host.AllowedExtensionWhitelist.ToDisplayString());
+                strMessage += "<br />" + string.Format(App.Services.Localizer.GetString("RestrictedFileType"), fuFile.FileName, Host.AllowedExtensionWhitelist.ToDisplayString());
             }
             catch (Exception)
             {
                 //Logger.Error(exc);
-                strMessage += "<br />" + string.Format(Localizer.Instance.GetString("SaveFileError"), fuFile.FileName);
+                strMessage += "<br />" + string.Format(App.Services.Localizer.GetString("SaveFileError"), fuFile.FileName);
             }
             if (string.IsNullOrEmpty(strMessage))
                 DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "Import Successful", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.GreenSuccess);

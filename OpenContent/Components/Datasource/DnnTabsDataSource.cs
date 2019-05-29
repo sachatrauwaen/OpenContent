@@ -6,6 +6,7 @@ using Satrabel.OpenContent.Components.Alpaca;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Satrabel.OpenContent.Components.Datasource.Search;
 
 namespace Satrabel.OpenContent.Components.Datasource
 {
@@ -22,7 +23,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         {
             return GetAll(context, null).Items.SingleOrDefault(i => i.Id == id);
         }
-        public override IDataItems GetAll(DataSourceContext context, Search.Select selectQuery)
+        public override IDataItems GetAll(DataSourceContext context, Select selectQuery)
         {
             int AdminTabId = PortalSettings.Current.AdminTabId;
             var tabs = TabController.GetTabsBySortOrder(context.PortalId).Where(t => t.ParentId != AdminTabId && !t.IsSuperTab);

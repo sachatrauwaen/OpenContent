@@ -8,10 +8,8 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
 
         public int Width { get; private set; }
         public int Height { get; private set; }
-        public float AsFloat
-        {
-            get { return (float)Width / (float)Height; }
-        }
+
+        public float AsFloat => (float)Width / (float)Height;
 
         public Ratio(string ratioString)
         {
@@ -48,6 +46,37 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         {
             Width = Convert.ToInt32(newHeight * _ratio);
             Height = newHeight;
+        }
+        
+        public bool IsSquare()
+        {
+            if (Width <= 0 || Height <= 0) return false;
+
+            var ratio = Math.Round((decimal)Height / (decimal)Width, 1);
+            return Math.Abs(1 - ratio) <= (decimal)0.1;
+        }
+
+        public bool IsPortrait()
+        {
+            if (Width <= 0 || Height <= 0) return false;
+            if (IsSquare()) return false;
+
+            return Height > Width;
+        }
+
+        public bool IsLandScape()
+        {
+            if (Width <= 0 || Height <= 0) return false;
+            if (IsSquare()) return false;
+
+            return Height < Width;
+        }
+
+        public void Rotate()
+        {
+            var h = Height;
+            Height = Width;
+            Width = h;
         }
     }
 }

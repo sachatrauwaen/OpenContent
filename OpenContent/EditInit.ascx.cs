@@ -10,7 +10,13 @@
 #region Using Statements
 
 using System;
+using System.Linq;
+using System.Web.UI.WebControls;
+using DotNetNuke.Common;
+using DotNetNuke.Common.Utilities;
 using DotNetNuke.Entities.Modules;
+using DotNetNuke.Entities.Tabs;
+using DotNetNuke.Framework.JavaScriptLibraries;
 using Satrabel.OpenContent.Components;
 using Satrabel.OpenContent.Components.Manifest;
 
@@ -20,6 +26,8 @@ namespace Satrabel.OpenContent
 {
     public partial class EditInit : PortalModuleBase
     {
+        
+
         protected override void OnInit(EventArgs e)
         {
             base.OnInit(e);
@@ -32,8 +40,15 @@ namespace Satrabel.OpenContent
             ti.Settings = settings;
             ti.Renderinfo = renderinfo;
             ti.RenderOnlySaveButton = true;
+            ti.ResourceFile = LocalResourceFile;
+
         }
 
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+        }
+      
         protected override void OnPreRender(EventArgs e)
         {
             OpenContent.TemplateInit ti = (TemplateInit)TemplateInitControl;

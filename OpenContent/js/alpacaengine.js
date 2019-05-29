@@ -23,7 +23,7 @@ alpacaEngine.engine = function (config) {
     self.data = {};
     self.rootUrl = config.appPath;
     self.bootstrap = config.bootstrap;    
-    var createEdit = config.IsNew ? "create" : "edit";
+    var createEdit = config.isNew ? "create" : "edit";
     self.view = "dnn-"+createEdit;
     if (config.bootstrap) {
         self.view = config.horizontal ? "dnnbootstrap-"+createEdit+"-horizontal" : "dnnbootstrap-"+createEdit;
@@ -98,9 +98,8 @@ alpacaEngine.engine = function (config) {
                 var href = $("#" + self.saveButton).attr('href');
                 var windowTop = parent; //needs to be assign to a varaible for Opera compatibility issues.
                 var popup = windowTop.jQuery("#iPopUp");
-                if (popup.length > 0) {
-                    windowTop.__doPostBack('dnn_ctr' + self.moduleId + '_View__UP', '');
-                    //dnnModal.closePopUp(false, href);
+                if (popup.length > 0 && windowTop.WebForm_GetElementById('dnn_ctr' + self.moduleId + '_View__UP')) {
+                    setTimeout(function () { windowTop.__doPostBack('dnn_ctr' + self.moduleId + '_View__UP', ''); }, 1);                                                                 
                     dnnModal.closePopUp(false, "");
                 }
                 else {
@@ -266,14 +265,13 @@ alpacaEngine.engine = function (config) {
             data: JSON.stringify(postData),
             beforeSend: self.sf.setModuleHeaders
         }).done(function (data) {
-            //alert('ok:' + data);
             //self.loadSettings();
             //window.location.href = href;
             if (data.isValid) {
                 var windowTop = parent; //needs to be assign to a varaible for Opera compatibility issues.
                 var popup = windowTop.jQuery("#iPopUp");
-                if (popup.length > 0) {
-                    windowTop.__doPostBack('dnn_ctr' + self.moduleId + '_View__UP', '');
+                if (popup.length > 0 && windowTop.WebForm_GetElementById('dnn_ctr' + self.moduleId + '_View__UP')) {
+                    setTimeout(function () { windowTop.__doPostBack('dnn_ctr' + self.moduleId + '_View__UP', ''); }, 1);
                     dnnModal.closePopUp(false, href);
                 }
                 else {

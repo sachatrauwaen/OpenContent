@@ -36,11 +36,15 @@ https://ci.appveyor.com/project/sachatrauwaen/opencontent
 
 ### Contributions
 
-Create a topic branch from where you want to base your work.
-This is usually the 'development' branch.
+The Master branch only holds the latest stable version of the product. Navigate to dev branch in order to see latest work.
 
-To quickly create a topic branch based on development; git checkout -b my_contribution development
-Make commits of logical units.
+Create a feature branch (branched from develop branch) for every feature you want to contribute.
+
+Before sending the Pull Requests, make sure you have the latest develop branch merged into you feature branch.
+Pull Requests should be targeted to develop branch, not master! 
+
+To quickly create a feature branch based on develop; git checkout -b my_contribution develop
+
 
 ### Set up development environment
 

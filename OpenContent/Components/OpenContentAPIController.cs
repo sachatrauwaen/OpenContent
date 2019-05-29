@@ -25,6 +25,7 @@ using DotNetNuke.Services.Localization;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.Datasource;
+using Satrabel.OpenContent.Components.Dnn;
 
 #endregion
 
@@ -53,11 +54,11 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
-                var moduleInfo = new OpenContentModuleInfo(ActiveModule);
-                IDataSource ds = DataSourceManager.GetDataSource(moduleInfo.Settings.Manifest.DataSource);
-                var dsContext = OpenContentUtils.CreateDataContext(moduleInfo);
+                var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
+                IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
+                var dsContext = OpenContentUtils.CreateDataContext(module);
                 IDataItem dsItem = null;
-                if (moduleInfo.IsListMode())
+                if (module.IsListMode())
                 {
                     if (!string.IsNullOrEmpty(id)) // not a new item
                     {
@@ -121,12 +122,12 @@ namespace Satrabel.OpenContent.Components
                 context["numberDecimalSeparator"] = currentLocale.Culture.NumberFormat.NumberDecimalSeparator;
                 context["rootUrl"] = System.Web.VirtualPathUtility.ToAbsolute(string.Concat(System.Web.HttpRuntime.AppDomainAppVirtualPath, "/"));
                 context["alpacaCulture"] = AlpacaEngine.AlpacaCulture(currentLocale.Code);
-                context["bootstrap"] = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController(PortalSettings.PortalId).GetEditLayout() != AlpacaLayoutEnum.DNN;
-                context["horizontal"] = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController(PortalSettings.PortalId).GetEditLayout() == AlpacaLayoutEnum.BootstrapHorizontal;
+                context["bootstrap"] = App.Services.CreateGlobalSettingsRepository(PortalSettings.PortalId).GetEditLayout() != AlpacaLayoutEnum.DNN;
+                context["horizontal"] = App.Services.CreateGlobalSettingsRepository(PortalSettings.PortalId).GetEditLayout() == AlpacaLayoutEnum.BootstrapHorizontal;
                 json["context"] = context;
 
                 //todo: can't we do some of these checks at the beginning of this method to fail faster?
-                if (!OpenContentUtils.HasEditPermissions(PortalSettings, moduleInfo.ViewModule, moduleInfo.Settings.Manifest.GetEditRole(), createdByUserid))
+                if (!DnnPermissionsUtils.HasEditPermissions(module, module.Settings.Manifest.GetEditRole(), createdByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
@@ -135,7 +136,7 @@ namespace Satrabel.OpenContent.Components
             }
             catch (Exception exc)
             {
-                Log.Logger.Error(exc);
+                App.Services.Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
@@ -147,7 +148,7 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
-                var module = new OpenContentModuleInfo(ActiveModule);
+                var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
                 var dataManifest = module.Settings.Manifest.GetAdditionalData(key);
 
                 IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
@@ -168,7 +169,7 @@ namespace Satrabel.OpenContent.Components
             }
             catch (Exception exc)
             {
-                Log.Logger.Error(exc);
+                App.Services.Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
@@ -180,7 +181,7 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
-                var module = new OpenContentModuleInfo(ActiveModule);
+                var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
                 string key = json["key"].ToString();
                 var dataManifest = module.Settings.Template.Manifest.GetAdditionalData(key);
 
@@ -203,7 +204,7 @@ namespace Satrabel.OpenContent.Components
             }
             catch (Exception exc)
             {
-                Log.Logger.Error(exc);
+                App.Services.Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
@@ -213,7 +214,7 @@ namespace Satrabel.OpenContent.Components
         [HttpGet]
         public HttpResponseMessage Version(string id, string ticks)
         {
-            var module = new OpenContentModuleInfo(ActiveModule);
+            var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
             JToken json = new JObject();
             try
             {
@@ -235,7 +236,7 @@ namespace Satrabel.OpenContent.Components
 
                 string editRole = module.Settings.Template.Manifest.GetEditRole();
                 //todo: can't we do some of these checks at the beginning of this method to fail faster?
-                if (!OpenContentUtils.HasEditPermissions(PortalSettings, module.ViewModule, editRole, createdByUserid))
+                if (!DnnPermissionsUtils.HasEditPermissions(module, editRole, createdByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
@@ -243,7 +244,7 @@ namespace Satrabel.OpenContent.Components
             }
             catch (Exception exc)
             {
-                Log.Logger.Error(exc);
+                App.Services.Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
@@ -270,7 +271,7 @@ namespace Satrabel.OpenContent.Components
             }
             catch (Exception exc)
             {
-                Log.Logger.Error(exc);
+                App.Services.Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
@@ -302,7 +303,7 @@ namespace Satrabel.OpenContent.Components
             }
             catch (Exception exc)
             {
-                Log.Logger.Error(exc);
+                App.Services.Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
@@ -318,7 +319,7 @@ namespace Satrabel.OpenContent.Components
                 OpenContentSettings settings = ActiveModule.OpenContentSettings();
                 var fb = new FormBuilder(settings.TemplateDir);
                 JObject json = fb.BuildQuerySettings(settings.Template.Collection);
-                var dataJson = data.ToJObject("quey settings json");
+                var dataJson = data.ToJObject("query settings json");
                 if (dataJson != null)
                     json["data"] = dataJson;
 
@@ -326,7 +327,7 @@ namespace Satrabel.OpenContent.Components
             }
             catch (Exception exc)
             {
-                Log.Logger.Error(exc);
+                App.Services.Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
@@ -344,7 +345,7 @@ namespace Satrabel.OpenContent.Components
             List<LookupResultDTO> res = new List<LookupResultDTO>();
             try
             {
-                var module = new OpenContentModuleInfo(ActiveModule);
+                var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
 
                 string key = req.dataKey;
                 var additionalDataManifest = module.Settings.Template.Manifest.GetAdditionalData(key);
@@ -364,14 +365,15 @@ namespace Satrabel.OpenContent.Components
                     {
                         json = json.DeepClone();
                         JsonUtils.SimplifyJson(json, DnnLanguageUtils.GetCurrentCultureCode());
-                        AddLookupItems(req.valueField, req.textField, req.childrenField, res, json as JArray);                        
+                        AddLookupItems(req.valueField, req.textField, req.childrenField, res, json as JArray);
+
                     }
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, res);
             }
             catch (Exception exc)
             {
-                Log.Logger.Error(exc);
+                App.Services.Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
@@ -383,9 +385,9 @@ namespace Satrabel.OpenContent.Components
         {
             int moduleid = req.moduleid > 0 ? req.moduleid : ActiveModule.ModuleID;
             int tabid = req.tabid > 0 ? req.tabid : ActiveModule.TabID;
-            var module = new OpenContentModuleInfo(moduleid, tabid);
+            var module = OpenContentModuleConfig.Create(moduleid, tabid, PortalSettings);
             if (module == null) throw new Exception($"Can not find ModuleInfo (tabid:{req.tabid}, moduleid:{req.moduleid})");
-
+            
             List<LookupResultDTO> res = new List<LookupResultDTO>();
             try
             {
@@ -405,7 +407,6 @@ namespace Satrabel.OpenContent.Components
                             {
                                 json = json[req.dataMember];
                             }
-
                             json = json.DeepClone();
                             JsonUtils.SimplifyJson(json, DnnLanguageUtils.GetCurrentCultureCode());
 
@@ -444,6 +445,7 @@ namespace Satrabel.OpenContent.Components
                             json = json[req.dataMember];
                             json = json.DeepClone();
                             JsonUtils.SimplifyJson(json, DnnLanguageUtils.GetCurrentCultureCode());
+
                             if (json is JArray)
                             {
                                 foreach (JToken item in (JArray)json)
@@ -462,7 +464,7 @@ namespace Satrabel.OpenContent.Components
             }
             catch (Exception exc)
             {
-                Log.Logger.Error(exc);
+                App.Services.Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
@@ -472,7 +474,7 @@ namespace Satrabel.OpenContent.Components
         [HttpPost]
         public HttpResponseMessage LookupCollection(LookupCollectionRequestDTO req)
         {
-            var module = new OpenContentModuleInfo(ActiveModule);
+            var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
             var res = new List<LookupResultDTO>();
 
             try
@@ -489,6 +491,8 @@ namespace Satrabel.OpenContent.Components
                         foreach (var item in items)
                         {
                             var json = item.Data as JObject;
+                            json = json.DeepClone() as JObject;
+                            JsonUtils.SimplifyJson(json, DnnLanguageUtils.GetCurrentCultureCode());
                             if (json?[req.textField] != null)
                             {
                                 res.Add(new LookupResultDTO()
@@ -504,7 +508,7 @@ namespace Satrabel.OpenContent.Components
             }
             catch (Exception exc)
             {
-                Log.Logger.Error(exc);
+                App.Services.Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
@@ -522,7 +526,7 @@ namespace Satrabel.OpenContent.Components
                 if (!string.IsNullOrEmpty(childrenField) && item[childrenField] is JArray)
                 {
                     var childJson = item[childrenField] as JArray;
-                    AddLookupItems(valueField, textField, childrenField, res, childJson, prefix + "..");
+                    AddLookupItems(valueField, textField, childrenField, res, childJson, $"{prefix}..");
                 }
             }
         }
@@ -537,7 +541,7 @@ namespace Satrabel.OpenContent.Components
                 OpenContentSettings settings = ActiveModule.OpenContentSettings();
                 string prefix = string.IsNullOrEmpty(key) ? "" : key + "-";
                 JObject json = new JObject();
-                var dataJson = JsonUtils.LoadJsonFromFile(settings.TemplateDir.UrlFolder + prefix + "builder.json");
+                var dataJson = JsonUtils.LoadJsonFromCacheOrDisk(new FileUri(settings.TemplateDir, $"{prefix}builder.json"));
                 if (dataJson != null)
                     json["data"] = dataJson;
 
@@ -545,7 +549,7 @@ namespace Satrabel.OpenContent.Components
             }
             catch (Exception exc)
             {
-                Log.Logger.Error(exc);
+                App.Services.Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
@@ -561,7 +565,7 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
-                var module = new OpenContentModuleInfo(ActiveModule);
+                var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
                 string editRole = module.Settings.Template.Manifest.GetEditRole();
                 int createdByUserid = -1;
 
@@ -588,7 +592,7 @@ namespace Satrabel.OpenContent.Components
                 }
 
                 //todo: can't we do some of these checks at the beginning of this method to fail faster?
-                if (!OpenContentUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, createdByUserid))
+                if (!DnnPermissionsUtils.HasEditPermissions(module, editRole, createdByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
@@ -604,6 +608,7 @@ namespace Satrabel.OpenContent.Components
                     {
                         ds.Update(dsContext, dsItem, json["form"] as JObject);
                     }
+                    App.Services.CacheAdapter.SyncronizeCache(module);
                 }
                 catch (DataNotValidException ex)
                 {
@@ -634,7 +639,7 @@ namespace Satrabel.OpenContent.Components
             }
             catch (Exception exc)
             {
-                Log.Logger.Error(exc);
+                App.Services.Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
@@ -647,7 +652,7 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
-                var module = new OpenContentModuleInfo(ActiveModule);
+                var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
                 IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
                 IDataItem dsItem = null;
@@ -673,7 +678,7 @@ namespace Satrabel.OpenContent.Components
             }
             catch (Exception exc)
             {
-                Log.Logger.Error(exc);
+                App.Services.Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
@@ -694,7 +699,7 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
-                var module = new OpenContentModuleInfo(ActiveModule);
+                var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
                 string editRole = module.Settings.Template.Manifest.GetEditRole();
                 int createdByUserid = -1;
 
@@ -721,7 +726,7 @@ namespace Satrabel.OpenContent.Components
                 }
 
                 //todo: can't we do some of these checks at the beginning of this method to fail faster?
-                if (!OpenContentUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, createdByUserid))
+                if (!DnnPermissionsUtils.HasEditPermissions(module, editRole, createdByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
@@ -745,7 +750,7 @@ namespace Satrabel.OpenContent.Components
             }
             catch (Exception exc)
             {
-                Log.Logger.Error(exc);
+                App.Services.Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
@@ -757,7 +762,7 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
-                var module = new OpenContentModuleInfo(ActiveModule);
+                var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
                 string editRole = module.Settings.Template.Manifest.GetEditRole();
                 int createdByUserid = -1;
 
@@ -784,7 +789,7 @@ namespace Satrabel.OpenContent.Components
                 }
 
                 //todo: can't we do some of these checks at the beginning of this method to fail faster?
-                if (!OpenContentUtils.HasEditPermissions(PortalSettings, ActiveModule, editRole, createdByUserid))
+                if (!DnnPermissionsUtils.HasEditPermissions(module, editRole, createdByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
@@ -793,11 +798,12 @@ namespace Satrabel.OpenContent.Components
                 {
                     ds.Delete(dsContext, content);
                 }
+                App.Services.CacheAdapter.SyncronizeCache(module);
                 return Request.CreateResponse(HttpStatusCode.OK, "");
             }
             catch (Exception exc)
             {
-                Log.Logger.Error(exc);
+                App.Services.Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
@@ -830,7 +836,7 @@ namespace Satrabel.OpenContent.Components
             }
             catch (Exception exc)
             {
-                Log.Logger.Error(exc);
+                App.Services.Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
@@ -858,7 +864,7 @@ namespace Satrabel.OpenContent.Components
             }
             catch (Exception exc)
             {
-                Log.Logger.Error(exc);
+                App.Services.Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
@@ -881,11 +887,11 @@ namespace Satrabel.OpenContent.Components
                     var view = json["view"].ToString();
                     var index = json["index"].ToString();
                     var data = json["data"].ToString();
-                    var datafile = new FileUri(settings.TemplateDir.UrlFolder + prefix + "builder.json");
-                    var schemafile = new FileUri(settings.TemplateDir.UrlFolder + prefix + "schema.json");
-                    var optionsfile = new FileUri(settings.TemplateDir.UrlFolder + prefix + "options.json");
-                    var viewfile = new FileUri(settings.TemplateDir.UrlFolder + prefix + "view.json");
-                    var indexfile = new FileUri(settings.TemplateDir.UrlFolder + prefix + "index.json");
+                    var datafile = new FileUri(settings.TemplateDir, $"{prefix}builder.json");
+                    var schemafile = new FileUri(settings.TemplateDir, $"{prefix}schema.json");
+                    var optionsfile = new FileUri(settings.TemplateDir, $"{prefix}options.json");
+                    var viewfile = new FileUri(settings.TemplateDir, $"{prefix}view.json");
+                    var indexfile = new FileUri(settings.TemplateDir, $"{prefix}index.json");
                     try
                     {
                         File.WriteAllText(datafile.PhysicalFilePath, data);
@@ -907,7 +913,7 @@ namespace Satrabel.OpenContent.Components
                     catch (Exception ex)
                     {
                         string mess = $"Error while saving file [{datafile.FilePath}]";
-                        Log.Logger.Error(mess, ex);
+                        App.Services.Logger.Error(mess, ex);
                         throw new Exception(mess, ex);
                     }
                 }
@@ -918,7 +924,7 @@ namespace Satrabel.OpenContent.Components
             }
             catch (Exception exc)
             {
-                Log.Logger.Error(exc);
+                App.Services.Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }

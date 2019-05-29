@@ -148,7 +148,6 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             return ImageHelper.GetFacebookImageUrl(FileInfo);
         }
 
-
         [Obsolete("This method is obsolete since dec 2015; use public string EditUrl(ModuleInfo module) instead")]
         public string EditImageUrl(ModuleInfo module)
         {

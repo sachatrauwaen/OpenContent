@@ -20,7 +20,10 @@ namespace Satrabel.OpenContent.Components.Dnn
         {
             return EditUrl(keyName, keyValue, "Edit", moduleId, ps);
         }
-
+        public static string EditAddDataUrl(string keyName, string keyValue, int moduleId, PortalSettings ps)
+        {
+            return EditUrl(keyName, keyValue, "EditAddData", moduleId, ps);
+        }
         private static string EditUrl(string keyName, string keyValue, string controlKey, int moduleId, PortalSettings ps)
         {
             var parameters = new string[] { };
@@ -61,6 +64,19 @@ namespace Satrabel.OpenContent.Components.Dnn
         public static string NavigateUrl(int tabId)
         {
             return Globals.NavigateURL(tabId);
+        }
+
+        internal static string NavigateUrl(int tabId, PortalSettings portalSettings, string currentCultureCode)
+        {
+            var isSuperTab = Globals.IsHostTab(tabId);
+            return Globals.NavigateURL(tabId, isSuperTab, portalSettings, "", currentCultureCode);
+        }
+
+        internal static string NavigateUrl(int detailTabId, PortalSettings portalSettings, string pagename, params string[] additionalParameters)
+        {
+            var isSuperTab = Globals.IsHostTab(detailTabId);
+            var url = Globals.NavigateURL(detailTabId, isSuperTab, portalSettings, "", DnnLanguageUtils.GetCurrentCultureCode(), pagename, additionalParameters);
+            return url;
         }
 
         private static string NavigateUrl(int tabId, int moduleId, string controlKey, bool pageRedirect, PortalSettings ps, params string[] additionalParameters)

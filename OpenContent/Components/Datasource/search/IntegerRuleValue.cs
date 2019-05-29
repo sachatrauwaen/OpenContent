@@ -2,24 +2,12 @@
 {
     public class IntegerRuleValue : RuleValue
     {
-        private int Value;
+        private readonly int _value;
         public IntegerRuleValue(int value)
         {
-            Value = value;
+            _value = value;
         }
-        public override int AsInteger
-        {
-            get
-            {
-                return Value;
-            }
-        }
-        public override string AsString
-        {
-            get
-            {
-                return Value.ToString();
-            }
-        }
+        public override int AsInteger => _value;
+        public override string AsString => _value.ToString();
     }
 }

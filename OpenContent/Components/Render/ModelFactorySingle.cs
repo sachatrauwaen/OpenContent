@@ -1,9 +1,6 @@
-﻿using DotNetNuke.Common;
-using DotNetNuke.Entities.Portals;
-using DotNetNuke.Services.Localization;
+﻿using DotNetNuke.Services.Localization;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Datasource;
-using Satrabel.OpenContent.Components.Dnn;
 using Satrabel.OpenContent.Components.Handlebars;
 using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Manifest;
@@ -17,20 +14,20 @@ namespace Satrabel.OpenContent.Components.Render
         private readonly JToken _dataJson;
         private readonly IDataItem _data;
 
-        public ModelFactorySingle(JToken dataJson, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleInfo module, PortalSettings portalSettings) :
-            base(settingsJson, physicalTemplateFolder, manifest, templateManifest, templateFiles, module, portalSettings)
+        public ModelFactorySingle(JToken dataJson, string settingsJson, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleConfig module) :
+            base(settingsJson, manifest, templateManifest, templateFiles, module)
         {
             this._dataJson = dataJson;
         }
 
-        public ModelFactorySingle(IDataItem data, string settingsJson, string physicalTemplateFolder, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleInfo module, PortalSettings portalSettings) :
-            base(settingsJson, physicalTemplateFolder, manifest, templateManifest, templateFiles, module, portalSettings)
+        public ModelFactorySingle(IDataItem data, string settingsJson, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleConfig module) :
+            base(settingsJson, manifest, templateManifest, templateFiles, module)
         {
             this._dataJson = data.Data;
             this._data = data;
         }
-        public ModelFactorySingle(IDataItem data, OpenContentModuleInfo module, PortalSettings portalSettings, string collection) :
-            base(module, portalSettings, collection)
+        public ModelFactorySingle(IDataItem data, OpenContentModuleConfig module, string collection) :
+            base(module, collection)
         {
             this._dataJson = data.Data;
             this._data = data;
@@ -60,7 +57,7 @@ namespace Satrabel.OpenContent.Components.Render
                     context["DetailUrl"] = GenerateDetailUrl(_data, model, _manifest, _detailTabId);
                     context["Id"] = _data.Id;
                     var editIsAllowed = !_manifest.DisableEdit && IsEditAllowed(_data.CreatedByUserId);
-                    context["EditUrl"] = editIsAllowed ? DnnUrlUtils.EditUrl("id", _data.Id, _module.ViewModule.ModuleID, _portalSettings) : "";
+                    context["EditUrl"] = editIsAllowed ? _module.EditUrl("id", _data.Id, _module.ViewModule.ModuleId) : "";
                 }
             }
         }

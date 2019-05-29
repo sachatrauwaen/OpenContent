@@ -4,24 +4,12 @@ namespace Satrabel.OpenContent.Components.Datasource.Search
 {
     public class DateTimeRuleValue : RuleValue
     {
-        private DateTime Value;
+        private readonly DateTime _value;
         public DateTimeRuleValue(DateTime value)
         {
-            Value = value;
+            _value = value;
         }
-        public override DateTime AsDateTime
-        {
-            get
-            {
-                return Value;
-            }
-        }
-        public override string AsString
-        {
-            get
-            {
-                return Value.ToString();
-            }
-        }
+        public override DateTime AsDateTime => _value;
+        public override string AsString => _value.ToString();
     }
 }

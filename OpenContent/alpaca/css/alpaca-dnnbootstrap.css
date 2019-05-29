@@ -248,9 +248,9 @@ select.oc-ddl-versions {
     padding-left: 15px;
 }
 
-.cropper-container {
- margin-top:5px;
- margin-bottom:5px;
+.alpaca-image-display {
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
 
 
@@ -260,6 +260,8 @@ select.oc-ddl-versions {
     opacity: 0.65;
 }
 
+
+li.select2-search.select2-search--inline { list-style-type: none; }
 
 .alpaca-field-accordion .panel-title > a {
     font-size:21px;

@@ -1,7 +1,7 @@
-﻿using Satrabel.OpenContent.Components.Datasource.Search;
-using Satrabel.OpenContent.Components.Lucene.Config;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Satrabel.OpenContent.Components.Datasource.Search;
+using Satrabel.OpenContent.Components.Lucene.Config;
 
 namespace Satrabel.OpenContent.Components.JPList
 {
@@ -41,10 +41,10 @@ namespace Satrabel.OpenContent.Components.JPList
                                     else
                                     {
                                         var group = new FilterGroup() { Condition = ConditionEnum.OR };
-                                        foreach (var n in names)
+                                        foreach (var name in names)
                                         {
                                             group.AddRule(FieldConfigUtils.CreateFilterRule(config, cultureCode,
-                                                n,
+                                                name,
                                                 OperatorEnum.START_WITH,
                                                 new StringRuleValue(status.data.value)
                                             ));
@@ -54,7 +54,7 @@ namespace Satrabel.OpenContent.Components.JPList
                                 }
                                 else if ((status.type == "checkbox-group-filter" || status.type == "button-filter-group" || status.type == "combined") && !string.IsNullOrEmpty(status.name))
                                 {
-                                    if (status.data.filterType == "pathGroup" && status.data != null && status.data.pathGroup != null && status.data.pathGroup.Count > 0 && status.data.pathGroup[0] != "*")
+                                    if (status.data.filterType == "pathGroup" && status.data?.pathGroup != null && status.data.pathGroup.Count > 0 && status.data.pathGroup[0] != "*")
                                     {
                                         query.AddRule(FieldConfigUtils.CreateFilterRule(config, cultureCode,
                                             status.name,
@@ -106,10 +106,7 @@ namespace Satrabel.OpenContent.Components.JPList
                     case "sort":
                         {
                             select.Sort.Clear();
-                            select.Sort.Add(FieldConfigUtils.CreateSortRule(config, cultureCode,
-                                status.data.path,
-                                status.data.order == "desc"
-                            ));
+                            select.Sort.Add(FieldConfigUtils.CreateSortRule(config, cultureCode, status.data.path, status.data.order == "desc"));
                             break;
                         }
                 }
