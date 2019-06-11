@@ -172,10 +172,14 @@ namespace Satrabel.OpenContent.Components
             //var url = Globals.NavigateURL(tabFileManager);
             //var dnnFileManagerModule = DnnUtils.GetDnnModulesByFriendlyName("filemanager", tabFileManager).OrderByDescending(m=> m.ModuleID).FirstOrDefault();
             var dnnFileManagerModule = DnnUtils.GetLastModuleByFriendlyName("Digital Asset Management");
-            var modId = dnnFileManagerModule.ModuleID;
-            //var modId = 1420; 
-            var url = Globals.NavigateURL(dnnFileManagerModule.TabID, "FileProperties", "mid=" + modId, "popUp=true", "fileId=" + FileInfo.FileId);
-            return $"javascript:dnnModal.show('{url}',/*showReturn*/false,550,950,true,'')";
+            if (dnnFileManagerModule != null)
+            {
+                var modId = dnnFileManagerModule.ModuleID;
+                //var modId = 1420; 
+                var url = Globals.NavigateURL(dnnFileManagerModule.TabID, "FileProperties", "mid=" + modId, "popUp=true", "fileId=" + FileInfo.FileId);
+                return $"javascript:dnnModal.show('{url}',/*showReturn*/false,550,950,true,'')";
+            }
+            return "";
             //javascript:dnnModal.show('http://localhost:54068/en-us/OpenFiles/ctl/Module/ModuleId/487/view/gridview/pageSize/10?ReturnURL=/en-us/OpenFiles?folderId=42&popUp=true',/*showReturn*/false,550,950,true,'')
             //return string.Format("javascript:dnnModal.show('{0}/ctl/FileProperties/mid/{2}?popUp=true&fileId={1}')", url, FileInfo.FileId, modId);
         }

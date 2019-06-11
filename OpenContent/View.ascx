@@ -50,7 +50,7 @@
                 <a  :value="val.Value" @click.prevent="selectTemplate(val.Value)" href="#" :title="val.Text" >{{val.Text}}</a>
             </div>
             <div class="octemplate">
-                <a href="#" @click.prevent="advanced=true" class="advanced" ><%=Resource("Advanced")%></a>
+                <a href="#" @click.prevent="goAdvanced" class="advanced" ><%=Resource("Advanced")%></a>
             </div>
             <div style="clear:both"></div>
         </div>
@@ -249,7 +249,7 @@
                         self.dataNeeded = data.DataNeeded;
                         self.dataDefined = data.DataDefined;
                     });
-                    this.apiGet('GetTemplates', {}, function (data) {
+                    this.apiGet('GetTemplates', {advanced: this.advanced}, function (data) {
                         self.templates = data;
                         self.loading = false;
                         if (self.templates.length == 0) {
@@ -291,12 +291,16 @@
                         this.advanced = false;
                         this.existingTemplateChange();
                     },
+                    goAdvanced: function () {
+                        this.advanced = true;
+                        this.existingTemplateChange();
+                    },
                     thisModuleChange: function () {
                         this.UseTemplate = "0";
                         this.tabModuleId = 0;
                         this.Template = '';
                         var self = this;
-                        this.apiGet('GetTemplates', {}, function (data) {
+                        this.apiGet('GetTemplates', {advanced: this.advanced}, function (data) {
                             self.templates = data;
                         });
                     },
@@ -327,14 +331,14 @@
                     fromWebChange: function () {
                         var self = this;
                         this.Template = '';
-                        this.apiGet('GetTemplates', { web: true }, function (data) {
+                        this.apiGet('GetNewTemplates', { web: true }, function (data) {
                             self.templates = data;
                         });
                     },
                     fromSiteChange: function () {
                         var self = this;
                         this.Template = '';
-                        this.apiGet('GetTemplates', { web: false }, function (data) {
+                        this.apiGet('GetNewTemplates', { web: false }, function (data) {
                             self.templates = data;
                         });
                     },
@@ -409,7 +413,7 @@
                                 self.dataDefined = data.DataDefined;
                                 self.Template = data.Template;
                                 if (self.newTemplate) {
-                                    self.apiGet('GetTemplates', {}, function (dataTemplates) {
+                                    self.apiGet('GetTemplates', {advanced: this.advanced}, function (dataTemplates) {
                                         self.templates = dataTemplates;
                                         self.Template = data.Template;
                                     });

@@ -42,6 +42,7 @@ namespace Satrabel.OpenContent.Components.Render
             ExtendModel(enhancedModel, onlyData, onlyMainData);
             ExtendModelSingle(enhancedModel);
             EnhanceSelect2(model, onlyData);
+            EnhanceImages(model);
             JsonUtils.Merge(model, enhancedModel);
             JsonUtils.SimplifyJson(model, GetCurrentCultureCode());
             return model;

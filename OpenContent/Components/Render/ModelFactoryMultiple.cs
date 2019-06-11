@@ -96,7 +96,7 @@ namespace Satrabel.OpenContent.Components.Render
                     JsonUtils.SimplifyJson(dyn, GetCurrentCultureCode());
                     EnhanceSelect2(dyn, onlyData);
                     EnhanceUser(dyn, item.CreatedByUserId);
-                    EnhanceImages(dyn, itemsModel);
+                    EnhanceImages(dyn);
                     if (onlyData)
                     {
                         RemoveNoData(itemsModel);
@@ -164,20 +164,7 @@ namespace Satrabel.OpenContent.Components.Render
                 }
             }
         }
-        private void EnhanceImages(JObject model, JObject itemsModel)
-        {
-            if (_optionsJson == null)
-            {
-                var alpaca = _ds.GetAlpaca(_dsContext, true, true, false);
-
-                if (alpaca != null)
-                {
-                    _schemaJson = alpaca["schema"] as JObject; // cache
-                    _optionsJson = alpaca["options"] as JObject; // cache
-                }
-            }
-            JsonUtils.ImagesJson(model, Options, _optionsJson, IsEditMode);
-        }
+        
 
         private static void RemoveNoData(JObject model)
         {

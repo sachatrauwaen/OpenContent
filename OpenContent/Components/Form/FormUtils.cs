@@ -101,7 +101,7 @@ namespace Satrabel.OpenContent.Components.Form
             {
                 strIn = Regex.Replace(strIn, @"(@)(.+)$", DomainMapper);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 invalid = true;
             }
