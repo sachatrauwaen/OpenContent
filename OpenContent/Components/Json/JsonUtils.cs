@@ -421,7 +421,7 @@ namespace Satrabel.OpenContent.Components.Json
                         var obj = value as JObject;
                         if (obj != null)
                         {
-                            //LookupJson(obj, reqOpt, opt["items"] as JObject);
+                            ImagesJson(obj, reqOpt, opt["items"] as JObject, isEditable);
                         }
                         else if (image)
                         {
@@ -432,7 +432,7 @@ namespace Satrabel.OpenContent.Components.Json
                                 {
                                     newArray.Add(GenerateImage(reqOpt, val.ToString(), isEditable));
                                 }
-                                catch (System.Exception)
+                                catch (Exception)
                                 {
                                 }
                             }
@@ -446,7 +446,7 @@ namespace Satrabel.OpenContent.Components.Json
                 else if (childProperty.Value is JObject)
                 {
                     var obj = childProperty.Value as JObject;
-
+                    ImagesJson(obj, reqOpt, opt, isEditable);
                 }
                 else if (childProperty.Value is JValue)
                 {
@@ -457,7 +457,7 @@ namespace Satrabel.OpenContent.Components.Json
                         {
                             o[childProperty.Name] = GenerateImage(reqOpt, val, isEditable);
                         }
-                        catch (System.Exception)
+                        catch (Exception)
                         {
                         }
                     }
