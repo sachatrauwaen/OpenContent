@@ -387,7 +387,7 @@ namespace Satrabel.OpenContent.Components.Json
                 }
             }
         }
-        
+
         /// <summary>
         /// Enhance data for all alpaca fields of type 'image2' and 'mlimage2'
         /// </summary>
@@ -419,7 +419,7 @@ namespace Satrabel.OpenContent.Components.Json
                     foreach (var value in array)
                     {
                         var obj = value as JObject;
-                        if (obj != null)
+                        if (obj != null && opt != null && opt["items"] != null)
                         {
                             ImagesJson(obj, reqOpt, opt["items"] as JObject, isEditable);
                         }
@@ -446,7 +446,10 @@ namespace Satrabel.OpenContent.Components.Json
                 else if (childProperty.Value is JObject)
                 {
                     var obj = childProperty.Value as JObject;
-                    ImagesJson(obj, reqOpt, opt, isEditable);
+                    if (obj != null && opt != null)
+                    {
+                        ImagesJson(obj, reqOpt, opt, isEditable);
+                    }
                 }
                 else if (childProperty.Value is JValue)
                 {
@@ -492,7 +495,7 @@ namespace Satrabel.OpenContent.Components.Json
             return portalFileUri.EditUrl();
         }
 
-        
+
 
         private static JObject GenerateObject(JObject additionalData, string key, string id, string dataMember, string valueField, string childerenField)
         {

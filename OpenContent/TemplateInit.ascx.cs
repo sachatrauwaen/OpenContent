@@ -35,7 +35,7 @@ namespace Satrabel.OpenContent
                 string key = item.Attributes["ResourceKey"];
                 if (key != null)
                 {
-                    item.Text = Localization.GetString(key+".Text", ResourceFile);
+                    item.Text = Localization.GetString(key + ".Text", ResourceFile);
                 }
             }
             foreach (ListItem item in rblUseTemplate.Items)
@@ -81,8 +81,8 @@ namespace Satrabel.OpenContent
                 //    tbTemplateName.Text = Path.GetFileNameWithoutExtension(ddlTemplate.Items[0].Value);
                 //}
 
-                
-                foreach (var item in GithubTemplateUtils.GetTemplateList(ModuleContext.PortalId).Where(t=> t.Type == Components.Github.TypeEnum.Dir).OrderBy(t => t.Name))
+
+                foreach (var item in GithubTemplateUtils.GetTemplateList(ModuleContext.PortalId).Where(t => t.Type == Components.Github.TypeEnum.Dir).OrderBy(t => t.Name))
                 {
                     ddlTemplate.Items.Add(new ListItem(item.Name, item.Path));
                 }
@@ -494,9 +494,15 @@ namespace Satrabel.OpenContent
                 ModuleInfo moduleInfo = item.Value;
                 if (moduleInfo.ModuleDefinition.FriendlyName == App.Config.Opencontent)
                 {
-                    if (moduleInfo.OpenContentSettings().GetModuleId(moduleInfo.ModuleID) == datamoduleId)
+                    try
                     {
-                        return true;
+                        if (moduleInfo.OpenContentSettings().GetModuleId(moduleInfo.ModuleID) == datamoduleId)
+                        {
+                            return true;
+                        }
+                    }
+                    catch (Exception)
+                    {
                     }
                 }
             }
@@ -517,7 +523,7 @@ namespace Satrabel.OpenContent
             }
         }
 
-        
+
 
     }
 }
