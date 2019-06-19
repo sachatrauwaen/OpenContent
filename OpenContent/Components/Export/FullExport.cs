@@ -74,18 +74,20 @@ namespace Satrabel.OpenContent.Components.Export
             }
 
             // additional data
-            foreach (var item in module.Settings.Manifest.AdditionalDataDefinition)
+            if (module.Settings.Manifest.AdditionalDataDefinition != null)
             {
-                alpaca = ds.GetDataAlpaca(dsContext, true, true, false, item.Key);
-                var dsItem = ds.GetData(dsContext, item.Value.ScopeType, item.Key);
-                if (dsItem != null)
+                foreach (var item in module.Settings.Manifest.AdditionalDataDefinition)
                 {
-                    var json = dsItem.Data;
-                    ExportTraverse(alpaca, json);
-                    SaveData(json, item.Key);
+                    alpaca = ds.GetDataAlpaca(dsContext, true, true, false, item.Key);
+                    var dsItem = ds.GetData(dsContext, item.Value.ScopeType, item.Key);
+                    if (dsItem != null)
+                    {
+                        var json = dsItem.Data;
+                        ExportTraverse(alpaca, json);
+                        SaveData(json, item.Key);
+                    }
                 }
             }
-
             // save settings
             SaveSettings(module.Settings);
             // zip template
@@ -138,7 +140,7 @@ namespace Satrabel.OpenContent.Components.Export
                 var optionsType = options?.Value<string>("type");
                 if (optionsType == "image" || optionsType == "file")
                 {
-                    SaveFile(data.ToString());
+                    SaveFile(data.ToString(), "");
                 }
                 else if (optionsType == "mlimage" || optionsType == "mlfile")
                 {
@@ -146,40 +148,65 @@ namespace Satrabel.OpenContent.Components.Export
                     {
                         foreach (var item in (data as JObject).Children<JProperty>())
                         {
-                            SaveFile(item.Value.ToString());
+                            SaveFile(item.Value.ToString(), "");
                         }
                     }
                 }
                 else if (optionsType == "imagex")
                 {
-                    SaveFile(data?["url"].ToString());
-                    SaveFile(data?["cropUrl"].ToString());
+                    var folder = "";
+                    var optionsFolder = options?.Value<string>("uploadfolder");
+                    if (!string.IsNullOrEmpty(optionsFolder))
+                    {
+                        folder = optionsFolder + "/";
+                    }
+
+                    SaveFile(data?["url"].ToString(), folder);
+                    SaveFile(data?["cropUrl"].ToString(), folder);
                 }
                 else if (optionsType == "mlimagex")
                 {
+                    var folder = "";
+                    var optionsFolder = options?.Value<string>("uploadfolder");
+                    if (!string.IsNullOrEmpty(optionsFolder))
+                    {
+                        folder = optionsFolder + "/";
+                    }
                     if (json is JObject)
                     {
                         foreach (var item in (data as JObject).Children<JProperty>())
                         {
                             if (item.Type == JTokenType.Object)
                             {
-                                SaveFile(item.Value?["url"].ToString());
-                                SaveFile(item.Value?["cropUrl"].ToString());
+                                SaveFile(item.Value?["url"].ToString(), folder);
+                                SaveFile(item.Value?["cropUrl"].ToString(), folder);
                             }
                         }
                     }
                 }
                 else if (optionsType == "file2")
                 {
-                    SaveFile(data.Value<int>());
+                    var folder = "";
+                    var optionsFolder = options?.Value<string>("folder");
+                    if (!string.IsNullOrEmpty(optionsFolder))
+                    {
+                        folder = optionsFolder + "/";
+                    }
+                    SaveFile(data.Value<int>(), folder);
                 }
                 else if (optionsType == "mlfile2")
                 {
+                    var folder = "";
+                    var optionsFolder = options?.Value<string>("folder");
+                    if (!string.IsNullOrEmpty(optionsFolder))
+                    {
+                        folder = optionsFolder + "/";
+                    }
                     if (json is JObject)
                     {
                         foreach (var item in (data as JObject).Children<JProperty>())
                         {
-                            SaveFile(item.Value<int>());
+                            SaveFile(item.Value<int>(), folder);
                         }
                     }
                 }
@@ -210,34 +237,58 @@ namespace Satrabel.OpenContent.Components.Export
                 }
                 else if (optionsType == "imagex")
                 {
-                    ImportFile(data, "url", ModuleFilesFolder, true);
-                    ImportFile(data, "cropUrl", ModuleCroppedFolder);
+                    var folder = "";
+                    var optionsFolder = options?.Value<string>("uploadfolder");
+                    if (!string.IsNullOrEmpty(optionsFolder))
+                    {
+                        folder = optionsFolder + "/";
+                    }
+                    ImportFile(data, "url", ModuleFilesFolder, folder, true);
+                    ImportFile(data, "cropUrl", ModuleCroppedFolder, folder);
                 }
                 else if (optionsType == "mlimagex")
                 {
+                    var folder = "";
+                    var optionsFolder = options?.Value<string>("uploadfolder");
+                    if (!string.IsNullOrEmpty(optionsFolder))
+                    {
+                        folder = optionsFolder + "/";
+                    }
                     if (json is JObject)
                     {
                         foreach (var item in (data as JObject).Children<JProperty>())
                         {
-                            ImportFile(item.Value, "url", ModuleFilesFolder, true);
-                            ImportFile(item.Value, "cropUrl", ModuleCroppedFolder);
+                            ImportFile(item.Value, "url", ModuleFilesFolder, folder, true);
+                            ImportFile(item.Value, "cropUrl", ModuleCroppedFolder, folder);
                         }
                     }
                 }
                 else if (optionsType == "file2")
                 {
                     var filename = Files[data.ToString()].ToString();
-                    return ImportFileId(filename, ModuleFilesFolder);
+                    var folder = ""; // ModuleFilesFolder;
+                    var optionsFolder = options?.Value<string>("folder");
+                    if (!string.IsNullOrEmpty(optionsFolder))
+                    {
+                        folder = optionsFolder + "/";
+                    }
+                    return ImportFileId(filename, ModuleFilesFolder, folder);
                 }
                 else if (optionsType == "mlfile2")
                 {
+                    var folder = ""; // ModuleFilesFolder;
+                    var optionsFolder = options?.Value<string>("folder");
+                    if (!string.IsNullOrEmpty(optionsFolder))
+                    {
+                        folder = optionsFolder + "/";
+                    }
                     if (json is JObject)
                     {
                         var newObj = new JObject();
                         foreach (var item in (data as JObject).Children<JProperty>())
                         {
                             var filename = Files[data.ToString()].ToString();
-                            newObj[item.Name] = ImportFileId(filename, ModuleFilesFolder);
+                            newObj[item.Name] = ImportFileId(filename, ModuleFilesFolder, folder);
                         }
                         return newObj;
                     }
@@ -246,12 +297,14 @@ namespace Satrabel.OpenContent.Components.Export
             });
         }
 
-        private void ImportFile(JToken data, string field, string ModuleFilesFolder, bool setId = false)
+        private void ImportFile(JToken data, string field, string ModuleFilesFolder, string folder, bool setId = false)
         {
             var filename = Path.GetFileName(data[field].ToString());
-            data[field] = new JValue(PortalSettings.HomeDirectory + ModuleFilesFolder + filename);
-            var file = ImportFile(filename, ModuleFilesFolder);
-            if (setId && file!= null)
+            var sourceFolder = folder;
+            var destinationFolder = string.IsNullOrEmpty(folder) ? ModuleFilesFolder : folder;
+            data[field] = new JValue(PortalSettings.HomeDirectory + destinationFolder + filename);
+            var file = ImportFile(filename, sourceFolder, destinationFolder);
+            if (setId && file != null)
             {
                 data["id"] = new JValue(file.FileId.ToString());
             }
@@ -260,34 +313,27 @@ namespace Satrabel.OpenContent.Components.Export
         private JToken ImportFile(JToken data, string ModuleFilesFolder)
         {
             var filename = Path.GetFileName(data.ToString());
-            ImportFile(filename, ModuleFilesFolder);
+            ImportFile(filename, "", ModuleFilesFolder);
             return new JValue(PortalSettings.HomeDirectory + ModuleFilesFolder + filename);
         }
 
-        private JToken ImportFileId(string filename, string ModuleFilesFolder)
+        private JToken ImportFileId(string filename, string ModuleFilesFolder, string folder)
         {
-            var file = ImportFile(filename, ModuleFilesFolder);
+            var sourceFolder = folder;
+            var destinationFolder = string.IsNullOrEmpty(folder) ? ModuleFilesFolder : folder;
+            var file = ImportFile(filename, sourceFolder, destinationFolder);
             if (file != null)
                 return new JValue(file.FileId.ToString());
             else
                 return null;
         }
 
-        private IFileInfo ImportFile(string filename, string folder)
+        private IFileInfo ImportFile(string filename, string sourceFolder, string destinationFolder)
         {
             if (string.IsNullOrEmpty(filename)) return null;
-            var sourceFilename = ModuleImportDirectory + filename;
-            //var destinationDirectory = HostingEnvironment.MapPath("~/" + folder);
-            //var destinationFilename = destinationDirectory + filename;
-
+            var sourceFilename = sourceFolder + filename;
             if (!File.Exists(sourceFilename)) return null;
-
-            return AddFile(filename, folder, sourceFilename);
-
-
-            //if (!Directory.Exists(destinationDirectory))
-            //    Directory.CreateDirectory(destinationDirectory);
-            // File.Copy(sourceFilename, destinationFilename, true);
+            return AddFile(Path.GetFileName(filename), destinationFolder, sourceFilename);
         }
 
         private IFileInfo AddFile(string filename, string folder, string sourceFilename)
@@ -311,36 +357,42 @@ namespace Satrabel.OpenContent.Components.Export
             return fileManager.AddFile(f, filename, File.OpenRead(sourceFilename), true);
         }
 
-        private void SaveFile(string url)
+        private void SaveFile(string url, string folder)
         {
             if (string.IsNullOrEmpty(url)) return;
-            
-            if ( url.IndexOf('?')> 0)
+
+            if (url.IndexOf('?') > 0)
             {
                 url = url.Substring(0, url.IndexOf('?'));
             }
 
             var sourceFilename = HostingEnvironment.MapPath("~/" + url);
-            var destinationFilename = ModuleExportDirectory + Path.GetFileName(url);
+            var destinationFilename = ModuleExportDirectory + folder + Path.GetFileName(url);
             if (File.Exists(sourceFilename))
             {
+                if (!Directory.Exists(ModuleExportDirectory + folder))
+                    Directory.CreateDirectory(ModuleExportDirectory + folder);
+
                 File.Copy(sourceFilename, destinationFilename, true);
                 if (Files[url] == null)
-                    Files.Add(url, Path.GetFileName(url));
+                    Files.Add(url, folder + Path.GetFileName(url));
             }
         }
-        private void SaveFile(int fileId)
+        private void SaveFile(int fileId, string folder)
         {
             var fileManager = FileManager.Instance;
             var file = fileManager.GetFile(fileId);
 
             var sourceFilename = file.PhysicalPath;
-            var destinationFilename = ModuleExportDirectory + file.FileName;
+            var destinationFilename = ModuleExportDirectory + folder + file.FileName;
+            if (!Directory.Exists(ModuleExportDirectory + folder))
+                Directory.CreateDirectory(ModuleExportDirectory + folder);
+
             if (File.Exists(sourceFilename))
             {
                 File.Copy(sourceFilename, destinationFilename, true);
                 if (Files[fileId.ToString()] == null)
-                    Files.Add(fileId.ToString(), file.FileName);
+                    Files.Add(fileId.ToString(), folder + file.FileName);
             }
         }
         public void Import(string filename, bool importTemplate, bool importData, bool importAdditionalData, bool importSettings)
@@ -421,7 +473,7 @@ namespace Satrabel.OpenContent.Components.Export
                 }
             }
 
-            if (importAdditionalData)
+            if (importAdditionalData && module.Settings.Manifest.AdditionalDataDefinition != null)
             {
                 foreach (var item in module.Settings.Manifest.AdditionalDataDefinition)
                 {
