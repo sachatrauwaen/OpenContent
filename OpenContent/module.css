@@ -39,3 +39,43 @@
     margin-left: 1.5em;
 }
 
+/* For Template Picker */
+
+.oc-view .dnnFormItem input[type="checkbox"], .oc-view .dnnFormItem input[type="radio"] {
+	display: inline-block;
+	width: auto;
+	margin: 6px 5px 6px 5px;
+}
+.oc-view .octemplate {
+	float: left;
+	width: 160px;
+}
+.oc-view .octemplate a {
+	background-color: #3D3C3C;
+	display: block;
+	height: 2em;
+	padding: 0.3em 0.5em;
+	margin: 0.3em;
+	color: #ffffff;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	border-radius: 3px;
+}
+.oc-view .octemplate a.advanced {
+	background-color: #1DAFE5;
+}
+.oc-view .octemplate a.advanced:hover {
+	color: #3D3C3C;
+}
+.oc-view .octemplate a:visited {
+	color: #ffffff;
+}
+.oc-view .octemplate a:hover {
+	color: #1DAFE5;
+}
+.oc-view [v-cloak] {
+	display: none;
+}
+
+
