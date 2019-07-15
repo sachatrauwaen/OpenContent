@@ -3,47 +3,9 @@
 <uc1:TemplateInit runat="server" ID="TemplateInitControl" />
 
 <asp:Panel ID="pInit" runat="server" Visible="false">
-    <style>
-        .dnnFormItem input[type="checkbox"], .dnnFormItem input[type="radio"] {
-            display: inline-block;
-            width: auto;
-            margin: 6px 5px 6px 5px;
-        }
-        .octemplate {
-            float: left;
-            width: 160px;
-        }
-        .octemplate a {
-            background-color: #3D3C3C;
-            display: block;
-            height: 2em;
-            padding: 0.3em 0.5em;
-            margin: 0.3em;
-            color: #ffffff;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            border-radius: 3px;
-        }
-        .octemplate a.advanced {
-            background-color: #1DAFE5;
-        }
-        .octemplate a.advanced:hover {
-            color: #3D3C3C;
-        }
-        .octemplate a:visited {
-            color: #ffffff;
-        }
-        .octemplate a:hover {
-            color: #1DAFE5;
-        }
-        [v-cloak] {
-            display: none;
-        }
-    </style>
 
 <asp:Panel ID="pVue" runat="server"  >
-    <div v-if="step==1" v-cloak>
+    <div class="oc-view" v-if="step==1" v-cloak>
         <div v-if ="!advanced ">
             <p style="text-align:center">Choose a template</p>
             <div class="octemplate" v-for="(val, index) in templates" v-if="index < 23">
