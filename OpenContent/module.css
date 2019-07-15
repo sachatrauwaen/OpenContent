@@ -1,12 +1,12 @@
-.aspNetDisabled, a.aspNetDisabled, .dnnDisabled, a.dnnDisabled {
+.DnnModule-OpenContent .aspNetDisabled, .DnnModule-OpenContent a.aspNetDisabled, .DnnModule-OpenContent .dnnDisabled, a.dnnDisabled {
     color: #ccc !important;
 }
 
-.dnnFormPopup {
+.DnnModule-OpenContent .dnnFormPopup {
     z-index: 10000000;
 }
 
-.dnnFormPopup .ui-dialog-titlebar {
+.DnnModule-OpenContent .dnnFormPopup .ui-dialog-titlebar {
     position: relative;
     border-bottom: none;
     font-size: 14px;
@@ -15,7 +15,7 @@
     /*margin-bottom: 5px;*/
 }
 
-.easyimage {
+.DnnModule-OpenContent .easyimage {
     background: transparent;
     border: none;
     outline: 0px;
@@ -25,17 +25,57 @@
     text-align: center;
 }
 
-.easyimage img {
+.DnnModule-OpenContent .easyimage img {
     display: block;
     height: auto;
     margin: 0 auto;
     max-width: 100%;
 }
 
-.easyimage.easyimage-side {
+.DnnModule-OpenContent .easyimage.easyimage-side {
     float: right;
     max-width: 50%;
     min-width: 10em;
     margin-left: 1.5em;
 }
 
+
+/* For Template Picker */
+
+.DnnModule-OpenContent .oc-view .dnnFormItem input[type="checkbox"], .DnnModule-OpenContent .oc-view .dnnFormItem input[type="radio"] {
+	display: inline-block;
+	width: auto;
+	margin: 6px 5px 6px 5px;
+}
+.DnnModule-OpenContent .oc-view .octemplate {
+	float: left;
+	width: 160px;
+}
+.DnnModule-OpenContent .oc-view .octemplate a {
+	background-color: #3D3C3C;
+	display: block;
+	height: 2em;
+	padding: 0.3em 0.5em;
+	margin: 0.3em;
+	color: #ffffff;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	border-radius: 3px;
+}
+.DnnModule-OpenContent .oc-view .octemplate a.advanced {
+	background-color: #1DAFE5;
+}
+.DnnModule-OpenContent .oc-view .octemplate a.advanced:hover {
+	color: #3D3C3C;
+}
+.DnnModule-OpenContent .oc-view .octemplate a:visited {
+	color: #ffffff;
+}
+.DnnModule-OpenContent .oc-view .octemplate a:hover {
+	color: #1DAFE5;
+}
+
+.DnnModule-OpenContent .oc-view [v-cloak] {
+	display: none;
+}
