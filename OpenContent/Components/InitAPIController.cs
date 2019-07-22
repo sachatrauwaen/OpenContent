@@ -249,6 +249,8 @@ namespace Satrabel.OpenContent.Components
             };
         }
 
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Admin)]
         public List<PageDto> GetDetailPages(string template, int tabModuleId)
         {
             string format;
