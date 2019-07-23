@@ -18,7 +18,7 @@
         </div>
         <div v-else class="dnnForm">
             <fieldset>
-                <div v-if="advanced" class="dnnFormItem">
+                <div v-if="advanced && existingTemplate" class="dnnFormItem">
                     <label class="dnnLabel"><%= Resource("lUseContent") %></label>
                     <table class="dnnFormRadioButtons">
                         <tr>
@@ -34,17 +34,6 @@
                     <select v-model="tabModuleId" @change="moduleChange">
                         <option v-for="mod in modules" :value="mod.TabModuleId">{{mod.Text}}</option>
                     </select>
-                </div>
-                <div v-if="advanced && !otherModule" class="dnnFormItem">
-                    <label class="dnnLabel"><%= Resource("lUseTemplate") %></label>
-                    <table class="dnnFormRadioButtons">
-                        <tr>
-                            <td>
-                                <input type="radio" v-model="UseTemplate" value="0" @change="existingTemplateChange" :disabled="noTemplates" /><label><%=Resource("liUseExistingTemplate")%></label></td>
-                            <td :class="{dnnDisabled:otherModule}">
-                                <input type="radio" v-model="UseTemplate" value="1" @change="newTemplateChange" :disabled="otherModule"/><label><%=Resource("liCreateNewTemplate")%></label></td>
-                        </tr>
-                    </table>
                 </div>
                 <div v-if="UseTemplate=='1'" class="dnnFormItem">
                     <label class="dnnLabel"><%= Resource("lFrom") %></label>
@@ -84,6 +73,13 @@
                 <li>
                     <a href="#" v-if="existingTemplate && thisModule" @click.prevent="basic" class="dnnSecondaryAction" :disabled="loading" >Basic</a>
                 </li>
+                <li>
+                    <a href="#" v-if="!otherModule && existingTemplate"  @click.prevent="newTemplateChange" class="dnnSecondaryAction" :disabled="loading" ><%=Resource("liCreateNewTemplate")%></a>
+                </li>
+                <li>
+                    <a href="#" v-if="!otherModule && !existingTemplate"  @click.prevent="existingTemplateChange" class="dnnSecondaryAction" :disabled="loading" ><%=Resource("liUseExistingTemplate")%></a>
+                </li>
+
             </ul>
         </div>
     </div>
@@ -211,7 +207,7 @@
                         self.dataNeeded = data.DataNeeded;
                         self.dataDefined = data.DataDefined;
                     });
-                    this.apiGet('GetTemplates', {advanced: this.advanced}, function (data) {
+                    this.apiGet('GetTemplates', { advanced: this.advanced }, function (data) {
                         self.templates = data;
                         self.loading = false;
                         if (self.templates.length == 0) {
@@ -262,7 +258,7 @@
                         this.tabModuleId = 0;
                         this.Template = '';
                         var self = this;
-                        this.apiGet('GetTemplates', {advanced: this.advanced}, function (data) {
+                        this.apiGet('GetTemplates', { advanced: this.advanced }, function (data) {
                             self.templates = data;
                         });
                     },
@@ -283,9 +279,11 @@
                         });
                     },
                     existingTemplateChange: function () {
+                        this.UseTemplate = "0";
                         this.thisModuleChange();
                     },
                     newTemplateChange: function () {
+                        this.UseTemplate = "1";
                         this.from = "0";
                         this.Template = '';
                         this.fromSiteChange();
@@ -375,7 +373,7 @@
                                 self.dataDefined = data.DataDefined;
                                 self.Template = data.Template;
                                 if (self.newTemplate) {
-                                    self.apiGet('GetTemplates', {advanced: this.advanced}, function (dataTemplates) {
+                                    self.apiGet('GetTemplates', { advanced: this.advanced }, function (dataTemplates) {
                                         self.templates = dataTemplates;
                                         self.Template = data.Template;
                                     });

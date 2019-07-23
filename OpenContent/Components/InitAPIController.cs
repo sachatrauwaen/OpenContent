@@ -262,7 +262,7 @@ namespace Satrabel.OpenContent.Components
             var manifest = templateUri.ToTemplateManifest();
 
             int othermoduleDetailTabId = -1;
-            if (manifest.IsListTemplate && manifest.Manifest.Templates.Any(t => t.Value.Detail != null))
+            if (manifest != null && manifest.IsListTemplate && manifest.Manifest.Templates.Any(t => t.Value.Detail != null))
             {
                 if (tabModuleId > 0)
                 {
