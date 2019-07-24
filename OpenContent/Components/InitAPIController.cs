@@ -72,10 +72,10 @@ namespace Satrabel.OpenContent.Components
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Admin)]
         [HttpGet]
-        public List<TemplateDto> GetTemplates()
+        public List<TemplateDto> GetTemplates(bool advanced)
         {
             var scriptFileSetting = ActiveModule.OpenContentSettings().Template;
-            var templates = OpenContentUtils.ListOfTemplatesFiles(PortalSettings, ActiveModule.ModuleID, scriptFileSetting, App.Config.Opencontent);
+            var templates = OpenContentUtils.ListOfTemplatesFiles(PortalSettings, ActiveModule.ModuleID, scriptFileSetting, App.Config.Opencontent, advanced);
             return templates.Select(t => new TemplateDto()
             {
                 Value = t.Value,
@@ -100,7 +100,7 @@ namespace Satrabel.OpenContent.Components
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Admin)]
         [HttpGet]
-        public List<TemplateDto> GetTemplates(bool web)
+        public List<TemplateDto> GetNewTemplates(bool web)
         {
             if (web)
             {
@@ -249,6 +249,8 @@ namespace Satrabel.OpenContent.Components
             };
         }
 
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Admin)]
         public List<PageDto> GetDetailPages(string template, int tabModuleId)
         {
             string format;
@@ -260,7 +262,7 @@ namespace Satrabel.OpenContent.Components
             var manifest = templateUri.ToTemplateManifest();
 
             int othermoduleDetailTabId = -1;
-            if (manifest.IsListTemplate && manifest.Manifest.Templates.Any(t => t.Value.Detail != null))
+            if (manifest != null && manifest.IsListTemplate && manifest.Manifest.Templates.Any(t => t.Value.Detail != null))
             {
                 if (tabModuleId > 0)
                 {

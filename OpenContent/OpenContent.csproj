@@ -126,6 +126,8 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -175,6 +177,8 @@
     <Compile Include="Components\Datasource\IDataQuery.cs" />
     <Compile Include="Components\Datasource\IDataQueries.cs" />
     <Compile Include="Components\Export\ExcelApiController.cs" />
+    <Compile Include="Components\Export\FullExport.cs" />
+    <Compile Include="Components\Export\JsonTraverse.cs" />
     <Compile Include="Components\Files\FileUriUtils.cs" />
     <Compile Include="Components\Github\GithubDtos.cs" />
     <Compile Include="Components\ImageStatus.cs" />

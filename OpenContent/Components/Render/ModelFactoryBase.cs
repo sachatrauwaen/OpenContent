@@ -120,6 +120,21 @@ namespace Satrabel.OpenContent.Components.Render
 
         public abstract JToken GetModelAsJson(bool onlyData = false, bool onlyMainData = false);
 
+        protected void EnhanceImages(JObject model)
+        {
+            if (_optionsJson == null)
+            {
+                var alpaca = _ds.GetAlpaca(_dsContext, true, true, false);
+
+                if (alpaca != null)
+                {
+                    _schemaJson = alpaca["schema"] as JObject; // cache
+                    _optionsJson = alpaca["options"] as JObject; // cache
+                }
+            }
+            JsonUtils.ImagesJson(model, Options, _optionsJson, IsEditMode);
+        }
+
         protected void EnhanceSelect2(JObject model, bool onlyData)
         {
             string colName = string.IsNullOrEmpty(_collection) ? "Items" : _collection;

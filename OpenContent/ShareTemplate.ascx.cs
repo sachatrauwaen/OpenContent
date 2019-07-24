@@ -22,6 +22,7 @@ using DotNetNuke.Common.Utilities;
 using System.Web;
 using Satrabel.OpenContent.Components.Rss;
 using Satrabel.OpenContent.Components.Manifest;
+using System.Web.Hosting;
 
 #endregion
 
@@ -69,6 +70,9 @@ namespace Satrabel.OpenContent
             phExport.Visible = false;
             phImportWeb.Visible = false;
             phCopy.Visible = false;
+            phFullExport.Visible = false;
+            phFullImport.Visible = false;
+
             if (rblAction.SelectedIndex == 0) return;
 
             if (rblAction.SelectedValue == "importfile") // import
@@ -97,6 +101,14 @@ namespace Satrabel.OpenContent
                 phCopy.Visible = true;
                 ddlCopyTemplate.Items.Clear();
                 ddlCopyTemplate.Items.AddRange(OpenContentUtils.GetTemplates(PortalSettings, ModuleId, (TemplateManifest)null, GetModuleSubDir()).ToArray());
+            }
+            else if (rblAction.SelectedValue == "fullexport") // 
+            {
+                phFullExport.Visible = true;
+            }
+            else if (rblAction.SelectedValue == "fullimport") // 
+            {
+                phFullImport.Visible = true;
             }
         }
         protected void cmdImport_Click(object sender, EventArgs e)
@@ -167,8 +179,6 @@ namespace Satrabel.OpenContent
                 folder = FolderManager.Instance.AddFolder(PortalId, GetModuleSubDir() + "/Templates");
             }
             var fileManager = DotNetNuke.Services.FileSystem.FileManager.Instance;
-            //var file = fileManager.AddFile(folder, fuFile.FileName, fuFile.FileContent, true, fuFile.PostedFile.co);
-            //var file = fileManager.AddFile(folder, fuFile.FileName, fuFile.PostedFile.InputStream, true, false, fuFile.PostedFile.ContentType);
             string zipfilename = Server.MapPath(ddlTemplates.SelectedValue) + ".zip";
             CreateZipFile(zipfilename, Server.MapPath(ddlTemplates.SelectedValue));
             DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "Export Successful", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.GreenSuccess);
@@ -369,6 +379,47 @@ namespace Satrabel.OpenContent
                 DotNetNuke.Services.Exceptions.Exceptions.LogException(ex);
             }
             DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "Copy Successful", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.GreenSuccess);
+        }
+
+        protected void lbFullImport_Click(object sender, EventArgs e)
+        {
+            string strMessage = "";
+            try
+            {
+
+                if (Path.GetExtension(fuFullImport.FileName) == ".zip")
+                {
+                    var ImportDirectory = HostingEnvironment.MapPath("~/" + PortalSettings.HomeDirectory + "OpenContent/Import/");
+                    if (!Directory.Exists(ImportDirectory))
+                        Directory.CreateDirectory(ImportDirectory);
+                    fuFullImport.SaveAs(ImportDirectory + fuFullImport.FileName);
+                    var fe = new Components.Export.FullExport(TabId, ModuleId);
+                    if (cbBackup.Checked)
+                    {
+                        fe.Export();
+                    }
+                    fe.Import(fuFullImport.FileName, cbTemplate.Checked, cbData.Checked, cbAdditionalData.Checked, cbSettings.Checked);
+                }
+            }
+            catch (Exception exc)
+            {
+                App.Services.Logger.Error(exc);
+                strMessage += "<br />" + string.Format(App.Services.Localizer.GetString("SaveFileError"), fuFile.FileName);
+            }
+            if (string.IsNullOrEmpty(strMessage))
+                DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "Import Successful", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.GreenSuccess);
+            else
+                DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, strMessage, DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
+
+            
+        }
+
+        protected void lbFullExport_Click(object sender, EventArgs e)
+        {
+            var fe = new Components.Export.FullExport(TabId, ModuleId);
+            
+            var zipFileName = fe.Export();
+            WriteFileToHttpContext(zipFileName, ContentDisposition.Attachment);
         }
     }
 }

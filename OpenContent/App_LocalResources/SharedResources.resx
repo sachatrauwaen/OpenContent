@@ -136,7 +136,7 @@
     <value>Based On Template From</value>
   </data>
   <data name="liCreateNewTemplate.Text" xml:space="preserve">
-    <value>Create a new template</value>
+    <value>Create New Template Folder</value>
   </data>
   <data name="liFromSite.Text" xml:space="preserve">
     <value>Site</value>
@@ -151,7 +151,7 @@
     <value>This module</value>
   </data>
   <data name="liUseExistingTemplate.Text" xml:space="preserve">
-    <value>Use a existing template</value>
+    <value>Use Existing Template</value>
   </data>
   <data name="lTemplate.Text" xml:space="preserve">
     <value>Template</value>

@@ -49,15 +49,20 @@ namespace Satrabel.OpenContent.Components
             {
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             }
-            List<Contents> contents = null;
-            string url = "https://api.github.com/repos/"+GetGitRepository(portalId)+"/contents";
-            HttpClient client = new HttpClient();
-            client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36");
-            var response = client.GetStringAsync(new Uri(url)).Result;
-            if (response != null)
+            List<Contents> contents = new List<Contents>();
+
+            var gitRepos = GetGitRepository(portalId);
+            foreach (var repo in gitRepos.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries))
             {
-                //content = JArray.Parse(response);
-                contents = Contents.FromJson(response);
+                string url = "https://api.github.com/repos/" + repo + "/contents";
+                HttpClient client = new HttpClient();
+                client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36");
+                var response = client.GetStringAsync(new Uri(url)).Result;
+                if (response != null)
+                {
+                    //content = JArray.Parse(response);
+                    contents .AddRange(Contents.FromJson(response));
+                }
             }
             return contents;
         }
@@ -70,7 +75,7 @@ namespace Satrabel.OpenContent.Components
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             }
             List<Contents> contents = null;
-            string url = "https://api.github.com/repos/"+GetGitRepository(portalId)+"/contents/" + path;
+            string url = "https://api.github.com/repos/" + GetGitRepository(portalId) + "/contents/" + path;
             HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36");
             var response = client.GetStringAsync(new Uri(url)).Result;

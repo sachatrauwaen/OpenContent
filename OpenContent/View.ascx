@@ -12,13 +12,13 @@
                 <a  :value="val.Value" @click.prevent="selectTemplate(val.Value)" href="#" :title="val.Text" >{{val.Text}}</a>
             </div>
             <div class="octemplate">
-                <a href="#" @click.prevent="advanced=true" class="advanced" ><%=Resource("Advanced")%></a>
+                <a href="#" @click.prevent="goAdvanced" class="advanced" ><%=Resource("Advanced")%></a>
             </div>
             <div style="clear:both"></div>
         </div>
         <div v-else class="dnnForm">
             <fieldset>
-                <div v-if="advanced" class="dnnFormItem">
+                <div v-if="advanced && existingTemplate" class="dnnFormItem">
                     <label class="dnnLabel"><%= Resource("lUseContent") %></label>
                     <table class="dnnFormRadioButtons">
                         <tr>
@@ -34,17 +34,6 @@
                     <select v-model="tabModuleId" @change="moduleChange">
                         <option v-for="mod in modules" :value="mod.TabModuleId">{{mod.Text}}</option>
                     </select>
-                </div>
-                <div v-if="advanced && !otherModule" class="dnnFormItem">
-                    <label class="dnnLabel"><%= Resource("lUseTemplate") %></label>
-                    <table class="dnnFormRadioButtons">
-                        <tr>
-                            <td>
-                                <input type="radio" v-model="UseTemplate" value="0" @change="existingTemplateChange" :disabled="noTemplates" /><label><%=Resource("liUseExistingTemplate")%></label></td>
-                            <td :class="{dnnDisabled:otherModule}">
-                                <input type="radio" v-model="UseTemplate" value="1" @change="newTemplateChange" :disabled="otherModule"/><label><%=Resource("liCreateNewTemplate")%></label></td>
-                        </tr>
-                    </table>
                 </div>
                 <div v-if="UseTemplate=='1'" class="dnnFormItem">
                     <label class="dnnLabel"><%= Resource("lFrom") %></label>
@@ -84,6 +73,13 @@
                 <li>
                     <a href="#" v-if="existingTemplate && thisModule" @click.prevent="basic" class="dnnSecondaryAction" :disabled="loading" >Basic</a>
                 </li>
+                <li>
+                    <a href="#" v-if="isPageAdmin && !otherModule && existingTemplate"  @click.prevent="newTemplateChange" class="dnnSecondaryAction" :disabled="loading" ><%=Resource("liCreateNewTemplate")%></a>
+                </li>
+                <li>
+                    <a href="#" v-if="!otherModule && !existingTemplate"  @click.prevent="existingTemplateChange" class="dnnSecondaryAction" :disabled="loading" ><%=Resource("liUseExistingTemplate")%></a>
+                </li>
+
             </ul>
         </div>
     </div>
@@ -167,7 +163,8 @@
                     editUrl: "<%= ModuleContext.EditUrl("Edit") %>",
                     message: '',
                     loading: false,
-                    noTemplates: false
+                    noTemplates: false,
+                    isPageAdmin: <%=IsPageAdmin() ? "true" : "false"%> 
                 },
                 computed: {
                     existingTemplate: function () {
@@ -211,7 +208,7 @@
                         self.dataNeeded = data.DataNeeded;
                         self.dataDefined = data.DataDefined;
                     });
-                    this.apiGet('GetTemplates', {}, function (data) {
+                    this.apiGet('GetTemplates', { advanced: this.advanced }, function (data) {
                         self.templates = data;
                         self.loading = false;
                         if (self.templates.length == 0) {
@@ -253,12 +250,16 @@
                         this.advanced = false;
                         this.existingTemplateChange();
                     },
+                    goAdvanced: function () {
+                        this.advanced = true;
+                        this.existingTemplateChange();
+                    },
                     thisModuleChange: function () {
                         this.UseTemplate = "0";
                         this.tabModuleId = 0;
                         this.Template = '';
                         var self = this;
-                        this.apiGet('GetTemplates', {}, function (data) {
+                        this.apiGet('GetTemplates', { advanced: this.advanced }, function (data) {
                             self.templates = data;
                         });
                     },
@@ -279,9 +280,11 @@
                         });
                     },
                     existingTemplateChange: function () {
+                        this.UseTemplate = "0";
                         this.thisModuleChange();
                     },
                     newTemplateChange: function () {
+                        this.UseTemplate = "1";
                         this.from = "0";
                         this.Template = '';
                         this.fromSiteChange();
@@ -289,14 +292,14 @@
                     fromWebChange: function () {
                         var self = this;
                         this.Template = '';
-                        this.apiGet('GetTemplates', { web: true }, function (data) {
+                        this.apiGet('GetNewTemplates', { web: true }, function (data) {
                             self.templates = data;
                         });
                     },
                     fromSiteChange: function () {
                         var self = this;
                         this.Template = '';
-                        this.apiGet('GetTemplates', { web: false }, function (data) {
+                        this.apiGet('GetNewTemplates', { web: false }, function (data) {
                             self.templates = data;
                         });
                     },
@@ -371,7 +374,7 @@
                                 self.dataDefined = data.DataDefined;
                                 self.Template = data.Template;
                                 if (self.newTemplate) {
-                                    self.apiGet('GetTemplates', {}, function (dataTemplates) {
+                                    self.apiGet('GetTemplates', { advanced: this.advanced }, function (dataTemplates) {
                                         self.templates = dataTemplates;
                                         self.Template = data.Template;
                                     });

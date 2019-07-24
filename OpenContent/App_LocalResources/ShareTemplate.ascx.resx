@@ -153,4 +153,19 @@
   <data name="lCopyTemplates.Text" xml:space="preserve">
     <value>From Template</value>
   </data>
+  <data name="lData.Text" xml:space="preserve">
+    <value>Import Data</value>
+  </data>
+  <data name="lSettings.Text" xml:space="preserve">
+    <value>Import Settings</value>
+  </data>
+  <data name="lTemplate.Text" xml:space="preserve">
+    <value>Import Template</value>
+  </data>
+  <data name="lAdditionalData.Text" xml:space="preserve">
+    <value>Import Additional Data</value>
+  </data>
+  <data name="lBackup.Text" xml:space="preserve">
+    <value>Create Backup</value>
+  </data>
 </root>

@@ -13600,6 +13600,8 @@
             
             if (this.culture != this.defaultCulture && this.olddata && this.olddata[this.defaultCulture]) {
                 this.options.placeholder = this.olddata[this.defaultCulture];
+            } else if (this.olddata && Object.keys(this.olddata).length && this.olddata[Object.keys(this.olddata)[0]]) {
+                this.options.placeholder = this.olddata[Object.keys(this.olddata)[0]];
             } else {
                 this.options.placeholder = "";
             }
@@ -13752,6 +13754,8 @@
             
             if (this.culture != this.defaultCulture && this.olddata && this.olddata[this.defaultCulture]) {
                 this.options.placeholder = this.olddata[this.defaultCulture];
+            } else if (this.olddata && Object.keys(this.olddata).length && this.olddata[Object.keys(this.olddata)[0]]) {
+                this.options.placeholder = this.olddata[Object.keys(this.olddata)[0]];
             } else {
                 this.options.placeholder = "";
             }
@@ -14005,6 +14009,8 @@
             }
             if (this.culture != this.defaultCulture && this.olddata && this.olddata[this.defaultCulture]) {
                 this.options.placeholder = this.olddata[this.defaultCulture];
+            } else if (this.olddata && Object.keys(this.olddata).length && this.olddata[Object.keys(this.olddata)[0]]) {
+                this.options.placeholder = this.olddata[Object.keys(this.olddata)[0]];
             } else {
                 this.options.placeholder = "";
             }
@@ -14458,6 +14464,8 @@
             }
             if (this.culture != this.defaultCulture && this.olddata && this.olddata[this.defaultCulture]) {
                 this.options.placeholder = this.olddata[this.defaultCulture];
+            } else if (this.olddata && Object.keys(this.olddata).length && this.olddata[Object.keys(this.olddata)[0]]) {
+                this.options.placeholder = this.olddata[Object.keys(this.olddata)[0]];
             } else {
                 this.options.placeholder = "";
             }
@@ -14618,6 +14626,8 @@
             
             if (this.culture != this.defaultCulture && this.olddata && this.olddata[this.defaultCulture]) {
                 this.options.placeholder = this.olddata[this.defaultCulture];
+            } else if (this.olddata && Object.keys(this.olddata).length && this.olddata[Object.keys(this.olddata)[0]]) {
+                this.options.placeholder = this.olddata[Object.keys(this.olddata)[0]];
             } else {
                 this.options.placeholder = "";
             }
@@ -14790,6 +14800,8 @@
             
             if (this.culture != this.defaultCulture && this.olddata && this.olddata[this.defaultCulture]) {
                 this.options.placeholder = this.olddata[this.defaultCulture];
+            } else if (this.olddata && Object.keys(this.olddata).length && this.olddata[Object.keys(this.olddata)[0]]) {
+                this.options.placeholder = this.olddata[Object.keys(this.olddata)[0]];
             } else {
                 this.options.placeholder = "";
             }
@@ -15058,6 +15070,8 @@
             }
             if (this.culture != this.defaultCulture && this.olddata && this.olddata[this.defaultCulture]) {
                 this.options.placeholder = this.olddata[this.defaultCulture];
+            } else if (this.olddata && Object.keys(this.olddata).length && this.olddata[Object.keys(this.olddata)[0]]) {
+                this.options.placeholder = this.olddata[Object.keys(this.olddata)[0]];
             } else {
                 this.options.placeholder = "";
             }
