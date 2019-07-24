@@ -98,12 +98,12 @@ namespace Satrabel.OpenContent.Components
         /// <param name="selectedTemplate">The selected template.</param>
         /// <param name="moduleSubDir">The module sub dir.</param>
         /// <returns></returns>
-        public static List<ListItem> ListOfTemplatesFiles(PortalSettings portalSettings, int moduleId, TemplateManifest selectedTemplate, string moduleSubDir, bool onePerFolder = false)
+        public static List<ListItem> ListOfTemplatesFiles(PortalSettings portalSettings, int moduleId, TemplateManifest selectedTemplate, string moduleSubDir, bool advanced = true)
         {
-            return ListOfTemplatesFiles(portalSettings, moduleId, selectedTemplate, moduleSubDir, null, onePerFolder);
+            return ListOfTemplatesFiles(portalSettings, moduleId, selectedTemplate, moduleSubDir, null, advanced);
         }
 
-        public static List<ListItem> ListOfTemplatesFiles(PortalSettings portalSettings, int moduleId, TemplateManifest selectedTemplate, string moduleSubDir, FileUri otherModuleTemplate, bool onePerFolder = false)
+        public static List<ListItem> ListOfTemplatesFiles(PortalSettings portalSettings, int moduleId, TemplateManifest selectedTemplate, string moduleSubDir, FileUri otherModuleTemplate, bool advanced = true)
         {
             string basePath = HostingEnvironment.MapPath(GetSiteTemplateFolder(portalSettings, moduleSubDir));
             if (!Directory.Exists(basePath))
@@ -153,26 +153,29 @@ namespace Satrabel.OpenContent.Components
                     {
                         FileUri manifestFileUri = FileUri.FromPath(manifestFile);
                         var manifest = ManifestUtils.LoadManifestFileFromCacheOrDisk(manifestFileUri);
-                        if (manifest != null && manifest.HasTemplates)
+                        if (manifest != null && manifest.HasTemplates )
                         {
                             manifestTemplateFound = true;
-                            foreach (var template in manifest.Templates)
+                            if (advanced || !manifest.Advanced)
                             {
-                                FileUri templateUri = new FileUri(manifestFileUri.FolderPath, template.Key);
-                                string templateName = Path.GetDirectoryName(manifestFile).Substring(basePath.Length).Replace("\\", " / ");
-                                if (!String.IsNullOrEmpty(template.Value.Title))
+                                foreach (var template in manifest.Templates)
                                 {
-                                    if (!onePerFolder)
-                                        templateName = templateName + " - " + template.Value.Title;
+                                    FileUri templateUri = new FileUri(manifestFileUri.FolderPath, template.Key);
+                                    string templateName = Path.GetDirectoryName(manifestFile).Substring(basePath.Length).Replace("\\", " / ");
+                                    if (!String.IsNullOrEmpty(template.Value.Title))
+                                    {
+                                        if (advanced)
+                                            templateName = templateName + " - " + template.Value.Title;
 
+                                    }
+                                    var item = new ListItem((templateCat == "Site" ? "" : templateCat + " : ") + templateName, templateUri.FilePath);
+                                    if (selectedTemplate != null && templateUri.FilePath.ToLowerInvariant() == selectedTemplate.Key.ToString().ToLowerInvariant())
+                                    {
+                                        item.Selected = true;
+                                    }
+                                    lst.Add(item);
+                                    if (!advanced) break;
                                 }
-                                var item = new ListItem((templateCat == "Site" ? "" : templateCat + " : ") + templateName, templateUri.FilePath);
-                                if (selectedTemplate != null && templateUri.FilePath.ToLowerInvariant() == selectedTemplate.Key.ToString().ToLowerInvariant())
-                                {
-                                    item.Selected = true;
-                                }
-                                lst.Add(item);
-                                if (onePerFolder) break;
                             }
                         }
                     }
@@ -249,7 +252,7 @@ namespace Satrabel.OpenContent.Components
                                         string templateName = Path.GetDirectoryName(manifestFile).Substring(basePath.Length).Replace("\\", " / ");
                                         if (!String.IsNullOrEmpty(template.Value.Title))
                                         {
-                                            if (!onePerFolder)
+                                            if (advanced)
                                                 templateName = templateName + " - " + template.Value.Title;
                                         }
                                         var item = new ListItem((templateCat == "Site" ? "" : templateCat + " : ") + templateName, templateUri.FilePath);
@@ -258,7 +261,7 @@ namespace Satrabel.OpenContent.Components
                                             item.Selected = true;
                                         }
                                         lst.Add(item);
-                                        if (onePerFolder) break;
+                                        if (!advanced) break;
                                     }
                                 }
                             }

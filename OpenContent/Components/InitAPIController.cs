@@ -75,7 +75,7 @@ namespace Satrabel.OpenContent.Components
         public List<TemplateDto> GetTemplates(bool advanced)
         {
             var scriptFileSetting = ActiveModule.OpenContentSettings().Template;
-            var templates = OpenContentUtils.ListOfTemplatesFiles(PortalSettings, ActiveModule.ModuleID, scriptFileSetting, App.Config.Opencontent, !advanced);
+            var templates = OpenContentUtils.ListOfTemplatesFiles(PortalSettings, ActiveModule.ModuleID, scriptFileSetting, App.Config.Opencontent, advanced);
             return templates.Select(t => new TemplateDto()
             {
                 Value = t.Value,

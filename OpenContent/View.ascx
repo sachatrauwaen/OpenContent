@@ -74,7 +74,7 @@
                     <a href="#" v-if="existingTemplate && thisModule" @click.prevent="basic" class="dnnSecondaryAction" :disabled="loading" >Basic</a>
                 </li>
                 <li>
-                    <a href="#" v-if="!otherModule && existingTemplate"  @click.prevent="newTemplateChange" class="dnnSecondaryAction" :disabled="loading" ><%=Resource("liCreateNewTemplate")%></a>
+                    <a href="#" v-if="isPageAdmin && !otherModule && existingTemplate"  @click.prevent="newTemplateChange" class="dnnSecondaryAction" :disabled="loading" ><%=Resource("liCreateNewTemplate")%></a>
                 </li>
                 <li>
                     <a href="#" v-if="!otherModule && !existingTemplate"  @click.prevent="existingTemplateChange" class="dnnSecondaryAction" :disabled="loading" ><%=Resource("liUseExistingTemplate")%></a>
@@ -163,7 +163,8 @@
                     editUrl: "<%= ModuleContext.EditUrl("Edit") %>",
                     message: '',
                     loading: false,
-                    noTemplates: false
+                    noTemplates: false,
+                    isPageAdmin: <%=IsPageAdmin() ? "true" : "false"%> 
                 },
                 computed: {
                     existingTemplate: function () {
