@@ -126,6 +126,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterReplaceNewlineHelper(hbs);
             RegisterTemplateHelper(hbs);
             RegisterRawHelper(hbs);
+            RegisterContainsHelper(hbs);
         }
 
         private static void RegisterTruncateWordsHelper(HandlebarsDotNet.IHandlebars hbs)
@@ -1019,6 +1020,33 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 catch (Exception )
                 {
                     writer.WriteSafeString("");
+                }
+            });
+        }
+
+        private static void RegisterContainsHelper(IHandlebars hbs)
+        {
+            hbs.RegisterHelper("contains", (writer, options, context, arguments) =>
+            {
+                bool res = false;
+                if (arguments != null && arguments.Length == 2)
+                {
+                    foreach (var arg in arguments)
+                    {
+                        res = res || HandlebarsUtils.IsTruthyOrNonEmpty(arg);
+                    }
+                }
+
+                var arg1 = arguments[0].ToString();
+                var arg2 = arguments[1].ToString();
+
+                if (res && arg2.Contains(arg1))
+                {
+                    options.Template(writer, (object)context);
+                }
+                else
+                {
+                    options.Inverse(writer, (object)context);
                 }
             });
         }
