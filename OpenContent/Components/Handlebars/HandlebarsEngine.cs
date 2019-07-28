@@ -49,6 +49,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 RegisterReplaceNewlineHelper(hbs);
                 RegisterTemplateHelper(hbs);
                 RegisterRawHelper(hbs);
+                RegisterContainsHelper(hbs);
                 _template = hbs.Compile(source);
             }
             catch (Exception ex)
