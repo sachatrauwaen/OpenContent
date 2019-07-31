@@ -1032,16 +1032,12 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 bool res = false;
                 if (arguments != null && arguments.Length == 2)
                 {
-                    foreach (var arg in arguments)
-                    {
-                        res = res || HandlebarsUtils.IsTruthyOrNonEmpty(arg);
-                    }
+                    var arg1 = arguments[0].ToString();
+                    var arg2 = arguments[1].ToString();
+                    res = arg2.Contains(arg1);
                 }
 
-                var arg1 = arguments[0].ToString();
-                var arg2 = arguments[1].ToString();
-
-                if (res && arg2.Contains(arg1))
+                if (res)
                 {
                     options.Template(writer, (object)context);
                 }
