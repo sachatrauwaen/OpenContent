@@ -411,6 +411,7 @@ function ocSetupCodeMirror(mimeType, elem, model) {
 		{ 'text': '{{#unless var}}\n{{/unless}}', 'displayText': 'unless' },
 		{ 'text': '{{#with var}}\n{{/with}}', 'displayText': 'with' },
 		{ 'text': '{{!--  --}}', 'displayText': 'comment' },
+        { 'text': '{{#contains lookFor insideOf}}\n{{/contains}}', 'displayText': 'contains' }
 	];
 
 	var razorHelpers = [
