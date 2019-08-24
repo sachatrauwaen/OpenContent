@@ -103,7 +103,8 @@ namespace Satrabel.OpenContent.Components.Json
         public static Dictionary<string, object> JsonToDictionary(string json)
         {
             var jsSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
-            Dictionary<string, object> model = (Dictionary<string, object>)jsSerializer.DeserializeObject(json);
+            // next line fails with large amount of data (>4MB). Use a client side template to fix that.
+            Dictionary<string, object> model = (Dictionary<string, object>)jsSerializer.DeserializeObject(json); 
             return model;
             //return ToDictionaryNoCase(model);
         }
