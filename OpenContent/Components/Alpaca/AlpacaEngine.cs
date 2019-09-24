@@ -113,6 +113,16 @@ namespace Satrabel.OpenContent.Components.Alpaca
             ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/alpacaengine.js", FileOrder.Js.DefaultPriority + 10);
 
             ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/css/font-awesome/css/font-awesome.min.css", FileOrder.Css.DefaultPriority + 1);
+
+
+            string prefix = (string.IsNullOrEmpty(Prefix) ? "" : $"{Prefix}-");
+            string physicalDirectory = HostingEnvironment.MapPath("~/" + VirtualDirectory);
+            string jsFilename = physicalDirectory + "\\" + $"{prefix}edit.js";
+            if (File.Exists(jsFilename))
+            {
+                ClientResourceManager.RegisterScript(Page, $"~/{VirtualDirectory}/{prefix}edit.js", FileOrder.Js.DefaultPriority + 11);
+            }
+
         }
         public void RegisterTemplates()
         {
