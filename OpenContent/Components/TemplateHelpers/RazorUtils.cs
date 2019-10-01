@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 
@@ -6,6 +7,14 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
 {
     public static class RazorUtils
     {
+        /// <summary>
+        /// Helper to quick and easy add a Debug Break in your Razor files, a point from whereon you can start debugging with Visual Studio
+        /// </summary>
+        public static void Break()
+        {
+            Debugger.Break();
+        }
+
         /// <summary>
         /// Helper method to obfusticates an email address but keeping the mailto functionality.
         /// </summary>
