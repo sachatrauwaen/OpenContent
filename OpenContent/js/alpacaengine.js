@@ -71,7 +71,6 @@ alpacaEngine.engine = function (config) {
 
             $("div.alpaca").parent().addClass('popup');
 
-
             $("#" + self.cancelButton).click(function () {
                 dnnModal.closePopUp(false, "");
                 return false;
@@ -216,7 +215,9 @@ alpacaEngine.engine = function (config) {
                             var value = selfControl.getValue();
                             //alert(JSON.stringify(value, null, "  "));
                             var href = $(button).attr('href');
+                            $(document).trigger("beforeSubmit.opencontent", [value, self.moduleId, self.data.id, self.sf, self.editAction]);
                             self.FormSubmit(value, href);
+                            $(document).trigger("afterSubmit.opencontent", [value, self.moduleId, self.data.id, self.sf, self.editAction]);
                         }
                     });
                     return false;
@@ -227,7 +228,9 @@ alpacaEngine.engine = function (config) {
                         if (selfControl.isValid(true)) {
                             var value = selfControl.getValue();
                             var href = $(button).attr('href');
+                            $(document).trigger("beforeSubmit.opencontent", [value, self.moduleId, self.data.id, self.sf, self.editAction]);
                             self.FormSubmit(value, href, true);
+                            $(document).trigger("afterSubmit.opencontent", [value, self.moduleId, self.data.id, self.sf, self.editAction]);
                         }
                     });
                     return false;
@@ -243,7 +246,7 @@ alpacaEngine.engine = function (config) {
                     self.Version(self.itemId, $(this).val(), control);
                     return false;
                 });
-
+                $(document).trigger("postRender.opencontent", [selfControl, self.moduleId, self.data.id, self.sf, self.editAction]);
             }
         });
 
