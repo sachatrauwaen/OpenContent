@@ -37,6 +37,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 RegisterFormatNumberHelper(hbs);
                 RegisterFormatDateTimeHelper(hbs);
                 RegisterImageUrlHelper(hbs);
+                RegisterEmailHelper(hbs);
                 RegisterArrayIndexHelper(hbs);
                 RegisterArrayTranslateHelper(hbs);
                 RegisterIfAndHelper(hbs);
@@ -46,11 +47,13 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 RegisterTruncateWordsHelper(hbs);
                 RegisterReplaceHelper(hbs);
                 RegisterReplaceNewlineHelper(hbs);
+                RegisterTemplateHelper(hbs);
+                RegisterRawHelper(hbs);
                 _template = hbs.Compile(source);
             }
             catch (Exception ex)
             {
-                Log.Logger.Error($"Failed to render Handlebar template source:[{source}]", ex);
+                App.Services.Logger.Error($"Failed to render Handlebar template source:[{source}]", ex);
                 throw new TemplateException("Failed to render Handlebar template " + source, ex, null, source);
             }
         }
@@ -64,7 +67,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             }
             catch (Exception ex)
             {
-                Log.Logger.Error(string.Format("Failed to execute Handlebar template with model:[{1}]", "", model), ex);
+                App.Services.Logger.Error(string.Format("Failed to execute Handlebar template with model:[{1}]", "", model), ex);
                 throw new TemplateException("Failed to render Handlebar template ", ex, model, "");
             }
         }
@@ -79,7 +82,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             }
             catch (Exception ex)
             {
-                Log.Logger.Error($"Failed to render Handlebar template source:[{source}], model:[{model}]", ex);
+                App.Services.Logger.Error($"Failed to render Handlebar template source:[{source}], model:[{model}]", ex);
                 throw new TemplateException("Failed to render Handlebar template ", ex, model, source);
             }
         }
@@ -93,12 +96,12 @@ namespace Satrabel.OpenContent.Components.Handlebars
             }
             catch (Exception ex)
             {
-                Log.Logger.Error($"Failed to render Handlebar template source:[{source}], model:[{model}]", ex);
+                App.Services.Logger.Error($"Failed to render Handlebar template source:[{source}], model:[{model}]", ex);
             }
             return defaultValue;
         }
 
-        private void RegisterHelpers(IHandlebars hbs)
+        private static void RegisterHelpers(IHandlebars hbs)
         {
             RegisterDivideHelper(hbs);
             RegisterMultiplyHelper(hbs);
@@ -108,6 +111,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterFormatNumberHelper(hbs);
             RegisterFormatDateTimeHelper(hbs);
             RegisterImageUrlHelper(hbs);
+            RegisterEmailHelper(hbs);
             RegisterArrayIndexHelper(hbs);
             RegisterArrayTranslateHelper(hbs);
             RegisterArrayLookupHelper(hbs);
@@ -120,9 +124,11 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterTruncateWordsHelper(hbs);
             RegisterReplaceHelper(hbs);
             RegisterReplaceNewlineHelper(hbs);
+            RegisterTemplateHelper(hbs);
+            RegisterRawHelper(hbs);
         }
 
-        private void RegisterTruncateWordsHelper(HandlebarsDotNet.IHandlebars hbs)
+        private static void RegisterTruncateWordsHelper(HandlebarsDotNet.IHandlebars hbs)
         {
             hbs.RegisterHelper("truncateWords", (writer, context, parameters) =>
             {
@@ -136,15 +142,16 @@ namespace Satrabel.OpenContent.Components.Handlebars
                         trailingText = parameters[2].ToString();
                     }
                     string res = html.TruncateWords(maxCharacters, trailingText);
-                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, res);
+                    writer.WriteSafeString(res);
                 }
                 catch (Exception)
                 {
-                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "");
+                    writer.WriteSafeString("");
                 }
             });
         }
-        private void RegisterReplaceHelper(HandlebarsDotNet.IHandlebars hbs)
+
+        private static void RegisterReplaceHelper(HandlebarsDotNet.IHandlebars hbs)
         {
             hbs.RegisterHelper("replace", (writer, context, parameters) =>
             {
@@ -153,15 +160,16 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     string text = parameters[0].ToString();
                     string oldString = parameters[1].ToString().Replace("\\n", "\n");
                     text = text.Replace(oldString, parameters[2].ToString());
-                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, text);
+                    writer.WriteSafeString(text);
                 }
                 catch (Exception)
                 {
-                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "");
+                    writer.WriteSafeString("");
                 }
             });
         }
-        private void RegisterReplaceNewlineHelper(HandlebarsDotNet.IHandlebars hbs)
+
+        private static void RegisterReplaceNewlineHelper(HandlebarsDotNet.IHandlebars hbs)
         {
             hbs.RegisterHelper("replacenewline", (writer, context, parameters) =>
             {
@@ -169,11 +177,11 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 {
                     string text = parameters[0].ToString();
                     text = text.Replace("\n", parameters[1].ToString());
-                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, text);
+                    writer.WriteSafeString(text);
                 }
                 catch (Exception)
                 {
-                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "");
+                    writer.WriteSafeString("");
                 }
             });
         }
@@ -193,7 +201,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             }
             catch (Exception ex)
             {
-                Log.Logger.Error(string.Format("Failed to render Handlebar template source:[{0}], model:[{1}]", sourceFileUri, model), ex);
+                App.Services.Logger.Error($"Failed to render Handlebar template source:[{sourceFileUri}], model:[{model}]", ex);
                 throw new TemplateException("Failed to render Handlebar template " + sourceFileUri.FilePath, ex, model, sourceFileUri.FilePath);
             }
         }
@@ -222,18 +230,18 @@ namespace Satrabel.OpenContent.Components.Handlebars
             }
             catch (Exception ex)
             {
-                Log.Logger.Error(string.Format("Failed to render Handlebar template source:[{0}], model:[{1}]", sourceFileUri.PhysicalFilePath, model), ex);
+                App.Services.Logger.Error($"Failed to render Handlebar template source:[{sourceFileUri.PhysicalFilePath}], model:[{model}]", ex);
                 throw new TemplateException("Failed to render Handlebar template " + sourceFileUri.PhysicalFilePath, ex, model, sourceFileUri.PhysicalFilePath);
             }
         }
 
-        private string CompileTemplate(IHandlebars hbs, string source, object model)
+        private static string CompileTemplate(IHandlebars hbs, string source, object model)
         {
             var compiledTemplate = hbs.Compile(source);
             return compiledTemplate(model);
         }
 
-        private void RegisterTemplate(HandlebarsDotNet.IHandlebars hbs, string name, string sourceFilename)
+        private static void RegisterTemplate(HandlebarsDotNet.IHandlebars hbs, string name, string sourceFilename)
         {
             string fileName = System.Web.Hosting.HostingEnvironment.MapPath(sourceFilename);
             if (File.Exists(fileName))
@@ -245,7 +253,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 }
             }
         }
-        private void RegisterMultiplyHelper(HandlebarsDotNet.IHandlebars hbs)
+        private static void RegisterMultiplyHelper(HandlebarsDotNet.IHandlebars hbs)
         {
             hbs.RegisterHelper("multiply", (writer, context, parameters) =>
             {
@@ -254,15 +262,15 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     int a = int.Parse(parameters[0].ToString());
                     int b = int.Parse(parameters[1].ToString());
                     int c = a * b;
-                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, c.ToString());
+                    writer.WriteSafeString(c.ToString());
                 }
                 catch (Exception)
                 {
-                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "0");
+                    writer.WriteSafeString("0");
                 }
             });
         }
-        private void RegisterDivideHelper(HandlebarsDotNet.IHandlebars hbs)
+        private static void RegisterDivideHelper(HandlebarsDotNet.IHandlebars hbs)
         {
             hbs.RegisterHelper("divide", (writer, context, parameters) =>
             {
@@ -271,15 +279,15 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     int a = int.Parse(parameters[0].ToString());
                     int b = int.Parse(parameters[1].ToString());
                     int c = a / b;
-                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, c.ToString());
+                    writer.WriteSafeString(c.ToString());
                 }
                 catch (Exception)
                 {
-                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "0");
+                    writer.WriteSafeString("0");
                 }
             });
         }
-        private void RegisterAdditionHelper(HandlebarsDotNet.IHandlebars hbs)
+        private static void RegisterAdditionHelper(HandlebarsDotNet.IHandlebars hbs)
         {
             hbs.RegisterHelper("add", (writer, context, parameters) =>
             {
@@ -288,15 +296,15 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     int a = int.Parse(parameters[0].ToString());
                     int b = int.Parse(parameters[1].ToString());
                     int c = a + b;
-                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, c.ToString());
+                    writer.WriteSafeString(c.ToString());
                 }
                 catch (Exception)
                 {
-                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "0");
+                    writer.WriteSafeString("0");
                 }
             });
         }
-        private void RegisterSubstractionHelper(HandlebarsDotNet.IHandlebars hbs)
+        private static void RegisterSubstractionHelper(HandlebarsDotNet.IHandlebars hbs)
         {
             hbs.RegisterHelper("substract", (writer, context, parameters) =>
             {
@@ -305,11 +313,11 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     int a = int.Parse(parameters[0].ToString());
                     int b = int.Parse(parameters[1].ToString());
                     int c = a - b;
-                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, c.ToString());
+                    writer.WriteSafeString(c.ToString());
                 }
                 catch (Exception)
                 {
-                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "0");
+                    writer.WriteSafeString("0");
                 }
             });
         }
@@ -318,7 +326,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
         /// Returns nothing, executes the template-part if contidions are met.
         /// </summary>
         /// <param name="hbs">The HBS.</param>
-        private void RegisterEqualHelper(HandlebarsDotNet.IHandlebars hbs)
+        private static void RegisterEqualHelper(HandlebarsDotNet.IHandlebars hbs)
         {
             hbs.RegisterHelper("equal", (writer, options, context, arguments) =>
             {
@@ -352,12 +360,12 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 }
             });
         }
-        private void RegisterEachPublishedHelper(HandlebarsDotNet.IHandlebars hbs)
+        private static void RegisterEachPublishedHelper(HandlebarsDotNet.IHandlebars hbs)
         {
             hbs.RegisterHelper("published", (writer, options, context, parameters) =>
             {
-                bool EditMode = PortalSettings.Current.UserMode == PortalSettings.Mode.Edit;
-                if (EditMode)
+                bool editMode = PortalSettings.Current.UserMode == PortalSettings.Mode.Edit;
+                if (editMode)
                 {
                     options.Template(writer, parameters[0]);
                 }
@@ -410,25 +418,34 @@ namespace Satrabel.OpenContent.Components.Handlebars
             });
 
         }
-        private void RegisterScriptHelper(HandlebarsDotNet.IHandlebars hbs)
+        private static void RegisterScriptHelper(HandlebarsDotNet.IHandlebars hbs)
         {
             hbs.RegisterHelper("script", (writer, options, context, arguments) =>
             {
-                HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "<script>");
+                writer.WriteSafeString("<script>");
                 options.Template(writer, (object)context);
-                HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "</script>");
+                writer.WriteSafeString("</script>");
             });
 
         }
-        private void RegisterHandlebarsHelper(HandlebarsDotNet.IHandlebars hbs)
+        private static void RegisterHandlebarsHelper(HandlebarsDotNet.IHandlebars hbs)
         {
             hbs.RegisterHelper("handlebars", (writer, options, context, arguments) =>
             {
-                HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "<script id=\"jplist-templatex\" type=\"text/x-handlebars-template\">");
+                writer.WriteSafeString("<script id=\"jplist-templatex\" type=\"text/x-handlebars-template\">");
                 HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, context);
-                HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "</script>");
+                writer.WriteSafeString("</script>");
             });
         }
+
+        private static void RegisterRawHelper(HandlebarsDotNet.IHandlebars hbs)
+        {
+            hbs.RegisterHelper("raw", (writer, options, context, parameters) => {
+                options.Template(writer, null);
+            });
+
+        }
+
         private void RegisterRegisterScriptHelper(HandlebarsDotNet.IHandlebars hbs, Page page, string sourceFolder)
         {
             hbs.RegisterHelper("registerscript", (writer, context, parameters) =>
@@ -466,7 +483,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             });
 
         }
-        private void RegisterRegisterStylesheetHelper(HandlebarsDotNet.IHandlebars hbs, Page page, string sourceFolder)
+        private static void RegisterRegisterStylesheetHelper(HandlebarsDotNet.IHandlebars hbs, Page page, string sourceFolder)
         {
             hbs.RegisterHelper("registerstylesheet", (writer, context, parameters) =>
             {
@@ -502,13 +519,13 @@ namespace Satrabel.OpenContent.Components.Handlebars
         /// Param3 is ratio string (eg '1x1'), 
         /// </summary>
         /// <param name="hbs">The HBS.</param>
-        private void RegisterImageUrlHelper(HandlebarsDotNet.IHandlebars hbs)
+        private static void RegisterImageUrlHelper(HandlebarsDotNet.IHandlebars hbs)
         {
             hbs.RegisterHelper("imageurl", (writer, context, parameters) =>
             {
-                if (parameters.Length == 3)
+                if (parameters.Length == 3) //{{imageurl ImageId 4 '800x500'}}
                 {
-                    string imageId = parameters[0] as string;
+                    string imageId = parameters[0].ToString();
                     int width = Normalize.DynamicValue(parameters[1], -1);
                     string ratiostring = parameters[2] as string;
                     bool isMobile = HttpContext.Current.Request.Browser.IsMobileDevice;
@@ -518,9 +535,9 @@ namespace Satrabel.OpenContent.Components.Handlebars
 
                     writer.WriteSafeString(imageUrl);
                 }
-                if (parameters.Length == 2)
+                if (parameters.Length == 2) //{{imageurl ImageId 4}}
                 {
-                    string imageId = parameters[0] as string;
+                    string imageId = parameters[0].ToString();
                     int width = Normalize.DynamicValue(parameters[1], -1);
                     bool isMobile = HttpContext.Current.Request.Browser.IsMobileDevice;
 
@@ -530,7 +547,32 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     writer.WriteSafeString(imageUrl);
                 }
             });
+        }
 
+        private static void RegisterEmailHelper(HandlebarsDotNet.IHandlebars hbs)
+        {
+            hbs.RegisterHelper("protectemail", (writer, context, parameters) =>
+            {
+                try
+                {
+                    string email = parameters[0].ToString();
+                    string subject = "";
+                    string visibleText = "";
+                    if (parameters.Length > 1)
+                    {
+                        subject = parameters[1].ToString();
+                    }
+                    if (parameters.Length > 2)
+                    {
+                        visibleText = parameters[2].ToString();
+                    }
+                    writer.WriteSafeString(email.ProtectEmail(subject, visibleText));
+                }
+                catch (Exception)
+                {
+                    writer.WriteSafeString("");
+                }
+            });
         }
 
         /// <summary>
@@ -539,7 +581,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
         /// Zero-based retrieval
         /// </summary>
         /// <param name="hbs">The HBS.</param>
-        private void RegisterArrayIndexHelper(HandlebarsDotNet.IHandlebars hbs)
+        private static void RegisterArrayIndexHelper(HandlebarsDotNet.IHandlebars hbs)
         {
             hbs.RegisterHelper("arrayindex", (writer, context, parameters) =>
             {
@@ -558,11 +600,11 @@ namespace Satrabel.OpenContent.Components.Handlebars
 
                     int b = int.Parse(parameters[1].ToString());
                     object c = a[b];
-                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, c.ToString());
+                    writer.WriteSafeString(c.ToString());
                 }
                 catch (Exception)
                 {
-                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "");
+                    writer.WriteSafeString("");
                 }
             });
 
@@ -575,7 +617,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
         /// parameters[2] = selected enum value
         /// </summary>
         /// <param name="hbs">The HBS.</param>
-        private void RegisterArrayTranslateHelper(HandlebarsDotNet.IHandlebars hbs)
+        private static void RegisterArrayTranslateHelper(HandlebarsDotNet.IHandlebars hbs)
         {
             hbs.RegisterHelper("arraytranslate", (writer, context, parameters) =>
             {
@@ -605,11 +647,11 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     int i = Array.IndexOf(a, c);
 
                     object res = b[i];
-                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, res.ToString());
+                    writer.WriteSafeString(res.ToString());
                 }
                 catch (Exception)
                 {
-                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "");
+                    writer.WriteSafeString("");
                 }
             });
 
@@ -622,7 +664,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
         /// arguments[2] =
         /// </summary>
         /// <param name="hbs">The HBS.</param>
-        private void RegisterArrayLookupHelper(HandlebarsDotNet.IHandlebars hbs)
+        private static void RegisterArrayLookupHelper(HandlebarsDotNet.IHandlebars hbs)
         {
             hbs.RegisterHelper("lookup", (writer, options, context, arguments) =>
             {
@@ -685,7 +727,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             */
         }
 
-        private void RegisterFormatNumberHelper(HandlebarsDotNet.IHandlebars hbs)
+        private static void RegisterFormatNumberHelper(HandlebarsDotNet.IHandlebars hbs)
         {
             hbs.RegisterHelper("formatNumber", (writer, context, parameters) =>
             {
@@ -732,16 +774,16 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     }
                     //string provider = parameters[2].ToString();
                     //string res = number.Value.ToString(format, formatprovider);
-                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, res);
+                    writer.WriteSafeString(res);
                 }
                 catch (Exception)
                 {
-                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "");
+                    writer.WriteSafeString("");
                 }
             });
         }
 
-        private void RegisterFormatDateTimeHelper(HandlebarsDotNet.IHandlebars hbs)
+        private static void RegisterFormatDateTimeHelper(HandlebarsDotNet.IHandlebars hbs)
         {
             hbs.RegisterHelper("formatDateTime", (writer, context, parameters) =>
             {
@@ -774,11 +816,11 @@ namespace Satrabel.OpenContent.Components.Handlebars
                         res = datetime.ToString(format);
                     }
 
-                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, res);
+                    writer.WriteSafeString(res);
                 }
                 catch (Exception)
                 {
-                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "");
+                    writer.WriteSafeString("");
                 }
             });
 
@@ -861,7 +903,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             });
             */
         }
-        private void RegisterIfAndHelper(IHandlebars hbs)
+        private static void RegisterIfAndHelper(IHandlebars hbs)
         {
             hbs.RegisterHelper("ifand", (writer, options, context, arguments) =>
             {
@@ -881,7 +923,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             });
         }
 
-        private void RegisterIfOrHelper(IHandlebars hbs)
+        private static void RegisterIfOrHelper(IHandlebars hbs)
         {
             hbs.RegisterHelper("ifor", (writer, options, context, arguments) =>
             {
@@ -900,7 +942,8 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 }
             });
         }
-        private void RegisterIfInHelper(IHandlebars hbs)
+
+        private static void RegisterIfInHelper(IHandlebars hbs)
         {
             hbs.RegisterHelper("ifin", (writer, options, context, arguments) =>
             {
@@ -922,7 +965,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 }
             });
         }
-        private void RegisterConvertHtmlToTextHelper(HandlebarsDotNet.IHandlebars hbs)
+        private static void RegisterConvertHtmlToTextHelper(HandlebarsDotNet.IHandlebars hbs)
         {
             hbs.RegisterHelper("convertHtmlToText", (writer, context, parameters) =>
             {
@@ -930,15 +973,15 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 {
                     string html = parameters[0].ToString();
                     string res = DotNetNuke.Services.Mail.Mail.ConvertToText(html);
-                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, res);
+                    writer.WriteSafeString(res);
                 }
                 catch (Exception)
                 {
-                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "");
+                    writer.WriteSafeString("");
                 }
             });
         }
-        private void RegisterConvertToJsonHelper(HandlebarsDotNet.IHandlebars hbs)
+        private static void RegisterConvertToJsonHelper(HandlebarsDotNet.IHandlebars hbs)
         {
             hbs.RegisterHelper("convertToJson", (writer, context, parameters) =>
             {
@@ -953,11 +996,29 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     {
                         res = System.Web.Helpers.Json.Encode(parameters[0]);
                     }
-                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, res);
+                    writer.WriteSafeString(res);
                 }
                 catch (Exception)
                 {
-                    HandlebarsDotNet.HandlebarsExtensions.WriteSafeString(writer, "");
+                    writer.WriteSafeString("");
+                }
+            });
+        }
+
+        private static void RegisterTemplateHelper(HandlebarsDotNet.IHandlebars hbs)
+        {
+            hbs.RegisterHelper("template", (writer, context, parameters) =>
+            {
+                try
+                {
+                    string html = parameters[0].ToString();
+                    HandlebarsEngine hbs2 = new HandlebarsEngine();
+                    var res = hbs2.Execute(html, parameters[1]);
+                    writer.WriteSafeString(res);
+                }
+                catch (Exception )
+                {
+                    writer.WriteSafeString("");
                 }
             });
         }

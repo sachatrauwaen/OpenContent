@@ -1,16 +1,12 @@
 ﻿using DotNetNuke.Entities.Modules;
-using DotNetNuke.Services.Exceptions;
 using DotNetNuke.UI.Skins;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.UI;
-using System.Web.UI.WebControls;
+using Satrabel.OpenContent.Components;
 using Satrabel.OpenContent.Components.Render;
 using Satrabel.OpenContent.Components.Logging;
 using Satrabel.OpenContent.Components.Json;
-
 
 namespace Satrabel.OpenContent
 {
@@ -22,6 +18,8 @@ namespace Satrabel.OpenContent
         public bool ShowOnAdminTabs { get; set; }
         public bool ShowOnHostTabs { get; set; }
         public string Template { get; set; }
+        public string ModuleTitle { get; set; }
+
         private void InitializeComponent()
         {
         }
@@ -35,7 +33,7 @@ namespace Satrabel.OpenContent
         {
             base.OnLoad(e);
             int[] hideTabs = new int[1] { TabId };
-            if (string.IsNullOrEmpty(HideOnTabIds))
+            if (!string.IsNullOrEmpty(HideOnTabIds))
             {
                 try
                 {
@@ -51,11 +49,26 @@ namespace Satrabel.OpenContent
             if (!ShowOnHostTabs && activeTab.IsSuperTab) return;
 
             ModuleController mc = new ModuleController();
-            var module = mc.GetModule(ModuleId, TabId, false);
-            if (module == null)
+            ModuleInfo module = null;
+            if (!string.IsNullOrEmpty(ModuleTitle))
             {
-                DotNetNuke.UI.Skins.Skin.AddPageMessage(Page, "OpenContent RenderModule SkinObject", $"No module exist for TabId {TabId} and ModuleId {ModuleId} ", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
-                return;
+                var modules = DnnUtils.GetDnnOpenContentModules(PortalSettings.PortalId);
+                module = modules.FirstOrDefault(m => m.ViewModule?.ModuleInfo?.ModuleTitle == ModuleTitle)?.ViewModule.ModuleInfo;
+                if (module == null)
+                {
+                    DotNetNuke.UI.Skins.Skin.AddPageMessage(Page, "OpenContent RenderModule SkinObject", $"No module exist for ModuleTitle {ModuleTitle}", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
+                    return;
+                }
+            }
+            else
+            {
+                module = mc.GetModule(ModuleId, TabId, false);
+                if (module == null)
+                {
+                    DotNetNuke.UI.Skins.Skin.AddPageMessage(Page, "OpenContent RenderModule SkinObject", $"No module exist for TabId {TabId} and ModuleId {ModuleId} ", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
+                    return;
+                }
+
             }
             if (!string.IsNullOrEmpty(Template))
             {
@@ -71,7 +84,7 @@ namespace Satrabel.OpenContent
                 moduleClone.ModuleSettings["template"] = Template;
                 module = moduleClone;
             }
-            var engine = new RenderEngine(module);
+            var engine = new RenderEngine(OpenContentModuleConfig.Create(module, PortalSettings));
             try
             {
                 engine.Render(Page);
@@ -102,7 +115,14 @@ namespace Satrabel.OpenContent
                     DotNetNuke.UI.Skins.Skin.AddPageMessage(Page, "OpenContent RenderModule SkinObject", ex.Message, DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
                 }
             }
+            if (App.Services.CreateGlobalSettingsRepository(activeTab.PortalID).GetCompositeCss())
+            {
+                //var absUrl = Utils.GetFullUrl(Request, Page.ResolveUrl($"~/DesktopModules/OpenContent/API/Resource/Css?tabid={activeTab.TabID}&portalid={activeTab.PortalID}"));
+                var absUrl = Utils.GetFullUrl(Request, Page.ResolveUrl($"~/API/OpenContent/Resource/Css?tabid={activeTab.TabID}&portalid={activeTab.PortalID}"));
+                App.Services.ClientResourceManager.RegisterStyleSheet(Page, absUrl);
+            }
         }
+
         private void RenderTemplateException(TemplateException ex, ModuleInfo module)
         {
             DotNetNuke.UI.Skins.Skin.AddPageMessage(Page, "OpenContent RenderModule SkinObject", "<p><b>Template error</b></p>" + ex.MessageAsHtml(), DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
@@ -126,6 +146,5 @@ namespace Satrabel.OpenContent
             }
             LoggingUtils.ProcessLogFileException(this, module, ex);
         }
-
     }
 }

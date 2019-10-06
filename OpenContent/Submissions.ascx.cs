@@ -9,18 +9,19 @@
 ' DEALINGS IN THE SOFTWARE.
 ' 
 */
-using System;
-using System.Linq;
-using DotNetNuke.Services.Exceptions;
-using Satrabel.OpenContent.Components.Json;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Web.Helpers;
-using System.Data;
-using System.Web;
-using Satrabel.OpenContent.Components;
 
-namespace Satrabel.OpenForm
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Dynamic;
+using System.Linq;
+using System.Web;
+using System.Web.Helpers;
+using DotNetNuke.Services.Exceptions;
+using Satrabel.OpenContent.Components;
+using Satrabel.OpenContent.Components.Json;
+
+namespace Satrabel.OpenContent
 {
     public partial class Submissions : DotNetNuke.Entities.Modules.PortalModuleBase
     {
@@ -45,17 +46,19 @@ namespace Satrabel.OpenForm
         {
             var dynData = GetDataAsListOfDynamics();
             DataTable datatable = ToDataTable(dynData);
-            string filename=GetFileNameFromFormName();
-            ExcelUtils.OutputFile(datatable, filename, HttpContext.Current);
+            string filename = GetFileNameFromFormName();
+            var excelBytes = ExcelUtils.CreateExcel(datatable);
+            ExcelUtils.PushDataAsExcelOntoHttpResponse(excelBytes, filename, HttpContext.Current);
         }
 
         #region Private Methods
 
         private List<dynamic> GetDataAsListOfDynamics()
         {
-            var module = new OpenContentModuleInfo(this.ModuleConfiguration);
+            var module = OpenContentModuleConfig.Create(this.ModuleConfiguration, PortalSettings);
             OpenContentController ctrl = new OpenContentController(ModuleContext.PortalId);
-            var data = ctrl.GetContents(module.DataModule.ModuleID, "Submissions").OrderByDescending(c => c.CreatedOnDate);
+            var data = ctrl.GetContents(module.DataModule.ModuleId, "Submissions").OrderByDescending(c => c.CreatedOnDate);
+
             var dynData = new List<dynamic>();
             foreach (var item in data)
             {
@@ -76,7 +79,7 @@ namespace Satrabel.OpenForm
             return dynData;
         }
 
-        private Dictionary<String, Object> Dyn2Dict(dynamic dynObj)
+        private static Dictionary<string, object> Dyn2Dict(dynamic dynObj)
         {
             var dictionary = new Dictionary<string, object>();
             foreach (var name in dynObj.GetDynamicMemberNames())
@@ -92,7 +95,7 @@ namespace Satrabel.OpenForm
             return site.Target(site, target);
         }
 
-        private string GetFileNameFromFormName()
+        private static string GetFileNameFromFormName()
         {
             //todo determine that current form and create a filename based on the name of the form.
             return "submissions.xlsx";

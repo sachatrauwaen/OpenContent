@@ -1,37 +1,30 @@
-﻿#region Usings
-
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Lucene.Net.Index;
-using Lucene.Net.Search;
 using Lucene.Net.QueryParsers;
+using Lucene.Net.Search;
 using Satrabel.OpenContent.Components.Lucene.Mapping;
 using Satrabel.OpenContent.Components.Lucene.Config;
-using DotNetNuke.Entities.Portals;
-using DotNetNuke.Entities.Modules;
 using Version = Lucene.Net.Util.Version;
-using Satrabel.OpenContent.Components.Lucene.Index;
-using Satrabel.OpenContent.Components.Datasource;
-using System.Collections.Generic;
 
-#endregion
 
 namespace Satrabel.OpenContent.Components.Lucene
 {
     public class LuceneController : IDisposable
     {
-        private static LuceneController _instance = new LuceneController();
-        private LuceneService _serviceInstance;
+        private LuceneService _serviceStoreInstance;
 
-        public static LuceneController Instance => _instance;
+        public static LuceneController Instance { get; private set; } = new LuceneController();
 
+        [Obsolete("Do not use the Lucene Store.Commit() (as of June 2017 v3.2.3). Use LuceneController.Commit() instead.")]
         public LuceneService Store
         {
             get
             {
-                if (_serviceInstance == null)
+                if (_serviceStoreInstance == null)
                     throw new Exception("LuceneController not initialized properly");
-                return _serviceInstance;
+                return _serviceStoreInstance;
             }
         }
 
@@ -39,24 +32,33 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         private LuceneController()
         {
-            _serviceInstance = new LuceneService(AppConfig.Instance.LuceneIndexFolder, JsonMappingUtils.GetAnalyser());
+            _serviceStoreInstance = new LuceneService(App.Config.LuceneIndexFolder, JsonMappingUtils.GetAnalyser());
         }
 
         public static void ClearInstance()
         {
-            if (_instance != null)
+            if (Instance != null)
             {
-                _instance.Dispose();
-                _instance = null;
+                Instance.Dispose();
+                Instance = null;
             }
-            _instance = new LuceneController();
+            Instance = new LuceneController();
+        }
+
+        public void Dispose()
+        {
+            if (_serviceStoreInstance != null)
+            {
+                _serviceStoreInstance.Dispose();
+                _serviceStoreInstance = null;
+            }
         }
 
         #endregion
 
         #region Search
 
-        public SearchResults Search(string type, QueryDefinition def)
+        public SearchResults Search(string type, SelectQueryDefinition def)
         {
             return Search(type, def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
         }
@@ -68,7 +70,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             //validate whether index folder is exist and contains index files, otherwise return null.
             if (!Store.ValidateIndexFolder())
             {
-                IndexAll();
+                App.Config.LuceneIndexAllDelegate();  //execute the IndexAll delegate
                 return luceneResults;
             }
 
@@ -76,13 +78,13 @@ namespace Satrabel.OpenContent.Components.Lucene
             TopDocs topDocs;
             var numOfItemsToReturn = (pageIndex + 1) * pageSize;
             if (filter == null)
-                topDocs = searcher.Search(type, query, numOfItemsToReturn, sort);
+                topDocs = Search(searcher, type, query, numOfItemsToReturn, sort);
             else
-                topDocs = searcher.Search(type, filter, query, numOfItemsToReturn, sort);
+                topDocs = Search(searcher, type, filter, query, numOfItemsToReturn, sort);
             luceneResults.TotalResults = topDocs.TotalHits;
             luceneResults.ids = topDocs.ScoreDocs.Skip(pageIndex * pageSize)
-                    .Select(d => searcher.Doc(d.Doc).GetField(JsonMappingUtils.FieldId).StringValue)
-                    .ToArray();
+                .Select(d => searcher.Doc(d.Doc).GetField(JsonMappingUtils.FIELD_ID).StringValue)
+                .ToArray();
             return luceneResults;
         }
 
@@ -91,19 +93,47 @@ namespace Satrabel.OpenContent.Components.Lucene
         #region Index
 
         /// <summary>
+        /// Reindex all content.
+        /// </summary>
+        public void IndexAll(Action<LuceneController> funcRegisterAllIndexableData)
+        {
+            App.Services.Logger.Info("Reindexing all OpenContent data, from all portals");
+            LuceneController.ClearInstance();
+            try
+            {
+                using (var lc = LuceneController.Instance)
+                {
+                    lc.Store.DeleteAll();
+                    funcRegisterAllIndexableData(lc);
+                    lc.Store.Commit();
+                    lc.Store.OptimizeSearchIndex(true);
+                }
+            }
+            catch (Exception ex)
+            {
+                App.Services.Logger.Error("Error while Reindexing all OpenContent data, from all portals", ex);
+            }
+            finally
+            {
+                LuceneController.ClearInstance();
+            }
+            App.Services.Logger.Info("Finished Reindexing all OpenContent data, from all portals");
+        }
+
+        /// <summary>
         /// Use this to 
         /// </summary>
         /// <param name="list">The list.</param>
         /// <param name="indexConfig">The index configuration.</param>
         /// <param name="scope">The scope.</param>
-        public void ReIndexModuleData(IEnumerable<IIndexableItem> list, FieldConfig indexConfig, string scope)
+        public void ReIndexData(IEnumerable<IIndexableItem> list, FieldConfig indexConfig, string scope)
         {
             try
             {
-                using (LuceneController lc = LuceneController.Instance)
+                using (var lc = LuceneController.Instance)
                 {
-                    lc.Store.Delete(new TermQuery(new Term("$type", scope)));
-                    foreach (var item in list)
+                    DeleteAllOfType(lc, scope);
+                    foreach (IIndexableItem item in list)
                     {
                         lc.Add(item, indexConfig);
                     }
@@ -117,94 +147,30 @@ namespace Satrabel.OpenContent.Components.Lucene
             }
         }
 
-        /// <summary>
-        /// Reindex all OpenContent modules of all portals.
-        /// </summary>
-        internal void IndexAll() //todo: this should only be called from DataSourceProviders
-        {
-            Log.Logger.Info("Reindexing all OpenContent data, from all portals");
-            LuceneController.ClearInstance();
-            try
-            {
-                using (var lc = LuceneController.Instance)
-                {
-                    foreach (PortalInfo portal in PortalController.Instance.GetPortals())
-                    {
-                        var modules = DnnUtils.GetDnnOpenContentModules(portal.PortalID);
-                        foreach (var module in modules)
-                        {
-                            IndexModule(lc, module);
-                        }
-                    }
-                    lc.Store.Commit();
-                    lc.Store.OptimizeSearchIndex(true);
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Logger.Error("Error while Reindexing all OpenContent data, from all portals", ex);
-            }
-            finally
-            {
-                LuceneController.ClearInstance();
-            }
-            Log.Logger.Info("Finished Reindexing all OpenContent data, from all portals");
-        }
-
-        private void IndexModule(LuceneController lc, OpenContentModuleInfo module)
-        {
-            OpenContentUtils.CheckOpenContentSettings(module);
-
-            if (module.IsListMode() && !module.Settings.IsOtherModule && module.Settings.Manifest.Index)
-            {
-                IndexModuleData(lc, module.ViewModule.ModuleID, module.Settings);
-            }
-        }
-
-        private void IndexModuleData(LuceneController lc, int moduleId, OpenContentSettings settings)
-        {
-            bool index = false;
-            if (settings.TemplateAvailable)
-            {
-                index = settings.Manifest.Index;
-            }
-            FieldConfig indexConfig = null;
-            if (index)
-            {
-                indexConfig = OpenContentUtils.GetIndexConfig(settings.Template);
-            }
-
-            if (settings.IsOtherModule)
-            {
-                moduleId = settings.ModuleId;
-            }            
-            lc.Store.Delete(new TermQuery(new Term("$type", OpenContentInfo.GetScope(moduleId, settings.Template.Collection))));
-            OpenContentController occ = new OpenContentController(PortalSettings.Current.PortalId);
-            foreach (var item in occ.GetContents(moduleId, settings.Template.Collection))
-            {
-                lc.Add(item, indexConfig);
-            }
-        }
-
         #endregion
 
         #region Operations
 
+        public void AddList(IEnumerable<IIndexableItem> list, FieldConfig indexConfig, string scope)
+        {
+            DeleteAllOfType(this, scope);
+            foreach (IIndexableItem item in list)
+            {
+                Add(item, indexConfig);
+            }
+        }
+
         public void Add(IIndexableItem data, FieldConfig config)
         {
-            if (null == data)
-            {
-                throw new ArgumentNullException("data");
-            }
+            Requires.NotNull(data);
+
             Store.Add(JsonMappingUtils.JsonToDocument(data.GetScope(), data.GetId(), data.GetCreatedByUserId(), data.GetCreatedOnDate(), data.GetData(), data.GetSource(), config));
         }
 
         public void Update(IIndexableItem data, FieldConfig config)
         {
-            if (null == data)
-            {
-                throw new ArgumentNullException("data");
-            }
+            Requires.NotNull(data);
+
             Delete(data);
             Add(data, config);
         }
@@ -215,18 +181,27 @@ namespace Satrabel.OpenContent.Components.Lucene
         /// <param name="data"></param>
         public void Delete(IIndexableItem data)
         {
-            if (null == data)
-            {
-                throw new ArgumentNullException("data");
-            }
-            var selection = new TermQuery(new Term(JsonMappingUtils.FieldId, data.GetId()));
+            Requires.NotNull(data);
+
+            var selection = new TermQuery(new Term(JsonMappingUtils.FIELD_ID, data.GetId()));
             Query deleteQuery = new FilteredQuery(selection, JsonMappingUtils.GetTypeFilter(data.GetScope()));
             Store.Delete(deleteQuery);
+        }
+
+        public void Commit()
+        {
+            Store.Commit();
         }
 
         #endregion
 
         #region Private
+
+        private static void DeleteAllOfType(LuceneController lc, string scope)
+        {
+            var selection = JsonMappingUtils.CreateTypeQuery(scope);
+            lc.Store.Delete(selection);
+        }
 
         public static Query ParseQuery(string searchQuery, string defaultFieldName)
         {
@@ -245,20 +220,30 @@ namespace Satrabel.OpenContent.Components.Lucene
             }
             catch (ParseException)
             {
-                query = parser.Parse(QueryParser.Escape(searchQuery.Trim()));
+                query = parser.Parse(QueryParser.Escape(searchQuery?.Trim()));
             }
             return query;
         }
 
-        #endregion
-
-        public void Dispose()
+        public static TopDocs Search(Searcher searcher, string type, Query query, int numResults, Sort sort)
         {
-            if (_serviceInstance != null)
+            var res = searcher.Search(query, JsonMappingUtils.GetTypeFilter(type), numResults, sort);
+            return res;
+        }
+
+        public static TopDocs Search(Searcher searcher, string type, Query query, Query filter, int numResults, Sort sort)
+        {
+            try
             {
-                _serviceInstance.Dispose();
-                _serviceInstance = null;
+                return searcher.Search(query, JsonMappingUtils.GetTypeFilter(type, filter), numResults, sort);
+            }
+            catch (Exception ex)
+            {
+                App.Services.Logger.Error($"Error while searching {type}, {query}", ex);
+                throw;
             }
         }
+
+        #endregion
     }
 }

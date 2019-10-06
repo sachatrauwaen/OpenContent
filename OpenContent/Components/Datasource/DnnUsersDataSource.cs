@@ -10,22 +10,21 @@ using DotNetNuke.Security.Roles;
 using DotNetNuke.Services.Mail;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Alpaca;
-using Satrabel.OpenContent.Components.Lucene;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Satrabel.OpenContent.Components.Lucene.Index;
-using Satrabel.OpenContent.Components.Lucene.Config;
-using Satrabel.OpenContent.Components.Logging;
 using Satrabel.OpenContent.Components.Datasource.Search;
-using Satrabel.OpenContent.Components.Localization;
+using Satrabel.OpenContent.Components.Logging;
+using Satrabel.OpenContent.Components.Lucene;
+using Satrabel.OpenContent.Components.Lucene.Config;
+using Satrabel.OpenContent.Components.Form;
 
 namespace Satrabel.OpenContent.Components.Datasource
 {
     public class DnnUsersDataSource : DefaultDataSource, IDataActions, IDataIndex
     {
         private const string REGISTERED_USERS = "Registered Users";
-        private const string LUCENE_SCOPE = "DnnUsers";
+        private const string INDEX_SCOPE = "DnnUsers";
 
         public override string Name => "Satrabel.DnnUsers";
 
@@ -39,7 +38,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             }
             return ToData(user);
         }
-        private IDataItem ToData(UserInfo user)
+        private static IDataItem ToData(UserInfo user)
         {
             var item = new DefaultDataItem()
             {
@@ -91,10 +90,19 @@ namespace Satrabel.OpenContent.Components.Datasource
 
         public override IDataItems GetAll(DataSourceContext context, Select selectQuery)
         {
+            ReIndexIfNeeded(context.ModuleId, context.TabId, context.PortalId);
             if (context.Index && selectQuery != null)
             {
-                SelectQueryDefinition def = BuildQuery(context, selectQuery);
-                SearchResults docs = LuceneController.Instance.Search(LUCENE_SCOPE, def.Filter, def.Query, def.Sort, def.PageSize, def.PageIndex);
+                SearchResults docs = LuceneUtils.Search(INDEX_SCOPE, selectQuery);
+                if (LogContext.IsLogActive)
+                {
+                    var logKey = "Lucene query";
+                    LogContext.Log(context.ActiveModuleId, logKey, "Filter", docs.ResultDefinition.Filter);
+                    LogContext.Log(context.ActiveModuleId, logKey, "Query", docs.ResultDefinition.Query);
+                    LogContext.Log(context.ActiveModuleId, logKey, "Sort", docs.ResultDefinition.Sort);
+                    LogContext.Log(context.ActiveModuleId, logKey, "PageIndex", docs.ResultDefinition.PageIndex);
+                    LogContext.Log(context.ActiveModuleId, logKey, "PageSize", docs.ResultDefinition.PageSize);
+                }
                 int total = docs.TotalResults;
                 var dataList = new List<IDataItem>();
                 foreach (string item in docs.ids)
@@ -106,14 +114,14 @@ namespace Satrabel.OpenContent.Components.Datasource
                     }
                     else
                     {
-                        Log.Logger.Debug($"DnnUsersDataSource.GetAll() ContentItem not found [{item}]");
+                        App.Services.Logger.Debug($"DnnUsersDataSource.GetAll() ContentItem not found [{item}]");
                     }
                 }
                 return new DefaultDataItems()
                 {
                     Items = dataList,
                     Total = total,
-                    DebugInfo = def.Filter + " - " + def.Query + " - " + def.Sort
+                    DebugInfo = docs.ResultDefinition.Filter + " - " + docs.ResultDefinition.Query + " - " + docs.ResultDefinition.Sort
                 };
             }
             else
@@ -148,6 +156,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 {
                     users = UserController.GetUsers(context.PortalId, pageIndex, pageSize, ref total, true, false).Cast<UserInfo>();
                 }
+                int excluded = users.Count() - users.Count(u => u.IsInRole("Administrators"));
                 users = users.Where(u => !u.IsInRole("Administrators"));
                 //users = users.Skip(pageIndex * pageSize).Take(pageSize);
                 var dataList = new List<IDataItem>();
@@ -158,26 +167,10 @@ namespace Satrabel.OpenContent.Components.Datasource
                 return new DefaultDataItems()
                 {
                     Items = dataList,
-                    Total = total,
+                    Total = total - excluded,
                     //DebugInfo = 
                 };
             }
-        }
-        private static SelectQueryDefinition BuildQuery(DataSourceContext context, Select selectQuery)
-        {
-            SelectQueryDefinition def = new SelectQueryDefinition();
-            def.Build(selectQuery);
-            if (LogContext.IsLogActive)
-            {
-                var logKey = "Lucene query";
-                LogContext.Log(context.ActiveModuleId, logKey, "Filter", def.Filter.ToString());
-                LogContext.Log(context.ActiveModuleId, logKey, "Query", def.Query.ToString());
-                LogContext.Log(context.ActiveModuleId, logKey, "Sort", def.Sort.ToString());
-                LogContext.Log(context.ActiveModuleId, logKey, "PageIndex", def.PageIndex);
-                LogContext.Log(context.ActiveModuleId, logKey, "PageSize", def.PageSize);
-            }
-
-            return def;
         }
 
         public override JObject GetAlpaca(DataSourceContext context, bool schema, bool options, bool view)
@@ -212,6 +205,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 user.Membership.Password = data["Password"]?.ToString() ?? "";
             }
             FillUser(data, schema, user);
+            FillProfile(data, schema, user, false);
             UpdateDisplayName(context, user);
             if (string.IsNullOrEmpty(user.DisplayName))
             {
@@ -236,18 +230,19 @@ namespace Satrabel.OpenContent.Components.Datasource
                         strMessage += Mail.SendMail(newUser, MessageType.UserRegistrationPublic, ps);
                     }
                 }
-                if (string.IsNullOrEmpty(strMessage))
+                if (!string.IsNullOrEmpty(strMessage))
                 {
-                    throw new Exception("Error sending notification email: " + strMessage);
-
+                    App.Services.Logger.Error($"Error sending notification email: [{strMessage}]");
+                    //don't throw error, otherwise item does not get indexed.
+                    //throw new Exception($"Error sending notification email: {strMessage}"); 
                 }
-                FillProfile(data, schema, user);
+                FillProfile(data, schema, user, true);
                 UpdateRoles(context, data, schema, user);
             }
             else
             {
-                Log.Logger.Error($"Creation of user failed with createStatus: {createStatus}");
-                throw new DataNotValidException(Localizer.Instance.GetString(createStatus.ToString()) + " (1)");
+                App.Services.Logger.Error($"Creation of user failed with createStatus: {createStatus}");
+                throw new DataNotValidException(App.Services.Localizer.GetString(createStatus.ToString()) + " (1)");
             }
             var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection);
             if (context.Index)
@@ -257,8 +252,9 @@ namespace Satrabel.OpenContent.Components.Datasource
                     Data = data,
                     User = user
                 }, indexConfig);
-                LuceneController.Instance.Store.Commit();
+                LuceneController.Instance.Commit();
             }
+            Notify(context, data, "add");
         }
 
         public override void Update(DataSourceContext context, IDataItem item, Newtonsoft.Json.Linq.JToken data)
@@ -307,12 +303,12 @@ namespace Satrabel.OpenContent.Components.Datasource
                     }
                     catch (Exception exc)
                     {
-                        Log.Logger.Error($"Update of user {user.Username} failed with 'Username not valid' error");
-                        throw new DataNotValidException(Localizer.Instance.GetString("Username not valid") + " (2)", exc);
+                        App.Services.Logger.Error($"Update of user {user.Username} failed with 'Username not valid' error");
+                        throw new DataNotValidException(App.Services.Localizer.GetString("Username not valid") + " (2)", exc);
                     }
                 }
             }
-            FillProfile(data, schema, user);
+            FillProfile(data, schema, user, true);
             UpdateRoles(context, data, schema, user);
 
             var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection);
@@ -323,15 +319,16 @@ namespace Satrabel.OpenContent.Components.Datasource
                     Data = data,
                     User = user
                 }, indexConfig);
-                LuceneController.Instance.Store.Commit();
+                LuceneController.Instance.Commit();
             }
+            Notify(context, data, "update");
         }
 
         public override void Delete(DataSourceContext context, IDataItem item)
         {
             var user = (UserInfo)item.Item;
             UserController.DeleteUser(ref user, true, false);
-
+            Notify(context, item.Data, "delete");
         }
 
         public List<IDataAction> GetActions(DataSourceContext context, IDataItem item)
@@ -361,25 +358,37 @@ namespace Satrabel.OpenContent.Components.Datasource
             return null;
         }
 
-        public void Reindex(DataSourceContext context)
+        public IEnumerable<IIndexableItem> GetIndexableData(DataSourceContext context)
         {
-            string scope = LUCENE_SCOPE;
-            var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection); //todo index is being build from schema & options. But they should be provided by the provider, not directly from the files
-            LuceneController.Instance.ReIndexModuleData(UserController.GetUsers(true, false, context.PortalId).Cast<UserInfo>().
-                Where(u => !u.IsInRole("Administrators")).Select(u => new IndexableItemUser()
-                {
-                    Data = ToData(u).Data,
-                    User = u
-                }), indexConfig, scope);
+            return UserController.GetUsers(true, false, context.PortalId).Cast<UserInfo>().
+                     Where(u => !u.IsInRole("Administrators")).Select(u => new IndexableItemUser()
+                     {
+                         Data = ToData(u).Data,
+                         User = u
+                     });
         }
 
         #region private methods
+
+        private static void ReIndexIfNeeded(int moduleid, int tabid, int portalId)
+        {
+            var currentUserCount = UserController.GetUserCountByPortal(portalId);
+            var userCountAtLastIndex = DnnUtils.GetPortalSetting("UserCountAtLastIndex", 0);
+            if (currentUserCount != userCountAtLastIndex)
+            {
+                // reindex module data
+                var module = OpenContentModuleConfig.Create(moduleid, tabid, null);
+                LuceneUtils.ReIndexModuleData(module);
+                DnnUtils.SetPortalSetting("UserCountAtLastIndex", currentUserCount);
+                App.Services.Logger.Info("DnnUsers reindexed");
+            }
+        }
 
         private static void UpdateRoles(DataSourceContext context, JToken data, JObject schema, UserInfo user)
         {
             if (HasProperty(schema, "", "Roles"))
             {
-                List<string> rolesToRemove = new List<string>(user.Roles);
+                List<string> rolesToRemove = new List<string>(user.Roles); //@todo : enkel deze van het schema
                 var roles = data["Roles"] as JArray;
                 foreach (var role in roles)
                 {
@@ -402,14 +411,13 @@ namespace Satrabel.OpenContent.Components.Datasource
             }
         }
 
-
         private static void ChangePassword(UserInfo user, string password)
         {
             // Check New Password is Valid
             if (!UserController.ValidatePassword(password))
             {
-                Log.Logger.Error($"Changing password of user {user.Username} failed with PasswordInvalid error");
-                throw new DataNotValidException(Localizer.Instance.GetString("PasswordInvalid"));
+                App.Services.Logger.Error($"Changing password of user {user.Username} failed with PasswordInvalid error");
+                throw new DataNotValidException(App.Services.Localizer.GetString("PasswordInvalid"));
             }
             // Check New Password is not same as username or banned
             var settings = new MembershipPasswordSettings(user.PortalID);
@@ -418,14 +426,14 @@ namespace Satrabel.OpenContent.Components.Datasource
                 var m = new MembershipPasswordController();
                 if (m.FoundBannedPassword(password) || user.Username == password)
                 {
-                    Log.Logger.Error($"Changing password of user {user.Username} failed with BannedPasswordUsed error");
-                    throw new DataNotValidException(Localizer.Instance.GetString("BannedPasswordUsed"));
+                    App.Services.Logger.Error($"Changing password of user {user.Username} failed with BannedPasswordUsed error");
+                    throw new DataNotValidException(App.Services.Localizer.GetString("BannedPasswordUsed"));
                 }
             }
             UserController.ResetAndChangePassword(user, password);
         }
 
-        private static void FillProfile(JToken data, JObject schema, UserInfo user)
+        private static void FillProfile(JToken data, JObject schema, UserInfo user, bool withUpdate)
         {
             if (HasProperty(schema, "", "Profile"))
             {
@@ -453,7 +461,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                         }
                     }
                 }
-                ProfileController.UpdateUserProfile(user);
+                if (withUpdate) ProfileController.UpdateUserProfile(user);
             }
         }
 
@@ -474,6 +482,10 @@ namespace Satrabel.OpenContent.Components.Datasource
             if (HasProperty(schema, "", "Email"))
             {
                 user.Email = data["Email"]?.ToString() ?? "";
+            }
+            if (HasProperty(schema, "", "PreferredLocale") && data["PreferredLocale"] != null)
+            {
+                user.Profile.PreferredLocale = data["PreferredLocale"].ToString();
             }
         }
 
@@ -498,10 +510,23 @@ namespace Satrabel.OpenContent.Components.Datasource
             return ((JObject)schema["properties"]).Properties().Any(p => p.Name == property);
         }
 
+        private static void Notify(DataSourceContext context, JToken data, string action)
+        {
+            if (context.Options?["Notifications"] is JArray)
+            {
+                var notifData = new JObject();
+                notifData["form"] = data.DeepClone();
+                notifData["form"]["action"] = action;
+                notifData["formSettings"] = new JObject();
+                notifData["formSettings"] = context.Options;
+                FormUtils.FormSubmit(notifData);
+            }
+        }
+
         #endregion
     }
 
-    internal class IndexableItemUser : IIndexableItem
+    public class IndexableItemUser : IIndexableItem
     {
         public JToken Data { get; set; }
         public UserInfo User { get; set; }

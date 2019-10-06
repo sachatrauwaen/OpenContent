@@ -10,7 +10,7 @@
         constructor: function (container, data, options, schema, view, connector) {
             var self = this;
             this.base(container, data, options, schema, view, connector);
-            this.numberDecimalSeparator = connector.numberDecimalSeparator;
+            this.numberDecimalSeparator = connector.numberDecimalSeparator || ".";
         },
         /**
          * @see Alpaca.Fields.TextField#setup

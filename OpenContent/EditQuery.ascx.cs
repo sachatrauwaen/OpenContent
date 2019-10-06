@@ -15,8 +15,6 @@ using DotNetNuke.Common;
 using Satrabel.OpenContent.Components;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Lucene;
-using Satrabel.OpenContent.Components.Lucene.Config;
-using Satrabel.OpenContent.Components.Datasource;
 
 #endregion
 
@@ -33,32 +31,18 @@ namespace Satrabel.OpenContent
             //OpenContentSettings settings = this.OpenContentSettings();
             //AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, settings.Template.Uri().FolderPath, "query");
             AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext.PortalId, "", "");
-            alpaca.RegisterAll(false, false);
+            alpaca.RegisterAll(false, false, false);
             string itemId = null;//Request.QueryString["id"] == null ? -1 : int.Parse(Request.QueryString["id"]);
             AlpacaContext = new AlpacaContext(PortalId, ModuleId, itemId, ScopeWrapper.ClientID, hlCancel.ClientID, cmdSave.ClientID, null, null, null);
         }
         protected void bIndex_Click(object sender, EventArgs e)
         {
-            //LuceneController.Instance.ReIndexModuleData(ModuleId, this.OpenContentSettings());
-            var module = new OpenContentModuleInfo(this.ModuleConfiguration);
-            var settings = module.Settings;
-            bool index = false;
-            if (settings.TemplateAvailable)
-            {
-                index = settings.Manifest.Index;
-            }
-            IDataSource ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
-            if (index && ds is IDataIndex)
-            {
-                FieldConfig indexConfig = OpenContentUtils.GetIndexConfig(settings.Template);
-                var dsContext = OpenContentUtils.CreateDataContext(module);
-                var dataIndex = (IDataIndex)ds;
-                dataIndex.Reindex(dsContext);
-            }
+            var module = OpenContentModuleConfig.Create(ModuleConfiguration, PortalSettings);
+            LuceneUtils.ReIndexModuleData(module);
         }
         protected void bIndexAll_Click(object sender, EventArgs e)
         {
-            LuceneController.Instance.IndexAll();
+            LuceneUtils.IndexAll();
         }
         protected void bGenerate_Click(object sender, EventArgs e)
         {

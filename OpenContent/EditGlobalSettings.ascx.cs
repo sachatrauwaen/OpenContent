@@ -13,10 +13,11 @@ using System;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Common;
 using Satrabel.OpenContent.Components;
-using DotNetNuke.Entities.Portals;
 using System.Web.UI.WebControls;
+using DotNetNuke.Entities.Portals;
 using DotNetNuke.Security.Roles;
 using Satrabel.OpenContent.Components.Alpaca;
+using Satrabel.OpenContent.Components.UrlRewriter;
 
 #endregion
 
@@ -31,14 +32,21 @@ namespace Satrabel.OpenContent
             hlCancel.NavigateUrl = Globals.NavigateURL();
             cmdSave.Click += cmdSave_Click;
             cmdUpgradeXml.Click += cmdUpgradeXml_Click;
+            cmdPurgeUrlCache.Click += cmdPurgeUrlCache_Click;
             //cmdCancel.Click += cmdCancel_Click;
         }
+
+        private void cmdPurgeUrlCache_Click(object sender, EventArgs e)
+        {
+            UrlRulesCaching.PurgeCache(PortalId);
+        }
+
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
             if (!Page.IsPostBack)
             {
-                var globalSettingsController = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController(ModuleContext.PortalId);
+                var globalSettingsRepository= App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId);
                 ddlRoles.Items.Add(new ListItem("None", "-1"));
                 var rc = new RoleController();
                 foreach (var role in rc.GetRoles(PortalId))
@@ -46,73 +54,74 @@ namespace Satrabel.OpenContent
                     ddlRoles.Items.Add(new ListItem(role.RoleName, role.RoleID.ToString()));
                 }
 
-                string OpenContent_EditorsRoleId = PortalController.GetPortalSetting("OpenContent_EditorsRoleId", ModuleContext.PortalId, "");
-                if (!string.IsNullOrEmpty(OpenContent_EditorsRoleId))
+                if (!string.IsNullOrEmpty(globalSettingsRepository.GetEditorRoleId()))
                 {
-                    var li = ddlRoles.Items.FindByValue(OpenContent_EditorsRoleId);
+                    var li = ddlRoles.Items.FindByValue(globalSettingsRepository.GetEditorRoleId());
                     if (li != null)
                     {
                         li.Selected = true;
                     }
                 }
-                string OpenContent_AutoAttach = PortalController.GetPortalSetting("OpenContent_AutoAttach", ModuleContext.PortalId, "False");
-                cbMLContent.Checked = bool.Parse(OpenContent_AutoAttach);
+                cbMLContent.Checked = App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetAutoAttach();
 
                 foreach (var item in new[] { 5, 10, 25, 50, 100 })
                 {
                     ddlMaxVersions.Items.Add(new ListItem(item.ToString(), item.ToString()));
                 }
-                var maxVersionItem = ddlMaxVersions.Items.FindByValue(globalSettingsController.GetMaxVersions().ToString());
+                var maxVersionItem = ddlMaxVersions.Items.FindByValue(globalSettingsRepository.GetMaxVersions().ToString());
                 if (maxVersionItem != null) maxVersionItem.Selected = true;
 
-                string OpenContent_Logging = PortalController.GetPortalSetting("OpenContent_Logging", ModuleContext.PortalId, "none");
-                ddlLogging.SelectedValue = OpenContent_Logging;
+                ddlLogging.SelectedValue = globalSettingsRepository.GetLoggingScope();
 
-                var editLayoutItem = ddlEditLayout.Items.FindByValue(((int)globalSettingsController.GetEditLayout()).ToString());
+                var editLayoutItem = ddlEditLayout.Items.FindByValue(((int)globalSettingsRepository.GetEditLayout()).ToString());
                 if (editLayoutItem != null) editLayoutItem.Selected = true;
 
-                cbLoadBootstrap.Checked = globalSettingsController.GetLoadBootstrap();
-                cbLoadBootstrap.Visible = lLoadBootstrap.Visible = globalSettingsController.GetEditLayout() != AlpacaLayoutEnum.DNN;
-                tbGoogleApiKey.Text = globalSettingsController.GetGoogleApiKey();
-                cbFastHandlebars.Checked = globalSettingsController.GetFastHandlebars();
-                cbSaveXml.Checked = globalSettingsController.IsSaveXml();
+                cbLoadBootstrap.Checked = globalSettingsRepository.GetLoadBootstrap();
+                cbLoadBootstrap.Visible = lLoadBootstrap.Visible = globalSettingsRepository.GetEditLayout() != AlpacaLayoutEnum.DNN;
+                cbLoadGlyphicons.Checked = globalSettingsRepository.GetLoadGlyphicons();
+                cbLoadGlyphicons.Visible = cbLoadBootstrap.Visible;
+                tbGoogleApiKey.Text = globalSettingsRepository.GetGoogleApiKey();
+                cbLegacyHandlebars.Checked = globalSettingsRepository.GetLegacyHandlebars();
+                //cbCompositeCss.Checked = globalSettingsRepository.GetCompositeCss();
+                cbSaveXml.Checked = globalSettingsRepository.IsSaveXml();
+                tbGithubRepository.Text = globalSettingsRepository.GetGithubRepository();
                 cmdUpgradeXml.Visible = cbSaveXml.Checked;
             }
         }
         protected void cmdSave_Click(object sender, EventArgs e)
         {
-            var globalSettingsController = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController(ModuleContext.PortalId);
-            if (ddlRoles.SelectedIndex > 0)
-                PortalController.UpdatePortalSetting(ModuleContext.PortalId, "OpenContent_EditorsRoleId", ddlRoles.SelectedValue, true);
-            else
-                PortalController.DeletePortalSetting(ModuleContext.PortalId, "OpenContent_EditorsRoleId");
-
-            PortalController.UpdatePortalSetting(ModuleContext.PortalId, "OpenContent_AutoAttach", cbMLContent.Checked.ToString(), true);
+            var globalSettingsRepository = App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId);
+            globalSettingsRepository.SetEditorRoleId(ddlRoles.SelectedIndex > 0 ? ddlRoles.SelectedValue : "");
+            globalSettingsRepository.SetAutoAttach(cbMLContent.Checked.ToString());
             int maxVersions;
             if (int.TryParse(ddlMaxVersions.SelectedValue, out maxVersions))
             {
-                globalSettingsController.SetMaxVersions(maxVersions);
+                globalSettingsRepository.SetMaxVersions(maxVersions);
+
             }
-            PortalController.UpdatePortalSetting(ModuleContext.PortalId, "OpenContent_Logging", ddlLogging.SelectedValue, true);
+            globalSettingsRepository.SetLoggingScope(ddlLogging.SelectedValue);
             int editLayout;
             if (int.TryParse(ddlEditLayout.SelectedValue, out editLayout))
             {
-                globalSettingsController.SetEditLayout((AlpacaLayoutEnum)editLayout);
+                globalSettingsRepository.SetEditLayout((AlpacaLayoutEnum)editLayout);
             }
-            globalSettingsController.SetLoadBootstrap(cbLoadBootstrap.Checked);
-            globalSettingsController.SetGoogleApiKey(tbGoogleApiKey.Text);
-            globalSettingsController.SetFastHandlebars(cbFastHandlebars.Checked);
-            globalSettingsController.SetSaveXml(cbSaveXml.Checked);
+            globalSettingsRepository.SetLoadBootstrap(cbLoadBootstrap.Checked);
+            globalSettingsRepository.SetLoadGlyphicons(cbLoadGlyphicons.Checked);
+            globalSettingsRepository.SetGoogleApiKey(tbGoogleApiKey.Text);
+            globalSettingsRepository.SetLegacyHandlebars(cbLegacyHandlebars.Checked);
+            //globalSettingsRepository.SetCompositeCss(cbCompositeCss.Checked);
+            globalSettingsRepository.SetSaveXml(cbSaveXml.Checked);
+            globalSettingsRepository.SetGithubRepository(tbGithubRepository.Text);
 
             Response.Redirect(Globals.NavigateURL(), true);
         }
 
         protected void cmdUpgradeXml_Click(object sender, EventArgs e)
         {
-            var globalSettingsController = OpenContentControllerFactory.Instance.OpenContentGlobalSettingsController(ModuleContext.PortalId);
+            var globalSettingsController = App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId);
             if (globalSettingsController.IsSaveXml())
             {
-                Log.Logger.Info("Updating all OpenContent Xml data for portal " + ModuleContext.PortalId);
+                App.Services.Logger.Info("Updating all OpenContent Xml data for portal " + ModuleContext.PortalId);
                 try
                 {
                     var ctrl = new OpenContentController(ModuleContext.PortalId);
@@ -129,7 +138,7 @@ namespace Satrabel.OpenContent
                 }
                 catch (Exception ex)
                 {
-                    Log.Logger.Error("Error while Updating all OpenContent Xml data for portal " + ModuleContext.PortalId, ex);
+                    App.Services.Logger.Error("Error while Updating all OpenContent Xml data for portal " + ModuleContext.PortalId, ex);
                 }
                 finally
                 {
@@ -146,6 +155,7 @@ namespace Satrabel.OpenContent
         protected void ddlEditLayout_SelectedIndexChanged(object sender, EventArgs e)
         {
             cbLoadBootstrap.Visible = lLoadBootstrap.Visible = ddlEditLayout.SelectedValue != "1"; // DNN
+            cbLoadGlyphicons.Visible = cbLoadBootstrap.Visible;
         }
 
 

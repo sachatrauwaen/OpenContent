@@ -3,7 +3,6 @@ using System.Runtime.CompilerServices;
 using System.Security;
 using System.Threading;
 
-
 namespace Satrabel.OpenContent.Components.Common
 {
     /// <summary>
@@ -22,30 +21,27 @@ namespace Satrabel.OpenContent.Components.Common
         /// <summary>
         /// Get timestamp
         /// </summary>
-        public int Timestamp { get; private set; }
+        public int Timestamp { get; }
 
         /// <summary>
         /// Get machine number
         /// </summary>
-        public int Machine { get; private set; }
+        public int Machine { get; }
 
         /// <summary>
         /// Get pid number
         /// </summary>
-        public short Pid { get; private set; }
+        public short Pid { get; }
 
         /// <summary>
         /// Get increment
         /// </summary>
-        public int Increment { get; private set; }
+        public int Increment { get; }
 
         /// <summary>
         /// Get creation time
         /// </summary>
-        public DateTime CreationTime
-        {
-            get { return UnixEpoch.AddSeconds(this.Timestamp); }
-        }
+        public DateTime CreationTime => UnixEpoch.AddSeconds(Timestamp);
 
         #endregion Properties
 
@@ -56,10 +52,10 @@ namespace Satrabel.OpenContent.Components.Common
         /// </summary>
         public ObjectId()
         {
-            this.Timestamp = 0;
-            this.Machine = 0;
-            this.Pid = 0;
-            this.Increment = 0;
+            Timestamp = 0;
+            Machine = 0;
+            Pid = 0;
+            Increment = 0;
         }
 
         /// <summary>
@@ -67,10 +63,10 @@ namespace Satrabel.OpenContent.Components.Common
         /// </summary>
         public ObjectId(int timestamp, int machine, short pid, int increment)
         {
-            this.Timestamp = timestamp;
-            this.Machine = machine;
-            this.Pid = pid;
-            this.Increment = increment;
+            Timestamp = timestamp;
+            Machine = machine;
+            Pid = pid;
+            Increment = increment;
         }
 
         /// <summary>
@@ -78,10 +74,10 @@ namespace Satrabel.OpenContent.Components.Common
         /// </summary>
         public ObjectId(ObjectId from)
         {
-            this.Timestamp = from.Timestamp;
-            this.Machine = from.Machine;
-            this.Pid = from.Pid;
-            this.Increment = from.Increment;
+            Timestamp = from.Timestamp;
+            Machine = from.Machine;
+            Pid = from.Pid;
+            Increment = from.Increment;
         }
 
         /// <summary>
@@ -97,13 +93,13 @@ namespace Satrabel.OpenContent.Components.Common
         /// </summary>
         public ObjectId(byte[] bytes)
         {
-            if (bytes == null) throw new ArgumentNullException("bytes");
-            if (bytes.Length != 12) throw new ArgumentException("Byte array must be 12 bytes long", "bytes");
+            if (bytes == null) throw new ArgumentNullException(nameof(bytes));
+            if (bytes.Length != 12) throw new ArgumentException("Byte array must be 12 bytes long", nameof(bytes));
 
-            this.Timestamp = (bytes[0] << 24) + (bytes[1] << 16) + (bytes[2] << 8) + bytes[3];
-            this.Machine = (bytes[4] << 16) + (bytes[5] << 8) + bytes[6];
-            this.Pid = (short)((bytes[7] << 8) + bytes[8]);
-            this.Increment = (bytes[9] << 16) + (bytes[10] << 8) + bytes[11];
+            Timestamp = (bytes[0] << 24) + (bytes[1] << 16) + (bytes[2] << 8) + bytes[3];
+            Machine = (bytes[4] << 16) + (bytes[5] << 8) + bytes[6];
+            Pid = (short)((bytes[7] << 8) + bytes[8]);
+            Increment = (bytes[9] << 16) + (bytes[10] << 8) + bytes[11];
         }
 
         /// <summary>
@@ -111,8 +107,8 @@ namespace Satrabel.OpenContent.Components.Common
         /// </summary>
         private static byte[] FromHex(string value)
         {
-            if (string.IsNullOrEmpty(value)) throw new ArgumentNullException("value");
-            if (value.Length != 24) throw new ArgumentException(string.Format("ObjectId strings should be 24 hex characters, got {0} : \"{1}\"", value.Length, value));
+            if (string.IsNullOrEmpty(value)) throw new ArgumentNullException(nameof(value));
+            if (value.Length != 24) throw new ArgumentException($"ObjectId strings should be 24 hex characters, got {value.Length} : \"{value}\"");
 
             var bytes = new byte[12];
 
@@ -135,10 +131,10 @@ namespace Satrabel.OpenContent.Components.Common
         {
             if (other != null)
                 return
-                    this.Timestamp == other.Timestamp &&
-                    this.Machine == other.Machine &&
-                    this.Pid == other.Pid &&
-                    this.Increment == other.Increment;
+                    Timestamp == other.Timestamp &&
+                    Machine == other.Machine &&
+                    Pid == other.Pid &&
+                    Increment == other.Increment;
             return false;
         }
 
@@ -147,12 +143,8 @@ namespace Satrabel.OpenContent.Components.Common
         /// </summary>
         public override bool Equals(object other)
         {
-            if (other is ObjectId)
-            {
-                return this.Equals((ObjectId)other);
-            }
-
-            return false;
+            var a = other as ObjectId;
+            return a != null && Equals(a);
         }
 
         /// <summary>
@@ -161,10 +153,10 @@ namespace Satrabel.OpenContent.Components.Common
         public override int GetHashCode()
         {
             int hash = 17;
-            hash = 37 * hash + this.Timestamp.GetHashCode();
-            hash = 37 * hash + this.Machine.GetHashCode();
-            hash = 37 * hash + this.Pid.GetHashCode();
-            hash = 37 * hash + this.Increment.GetHashCode();
+            hash = 37 * hash + Timestamp.GetHashCode();
+            hash = 37 * hash + Machine.GetHashCode();
+            hash = 37 * hash + Pid.GetHashCode();
+            hash = 37 * hash + Increment.GetHashCode();
             return hash;
         }
 
@@ -173,16 +165,16 @@ namespace Satrabel.OpenContent.Components.Common
         /// </summary>
         public int CompareTo(ObjectId other)
         {
-            var r = this.Timestamp.CompareTo(other.Timestamp);
+            var r = Timestamp.CompareTo(other.Timestamp);
             if (r != 0) return r;
 
-            r = this.Machine.CompareTo(other.Machine);
+            r = Machine.CompareTo(other.Machine);
             if (r != 0) return r;
 
-            r = this.Pid.CompareTo(other.Pid);
+            r = Pid.CompareTo(other.Pid);
             if (r != 0) return r < 0 ? -1 : 1;
 
-            return this.Increment.CompareTo(other.Increment);
+            return Increment.CompareTo(other.Increment);
         }
 
         /// <summary>
@@ -192,25 +184,25 @@ namespace Satrabel.OpenContent.Components.Common
         {
             var bytes = new byte[12];
 
-            bytes[0] = (byte)(this.Timestamp >> 24);
-            bytes[1] = (byte)(this.Timestamp >> 16);
-            bytes[2] = (byte)(this.Timestamp >> 8);
-            bytes[3] = (byte)(this.Timestamp);
-            bytes[4] = (byte)(this.Machine >> 16);
-            bytes[5] = (byte)(this.Machine >> 8);
-            bytes[6] = (byte)(this.Machine);
-            bytes[7] = (byte)(this.Pid >> 8);
-            bytes[8] = (byte)(this.Pid);
-            bytes[9] = (byte)(this.Increment >> 16);
-            bytes[10] = (byte)(this.Increment >> 8);
-            bytes[11] = (byte)(this.Increment);
+            bytes[0] = (byte)(Timestamp >> 24);
+            bytes[1] = (byte)(Timestamp >> 16);
+            bytes[2] = (byte)(Timestamp >> 8);
+            bytes[3] = (byte)(Timestamp);
+            bytes[4] = (byte)(Machine >> 16);
+            bytes[5] = (byte)(Machine >> 8);
+            bytes[6] = (byte)(Machine);
+            bytes[7] = (byte)(Pid >> 8);
+            bytes[8] = (byte)(Pid);
+            bytes[9] = (byte)(Increment >> 16);
+            bytes[10] = (byte)(Increment >> 8);
+            bytes[11] = (byte)(Increment);
 
             return bytes;
         }
 
         public override string ToString()
         {
-            return BitConverter.ToString(this.ToByteArray()).Replace("-", "").ToLower();
+            return BitConverter.ToString(ToByteArray()).Replace("-", "").ToLower();
         }
 
         #endregion Equals/CompareTo/ToString
@@ -219,8 +211,8 @@ namespace Satrabel.OpenContent.Components.Common
 
         public static bool operator ==(ObjectId lhs, ObjectId rhs)
         {
-            if (object.ReferenceEquals(lhs, null)) return object.ReferenceEquals(rhs, null);
-            if (object.ReferenceEquals(rhs, null)) return false; // don't check type because sometimes different types can be ==
+            if (ReferenceEquals(lhs, null)) return ReferenceEquals(rhs, null);
+            if (ReferenceEquals(rhs, null)) return false; // don't check type because sometimes different types can be ==
 
             return lhs.Equals(rhs);
         }
@@ -254,8 +246,8 @@ namespace Satrabel.OpenContent.Components.Common
 
         #region Static methods
 
-        private static int _machine;
-        private static short _pid;
+        private static readonly int _machine;
+        private static readonly short _pid;
         private static int _increment;
 
         // static constructor
@@ -265,9 +257,9 @@ namespace Satrabel.OpenContent.Components.Common
 #if NET35
                 AppDomain.CurrentDomain.Id
 #else
-                10000 // Magic number
+                        10000 // Magic number
 #endif
-                ) & 0x00ffffff;
+                       ) & 0x00ffffff;
             _increment = (new Random()).Next();
 
             try

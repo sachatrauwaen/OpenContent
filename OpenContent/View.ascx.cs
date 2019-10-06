@@ -9,33 +9,37 @@
 
 #region Using Statements
 
-using System;
-using System.Linq;
-using System.Diagnostics;
+using DotNetNuke.Common.Utilities;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Modules.Actions;
-using DotNetNuke.Services.Localization;
-using DotNetNuke.Security;
-using System.Web.UI;
-using DotNetNuke.Web.Client.ClientResourceManagement;
-using DotNetNuke.Web.Client;
-using Satrabel.OpenContent.Components;
-using Satrabel.OpenContent.Components.Json;
-using DotNetNuke.Framework;
-using DotNetNuke.Common.Utilities;
 using DotNetNuke.Entities.Portals;
-using DotNetNuke.Security.Permissions;
-using Satrabel.OpenContent.Components.Manifest;
-using Satrabel.OpenContent.Components.Logging;
-using Newtonsoft.Json;
-using System.Text;
-using Satrabel.OpenContent.Components.Render;
-using System.Web;
-using Satrabel.OpenContent.Components.Dnn;
 using DotNetNuke.Entities.Tabs;
-using DotNetNuke.Services.Personalization;
+using DotNetNuke.Framework;
 using DotNetNuke.Framework.JavaScriptLibraries;
-using Localization = DotNetNuke.Services.Localization.Localization;
+using DotNetNuke.Security.Permissions;
+using DotNetNuke.Services.Personalization;
+using DotNetNuke.Web.Client;
+using DotNetNuke.Web.Client.ClientResourceManagement;
+using Newtonsoft.Json;
+using Satrabel.OpenContent.Components;
+using Satrabel.OpenContent.Components.Dnn;
+using Satrabel.OpenContent.Components.Json;
+using Satrabel.OpenContent.Components.Logging;
+using Satrabel.OpenContent.Components.Manifest;
+using Satrabel.OpenContent.Components.Render;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Web;
+using System.Web.UI;
+using DotNetNuke.Services.Localization;
+using Satrabel.OpenContent.Components.Datasource;
+using IDataSource = Satrabel.OpenContent.Components.Datasource.IDataSource;
+using SecurityAccessLevel = DotNetNuke.Security.SecurityAccessLevel;
+using Newtonsoft.Json.Serialization;
+using System.Reflection;
 
 #endregion
 
@@ -48,7 +52,6 @@ namespace Satrabel.OpenContent
     /// </summary>
     public partial class View : DotNetNuke.Web.Razor.RazorModuleBase, IActionable
     {
-        private string _itemId = null;
         private RenderInfo _renderinfo;
         private OpenContentSettings _settings;
         private RenderEngine _engine;
@@ -59,55 +62,34 @@ namespace Satrabel.OpenContent
         {
             base.OnInit(e);
             ModuleInfo module = ModuleContext.Configuration;
-            // auto attach a ContentLocalized OpenContent module to the reference module of the default language
-            string openContentAutoAttach = PortalController.GetPortalSetting("OpenContent_AutoAttach", ModuleContext.PortalId, "False");
-            bool autoAttach = bool.Parse(openContentAutoAttach);
-            if (autoAttach)
+
+            if (App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetAutoAttach())
             {
-                //var module = (new ModuleController()).GetModule(ModuleContext.moduleId, ModuleContext.tabId, false);
-                var defaultModule = module.DefaultLanguageModule;
-                if (defaultModule != null)
-                {
-                    if (ModuleContext.ModuleId != defaultModule.ModuleID)
-                    {
-                        var mc = (new ModuleController());
-                        mc.DeLocalizeModule(module);
-
-                        mc.ClearCache(defaultModule.TabID);
-                        mc.ClearCache(module.TabID);
-                        const string MODULE_SETTINGS_CACHE_KEY = "ModuleSettings{0}"; // to be compatible with dnn 7.2
-                        DataCache.RemoveCache(string.Format(MODULE_SETTINGS_CACHE_KEY, defaultModule.TabID));
-                        DataCache.RemoveCache(string.Format(MODULE_SETTINGS_CACHE_KEY, module.TabID));
-
-                        //DataCache.ClearCache();
-                        module = mc.GetModule(defaultModule.ModuleID, ModuleContext.TabId, true);
-                        //_settings = module.OpenContentSettings();
-                    }
-                }
+                // auto attach a ContentLocalized OpenContent module to the reference module of the default language
+                AutoAttachLocalizedModule(ref module);
             }
-            _engine = new RenderEngine(module);
+            _engine = new RenderEngine(OpenContentModuleConfig.Create(module, PortalSettings.Current), new DnnRenderContext(ModuleContext), LocalResourceFile);
             _renderinfo = _engine.Info;
             _settings = _engine.Settings;
-
-            OpenContent.TemplateInit ti = (TemplateInit)TemplateInitControl;
-            ti.ModuleContext = ModuleContext;
-            ti.Settings = _settings;
-            ti.Renderinfo = _renderinfo;
-            /*
-            AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext.PortalId, _settings.Template.ManifestFolderUri.FolderPath, "Submissions");
-            alpaca.RegisterAll(true, false);
-            */
-        }
-        protected override void OnLoad(EventArgs e)
-        {
-            base.OnLoad(e);
             _engine.QueryString = Page.Request.QueryString;
             if (Page.Request.QueryString["id"] != null)
             {
                 _engine.ItemId = Page.Request.QueryString["id"];
             }
-            _engine.LocalResourceFile = LocalResourceFile;
-            _engine.ModuleContext = ModuleContext;
+
+            //initialize TemplateInitControl
+            TemplateInit ti = (TemplateInit)TemplateInitControl;
+            ti.ModuleContext = ModuleContext;
+            ti.Settings = _settings;
+            ti.Renderinfo = _renderinfo;
+            ti.ResourceFile = LocalResourceFile;
+        }
+
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+
+
             if (!Page.IsPostBack)
             {
                 AddEditorRole();
@@ -127,10 +109,10 @@ namespace Satrabel.OpenContent
             }
             catch (NotAuthorizedException ex)
             {
-                if (ModuleContext.Configuration.HasEditRightsOnModule())
+                if (_engine.ModuleConfig.ViewModule.HasEditRightsOnModule())
                     RenderHttpException(ex);
                 else
-                    throw ex;
+                    throw;
             }
             catch (Exception ex)
             {
@@ -141,39 +123,70 @@ namespace Satrabel.OpenContent
                 try
                 {
                     _engine.IncludeResourses(Page, this);
-
                 }
                 catch (Exception ex)
                 {
                     DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, ex.Message, DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
                 }
             }
-        }
-
-        private void AutoEditMode()
-        {
-            if (!Page.IsPostBack)
+            if (App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetCompositeCss())
             {
-                if (HttpContext.Current != null && HttpContext.Current.Request.IsAuthenticated)
-                {
-                    var defaultMode = ModuleContext.PortalSettings.DefaultControlPanelMode;
-                    if (defaultMode == PortalSettings.Mode.Edit)
-                    {
-                        string setting = Convert.ToString(DotNetNuke.Services.Personalization.Personalization.GetProfile("Usability", "UserMode" + PortalSettings.Current.PortalId));
-                        if (!IsPageAdmin() & IsModuleAdmin())
-                        {
-                            if (setting != "EDIT")
-                            {
-                                Personalization.SetProfile("Usability", "UserMode" + PortalSettings.Current.PortalId, "EDIT");
-                                //Page.Response.AppendHeader("X-UserMode", setting + "/" + IsPageAdmin() + "/" + IsModuleAdmin());
-                            }
-                            JavaScript.RequestRegistration(CommonJs.DnnPlugins); // avoid js error 
-                        }
-                    }
-                }
-                //string  usermode = "" + DotNetNuke.Services.Personalization.Personalization.GetProfile("Usability", "UserMode" + PortalSettings.Current.PortalId);
+                //var absUrl = Utils.GetFullUrl(Request, Page.ResolveUrl($"~/DesktopModules/OpenContent/API/Resource/Css?tabid={activeTab.TabID}&portalid={activeTab.PortalID}"));
+                //var absUrl = Utils.GetFullUrl(Request, Page.ResolveUrl($"~/API/OpenContent/Resource/Css?tabid={ModuleContext.TabId}&portalid={ModuleContext.PortalId}"));
+                //App.Services.ClientResourceManager.RegisterStyleSheet(Page, absUrl);
+
+                //var cssControl = Page.Header.FindControl("OpenContentCss");
+                //if (cssControl == null)
+                //{                    
+                //    System.Web.UI.HtmlControls.HtmlLink css = new System.Web.UI.HtmlControls.HtmlLink();
+                //    css.Href = Page.ResolveUrl($"~/API/OpenContent/Resource/Css?tabid={ModuleContext.TabId}&portalid={ModuleContext.PortalId}&cdv={ModuleContext.PortalSettings.CdfVersion}");
+                //    css.Attributes["rel"] = "stylesheet";
+                //    css.Attributes["type"] = "text/css";
+                //    css.ID = "OpenContentCss";
+                //    Page.Header.Controls.Add(css);
+                //}
             }
         }
+
+        protected override void OnPreRender(EventArgs e)
+        {
+            //base.OnPreRender(e);
+            //pHelp.Visible = false;
+            pInit.Visible = false;
+            GenerateAndRenderDemoData();
+            if (_renderinfo.Template != null && !string.IsNullOrEmpty(_renderinfo.OutputString))
+            {
+                //Rendering was succesful.
+                var lit = new LiteralControl(Server.HtmlDecode(_renderinfo.OutputString));
+                Controls.Add(lit);
+                var mst = _renderinfo.Template.Manifest;
+                bool editWitoutPostback = mst != null && mst.EditWitoutPostback;
+                if (ModuleContext.PortalSettings.EnablePopUps && ModuleContext.IsEditable && editWitoutPostback)
+                {
+                    AJAX.WrapUpdatePanelControl(lit, true);
+                }
+                _engine.IncludeMeta(Page);
+            }
+            if (LogContext.IsLogActive && !Debugger.IsAttached)
+            {
+                ClientResourceManager.RegisterScript(Page, Page.ResolveUrl("~/DesktopModules/OpenContent/js/opencontent.js"), FileOrder.Js.DefaultPriority);
+                var json = JsonConvert.SerializeObject(LogContext.Current.ModuleLogs(ModuleContext.ModuleId));
+                json = json.Replace("<script>", "*script*");
+                json = json.Replace("</script>", "*/script*");
+                StringBuilder logScript = new StringBuilder();
+                //logScript.AppendLine("<script type=\"text/javascript\"> ");
+                logScript.AppendLine("$(document).ready(function () { ");
+                logScript.AppendLine("var logs = " + json + "; " );
+                logScript.AppendLine("$.fn.openContent.printLogs(\"Module " + ModuleContext.ModuleId + " - " + ModuleContext.Configuration.ModuleTitle + "\", logs);");
+                logScript.AppendLine("});");
+                //logScript.AppendLine("</script>");
+                Page.ClientScript.RegisterClientScriptBlock(this.GetType(), "logScript" + ModuleContext.ModuleId, /*DotNetNuke.UI.Utilities.ClientAPI.EscapeForJavascript*/(logScript.ToString()), true);
+            }
+        }
+
+        #endregion
+
+        #region Private Methods
 
         protected bool IsModuleAdmin()
         {
@@ -204,97 +217,136 @@ namespace Satrabel.OpenContent
             return isPageAdmin;
         }
 
+        private void AutoAttachLocalizedModule(ref ModuleInfo module)
+        {
+            var defaultModule = module.DefaultLanguageModule;
+            if (defaultModule == null) return;  //if module is not localized, return
+            if (ModuleContext.ModuleId == defaultModule.ModuleID) return;  //if module is already attached, return
+
+            if (ModuleHasValidConfig(module) && ModuleHasAlreadyData(module))
+            {
+                // this module is in another language but has already data.
+                // Therefor we will not AutoAttach it, because otherwise all data will be deleted.
+                
+                //App.Services.Logger.Info($"Module {module.ModuleID} on Tab {module.TabID} has not been AutoAttached because it already contains data.");
+                //return;
+            }
+
+            var mc = (new ModuleController());
+            mc.DeLocalizeModule(module);
+
+            mc.ClearCache(defaultModule.TabID);
+            mc.ClearCache(module.TabID);
+            const string MODULE_SETTINGS_CACHE_KEY = "ModuleSettings{0}"; // to be compatible with dnn 7.2
+            DataCache.RemoveCache(string.Format(MODULE_SETTINGS_CACHE_KEY, defaultModule.TabID));
+            DataCache.RemoveCache(string.Format(MODULE_SETTINGS_CACHE_KEY, module.TabID));
+
+            module = mc.GetModule(defaultModule.ModuleID, ModuleContext.TabId, true);
+        }
+
+        private static bool ModuleHasValidConfig(ModuleInfo moduleInfo)
+        {
+            OpenContentModuleConfig ocModuleConfig = OpenContentModuleConfig.Create(moduleInfo, PortalSettings.Current);
+            return ocModuleConfig.Settings.Manifest != null;
+        }
+
+        private static bool ModuleHasAlreadyData(ModuleInfo moduleInfo)
+        {
+            OpenContentModuleConfig ocModuleConfig = OpenContentModuleConfig.Create(moduleInfo, PortalSettings.Current);
+            IDataSource ds = DataSourceManager.GetDataSource(ocModuleConfig.Settings.Manifest.DataSource);
+            var dsContext = OpenContentUtils.CreateDataContext(ocModuleConfig);
+
+            return ds.Any(dsContext);
+        }
+
+        private void AutoEditMode()
+        {
+            if (!Page.IsPostBack)
+            {
+                if (HttpContext.Current != null && HttpContext.Current.Request.IsAuthenticated)
+                {
+                    var defaultMode = ModuleContext.PortalSettings.DefaultControlPanelMode;
+                    if (defaultMode == PortalSettings.Mode.Edit)
+                    {
+                        string setting = Convert.ToString(Personalization.GetProfile("Usability", "UserMode" + PortalSettings.Current.PortalId));
+                        //if (!IsPageAdmin() & IsModuleAdmin())
+                        {
+                            if (setting != "EDIT")
+                            {
+                                Personalization.SetProfile("Usability", "UserMode" + PortalSettings.Current.PortalId, "EDIT");
+                                //Page.Response.AppendHeader("X-UserMode", setting + "/" + IsPageAdmin() + "/" + IsModuleAdmin());
+                            }
+                            JavaScript.RequestRegistration(CommonJs.DnnPlugins); // avoid js error 
+                        }
+                    }
+                }
+                //string  usermode = "" + DotNetNuke.Services.Personalization.Personalization.GetProfile("Usability", "UserMode" + PortalSettings.Current.PortalId);
+            }
+        }
+
         private void AddEditorRole()
         {
             if (ModuleContext.PortalSettings.UserId > 0)
             {
-                string OpenContent_EditorsRoleId = PortalController.GetPortalSetting("OpenContent_EditorsRoleId", ModuleContext.PortalId, "");
-                if (!string.IsNullOrEmpty(OpenContent_EditorsRoleId))
+                var roleIdStr = App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetEditorRoleId();
+                if (!string.IsNullOrEmpty(roleIdStr))
                 {
-                    int roleId = int.Parse(OpenContent_EditorsRoleId);
+                    int roleId = int.Parse(roleIdStr);
                     var objModule = ModuleContext.Configuration;
                     //todo: probable DNN bug.  objModule.ModulePermissions doesn't return correct permissions for attached multi-lingual modules
                     //don't alter permissions of modules that are non-default language and that are attached
                     var permExist = objModule.ModulePermissions.Where(tp => tp.RoleID == roleId).Any();
                     if (!permExist)
                     {
-                        //todo sacha: add two permissions, read and write; Or better still add all permissions that are available. eg if you installed extra permissions
-
-                        var permissionController = new PermissionController();
-                        // view permission
-                        var arrSystemModuleViewPermissions = permissionController.GetPermissionByCodeAndKey("SYSTEM_MODULE_DEFINITION", "VIEW");
-                        var permission = (PermissionInfo)arrSystemModuleViewPermissions[0];
-                        var objModulePermission = new ModulePermissionInfo
-                        {
-                            ModuleID = ModuleContext.Configuration.ModuleID,
-                            //ModuleDefID = permission.ModuleDefID,
-                            //PermissionCode = permission.PermissionCode,
-                            PermissionID = permission.PermissionID,
-                            PermissionKey = permission.PermissionKey,
-                            RoleID = roleId,
-                            //UserID = userId,
-                            AllowAccess = true
-                        };
-                        objModule.ModulePermissions.Add(objModulePermission);
-
-                        // edit permission
-                        arrSystemModuleViewPermissions = permissionController.GetPermissionByCodeAndKey("SYSTEM_MODULE_DEFINITION", "EDIT");
-                        permission = (PermissionInfo)arrSystemModuleViewPermissions[0];
-                        objModulePermission = new ModulePermissionInfo
-                        {
-                            ModuleID = ModuleContext.Configuration.ModuleID,
-                            //ModuleDefID = permission.ModuleDefID,
-                            //PermissionCode = permission.PermissionCode,
-                            PermissionID = permission.PermissionID,
-                            PermissionKey = permission.PermissionKey,
-                            RoleID = roleId,
-                            //UserID = userId,
-                            AllowAccess = true
-                        };
-                        objModule.ModulePermissions.Add(objModulePermission);
-                        try
-                        {
-                            ModulePermissionController.SaveModulePermissions(objModule);
-                        }
-                        catch (Exception ex)
-                        {
-                            //Log.Logger.Error($"Failed to automaticly set the permission. It already exists? tab={0}, moduletitle={1} ", objModule.TabID ,objModule.ModuleTitle);
-                        }
+                        AutoSetPermission(objModule, roleId);
                     }
                 }
             }
         }
 
-        protected override void OnPreRender(EventArgs e)
+        private void AutoSetPermission(ModuleInfo objModule, int roleId)
         {
-            //base.OnPreRender(e);
-            //pHelp.Visible = false;
-            GenerateAndRenderDemoData();
-            if (_renderinfo.Template != null && !string.IsNullOrEmpty(_renderinfo.OutputString))
+            //todo sacha: add two permissions, read and write; Or better still add all permissions that are available. eg if you installed extra permissions
+
+            var permissionController = new PermissionController();
+            // view permission
+            var arrSystemModuleViewPermissions = permissionController.GetPermissionByCodeAndKey("SYSTEM_MODULE_DEFINITION", "VIEW");
+            var permission = (PermissionInfo)arrSystemModuleViewPermissions[0];
+            var objModulePermission = new ModulePermissionInfo
             {
-                //Rendering was succesful.
-                var lit = new LiteralControl(Server.HtmlDecode(_renderinfo.OutputString));
-                Controls.Add(lit);
-                var mst = _renderinfo.Template.Manifest;
-                bool editWitoutPostback = mst != null && mst.EditWitoutPostback;
-                if (ModuleContext.PortalSettings.EnablePopUps && ModuleContext.IsEditable && editWitoutPostback)
-                {
-                    AJAX.WrapUpdatePanelControl(lit, true);
-                }
-                _engine.IncludeMeta(Page);
-                //if (DemoData) pDemo.Visible = true;
+                ModuleID = ModuleContext.Configuration.ModuleID,
+                //ModuleDefID = permission.ModuleDefID,
+                //PermissionCode = permission.PermissionCode,
+                PermissionID = permission.PermissionID,
+                PermissionKey = permission.PermissionKey,
+                RoleID = roleId,
+                //UserID = userId,
+                AllowAccess = true
+            };
+            objModule.ModulePermissions.Add(objModulePermission);
+
+            // edit permission
+            arrSystemModuleViewPermissions = permissionController.GetPermissionByCodeAndKey("SYSTEM_MODULE_DEFINITION", "EDIT");
+            permission = (PermissionInfo)arrSystemModuleViewPermissions[0];
+            objModulePermission = new ModulePermissionInfo
+            {
+                ModuleID = ModuleContext.Configuration.ModuleID,
+                //ModuleDefID = permission.ModuleDefID,
+                //PermissionCode = permission.PermissionCode,
+                PermissionID = permission.PermissionID,
+                PermissionKey = permission.PermissionKey,
+                RoleID = roleId,
+                //UserID = userId,
+                AllowAccess = true
+            };
+            objModule.ModulePermissions.Add(objModulePermission);
+            try
+            {
+                ModulePermissionController.SaveModulePermissions(objModule);
             }
-            if (LogContext.IsLogActive && !Debugger.IsAttached)
+            catch (Exception )
             {
-                ClientResourceManager.RegisterScript(Page, Page.ResolveUrl("~/DesktopModules/OpenContent/js/opencontent.js"), FileOrder.Js.DefaultPriority);
-                StringBuilder logScript = new StringBuilder();
-                //logScript.AppendLine("<script type=\"text/javascript\"> ");
-                logScript.AppendLine("$(document).ready(function () { ");
-                logScript.AppendLine("var logs = " + JsonConvert.SerializeObject(LogContext.Current.ModuleLogs(ModuleContext.ModuleId)) + "; ");
-                logScript.AppendLine("$.fn.openContent.printLogs(\"Module " + ModuleContext.ModuleId + " - " + ModuleContext.Configuration.ModuleTitle + "\", logs);");
-                logScript.AppendLine("});");
-                //logScript.AppendLine("</script>");
-                Page.ClientScript.RegisterClientScriptBlock(this.GetType(), "logScript" + ModuleContext.ModuleId, /*DotNetNuke.UI.Utilities.ClientAPI.EscapeForJavascript*/(logScript.ToString()), true);
+                //App.Services.Logger.Error($"Failed to automaticly set the permission. It already exists? tab={0}, moduletitle={1} ", objModule.TabID ,objModule.ModuleTitle);
             }
         }
 
@@ -333,288 +385,48 @@ namespace Satrabel.OpenContent
                 }
             }
         }
+
         private void RenderInitForm()
         {
-            OpenContent.TemplateInit ti = (TemplateInit)TemplateInitControl;
-            ti.RenderInitForm();
+            //TemplateInit ti = (TemplateInit)TemplateInitControl;
+            //ti.RenderInitForm();
+            pInit.Visible = true;
+            //App.Services.ClientResourceManager.RegisterStyleSheet(page, cssfilename.UrlFilePath);
+            App.Services.ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/vue/vue.js");
         }
-        public DotNetNuke.Entities.Modules.Actions.ModuleActionCollection ModuleActions
+        public string Resource(string key)
+        {
+            return Localization.GetString(key + ".Text", LocalResourceFile);
+        }
+        #endregion
+
+        #region IActionable
+
+        public ModuleActionCollection ModuleActions
         {
             get
             {
                 var actions = new ModuleActionCollection();
+                var actionDefinitions = _engine.GetMenuActions();
 
-                var settings = ModuleContext.OpenContentSettings();
-                TemplateManifest template = settings.Template;
-                bool templateDefined = template != null;
-                bool listMode = template != null && template.IsListTemplate;
-
-                if (Page.Request.QueryString["id"] != null)
+                foreach (var item in actionDefinitions)
                 {
-                    _itemId = Page.Request.QueryString["id"];
-                }
-
-                //Add item / Edit Item
-                if (templateDefined && template.DataNeeded() && !settings.Manifest.DisableEdit)
-                {
-                    string title = Localization.GetString((listMode && string.IsNullOrEmpty(_itemId) ? ModuleActionType.AddContent : ModuleActionType.EditContent), LocalResourceFile);
-                    if (!string.IsNullOrEmpty(settings.Manifest.Title))
-                    {
-                        title = Localization.GetString((listMode && string.IsNullOrEmpty(_itemId) ? "Add.Action" : "Edit.Action"), LocalResourceFile) + " " + settings.Manifest.Title;
-                    }
                     actions.Add(ModuleContext.GetNextActionID(),
-                        title,
-                        ModuleActionType.AddContent,
+                        item.Title,
+                        item.ActionType.ToDnnActionType(),
                         "",
-                         (listMode && string.IsNullOrEmpty(_itemId) ? "~/DesktopModules/OpenContent/images/addcontent2.png" : "~/DesktopModules/OpenContent/images/editcontent2.png"),
-                        (listMode && !string.IsNullOrEmpty(_itemId) ? ModuleContext.EditUrl("id", _itemId) : ModuleContext.EditUrl()),
+                        item.Image,
+                        item.Url,
                         false,
-                        SecurityAccessLevel.Edit,
+                        item.AccessLevel.ToDnnSecurityAccessLevel(),
                         true,
-                        false);
+                        item.NewWindow);
                 }
-
-                //Add AdditionalData manage actions
-                if (templateDefined && template.Manifest.AdditionalDataDefined() && !settings.Manifest.DisableEdit)
-                {
-                    foreach (var addData in template.Manifest.AdditionalDataDefinition)
-                    {
-                        if (addData.Value.SourceRelatedDataSource == RelatedDataSourceType.AdditionalData)
-                        {
-                            actions.Add(ModuleContext.GetNextActionID(),
-                                addData.Value.Title,
-                                ModuleActionType.EditContent,
-                                "",
-                                "~/DesktopModules/OpenContent/images/editcontent2.png",
-                                ModuleContext.EditUrl("key", addData.Key, "EditAddData"),
-                                false,
-                                SecurityAccessLevel.Edit,
-                                true,
-                                false);
-                        }
-                        else
-                        {
-                            actions.Add(ModuleContext.GetNextActionID(),
-                              addData.Value.Title,
-                              ModuleActionType.EditContent,
-                              "",
-                              "~/DesktopModules/OpenContent/images/editcontent2.png",
-                              DnnUrlUtils.NavigateUrl(addData.Value.DataTabId),
-                              false,
-                              SecurityAccessLevel.Edit,
-                              true,
-                              false);
-                        }
-                    }
-                }
-
-                //Manage Form Submissions
-                if (templateDefined && OpenContentUtils.FormExist(settings.Template.ManifestFolderUri))
-                {
-
-                    actions.Add(ModuleContext.GetNextActionID(),
-                                "Submissions",
-                                ModuleActionType.EditContent,
-                                "",
-                                "~/DesktopModules/OpenContent/images/editcontent2.png",
-                                ModuleContext.EditUrl("Submissions"),
-                                false,
-                                SecurityAccessLevel.Edit,
-                                true,
-                                false);
-                }
-
-                /*
-                string AddEditControl = PortalController.GetPortalSetting("OpenContent_AddEditControl", ModuleContext.PortalId, "");
-                if (TemplateDefined && !string.IsNullOrEmpty(AddEditControl))
-                {
-                    Actions.Add(ModuleContext.GetNextActionID(),
-                                LocalizationHelpers.GetString("AddEntity.Action", LocalResourceFile),
-                                ModuleActionType.EditContent,
-                                "",
-                                "",
-                                ModuleContext.EditUrl("AddEdit"),
-                                false,
-                                SecurityAccessLevel.Edit,
-                                true,
-                                false);
-                }
-                */
-
-                //Edit Template Settings
-                if (templateDefined && settings.Template.SettingsNeeded())
-                {
-                    actions.Add(ModuleContext.GetNextActionID(),
-                        Localization.GetString("EditSettings.Action", LocalResourceFile),
-                        ModuleActionType.ContentOptions,
-                        "",
-                        "~/DesktopModules/OpenContent/images/editsettings2.png",
-                        ModuleContext.EditUrl("EditSettings"),
-                        false,
-                        SecurityAccessLevel.Admin,
-                        true,
-                        false);
-                }
-
-                //Edit Form Settings
-                if (templateDefined && OpenContentUtils.FormExist(settings.Template.ManifestFolderUri))
-                {
-                    actions.Add(ModuleContext.GetNextActionID(),
-                        Localization.GetString("FormSettings.Action", LocalResourceFile),
-                        ModuleActionType.ContentOptions,
-                        "",
-                        "~/DesktopModules/OpenContent/images/editsettings2.png",
-                        ModuleContext.EditUrl("formsettings"),
-                        false,
-                        SecurityAccessLevel.Admin,
-                        true,
-                        false);
-                }
-                //Edit Form Settings
-                if (templateDefined)
-                {
-                    actions.Add(ModuleContext.GetNextActionID(),
-                        Localization.GetString("Notifications.Action", LocalResourceFile),
-                        ModuleActionType.ContentOptions,
-                        "",
-                        "~/DesktopModules/OpenContent/images/editsettings2.png",
-                        ModuleContext.EditUrl("notifications"),
-                        false,
-                        SecurityAccessLevel.Admin,
-                        true,
-                        false);
-                }
-                //Switch Template
-                actions.Add(ModuleContext.GetNextActionID(),
-                    Localization.GetString("EditInit.Action", LocalResourceFile),
-                    ModuleActionType.ContentOptions,
-                    "",
-                    "~/DesktopModules/OpenContent/images/editinit.png",
-                    ModuleContext.EditUrl("EditInit"),
-                    false,
-                    SecurityAccessLevel.Admin,
-                    true,
-                    false);
-
-                //Edit Filter Settings
-                if (templateDefined && listMode)
-                {
-                    if (settings.Manifest.Index)
-                    {
-                        actions.Add(ModuleContext.GetNextActionID(),
-                            Localization.GetString("EditQuery.Action", LocalResourceFile),
-                            ModuleActionType.ContentOptions,
-                            "",
-                            "~/DesktopModules/OpenContent/images/editfilter.png",
-                            ModuleContext.EditUrl("EditQuery"),
-                            false,
-                            SecurityAccessLevel.Admin,
-                            true,
-                            false);
-                    }
-                }
-
-
-                if (templateDefined && OpenContentUtils.BuildersExist(settings.Template.ManifestFolderUri))
-                    actions.Add(ModuleContext.GetNextActionID(),
-                        Localization.GetString("Builder.Action", LocalResourceFile),
-                        ModuleActionType.ContentOptions,
-                        "",
-                        "~/DesktopModules/OpenContent/images/formbuilder.png",
-                        ModuleContext.EditUrl("FormBuilder"),
-                        false,
-                        SecurityAccessLevel.Admin,
-                        true,
-                        false);
-
-                if (templateDefined)
-                    actions.Add(ModuleContext.GetNextActionID(),
-                        Localization.GetString("EditTemplate.Action", LocalResourceFile),
-                        ModuleActionType.ContentOptions,
-                        "",
-                        "~/DesktopModules/OpenContent/images/edittemplate.png",
-                        ModuleContext.EditUrl("EditTemplate"),
-                        false,
-                        SecurityAccessLevel.Host,
-                        true,
-                        false);
-
-
-                //Edit Raw Data
-                if (templateDefined && settings.Manifest != null &&
-                     (template.DataNeeded() || template.SettingsNeeded() || template.Manifest.AdditionalDataDefined()) && !settings.Manifest.DisableEdit)
-                {
-                    actions.Add(ModuleContext.GetNextActionID(),
-                        Localization.GetString("EditData.Action", LocalResourceFile),
-                        ModuleActionType.EditContent,
-                        "",
-                        "~/DesktopModules/OpenContent/images/edit.png",
-                        //ModuleContext.EditUrl("EditData"),
-                        (listMode && !string.IsNullOrEmpty(_itemId) ? ModuleContext.EditUrl("id", _itemId.ToString(), "EditData") : ModuleContext.EditUrl("EditData")),
-                        false,
-                        SecurityAccessLevel.Host,
-                        true,
-                        false);
-                }
-                actions.Add(ModuleContext.GetNextActionID(),
-                    Localization.GetString("ShareTemplate.Action", LocalResourceFile),
-                    ModuleActionType.ContentOptions,
-                    "",
-                    "~/DesktopModules/OpenContent/images/exchange.png",
-                    ModuleContext.EditUrl("ShareTemplate"),
-                    false,
-                    SecurityAccessLevel.Host,
-                    true,
-                    false);
-
-                actions.Add(ModuleContext.GetNextActionID(),
-                    Localization.GetString("EditGlobalSettings.Action", LocalResourceFile),
-                    ModuleActionType.ContentOptions,
-                    "",
-                    "~/DesktopModules/OpenContent/images/settings.png",
-                    ModuleContext.EditUrl("EditGlobalSettings"),
-                    false,
-                    SecurityAccessLevel.Host,
-                    true,
-                    false);
-                /*
-                Actions.Add(ModuleContext.GetNextActionID(),
-                           LocalizationHelpers.GetString("EditGlobalSettings.Action", LocalResourceFile),
-                           ModuleActionType.ContentOptions,
-                           "",
-                           "~/DesktopModules/OpenContent/images/settings.png",
-                           ModuleContext.EditUrl("EditGlobalSettings"),
-                           false,
-                           SecurityAccessLevel.Host,
-                           true,
-                           false);
-                */
-                actions.Add(ModuleContext.GetNextActionID(),
-                    Localization.GetString("Help.Action", LocalResourceFile),
-                    ModuleActionType.ContentOptions,
-                    "",
-                    "~/DesktopModules/OpenContent/images/help.png",
-                    "https://opencontent.readme.io",
-                    false,
-                    SecurityAccessLevel.Host,
-                    true,
-                    true);
-
 
                 return actions;
             }
         }
-        private string RemoveHost(string editUrl)
-        {
-            //Dnn sometimes adds an incorrect alias.
-            //To fix this just remove the host. Give the browser a relative url
 
-            if (string.IsNullOrEmpty(editUrl)) return editUrl;
-            editUrl = editUrl.Replace("//", "");
-            var pos = editUrl.IndexOf("/");
-            if (pos == -1) return editUrl;
-            return editUrl.Remove(0, pos);
-        }
         #endregion
 
         #region Exceptions
@@ -652,7 +464,7 @@ namespace Satrabel.OpenContent
 
         private void RenderHttpException(NotAuthorizedException ex)
         {
-            DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "<p><b>Permission error</b></p>" + ex.Message.Replace("\n","<br />"), DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
+            DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "<p><b>Permission error</b></p>" + ex.Message.Replace("\n", "<br />"), DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
             if (LogContext.IsLogActive)
             {
                 var logKey = "Error accessing data";
@@ -664,4 +476,7 @@ namespace Satrabel.OpenContent
         }
         #endregion
     }
+
+   
+
 }

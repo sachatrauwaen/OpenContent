@@ -2,24 +2,12 @@
 {
     public class FloatRuleValue : RuleValue
     {
-        private float Value;
+        private readonly float _value;
         public FloatRuleValue(float value)
         {
-            Value = value;
+            _value = value;
         }
-        public override float AsFloat
-        {
-            get
-            {
-                return Value;
-            }
-        }
-        public override string AsString
-        {
-            get
-            {
-                return Value.ToString();
-            }
-        }
+        public override float AsFloat => _value;
+        public override string AsString => _value.ToString();
     }
 }

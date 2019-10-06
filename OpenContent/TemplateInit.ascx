@@ -1,12 +1,13 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="TemplateInit.ascx.cs" Inherits="Satrabel.OpenContent.TemplateInit" %>
+<%@ Import Namespace="Newtonsoft.Json" %>
 <asp:Panel ID="pHelp" runat="server" Visible="false" CssClass="dnnForm">
     <fieldset>
         <div class="dnnFormItem">
             <asp:Label ID="lUseContent" runat="server" ControlName="rblDataSource" ResourceKey="lUseContent" CssClass="dnnLabel" />
             <asp:RadioButtonList runat="server" ID="rblDataSource" AutoPostBack="true" OnSelectedIndexChanged="rblDataSource_SelectedIndexChanged"
                 RepeatDirection="Horizontal" CssClass="dnnFormRadioButtons">
-                <asp:ListItem Text="This module" Selected="True" />
-                <asp:ListItem Text="Other module" />
+                <asp:ListItem Text="This module" Selected="True" ResourceKey="liThisModule" />
+                <asp:ListItem Text="xOther module" ResourceKey="liOtherModule" />
             </asp:RadioButtonList>
         </div>
         <asp:PlaceHolder ID="phDataSource" runat="server" Visible="false">
@@ -20,8 +21,8 @@
             <asp:Label ID="lUseTemplate" runat="server" ControlName="rblUseTemplate" ResourceKey="lUseTemplate" CssClass="dnnLabel" />
             <asp:RadioButtonList runat="server" ID="rblUseTemplate" AutoPostBack="true" OnSelectedIndexChanged="rblUseTemplate_SelectedIndexChanged"
                 RepeatDirection="Horizontal" CssClass="dnnFormRadioButtons">
-                <asp:ListItem Text="Use a existing template" Selected="True" />
-                <asp:ListItem Text="Create a new template" />
+                <asp:ListItem Text="Use a existing template" Selected="True" ResourceKey="liUseExistingTemplate" />
+                <asp:ListItem Text="Create a new template" ResourceKey="liCreateNewTemplate" />
             </asp:RadioButtonList>
         </div>
         <asp:PlaceHolder ID="phFrom" runat="server" Visible="false">
@@ -29,15 +30,15 @@
                 <asp:Label ID="Label4" runat="server" ControlName="rblFrom" CssClass="dnnLabel" ResourceKey="lFrom" />
                 <asp:RadioButtonList runat="server" ID="rblFrom" AutoPostBack="true" OnSelectedIndexChanged="rblFrom_SelectedIndexChanged"
                     RepeatDirection="Horizontal" CssClass="dnnFormRadioButtons">
-                    <asp:ListItem Text="Site" Selected="True" />
-                    <asp:ListItem Text="Web (openextensions.net)" />
+                    <asp:ListItem Text="Site" Selected="True" ResourceKey="liFromSite" />
+                    <asp:ListItem Text="Web (Github)" ResourceKey="liFromWeb" />
                 </asp:RadioButtonList>
             </div>
         </asp:PlaceHolder>
         <asp:PlaceHolder ID="phCurrentTemplate" runat="server">
 
-            <div class="dnnFormItem" style="padding-left:32%;margin-left:38px;width:auto;">
-                <asp:Label ID="lCurrentTemplate" runat="server"   />
+            <div class="dnnFormItem" style="padding-left: 32%; margin-left: 38px; width: auto;">
+                <asp:Label ID="lCurrentTemplate" runat="server" />
             </div>
         </asp:PlaceHolder>
         <asp:PlaceHolder ID="phTemplate" runat="server">
@@ -60,8 +61,6 @@
                 </asp:DropDownList>
             </div>
         </asp:PlaceHolder>
-
-
     </fieldset>
     <ul class="dnnActions dnnClear" style="padding-left: 32%; margin-left: 38px;">
         <li>
@@ -81,3 +80,4 @@
         <asp:HyperLink ID="hlEditContent2" runat="server" Visible="false">Edit Content</asp:HyperLink>
     </p>
 </asp:Panel>
+

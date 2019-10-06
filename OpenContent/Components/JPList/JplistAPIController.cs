@@ -8,8 +8,9 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using Satrabel.OpenContent.Components.Datasource;
-using Satrabel.OpenContent.Components.Alpaca;
+using Satrabel.OpenContent.Components.Dnn;
 using Satrabel.OpenContent.Components.Logging;
+using Satrabel.OpenContent.Components.Querying;
 using Satrabel.OpenContent.Components.Render;
 
 namespace Satrabel.OpenContent.Components.JPList
@@ -24,7 +25,7 @@ namespace Satrabel.OpenContent.Components.JPList
         {
             try
             {
-                OpenContentModuleInfo module = new OpenContentModuleInfo(ActiveModule);
+                OpenContentModuleConfig module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
                 JObject reqOptions = null;
                 if (!string.IsNullOrEmpty(req.options))
                 {
@@ -34,12 +35,12 @@ namespace Satrabel.OpenContent.Components.JPList
                 {
                     var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template);
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
-                    bool isEditable = ActiveModule.CheckIfEditable(PortalSettings);
-                    queryBuilder.Build(module.Settings.Query, !isEditable, UserInfo.UserID, DnnLanguageUtils.GetCurrentCultureCode(), UserInfo.Social.Roles);
+                    bool isEditable = module.ViewModule.CheckIfEditable(module);
+                    queryBuilder.Build(module.Settings.Query, !isEditable, UserInfo.UserID, DnnLanguageUtils.GetCurrentCultureCode(), UserInfo.Social.Roles.FromDnnRoles());
 
                     JplistQueryBuilder.MergeJpListQuery(indexConfig, queryBuilder.Select, req.StatusLst, DnnLanguageUtils.GetCurrentCultureCode());
                     IDataItems dsItems;
-                    if (queryBuilder.DefaultNoResults && queryBuilder.Select.IsQueryEmpty)
+                    if (queryBuilder.DefaultNoResults && queryBuilder.Select.IsEmptyQuery)
                     {
                         dsItems = new DefaultDataItems()
                         {
@@ -53,7 +54,7 @@ namespace Satrabel.OpenContent.Components.JPList
                         var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID, false, reqOptions);
                         dsItems = ds.GetAll(dsContext, queryBuilder.Select);
                     }
-                    var mf = new ModelFactoryMultiple(dsItems.Items, module, PortalSettings);
+                    var mf = new ModelFactoryMultiple(dsItems.Items, module);
                     mf.Options = reqOptions;
                     var model = mf.GetModelAsJson(false, req.onlyItems);
 
@@ -83,7 +84,7 @@ namespace Satrabel.OpenContent.Components.JPList
             }
             catch (Exception exc)
             {
-                Log.Logger.Error(exc);
+                App.Services.Logger.Error(exc);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }

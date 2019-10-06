@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using Newtonsoft.Json;
-using DotNetNuke.Common.Utilities;
-using DotNetNuke.Services.Cache;
+using Satrabel.OpenContent.Components.Json;
 
 namespace Satrabel.OpenContent.Components.Manifest
 {
@@ -17,6 +14,7 @@ namespace Satrabel.OpenContent.Components.Manifest
             var manifest = GetManifest(templateKey, out templateManifest);
             return manifest;
         }
+
         internal static Manifest GetManifest(TemplateKey templateKey, out TemplateManifest templateManifest)
         {
             templateManifest = null;
@@ -25,7 +23,7 @@ namespace Satrabel.OpenContent.Components.Manifest
             Manifest manifest;
             if (templateKey.Extention == "manifest")
             {
-                manifest = GetFileManifest(templateKey.TemplateDir);
+                manifest = LoadManifestFileFromCacheOrDisk(templateKey.TemplateDir);
                 //todo downgrade template directories that stop using manifests
             }
             else
@@ -52,28 +50,17 @@ namespace Satrabel.OpenContent.Components.Manifest
             return manifest;
         }
 
-        internal static Manifest GetFileManifest(FolderUri folder)
+        internal static Manifest LoadManifestFileFromCacheOrDisk(FolderUri folder)
         {
             try
             {
-                Manifest manifest = null;
-                var file = new FileUri(folder.UrlFolder, "manifest.json");
-                if (file.FileExists)
-                {
-                    string cacheKey = folder.UrlFolder + "manifest.json";
-                    manifest = (Manifest)DataCache.GetCache(cacheKey);
-                    if (manifest == null)
-                    {
-                        string content = File.ReadAllText(file.PhysicalFilePath);
-                        manifest = JsonConvert.DeserializeObject<Manifest>(content);
-                        DataCache.SetCache(cacheKey, manifest, new DNNCacheDependency(file.PhysicalFilePath));
-                    }
-                }
+                var file = new FileUri(folder, "manifest.json");
+                var manifest = JsonUtils.LoadJsonFileFromCacheOrDisk<Manifest>(file);
                 return manifest;
             }
             catch (Exception ex)
             {
-                Log.Logger.Error($"Failed to load manifest from folder {folder.UrlFolder}. Error: {ex}");
+                App.Services.Logger.Error($"Failed to load manifest from folder {folder.UrlFolder}. Error: {ex}");
                 throw;
             }
         }
@@ -85,10 +72,14 @@ namespace Satrabel.OpenContent.Components.Manifest
             return templateManifest;
         }
 
-
         internal static FileUri MainTemplateUri(this TemplateManifest templateUri)
         {
-            return templateUri == null || templateUri.Main == null ? null : new FileUri(templateUri.ManifestFolderUri, templateUri.Main.Template);
+            return templateUri?.Main == null ? null : new FileUri(templateUri.ManifestFolderUri, templateUri.Main.Template);
+        }
+
+        internal static FileUri DetailTemplateUri(this TemplateManifest templateUri)
+        {
+            return templateUri?.Detail == null ? null : new FileUri(templateUri.ManifestFolderUri, templateUri.Detail.Template);
         }
 
         private static Manifest GetVirtualManifest(TemplateKey templeteKey)

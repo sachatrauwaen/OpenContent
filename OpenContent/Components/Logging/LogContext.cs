@@ -15,7 +15,6 @@ namespace Satrabel.OpenContent.Components.Logging
             Logs = new Dictionary<int, ModuleLogInfo>();
         }
 
-        //private static LogContext Context = null;
         public static LogContext Current
         {
             get
@@ -39,7 +38,7 @@ namespace Satrabel.OpenContent.Components.Logging
             {
                 var ps = PortalSettings.Current;
                 if (ps == null) return false;
-                string openContentLogging = PortalController.GetPortalSetting("OpenContent_Logging", ps.PortalId, "none");
+                string openContentLogging = App.Services.CreateGlobalSettingsRepository(ps.PortalId).GetLoggingScope();
                 return openContentLogging == "allways" || (openContentLogging == "host" && ps.UserInfo.IsSuperUser);
             }
         }
@@ -88,6 +87,7 @@ namespace Satrabel.OpenContent.Components.Logging
         }
 
     }
+
     public class ModuleLogInfo
     {
         public ModuleLogInfo()
@@ -97,6 +97,7 @@ namespace Satrabel.OpenContent.Components.Logging
         [JsonProperty("logs")]
         public Dictionary<string, List<LogInfo>> Logs { get; private set; }
     }
+
     public class LogInfo
     {
         [JsonProperty("date")]

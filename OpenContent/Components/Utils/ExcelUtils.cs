@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Web;
@@ -8,13 +9,7 @@ namespace Satrabel.OpenContent.Components
 {
     public static class ExcelUtils
     {
-        public static void OutputFile(DataTable dataTable, string filename, HttpContext ctx)
-        {
-            var excelBytes = ExcelUtils.CreateExcel(dataTable);
-            ExcelUtils.OutputFile(excelBytes, filename, ctx);
-        }
-
-        public static byte[] OutputFile(string csv)
+        public static byte[] CreateExcel(string csv)
         {
             using (var pck = new ExcelPackage())  //we gebruiken using om zeker mooi alles te sluiten achteraf.
             {
@@ -24,13 +19,13 @@ namespace Satrabel.OpenContent.Components
                     Delimiter = ';',
                     TextQualifier = '"',
                     //EOL = "|"
-                    
+
                 });
                 return pck.GetAsByteArray();
             }
         }
 
-        private static byte[] CreateExcel(DataTable dataTable)
+        public static byte[] CreateExcel(DataTable dataTable)
         {
             using (var pck = new ExcelPackage())  //we gebruiken using om zeker mooi alles te sluiten achteraf.
             {
@@ -40,7 +35,7 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
-        private static void OutputFile(byte[] excelBytes, string filename, HttpContext ctx)
+        public static void PushDataAsExcelOntoHttpResponse(byte[] excelBytes, string filename, HttpContext ctx)
         {
             if (excelBytes.Length > 0)
             {
@@ -54,18 +49,25 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
-        public static HttpResponseMessage CreateExcelResponseMessage(string fileName, byte[] fileBytes)
+        public static HttpResponseMessage CreateExcelResponseMessage(string filename, byte[] filebytes)
         {
-            var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
+            var responseMessage = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
 
             //Create a file on the fly and get file data as a byte array and send back to client
-            response.Content = new ByteArrayContent(fileBytes);//Use your byte array
-            response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
-            response.Content.Headers.ContentDisposition.FileName = fileName;//your file Name- text.xlsx
-            response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-            response.Content.Headers.ContentLength = fileBytes.Length;
-            response.StatusCode = System.Net.HttpStatusCode.OK;
-            return response;
+            responseMessage.Content = new ByteArrayContent(filebytes);//Use your byte array
+            responseMessage.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
+            responseMessage.Content.Headers.ContentDisposition.FileName = filename; //your file Name- text.xlsx
+            responseMessage.Content.Headers.ContentType = new MediaTypeHeaderValue("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            responseMessage.Content.Headers.ContentLength = filebytes.Length;
+            responseMessage.StatusCode = System.Net.HttpStatusCode.OK;
+            return responseMessage;
+        }
+
+        [Obsolete("This method is obsolete since aug 2017; use PushDataAsExcelOntoHttpResponse() instead")]
+        public static void OutputFile(DataTable datatable, string filename, HttpContext currentContext)
+        {
+            var excelBytes = ExcelUtils.CreateExcel(datatable);
+            ExcelUtils.PushDataAsExcelOntoHttpResponse(excelBytes, filename, currentContext);
         }
     }
 }

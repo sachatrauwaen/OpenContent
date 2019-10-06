@@ -1,14 +1,11 @@
-﻿using DotNetNuke.Services.FileSystem;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
+using Satrabel.OpenContent.Components.Lucene.Config;
 
 namespace Satrabel.OpenContent.Components.Datasource
 {
     public interface IDataIndex
     {
-        void Reindex(DataSourceContext context);
-       
+        IEnumerable<IIndexableItem> GetIndexableData(DataSourceContext context);
+       // void Reindex(DataSourceContext context);
     }
 }
