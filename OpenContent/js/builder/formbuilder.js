@@ -648,8 +648,8 @@ var BootstrapHorizontal = false;
 
 function showForm(value) {
     if (ContactForm) {
-        fieldSchema.properties.fieldtype.enum.splice(9);
-        fieldOptions.fieldtype.optionLabels.splice(9);
+        fieldSchema.properties.fieldtype.enum.splice(10);
+        fieldOptions.fieldtype.optionLabels.splice(10);
     }
 
     if (!Indexable) {
@@ -716,7 +716,7 @@ var fieldSchema =
             "required": true,
             "title": "Type",
             "enum": ["text", "checkbox", "multicheckbox", "select", "radio", "textarea", "email", "date", "number",
-                "image", "imagex", "file", "url", "icon", "guid", "address",
+                "file", "image", "imagex",  "url", "icon", "guid", "address",
                 "array", "table", "accordion", "relation", "related",
                 "folder2", "file2", "url2", "role2",
                 "wysihtml", "summernote", "ckeditor", "gallery", "documents", "object",
@@ -831,7 +831,7 @@ var fieldSchema =
                     "type": "string",
                     "title": "Filter pattern"
                 }
-            }
+            }   
         },
         "folder2options": {
             "type": "object",
@@ -1076,7 +1076,7 @@ var fieldOptions =
     "fieldtype": {
         "optionLabels": ["Text", "Checkbox", "Multi checkbox", "Dropdown list (select)", "Radio buttons", "Text area", "Email address", "Date", "Number",
 
-            "Image (upload & autocomplete)", "ImageX (cropper, overwrite, ...)", "File (upload & autocomplete)", "Url (autocomplete for pages)", "Font Awesome Icons", "Guid (auto id)", "Address (autocomplete & geocode)",
+            "File (upload & autocomplete)", "Image (upload & autocomplete)", "ImageX (cropper, overwrite, ...)",  "Url (autocomplete for pages)", "Font Awesome Icons", "Guid (auto id)", "Address (autocomplete & geocode)",
             "List (Panels)", "List (Table)", "List (Accordion)", "Relation (Additional Data)", "Related",
             "Folder2 (folderID)", "File2 (fileID)", "Url2 (tabID)", "Role2 (roleID)",
             "Html (Wysihtml)", "Html (Summernote)", "Html (CK Editor)", "Image Gallery", "Documents", "Group (object)",

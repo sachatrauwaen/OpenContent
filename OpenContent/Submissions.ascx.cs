@@ -34,6 +34,14 @@ namespace Satrabel.OpenContent
                     var dynData = GetDataAsListOfDynamics();
                     gvData.DataSource = ToDataTable(dynData);
                     gvData.DataBind();
+                    for (int i = 0; i < gvData.Rows.Count; i++)
+                    {
+                        for (int j = 1; j < gvData.Rows[i].Cells.Count; j++)
+                        {
+                            string encoded = gvData.Rows[i].Cells[j].Text;
+                            gvData.Rows[i].Cells[j].Text = Context.Server.HtmlDecode(encoded);
+                        }
+                    }
                 }
             }
             catch (Exception exc) //Module failed to load
@@ -134,7 +142,20 @@ namespace Satrabel.OpenContent
                         }
                         else if (value is DynamicJsonArray)
                         {
-                            row.Add(string.Join(";", (DynamicJsonArray)value));
+                            if (key == "Files")
+                            {
+                                string files = "";
+                                foreach (dynamic file in (DynamicJsonArray)value)
+                                {
+                                    //files = files + "<a href=\""+ file.url+"\">"+file.name+"</a> ";
+                                    files = files + "<a href=\"" + file.url + "\" target=\"_blank\">" + file.name + "</a> ";
+                                }
+                                row.Add(files);
+                            }
+                            else
+                            {
+                                row.Add(string.Join(";", (DynamicJsonArray)value));
+                            }
                         }
                         else
                         {
