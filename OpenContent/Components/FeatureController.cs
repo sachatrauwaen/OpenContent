@@ -194,7 +194,7 @@ namespace Satrabel.OpenContent.Components
 
             string url = null;
             // Check if it is a single or list template 
-            if (settings.Template.IsListTemplate)
+            if (settings.Template.IsListTemplate && settings.Template.Detail != null)
             {
                 url = TestableGlobals.Instance.NavigateURL(modInfo.TabID, ps, "", $"id={itemId}");
             }
