@@ -39,14 +39,21 @@ namespace Satrabel.OpenContent.Components.Dnn
                         if (!string.IsNullOrEmpty(title) && !string.IsNullOrEmpty(email))
                         {
                             //var name = title.Replace(" ", "").ToLower();
-                            var password = (new Guid()).ToString().Substring(0, 10);
+                            //var password = (new Guid()).ToString().Substring(0, 10);
+                            try
+                            {
+
+                            
                             int userid =CreateUser(email, passPrefix + item.Id+ passSuffix, firstName, title, email, roleName);
                             var content = (OpenContentInfo)item.Item;
                             content.CreatedByUserId = userid;
                             ds.Update(dsContext, item, item.Data);
-                        }
+                            }
+                            catch (Exception)
+                            {
+                            }
+                        }                        
                     }
-                    break;
                 }
             }
         }
