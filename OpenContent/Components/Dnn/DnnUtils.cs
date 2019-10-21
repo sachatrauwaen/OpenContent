@@ -214,10 +214,7 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
-        public static void CreateUser()
-        {
-
-        }
+        
 
     }
 }
