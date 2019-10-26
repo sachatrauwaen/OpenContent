@@ -34,6 +34,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 RegisterAdditionHelper(hbs);
                 RegisterSubstractionHelper(hbs);
                 RegisterEqualHelper(hbs);
+                RegisterOddEvenHelper(hbs);
                 RegisterFormatNumberHelper(hbs);
                 RegisterFormatDateTimeHelper(hbs);
                 RegisterImageUrlHelper(hbs);
@@ -109,6 +110,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterAdditionHelper(hbs);
             RegisterSubstractionHelper(hbs);
             RegisterEqualHelper(hbs);
+            RegisterOddEvenHelper(hbs);
             RegisterFormatNumberHelper(hbs);
             RegisterFormatDateTimeHelper(hbs);
             RegisterImageUrlHelper(hbs);
@@ -362,6 +364,34 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 }
             });
         }
+        private static void RegisterOddEvenHelper(HandlebarsDotNet.IHandlebars hbs)
+        {
+            hbs.RegisterHelper("odd", (writer, options, context, arguments) =>
+            {
+                int number = 0;
+                if (arguments.Length == 1 && int.TryParse(arguments[0].ToString(), out number) && number % 2 != 0)
+                {
+                    options.Template(writer, (object)context);
+                }
+                else
+                {
+                    options.Inverse(writer, (object)context);
+                }
+            });
+            hbs.RegisterHelper("even", (writer, options, context, arguments) =>
+            {
+                int number = 0;
+                if (arguments.Length == 1 && int.TryParse(arguments[0].ToString(), out number) && number % 2 == 0)
+                {
+                    options.Template(writer, (object)context);
+                }
+                else
+                {
+                    options.Inverse(writer, (object)context);
+                }
+            });
+        }
+
         private static void RegisterEachPublishedHelper(HandlebarsDotNet.IHandlebars hbs)
         {
             hbs.RegisterHelper("published", (writer, options, context, parameters) =>
@@ -442,7 +472,8 @@ namespace Satrabel.OpenContent.Components.Handlebars
 
         private static void RegisterRawHelper(HandlebarsDotNet.IHandlebars hbs)
         {
-            hbs.RegisterHelper("raw", (writer, options, context, parameters) => {
+            hbs.RegisterHelper("raw", (writer, options, context, parameters) =>
+            {
                 options.Template(writer, null);
             });
 
@@ -1018,7 +1049,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     var res = hbs2.Execute(html, parameters[1]);
                     writer.WriteSafeString(res);
                 }
-                catch (Exception )
+                catch (Exception)
                 {
                     writer.WriteSafeString("");
                 }

@@ -338,7 +338,7 @@ namespace Satrabel.OpenContent.Components
         /// <param name="req">The req.</param>
         /// <returns></returns>
         [ValidateAntiForgeryToken]
-        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         [HttpPost]
         public HttpResponseMessage LookupData(LookupDataRequestDTO req)
         {
@@ -346,6 +346,7 @@ namespace Satrabel.OpenContent.Components
             try
             {
                 var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
+
 
                 string key = req.dataKey;
                 var additionalDataManifest = module.Settings.Template.Manifest.GetAdditionalData(key);
