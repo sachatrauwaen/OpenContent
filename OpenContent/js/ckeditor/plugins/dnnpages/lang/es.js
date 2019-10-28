@@ -2,7 +2,7 @@
 Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
-CKEDITOR.plugins.setLang( 'link', 'es', {
+CKEDITOR.plugins.setLang( 'dnnpages', 'es', {
 	acccessKey: 'Tecla de Acceso',
 	advanced: 'Avanzado',
 	advisoryContentType: 'Tipo de Contenido',
@@ -62,6 +62,7 @@ CKEDITOR.plugins.setLang( 'link', 'es', {
 	toAnchor: 'Referencia en esta página',
 	toEmail: 'E-Mail',
 	toUrl: 'URL',
+toPage: 'Page',
 	toPhone: 'Phone', // MISSING
 	toolbar: 'Insertar/Editar Vínculo',
 	type: 'Tipo de vínculo',

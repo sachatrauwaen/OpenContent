@@ -2,7 +2,7 @@
 Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
-CKEDITOR.plugins.setLang( 'link', 'oc', {
+CKEDITOR.plugins.setLang( 'dnnpages', 'oc', {
 	acccessKey: 'Tòca d\'accessibilitat',
 	advanced: 'Avançat',
 	advisoryContentType: 'Tipe de contengut (indicatiu)',
@@ -62,6 +62,7 @@ CKEDITOR.plugins.setLang( 'link', 'oc', {
 	toAnchor: 'Ancòra',
 	toEmail: 'Corrièl',
 	toUrl: 'URL',
+toPage: 'Page',
 	toPhone: 'Phone', // MISSING
 	toolbar: 'Ligam',
 	type: 'Tipe de ligam',

@@ -2,7 +2,7 @@
 Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
-CKEDITOR.plugins.setLang( 'link', 'vi', {
+CKEDITOR.plugins.setLang( 'dnnpages', 'vi', {
 	acccessKey: 'Phím hỗ trợ truy cập',
 	advanced: 'Mở rộng',
 	advisoryContentType: 'Nội dung hướng dẫn',
@@ -62,6 +62,7 @@ CKEDITOR.plugins.setLang( 'link', 'vi', {
 	toAnchor: 'Neo trong trang này',
 	toEmail: 'Thư điện tử',
 	toUrl: 'URL',
+toPage: 'Page',
 	toPhone: 'Phone', // MISSING
 	toolbar: 'Chèn/Sửa liên kết',
 	type: 'Kiểu liên kết',

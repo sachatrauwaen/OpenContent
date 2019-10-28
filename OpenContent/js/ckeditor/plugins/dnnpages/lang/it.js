@@ -2,7 +2,7 @@
 Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
-CKEDITOR.plugins.setLang( 'link', 'it', {
+CKEDITOR.plugins.setLang( 'dnnpages', 'it', {
 	acccessKey: 'Scorciatoia da tastiera',
 	advanced: 'Avanzate',
 	advisoryContentType: 'Tipo della risorsa collegata',
@@ -62,6 +62,7 @@ CKEDITOR.plugins.setLang( 'link', 'it', {
 	toAnchor: 'Ancora nel testo',
 	toEmail: 'E-Mail',
 	toUrl: 'URL',
+toPage: 'Page',
 	toPhone: 'Telefono',
 	toolbar: 'Collegamento',
 	type: 'Tipo di Collegamento',

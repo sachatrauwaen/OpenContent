@@ -2,7 +2,7 @@
 Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
-CKEDITOR.plugins.setLang( 'link', 'ka', {
+CKEDITOR.plugins.setLang( 'dnnpages', 'ka', {
 	acccessKey: 'წვდომის ღილაკი',
 	advanced: 'დაწვრილებით',
 	advisoryContentType: 'შიგთავსის ტიპი',
@@ -62,6 +62,7 @@ CKEDITOR.plugins.setLang( 'link', 'ka', {
 	toAnchor: 'ბმული ტექსტში ღუზაზე',
 	toEmail: 'ელფოსტა',
 	toUrl: 'URL',
+toPage: 'Page',
 	toPhone: 'Phone', // MISSING
 	toolbar: 'ბმული',
 	type: 'ბმულის ტიპი',
