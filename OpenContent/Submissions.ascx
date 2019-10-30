@@ -4,8 +4,8 @@
     <p><asp:LinkButton ID="excelDownload" runat="server" Text="Download as Excel" OnClick="ExcelDownload_Click"/></p>
     <fieldset>
         <div class="dnnFormItem">
-            <asp:GridView ID="gvData" runat="server" CssClass="dnnGrid" GridLines="None" 
-                AutoGenerateColumns="true" Width="98%" 
+            <asp:GridView ID="gvData" runat="server" CssClass="dnnGrid" GridLines="None"  Width="98%" 
+                AutoGenerateColumns="true"
                 EnableViewState="false" BorderStyle="None" >
                 <HeaderStyle CssClass="dnnGridHeader" VerticalAlign="Top" />
                 <RowStyle CssClass="dnnGridItem" HorizontalAlign="Left" />
