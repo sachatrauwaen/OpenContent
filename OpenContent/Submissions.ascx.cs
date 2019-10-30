@@ -73,15 +73,22 @@ namespace Satrabel.OpenContent
                 dynamic o = new ExpandoObject();
                 var dict = (IDictionary<string, object>)o;
                 o.CreatedOnDate = item.CreatedOnDate;
+                o.Id = item.ContentId;
                 o.Title = item.Title;
-                //o.Json = item.Json;
-                dynamic d = JsonUtils.JsonToDynamic(item.Json);
-                //o.Data = d;
-                Dictionary<String, Object> jdic = Dyn2Dict(d);
-                foreach (var p in jdic)
+                try
                 {
-                    dict[p.Key] = p.Value;
+                    dynamic d = JsonUtils.JsonToDynamic(item.Json);
+                    Dictionary<string, object> jdic = Dyn2Dict(d);
+                    foreach (var p in jdic)
+                    {
+                        dict[p.Key] = p.Value;
+                    }
                 }
+                catch (Exception e)
+                {
+                    o.Error = $"Failed to Convert item [{item.ContentId}] to dynamic. Item.CreatedOnDate: {item.CreatedOnDate}";
+                }
+
                 dynData.Add(o);
             }
             return dynData;
