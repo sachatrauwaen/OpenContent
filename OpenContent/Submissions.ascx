@@ -5,13 +5,22 @@
     <fieldset>
         <div class="dnnFormItem">
             <asp:GridView ID="gvData" runat="server" CssClass="dnnGrid" GridLines="None"  Width="98%" 
-                AutoGenerateColumns="true"
-                EnableViewState="false" BorderStyle="None" >
+                EnableViewState="true" BorderStyle="None" >
+                <Columns>
+                    <asp:TemplateField HeaderText="Action">
+                        <ItemTemplate>
+
+                            <asp:Button ID="btnDelete" runat="server" OnClick="btnDelete_Click" CommandArgument='<%# Eval("Id") %>' Text="Delete" />
+                        </ItemTemplate>
+                    </asp:TemplateField>
+
+                </Columns>
                 <HeaderStyle CssClass="dnnGridHeader" VerticalAlign="Top" />
                 <RowStyle CssClass="dnnGridItem" HorizontalAlign="Left" />
                 <AlternatingRowStyle CssClass="dnnGridAltItem" />
                 <FooterStyle CssClass="dnnGridFooter" />
                 <PagerStyle CssClass="dnnGridPager" />
+                
             </asp:GridView>
         </div>
     </fieldset>

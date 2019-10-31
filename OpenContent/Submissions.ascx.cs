@@ -17,6 +17,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Web;
 using System.Web.Helpers;
+using System.Web.UI.WebControls;
 using DotNetNuke.Services.Exceptions;
 using Satrabel.OpenContent.Components;
 using Satrabel.OpenContent.Components.Json;
@@ -185,5 +186,15 @@ namespace Satrabel.OpenContent
         }
 
         #endregion
+
+        protected void btnDelete_Click(object sender, EventArgs e)
+        {
+            var btn = (Button)sender;
+            int id = int.Parse(btn.CommandArgument);
+            OpenContentController ctrl = new OpenContentController(ModuleContext.PortalId);
+            var data = ctrl.GetContent(id);
+            ctrl.DeleteContent(data);
+            DataBindGrid();
+        }
     }
 }
