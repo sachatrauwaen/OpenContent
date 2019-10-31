@@ -419,6 +419,7 @@
       <DependentUpon>EditFormSettings.ascx</DependentUpon>
     </Compile>
     <Compile Include="Components\AppDefinitions\IMenuAction.cs" />
+    <Content Include="alpaca\js\fields\dnn\MLAddressField.js" />
     <Content Include="alpaca\js\fields\dnn\CheckboxField.js" />
     <Content Include="alpaca\js\fields\dnn\ImageXField.js" />
     <Content Include="alpaca\js\fields\dnn\MLImageXField.js" />
