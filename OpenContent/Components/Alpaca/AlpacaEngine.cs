@@ -166,7 +166,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     fieldTypes = FieldTypes(options);
                 }
             }
-            if (allFields || fieldTypes.Contains("address"))
+            if (allFields || fieldTypes.Contains("address") || fieldTypes.Contains("mladdress"))
             {
                 string apikey = App.Services.CreateGlobalSettingsRepository(PortalId).GetGoogleApiKey();
                 ClientResourceManager.RegisterScript(Page, "//maps.googleapis.com/maps/api/js?v=3.exp&libraries=places" + (string.IsNullOrEmpty(apikey) ? "" : "&key=" + apikey), FileOrder.Js.DefaultPriority);
