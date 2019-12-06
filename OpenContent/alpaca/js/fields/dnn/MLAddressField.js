@@ -236,7 +236,7 @@
             getType: function () {
                 return "any";
             },
-            getValueOfML(ml) {
+            getValueOfML: function(ml) {
                 if (ml && Alpaca.isObject(ml)) {
                     if (ml[this.culture]) {
                         return ml[this.culture];

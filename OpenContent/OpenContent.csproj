@@ -423,6 +423,7 @@
     <Content Include="alpaca\js\fields\dnn\CheckboxField.js" />
     <Content Include="alpaca\js\fields\dnn\ImageXField.js" />
     <Content Include="alpaca\js\fields\dnn\MLImageXField.js" />
+    <Content Include="alpaca\js\fields\dnn\MLNumberField.js" />
     <Content Include="alpaca\templates\dnn-edit\control-imagex.html" />
     <Content Include="CloneModule.ascx" />
     <Content Include="js\bootstrap\css\glyphicons.css" />
