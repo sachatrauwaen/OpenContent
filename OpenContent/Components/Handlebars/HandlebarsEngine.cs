@@ -15,6 +15,7 @@ using System.Collections;
 using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components.Logging;
 using Newtonsoft.Json.Linq;
+using System.Text.RegularExpressions;
 
 namespace Satrabel.OpenContent.Components.Handlebars
 {
@@ -51,6 +52,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 RegisterTemplateHelper(hbs);
                 RegisterRawHelper(hbs);
                 RegisterContainsHelper(hbs);
+                RegisterUrlHelper(hbs);
                 _template = hbs.Compile(source);
             }
             catch (Exception ex)
@@ -130,6 +132,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterTemplateHelper(hbs);
             RegisterRawHelper(hbs);
             RegisterContainsHelper(hbs);
+            RegisterUrlHelper(hbs);
         }
 
         private static void RegisterTruncateWordsHelper(HandlebarsDotNet.IHandlebars hbs)
@@ -606,6 +609,53 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     writer.WriteSafeString("");
                 }
             });
+        }
+
+        private static void RegisterUrlHelper(HandlebarsDotNet.IHandlebars hbs)
+        {
+            hbs.RegisterHelper("url", (writer, context, parameters) =>
+            {
+                try
+                {
+                    string url = parameters[0].ToString();
+                    string lowerUrl = url.ToLower();
+                    if (!lowerUrl.StartsWith("http://") &&
+                        !lowerUrl.StartsWith("https://") &&
+                        !lowerUrl.StartsWith("phone:") &&
+                        !lowerUrl.StartsWith("mail:"))
+                    {
+                        if (IsEmailAdress(url))
+                        {
+                            url = "mailto:" + url;
+                        }
+                        else if (IsPhoneNumber(url))
+                        {
+                            url = "phone:" + url;
+                        }
+                        else
+                        {
+                            url = "http://" + url;
+                        }
+                    }
+                    writer.WriteSafeString(url);
+                }
+                catch (Exception)
+                {
+                    writer.WriteSafeString("");
+                }
+            });
+        }
+        private static bool IsPhoneNumber(string number)
+        {
+            return Regex.Match(number, @"^(\+[0-9]{9})$").Success;
+        }
+
+        private static bool IsEmailAdress(string number)
+        {
+            string validEmailPattern = @"^(?!\.)(""([^""\r\\]|\\[""\r\\])*""|"
+           + @"([-a-z0-9!#$%&'*+/=?^_`{|}~]|(?<!\.)\.)*)(?<!\.)"
+           + @"@[a-z0-9][\w\.-]*[a-z0-9]\.[a-z][a-z\.]*[a-z]$";
+            return Regex.Match(number, validEmailPattern).Success;
         }
 
         /// <summary>

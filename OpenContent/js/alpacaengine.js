@@ -81,8 +81,10 @@ alpacaEngine.engine = function (config) {
             $("#" + self.copyButton).hide();
         }
 
-        $("#" + self.deleteButton).click(function () {
-
+        $("#" + self.deleteButton).dnnConfirm({
+            callbackTrue: function () {
+        
+        
             var postData = JSON.stringify({ id: self.itemId });
             //var action = "Delete";
             $.ajax({
@@ -108,8 +110,8 @@ alpacaEngine.engine = function (config) {
                 alert("Uh-oh, something broke: " + status);
             });
             return false;
+            }
         });
-
 
         //var moduleScope = $('#'+self.scopeWrapper),
         //self = moduleScope,

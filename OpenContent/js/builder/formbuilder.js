@@ -1051,7 +1051,7 @@ var fieldOptions =
         "label": "Multi language",
         "dependencies": {
             "advanced": [true],
-            "fieldtype": ["address","text", "textarea", "ckeditor", "file", "image", "url", "wysihtml", "summernote", "file2", "url2", "role2", "image2", "imagex"]
+            "fieldtype": ["number","address","text", "textarea", "ckeditor", "file", "image", "url", "wysihtml", "summernote", "file2", "url2", "role2", "image2", "imagex"]
         }
     },
     "index": {
