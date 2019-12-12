@@ -15,7 +15,7 @@
             <asp:HyperLink ID="hlCancel" runat="server" class="dnnSecondaryAction" resourcekey="cmdCancel" />
         </li>
         <li>
-            <asp:HyperLink ID="hlDelete" runat="server" class="dnnSecondaryAction" resourcekey="cmdDelete" />
+            <asp:HyperLink ID="hlDelete" runat="server" class="dnnSecondaryAction" resourcekey="cmdDelete" NavigateUrl="#" />
         </li>
         <li style="padding-left: 10px;">
             <asp:DropDownList ID="ddlVersions" runat="server" CssClass="oc-ddl-versions" />

@@ -100,13 +100,22 @@ namespace Satrabel.OpenContent.Components.Json
             var dynamicObject = System.Web.Helpers.Json.Decode(json);
             return dynamicObject;
         }
+
         public static Dictionary<string, object> JsonToDictionary(string json)
         {
             var jsSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
-            Dictionary<string, object> model = (Dictionary<string, object>)jsSerializer.DeserializeObject(json);
+
+            if(json.Length >= jsSerializer.MaxJsonLength )
+            {
+                //jsSerializer.MaxJsonLength = jsSerializer.MaxJsonLength + 40000; //temp fix
+                throw new Exception($"Too much data to deserialize. Please use a client side template to circumvent that.");
+            }
+            // next line fails with large amount of data (>4MB). Use a client side template to fix that.
+            Dictionary<string, object> model = (Dictionary<string, object>)jsSerializer.DeserializeObject(json); 
             return model;
             //return ToDictionaryNoCase(model);
         }
+
         private static DictionaryNoCase ToDictionaryNoCase(Dictionary<string, object> dic)
         {
             var newDic = new DictionaryNoCase();
@@ -388,99 +397,6 @@ namespace Satrabel.OpenContent.Components.Json
             }
         }
 
-        public static void LookupSelect2InOtherModule(JObject o, JObject options)
-        {
-            foreach (var child in o.Children<JProperty>().ToList())
-            {
-                JObject opt = null;
-                if (options?["fields"] != null)
-                {
-                    opt = options["fields"][child.Name] as JObject;
-                }
-                if (opt == null) continue;
-                bool lookup =
-                    opt["type"] != null &&
-                    opt["type"].ToString() == "select2" &&
-                    opt["dataService"]?["data"]?["moduleId"] != null &&
-                    opt["dataService"]?["data"]?["tabId"] != null;
-
-                string dataMember = "";
-                string valueField = "Id";
-                string moduleId = "";
-                string tabId = "";
-                if (lookup)
-                {
-                    dataMember = opt["dataService"]["data"]["dataMember"]?.ToString() ?? "";
-                    valueField = opt["dataService"]["data"]["valueField"]?.ToString() ?? "Id";
-                    moduleId = opt["dataService"]["data"]["moduleId"]?.ToString() ?? "0";
-                    tabId = opt["dataService"]["data"]["tabId"]?.ToString() ?? "0";
-                }
-
-                var childProperty = child;
-
-                if (childProperty.Value is JArray)
-                {
-                    var array = childProperty.Value as JArray;
-                    JArray newArray = new JArray();
-                    foreach (var value in array)
-                    {
-                        var obj = value as JObject;
-                        if (obj != null)
-                        {
-                            LookupSelect2InOtherModule(obj, opt["items"] as JObject);
-                        }
-                        else if (lookup)
-                        {
-                            var val = value as JValue;
-                            if (val != null)
-                            {
-                                try
-                                {
-                                    var module = OpenContentModuleConfig.Create(int.Parse(moduleId), int.Parse(tabId), PortalSettings.Current);
-                                    var ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
-                                    var dsContext = OpenContentUtils.CreateDataContext(module);
-                                    IDataItem dataItem = ds.Get(dsContext, val.ToString());
-                                    newArray.Add(GenerateObject(dataItem, val.ToString()));
-                                }
-                                catch (System.Exception)
-                                {
-                                    Debugger.Break();
-                                }
-                            }
-                        }
-                    }
-                    if (lookup)
-                    {
-                        childProperty.Value = newArray;
-                    }
-                }
-                else if (childProperty.Value is JObject)
-                {
-                    var obj = childProperty.Value as JObject;
-                    LookupSelect2InOtherModule(obj, opt);
-                }
-                else if (childProperty.Value is JValue)
-                {
-                    if (lookup)
-                    {
-                        string val = childProperty.Value.ToString();
-                        try
-                        {
-                            var module = OpenContentModuleConfig.Create(int.Parse(moduleId), int.Parse(tabId), PortalSettings.Current);
-                            var ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
-                            var dsContext = OpenContentUtils.CreateDataContext(module);
-                            IDataItem dataItem = ds.Get(dsContext, val);
-                            o[childProperty.Name] = GenerateObject(dataItem, val);
-                        }
-                        catch (System.Exception ex)
-                        {
-                            Debugger.Break();
-                        }
-                    }
-                }
-            }
-        }
-
         /// <summary>
         /// Enhance data for all alpaca fields of type 'image2' and 'mlimage2'
         /// </summary>
@@ -512,9 +428,9 @@ namespace Satrabel.OpenContent.Components.Json
                     foreach (var value in array)
                     {
                         var obj = value as JObject;
-                        if (obj != null)
+                        if (obj != null && opt != null && opt["items"] != null)
                         {
-                            //LookupJson(obj, reqOpt, opt["items"] as JObject);
+                            ImagesJson(obj, reqOpt, opt["items"] as JObject, isEditable);
                         }
                         else if (image)
                         {
@@ -525,7 +441,7 @@ namespace Satrabel.OpenContent.Components.Json
                                 {
                                     newArray.Add(GenerateImage(reqOpt, val.ToString(), isEditable));
                                 }
-                                catch (System.Exception)
+                                catch (Exception)
                                 {
                                 }
                             }
@@ -539,7 +455,10 @@ namespace Satrabel.OpenContent.Components.Json
                 else if (childProperty.Value is JObject)
                 {
                     var obj = childProperty.Value as JObject;
-
+                    if (obj != null && opt != null)
+                    {
+                        ImagesJson(obj, reqOpt, opt, isEditable);
+                    }
                 }
                 else if (childProperty.Value is JValue)
                 {
@@ -550,7 +469,7 @@ namespace Satrabel.OpenContent.Components.Json
                         {
                             o[childProperty.Name] = GenerateImage(reqOpt, val, isEditable);
                         }
-                        catch (System.Exception)
+                        catch (Exception)
                         {
                         }
                     }
@@ -584,22 +503,8 @@ namespace Satrabel.OpenContent.Components.Json
             var portalFileUri = new PortalFileUri(f);
             return portalFileUri.EditUrl();
         }
-        private static JObject GenerateObject(IDataItem additionalData, string id)
-        {
-            var json = additionalData?.Data;
-            //if (!string.IsNullOrEmpty(dataMember))
-            //{
-            //    json = json[dataMember];
-            //}
-            if (json != null)
-            {
-                return json as JObject;
-            }
-            JObject res = new JObject();
-            res["Id"] = id;
-            res["Title"] = "unknow";
-            return res;
-        }
+
+
 
         private static JObject GenerateObject(JObject additionalData, string key, string id, string dataMember, string valueField, string childerenField)
         {
@@ -749,7 +654,6 @@ namespace Satrabel.OpenContent.Components.Json
                 }
             }
         }
-
     }
     class DictionaryNoCase : Dictionary<string, object>
     {

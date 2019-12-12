@@ -117,16 +117,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="DataType.Text" xml:space="preserve">
-    <value>Type of data</value>
-  </data>
-  <data name="Versions.Text" xml:space="preserve">
-    <value>Versions</value>
-  </data>
   <data name="cmdImport.Text" xml:space="preserve">
     <value>Import Demo Data</value>
   </data>
   <data name="cmdRestApi.Text" xml:space="preserve">
     <value>Rest Api Doc</value>
+  </data>
+  <data name="cmdSaveDefault.Text" xml:space="preserve">
+    <value>Save to file As default</value>
+  </data>
+  <data name="DataType.Text" xml:space="preserve">
+    <value>Type of data</value>
+  </data>
+  <data name="Versions.Text" xml:space="preserve">
+    <value>Versions</value>
   </data>
 </root>

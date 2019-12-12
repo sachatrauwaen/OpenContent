@@ -29,7 +29,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         {
             DotNetNuke.Framework.ServicesFramework.Instance.RequestAjaxScriptSupport();
             AlpacaEngine alpaca = new AlpacaEngine(page, portalId, sourceFolder, prefix);
-            alpaca.RegisterAll(bootstrapLayoutEnabled: true, loadBootstrap: false);
+            alpaca.RegisterAll(bootstrapLayoutEnabled: true, loadBootstrap: false, loadGlyphicons:false);
             DnnUtils.RegisterScript(page, sourceFolder, "/DesktopModules/OpenContent/js/oc.jquery.js", jsOrder);
             jsOrder++;
         }

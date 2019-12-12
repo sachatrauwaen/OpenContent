@@ -8,7 +8,6 @@ using Satrabel.OpenContent.Components.Render;
 using Satrabel.OpenContent.Components.Logging;
 using Satrabel.OpenContent.Components.Json;
 
-
 namespace Satrabel.OpenContent
 {
     public partial class RenderModule : SkinObjectBase
@@ -19,6 +18,9 @@ namespace Satrabel.OpenContent
         public bool ShowOnAdminTabs { get; set; }
         public bool ShowOnHostTabs { get; set; }
         public string Template { get; set; }
+        public string ModuleTitle { get; set; }
+        public bool Enabled { get; set; } = true;
+
         private void InitializeComponent()
         {
         }
@@ -31,6 +33,9 @@ namespace Satrabel.OpenContent
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
+
+            if (!Enabled) return;
+
             int[] hideTabs = new int[1] { TabId };
             if (!string.IsNullOrEmpty(HideOnTabIds))
             {
@@ -48,11 +53,26 @@ namespace Satrabel.OpenContent
             if (!ShowOnHostTabs && activeTab.IsSuperTab) return;
 
             ModuleController mc = new ModuleController();
-            var module = mc.GetModule(ModuleId, TabId, false);
-            if (module == null)
+            ModuleInfo module = null;
+            if (!string.IsNullOrEmpty(ModuleTitle))
             {
-                DotNetNuke.UI.Skins.Skin.AddPageMessage(Page, "OpenContent RenderModule SkinObject", $"No module exist for TabId {TabId} and ModuleId {ModuleId} ", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
-                return;
+                var modules = DnnUtils.GetDnnOpenContentModules(PortalSettings.PortalId);
+                module = modules.FirstOrDefault(m => m.ViewModule?.ModuleInfo?.ModuleTitle == ModuleTitle)?.ViewModule.ModuleInfo;
+                if (module == null)
+                {
+                    DotNetNuke.UI.Skins.Skin.AddPageMessage(Page, "OpenContent RenderModule SkinObject", $"No module exist for ModuleTitle {ModuleTitle}", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
+                    return;
+                }
+            }
+            else
+            {
+                module = mc.GetModule(ModuleId, TabId, false);
+                if (module == null)
+                {
+                    DotNetNuke.UI.Skins.Skin.AddPageMessage(Page, "OpenContent RenderModule SkinObject", $"No module exist for TabId {TabId} and ModuleId {ModuleId} ", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
+                    return;
+                }
+
             }
             if (!string.IsNullOrEmpty(Template))
             {
@@ -99,7 +119,14 @@ namespace Satrabel.OpenContent
                     DotNetNuke.UI.Skins.Skin.AddPageMessage(Page, "OpenContent RenderModule SkinObject", ex.Message, DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
                 }
             }
+            if (App.Services.CreateGlobalSettingsRepository(activeTab.PortalID).GetCompositeCss())
+            {
+                //var absUrl = Utils.GetFullUrl(Request, Page.ResolveUrl($"~/DesktopModules/OpenContent/API/Resource/Css?tabid={activeTab.TabID}&portalid={activeTab.PortalID}"));
+                var absUrl = Utils.GetFullUrl(Request, Page.ResolveUrl($"~/API/OpenContent/Resource/Css?tabid={activeTab.TabID}&portalid={activeTab.PortalID}"));
+                App.Services.ClientResourceManager.RegisterStyleSheet(Page, absUrl);
+            }
         }
+
         private void RenderTemplateException(TemplateException ex, ModuleInfo module)
         {
             DotNetNuke.UI.Skins.Skin.AddPageMessage(Page, "OpenContent RenderModule SkinObject", "<p><b>Template error</b></p>" + ex.MessageAsHtml(), DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
@@ -123,6 +150,5 @@ namespace Satrabel.OpenContent
             }
             LoggingUtils.ProcessLogFileException(this, module, ex);
         }
-
     }
 }

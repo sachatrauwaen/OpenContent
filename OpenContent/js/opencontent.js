@@ -4,7 +4,7 @@
         return {
             version: { major: 2, minor: 1, patch: 1 }
         };
-    }
+    };
     $.fn.openContent = function (options) {
         return OpenContent();
     };
@@ -20,7 +20,7 @@
             }
             console.groupEnd();
         }
-    }
+    };
     /*
     var myString = $(this).closest("div[class*='DnnModule-']").attr('class');
     var myRegexp = /DnnModule-(\d+)/g;

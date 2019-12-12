@@ -176,7 +176,9 @@ namespace Satrabel.OpenContent.Components
                     thumbUrl = ImageHelper.GetImageUrl(f, new Ratio(40, 40)),  //todo for install in application folder is dat niet voldoende ???
                     url = FileManager.Instance.GetUrl(f).RemoveCachebuster(),
                     text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName,
-                    filename = f.FileName
+                    filename = f.FileName,
+                    width = f.Width,
+                    height = f.Height
                 }).Take(1000);
 
                 return Request.CreateResponse(HttpStatusCode.OK, res);
@@ -464,7 +466,7 @@ namespace Satrabel.OpenContent.Components
                 }
                 rawImageUrl = rawImageUrl.Replace(PortalSettings.HomeDirectory, "");
                 var file = fileManager.GetFile(ActiveModule.PortalID, rawImageUrl);
-                string cropfolder = "OpenContent/Files/" + ActiveModule.ModuleID;
+                string cropfolder = "OpenContent/Cropped/" + ActiveModule.ModuleID;
                 if (!string.IsNullOrEmpty(cropData.cropfolder))
                 {
                     cropfolder = cropData.cropfolder;

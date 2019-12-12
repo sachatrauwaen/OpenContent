@@ -28,7 +28,7 @@ namespace Satrabel.OpenContent.Components.Render
         {
             this._dataList = dataList;
         }
-        public ModelFactoryMultiple(IEnumerable<IDataItem> dataList, string settingsJson,  Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleConfig module) :
+        public ModelFactoryMultiple(IEnumerable<IDataItem> dataList, string settingsJson, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleConfig module) :
             base(settingsJson, manifest, templateManifest, templateFiles, module)
         {
             this._dataList = dataList;
@@ -62,10 +62,7 @@ namespace Satrabel.OpenContent.Components.Render
                     JObject context = new JObject();
                     model["Context"] = context;
                     context["Id"] = item.Id;
-                    if (LocaleController.Instance.GetLocales(_portalId).Count > 1)
-                    {
-                        JsonUtils.SimplifyJson(model, GetCurrentCultureCode());
-                    }
+                    JsonUtils.SimplifyJson(model, GetCurrentCultureCode());
                     EnhanceSelect2(model, true);
                     yield return JsonUtils.JsonToDictionary(model.ToString());
                 }
@@ -96,34 +93,23 @@ namespace Satrabel.OpenContent.Components.Render
                     JObject context = new JObject();
                     dyn["Context"] = context;
                     context["Id"] = item.Id;
-                    if (LocaleController.Instance.GetLocales(_portalId).Count > 1)
-                    {
-                        JsonUtils.SimplifyJson(dyn, GetCurrentCultureCode());
-                    }
+                    JsonUtils.SimplifyJson(dyn, GetCurrentCultureCode());
                     EnhanceSelect2(dyn, onlyData);
                     EnhanceUser(dyn, item.CreatedByUserId);
-                    EnhanceImages(dyn, itemsModel);
+                    EnhanceImages(dyn);
                     if (onlyData)
                     {
                         RemoveNoData(itemsModel);
                     }
-                    else 
+                    else
                     {
-                        string url = "";
-                        if (!string.IsNullOrEmpty(_manifest.DetailUrl))
-                        {
-                            HandlebarsEngine hbEngine = new HandlebarsEngine();
-                            var dynForHBS = JsonUtils.JsonToDictionary(dyn.ToString());
-                            url = hbEngine.Execute(_manifest.DetailUrl, dynForHBS);
-                            url = HttpUtility.HtmlDecode(url);
-                        }
                         var editStatus = !_manifest.DisableEdit && IsEditAllowed(item.CreatedByUserId);
                         context["IsEditable"] = editStatus;
                         if (HasEditPermissions(item.CreatedByUserId))
                         {
                             context["EditUrl"] = _module.EditUrl("id", item.Id, _module.ViewModule.ModuleId);
                         }
-                        context["DetailUrl"] = _module.GetUrl(_detailTabId, url.CleanupUrl(), "id=" + item.Id);
+                        context["DetailUrl"] = GenerateDetailUrl(item, dyn, _manifest, _detailTabId);
                         context["MainUrl"] = mainUrl;
                     }
                     items.Add(dyn);
@@ -178,20 +164,7 @@ namespace Satrabel.OpenContent.Components.Render
                 }
             }
         }
-        private void EnhanceImages(JObject model, JObject itemsModel)
-        {
-            if (_optionsJson == null)
-            {
-                var alpaca = _ds.GetAlpaca(_dsContext, true, true, false);
-
-                if (alpaca != null)
-                {
-                    _schemaJson = alpaca["schema"] as JObject; // cache
-                    _optionsJson = alpaca["options"] as JObject; // cache
-                }
-            }
-            JsonUtils.ImagesJson(model, Options, _optionsJson, IsEditMode);
-        }
+        
 
         private static void RemoveNoData(JObject model)
         {

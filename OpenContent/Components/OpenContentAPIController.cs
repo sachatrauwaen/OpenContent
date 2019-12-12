@@ -338,7 +338,7 @@ namespace Satrabel.OpenContent.Components
         /// <param name="req">The req.</param>
         /// <returns></returns>
         [ValidateAntiForgeryToken]
-        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         [HttpPost]
         public HttpResponseMessage LookupData(LookupDataRequestDTO req)
         {
@@ -346,6 +346,7 @@ namespace Satrabel.OpenContent.Components
             try
             {
                 var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
+
 
                 string key = req.dataKey;
                 var additionalDataManifest = module.Settings.Template.Manifest.GetAdditionalData(key);
@@ -363,8 +364,10 @@ namespace Satrabel.OpenContent.Components
                     }
                     if (json is JArray)
                     {
-                        AddLookupItems(req.valueField, req.textField, req.childrenField, res, json as JArray);
+                        json = json.DeepClone();
                         JsonUtils.SimplifyJson(json, DnnLanguageUtils.GetCurrentCultureCode());
+                        AddLookupItems(req.valueField, req.textField, req.childrenField, res, json as JArray);
+
                     }
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, res);
@@ -381,9 +384,11 @@ namespace Satrabel.OpenContent.Components
         [HttpPost]
         public HttpResponseMessage Lookup(LookupRequestDTO req)
         {
-            var module = OpenContentModuleConfig.Create(req.moduleid, req.tabid, PortalSettings);
+            int moduleid = req.moduleid > 0 ? req.moduleid : ActiveModule.ModuleID;
+            int tabid = req.tabid > 0 ? req.tabid : ActiveModule.TabID;
+            var module = OpenContentModuleConfig.Create(moduleid, tabid, PortalSettings);
             if (module == null) throw new Exception($"Can not find ModuleInfo (tabid:{req.tabid}, moduleid:{req.moduleid})");
-
+            
             List<LookupResultDTO> res = new List<LookupResultDTO>();
             try
             {
@@ -403,6 +408,8 @@ namespace Satrabel.OpenContent.Components
                             {
                                 json = json[req.dataMember];
                             }
+                            json = json.DeepClone();
+                            JsonUtils.SimplifyJson(json, DnnLanguageUtils.GetCurrentCultureCode());
 
                             var array = json as JArray;
                             if (array != null)
@@ -437,6 +444,9 @@ namespace Satrabel.OpenContent.Components
                         if (!string.IsNullOrEmpty(req.dataMember))
                         {
                             json = json[req.dataMember];
+                            json = json.DeepClone();
+                            JsonUtils.SimplifyJson(json, DnnLanguageUtils.GetCurrentCultureCode());
+
                             if (json is JArray)
                             {
                                 foreach (JToken item in (JArray)json)
@@ -482,6 +492,8 @@ namespace Satrabel.OpenContent.Components
                         foreach (var item in items)
                         {
                             var json = item.Data as JObject;
+                            json = json.DeepClone() as JObject;
+                            JsonUtils.SimplifyJson(json, DnnLanguageUtils.GetCurrentCultureCode());
                             if (json?[req.textField] != null)
                             {
                                 res.Add(new LookupResultDTO()
@@ -644,6 +656,11 @@ namespace Satrabel.OpenContent.Components
                 var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
                 IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
+
+                var alpaca = ds.GetAlpaca(dsContext, false, true, false);
+                var opt = alpaca["options"]?["fields"]?["SortIndex"]?["type"]?.ToString();
+                var ml = opt == "mlnumber";
+
                 IDataItem dsItem = null;
                 if (module.IsListMode())
                 {
@@ -654,7 +671,10 @@ namespace Satrabel.OpenContent.Components
                         {
                             dsItem = ds.Get(dsContext, id);
                             var json = dsItem.Data;
-                            json["SortIndex"] = i;
+                            if (ml) // multi language
+                                json["SortIndex"][DnnLanguageUtils.GetCurrentCultureCode()] = i;
+                            else
+                                json["SortIndex"] = i;
                             ds.Update(dsContext, dsItem, json);
                             i++;
                         }
@@ -671,6 +691,8 @@ namespace Satrabel.OpenContent.Components
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
+
+       
 
         private void AddNotifyInfo(DataSourceContext dsContext)
         {

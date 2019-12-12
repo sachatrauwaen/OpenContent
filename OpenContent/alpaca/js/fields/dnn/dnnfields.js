@@ -396,6 +396,364 @@
 
 })(jQuery);
 (function ($) {
+    var Alpaca = $.alpaca;
+    Alpaca.Fields.MLAddressField = Alpaca.Fields.ObjectField.extend(
+        {
+            getFieldType: function () {
+                return "mladdress";
+            },
+            constructor: function (container, data, options, schema, view, connector) {
+                this.base(container, data, options, schema, view, connector);
+                this.culture = connector.culture;
+                this.defaultCulture = connector.defaultCulture;
+            },
+            setup: function () {
+                this.base();
+                if (this.data === undefined) {
+                    this.data = {
+                    };
+                }
+                this.schema = {
+                    "title": "Address",
+                    "type": "object",
+                    "properties": {
+                        "search": {
+                            "title": "Search",
+                            "type": "string"
+                        },
+                        "street": {
+                            "title": "Street",
+                            "type": "string"
+                        },
+                        "number": {
+                            "title": "House Number",
+                            "type": "string"
+                        },
+                        "city": {
+                            "title": "City",
+                            "type": "string"
+                        },
+                        "state": {
+                            "title": "State",
+                            "type": "string",
+                            "enum": ["AL", "AK", "AS", "AZ", "AR", "CA", "CO", "CT", "DE", "DC", "FM", "FL", "GA", "GU", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MH", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "MP", "OH", "OK", "OR", "PW", "PA", "PR", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VI", "VA", "WA", "WV", "WI", "WY"]
+                        },
+                        "postalcode": {
+                            "title": "Postal Code",
+                            "type": "string"
+                        },
+                        "country": {
+                            "title": "Country",
+                            "type": "string"
+                        },
+                        "latitude": {
+                            "title": "Latitude",
+                            "type": "number"
+                        },
+                        "longitude": {
+                            "title": "Longitude",
+                            "type": "number"
+                        }
+                    }
+                };
+                Alpaca.merge(this.options, {
+                    "fields": {
+                        "search": {
+                            "fieldClass": "googlesearch"
+                        },
+                        "street": {
+                            "type": "mltext",
+                            "fieldClass": "street"
+                        },
+                        "number": {
+                            "fieldClass": "number"
+                        },
+                        "city": {
+                            "type": "mltext",
+                            "fieldClass": "city"
+                        },
+                        "postalcode": {
+                            "fieldClass": "postalcode"
+                        },
+                        "state": {
+                            "optionLabels": ["ALABAMA", "ALASKA", "AMERICANSAMOA", "ARIZONA", "ARKANSAS", "CALIFORNIA", "COLORADO", "CONNECTICUT", "DELAWARE", "DISTRICTOFCOLUMBIA", "FEDERATEDSTATESOFMICRONESIA", "FLORIDA", "GEORGIA", "GUAM", "HAWAII", "IDAHO", "ILLINOIS", "INDIANA", "IOWA", "KANSAS", "KENTUCKY", "LOUISIANA", "MAINE", "MARSHALLISLANDS", "MARYLAND", "MASSACHUSETTS", "MICHIGAN", "MINNESOTA", "MISSISSIPPI", "MISSOURI", "MONTANA", "NEBRASKA", "NEVADA", "NEWHAMPSHIRE", "NEWJERSEY", "NEWMEXICO", "NEWYORK", "NORTHCAROLINA", "NORTHDAKOTA", "NORTHERNMARIANAISLANDS", "OHIO", "OKLAHOMA", "OREGON", "PALAU", "PENNSYLVANIA", "PUERTORICO", "RHODEISLAND", "SOUTHCAROLINA", "SOUTHDAKOTA", "TENNESSEE", "TEXAS", "UTAH", "VERMONT", "VIRGINISLANDS", "VIRGINIA", "WASHINGTON", "WESTVIRGINIA", "WISCONSIN", "WYOMING"],
+                            "fieldClass": "state",
+                            "hidden": true
+                        },
+                        "country": {
+                            "type": "country",
+                            "fieldClass": "country"
+                        },
+                        "latitude": {
+                            "fieldClass": "lat"
+                        },
+                        "longitude": {
+                            "fieldClass": "lng"
+                        }
+                    }
+                });
+                if (Alpaca.isEmpty(this.options.addressValidation)) {
+                    this.options.addressValidation = true;
+                }
+            },
+            isContainer: function () {
+                return false;
+            },
+            getAddress: function () {
+                var value = this.getValue();
+                if (this.view.type === "view") {
+                    value = this.data;
+                }
+                var address = "";
+                if (value) {
+                    var street = this.getValueOfML(value.street);
+                    if (value.street) {
+                        address += street + " ";
+                    }
+                    if (value.number) {
+                        address += value.number + " ";
+                    }
+                    var city = this.getValueOfML(value.city);
+                    if (value.city) {
+                        address += city + " ";
+                    }
+                    if (value.state) {
+                        address += value.state + " ";
+                    }
+                    if (value.postalcode) {
+                        address += value.postalcode + " ";
+                    }
+                    if (value.country) {
+                        address += countryName(value.country);
+                    }
+                }
+                return address;
+            },
+            afterRenderContainer: function (model, callback) {
+
+                var self = this;
+
+                this.base(model, function () {
+                    var container = self.getContainerEl();
+
+                    // apply additional css
+                    $(container).addClass("alpaca-addressfield");
+
+                    if (self.options.addressValidation && !self.isDisplayOnly()) {
+                        $('<div style="clear:both;"></div>').appendTo(container);
+                        var mapButton = $('<a href="#" class="alpaca-form-button">Geocode Address</a>').appendTo(container);
+                        if (mapButton.button) {
+                            mapButton.button({
+                                text: true
+                            });
+                        }
+                        mapButton.click(function () {
+
+                            if (google && google.maps) {
+                                var geocoder = new google.maps.Geocoder();
+                                var address = self.getAddress();
+                                if (geocoder) {
+                                    geocoder.geocode({
+                                        'address': address
+                                    }, function (results, status) {
+                                        if (status === google.maps.GeocoderStatus.OK) {
+                                            /*
+                                            var mapCanvasId = self.getId() + "-map-canvas";
+                                            if ($('#' + mapCanvasId).length === 0) {
+                                                $("<div id='" + mapCanvasId + "' class='alpaca-field-address-mapcanvas'></div>").appendTo(self.getFieldEl());
+                                            }
+    
+                                            var map = new google.maps.Map(document.getElementById(self.getId() + "-map-canvas"), {
+                                                "zoom": 10,
+                                                "center": results[0].geometry.location,
+                                                "mapTypeId": google.maps.MapTypeId.ROADMAP
+                                            });
+    
+                                            var marker = new google.maps.Marker({
+                                                map: map,
+                                                position: results[0].geometry.location
+                                            });
+                                            */
+                                            $(".alpaca-field.lng input.alpaca-control", container).val(results[0].geometry.location.lng());
+                                            $(".alpaca-field.lat input.alpaca-control", container).val(results[0].geometry.location.lat());
+                                        }
+                                        else {
+                                            self.displayMessage("Geocoding failed: " + status);
+                                        }
+                                    });
+                                }
+
+                            }
+                            else {
+                                self.displayMessage("Google Map API is not installed.");
+                            }
+                            return false;
+                        }).wrap('<small/>');
+
+                        //var mapSearchId = self.getId() + "-map-search";
+                        //var input = $("<input type='textbox' id='" + mapSearchId + "' class='alpaca-field-address-mapsearch'></div>").prependTo(container)[0];
+                        var input = $(".alpaca-field.googlesearch input.alpaca-control", container)[0];
+                        //var input = document.getElementById(mapSearchId);
+                        if (input && (typeof google != "undefined") && google && google.maps) {
+                            var searchBox = new google.maps.places.SearchBox(input);
+                            google.maps.event.addListener(searchBox, 'places_changed', function () {
+                                var places = searchBox.getPlaces();
+                                if (places.length == 0) {
+                                    return;
+                                }
+                                var place = places[0];
+                                $(".alpaca-field.postalcode input.alpaca-control", container).val(addressPart(place, "postal_code"));
+                                $(".alpaca-field.city input.alpaca-control", container).val(addressPart(place, "locality"));
+                                $(".alpaca-field.street input.alpaca-control", container).val(addressPart(place, "route"));
+                                $(".alpaca-field.number input.alpaca-control", container).val(addressPart(place, "street_number"));
+                                $(".alpaca-field.country select.alpaca-control", container).val(countryISO3(addressCountry(place, "country")));
+
+                                $(".alpaca-field.lng input.alpaca-control", container).val(place.geometry.location.lng());
+                                $(".alpaca-field.lat input.alpaca-control", container).val(place.geometry.location.lat());
+                                input.value = '';
+
+                            });
+                            google.maps.event.addDomListener(input, 'keydown', function (e) {
+                                if (e.keyCode == 13) {
+                                    e.preventDefault();
+                                }
+                            });
+                        }
+
+                        if (self.options.showMapOnLoad) {
+                            mapButton.click();
+                        }
+                    }
+
+                    callback();
+
+                });
+            },
+
+            getType: function () {
+                return "any";
+            },
+            getValueOfML: function(ml) {
+                if (ml && Alpaca.isObject(ml)) {
+                    if (ml[this.culture]) {
+                        return ml[this.culture];
+                    } else {
+                        return "";
+                    }
+                } else if (ml) {
+                    return ml;
+                } else {
+                    return "";
+                }
+            }
+            /* builder_helpers */
+            ,
+            getTitle: function () {
+                return "Address";
+            },
+            getDescription: function () {
+                return "Address with Street, City, State, Postal code and Country. Also comes with support for Google map.";
+            },
+            getSchemaOfOptions: function () {
+                return Alpaca.merge(this.base(), {
+                    "properties": {
+                        "validateAddress": {
+                            "title": "Address Validation",
+                            "description": "Enable address validation if true",
+                            "type": "boolean",
+                            "default": true
+                        },
+                        "showMapOnLoad": {
+                            "title": "Whether to show the map when first loaded",
+                            "type": "boolean"
+                        }
+                    }
+                });
+            },
+            getOptionsForOptions: function () {
+                return Alpaca.merge(this.base(), {
+                    "fields": {
+                        "validateAddress": {
+                            "helper": "Address validation if checked",
+                            "rightLabel": "Enable Google Map for address validation?",
+                            "type": "checkbox"
+                        }
+                    }
+                });
+            }
+
+            /* end_builder_helpers */
+        });
+
+    function addressPart(place, adrtype) {
+        var res = "";
+        if (place && place.address_components) {
+            $.each(place.address_components, function (i, comp) {
+                $.each(comp.types, function (i, comptype) {
+                    if (comptype == adrtype) {
+                        //alert(comp.long_name);
+                        res = comp.long_name;
+                        return;
+                    }
+                });
+                if (res != "") return;
+            });
+        }
+        return res;
+    }
+    function addressCountry(place) {
+        var res = "";
+        if (place && place.address_components) {
+            $.each(place.address_components, function (i, comp) {
+                $.each(comp.types, function (i, comptype) {
+                    if (comptype == 'country') {
+                        //alert(comp.long_name);
+                        res = comp.short_name;
+                        return;
+                    }
+                });
+                if (res != "") return;
+            });
+        }
+        return res;
+    }
+
+    var countries = [{ "countryName": "Afghanistan", "iso2": "AF", "iso3": "AFG", "phoneCode": "93" }, { "countryName": "Albania", "iso2": "AL", "iso3": "ALB", "phoneCode": "355" }, { "countryName": "Algeria", "iso2": "DZ", "iso3": "DZA", "phoneCode": "213" }, { "countryName": "American Samoa", "iso2": "AS", "iso3": "ASM", "phoneCode": "1 684" }, { "countryName": "Andorra", "iso2": "AD", "iso3": "AND", "phoneCode": "376" }, { "countryName": "Angola", "iso2": "AO", "iso3": "AGO", "phoneCode": "244" }, { "countryName": "Anguilla", "iso2": "AI", "iso3": "AIA", "phoneCode": "1 264" }, { "countryName": "Antarctica", "iso2": "AQ", "iso3": "ATA", "phoneCode": "672" }, { "countryName": "Antigua and Barbuda", "iso2": "AG", "iso3": "ATG", "phoneCode": "1 268" }, { "countryName": "Argentina", "iso2": "AR", "iso3": "ARG", "phoneCode": "54" }, { "countryName": "Armenia", "iso2": "AM", "iso3": "ARM", "phoneCode": "374" }, { "countryName": "Aruba", "iso2": "AW", "iso3": "ABW", "phoneCode": "297" }, { "countryName": "Australia", "iso2": "AU", "iso3": "AUS", "phoneCode": "61" }, { "countryName": "Austria", "iso2": "AT", "iso3": "AUT", "phoneCode": "43" }, { "countryName": "Azerbaijan", "iso2": "AZ", "iso3": "AZE", "phoneCode": "994" }, { "countryName": "Bahamas", "iso2": "BS", "iso3": "BHS", "phoneCode": "1 242" }, { "countryName": "Bahrain", "iso2": "BH", "iso3": "BHR", "phoneCode": "973" }, { "countryName": "Bangladesh", "iso2": "BD", "iso3": "BGD", "phoneCode": "880" }, { "countryName": "Barbados", "iso2": "BB", "iso3": "BRB", "phoneCode": "1 246" }, { "countryName": "Belarus", "iso2": "BY", "iso3": "BLR", "phoneCode": "375" }, { "countryName": "Belgium", "iso2": "BE", "iso3": "BEL", "phoneCode": "32" }, { "countryName": "Belize", "iso2": "BZ", "iso3": "BLZ", "phoneCode": "501" }, { "countryName": "Benin", "iso2": "BJ", "iso3": "BEN", "phoneCode": "229" }, { "countryName": "Bermuda", "iso2": "BM", "iso3": "BMU", "phoneCode": "1 441" }, { "countryName": "Bhutan", "iso2": "BT", "iso3": "BTN", "phoneCode": "975" }, { "countryName": "Bolivia", "iso2": "BO", "iso3": "BOL", "phoneCode": "591" }, { "countryName": "Bosnia and Herzegovina", "iso2": "BA", "iso3": "BIH", "phoneCode": "387" }, { "countryName": "Botswana", "iso2": "BW", "iso3": "BWA", "phoneCode": "267" }, { "countryName": "Brazil", "iso2": "BR", "iso3": "BRA", "phoneCode": "55" }, { "countryName": "British Indian Ocean Territory", "iso2": "IO", "iso3": "IOT", "phoneCode": "" }, { "countryName": "British Virgin Islands", "iso2": "VG", "iso3": "VGB", "phoneCode": "1 284" }, { "countryName": "Brunei", "iso2": "BN", "iso3": "BRN", "phoneCode": "673" }, { "countryName": "Bulgaria", "iso2": "BG", "iso3": "BGR", "phoneCode": "359" }, { "countryName": "Burkina Faso", "iso2": "BF", "iso3": "BFA", "phoneCode": "226" }, { "countryName": "Burma (Myanmar)", "iso2": "MM", "iso3": "MMR", "phoneCode": "95" }, { "countryName": "Burundi", "iso2": "BI", "iso3": "BDI", "phoneCode": "257" }, { "countryName": "Cambodia", "iso2": "KH", "iso3": "KHM", "phoneCode": "855" }, { "countryName": "Cameroon", "iso2": "CM", "iso3": "CMR", "phoneCode": "237" }, { "countryName": "Canada", "iso2": "CA", "iso3": "CAN", "phoneCode": "1" }, { "countryName": "Cape Verde", "iso2": "CV", "iso3": "CPV", "phoneCode": "238" }, { "countryName": "Cayman Islands", "iso2": "KY", "iso3": "CYM", "phoneCode": "1 345" }, { "countryName": "Central African Republic", "iso2": "CF", "iso3": "CAF", "phoneCode": "236" }, { "countryName": "Chad", "iso2": "TD", "iso3": "TCD", "phoneCode": "235" }, { "countryName": "Chile", "iso2": "CL", "iso3": "CHL", "phoneCode": "56" }, { "countryName": "China", "iso2": "CN", "iso3": "CHN", "phoneCode": "86" }, { "countryName": "Christmas Island", "iso2": "CX", "iso3": "CXR", "phoneCode": "61" }, { "countryName": "Cocos (Keeling) Islands", "iso2": "CC", "iso3": "CCK", "phoneCode": "61" }, { "countryName": "Colombia", "iso2": "CO", "iso3": "COL", "phoneCode": "57" }, { "countryName": "Comoros", "iso2": "KM", "iso3": "COM", "phoneCode": "269" }, { "countryName": "Cook Islands", "iso2": "CK", "iso3": "COK", "phoneCode": "682" }, { "countryName": "Costa Rica", "iso2": "CR", "iso3": "CRC", "phoneCode": "506" }, { "countryName": "Croatia", "iso2": "HR", "iso3": "HRV", "phoneCode": "385" }, { "countryName": "Cuba", "iso2": "CU", "iso3": "CUB", "phoneCode": "53" }, { "countryName": "Cyprus", "iso2": "CY", "iso3": "CYP", "phoneCode": "357" }, { "countryName": "Czech Republic", "iso2": "CZ", "iso3": "CZE", "phoneCode": "420" }, { "countryName": "Democratic Republic of the Congo", "iso2": "CD", "iso3": "COD", "phoneCode": "243" }, { "countryName": "Denmark", "iso2": "DK", "iso3": "DNK", "phoneCode": "45" }, { "countryName": "Djibouti", "iso2": "DJ", "iso3": "DJI", "phoneCode": "253" }, { "countryName": "Dominica", "iso2": "DM", "iso3": "DMA", "phoneCode": "1 767" }, { "countryName": "Dominican Republic", "iso2": "DO", "iso3": "DOM", "phoneCode": "1 809" }, { "countryName": "Ecuador", "iso2": "EC", "iso3": "ECU", "phoneCode": "593" }, { "countryName": "Egypt", "iso2": "EG", "iso3": "EGY", "phoneCode": "20" }, { "countryName": "El Salvador", "iso2": "SV", "iso3": "SLV", "phoneCode": "503" }, { "countryName": "Equatorial Guinea", "iso2": "GQ", "iso3": "GNQ", "phoneCode": "240" }, { "countryName": "Eritrea", "iso2": "ER", "iso3": "ERI", "phoneCode": "291" }, { "countryName": "Estonia", "iso2": "EE", "iso3": "EST", "phoneCode": "372" }, { "countryName": "Ethiopia", "iso2": "ET", "iso3": "ETH", "phoneCode": "251" }, { "countryName": "Falkland Islands", "iso2": "FK", "iso3": "FLK", "phoneCode": "500" }, { "countryName": "Faroe Islands", "iso2": "FO", "iso3": "FRO", "phoneCode": "298" }, { "countryName": "Fiji", "iso2": "FJ", "iso3": "FJI", "phoneCode": "679" }, { "countryName": "Finland", "iso2": "FI", "iso3": "FIN", "phoneCode": "358" }, { "countryName": "France", "iso2": "FR", "iso3": "FRA", "phoneCode": "33" }, { "countryName": "French Polynesia", "iso2": "PF", "iso3": "PYF", "phoneCode": "689" }, { "countryName": "Gabon", "iso2": "GA", "iso3": "GAB", "phoneCode": "241" }, { "countryName": "Gambia", "iso2": "GM", "iso3": "GMB", "phoneCode": "220" }, { "countryName": "Gaza Strip", "iso2": "", "iso3": "", "phoneCode": "970" }, { "countryName": "Georgia", "iso2": "GE", "iso3": "GEO", "phoneCode": "995" }, { "countryName": "Germany", "iso2": "DE", "iso3": "DEU", "phoneCode": "49" }, { "countryName": "Ghana", "iso2": "GH", "iso3": "GHA", "phoneCode": "233" }, { "countryName": "Gibraltar", "iso2": "GI", "iso3": "GIB", "phoneCode": "350" }, { "countryName": "Greece", "iso2": "GR", "iso3": "GRC", "phoneCode": "30" }, { "countryName": "Greenland", "iso2": "GL", "iso3": "GRL", "phoneCode": "299" }, { "countryName": "Grenada", "iso2": "GD", "iso3": "GRD", "phoneCode": "1 473" }, { "countryName": "Guam", "iso2": "GU", "iso3": "GUM", "phoneCode": "1 671" }, { "countryName": "Guatemala", "iso2": "GT", "iso3": "GTM", "phoneCode": "502" }, { "countryName": "Guinea", "iso2": "GN", "iso3": "GIN", "phoneCode": "224" }, { "countryName": "Guinea-Bissau", "iso2": "GW", "iso3": "GNB", "phoneCode": "245" }, { "countryName": "Guyana", "iso2": "GY", "iso3": "GUY", "phoneCode": "592" }, { "countryName": "Haiti", "iso2": "HT", "iso3": "HTI", "phoneCode": "509" }, { "countryName": "Holy See (Vatican City)", "iso2": "VA", "iso3": "VAT", "phoneCode": "39" }, { "countryName": "Honduras", "iso2": "HN", "iso3": "HND", "phoneCode": "504" }, { "countryName": "Hong Kong", "iso2": "HK", "iso3": "HKG", "phoneCode": "852" }, { "countryName": "Hungary", "iso2": "HU", "iso3": "HUN", "phoneCode": "36" }, { "countryName": "Iceland", "iso2": "IS", "iso3": "IS", "phoneCode": "354" }, { "countryName": "India", "iso2": "IN", "iso3": "IND", "phoneCode": "91" }, { "countryName": "Indonesia", "iso2": "ID", "iso3": "IDN", "phoneCode": "62" }, { "countryName": "Iran", "iso2": "IR", "iso3": "IRN", "phoneCode": "98" }, { "countryName": "Iraq", "iso2": "IQ", "iso3": "IRQ", "phoneCode": "964" }, { "countryName": "Ireland", "iso2": "IE", "iso3": "IRL", "phoneCode": "353" }, { "countryName": "Isle of Man", "iso2": "IM", "iso3": "IMN", "phoneCode": "44" }, { "countryName": "Israel", "iso2": "IL", "iso3": "ISR", "phoneCode": "972" }, { "countryName": "Italy", "iso2": "IT", "iso3": "ITA", "phoneCode": "39" }, { "countryName": "Ivory Coast", "iso2": "CI", "iso3": "CIV", "phoneCode": "225" }, { "countryName": "Jamaica", "iso2": "JM", "iso3": "JAM", "phoneCode": "1 876" }, { "countryName": "Japan", "iso2": "JP", "iso3": "JPN", "phoneCode": "81" }, { "countryName": "Jersey", "iso2": "JE", "iso3": "JEY", "phoneCode": "" }, { "countryName": "Jordan", "iso2": "JO", "iso3": "JOR", "phoneCode": "962" }, { "countryName": "Kazakhstan", "iso2": "KZ", "iso3": "KAZ", "phoneCode": "7" }, { "countryName": "Kenya", "iso2": "KE", "iso3": "KEN", "phoneCode": "254" }, { "countryName": "Kiribati", "iso2": "KI", "iso3": "KIR", "phoneCode": "686" }, { "countryName": "Kosovo", "iso2": "", "iso3": "", "phoneCode": "381" }, { "countryName": "Kuwait", "iso2": "KW", "iso3": "KWT", "phoneCode": "965" }, { "countryName": "Kyrgyzstan", "iso2": "KG", "iso3": "KGZ", "phoneCode": "996" }, { "countryName": "Laos", "iso2": "LA", "iso3": "LAO", "phoneCode": "856" }, { "countryName": "Latvia", "iso2": "LV", "iso3": "LVA", "phoneCode": "371" }, { "countryName": "Lebanon", "iso2": "LB", "iso3": "LBN", "phoneCode": "961" }, { "countryName": "Lesotho", "iso2": "LS", "iso3": "LSO", "phoneCode": "266" }, { "countryName": "Liberia", "iso2": "LR", "iso3": "LBR", "phoneCode": "231" }, { "countryName": "Libya", "iso2": "LY", "iso3": "LBY", "phoneCode": "218" }, { "countryName": "Liechtenstein", "iso2": "LI", "iso3": "LIE", "phoneCode": "423" }, { "countryName": "Lithuania", "iso2": "LT", "iso3": "LTU", "phoneCode": "370" }, { "countryName": "Luxembourg", "iso2": "LU", "iso3": "LUX", "phoneCode": "352" }, { "countryName": "Macau", "iso2": "MO", "iso3": "MAC", "phoneCode": "853" }, { "countryName": "Macedonia", "iso2": "MK", "iso3": "MKD", "phoneCode": "389" }, { "countryName": "Madagascar", "iso2": "MG", "iso3": "MDG", "phoneCode": "261" }, { "countryName": "Malawi", "iso2": "MW", "iso3": "MWI", "phoneCode": "265" }, { "countryName": "Malaysia", "iso2": "MY", "iso3": "MYS", "phoneCode": "60" }, { "countryName": "Maldives", "iso2": "MV", "iso3": "MDV", "phoneCode": "960" }, { "countryName": "Mali", "iso2": "ML", "iso3": "MLI", "phoneCode": "223" }, { "countryName": "Malta", "iso2": "MT", "iso3": "MLT", "phoneCode": "356" }, { "countryName": "Marshall Islands", "iso2": "MH", "iso3": "MHL", "phoneCode": "692" }, { "countryName": "Mauritania", "iso2": "MR", "iso3": "MRT", "phoneCode": "222" }, { "countryName": "Mauritius", "iso2": "MU", "iso3": "MUS", "phoneCode": "230" }, { "countryName": "Mayotte", "iso2": "YT", "iso3": "MYT", "phoneCode": "262" }, { "countryName": "Mexico", "iso2": "MX", "iso3": "MEX", "phoneCode": "52" }, { "countryName": "Micronesia", "iso2": "FM", "iso3": "FSM", "phoneCode": "691" }, { "countryName": "Moldova", "iso2": "MD", "iso3": "MDA", "phoneCode": "373" }, { "countryName": "Monaco", "iso2": "MC", "iso3": "MCO", "phoneCode": "377" }, { "countryName": "Mongolia", "iso2": "MN", "iso3": "MNG", "phoneCode": "976" }, { "countryName": "Montenegro", "iso2": "ME", "iso3": "MNE", "phoneCode": "382" }, { "countryName": "Montserrat", "iso2": "MS", "iso3": "MSR", "phoneCode": "1 664" }, { "countryName": "Morocco", "iso2": "MA", "iso3": "MAR", "phoneCode": "212" }, { "countryName": "Mozambique", "iso2": "MZ", "iso3": "MOZ", "phoneCode": "258" }, { "countryName": "Namibia", "iso2": "NA", "iso3": "NAM", "phoneCode": "264" }, { "countryName": "Nauru", "iso2": "NR", "iso3": "NRU", "phoneCode": "674" }, { "countryName": "Nepal", "iso2": "NP", "iso3": "NPL", "phoneCode": "977" }, { "countryName": "Netherlands", "iso2": "NL", "iso3": "NLD", "phoneCode": "31" }, { "countryName": "Netherlands Antilles", "iso2": "AN", "iso3": "ANT", "phoneCode": "599" }, { "countryName": "New Caledonia", "iso2": "NC", "iso3": "NCL", "phoneCode": "687" }, { "countryName": "New Zealand", "iso2": "NZ", "iso3": "NZL", "phoneCode": "64" }, { "countryName": "Nicaragua", "iso2": "NI", "iso3": "NIC", "phoneCode": "505" }, { "countryName": "Niger", "iso2": "NE", "iso3": "NER", "phoneCode": "227" }, { "countryName": "Nigeria", "iso2": "NG", "iso3": "NGA", "phoneCode": "234" }, { "countryName": "Niue", "iso2": "NU", "iso3": "NIU", "phoneCode": "683" }, { "countryName": "Norfolk Island", "iso2": "", "iso3": "NFK", "phoneCode": "672" }, { "countryName": "North Korea", "iso2": "KP", "iso3": "PRK", "phoneCode": "850" }, { "countryName": "Northern Mariana Islands", "iso2": "MP", "iso3": "MNP", "phoneCode": "1 670" }, { "countryName": "Norway", "iso2": "NO", "iso3": "NOR", "phoneCode": "47" }, { "countryName": "Oman", "iso2": "OM", "iso3": "OMN", "phoneCode": "968" }, { "countryName": "Pakistan", "iso2": "PK", "iso3": "PAK", "phoneCode": "92" }, { "countryName": "Palau", "iso2": "PW", "iso3": "PLW", "phoneCode": "680" }, { "countryName": "Panama", "iso2": "PA", "iso3": "PAN", "phoneCode": "507" }, { "countryName": "Papua New Guinea", "iso2": "PG", "iso3": "PNG", "phoneCode": "675" }, { "countryName": "Paraguay", "iso2": "PY", "iso3": "PRY", "phoneCode": "595" }, { "countryName": "Peru", "iso2": "PE", "iso3": "PER", "phoneCode": "51" }, { "countryName": "Philippines", "iso2": "PH", "iso3": "PHL", "phoneCode": "63" }, { "countryName": "Pitcairn Islands", "iso2": "PN", "iso3": "PCN", "phoneCode": "870" }, { "countryName": "Poland", "iso2": "PL", "iso3": "POL", "phoneCode": "48" }, { "countryName": "Portugal", "iso2": "PT", "iso3": "PRT", "phoneCode": "351" }, { "countryName": "Puerto Rico", "iso2": "PR", "iso3": "PRI", "phoneCode": "1" }, { "countryName": "Qatar", "iso2": "QA", "iso3": "QAT", "phoneCode": "974" }, { "countryName": "Republic of the Congo", "iso2": "CG", "iso3": "COG", "phoneCode": "242" }, { "countryName": "Romania", "iso2": "RO", "iso3": "ROU", "phoneCode": "40" }, { "countryName": "Russia", "iso2": "RU", "iso3": "RUS", "phoneCode": "7" }, { "countryName": "Rwanda", "iso2": "RW", "iso3": "RWA", "phoneCode": "250" }, { "countryName": "Saint Barthelemy", "iso2": "BL", "iso3": "BLM", "phoneCode": "590" }, { "countryName": "Saint Helena", "iso2": "SH", "iso3": "SHN", "phoneCode": "290" }, { "countryName": "Saint Kitts and Nevis", "iso2": "KN", "iso3": "KNA", "phoneCode": "1 869" }, { "countryName": "Saint Lucia", "iso2": "LC", "iso3": "LCA", "phoneCode": "1 758" }, { "countryName": "Saint Martin", "iso2": "MF", "iso3": "MAF", "phoneCode": "1 599" }, { "countryName": "Saint Pierre and Miquelon", "iso2": "PM", "iso3": "SPM", "phoneCode": "508" }, { "countryName": "Saint Vincent and the Grenadines", "iso2": "VC", "iso3": "VCT", "phoneCode": "1 784" }, { "countryName": "Samoa", "iso2": "WS", "iso3": "WSM", "phoneCode": "685" }, { "countryName": "San Marino", "iso2": "SM", "iso3": "SMR", "phoneCode": "378" }, { "countryName": "Sao Tome and Principe", "iso2": "ST", "iso3": "STP", "phoneCode": "239" }, { "countryName": "Saudi Arabia", "iso2": "SA", "iso3": "SAU", "phoneCode": "966" }, { "countryName": "Senegal", "iso2": "SN", "iso3": "SEN", "phoneCode": "221" }, { "countryName": "Serbia", "iso2": "RS", "iso3": "SRB", "phoneCode": "381" }, { "countryName": "Seychelles", "iso2": "SC", "iso3": "SYC", "phoneCode": "248" }, { "countryName": "Sierra Leone", "iso2": "SL", "iso3": "SLE", "phoneCode": "232" }, { "countryName": "Singapore", "iso2": "SG", "iso3": "SGP", "phoneCode": "65" }, { "countryName": "Slovakia", "iso2": "SK", "iso3": "SVK", "phoneCode": "421" }, { "countryName": "Slovenia", "iso2": "SI", "iso3": "SVN", "phoneCode": "386" }, { "countryName": "Solomon Islands", "iso2": "SB", "iso3": "SLB", "phoneCode": "677" }, { "countryName": "Somalia", "iso2": "SO", "iso3": "SOM", "phoneCode": "252" }, { "countryName": "South Africa", "iso2": "ZA", "iso3": "ZAF", "phoneCode": "27" }, { "countryName": "South Korea", "iso2": "KR", "iso3": "KOR", "phoneCode": "82" }, { "countryName": "Spain", "iso2": "ES", "iso3": "ESP", "phoneCode": "34" }, { "countryName": "Sri Lanka", "iso2": "LK", "iso3": "LKA", "phoneCode": "94" }, { "countryName": "Sudan", "iso2": "SD", "iso3": "SDN", "phoneCode": "249" }, { "countryName": "Suriname", "iso2": "SR", "iso3": "SUR", "phoneCode": "597" }, { "countryName": "Svalbard", "iso2": "SJ", "iso3": "SJM", "phoneCode": "" }, { "countryName": "Swaziland", "iso2": "SZ", "iso3": "SWZ", "phoneCode": "268" }, { "countryName": "Sweden", "iso2": "SE", "iso3": "SWE", "phoneCode": "46" }, { "countryName": "Switzerland", "iso2": "CH", "iso3": "CHE", "phoneCode": "41" }, { "countryName": "Syria", "iso2": "SY", "iso3": "SYR", "phoneCode": "963" }, { "countryName": "Taiwan", "iso2": "TW", "iso3": "TWN", "phoneCode": "886" }, { "countryName": "Tajikistan", "iso2": "TJ", "iso3": "TJK", "phoneCode": "992" }, { "countryName": "Tanzania", "iso2": "TZ", "iso3": "TZA", "phoneCode": "255" }, { "countryName": "Thailand", "iso2": "TH", "iso3": "THA", "phoneCode": "66" }, { "countryName": "Timor-Leste", "iso2": "TL", "iso3": "TLS", "phoneCode": "670" }, { "countryName": "Togo", "iso2": "TG", "iso3": "TGO", "phoneCode": "228" }, { "countryName": "Tokelau", "iso2": "TK", "iso3": "TKL", "phoneCode": "690" }, { "countryName": "Tonga", "iso2": "TO", "iso3": "TON", "phoneCode": "676" }, { "countryName": "Trinidad and Tobago", "iso2": "TT", "iso3": "TTO", "phoneCode": "1 868" }, { "countryName": "Tunisia", "iso2": "TN", "iso3": "TUN", "phoneCode": "216" }, { "countryName": "Turkey", "iso2": "TR", "iso3": "TUR", "phoneCode": "90" }, { "countryName": "Turkmenistan", "iso2": "TM", "iso3": "TKM", "phoneCode": "993" }, { "countryName": "Turks and Caicos Islands", "iso2": "TC", "iso3": "TCA", "phoneCode": "1 649" }, { "countryName": "Tuvalu", "iso2": "TV", "iso3": "TUV", "phoneCode": "688" }, { "countryName": "Uganda", "iso2": "UG", "iso3": "UGA", "phoneCode": "256" }, { "countryName": "Ukraine", "iso2": "UA", "iso3": "UKR", "phoneCode": "380" }, { "countryName": "United Arab Emirates", "iso2": "AE", "iso3": "ARE", "phoneCode": "971" }, { "countryName": "United Kingdom", "iso2": "GB", "iso3": "GBR", "phoneCode": "44" }, { "countryName": "United States", "iso2": "US", "iso3": "USA", "phoneCode": "1" }, { "countryName": "Uruguay", "iso2": "UY", "iso3": "URY", "phoneCode": "598" }, { "countryName": "US Virgin Islands", "iso2": "VI", "iso3": "VIR", "phoneCode": "1 340" }, { "countryName": "Uzbekistan", "iso2": "UZ", "iso3": "UZB", "phoneCode": "998" }, { "countryName": "Vanuatu", "iso2": "VU", "iso3": "VUT", "phoneCode": "678" }, { "countryName": "Venezuela", "iso2": "VE", "iso3": "VEN", "phoneCode": "58" }, { "countryName": "Vietnam", "iso2": "VN", "iso3": "VNM", "phoneCode": "84" }, { "countryName": "Wallis and Futuna", "iso2": "WF", "iso3": "WLF", "phoneCode": "681" }, { "countryName": "West Bank", "iso2": "", "iso3": "", "phoneCode": "970" }, { "countryName": "Western Sahara", "iso2": "EH", "iso3": "ESH", "phoneCode": "" }, { "countryName": "Yemen", "iso2": "YE", "iso3": "YEM", "phoneCode": "967" }, { "countryName": "Zambia", "iso2": "ZM", "iso3": "ZMB", "phoneCode": "260" }, { "countryName": "Zimbabwe", "iso2": "ZW", "iso3": "ZWE", "phoneCode": "263" }];
+
+    function countryISO2(iso3) {
+        iso2 = iso2.toUpperCase();
+        for (index = 0; index < countries.length; ++index) {
+            if (countries[index].iso3 === iso3) {
+                return countries[index].iso2;
+            }
+        }
+        return "";
+    }
+
+    function countryISO3(iso2) {
+        iso2 = iso2.toUpperCase();
+        for (index = 0; index < countries.length; ++index) {
+            if (countries[index].iso2 === iso2) {
+                return countries[index].iso3.toLowerCase();
+            }
+        }
+        return "";
+    }
+
+    function countryName(iso3) {
+        iso3 = iso3.toUpperCase();
+        for (index = 0; index < countries.length; ++index) {
+            if (countries[index].iso3 === iso3) {
+                return countries[index].countryName;
+            }
+        }
+        return "";
+    }
+
+    Alpaca.registerFieldClass("mladdress", Alpaca.Fields.MLAddressField);
+
+})(jQuery);
+(function ($) {
 
     var Alpaca = $.alpaca;
 
@@ -409,6 +767,12 @@
          */
         getFieldType: function () {
             return "ckeditor";
+        },
+
+        constructor: function (container, data, options, schema, view, connector) {
+            var self = this;
+            this.base(container, data, options, schema, view, connector);
+            this.sf = connector.servicesFramework;
         },
 
         /**
@@ -481,7 +845,7 @@
                             // Simplify the dialog windows.
                             removeDialogTabs: 'image:advanced;link:advanced',
                             // Remove one plugin.
-                            removePlugins: 'elementspath',
+                            removePlugins: 'elementspath,link',
                             extraPlugins: 'dnnpages',
                             //autoGrow_onStartup : true,
                             //autoGrow_minHeight : 100,
@@ -516,7 +880,7 @@
                             // Simplify the dialog windows.
                             removeDialogTabs: 'image:advanced;link:advanced',
                             // Remove one plugin.
-                            removePlugins: 'elementspath',
+                            removePlugins: 'elementspath,link',
                             extraPlugins: 'dnnpages',
                             //autoGrow_onStartup : true,
                             //autoGrow_minHeight : 100,
@@ -528,11 +892,10 @@
                         };
                     } else if (self.options.configset == "full") {
                         defaultConfig = {
-                            toolbar: [
-                                { name: 'document', items: ['Save', 'NewPage', 'DocProps', 'Preview', 'Print', '-', 'Templates'] },
+                            toolbar: [                                
                                 { name: 'clipboard', items: ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'] },
                                 { name: 'editing', items: ['Find', 'Replace', '-', 'SelectAll', '-', 'SpellChecker', 'Scayt'] },
-                                { name: 'forms', items: ['Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton', 'HiddenField'] },
+                                { name: 'insert', items: ['EasyImageUpload', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe'] },
                                 '/',
                                 { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'] },
                                 {
@@ -540,7 +903,7 @@
                                     '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl']
                                 },
                                 { name: 'links', items: ['Link', 'Unlink', 'Anchor'] },
-                                { name: 'insert', items: ['Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe'] },
+                                
                                 '/',
                                 { name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize'] },
                                 { name: 'colors', items: ['TextColor', 'BGColor'] },
@@ -549,11 +912,11 @@
                             // Set the most common block elements.
                             format_tags: 'p;h1;h2;h3;pre;div',
                             //http://docs.ckeditor.com/#!/api/CKEDITOR.config-cfg-allowedContent
-                            allowedContentRules: true,
+                            allowedContentRules: true, 
                             // Simplify the dialog windows.
                             removeDialogTabs: 'image:advanced;link:advanced',
                             // Remove one plugin.
-                            removePlugins: 'elementspath',
+                            removePlugins: 'elementspath,link,image',
                             extraPlugins: 'dnnpages',
                             //autoGrow_onStartup : true,
                             //autoGrow_minHeight : 100,
@@ -561,18 +924,20 @@
                             height: 150,
                             //skin : 'flat',
                             customConfig: '',
-                            stylesSet: []
+                            stylesSet: [],
+                            //easyimage_toolbar :['EasyImageAlignLeft', 'EasyImageAlignCenter', 'EasyImageAlignRight']
                         };
                     }
                     var config = $.extend({}, defaultConfig, self.options.ckeditor);
 
-
-
                     // wait for Alpaca to declare the DOM swapped and ready before we attempt to do anything with CKEditor
                     self.on("ready", function () {
                         if (!self.editor) {
+                            if (self.sf) {
+                                config.cloudServices_uploadUrl = self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadEasyImage";
+                                config.cloudServices_tokenUrl = self.sf.getServiceRoot('OpenContent') + "FileUpload/EasyImageToken";
+                            }
                             self.editor = CKEDITOR.replace($(self.control)[0], config);
-
                             self.initCKEditorEvents();
                         }
                     });
@@ -643,6 +1008,10 @@
                  self.trigger("keydown", e);
                  });
                  */
+
+                self.editor.on('fileUploadRequest', function (evt) {
+                    self.sf.setModuleHeaders(evt.data.fileLoader.xhr);
+                });
             }
         },
 
@@ -1570,7 +1939,7 @@
             var date = null;
             try {
                 if (self.picker) {
-                    date = (self.picker.date() ? self.picker.date().format() : null);
+                    date = (self.picker.date() ? self.picker.date().format("YYYY-MM-DDTHH:mm:ss") : null);
                 }
                 else {
                     date = this.base();
@@ -7706,522 +8075,614 @@
 (function ($) {
     var Alpaca = $.alpaca;
     Alpaca.Fields.ImageXField = Alpaca.Fields.ListField.extend(
-    {
-        constructor: function (container, data, options, schema, view, connector) {
-            var self = this;
-            this.base(container, data, options, schema, view, connector);
-            this.sf = connector.servicesFramework;
-            this.dataSource = {};
-        },
-        getFieldType: function () {
-            return "imagex";
-        },
-        setup: function () {
-            var self = this;
-            if (!this.options.uploadfolder) {
-                this.options.uploadfolder = "";
-            }
-            if (!this.options.uploadhidden) {
-                this.options.uploadhidden = false;
-            }
-            if (!this.options.overwrite) {
-                this.options.overwrite = false;
-            }
-            if (!this.options.showOverwrite) {
-                this.options.showOverwrite = false;
-            }
-            if (this.options.showCropper === undefined) {
-                this.options.showCropper = true;
-            }
-            if (this.options.showCropper) {
-                this.options.showImage = true;
-            }
-            if (this.options.showImage === undefined) {
-                this.options.showImage = true;
-            }
-            if (this.options.showCropper) {
-                if (!this.options.cropfolder) {
-                    this.options.cropfolder = this.options.uploadfolder;
+        {
+            constructor: function (container, data, options, schema, view, connector) {
+                var self = this;
+                this.base(container, data, options, schema, view, connector);
+                this.sf = connector.servicesFramework;
+                this.dataSource = {};
+            },
+            getFieldType: function () {
+                return "imagex";
+            },
+            setup: function () {
+                var self = this;
+                //if (this.options.advanced === undefined) {
+                    this.options.advanced = true;
+                //}
+                if (!this.options.fileExtensions) {
+                    this.options.fileExtensions = 'gif|jpg|jpeg|tiff|png';
                 }
-                if (!this.options.cropper) {
-                    this.options.cropper = {};
+                if (!this.options.fileMaxSize) {
+                    this.options.fileMaxSize = 2000000;
                 }
-                if (this.options.width && this.options.height) {
-                    this.options.cropper.aspectRatio = this.options.width / this.options.height;
+                if (!this.options.uploadfolder) {
+                    this.options.uploadfolder = "";
                 }
-                this.options.cropper.responsive = false;
-                if (!this.options.cropper.autoCropArea) {
-                    this.options.cropper.autoCropArea = 1;
+                if (!this.options.uploadhidden) {
+                    this.options.uploadhidden = false;
                 }
-                 if (!this.options.cropper.viewMode) {
-                    this.options.cropper.viewMode = 1;
+                if (!this.options.overwrite) {
+                    this.options.overwrite = false;
                 }
-                if (!this.options.cropper.zoomOnWheel) {
-                    this.options.cropper.zoomOnWheel = false;
+                if (!this.options.showOverwrite) {
+                    this.options.showOverwrite = false;
                 }
-                if (!this.options.cropButtonHidden) {
-                    this.options.cropButtonHidden = false;
+                if (this.options.uploadhidden) {
+                    this.options.showOverwrite = false;
                 }
-                if (!this.options.cropButtonHidden) {
-                    this.options.buttons = {
-                        "check": {
-                            "value": "Crop Image",
-                            "click": function () {
-                                this.cropImage();
-                            }
-                        }
-                    };
+                if (this.options.showCropper === undefined) {
+                    this.options.showCropper = false;                    
                 }
-            }
-            this.base();
-        },
-        getValue: function () {
-            var self = this;
-            if (this.control && this.control.length > 0) {
-                var value = null;
-                $image = self.getImage();
-                value = {};
                 if (this.options.showCropper) {
-                    if (self.cropperExist())
-                        value = $image.cropper('getData', { rounded: true });
+                    this.options.showImage = true;
+                    this.options.advanced = true;
                 }
-                value.url = $(this.control).find('select').val();
-                if (value.url) {
-                    if (this.dataSource && this.dataSource[value.url]) {
-                        value.id = this.dataSource[value.url].id;
-                        value.filename = this.dataSource[value.url].filename;
-                    }
-                    if (this.options.showCropper) {
-                        value.cropUrl = $(self.getControlEl()).attr('data-cropurl');
-                    }
+                if (this.options.showImage === undefined) {
+                    this.options.showImage = true;
                 }
-                return value;
-            }
-        },
-        setValue: function (val) {
-            var self = this;
-            if (val !== this.getValue()) {
-                if (this.control && typeof (val) != "undefined" && val != null) {
-                    //this.base(val); ???
-                    if (Alpaca.isEmpty(val)) {
-                        $image.attr('src', url);
-                        if (this.options.showCropper) {
-                            self.cropper("");
-                            $(self.getControlEl()).attr('data-cropurl', '');
-                        }
-                        $(this.control).find('select').val("");
+                if (this.options.showCropper) {
+                    if (!this.options.cropfolder) {
+                        this.options.cropfolder = this.options.uploadfolder;
                     }
-                    else if (Alpaca.isObject(val)) {
-                        // Fix for OC data that still has the Cachebuster SQ parameter
-                        if (val.url) val.url = val.url.split("?")[0];
-                        $image.attr('src', val.url);
-                        if (this.options.showCropper) {
-                            if (val.cropUrl) val.cropUrl = val.cropUrl.split("?")[0];
-                            if (val.cropdata && Object.keys(val.cropdata).length > 0) { // compatibility with imagecropper
-                                var firstcropdata = val.cropdata[Object.keys(val.cropdata)[0]];
-                                self.cropper(val.url, firstcropdata.cropper);
-                                $(self.getControlEl()).attr('data-cropurl', firstcropdata.url);
-                            } else {
-                                self.cropper(val.url, val);
-                                $(self.getControlEl()).attr('data-cropurl', val.cropUrl);
+                    if (!this.options.cropper) {
+                        this.options.cropper = {};
+                    }
+                    if (this.options.width && this.options.height) {
+                        this.options.cropper.aspectRatio = this.options.width / this.options.height;
+                    }
+                    if (this.options.ratio) {
+                        this.options.cropper.aspectRatio = this.options.ratio;
+                    }
+                    this.options.cropper.responsive = false;
+                    if (!this.options.cropper.autoCropArea) {
+                        this.options.cropper.autoCropArea = 1;
+                    }
+                    if (!this.options.cropper.viewMode) {
+                        this.options.cropper.viewMode = 1;
+                    }
+                    if (!this.options.cropper.zoomOnWheel) {
+                        this.options.cropper.zoomOnWheel = false;
+                    }
+                    if (!this.options.saveCropFile) {
+                        this.options.saveCropFile = false;
+                    }
+                    if (this.options.saveCropFile) {
+                        this.options.buttons = {
+                            "check": {
+                                "value": "Crop Image",
+                                "click": function () {
+                                    this.cropImage();
+                                }
                             }
-                        }
-                         $(this.control).find('select').val(val.url);
+                        };
                     }
-                    else {
-                        $image.attr('src', val);
-                        if (this.options.showCropper) {
-                            self.cropper(val);
-                            $(self.getControlEl()).attr('data-cropurl', '');
-                        }
-                        $(this.control).find('select').val(val);
-                    }
-                    $(this.control).find('select').trigger('change.select2');
                 }
-            }
-        },
-        beforeRenderControl: function (model, callback) {
-            var self = this;
-            this.base(model, function () {
-                self.selectOptions = [];
-                if (self.sf) {
-                    var completionFunction = function () {
-                        self.schema.enum = [];
-                        self.options.optionLabels = [];
-                        for (var i = 0; i < self.selectOptions.length; i++) {
-                            self.schema.enum.push(self.selectOptions[i].value);
-                            self.options.optionLabels.push(self.selectOptions[i].text);
+                this.base();
+            },
+            getValue: function () {
+                return this.getBaseValue();
+            },
+            setValue: function (val) {
+                var self = this;
+                //if (val !== this.getValue()) {
+                if (this.control && typeof (val) != "undefined" && val != null) {
+                    $image = self.getImage();
+                        //this.base(val); ???
+                        if (Alpaca.isEmpty(val)) {
+                            $image.attr('src', url);
+                            if (this.options.showCropper) {
+                                self.cropper("");
+                                self.setCropUrl('');
+                                
+                            }
+                            $(this.control).find('select').val("");
                         }
-                        // push back to model
-                        model.selectOptions = self.selectOptions;
+                        else if (Alpaca.isObject(val)) {
+                            // Fix for OC data that still has the Cachebuster SQ parameter
+                            if (val.url) val.url = val.url.split("?")[0];
+                            $image.attr('src', val.url);
+                            if (this.options.showCropper) {
+                                if (val.cropUrl) val.cropUrl = val.cropUrl.split("?")[0];
+                                if (val.cropdata && Object.keys(val.cropdata).length > 0) { // compatibility with imagecropper
+                                    var firstcropdata = val.cropdata[Object.keys(val.cropdata)[0]];
+                                    self.cropper(val.url, firstcropdata.cropper);
+                                    self.setCropUrl(firstcropdata.url);
+                                } else if (val.crop) {
+                                    self.cropper(val.url, val.crop);
+                                    self.setCropUrl( val.cropUrl);
+                                } else {
+                                    self.cropper(val.url, val.crop);
+                                    self.setCropUrl( val.cropUrl);
+                                }
+                            }
+                            $(this.control).find('select').val(val.url);
+
+                        }
+                        else {
+                            $image.attr('src', val);
+                            if (this.options.showCropper) {
+                                self.cropper(val);
+                                self.setCropUrl( '');
+                            }
+                            $(this.control).find('select').val(val);
+
+                        }
+                        $(this.control).find('select').trigger('change.select2');
+                    }
+                //}
+            },
+            getBaseValue: function () {
+                var self = this;
+                if (this.control && this.control.length > 0) {
+                    var value = null;
+                    $image = self.getImage();
+                    value = {};
+                    if (this.options.showCropper) {
+                        if (self.cropperExist()) {
+                            value.crop = $image.cropper('getData', { rounded: true });
+                        }
+                    }
+                    var url = $(this.control).find('select').val();
+                    if (self.options.advanced) {
+                        value.url = url;
+                    } else {
+                        value = url; // compatibility mode
+                    }
+                    if (value.url) {
+                        if (this.dataSource && this.dataSource[value.url]) {
+                            value.id = this.dataSource[value.url].id;
+                            value.filename = this.dataSource[value.url].filename;
+                            value.width = this.dataSource[value.url].width;
+                            value.height = this.dataSource[value.url].height;
+                        }
+                        if (this.options.showCropper) {
+                            value.cropUrl = this.getCropUrl();
+                        }
+                    }
+                    return value;
+                }        
+            },
+            beforeRenderControl: function (model, callback) {
+                var self = this;
+                this.base(model, function () {
+                    self.selectOptions = [];
+                    if (self.sf) {
+                        var completionFunction = function () {
+                            self.schema.enum = [];
+                            self.options.optionLabels = [];
+                            for (var i = 0; i < self.selectOptions.length; i++) {
+                                self.schema.enum.push(self.selectOptions[i].value);
+                                self.options.optionLabels.push(self.selectOptions[i].text);
+                            }
+                            // push back to model
+                            model.selectOptions = self.selectOptions;
+                            callback();
+                        };
+                        var postData = { q: "*", folder: self.options.uploadfolder };
+                        $.ajax({
+                            url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "ImagesLookupExt",
+                            beforeSend: self.sf.setModuleHeaders,
+                            type: "get",
+                            dataType: "json",
+                            //contentType: "application/json; charset=utf-8",
+                            data: postData,
+                            success: function (jsonDocument) {
+                                var ds = jsonDocument;
+                                if (self.options.dsTransformer && Alpaca.isFunction(self.options.dsTransformer)) {
+                                    ds = self.options.dsTransformer(ds);
+                                }
+                                if (ds) {
+                                    if (Alpaca.isArray(ds)) {
+                                        // for arrays, we walk through one index at a time
+                                        // the insertion order is dictated by the order of the indices into the array
+                                        // this preserves order
+                                        $.each(ds, function (index, value) {
+                                            self.selectOptions.push({
+                                                "value": value.url,
+                                                "thumbUrl": value.thumbUrl,
+                                                "id": value.id,
+                                                "text": value.text,
+                                                "filename": value.filename,
+                                                "width": value.width,
+                                                "height": value.height,
+                                            });
+                                            self.dataSource[value.url] = value;
+                                        });
+                                        completionFunction();
+                                    }
+                                }
+                            },
+                            "error": function (jqXHR, textStatus, errorThrown) {
+                                self.errorCallback({
+                                    "message": "Unable to load data from uri : " + self.options.dataSource,
+                                    "stage": "DATASOURCE_LOADING_ERROR",
+                                    "details": {
+                                        "jqXHR": jqXHR,
+                                        "textStatus": textStatus,
+                                        "errorThrown": errorThrown
+                                    }
+                                });
+                            }
+                        });
+                    } else {
                         callback();
-                    };
-                    var postData = { q: "*", folder: self.options.uploadfolder };
+                    }
+                });
+            },
+
+            prepareControlModel: function (callback) {
+                var self = this;
+                this.base(function (model) {
+                    model.selectOptions = self.selectOptions;
+                    callback(model);
+                });
+            },
+            afterRenderControl: function (model, callback) {
+                var self = this;
+                this.base(model, function () {
+                    // if emptySelectFirst and nothing currently checked, then pick first item in the value list
+                    // set data and visually select it
+                    if (Alpaca.isUndefined(self.data) && self.options.emptySelectFirst && self.selectOptions && self.selectOptions.length > 0) {
+                        self.data = self.selectOptions[0].value;
+                    }
+                    // do this little trick so that if we have a default value, it gets set during first render
+                    // this causes the state of the control
+                    if (self.data) {
+                        self.setValue(self.data);
+                    }
+
+                    if ($.fn.select2) {
+                        var settings = null;
+                        if (self.options.select2) {
+                            settings = self.options.select2;
+                        }
+                        else {
+                            settings = {};
+                        }
+                        settings.templateResult = function (state) {
+                            if (!state.id) { return state.text; }
+
+                            var $state = $(
+                                '<span><img src="' + self.dataSource[state.id].thumbUrl + '" style="height: 45px;width: 54px;"  /> ' + state.text + '</span>'
+                            );
+                            return $state;
+                        };
+
+                        settings.templateSelection = function (state) {
+                            if (!state.id) { return state.text; }
+
+                            var $state = $(
+                                '<span><img src="' + self.dataSource[state.id].thumbUrl + '" style="height: 15px;width: 18px;"  /> ' + state.text + '</span>'
+                            );
+                            return $state;
+                        };
+
+                        $(self.getControlEl().find('select')).select2(settings);
+                    }
+                    if (self.options.uploadhidden) {
+                        $(self.getControlEl()).find('input[type=file]').hide();
+                    } else {
+                        if (self.sf) {
+
+                            $(self.getControlEl()).find('input[type=file]').fileupload({
+                                dataType: 'json',
+                                url: self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
+                                maxFileSize: 25000000,
+                                formData: function () {
+                                    var formData = [{ name: 'uploadfolder', value: self.options.uploadfolder }];
+                                    if (self.options.showOverwrite) {
+                                        formData.push({ name: 'overwrite', value: self.isOverwrite() });
+                                    } else if (self.options.overwrite) {
+                                        formData.push({ name: 'overwrite', value: true });
+                                    }
+                                    return formData;
+                                    //{ uploadfolder: self.options.uploadfolder, overwrite: self.isOverwrite() }
+                                },
+                                beforeSend: self.sf.setModuleHeaders,
+                                add: function (e, data) {
+                                    var goUpload = true;
+                                    var uploadFile = data.files[0];        
+                                    var regex = new RegExp('\\.(' + self.options.fileExtensions + ')$', 'i');
+                                    if (!(regex).test(uploadFile.name)) {
+                                        self.showAlert('You must select an image file only (' + self.options.fileExtensions+')');
+                                        goUpload = false;
+                                    }
+                                    if (uploadFile.size > self.options.fileMaxSize) { 
+                                        self.showAlert('Please upload a smaller image, max size is ' + self.options.fileMaxSize+ ' bytes');
+                                        goUpload = false;
+                                    }
+                                    if (goUpload == true) {
+                                        self.showAlert('File uploading...');
+                                        data.submit();
+                                    }
+                                    //data.context = $(opts.progressContextSelector);
+                                    //data.context.find($(opts.progressFileNameSelector)).html(data.files[0].name);
+                                    //data.context.show('fade');
+                                    //data.submit();
+                                },
+                                progress: function (e, data) {
+                                    if (data.context) {
+                                        var progress = parseInt(data.loaded / data.total * 100, 10);
+                                        data.context.find(opts.progressBarSelector).css('width', progress + '%').find('span').html(progress + '%');
+                                    }
+                                },
+                                done: function (e, data) {
+                                    if (data.result) {
+                                        $.each(data.result, function (index, file) {
+                                            if (file.success) {
+                                                self.refresh(function () {
+                                                    self.setValue(file.url);
+                                                    self.showAlert('File uploaded', true);
+                                                });
+                                            } else {
+                                                self.showAlert(file.message, true);
+                                            }
+                                        });
+                                    }
+
+                                }
+                            }).data('loaded', true);
+                        }
+                    }
+                    if (!self.options.showOverwrite) {
+                        $(self.control).parent().find('#' + self.id + '-overwriteLabel').hide();
+                    }
+                    callback();
+                });
+            },
+            cropImage: function () {
+                var self = this;
+                var data = self.getBaseValue();
+                if (!data.url) return;
+                $image = self.getImage();
+                var crop = $image.cropper('getData', { rounded: true }); 
+                
+                var postData = { url: data.url, cropfolder: self.options.cropfolder, crop: crop, id: "crop" };
+                if (self.options.width && self.options.height) {
+                    postData.resize = { width: self.options.width, height: self.options.height };
+                }
+                $(self.getControlEl()).css('cursor', 'wait');
+                self.showAlert('Image cropping...');
+                $.ajax({
+                    type: "POST",
+                    url: self.sf.getServiceRoot('OpenContent') + "DnnEntitiesAPI/CropImage",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify(postData),
+                    beforeSend: self.sf.setModuleHeaders
+                }).done(function (res) {
+                    self.setCropUrl( res.url);
+                    self.showAlert('Image cropped', true);
+                    setTimeout(function () {
+                        $(self.getControlEl()).css('cursor', 'initial');
+                    }, 500);
+                }).fail(function (xhr, result, status) {
+                    alert("Uh-oh, something broke: " + status);
+                    $(self.getControlEl()).css('cursor', 'initial');
+                });
+            },
+            getFileUrl: function (fileid) {
+                var self = this;
+                if (self.sf) {
+                    var postData = { fileid: fileid };
                     $.ajax({
-                        url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "ImagesLookupExt",
+                        url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "FileUrl",
                         beforeSend: self.sf.setModuleHeaders,
                         type: "get",
+                        asych: false,
                         dataType: "json",
                         //contentType: "application/json; charset=utf-8",
                         data: postData,
-                        success: function (jsonDocument) {
-                            var ds = jsonDocument;
-                            if (self.options.dsTransformer && Alpaca.isFunction(self.options.dsTransformer)) {
-                                ds = self.options.dsTransformer(ds);
-                            }
-                            if (ds) {
-                                if (Alpaca.isArray(ds)) {
-                                    // for arrays, we walk through one index at a time
-                                    // the insertion order is dictated by the order of the indices into the array
-                                    // this preserves order
-                                    $.each(ds, function (index, value) {
-                                        self.selectOptions.push({
-                                            "value": value.url,
-                                            "thumbUrl": value.thumbUrl,
-                                            "id": value.id,
-                                            "text": value.text,
-                                            "filename": value.filename,
-                                        });
-                                        self.dataSource[value.url] = value;
-                                    });
-                                    completionFunction();
-                                }
-                            }
+                        success: function (data) {
+                            return data;
                         },
-                        "error": function (jqXHR, textStatus, errorThrown) {
-                            self.errorCallback({
-                                "message": "Unable to load data from uri : " + self.options.dataSource,
-                                "stage": "DATASOURCE_LOADING_ERROR",
-                                "details": {
-                                    "jqXHR": jqXHR,
-                                    "textStatus": textStatus,
-                                    "errorThrown": errorThrown
-                                }
-                            });
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            return "";
                         }
                     });
+                }
+            },
+            cropper: function (url, data) {
+                var self = this;
+                $image = self.getImage();
+
+                var cropperExist = $image.data('cropper');
+                if (url) {
+                    $image.show();
+                    if (!cropperExist) {
+                        var config = $.extend({}, {
+                            aspectRatio: 16 / 9,
+                            checkOrientation: false,
+                            autoCropArea: 0.90,
+                            minContainerHeight: 200,
+                            minContainerWidth: 400,
+                            toggleDragModeOnDblclick: false,
+                            zoomOnWheel: false,
+                            cropmove: function(event) {
+                                self.setCropUrl('');
+                            }
+                        }, self.options.cropper);
+                        if (data) {
+                            config.data = data;
+                        };
+
+                        $image.cropper(config);
+                    } else {
+                        if (url != cropperExist.originalUrl || (cropperExist.url && url != cropperExist.url)) {
+                            $image.cropper('replace', url);
+                        }
+                        //$image.cropper('reset');
+                        if (data) {
+                            $image.cropper('setData', data);
+                        }
+                    }
                 } else {
-                    callback();
-                }
-            });
-        },
+                    $image.hide();
+                    if (!cropperExist) {
 
-        prepareControlModel: function (callback) {
-            var self = this;
-            this.base(function (model) {
-                model.selectOptions = self.selectOptions;
-                callback(model);
-            });
-        },
-        afterRenderControl: function (model, callback) {
-            var self = this;
-            this.base(model, function () {
-                // if emptySelectFirst and nothing currently checked, then pick first item in the value list
-                // set data and visually select it
-                if (Alpaca.isUndefined(self.data) && self.options.emptySelectFirst && self.selectOptions && self.selectOptions.length > 0) {
-                    self.data = self.selectOptions[0].value;
+                    } else {
+                        $image.cropper('destroy');
+                    }
                 }
-                // do this little trick so that if we have a default value, it gets set during first render
-                // this causes the state of the control
-                if (self.data) {
-                    self.setValue(self.data);
-                }
+            },
+            cropperExist: function () {
+                var self = this;
+                $image = self.getImage();
+                var cropperData = $image.data('cropper');
 
-                if ($.fn.select2) {
-                    var settings = null;
-                    if (self.options.select2) {
-                        settings = self.options.select2;
+                return cropperData;
+            },
+            getImage: function () {
+                var self = this;
+                return $(self.control).parent().find('#' + self.id + '-image'); //.find('.alpaca-image-display > img');
+
+            },
+            isOverwrite: function () {
+                var self = this;
+                if (this.options.showOverwrite) {
+                    var checkbox = $(self.control).parent().find('#' + self.id + '-overwrite');
+                    return Alpaca.checked(checkbox);
+                } else {
+                    return this.options.overwrite;
+                }
+            },
+            getCropUrl: function () {
+                var self = this;
+                return $(self.getControlEl()).attr('data-cropurl');
+            },
+            setCropUrl: function (url) {
+                var self = this;
+                $(self.getControlEl()).attr('data-cropurl', url);
+                self.refreshValidationState();
+            },
+
+            handleValidate: function () {
+                var baseStatus = this.base();
+                var valInfo = this.validation;
+
+                var url = $(this.control).find('select').val();
+
+                var status = !url || !this.options.showCropper || !this.options.saveCropFile || this.getCropUrl();
+                
+                valInfo["cropMissing"] = {
+                    "message": status ? "" : this.getMessage("cropMissing"),
+                    "status": status
+                };
+
+                return baseStatus && valInfo["cropMissing"]["status"];
+            },
+
+            /**
+             * Validate against enum property.
+             *
+             * @returns {Boolean} True if the element value is part of the enum list, false otherwise.
+             */
+            _validateEnum: function () {
+                var _this = this;
+                
+                if (this.schema["enum"]) {
+                    var val = this.data ? this.data.url : "";
+
+                    if (!this.isRequired() && Alpaca.isValEmpty(val)) {
+                        return true;
+                    }
+
+                    if (this.options.multiple) {
+                        var isValid = true;
+
+                        if (!val) {
+                            val = [];
+                        }
+
+                        if (!Alpaca.isArray(val) && !Alpaca.isObject(val)) {
+                            val = [val];
+                        }
+
+                        $.each(val, function (i, v) {
+
+                            if ($.inArray(v, _this.schema["enum"]) <= -1) {
+                                isValid = false;
+                                return false;
+                            }
+
+                        });
+
+                        return isValid;
                     }
                     else {
-                        settings = {};
+                        return ($.inArray(val, this.schema["enum"]) > -1);
                     }
-                    settings.templateResult = function (state) {
-                        if (!state.id) { return state.text; }
-
-                        var $state = $(
-                          '<span><img src="' + self.dataSource[state.id].thumbUrl + '" style="height: 45px;width: 54px;"  /> ' + state.text + '</span>'
-                        );
-                        return $state;
-                    };
-
-                    settings.templateSelection = function (state) {
-                        if (!state.id) { return state.text; }
-
-                        var $state = $(
-                          '<span><img src="' + self.dataSource[state.id].thumbUrl + '" style="height: 15px;width: 18px;"  /> ' + state.text + '</span>'
-                        );
-                        return $state;
-                    };
-
-                    $(self.getControlEl().find('select')).select2(settings);
-                }
-                if (self.options.uploadhidden) {
-                    $(self.getControlEl()).find('input[type=file]').hide();
-                } else {
-                    if (self.sf) {
-                        
-                        $(self.getControlEl()).find('input[type=file]').fileupload({
-                            dataType: 'json',
-                            url: self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
-                            maxFileSize: 25000000,
-                            formData: function () {
-                                return [
-                                    { name: 'uploadfolder', value: self.options.uploadfolder },
-                                    { name: 'overwrite', value: self.isOverwrite() },
-                                ]
-                                //{ uploadfolder: self.options.uploadfolder, overwrite: self.isOverwrite() }
-                            },
-                            beforeSend: self.sf.setModuleHeaders,
-                            add: function (e, data) {
-                                self.showAlert('File uploading...');
-                                //data.context = $(opts.progressContextSelector);
-                                //data.context.find($(opts.progressFileNameSelector)).html(data.files[0].name);
-                                //data.context.show('fade');
-                                data.submit();
-                            },
-                            progress: function (e, data) {
-                                if (data.context) {
-                                    var progress = parseInt(data.loaded / data.total * 100, 10);
-                                    data.context.find(opts.progressBarSelector).css('width', progress + '%').find('span').html(progress + '%');
-                                }
-                            },
-                            done: function (e, data) {
-                                if (data.result) {
-                                    $.each(data.result, function (index, file) {
-                                        if (file.success) {
-                                            self.refresh(function () {
-                                                self.setValue(file.url);
-                                                self.showAlert('File uploaded', true);
-                                            }); 
-                                        } else {
-                                            self.showAlert(file.message, true);
-                                        }
-                                    });
-                                }
-                                
-                            }
-                        }).data('loaded', true);
-                    }
-                }
-
-                if (!self.options.showOverwrite) {
-                    $(self.control).parent().find('#' + self.id + '-overwrite').hide();
-                }
-                callback();
-            });
-        },
-        cropImage: function () {
-            var self = this;
-            var data = self.getValue();
-            var postData = { url: data.url, cropfolder: self.options.cropfolder, crop: data, id: "crop" };
-            if (self.options.width && self.options.height) {
-                postData.resize = { width: self.options.width, height: self.options.height };
-            }
-            $(self.getControlEl()).css('cursor', 'wait');
-            self.showAlert('Image cropping...');
-            $.ajax({
-                type: "POST",
-                url: self.sf.getServiceRoot('OpenContent') + "DnnEntitiesAPI/CropImage",
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                data: JSON.stringify(postData),
-                beforeSend: self.sf.setModuleHeaders
-            }).done(function (res) {
-
-                $(self.getControlEl()).attr('data-cropurl', res.url);
-                self.showAlert('Image cropped', true);
-                setTimeout(function () {
-                    $(self.getControlEl()).css('cursor', 'initial');
-                }, 500);
-            }).fail(function (xhr, result, status) {
-                alert("Uh-oh, something broke: " + status);
-                $(self.getControlEl()).css('cursor', 'initial');
-            });
-        },
-        getFileUrl: function (fileid) {
-            var self = this;
-            if (self.sf) {
-                var postData = { fileid: fileid };
-                $.ajax({
-                    url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "FileUrl",
-                    beforeSend: self.sf.setModuleHeaders,
-                    type: "get",
-                    asych: false,
-                    dataType: "json",
-                    //contentType: "application/json; charset=utf-8",
-                    data: postData,
-                    success: function (data) {
-                        return data;
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        return "";
-                    }
-                });
-            }
-        },
-        cropper: function (url, data) {
-            var self = this;
-            $image = self.getImage();
-            
-            var cropperExist = $image.data('cropper');
-            if (url) {
-                $image.show();
-                if (!cropperExist) {
-                    var config = $.extend({}, {
-                        aspectRatio: 16 / 9,
-                        checkOrientation: false,
-                        autoCropArea: 0.90,
-                        minContainerHeight: 200,
-                        minContainerWidth: 400,
-                        toggleDragModeOnDblclick: false
-                    }, self.options.cropper);
-                    if (data) {
-                        config.data = data;
-                    }
-                    $image.cropper(config);
-                } else {
-                    if (url != cropperExist.originalUrl || (cropperExist.url && url != cropperExist.url)) {
-                        $image.cropper('replace', url);
-                    }
-                    //$image.cropper('reset');
-                    if (data) {
-                        $image.cropper('setData', data);
-                    }
-                }
-            } else {
-                $image.hide();
-                if (!cropperExist) {
-
-                } else {
-                    $image.cropper('destroy');
-                }
-            }
-        },
-        cropperExist: function () {
-            var self = this;
-            $image = self.getImage();
-            var cropperData = $image.data('cropper');
-
-            return cropperData;
-        },
-        getImage: function () {
-            var self = this;
-            return $(self.control).parent().find('#' + self.id + '-image'); //.find('.alpaca-image-display > img');
-
-        },
-        isOverwrite: function () {
-            var self = this;
-            if (this.options.showOverwrite) {
-                var checkbox = $(self.control).parent().find('#' + self.id + '-overwrite');
-                return Alpaca.checked(checkbox);
-            } else {
-                return this.options.overwrite;
-            }
-        },
-        /**
-         * Validate against enum property.
-         *
-         * @returns {Boolean} True if the element value is part of the enum list, false otherwise.
-         */
-        _validateEnum: function () {
-            var _this = this;
-
-            if (this.schema["enum"]) {
-                var val = this.data ? this.data.url : "";
-
-                if (!this.isRequired() && Alpaca.isValEmpty(val)) {
-                    return true;
-                }
-
-                if (this.options.multiple) {
-                    var isValid = true;
-
-                    if (!val) {
-                        val = [];
-                    }
-
-                    if (!Alpaca.isArray(val) && !Alpaca.isObject(val)) {
-                        val = [val];
-                    }
-
-                    $.each(val, function (i, v) {
-
-                        if ($.inArray(v, _this.schema["enum"]) <= -1) {
-                            isValid = false;
-                            return false;
-                        }
-
-                    });
-
-                    return isValid;
                 }
                 else {
-                    return ($.inArray(val, this.schema["enum"]) > -1);
+                    return true;
+                }
+            },
+
+            /**
+             * @see Alpaca.Field#onChange
+             */
+            onChange: function (e) {
+                this.base(e);
+                var _this = this;
+                _this.setCropUrl('');
+                
+
+                Alpaca.later(25, this, function () {
+                    var v = _this.getValue();                    
+                    _this.setValue(v);
+                    _this.refreshValidationState();
+                });
+            },
+
+            /**
+             * @see Alpaca.Field#focus
+             */
+            focus: function (onFocusCallback) {
+                if (this.control && this.control.length > 0) {
+                    // set focus onto the select
+                    var el = $(this.control).find('select');
+
+                    el.focus();
+
+                    if (onFocusCallback) {
+                        onFocusCallback(this);
+                    }
                 }
             }
-            else {
-                return true;
-            }
-        },
 
-        /**
-         * @see Alpaca.Field#onChange
-         */
-        onChange: function (e) {
-            this.base(e);
-            var _this = this;
-            Alpaca.later(25, this, function () {
-                var v = _this.getValue();
-                _this.setValue(v);
-                _this.refreshValidationState();
-            });
-        },
+            /* builder_helpers */
+            ,
 
-        /**
-         * @see Alpaca.Field#focus
-         */
-        focus: function (onFocusCallback) {
-            if (this.control && this.control.length > 0) {
-                // set focus onto the select
-                var el = $(this.control).find('select');
+            /**
+             * @see Alpaca.Field#getTitle
+             */
+            getTitle: function () {
+                return "Image Crop 2 Field";
+            },
 
-                el.focus();
-
-                if (onFocusCallback) {
-                    onFocusCallback(this);
+            /**
+             * @see Alpaca.Field#getDescription
+             */
+            getDescription: function () {
+                return "Image Crop 2 Field";
+            },
+            showAlert: function (text, time) {
+                var self = this;
+                $('#' + self.id + '-alert').text(text);
+                $('#' + self.id + '-alert').show();
+                if (time) {
+                    setTimeout(function (text) {
+                        $('#' + self.id + '-alert').hide();
+                    }, 4000);
                 }
-            }
-        }
-
-        /* builder_helpers */
-        ,
-
-        /**
-         * @see Alpaca.Field#getTitle
-         */
-        getTitle: function () {
-            return "Image Crop 2 Field";
-        },
-
-        /**
-         * @see Alpaca.Field#getDescription
-         */
-        getDescription: function () {
-            return "Image Crop 2 Field";
-        },
-        showAlert: function (text, time) {
-            var self =this;
-            $('#' + self.id + '-alert').text(text);
-            $('#' + self.id + '-alert').show();
-            if(time){
-                setTimeout( function (text) {
-                    $('#' + self.id + '-alert').hide();
-                }, 2000);
-            }
-        },
-    });
+            },
+        });
 
     Alpaca.registerFieldClass("imagex", Alpaca.Fields.ImageXField);
+    Alpaca.registerMessages({
+        "cropMissing": "Cropped image missing (click the crop button)"
+    });
 
 })(jQuery);
 (function ($) {
@@ -10571,7 +11032,7 @@
         constructor: function (container, data, options, schema, view, connector) {
             var self = this;
             this.base(container, data, options, schema, view, connector);
-            this.numberDecimalSeparator = connector.numberDecimalSeparator;
+            this.numberDecimalSeparator = connector.numberDecimalSeparator || ".";
         },
         /**
          * @see Alpaca.Fields.TextField#setup
@@ -12038,6 +12499,9 @@
                 self.options.removeDefaultNone = true;
                 //self.options.hideNone = true;
             }
+            if (self.schema.required) {
+                self.options.hideNone = false;
+            }
             this.base();
         },
 
@@ -13494,6 +13958,8 @@
             
             if (this.culture != this.defaultCulture && this.olddata && this.olddata[this.defaultCulture]) {
                 this.options.placeholder = this.olddata[this.defaultCulture];
+            } else if (this.olddata && Object.keys(this.olddata).length && this.olddata[Object.keys(this.olddata)[0]]) {
+                this.options.placeholder = this.olddata[Object.keys(this.olddata)[0]];
             } else {
                 this.options.placeholder = "";
             }
@@ -13646,6 +14112,8 @@
             
             if (this.culture != this.defaultCulture && this.olddata && this.olddata[this.defaultCulture]) {
                 this.options.placeholder = this.olddata[this.defaultCulture];
+            } else if (this.olddata && Object.keys(this.olddata).length && this.olddata[Object.keys(this.olddata)[0]]) {
+                this.options.placeholder = this.olddata[Object.keys(this.olddata)[0]];
             } else {
                 this.options.placeholder = "";
             }
@@ -13899,6 +14367,8 @@
             }
             if (this.culture != this.defaultCulture && this.olddata && this.olddata[this.defaultCulture]) {
                 this.options.placeholder = this.olddata[this.defaultCulture];
+            } else if (this.olddata && Object.keys(this.olddata).length && this.olddata[Object.keys(this.olddata)[0]]) {
+                this.options.placeholder = this.olddata[Object.keys(this.olddata)[0]];
             } else {
                 this.options.placeholder = "";
             }
@@ -14154,9 +14624,7 @@
         },
 
         getValue: function () {
-            
-                var val = this.base(val);
-
+                var val = this.base();
                 var self = this;
                 var o = {};
                 if (this.olddata && Alpaca.isObject(this.olddata)) {
@@ -14174,7 +14642,6 @@
                     return "";
                 }
                 return o;
-            
         },
 
         /**
@@ -14226,6 +14693,106 @@
     Alpaca.registerFieldClass("mlimage2", Alpaca.Fields.MLImage2Field);
 
 })(jQuery);
+(function($) {
+
+    var Alpaca = $.alpaca;
+        
+    Alpaca.Fields.MLImageXField = Alpaca.Fields.ImageXField.extend(
+    /**
+     * @lends Alpaca.Fields.MLImageXField.prototype
+     */
+    {
+        constructor: function (container, data, options, schema, view, connector) {
+            var self = this;
+            this.base(container, data, options, schema, view, connector);
+            this.culture = connector.culture;
+            this.defaultCulture = connector.defaultCulture;
+            this.rootUrl = connector.rootUrl;
+        },
+        /**
+         * @see Alpaca.Fields.MLImageXField#setup
+         */
+        setup: function()
+        {
+            var self = this;
+            if (this.data && Alpaca.isObject(this.data)) {
+                this.olddata = this.data;
+            } else if (this.data) {
+                this.olddata = {};
+                this.olddata[this.defaultCulture] = this.data;
+            }
+            this.base();
+        },
+
+        getValue: function () {
+                var val = this.base();
+                var self = this;
+                var o = {};
+                if (this.olddata && Alpaca.isObject(this.olddata)) {
+                    $.each(this.olddata, function (key, value) {
+                        var v = Alpaca.copyOf(value);
+                        if (key != self.culture) {
+                            o[key] = v;
+                        }
+                    });
+                }
+                if (val != "") {
+                    o[self.culture] = val;
+                }
+                if ($.isEmptyObject(o)) {
+                    return "";
+                }
+                return o;
+        },
+
+
+
+        /**
+         * @see Alpaca.MLImageXField#setValue
+         */
+        setValue: function(val)
+        {
+            
+            if (val === "") {
+                return;
+            }
+            if (!val) {
+                this.base("");
+                return;
+            }
+            if (Alpaca.isObject(val)) {
+                var v = val[this.culture];
+                if (!v) {
+                    this.base("");
+                    return;
+                }
+                this.base(v);
+            }
+            else {
+                this.base(val);
+            }
+
+        },
+        afterRenderControl: function (model, callback) {
+            var self = this;
+            this.base(model, function () {
+                self.handlePostRender2(function () {
+                    callback();
+                });
+            });
+        },
+        handlePostRender2: function (callback) {
+            var self = this;
+            var el = this.getControlEl();
+            callback();
+            $(this.control).parent().find('.select2').after('<img src="' + self.rootUrl + 'images/Flags/' + this.culture + '.gif" class="flag" />');
+            
+        },
+    });
+
+    Alpaca.registerFieldClass("mlimagex", Alpaca.Fields.MLImageXField);
+
+})(jQuery);
 (function ($) {
 
     var Alpaca = $.alpaca;
@@ -14255,6 +14822,8 @@
             }
             if (this.culture != this.defaultCulture && this.olddata && this.olddata[this.defaultCulture]) {
                 this.options.placeholder = this.olddata[this.defaultCulture];
+            } else if (this.olddata && Object.keys(this.olddata).length && this.olddata[Object.keys(this.olddata)[0]]) {
+                this.options.placeholder = this.olddata[Object.keys(this.olddata)[0]];
             } else {
                 this.options.placeholder = "";
             }
@@ -14415,6 +14984,8 @@
             
             if (this.culture != this.defaultCulture && this.olddata && this.olddata[this.defaultCulture]) {
                 this.options.placeholder = this.olddata[this.defaultCulture];
+            } else if (this.olddata && Object.keys(this.olddata).length && this.olddata[Object.keys(this.olddata)[0]]) {
+                this.options.placeholder = this.olddata[Object.keys(this.olddata)[0]];
             } else {
                 this.options.placeholder = "";
             }
@@ -14551,6 +15122,258 @@
 
     var Alpaca = $.alpaca;
 
+    Alpaca.Fields.MLNumberField = Alpaca.Fields.NumberField.extend(
+        {
+            constructor: function (container, data, options, schema, view, connector) {
+                var self = this;
+                this.base(container, data, options, schema, view, connector);
+                this.culture = connector.culture;
+                this.defaultCulture = connector.defaultCulture;
+                this.rootUrl = connector.rootUrl;
+            },
+            /**
+             * @see Alpaca.Fields.TextField#getFieldType
+            */
+            /*
+            getFieldType: function () {
+                return "text";
+            },
+            */
+
+            /**
+             * @see Alpaca.Fields.TextField#setup
+             */
+            setup: function () {
+
+                if (this.data && Alpaca.isObject(this.data)) {
+                    this.olddata = this.data;
+                } else if (this.data) {
+                    this.olddata = {};
+                    this.olddata[this.defaultCulture] = this.data;
+                }
+
+                if (this.culture != this.defaultCulture && this.olddata && this.olddata[this.defaultCulture]) {
+                    this.options.placeholder = this.olddata[this.defaultCulture];
+                } else if (this.olddata && Object.keys(this.olddata).length && this.olddata[Object.keys(this.olddata)[0]]) {
+                    this.options.placeholder = this.olddata[Object.keys(this.olddata)[0]];
+                } else {
+                    this.options.placeholder = "";
+                }
+                this.base();
+                /*
+                Alpaca.mergeObject(this.options, {
+                    "fieldClass": "flag-"+this.culture
+                });
+                */
+            },
+            getValue: function () {
+                var val = this.base();
+                var self = this;
+                /*
+                if (val === "") {
+                    return [];
+                }
+                */
+
+                var o = {};
+                if (this.olddata && Alpaca.isObject(this.olddata)) {
+                    $.each(this.olddata, function (key, value) {
+                        var v = Alpaca.copyOf(value);
+                        if (key != self.culture) {
+                            o[key] = v;
+                        }
+                    });
+                }
+                if (val != "") {
+                    o[self.culture] = val;
+                }
+                if ($.isEmptyObject(o)) {
+                    return "";
+                }
+                //o["_type"] = "languages";
+                return o;
+            },
+            getFloatValue: function () {
+                var val = this.base();
+                var self = this;
+                
+                return val;
+            },
+            setValue: function (val) {
+                if (val === "") {
+                    return;
+                }
+                if (!val) {
+                    this.base("");
+                    return;
+                }
+                if (Alpaca.isObject(val)) {
+                    var v = val[this.culture];
+                    if (!v) {
+                        this.base("");
+                        return;
+                    }
+                    this.base(v);
+                }
+                else {
+                    this.base(val);
+                }
+            },
+
+            getControlValue: function () {
+                var val = this._getControlVal(true);
+
+                if (typeof (val) == "undefined" || "" == val) {
+                    return val;
+                }
+
+                return parseFloat(val);
+            },
+
+            afterRenderControl: function (model, callback) {
+                var self = this;
+                this.base(model, function () {
+                    self.handlePostRender(function () {
+                        callback();
+                    });
+                });
+            },
+            handlePostRender: function (callback) {
+                var self = this;
+                var el = this.getControlEl();
+                $(this.control.get(0)).after('<img src="' + self.rootUrl + 'images/Flags/' + this.culture + '.gif" class="flag" />');
+                callback();
+            },
+
+
+            /**
+             * Validates if it is a float number.
+             * @returns {Boolean} true if it is a float number
+             */
+            _validateNumber: function () {
+
+                // get value as text
+                var textValue = this._getControlVal();
+                if (typeof (textValue) === "number") {
+                    textValue = "" + textValue;
+                }
+
+                // allow empty
+                if (Alpaca.isValEmpty(textValue)) {
+                    return true;
+                }
+
+                // check if valid number format
+                var validNumber = Alpaca.testRegex(Alpaca.regexps.number, textValue);
+                if (!validNumber) {
+                    return false;
+                }
+
+                // quick check to see if what they entered was a number
+                var floatValue = this.getFloatValue();
+                if (isNaN(floatValue)) {
+                    return false;
+                }
+
+                return true;
+            },
+
+            /**
+             * Validates divisibleBy constraint.
+             * @returns {Boolean} true if it passes the divisibleBy constraint.
+             */
+            _validateDivisibleBy: function () {
+                var floatValue = this.getFloatValue();
+                if (!Alpaca.isEmpty(this.schema.divisibleBy)) {
+
+                    // mod
+                    if (floatValue % this.schema.divisibleBy !== 0) {
+                        return false;
+                    }
+                }
+                return true;
+            },
+
+            /**
+             * Validates maximum constraint.
+             * @returns {Boolean} true if it passes the maximum constraint.
+             */
+            _validateMaximum: function () {
+                var floatValue = this.getFloatValue();
+
+                if (!Alpaca.isEmpty(this.schema.maximum)) {
+                    if (floatValue > this.schema.maximum) {
+                        return false;
+                    }
+
+                    if (!Alpaca.isEmpty(this.schema.exclusiveMaximum)) {
+                        if (floatValue == this.schema.maximum && this.schema.exclusiveMaximum) { // jshint ignore:line
+                            return false;
+                        }
+                    }
+                }
+
+                return true;
+            },
+
+            /**
+             * Validates maximum constraint.
+             * @returns {Boolean} true if it passes the minimum constraint.
+             */
+            _validateMinimum: function () {
+                var floatValue = this.getFloatValue();
+
+                if (!Alpaca.isEmpty(this.schema.minimum)) {
+                    if (floatValue < this.schema.minimum) {
+                        return false;
+                    }
+
+                    if (!Alpaca.isEmpty(this.schema.exclusiveMinimum)) {
+                        if (floatValue == this.schema.minimum && this.schema.exclusiveMinimum) { // jshint ignore:line
+                            return false;
+                        }
+                    }
+                }
+
+                return true;
+            },
+
+            /**
+             * Validates multipleOf constraint.
+             * @returns {Boolean} true if it passes the multipleOf constraint.
+             */
+            _validateMultipleOf: function () {
+                var floatValue = this.getFloatValue();
+
+                if (!Alpaca.isEmpty(this.schema.multipleOf)) {
+                    if (floatValue && this.schema.multipleOf !== 0) {
+                        return false;
+                    }
+                }
+
+                return true;
+            },
+
+            getTitle: function () {
+                return "Multi Language Number Field";
+            },
+
+
+            getDescription: function () {
+                return "Multi Language Number field .";
+            },
+
+
+            /* end_builder_helpers */
+        });
+
+    Alpaca.registerFieldClass("mlnumber", Alpaca.Fields.MLNumberField);
+
+})(jQuery);
+(function ($) {
+
+    var Alpaca = $.alpaca;
+
     Alpaca.Fields.MLTextField = Alpaca.Fields.TextField.extend(
     /**
      * @lends Alpaca.Fields.TagField.prototype
@@ -14587,6 +15410,8 @@
             
             if (this.culture != this.defaultCulture && this.olddata && this.olddata[this.defaultCulture]) {
                 this.options.placeholder = this.olddata[this.defaultCulture];
+            } else if (this.olddata && Object.keys(this.olddata).length && this.olddata[Object.keys(this.olddata)[0]]) {
+                this.options.placeholder = this.olddata[Object.keys(this.olddata)[0]];
             } else {
                 this.options.placeholder = "";
             }
@@ -14855,6 +15680,8 @@
             }
             if (this.culture != this.defaultCulture && this.olddata && this.olddata[this.defaultCulture]) {
                 this.options.placeholder = this.olddata[this.defaultCulture];
+            } else if (this.olddata && Object.keys(this.olddata).length && this.olddata[Object.keys(this.olddata)[0]]) {
+                this.options.placeholder = this.olddata[Object.keys(this.olddata)[0]];
             } else {
                 this.options.placeholder = "";
             }

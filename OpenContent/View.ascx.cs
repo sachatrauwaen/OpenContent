@@ -38,6 +38,8 @@ using DotNetNuke.Services.Localization;
 using Satrabel.OpenContent.Components.Datasource;
 using IDataSource = Satrabel.OpenContent.Components.Datasource.IDataSource;
 using SecurityAccessLevel = DotNetNuke.Security.SecurityAccessLevel;
+using Newtonsoft.Json.Serialization;
+using System.Reflection;
 
 #endregion
 
@@ -80,6 +82,7 @@ namespace Satrabel.OpenContent
             ti.ModuleContext = ModuleContext;
             ti.Settings = _settings;
             ti.Renderinfo = _renderinfo;
+            ti.ResourceFile = LocalResourceFile;
         }
 
         protected override void OnLoad(EventArgs e)
@@ -126,12 +129,30 @@ namespace Satrabel.OpenContent
                     DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, ex.Message, DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
                 }
             }
+            if (App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetCompositeCss())
+            {
+                //var absUrl = Utils.GetFullUrl(Request, Page.ResolveUrl($"~/DesktopModules/OpenContent/API/Resource/Css?tabid={activeTab.TabID}&portalid={activeTab.PortalID}"));
+                //var absUrl = Utils.GetFullUrl(Request, Page.ResolveUrl($"~/API/OpenContent/Resource/Css?tabid={ModuleContext.TabId}&portalid={ModuleContext.PortalId}"));
+                //App.Services.ClientResourceManager.RegisterStyleSheet(Page, absUrl);
+
+                //var cssControl = Page.Header.FindControl("OpenContentCss");
+                //if (cssControl == null)
+                //{                    
+                //    System.Web.UI.HtmlControls.HtmlLink css = new System.Web.UI.HtmlControls.HtmlLink();
+                //    css.Href = Page.ResolveUrl($"~/API/OpenContent/Resource/Css?tabid={ModuleContext.TabId}&portalid={ModuleContext.PortalId}&cdv={ModuleContext.PortalSettings.CdfVersion}");
+                //    css.Attributes["rel"] = "stylesheet";
+                //    css.Attributes["type"] = "text/css";
+                //    css.ID = "OpenContentCss";
+                //    Page.Header.Controls.Add(css);
+                //}
+            }
         }
 
         protected override void OnPreRender(EventArgs e)
         {
             //base.OnPreRender(e);
             //pHelp.Visible = false;
+            pInit.Visible = false;
             GenerateAndRenderDemoData();
             if (_renderinfo.Template != null && !string.IsNullOrEmpty(_renderinfo.OutputString))
             {
@@ -149,10 +170,13 @@ namespace Satrabel.OpenContent
             if (LogContext.IsLogActive && !Debugger.IsAttached)
             {
                 ClientResourceManager.RegisterScript(Page, Page.ResolveUrl("~/DesktopModules/OpenContent/js/opencontent.js"), FileOrder.Js.DefaultPriority);
+                var json = JsonConvert.SerializeObject(LogContext.Current.ModuleLogs(ModuleContext.ModuleId));
+                json = json.Replace("<script>", "*script*");
+                json = json.Replace("</script>", "*/script*");
                 StringBuilder logScript = new StringBuilder();
                 //logScript.AppendLine("<script type=\"text/javascript\"> ");
                 logScript.AppendLine("$(document).ready(function () { ");
-                logScript.AppendLine("var logs = " + JsonConvert.SerializeObject(LogContext.Current.ModuleLogs(ModuleContext.ModuleId)) + "; ");
+                logScript.AppendLine("var logs = " + json + "; ");
                 logScript.AppendLine("$.fn.openContent.printLogs(\"Module " + ModuleContext.ModuleId + " - " + ModuleContext.Configuration.ModuleTitle + "\", logs);");
                 logScript.AppendLine("});");
                 //logScript.AppendLine("</script>");
@@ -203,20 +227,28 @@ namespace Satrabel.OpenContent
             {
                 // this module is in another language but has already data.
                 // Therefor we will not AutoAttach it, because otherwise all data will be deleted.
-                App.Services.Logger.Info($"Module {module.ModuleID} on Tab {module.TabID} has not been AutoAttached because it already contains data.");
-                return;
+
+                //App.Services.Logger.Info($"Module {module.ModuleID} on Tab {module.TabID} has not been AutoAttached because it already contains data.");
+                //return;
             }
 
-            var mc = (new ModuleController());
-            mc.DeLocalizeModule(module);
+            try
+            {
+                var mc = (new ModuleController());
+                mc.DeLocalizeModule(module);
 
-            mc.ClearCache(defaultModule.TabID);
-            mc.ClearCache(module.TabID);
-            const string MODULE_SETTINGS_CACHE_KEY = "ModuleSettings{0}"; // to be compatible with dnn 7.2
-            DataCache.RemoveCache(string.Format(MODULE_SETTINGS_CACHE_KEY, defaultModule.TabID));
-            DataCache.RemoveCache(string.Format(MODULE_SETTINGS_CACHE_KEY, module.TabID));
+                mc.ClearCache(defaultModule.TabID);
+                mc.ClearCache(module.TabID);
+                const string MODULE_SETTINGS_CACHE_KEY = "ModuleSettings{0}"; // to be compatible with dnn 7.2
+                DataCache.RemoveCache(string.Format(MODULE_SETTINGS_CACHE_KEY, defaultModule.TabID));
+                DataCache.RemoveCache(string.Format(MODULE_SETTINGS_CACHE_KEY, module.TabID));
 
-            module = mc.GetModule(defaultModule.ModuleID, ModuleContext.TabId, true);
+                module = mc.GetModule(defaultModule.ModuleID, ModuleContext.TabId, true);
+            }
+            catch (Exception ex)
+            {
+                App.Services.Logger.Error($"Module {module.ModuleID} on Tab {module.TabID} has not been AutoAttached because an error occured", ex);
+            }
         }
 
         private static bool ModuleHasValidConfig(ModuleInfo moduleInfo)
@@ -244,7 +276,7 @@ namespace Satrabel.OpenContent
                     if (defaultMode == PortalSettings.Mode.Edit)
                     {
                         string setting = Convert.ToString(Personalization.GetProfile("Usability", "UserMode" + PortalSettings.Current.PortalId));
-                        if (!IsPageAdmin() & IsModuleAdmin())
+                        //if (!IsPageAdmin() & IsModuleAdmin())
                         {
                             if (setting != "EDIT")
                             {
@@ -319,7 +351,7 @@ namespace Satrabel.OpenContent
             {
                 ModulePermissionController.SaveModulePermissions(objModule);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //App.Services.Logger.Error($"Failed to automaticly set the permission. It already exists? tab={0}, moduletitle={1} ", objModule.TabID ,objModule.ModuleTitle);
             }
@@ -363,10 +395,16 @@ namespace Satrabel.OpenContent
 
         private void RenderInitForm()
         {
-            TemplateInit ti = (TemplateInit)TemplateInitControl;
-            ti.RenderInitForm();
+            //TemplateInit ti = (TemplateInit)TemplateInitControl;
+            //ti.RenderInitForm();
+            pInit.Visible = true;
+            //App.Services.ClientResourceManager.RegisterStyleSheet(page, cssfilename.UrlFilePath);
+            App.Services.ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/vue/vue.js");
         }
-
+        public string Resource(string key)
+        {
+            return Localization.GetString(key + ".Text", LocalResourceFile);
+        }
         #endregion
 
         #region IActionable
@@ -445,5 +483,7 @@ namespace Satrabel.OpenContent
         }
         #endregion
     }
+
+
 
 }

@@ -3,6 +3,7 @@
     "outputFileName": "alpaca/js/fields/dnn/dnnfields.js",
     "inputFiles": [
       "alpaca/js/fields/dnn/AddressField.js",
+      "alpaca/js/fields/dnn/MLAddressField.js",
       "alpaca/js/fields/dnn/CKEditorField.js",
       "alpaca/js/fields/dnn/CheckboxField.js",
       "alpaca/js/fields/dnn/DateField.js",
@@ -35,8 +36,10 @@
       "alpaca/js/fields/dnn/MLFileField.js",
       "alpaca/js/fields/dnn/MLFolder2Field.js",
       "alpaca/js/fields/dnn/MLImage2Field.js",
+      "alpaca/js/fields/dnn/MLImageXField.js",
       "alpaca/js/fields/dnn/MLImageField.js",
       "alpaca/js/fields/dnn/MLTextAreaField.js",
+      "alpaca/js/fields/dnn/MLNumberField.js",
       "alpaca/js/fields/dnn/MLTextField.js",
       "alpaca/js/fields/dnn/MLUrl2Field.js",
       "alpaca/js/fields/dnn/MLUrlField.js",

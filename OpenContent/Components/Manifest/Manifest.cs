@@ -67,6 +67,9 @@ namespace Satrabel.OpenContent.Components.Manifest
         [JsonProperty(PropertyName = "permissions")]
         public JObject Permissions { get; set; }
 
+        [JsonProperty(PropertyName = "advanced")]
+        public bool Advanced { get; set; }
+
         public bool HasTemplates => (Templates != null);
         public FolderUri ManifestDir { get; set; }
 

@@ -100,7 +100,8 @@ namespace Satrabel.OpenContent.Components.Querying
                         var val = item.Value.ToString();
                         if (fieldConfig != null && fieldConfig.IndexType == "boolean")
                         {
-                            if (bool.TryParse(val, out var bval))
+                            bool bval = false;
+                            if (bool.TryParse(val, out bval))
                             {
                                 workFlowFilter.AddRule(new FilterRule()
                                 {
@@ -112,7 +113,8 @@ namespace Satrabel.OpenContent.Components.Querying
                         }
                         else if (fieldConfig != null && fieldConfig.IndexType == "float")
                         {
-                            if (float.TryParse(val, out var fval))
+                            float fval = 0;
+                            if (float.TryParse(val, out fval))
                             {
                                 workFlowFilter.AddRule(new FilterRule()
                                 {

@@ -126,4 +126,43 @@
   <data name="cmdSaveClose.Text" xml:space="preserve">
     <value>Save and Close</value>
   </data>
+  <data name="lDataSource.Text" xml:space="preserve">
+    <value>Page - Module</value>
+  </data>
+  <data name="lDetailPage.Text" xml:space="preserve">
+    <value>Detail Page</value>
+  </data>
+  <data name="lFrom.Text" xml:space="preserve">
+    <value>Based On Template From</value>
+  </data>
+  <data name="liCreateNewTemplate.Text" xml:space="preserve">
+    <value>Create New Template Folder</value>
+  </data>
+  <data name="liFromSite.Text" xml:space="preserve">
+    <value>Site</value>
+  </data>
+  <data name="liFromWeb.Text" xml:space="preserve">
+    <value>Web (github)</value>
+  </data>
+  <data name="liOtherModule.Text" xml:space="preserve">
+    <value>Other Module</value>
+  </data>
+  <data name="liThisModule.Text" xml:space="preserve">
+    <value>This module</value>
+  </data>
+  <data name="liUseExistingTemplate.Text" xml:space="preserve">
+    <value>Use Existing Template</value>
+  </data>
+  <data name="lTemplate.Text" xml:space="preserve">
+    <value>Template</value>
+  </data>
+  <data name="lTemplateName.Text" xml:space="preserve">
+    <value>New Template Name</value>
+  </data>
+  <data name="lUseContent.Text" xml:space="preserve">
+    <value>Source of content</value>
+  </data>
+  <data name="lUseTemplate.Text" xml:space="preserve">
+    <value>I want</value>
+  </data>
 </root>

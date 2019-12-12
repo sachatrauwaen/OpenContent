@@ -136,16 +136,18 @@
 
                 var windowTop = parent; //needs to be assign to a varaible for Opera compatibility issues.
                 var popup = windowTop.jQuery("#iPopUp");
-                if (popup.length > 0) {
-                    if (href) {
+
+                if (popup.length > 0 && windowTop.WebForm_GetElementById('dnn_ctr<%=ModuleId %>_View__UP')) {
+                    setTimeout(function () {
                         windowTop.__doPostBack('dnn_ctr<%=ModuleId %>_View__UP', '');
-                        dnnModal.closePopUp(false, href);
-                    }
+                    }, 1);
+                    
+                    //$('#' + 'dnn_ctr' + self.moduleId + '_View__UP').click();
+                    dnnModal.closePopUp(false, href);
                 }
                 else {
                     window.location.href = href;
                 }
-
             }).fail(function (xhr, result, status) {
                 alert("Uh-oh, something broke: " + status + " " + xhr.responseText);
             });

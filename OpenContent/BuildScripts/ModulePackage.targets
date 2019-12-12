@@ -19,7 +19,9 @@
     <ItemGroup>
       <InstallInclude Include="**\*.ascx" Exclude="packages\**" />
       <InstallInclude Include="**\*.asmx" Exclude="packages\**" />
+      <InstallInclude Include="**\*.ashx" Exclude="packages\**" />
       <InstallInclude Include="**\*.css" Exclude="packages\**" />
+      <InstallInclude Include="**\*.png" Exclude="packages\**" />
       <InstallInclude Include="**\*.html" Exclude="packages\**" />
       <InstallInclude Include="**\*.htm" Exclude="packages\**" />
       <InstallInclude Include="**\*.resx" Exclude="packages\**" />

@@ -71,7 +71,6 @@ alpacaEngine.engine = function (config) {
 
             $("div.alpaca").parent().addClass('popup');
 
-
             $("#" + self.cancelButton).click(function () {
                 dnnModal.closePopUp(false, "");
                 return false;
@@ -82,8 +81,10 @@ alpacaEngine.engine = function (config) {
             $("#" + self.copyButton).hide();
         }
 
-        $("#" + self.deleteButton).click(function () {
-
+        $("#" + self.deleteButton).dnnConfirm({
+            callbackTrue: function () {
+        
+        
             var postData = JSON.stringify({ id: self.itemId });
             //var action = "Delete";
             $.ajax({
@@ -98,9 +99,8 @@ alpacaEngine.engine = function (config) {
                 var href = $("#" + self.saveButton).attr('href');
                 var windowTop = parent; //needs to be assign to a varaible for Opera compatibility issues.
                 var popup = windowTop.jQuery("#iPopUp");
-                if (popup.length > 0) {
-                    windowTop.__doPostBack('dnn_ctr' + self.moduleId + '_View__UP', '');
-                    //dnnModal.closePopUp(false, href);
+                if (popup.length > 0 && windowTop.WebForm_GetElementById('dnn_ctr' + self.moduleId + '_View__UP')) {
+                    setTimeout(function () { windowTop.__doPostBack('dnn_ctr' + self.moduleId + '_View__UP', ''); }, 1);                                                                 
                     dnnModal.closePopUp(false, "");
                 }
                 else {
@@ -110,8 +110,8 @@ alpacaEngine.engine = function (config) {
                 alert("Uh-oh, something broke: " + status);
             });
             return false;
+            }
         });
-
 
         //var moduleScope = $('#'+self.scopeWrapper),
         //self = moduleScope,
@@ -217,7 +217,9 @@ alpacaEngine.engine = function (config) {
                             var value = selfControl.getValue();
                             //alert(JSON.stringify(value, null, "  "));
                             var href = $(button).attr('href');
+                            $(document).trigger("beforeSubmit.opencontent", [value, self.moduleId, self.data.id, self.sf, self.editAction]);
                             self.FormSubmit(value, href);
+                            $(document).trigger("afterSubmit.opencontent", [value, self.moduleId, self.data.id, self.sf, self.editAction]);
                         }
                     });
                     return false;
@@ -228,7 +230,9 @@ alpacaEngine.engine = function (config) {
                         if (selfControl.isValid(true)) {
                             var value = selfControl.getValue();
                             var href = $(button).attr('href');
+                            $(document).trigger("beforeSubmit.opencontent", [value, self.moduleId, self.data.id, self.sf, self.editAction]);
                             self.FormSubmit(value, href, true);
+                            $(document).trigger("afterSubmit.opencontent", [value, self.moduleId, self.data.id, self.sf, self.editAction]);
                         }
                     });
                     return false;
@@ -244,7 +248,7 @@ alpacaEngine.engine = function (config) {
                     self.Version(self.itemId, $(this).val(), control);
                     return false;
                 });
-
+                $(document).trigger("postRender.opencontent", [selfControl, self.moduleId, self.data.id, self.sf, self.editAction]);
             }
         });
 
@@ -266,14 +270,13 @@ alpacaEngine.engine = function (config) {
             data: JSON.stringify(postData),
             beforeSend: self.sf.setModuleHeaders
         }).done(function (data) {
-            //alert('ok:' + data);
             //self.loadSettings();
             //window.location.href = href;
             if (data.isValid) {
                 var windowTop = parent; //needs to be assign to a varaible for Opera compatibility issues.
                 var popup = windowTop.jQuery("#iPopUp");
-                if (popup.length > 0) {
-                    windowTop.__doPostBack('dnn_ctr' + self.moduleId + '_View__UP', '');
+                if (popup.length > 0 && windowTop.WebForm_GetElementById('dnn_ctr' + self.moduleId + '_View__UP')) {
+                    setTimeout(function () { windowTop.__doPostBack('dnn_ctr' + self.moduleId + '_View__UP', ''); }, 1);
                     dnnModal.closePopUp(false, href);
                 }
                 else {

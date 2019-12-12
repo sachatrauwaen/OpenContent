@@ -1,6 +1,7 @@
 ﻿using DotNetNuke.Entities.Host;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Entities.Users;
+using DotNetNuke.Services.FileSystem;
 using DotNetNuke.Services.Mail;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Handlebars;
@@ -12,7 +13,7 @@ using System.Linq;
 using System.Net.Mail;
 using System.Text;
 using System.Text.RegularExpressions;
-
+using System.Web;
 
 namespace Satrabel.OpenContent.Components.Form
 {
@@ -101,7 +102,7 @@ namespace Satrabel.OpenContent.Components.Form
             {
                 strIn = Regex.Replace(strIn, @"(@)(.+)$", DomainMapper);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 invalid = true;
             }
@@ -129,13 +130,13 @@ namespace Satrabel.OpenContent.Components.Form
         {
             return SendMail(mailFrom, mailTo, replyTo, "", "", subject, body);
         }
-        public static string SendMail(string mailFrom, string mailTo, string replyTo, string cc, string bcc, string subject, string body)
+        public static string SendMail(string mailFrom, string mailTo, string replyTo, string cc, string bcc, string subject, string body, List<Attachment> attachments = null)
         {
 
             DotNetNuke.Services.Mail.MailPriority priority = DotNetNuke.Services.Mail.MailPriority.Normal;
             MailFormat bodyFormat = MailFormat.Html;
             Encoding bodyEncoding = Encoding.UTF8;
-            List<Attachment> attachments = new List<Attachment>();
+            
             string smtpServer = Host.SMTPServer;
             string smtpAuthentication = Host.SMTPAuthentication;
             string smtpUsername = Host.SMTPUsername;
@@ -173,7 +174,19 @@ namespace Satrabel.OpenContent.Components.Form
                 formDataS.Append("<table boder=\"1\">");
                 foreach (var item in JObject.Parse(form).Properties())
                 {
-                    formDataS.Append("<tr>").Append("<td>").Append(item.Name).Append("</td>").Append("<td>").Append(" : ").Append("</td>").Append("<td>").Append(item.Value).Append("</td>").Append("</tr>");
+                    if (item.Name == "Files")
+                    {
+                        var files = item.Value as JArray;
+                        foreach (var file in files)
+                        {
+                            formDataS.Append("<tr>").Append("<td>").Append("File").Append("</td>").Append("<td>").Append(" : ").Append("</td>").Append("<td><a href=\"").Append(HttpUtility.HtmlEncode(file["url"])).Append("\">").Append(file["name"]).Append("</a></td>").Append("</tr>");
+                        }
+                    }
+                    else
+                    {
+                        formDataS.Append("<tr>").Append("<td>").Append(item.Name).Append("</td>").Append("<td>").Append(" : ").Append("</td>").Append("<td>").Append(HttpUtility.HtmlEncode(item.Value)).Append("</td>").Append("</tr>");
+                    }
+                    //formDataS.Append("<tr>").Append("<td>").Append(item.Name).Append("</td>").Append("<td>").Append(" : ").Append("</td>").Append("<td>").Append(item.Value).Append("</td>").Append("</tr>");
                 }
                 formDataS.Append("</table>");
                 data = JsonUtils.JsonToDynamic(form);
@@ -290,8 +303,16 @@ namespace Satrabel.OpenContent.Components.Form
                             {
                                 body = hbs.Execute(notification.EmailBody, data);
                             }
-
-                            string send = FormUtils.SendMail(from.ToString(), to.ToString(), reply?.ToString() ?? "", notification.CcEmails, notification.BccEmails, notification.EmailSubject, body);
+                            var attachements = new List<Attachment>();
+                            if (form["Files"] is JArray)
+                            {
+                                foreach (var fileItem in form["Files"] as JArray)
+                                {
+                                    var file = FileManager.Instance.GetFile((int)fileItem["id"]);
+                                    attachements.Add(new Attachment(FileManager.Instance.GetFileContent(file), fileItem["name"].ToString()));
+                                }
+                            }
+                            string send = FormUtils.SendMail(from.ToString(), to.ToString(), reply?.ToString() ?? "", notification.CcEmails, notification.BccEmails, notification.EmailSubject, body, attachements);
                             if (!string.IsNullOrEmpty(send))
                             {
                                 errors.Add("From:" + from.ToString() + " - To:" + to.ToString() + " - " + send);
@@ -366,6 +387,26 @@ namespace Satrabel.OpenContent.Components.Form
             {
                 notification.EmailSubject = hbs.Execute(notification.EmailSubject, data);
             }
+        }
+
+        public static string ToAbsoluteUrl(string relativeUrl)
+        {
+            if (string.IsNullOrEmpty(relativeUrl))
+                return relativeUrl;
+
+            if (HttpContext.Current == null)
+                return relativeUrl;
+
+            if (relativeUrl.StartsWith("/"))
+                relativeUrl = relativeUrl.Insert(0, "~");
+            if (!relativeUrl.StartsWith("~/"))
+                relativeUrl = relativeUrl.Insert(0, "~/");
+
+            var url = HttpContext.Current.Request.Url;
+            var port = url.Port != 80 ? (":" + url.Port) : String.Empty;
+
+            return String.Format("{0}://{1}{2}{3}",
+                url.Scheme, url.Host, port, VirtualPathUtility.ToAbsolute(relativeUrl));
         }
     }
 }

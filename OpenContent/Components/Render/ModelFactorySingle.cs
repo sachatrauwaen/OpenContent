@@ -42,6 +42,7 @@ namespace Satrabel.OpenContent.Components.Render
             ExtendModel(enhancedModel, onlyData, onlyMainData);
             ExtendModelSingle(enhancedModel);
             EnhanceSelect2(model, onlyData);
+            EnhanceImages(model);
             JsonUtils.Merge(model, enhancedModel);
             JsonUtils.SimplifyJson(model, GetCurrentCultureCode());
             return model;
@@ -54,15 +55,7 @@ namespace Satrabel.OpenContent.Components.Render
                 var context = model["Context"];
                 if (Detail)
                 {
-                    string url = "";
-                    if (!string.IsNullOrEmpty(_manifest?.DetailUrl))
-                    {
-                        HandlebarsEngine hbEngine = new HandlebarsEngine();
-                        var dynForHBS = JsonUtils.JsonToDictionary(model.ToString());
-                        url = hbEngine.Execute(_manifest.DetailUrl, dynForHBS);
-                        url = HttpUtility.HtmlDecode(url);
-                    }
-                    context["DetailUrl"] = _module.GetUrl(_detailTabId, url.CleanupUrl(), "id=" + _data.Id);
+                    context["DetailUrl"] = GenerateDetailUrl(_data, model, _manifest, _detailTabId);
                     context["Id"] = _data.Id;
                     var editIsAllowed = !_manifest.DisableEdit && IsEditAllowed(_data.CreatedByUserId);
                     context["EditUrl"] = editIsAllowed ? _module.EditUrl("id", _data.Id, _module.ViewModule.ModuleId) : "";

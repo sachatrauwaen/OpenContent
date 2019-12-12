@@ -33,9 +33,7 @@
         },
 
         getValue: function () {
-            
-                var val = this.base(val);
-
+                var val = this.base();
                 var self = this;
                 var o = {};
                 if (this.olddata && Alpaca.isObject(this.olddata)) {
@@ -53,7 +51,6 @@
                     return "";
                 }
                 return o;
-            
         },
 
         /**

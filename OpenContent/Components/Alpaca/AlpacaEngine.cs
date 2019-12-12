@@ -57,29 +57,39 @@ namespace Satrabel.OpenContent.Components.Alpaca
 
         public void RegisterAll() // for openform
         {
-            RegisterAll(false, false);
+            RegisterAll(false, false, false);
         }
 
         public void RegisterAll(bool bootstrap) // for openform
         {
-            RegisterAll(bootstrap, false);
+            RegisterAll(bootstrap, false, false);
         }
 
-        public void RegisterAll(bool bootstrapLayoutEnabled, bool loadBootstrap)
+        public void RegisterAll(bool bootstrapLayoutEnabled, bool loadBootstrap) // for openform
         {
-            RegisterAlpaca(bootstrapLayoutEnabled, loadBootstrap);
+            RegisterAll(bootstrapLayoutEnabled, loadBootstrap, false);
+        }
+
+        public void RegisterAll(bool bootstrapLayoutEnabled, bool loadBootstrap, bool loadGlyphicons)
+        {
+            RegisterAlpaca(bootstrapLayoutEnabled, loadBootstrap, loadGlyphicons);
             RegisterTemplates();
             RegisterScripts(bootstrapLayoutEnabled);
             RegisterFields(bootstrapLayoutEnabled);
         }
 
-        private void RegisterAlpaca(bool bootstrap, bool loadBootstrap)
+        private void RegisterAlpaca(bool bootstrap, bool loadBootstrap, bool loadGlyphicons)
         {
             if (loadBootstrap)
             {
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/bootstrap/js/bootstrap.min.js", FileOrder.Js.DefaultPriority);
-                ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/bootstrap/css/bootstrap.min.css", FileOrder.Css.DefaultPriority);
+                ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/bootstrap/css/bootstrap.min.css", FileOrder.Css.DefaultPriority);                
             }
+            if (loadGlyphicons)
+            {
+                ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/bootstrap/css/glyphicons.css", FileOrder.Css.DefaultPriority);
+            }
+            //ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/css/font-awesome/css/font-awesome.min.css", FileOrder.Css.DefaultPriority);
             ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/lib/handlebars/handlebars.js", FileOrder.Js.DefaultPriority);
             ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/lib/typeahead.js/dist/typeahead.bundle.min.js", FileOrder.Js.DefaultPriority);
 
@@ -103,6 +113,16 @@ namespace Satrabel.OpenContent.Components.Alpaca
             ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/alpacaengine.js", FileOrder.Js.DefaultPriority + 10);
 
             ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/css/font-awesome/css/font-awesome.min.css", FileOrder.Css.DefaultPriority + 1);
+
+
+            string prefix = (string.IsNullOrEmpty(Prefix) ? "" : $"{Prefix}-");
+            string physicalDirectory = HostingEnvironment.MapPath("~/" + VirtualDirectory);
+            string jsFilename = physicalDirectory + "\\" + $"{prefix}edit.js";
+            if (File.Exists(jsFilename))
+            {
+                ClientResourceManager.RegisterScript(Page, $"~/{VirtualDirectory}/{prefix}edit.js", FileOrder.Js.DefaultPriority + 11);
+            }
+
         }
         public void RegisterTemplates()
         {
@@ -146,17 +166,17 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     fieldTypes = FieldTypes(options);
                 }
             }
-            if (allFields || fieldTypes.Contains("address"))
+            if (allFields || fieldTypes.Contains("address") || fieldTypes.Contains("mladdress"))
             {
                 string apikey = App.Services.CreateGlobalSettingsRepository(PortalId).GetGoogleApiKey();
                 ClientResourceManager.RegisterScript(Page, "//maps.googleapis.com/maps/api/js?v=3.exp&libraries=places" + (string.IsNullOrEmpty(apikey) ? "" : "&key=" + apikey), FileOrder.Js.DefaultPriority);
             }
-            if (allFields || fieldTypes.ContainsAny("imagecropper", "imagecrop", "imagecrop2"))
+            if (allFields || fieldTypes.ContainsAny("imagecropper", "imagecrop", "imagecrop2", "imagex", "mlimagex"))
             {
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/cropper/cropper.js", FileOrder.Js.DefaultPriority);
                 ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/cropper/cropper.css", FileOrder.Css.DefaultPriority);
             }
-            if (allFields || fieldTypes.ContainsAny("select2", "image2", "file2", "url2", "mlimage2", "mlfile2", "mlurl2", "mlfolder2", "imagecrop2", "role2", "user2"))
+            if (allFields || fieldTypes.ContainsAny("select2", "image2", "file2", "url2", "mlimage2", "mlfile2", "mlurl2", "mlfolder2", "imagecrop2", "role2", "user2", "imagex", "mlimagex"))
             {
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/select2/select2.js", FileOrder.Js.DefaultPriority);
                 ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/select2/select2.css", FileOrder.Css.DefaultPriority);
@@ -179,49 +199,38 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
             if (allFields || fieldTypes.Contains("ckeditor") || fieldTypes.Contains("mlckeditor"))
             {
-                //var form = Page.FindControl("Form");
-                //if (form.FindControl("CKDNNporid") == null)
-                {
-                    if (CKEditorIngoThaWatchaIsInstalled)
-                    {
-                        ClientResourceManager.RegisterScript(Page, "~/Providers/HtmlEditorProviders/CKEditor/ckeditor.js", FileOrder.Js.DefaultPriority);
-                        DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "PortalId", PortalId.ToString(), true);
-                        /*
-                        var CKDNNporid = new HiddenField();
-                        CKDNNporid.ID = "CKDNNporid";
-                        CKDNNporid.ClientIDMode = ClientIDMode.Static;
-                        form.Controls.Add(CKDNNporid);
-                        CKDNNporid.Value = PortalId.ToString();
-                        */
-                        RegisterStartupScript("oc-ckdnnporid", $@"<input type=""hidden"" id=""CKDNNporid"" value=""{PortalId}"">", false);
-                        GenerateEditorLoadScript(PortalId);
-                    }
-                    else if (CKEditorDnnConnectIsInstalled)
-                    {
-                        ClientResourceManager.RegisterScript(Page, "~/Providers/HtmlEditorProviders/DNNConnect.CKE/js/ckeditor/4.5.3/ckeditor.js", FileOrder.Js.DefaultPriority);
-                        DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "PortalId", PortalId.ToString(), true);
-                        /*
-                        var CKDNNporid = new HiddenField();
-                        CKDNNporid.ID = "CKDNNporid";
-                        CKDNNporid.ClientIDMode = ClientIDMode.Static;
+                //ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/CKEditor/ckeditor.js", FileOrder.Js.DefaultPriority);
 
-                        form.Controls.Add(CKDNNporid);
-                        CKDNNporid.Value = PortalId.ToString();
-                        */
-                        RegisterStartupScript("oc-ckdnnporid", $@"<input type=""hidden"" id=""CKDNNporid"" value=""{PortalId}"">", false);
-                        GenerateEditorLoadScript(PortalId);
-                    }
-                    else
-                    {
-                        App.Services.Logger.Warn("Failed to load CKEeditor. Please install a DNN CKEditor Provider.");
-                    }
+                ClientScriptManager cs = Page.ClientScript;
+                Type csType = GetType();
+                const string CsName = "CKEdScript";
+                if (!cs.IsClientScriptIncludeRegistered(csType, CsName))
+                {
+                    cs.RegisterClientScriptInclude(
+                        csType, CsName, Page.ResolveUrl("~/DesktopModules/OpenContent/js/CKEditor/ckeditor.js"));
                 }
+
+                DotNetNuke.UI.Utilities.ClientAPI.RegisterClientVariable(Page, "PortalId", PortalId.ToString(), true);
+                /*
+                var CKDNNporid = new HiddenField();
+                CKDNNporid.ID = "CKDNNporid";
+                CKDNNporid.ClientIDMode = ClientIDMode.Static;
+                form.Controls.Add(CKDNNporid);
+                CKDNNporid.Value = PortalId.ToString();
+                */
+                RegisterStartupScript("oc-ckdnnporid", $@"<input type=""hidden"" id=""CKDNNporid"" value=""{PortalId}"">", false);
+                GenerateEditorLoadScript(PortalId);
+
+                
             }
             if (allFields || fieldTypes.Contains("icon"))
             {
-                ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/fontIconPicker/jquery.fonticonpicker.min.js", FileOrder.Js.DefaultPriority, "DnnPageHeaderProvider");
-                ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/fontIconPicker/css/jquery.fonticonpicker.min.css", FileOrder.Css.DefaultPriority);
-                ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/fontIconPicker/themes/grey-theme/jquery.fonticonpicker.grey.min.css", FileOrder.Css.DefaultPriority);
+                ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/fontIconPicker/js/jquery.fonticonpicker.js", FileOrder.Js.DefaultPriority, "DnnPageHeaderProvider");
+                ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/fontIconPicker/css/base/jquery.fonticonpicker.min.css", FileOrder.Css.DefaultPriority);
+                //if (bootstrap)
+                //    ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/fontIconPicker/css/themes/bootstrap-theme/jquery.fonticonpicker.bootstrap.min.css", FileOrder.Css.DefaultPriority);
+                //else
+                    ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/fontIconPicker/css/themes/grey-theme/jquery.fonticonpicker.grey.min.css", FileOrder.Css.DefaultPriority);
                 ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/css/glyphicons/glyphicons.css", FileOrder.Css.DefaultPriority + 1);
             }
             if (allFields || fieldTypes.Contains("summernote") || fieldTypes.Contains("mlsummernote"))
@@ -420,6 +429,13 @@ namespace Satrabel.OpenContent.Components.Alpaca
             editorScript.Append("if(CKEDITOR && CKEDITOR.config){");
             editorScript.Append("  CKEDITOR.config.portalId = " + portalId + ";");
             editorScript.Append("  CKEDITOR.config.enableConfigHelper = " + EnableConfigHelper() + ";");
+
+            editorScript.Append("  CKEDITOR.config.cloudServices_uploadUrl= 'https://33333.cke-cs.com/easyimage/upload/';");
+
+            editorScript.Append("  CKEDITOR.config.cloudServices_tokenUrl= 'https://33333.cke-cs.com/token/dev/ijrDsqFix838Gh3wGO3F77FSW94BwcLXprJ4APSp3XQ26xsUHTi0jcb1hoBt';");
+
+
+
             editorScript.Append("};");
 
             //if(CKEDITOR && CKEDITOR.config && CKEDITOR.config.plugins ))

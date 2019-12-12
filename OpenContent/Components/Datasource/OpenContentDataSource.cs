@@ -290,6 +290,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 LuceneController.Instance.Add(content, indexConfig);
                 LuceneController.Instance.Commit();
             }
+            ClearUrlRewriterCache(context);
             Notify(context, data, "add");
         }
         public virtual void Update(DataSourceContext context, IDataItem item, JToken data)

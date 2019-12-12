@@ -32,6 +32,9 @@
                 self.options.removeDefaultNone = true;
                 //self.options.hideNone = true;
             }
+            if (self.schema.required) {
+                self.options.hideNone = false;
+            }
             this.base();
         },
 

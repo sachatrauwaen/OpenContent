@@ -24,6 +24,8 @@
                 <asp:ListItem Text="Import from web" Value="importweb"></asp:ListItem>
                 <asp:ListItem Text="Copy template" Value="copy"></asp:ListItem>
                 <asp:ListItem Text="Export" Value="exportfile"></asp:ListItem>
+                <asp:ListItem Text="Full Export" Value="fullexport"></asp:ListItem>
+                <asp:ListItem Text="Full Import" Value="fullimport"></asp:ListItem>
             </asp:DropDownList>
         </div>
     </fieldset>
@@ -102,6 +104,60 @@
         <ul class="dnnActions dnnClear" style="display: block; padding-left: 35%">
             <li>
                 <asp:LinkButton ID="lbCopy" resourcekey="cmdCopy" runat="server" CssClass="dnnPrimaryAction" OnClick="lbCopy_Click" />
+            </li>
+        </ul>
+    </div>
+</asp:PlaceHolder>
+
+<asp:PlaceHolder ID="phFullExport" runat="server" Visible="false">
+    <div class="dnnForm dnnImport dnnClear">
+        <fieldset>
+        </fieldset>
+        <ul class="dnnActions dnnClear" style="display: block; padding-left: 35%">
+            <li>
+                <asp:LinkButton ID="lbFullExport" resourcekey="cmdExport" runat="server" CssClass="dnnPrimaryAction" OnClick="lbFullExport_Click" />
+            </li>
+        </ul>
+    </div>
+</asp:PlaceHolder>
+
+<asp:PlaceHolder ID="phFullImport" runat="server" Visible="false">
+    <div class="dnnForm dnnImport dnnClear">
+        <fieldset>
+            <div class="dnnFormItem">
+                <dnn:Label ID="Label1" ControlName="fuFile" runat="server" resourcekey="lblFile" />
+                <asp:FileUpload ID="fuFullImport" runat="server" />
+                <br />
+            </div>
+            <div class="dnnFormItem">
+                <dnn:Label ID="lBackup" ControlName="fuFile" runat="server"  />
+               <asp:CheckBox runat="server" ID="cbBackup" Checked="true" />
+                <br />
+            </div>
+            <div class="dnnFormItem">
+                <dnn:Label ID="lTemplate" ControlName="fuFile" runat="server"  />
+               <asp:CheckBox runat="server" ID="cbTemplate" />
+                <br />
+            </div>
+            <div class="dnnFormItem">
+                <dnn:Label ID="lData" ControlName="fuFile" runat="server" />
+               <asp:CheckBox runat="server" ID="cbData" />
+                <br />
+            </div>
+            <div class="dnnFormItem">
+                <dnn:Label ID="lAdditionalData" ControlName="fuFile" runat="server" />
+               <asp:CheckBox runat="server" ID="cbAdditionalData" />
+                <br />
+            </div>
+            <div class="dnnFormItem">
+                <dnn:Label ID="lSettings" ControlName="fuFile" runat="server"  />
+                <asp:CheckBox runat="server" ID="cbSettings" />
+                <br />
+            </div>
+        </fieldset>
+        <ul class="dnnActions dnnClear" style="display: block; padding-left: 35%">
+            <li>
+                <asp:LinkButton ID="lbFullImport" resourcekey="cmdImport" runat="server" CssClass="dnnPrimaryAction" OnClick="lbFullImport_Click" />
             </li>
         </ul>
     </div>
