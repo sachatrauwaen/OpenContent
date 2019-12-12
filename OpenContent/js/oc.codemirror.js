@@ -410,7 +410,7 @@ function ocSetupCodeMirror(mimeType, elem, model) {
 		{ 'text': '{{formatDateTime var "dd/MMM/yy" "nl-NL" }}', 'displayText': 'formatDateTime' },
 		{ 'text': '{{convertHtmlToText var }}', 'displayText': 'convertHtmlToText' },
         { 'text': '{{convertToJson var }}', 'displayText': 'convertToJson' },
-        { 'text': '{{template var}}', 'displayText': 'template' },
+        { 'text': '{{template varTemplate varModel}}', 'displayText': 'template' },
 		{ 'text': '{{truncateWords var 50 "..." }}', 'displayText': 'formatDateTime' },
 		{ 'text': '{{#equal var "value"}}\n{{/equal}}', 'displayText': 'equal' },
         { 'text': '{{#unless var}}\n{{/unless}}', 'displayText': 'unless' },
