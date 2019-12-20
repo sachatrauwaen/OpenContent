@@ -125,7 +125,6 @@
                 callback();
             },
 
-
             /**
              * Validates if it is a float number.
              * @returns {Boolean} true if it is a float number

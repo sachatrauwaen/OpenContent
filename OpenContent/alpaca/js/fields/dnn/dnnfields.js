@@ -15245,7 +15245,6 @@
                 callback();
             },
 
-
             /**
              * Validates if it is a float number.
              * @returns {Boolean} true if it is a float number
@@ -15407,7 +15406,6 @@
                 this.olddata[this.defaultCulture] = this.data;
             }
             
-            
             if (this.culture != this.defaultCulture && this.olddata && this.olddata[this.defaultCulture]) {
                 this.options.placeholder = this.olddata[this.defaultCulture];
             } else if (this.olddata && Object.keys(this.olddata).length && this.olddata[Object.keys(this.olddata)[0]]) {
@@ -15472,8 +15470,7 @@
                 }
                 this.base(v);
             }
-            else
-            {
+            else {
                 this.base(val);
             }
         },
@@ -15489,7 +15486,6 @@
             var self = this;
             var el = this.getControlEl();
             $(this.control.get(0)).after('<img src="' + self.rootUrl + 'images/Flags/' + this.culture + '.gif" class="flag" />');
-            //$(this.control.get(0)).after('<div style="background:#eee;margin-bottom: 18px;display:inline-block;padding-bottom:8px;"><span>' + this.culture + '</span></div>');
             callback();
         },
         

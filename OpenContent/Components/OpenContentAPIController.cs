@@ -21,6 +21,7 @@ using DotNetNuke.Security;
 using Satrabel.OpenContent.Components.Json;
 using DotNetNuke.Entities.Modules;
 using System.Collections.Generic;
+using System.Diagnostics;
 using DotNetNuke.Services.Localization;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Manifest;
@@ -388,7 +389,7 @@ namespace Satrabel.OpenContent.Components
             int tabid = req.tabid > 0 ? req.tabid : ActiveModule.TabID;
             var module = OpenContentModuleConfig.Create(moduleid, tabid, PortalSettings);
             if (module == null) throw new Exception($"Can not find ModuleInfo (tabid:{req.tabid}, moduleid:{req.moduleid})");
-            
+
             List<LookupResultDTO> res = new List<LookupResultDTO>();
             try
             {
@@ -661,24 +662,31 @@ namespace Satrabel.OpenContent.Components
                 var opt = alpaca["options"]?["fields"]?["SortIndex"]?["type"]?.ToString();
                 var ml = opt == "mlnumber";
 
-                IDataItem dsItem = null;
-                if (module.IsListMode())
+                if (!module.IsListMode())
+                    return Request.CreateResponse(HttpStatusCode.OK, new { isValid = true });
+
+                if (ids == null)
+                    return Request.CreateResponse(HttpStatusCode.OK, new { isValid = true });
+
+                int i = 1;
+                foreach (var id in ids)
                 {
-                    if (ids != null)
+                    var dsItem = ds.Get(dsContext, id);
+                    if (dsItem == null)
                     {
-                        int i = 1;
-                        foreach (var id in ids)
-                        {
-                            dsItem = ds.Get(dsContext, id);
-                            var json = dsItem.Data;
-                            if (ml) // multi language
-                                json["SortIndex"][DnnLanguageUtils.GetCurrentCultureCode()] = i;
-                            else
-                                json["SortIndex"] = i;
-                            ds.Update(dsContext, dsItem, json);
-                            i++;
-                        }
+                        Debugger.Break(); // this should never happen: investigate!
+                        throw new Exception($"Reorder failed. Unknown item {id}. Reindex module and try again.");
                     }
+
+                    var json = dsItem.Data;
+                    if (ml) // multi language
+                    {
+                        json["SortIndex"][DnnLanguageUtils.GetCurrentCultureCode()] = i;
+                    }
+                    else
+                        json["SortIndex"] = i;
+                    ds.Update(dsContext, dsItem, json);
+                    i++;
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, new
                 {
@@ -692,7 +700,7 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
-       
+
 
         private void AddNotifyInfo(DataSourceContext dsContext)
         {

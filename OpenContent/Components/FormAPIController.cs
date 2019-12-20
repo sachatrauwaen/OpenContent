@@ -55,11 +55,9 @@ namespace Satrabel.OpenContent.Components
 
         [HttpPost]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
-        //public HttpResponseMessage Submit(SubmitDTO req)
         public HttpResponseMessage Submit()
         {
             SubmitDTO req = JsonConvert.DeserializeObject<SubmitDTO>(HttpContextSource.Current.Request.Form["data"].ToString());
-            //var form = JObject.Parse(HttpContextSource.Current.Request.Form["data"].ToString());
             var form = req.form;
             var statuses = new List<FilesStatus>();
             try

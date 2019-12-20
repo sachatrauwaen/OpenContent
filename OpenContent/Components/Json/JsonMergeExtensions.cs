@@ -13,8 +13,7 @@ namespace Satrabel.OpenContent.Components.Json
         /// <param name="right">Token to merge, overwriting the left</param>
         /// <param name="options">Options for merge</param>
         /// <returns>A new merged token</returns>
-        public static JToken JsonMerge(
-            this JToken left, JToken right, JsonMergeOptions options)
+        public static JToken JsonMerge(this JToken left, JToken right, JsonMergeOptions options)
         {
             if (left.Type != JTokenType.Object)
                 return right.DeepClone();
