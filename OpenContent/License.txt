@@ -1,7 +1,7 @@
 ﻿<div class="License">
 	<h3>License</h3>
 	<p class="Owner">		
-		Copyright (c) 2016-2018 by Satrabel.be</br>
+		Copyright (c) 2016-2020 by Satrabel.be</br>
 		<a href=http://www.satrabel.be>www.satrabel.be</a>
 	</p>
     <p>
