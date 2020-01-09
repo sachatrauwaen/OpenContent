@@ -160,9 +160,14 @@ namespace Satrabel.OpenContent.Components.Export
                     {
                         folder = optionsFolder + "/";
                     }
-
+                    var cropfolder = folder;
+                    var optionsCropFolder = options?.Value<string>("cropfolder");
+                    if (!string.IsNullOrEmpty(optionsCropFolder))
+                    {
+                        cropfolder = optionsCropFolder + "/";
+                    }
                     SaveFile(data?["url"].ToString(), folder);
-                    SaveFile(data?["cropUrl"].ToString(), folder);
+                    SaveFile(data?["cropUrl"].ToString(), cropfolder);
                 }
                 else if (optionsType == "mlimagex")
                 {
@@ -172,6 +177,12 @@ namespace Satrabel.OpenContent.Components.Export
                     {
                         folder = optionsFolder + "/";
                     }
+                    var cropfolder = folder;
+                    var optionsCropFolder = options?.Value<string>("cropfolder");
+                    if (!string.IsNullOrEmpty(optionsCropFolder))
+                    {
+                        cropfolder = optionsCropFolder + "/";
+                    }
                     if (json is JObject)
                     {
                         foreach (var item in (data as JObject).Children<JProperty>())
@@ -179,7 +190,7 @@ namespace Satrabel.OpenContent.Components.Export
                             if (item.Type == JTokenType.Object)
                             {
                                 SaveFile(item.Value?["url"].ToString(), folder);
-                                SaveFile(item.Value?["cropUrl"].ToString(), folder);
+                                SaveFile(item.Value?["cropUrl"].ToString(), cropfolder);
                             }
                         }
                     }
@@ -244,7 +255,13 @@ namespace Satrabel.OpenContent.Components.Export
                         folder = optionsFolder + "/";
                     }
                     ImportFile(data, "url", ModuleFilesFolder, folder, true);
-                    ImportFile(data, "cropUrl", ModuleCroppedFolder, folder);
+                    var cropfolder = folder;
+                    var optionsCropFolder = options?.Value<string>("cropfolder");
+                    if (!string.IsNullOrEmpty(optionsCropFolder))
+                    {
+                        cropfolder = optionsCropFolder + "/";
+                    }
+                    ImportFile(data, "cropUrl", ModuleCroppedFolder, cropfolder);
                 }
                 else if (optionsType == "mlimagex")
                 {
@@ -254,12 +271,18 @@ namespace Satrabel.OpenContent.Components.Export
                     {
                         folder = optionsFolder + "/";
                     }
+                    var cropfolder = folder;
+                    var optionsCropFolder = options?.Value<string>("cropfolder");
+                    if (!string.IsNullOrEmpty(optionsCropFolder))
+                    {
+                        cropfolder = optionsCropFolder + "/";
+                    }
                     if (json is JObject)
                     {
                         foreach (var item in (data as JObject).Children<JProperty>())
                         {
                             ImportFile(item.Value, "url", ModuleFilesFolder, folder, true);
-                            ImportFile(item.Value, "cropUrl", ModuleCroppedFolder, folder);
+                            ImportFile(item.Value, "cropUrl", ModuleCroppedFolder, cropfolder);
                         }
                     }
                 }
