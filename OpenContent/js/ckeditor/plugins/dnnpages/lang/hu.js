@@ -2,7 +2,7 @@
 Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
-CKEDITOR.plugins.setLang( 'link', 'hu', {
+CKEDITOR.plugins.setLang( 'dnnpages', 'hu', {
 	acccessKey: 'Billentyűkombináció',
 	advanced: 'További opciók',
 	advisoryContentType: 'Súgó tartalomtípusa',
@@ -62,6 +62,7 @@ CKEDITOR.plugins.setLang( 'link', 'hu', {
 	toAnchor: 'Horgony az oldalon',
 	toEmail: 'E-Mail',
 	toUrl: 'URL',
+toPage: 'Page',
 	toPhone: 'Phone', // MISSING
 	toolbar: 'Hivatkozás beillesztése/módosítása',
 	type: 'Hivatkozás típusa',

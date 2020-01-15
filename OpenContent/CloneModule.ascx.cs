@@ -18,6 +18,7 @@ using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Tabs;
 using DotNetNuke.Framework.JavaScriptLibraries;
 using Satrabel.OpenContent.Components;
+using Satrabel.OpenContent.Components.Dnn;
 using Satrabel.OpenContent.Components.Manifest;
 
 #endregion
@@ -56,7 +57,7 @@ namespace Satrabel.OpenContent
             {
                 {
                     ListItem li = new ListItem(ti.TabName, ti.TabID.ToString());
-                    li.Text = ti.IndentedTabName;
+                    li.Text = $"{ti.IndentedTabName} <a href='{DnnUrlUtils.NavigateUrl(ti.TabID)}' target='_blank' style='font-size: 10px;text-decoration: none;' class='clonetabid'>({ti.TabID})</span></a>" ;
                     li.Enabled = ti.TabID != m.TabID;
                     cblPages.Items.Add(li);
 
@@ -68,7 +69,7 @@ namespace Satrabel.OpenContent
                         if (tmi.IsDeleted)
                         {
                             //li.Enabled = false;
-                            li.Text = "<i>" + li.Text + "</i>";
+                            li.Text = $"<i>{li.Text}</i>";
                         }
                         else
                         {

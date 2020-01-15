@@ -2,7 +2,7 @@
 Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
-CKEDITOR.plugins.setLang( 'link', 'el', {
+CKEDITOR.plugins.setLang( 'dnnpages', 'el', {
 	acccessKey: 'Συντόμευση',
 	advanced: 'Για Προχωρημένους',
 	advisoryContentType: 'Ενδεικτικός Τύπος Περιεχομένου',
@@ -62,6 +62,7 @@ CKEDITOR.plugins.setLang( 'link', 'el', {
 	toAnchor: 'Άγκυρα σε αυτήν τη σελίδα',
 	toEmail: 'E-Mail',
 	toUrl: 'URL',
+toPage: 'Page',
 	toPhone: 'Phone', // MISSING
 	toolbar: 'Σύνδεσμος',
 	type: 'Τύπος Συνδέσμου',

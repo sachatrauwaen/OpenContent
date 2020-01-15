@@ -17,6 +17,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Web;
 using System.Web.Helpers;
+using System.Web.UI.WebControls;
 using DotNetNuke.Services.Exceptions;
 using Satrabel.OpenContent.Components;
 using Satrabel.OpenContent.Components.Json;
@@ -31,14 +32,27 @@ namespace Satrabel.OpenContent
             {
                 if (!Page.IsPostBack)
                 {
-                    var dynData = GetDataAsListOfDynamics();
-                    gvData.DataSource = ToDataTable(dynData);
-                    gvData.DataBind();
+                    DataBindGrid();
                 }
             }
             catch (Exception exc) //Module failed to load
             {
                 Exceptions.ProcessModuleLoadException(this, exc);
+            }
+        }
+
+        private void DataBindGrid()
+        {
+            var dynData = GetDataAsListOfDynamics();
+            gvData.DataSource = ToDataTable(dynData);
+            gvData.DataBind();
+            for (int i = 0; i < gvData.Rows.Count; i++)
+            {
+                for (int j = 1; j < gvData.Rows[i].Cells.Count; j++)
+                {
+                    string encoded = gvData.Rows[i].Cells[j].Text;
+                    gvData.Rows[i].Cells[j].Text = Context.Server.HtmlDecode(encoded);
+                }
             }
         }
 
@@ -65,15 +79,22 @@ namespace Satrabel.OpenContent
                 dynamic o = new ExpandoObject();
                 var dict = (IDictionary<string, object>)o;
                 o.CreatedOnDate = item.CreatedOnDate;
+                o.Id = item.ContentId;
                 o.Title = item.Title;
-                //o.Json = item.Json;
-                dynamic d = JsonUtils.JsonToDynamic(item.Json);
-                //o.Data = d;
-                Dictionary<String, Object> jdic = Dyn2Dict(d);
-                foreach (var p in jdic)
+                try
                 {
-                    dict[p.Key] = p.Value;
+                    dynamic d = JsonUtils.JsonToDynamic(item.Json);
+                    Dictionary<string, object> jdic = Dyn2Dict(d);
+                    foreach (var p in jdic)
+                    {
+                        dict[p.Key] = p.Value;
+                    }
                 }
+                catch (Exception e)
+                {
+                    o.Error = $"Failed to Convert item [{item.ContentId}] to dynamic. Item.CreatedOnDate: {item.CreatedOnDate}";
+                }
+
                 dynData.Add(o);
             }
             return dynData;
@@ -134,7 +155,20 @@ namespace Satrabel.OpenContent
                         }
                         else if (value is DynamicJsonArray)
                         {
-                            row.Add(string.Join(";", (DynamicJsonArray)value));
+                            if (key == "Files")
+                            {
+                                string files = "";
+                                foreach (dynamic file in (DynamicJsonArray)value)
+                                {
+                                    //files = files + "<a href=\""+ file.url+"\">"+file.name+"</a> ";
+                                    files = files + "<a href=\"" + file.url + "\" target=\"_blank\">" + file.name + "</a> ";
+                                }
+                                row.Add(files);
+                            }
+                            else
+                            {
+                                row.Add(string.Join(";", (DynamicJsonArray)value));
+                            }
                         }
                         else
                         {
@@ -152,5 +186,15 @@ namespace Satrabel.OpenContent
         }
 
         #endregion
+
+        protected void btnDelete_Click(object sender, EventArgs e)
+        {
+            var btn = (Button)sender;
+            int id = int.Parse(btn.CommandArgument);
+            OpenContentController ctrl = new OpenContentController(ModuleContext.PortalId);
+            var data = ctrl.GetContent(id);
+            ctrl.DeleteContent(data);
+            DataBindGrid();
+        }
     }
 }

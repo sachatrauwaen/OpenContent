@@ -2,7 +2,7 @@
 Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
-CKEDITOR.plugins.setLang( 'link', 'si', {
+CKEDITOR.plugins.setLang( 'dnnpages', 'si', {
 	acccessKey: 'ප්‍රවේශ  යතුර',
 	advanced: 'දීය',
 	advisoryContentType: 'උපදේශාත්මක අන්තර්ගත ආකාරය',
@@ -62,6 +62,7 @@ CKEDITOR.plugins.setLang( 'link', 'si', {
 	toAnchor: 'Link to anchor in the text', // MISSING
 	toEmail: 'E-mail', // MISSING
 	toUrl: 'URL',
+toPage: 'Page',
 	toPhone: 'Phone', // MISSING
 	toolbar: 'සබැඳිය',
 	type: 'Link Type', // MISSING

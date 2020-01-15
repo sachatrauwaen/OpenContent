@@ -2,7 +2,7 @@
 Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
-CKEDITOR.plugins.setLang( 'link', 'nb', {
+CKEDITOR.plugins.setLang( 'dnnpages', 'nb', {
 	acccessKey: 'Aksessknapp',
 	advanced: 'Avansert',
 	advisoryContentType: 'Type',
@@ -62,6 +62,7 @@ CKEDITOR.plugins.setLang( 'link', 'nb', {
 	toAnchor: 'Lenke til anker i teksten',
 	toEmail: 'E-post',
 	toUrl: 'URL',
+toPage: 'Page',
 	toPhone: 'Telefon',
 	toolbar: 'Lenke',
 	type: 'Lenketype',

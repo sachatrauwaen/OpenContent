@@ -19,6 +19,7 @@ namespace Satrabel.OpenContent
         public bool ShowOnHostTabs { get; set; }
         public string Template { get; set; }
         public string ModuleTitle { get; set; }
+        public bool Enabled { get; set; } = true;
 
         private void InitializeComponent()
         {
@@ -32,6 +33,9 @@ namespace Satrabel.OpenContent
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
+
+            if (!Enabled) return;
+
             int[] hideTabs = new int[1] { TabId };
             if (!string.IsNullOrEmpty(HideOnTabIds))
             {

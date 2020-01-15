@@ -2,7 +2,7 @@
 Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
-CKEDITOR.plugins.setLang( 'link', 'ro', {
+CKEDITOR.plugins.setLang( 'dnnpages', 'ro', {
 	acccessKey: 'Tasta de acces',
 	advanced: 'Avansat',
 	advisoryContentType: 'Tipul consultativ al titlului',
@@ -62,6 +62,7 @@ CKEDITOR.plugins.setLang( 'link', 'ro', {
 	toAnchor: 'Ancoră în această pagină',
 	toEmail: 'E-Mail',
 	toUrl: 'URL',
+toPage: 'Page',
 	toPhone: 'Phone', // MISSING
 	toolbar: 'Inserează/Editează link (legătură web)',
 	type: 'Tipul link-ului (al legăturii web)',

@@ -2,7 +2,7 @@
 Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
-CKEDITOR.plugins.setLang( 'link', 'ms', {
+CKEDITOR.plugins.setLang( 'dnnpages', 'ms', {
 	acccessKey: 'Kunci Akses',
 	advanced: 'Advanced',
 	advisoryContentType: 'Jenis Kandungan Makluman',
@@ -62,6 +62,7 @@ CKEDITOR.plugins.setLang( 'link', 'ms', {
 	toAnchor: 'Pautan dalam muka surat ini',
 	toEmail: 'E-Mail',
 	toUrl: 'URL',
+toPage: 'Page',
 	toPhone: 'Phone', // MISSING
 	toolbar: 'Masukkan/Sunting Sambungan',
 	type: 'Jenis Sambungan',

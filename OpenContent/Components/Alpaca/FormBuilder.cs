@@ -149,7 +149,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
 
                         fieldLst.Add(propKey);
                     }
-                    else if (prop.Value.Type == "number")
+                    else if (prop.Value.Type == "number" || optType == "mlnumber")
                     {
                         var newProp = new SchemaConfig()
                         {
@@ -355,6 +355,17 @@ namespace Satrabel.OpenContent.Components.Alpaca
                             IndexType = "boolean",
                             Index = true,
                             Sort = true
+                        };
+                        newConfig.Fields.Add(prop.Key, newField);
+                    }
+                    else if (optType == "mlnumber")
+                    {
+                        var newField = new FieldConfig()
+                        {
+                            IndexType = "float",
+                            Index = true,
+                            Sort = true,
+                            MultiLanguage = true
                         };
                         newConfig.Fields.Add(prop.Key, newField);
                     }

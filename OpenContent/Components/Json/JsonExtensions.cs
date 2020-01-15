@@ -64,7 +64,6 @@ namespace Satrabel.OpenContent.Components.Json
             return json?[fieldname]?.Value<bool>() ?? defaultvalue;
         }
 
-
         public static void MakeSureFieldExists(this JToken jToken, string fieldname, JTokenType jTokenType)
         {
             JToken defaultvalue;

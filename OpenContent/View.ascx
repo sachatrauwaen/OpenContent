@@ -217,7 +217,7 @@
                             self.UseTemplate = '1';
                             self.from = '1';
                             self.loading = true;
-                            self.apiGet('GetTemplates', { web: true }, function (data) {
+                            self.apiGet('GetNewTemplates', { web: true }, function (data) {
                                 self.templates = data;
                                 self.loading = false;
                             });

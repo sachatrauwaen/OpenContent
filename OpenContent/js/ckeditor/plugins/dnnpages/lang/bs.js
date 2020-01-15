@@ -2,7 +2,7 @@
 Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
-CKEDITOR.plugins.setLang( 'link', 'bs', {
+CKEDITOR.plugins.setLang( 'dnnpages', 'bs', {
 	acccessKey: 'Pristupna tipka',
 	advanced: 'Naprednije',
 	advisoryContentType: 'Advisory vrsta sadržaja',
@@ -62,6 +62,7 @@ CKEDITOR.plugins.setLang( 'link', 'bs', {
 	toAnchor: 'Sidro na ovoj stranici',
 	toEmail: 'E-Mail',
 	toUrl: 'URL',
+toPage: 'Page',
 	toPhone: 'Phone', // MISSING
 	toolbar: 'Ubaci/Izmjeni link',
 	type: 'Tip linka',

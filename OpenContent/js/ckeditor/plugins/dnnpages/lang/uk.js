@@ -2,7 +2,7 @@
 Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
-CKEDITOR.plugins.setLang( 'link', 'uk', {
+CKEDITOR.plugins.setLang( 'dnnpages', 'uk', {
 	acccessKey: 'Гаряча клавіша',
 	advanced: 'Додаткове',
 	advisoryContentType: 'Тип вмісту',
@@ -62,6 +62,7 @@ CKEDITOR.plugins.setLang( 'link', 'uk', {
 	toAnchor: 'Якір на цю сторінку',
 	toEmail: 'Ел. пошта',
 	toUrl: 'URL',
+toPage: 'Page',
 	toPhone: 'Phone', // MISSING
 	toolbar: 'Вставити/Редагувати посилання',
 	type: 'Тип посилання',
