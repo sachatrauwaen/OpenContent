@@ -2637,7 +2637,7 @@
                 } else if (this.options.items.fields ) {
                     for (var i in this.options.items.fields) {
                         var f = this.options.items.fields[i];
-                        if (f.type == "image" || f.type == "mlimage" || f.type == "imagecrop") {
+                        if (f.type == "image" || f.type == "mlimage" || f.type == "imagecrop" || f.type == "imagecrop2" || f.type == "imagex") {
                             this.urlfield = i;
                             this.options.uploadfolder = f.uploadfolder;
                             break;
