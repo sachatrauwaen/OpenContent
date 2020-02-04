@@ -681,7 +681,7 @@ namespace Satrabel.OpenContent.Components
                     var json = dsItem.Data;
                     if (ml) // multi language
                     {
-                        if (json["SortIndex"].Type != JTokenType.Object) // old data-format (single-language) detected. Migrate to ML version.
+                        if (json["SortIndex"] == null || json["SortIndex"].Type != JTokenType.Object) // old data-format (single-language) detected. Migrate to ML version.
                             json["SortIndex"] = new JObject();
                         json["SortIndex"][DnnLanguageUtils.GetCurrentCultureCode()] = i;
                     }
