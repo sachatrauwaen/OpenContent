@@ -613,7 +613,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
 
         private static void RegisterUrlHelper(HandlebarsDotNet.IHandlebars hbs)
         {
-            hbs.RegisterHelper("url", (writer, context, parameters) =>
+            hbs.RegisterHelper("prefixurl", (writer, context, parameters) =>
             {
                 try
                 {
