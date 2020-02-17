@@ -48,7 +48,7 @@ namespace Satrabel.OpenContent.Components
         public void AddContent(OpenContentInfo content)
         {
             SynchronizeXml(content);
-            ClearDataCache(content); 
+            ClearDataCache(content);
             var json = content.JsonAsJToken;
             if (string.IsNullOrEmpty(content.Key))
             {
@@ -189,7 +189,7 @@ namespace Satrabel.OpenContent.Components
 
         public OpenContentInfo GetFirstContent(int moduleId)
         {
-            var cacheArgs = new CacheItemArgs(GetModuleIdCacheKey(moduleId) + "GetFirstContent", CACHE_TIME);
+            var cacheArgs = new CacheItemArgs(GetModuleIdCacheKey(moduleId, "GetFirstContent"), CACHE_TIME);
             return DataCache.GetCachedData<OpenContentInfo>(cacheArgs, args =>
                 {
                     OpenContentInfo content;
@@ -266,8 +266,17 @@ namespace Satrabel.OpenContent.Components
 
         private static void ClearDataCache(OpenContentInfo content)
         {
-            if (content.ContentId > 0) App.Services.CacheAdapter.ClearCache(GetContentIdCacheKey(content.ContentId));
-            if (content.ModuleId > 0) App.Services.CacheAdapter.ClearCache(GetModuleIdCacheKey(content.ModuleId));
+            if (content.ContentId > 0)
+            {
+                App.Services.CacheAdapter.ClearCache(GetContentIdCacheKey(content.ContentId));
+            }
+
+            if (content.ModuleId > 0)
+            {
+                App.Services.CacheAdapter.ClearCache(GetModuleIdCacheKey(content.ModuleId, "GetContents"));
+                App.Services.CacheAdapter.ClearCache(GetModuleIdCacheKey(content.ModuleId, "GetFirstContent"));
+                return;
+            }
         }
 
         #endregion

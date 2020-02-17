@@ -2,7 +2,7 @@
 Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
-CKEDITOR.plugins.setLang( 'link', 'ja', {
+CKEDITOR.plugins.setLang( 'dnnpages', 'ja', {
 	acccessKey: 'アクセスキー',
 	advanced: '高度な設定',
 	advisoryContentType: 'Content Type属性',
@@ -62,6 +62,7 @@ CKEDITOR.plugins.setLang( 'link', 'ja', {
 	toAnchor: 'ページ内のアンカー',
 	toEmail: 'E-Mail',
 	toUrl: 'URL',
+toPage: 'Page',
 	toPhone: 'Phone', // MISSING
 	toolbar: 'リンク挿入/編集',
 	type: 'リンクタイプ',

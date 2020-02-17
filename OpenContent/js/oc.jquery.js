@@ -289,20 +289,33 @@
             if (settings.onSubmit) {
                 settings.onSubmit(data);
             }
+
+            var fd = new FormData();
+            $("input[type='file']", elem).each(function () {
+                var file_data = $(this).prop("files")[0];
+                var name = $(this).attr("name");
+                fd.append(name, file_data);
+
+            });
+            fd.append("data", JSON.stringify({ id: id, form: data, action: settings.action }));
+
             var sf = settings.servicesFramework;
             $.ajax({
                 type: "POST",
                 url: sf.getServiceRoot('OpenContent') + "FormAPI/Submit",
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                data: JSON.stringify({ id: id, form: data, action: settings.action }),
+                //contentType: "application/json; charset=utf-8",
+                //dataType: "json",
+                //data: JSON.stringify({ id: id, form: data, action: settings.action }),
+                contentType: false,
+                processData: false,
+                data: fd,
                 beforeSend: sf.setModuleHeaders
             }).done(function (data) {
                 if (data.Errors && data.Errors.length > 0) {
                     console.log(data.Errors);
                 }
                 if (data.Tracking) {
-
+                    // nothing
                 }
                 if (typeof ga === 'function') {
                     ga('send', 'event', {

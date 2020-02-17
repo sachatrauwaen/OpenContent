@@ -2,7 +2,7 @@
 Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
-CKEDITOR.plugins.setLang( 'link', 'hi', {
+CKEDITOR.plugins.setLang( 'dnnpages', 'hi', {
 	acccessKey: 'ऍक्सॅस की',
 	advanced: 'ऍड्वान्स्ड',
 	advisoryContentType: 'परामर्श कन्टॅन्ट प्रकार',
@@ -62,6 +62,7 @@ CKEDITOR.plugins.setLang( 'link', 'hi', {
 	toAnchor: 'इस पेज का ऐंकर',
 	toEmail: 'ई-मेल',
 	toUrl: 'URL',
+toPage: 'Page',
 	toPhone: 'Phone', // MISSING
 	toolbar: 'लिंक इन्सर्ट/संपादन',
 	type: 'लिंक प्रकार',

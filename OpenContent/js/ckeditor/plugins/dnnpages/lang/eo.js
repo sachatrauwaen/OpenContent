@@ -2,7 +2,7 @@
 Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
-CKEDITOR.plugins.setLang( 'link', 'eo', {
+CKEDITOR.plugins.setLang( 'dnnpages', 'eo', {
 	acccessKey: 'Fulmoklavo',
 	advanced: 'Speciala',
 	advisoryContentType: 'Enhavotipo',
@@ -62,6 +62,7 @@ CKEDITOR.plugins.setLang( 'link', 'eo', {
 	toAnchor: 'Ankri en tiu ĉi paĝo',
 	toEmail: 'Retpoŝto',
 	toUrl: 'URL',
+toPage: 'Page',
 	toPhone: 'Phone', // MISSING
 	toolbar: 'Enmeti/Ŝanĝi Ligilon',
 	type: 'Tipo de Ligilo',

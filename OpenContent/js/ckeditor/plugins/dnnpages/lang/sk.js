@@ -2,7 +2,7 @@
 Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
-CKEDITOR.plugins.setLang( 'link', 'sk', {
+CKEDITOR.plugins.setLang( 'dnnpages', 'sk', {
 	acccessKey: 'Prístupový kľúč',
 	advanced: 'Rozšírené',
 	advisoryContentType: 'Pomocný typ obsahu',
@@ -62,6 +62,7 @@ CKEDITOR.plugins.setLang( 'link', 'sk', {
 	toAnchor: 'Odkaz na kotvu v texte',
 	toEmail: 'E-mail',
 	toUrl: 'URL',
+toPage: 'Page',
 	toPhone: 'Telefón',
 	toolbar: 'Odkaz',
 	type: 'Typ odkazu',

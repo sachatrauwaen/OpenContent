@@ -389,28 +389,34 @@
 
 function ocSetupCodeMirror(mimeType, elem, model) {
 
-	var handlebarsHelpers = [
+    var handlebarsHelpers = [
+        { 'text': '{{add var 2}}', 'displayText': 'add' },
+        { 'text': '{{#contains lookFor insideOf}}\n{{/contains}}', 'displayText': 'contains' },
+        { 'text': '{{divide var 2}}', 'displayText': 'divide' },
 		{ 'text': '{{#each var}}\n{{/each}}', 'displayText': 'each' },
-		{ 'text': '{{#if var}}\n{{/if}}', 'displayText': 'if' },
-		{ 'text': '{{#if var}}\n{{else}}\n{{/if}}', 'displayText': 'ifelse' },
-		{ 'text': '{{else}}', 'displayText': 'else' },
+        { 'text': '{{else}}', 'displayText': 'else' },
+        { 'text': '{{#if var}}\n{{/if}}', 'displayText': 'if' },
+        { 'text': '{{#if var}}\n{{else}}\n{{/if}}', 'displayText': 'ifelse' },
 		{ 'text': '{{#ifand var1 var2 var3}}\n{{/ifand}}', 'displayText': 'ifand' },
 		{ 'text': '{{#ifor var1 var2 var3}}\n{{/ifor}}', 'displayText': 'ifor' },
-		{ 'text': '{{multiply var 2}}', 'displayText': 'multiply' },
-		{ 'text': '{{divide var 2}}', 'displayText': 'divide' },
-		{ 'text': '{{add var 2}}', 'displayText': 'add' },
-		{ 'text': '{{substract var 2}}', 'displayText': 'substract' },
+        { 'text': '{{multiply var 2}}', 'displayText': 'multiply' },
+        { 'text': '{{substract var 2}}', 'displayText': 'substract' },
+        { 'text': '{{raw var}}', 'displayText': 'raw' },
+        { 'text': '{{replace var}}', 'displayText': 'replace' },
+        { 'text': '{{replacenewline var}}', 'displayText': 'replacenewline' },
 		{ 'text': '{{registerscript "javascript.js"}}', 'displayText': 'registerscript' },
 		{ 'text': '{{registerstylesheet "stylesheet.css"}}', 'displayText': 'registerstylesheet' },
 		{ 'text': '{{formatNumber var "0.00"}}', 'displayText': 'formatNumber' },
 		{ 'text': '{{formatDateTime var "dd/MMM/yy" "nl-NL" }}', 'displayText': 'formatDateTime' },
 		{ 'text': '{{convertHtmlToText var }}', 'displayText': 'convertHtmlToText' },
-		{ 'text': '{{convertToJson var }}', 'displayText': 'convertToJson' },
+        { 'text': '{{convertToJson var }}', 'displayText': 'convertToJson' },
+        { 'text': '{{template varTemplate varModel}}', 'displayText': 'template' },
 		{ 'text': '{{truncateWords var 50 "..." }}', 'displayText': 'formatDateTime' },
 		{ 'text': '{{#equal var "value"}}\n{{/equal}}', 'displayText': 'equal' },
-		{ 'text': '{{#unless var}}\n{{/unless}}', 'displayText': 'unless' },
+        { 'text': '{{#unless var}}\n{{/unless}}', 'displayText': 'unless' },
+        { 'text': '{{url var}}', 'displayText': 'url' },
 		{ 'text': '{{#with var}}\n{{/with}}', 'displayText': 'with' },
-		{ 'text': '{{!--  --}}', 'displayText': 'comment' },
+		{ 'text': '{{!--  --}}', 'displayText': 'comment' }
 	];
 
 	var razorHelpers = [

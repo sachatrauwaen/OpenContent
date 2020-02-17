@@ -2,7 +2,7 @@
 Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
-CKEDITOR.plugins.setLang( 'link', 'sq', {
+CKEDITOR.plugins.setLang( 'dnnpages', 'sq', {
 	acccessKey: 'Elementi i qasjes',
 	advanced: 'Të përparuara',
 	advisoryContentType: 'Lloji i Përmbajtjes Këshillimorit',
@@ -62,6 +62,7 @@ CKEDITOR.plugins.setLang( 'link', 'sq', {
 	toAnchor: 'Lidhu me spirancën në tekst',
 	toEmail: 'Posta Elektronike',
 	toUrl: 'URL',
+toPage: 'Page',
 	toPhone: 'Phone', // MISSING
 	toolbar: 'Nyja',
 	type: 'Lloji i Nyjës',

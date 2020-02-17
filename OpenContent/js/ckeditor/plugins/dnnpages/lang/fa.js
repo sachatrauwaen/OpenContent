@@ -2,7 +2,7 @@
 Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
-CKEDITOR.plugins.setLang( 'link', 'fa', {
+CKEDITOR.plugins.setLang( 'dnnpages', 'fa', {
 	acccessKey: 'کلید دستیابی',
 	advanced: 'پیشرفته',
 	advisoryContentType: 'نوع محتوای کمکی',
@@ -62,6 +62,7 @@ CKEDITOR.plugins.setLang( 'link', 'fa', {
 	toAnchor: 'لنگر در همین صفحه',
 	toEmail: 'پست الکترونیکی',
 	toUrl: 'URL',
+toPage: 'Page',
 	toPhone: 'Phone', // MISSING
 	toolbar: 'گنجاندن/ویرایش پیوند',
 	type: 'نوع پیوند',

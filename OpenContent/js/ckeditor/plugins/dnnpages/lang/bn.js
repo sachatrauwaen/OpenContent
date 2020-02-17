@@ -2,7 +2,7 @@
 Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
-CKEDITOR.plugins.setLang( 'link', 'bn', {
+CKEDITOR.plugins.setLang( 'dnnpages', 'bn', {
 	acccessKey: 'প্রবেশ কী',
 	advanced: 'এডভান্সড',
 	advisoryContentType: 'পরামর্শ কন্টেন্টের প্রকার',
@@ -62,6 +62,7 @@ CKEDITOR.plugins.setLang( 'link', 'bn', {
 	toAnchor: 'এই পেজে নোঙর কর',
 	toEmail: 'ইমেইল',
 	toUrl: 'URL',
+toPage: 'Page',
 	toPhone: 'Phone', // MISSING
 	toolbar: 'লিংক যুক্ত কর',
 	type: 'লিংক প্রকার',

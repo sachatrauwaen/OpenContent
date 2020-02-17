@@ -41,7 +41,7 @@ namespace Satrabel.OpenContent.Components
         public string ExportModule(int moduleId)
         {
             string xml = "";
-            OpenContentController ctrl = new OpenContentController();
+            OpenContentController ctrl = new OpenContentController(PortalSettings.Current.PortalId);
             var items = ctrl.GetContents(moduleId);
             xml += "<opencontent>";
             foreach (var item in items)
@@ -204,7 +204,7 @@ namespace Satrabel.OpenContent.Components
 
             string url = null;
             // Check if it is a single or list template 
-            if (settings.Template.IsListTemplate)
+            if (settings.Template.IsListTemplate && settings.Template.Detail != null)
             {
                 url = TestableGlobals.Instance.NavigateURL(modInfo.TabID, ps, "", $"id={itemId}");
             }

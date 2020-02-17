@@ -2,7 +2,7 @@
 Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
-CKEDITOR.plugins.setLang( 'link', 'az', {
+CKEDITOR.plugins.setLang( 'dnnpages', 'az', {
 	acccessKey: 'Qısayol düyməsi',
 	advanced: 'Geniş seçimləri',
 	advisoryContentType: 'Məsləhətli məzmunun növü',
@@ -62,6 +62,7 @@ CKEDITOR.plugins.setLang( 'link', 'az', {
 	toAnchor: 'Xeş',
 	toEmail: 'E-poçt',
 	toUrl: 'URL',
+toPage: 'Page',
 	toPhone: 'Phone', // MISSING
 	toolbar: 'Link',
 	type: 'Linkin növü',

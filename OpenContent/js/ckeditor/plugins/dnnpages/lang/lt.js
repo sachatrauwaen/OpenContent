@@ -2,7 +2,7 @@
 Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
-CKEDITOR.plugins.setLang( 'link', 'lt', {
+CKEDITOR.plugins.setLang( 'dnnpages', 'lt', {
 	acccessKey: 'Prieigos raktas',
 	advanced: 'Papildomas',
 	advisoryContentType: 'Konsultacinio turinio tipas',

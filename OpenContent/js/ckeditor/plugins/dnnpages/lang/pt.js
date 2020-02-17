@@ -2,7 +2,7 @@
 Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
-CKEDITOR.plugins.setLang( 'link', 'pt', {
+CKEDITOR.plugins.setLang( 'dnnpages', 'pt', {
 	acccessKey: 'Chave de acesso',
 	advanced: 'Avançado',
 	advisoryContentType: 'Tipo de conteúdo',
@@ -62,6 +62,7 @@ CKEDITOR.plugins.setLang( 'link', 'pt', {
 	toAnchor: 'Ligar a âncora no texto',
 	toEmail: 'Email',
 	toUrl: 'URL',
+toPage: 'Page',
 	toPhone: 'Telefone',
 	toolbar: 'Hiperligação',
 	type: 'Tipo de hiperligação',

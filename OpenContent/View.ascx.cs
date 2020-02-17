@@ -176,7 +176,7 @@ namespace Satrabel.OpenContent
                 StringBuilder logScript = new StringBuilder();
                 //logScript.AppendLine("<script type=\"text/javascript\"> ");
                 logScript.AppendLine("$(document).ready(function () { ");
-                logScript.AppendLine("var logs = " + json + "; " );
+                logScript.AppendLine("var logs = " + json + "; ");
                 logScript.AppendLine("$.fn.openContent.printLogs(\"Module " + ModuleContext.ModuleId + " - " + ModuleContext.Configuration.ModuleTitle + "\", logs);");
                 logScript.AppendLine("});");
                 //logScript.AppendLine("</script>");
@@ -227,21 +227,28 @@ namespace Satrabel.OpenContent
             {
                 // this module is in another language but has already data.
                 // Therefor we will not AutoAttach it, because otherwise all data will be deleted.
-                
+
                 //App.Services.Logger.Info($"Module {module.ModuleID} on Tab {module.TabID} has not been AutoAttached because it already contains data.");
                 //return;
             }
 
-            var mc = (new ModuleController());
-            mc.DeLocalizeModule(module);
+            try
+            {
+                var mc = (new ModuleController());
+                mc.DeLocalizeModule(module);
 
-            mc.ClearCache(defaultModule.TabID);
-            mc.ClearCache(module.TabID);
-            const string MODULE_SETTINGS_CACHE_KEY = "ModuleSettings{0}"; // to be compatible with dnn 7.2
-            DataCache.RemoveCache(string.Format(MODULE_SETTINGS_CACHE_KEY, defaultModule.TabID));
-            DataCache.RemoveCache(string.Format(MODULE_SETTINGS_CACHE_KEY, module.TabID));
+                mc.ClearCache(defaultModule.TabID);
+                mc.ClearCache(module.TabID);
+                const string MODULE_SETTINGS_CACHE_KEY = "ModuleSettings{0}"; // to be compatible with dnn 7.2
+                DataCache.RemoveCache(string.Format(MODULE_SETTINGS_CACHE_KEY, defaultModule.TabID));
+                DataCache.RemoveCache(string.Format(MODULE_SETTINGS_CACHE_KEY, module.TabID));
 
-            module = mc.GetModule(defaultModule.ModuleID, ModuleContext.TabId, true);
+                module = mc.GetModule(defaultModule.ModuleID, ModuleContext.TabId, true);
+            }
+            catch (Exception ex)
+            {
+                App.Services.Logger.Error($"Module {module.ModuleID} on Tab {module.TabID} has not been AutoAttached because an error occured", ex);
+            }
         }
 
         private static bool ModuleHasValidConfig(ModuleInfo moduleInfo)
@@ -344,7 +351,7 @@ namespace Satrabel.OpenContent
             {
                 ModulePermissionController.SaveModulePermissions(objModule);
             }
-            catch (Exception )
+            catch (Exception)
             {
                 //App.Services.Logger.Error($"Failed to automaticly set the permission. It already exists? tab={0}, moduletitle={1} ", objModule.TabID ,objModule.ModuleTitle);
             }
@@ -477,6 +484,6 @@ namespace Satrabel.OpenContent
         #endregion
     }
 
-   
+
 
 }
