@@ -194,6 +194,9 @@ namespace Satrabel.OpenContent.Components
 
         public static int GetPortalSetting(string key, int defaultValue)
         {
+
+            App.Services.Logger.Trace($"property name: {key} default value {defaultValue} current portal id: {PortalSettings.Current.PortalId}");
+
             var val = PortalController.GetPortalSettingAsInteger($"OpenContent_{key}", PortalSettings.Current.PortalId, defaultValue);
             return val;
         }

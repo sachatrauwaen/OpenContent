@@ -70,6 +70,10 @@ namespace Satrabel.OpenContent.Components.Datasource
                 {
                     item.Data["Profile"]["PhotoURL"] = user.Profile.PhotoURL;
                     item.Data["Profile"][def.PropertyName] = def.PropertyValue;
+
+
+                    App.Services.Logger.Trace($"property name: {def.PropertyName} photo url in userprofile {user.Profile.PhotoURL} property value: {def.PropertyValue}");
+
                 }
                 else
                 {

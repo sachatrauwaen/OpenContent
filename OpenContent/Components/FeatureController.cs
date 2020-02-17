@@ -114,12 +114,22 @@ namespace Satrabel.OpenContent.Components
 
             var module = OpenContentModuleConfig.Create(modInfo, PortalSettings.Current);
 
+            //App.Services.Logger.Trace($"Debugging Indexing index {module.Settings.Manifest.Index.ToString()} ");
+            //App.Services.Logger.Trace($"Debugging Indexing dir {module.Settings.Manifest.ManifestDir.ToString()} ");
+            //App.Services.Logger.Trace($"Debugging Indexing has templates {module.Settings.Manifest.HasTemplates.ToString()} ");
+            //App.Services.Logger.Trace($"Debugging Indexing count {module.Settings.Manifest.Templates.Count} ");
+            //App.Services.Logger.Trace($"Debugging Indexing keys {module.Settings.Manifest.Templates.Keys.ToString()} ");
+            //App.Services.Logger.Trace($"Debugging Indexing templats json {module.Settings.Manifest.Templates.ToJsonString()} ");
+
+
             if (module.Settings.Template?.Main == null || !module.Settings.Template.Main.DnnSearch)
             {
+                App.Services.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} - DnnSearch not active or no Main template defined");
                 return searchDocuments;
             }
             if (module.Settings.IsOtherModule)
             {
+                App.Services.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} - IsOtherModule Content in other module");
                 return searchDocuments;
             }
 
