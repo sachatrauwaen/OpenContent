@@ -160,7 +160,7 @@ namespace Satrabel.OpenContent
                 {
                     var dsModule = (new ModuleController()).GetTabModule(int.Parse(ddlDataSource.SelectedValue));
                     var dsPortal = int.Parse(ddlPortals.SelectedValue);
-                    mc.UpdateModuleSetting(ModuleContext.ModuleId, "portalid", dsModule.TabID.ToString());
+                    mc.UpdateModuleSetting(ModuleContext.ModuleId, "portalid", dsModule.PortalID.ToString());
                     mc.UpdateModuleSetting(ModuleContext.ModuleId, "tabid", dsModule.TabID.ToString());
                     mc.UpdateModuleSetting(ModuleContext.ModuleId, "moduleid", dsModule.ModuleID.ToString());
                 }
@@ -411,6 +411,7 @@ namespace Satrabel.OpenContent
             {
                 ddlPortals.SelectedValue = ModuleContext.PortalId.ToString();
             }
+            
             //ddlPortals.Items[1].Enabled = ddlDataSource.Items.Count > 0;
         }
         private void BindOtherModules(int tabId, int moduleId)
