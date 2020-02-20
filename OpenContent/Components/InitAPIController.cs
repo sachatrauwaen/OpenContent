@@ -29,6 +29,7 @@ using Satrabel.OpenContent.Components.Dnn;
 using DotNetNuke.Entities.Tabs;
 using System.Web.Hosting;
 using Satrabel.OpenContent.Components.Logging;
+using DotNetNuke.Entities.Portals;
 
 #endregion
 
@@ -38,6 +39,25 @@ namespace Satrabel.OpenContent.Components
     public class InitAPIController : DnnApiController
     {
         public object TemplateAvailable { get; private set; }
+
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Admin)]
+        [HttpGet]
+        public List<PortalDto> GetPortals()
+        {
+            IEnumerable<PortalInfo> portals = (new PortalController()).GetPortals().Cast<PortalInfo>();
+            var listItems = new List<PortalDto>();
+            foreach (var item in portals)
+            {
+                    var li = new PortalDto()
+                    {
+                        Text = item.PortalName,
+                        PortalId= item.PortalID
+                    };
+                    listItems.Add(li);
+            }
+            return listItems.OrderBy(x => x.Text).ToList();
+        }
 
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Admin)]
@@ -69,6 +89,7 @@ namespace Satrabel.OpenContent.Components
             }
             return listItems.OrderBy(x => x.Text).ToList();
         }
+
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Admin)]
         [HttpGet]
@@ -420,10 +441,14 @@ public class TemplateDto
     public string Value { get; set; }
 }
 
+public class PortalDto
+{
+    public string Text { get; set; }
+    public int PortalId { get; set; }
+}
+
 public class ModuleDto
 {
     public string Text { get; set; }
     public int TabModuleId { get; set; }
 }
-
-
