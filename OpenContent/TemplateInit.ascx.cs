@@ -151,7 +151,7 @@ namespace Satrabel.OpenContent
                     mc.DeleteModuleSetting(ModuleContext.ModuleId, "tabid");
                     mc.DeleteModuleSetting(ModuleContext.ModuleId, "moduleid");
                 }
-                if (rblDataSource.SelectedIndex == 0) // other module
+                else if (rblDataSource.SelectedIndex == 1) // other module
                 {
                     var dsModule = (new ModuleController()).GetTabModule(int.Parse(ddlDataSource.SelectedValue));
                     mc.DeleteModuleSetting(ModuleContext.ModuleId, "portalid");
