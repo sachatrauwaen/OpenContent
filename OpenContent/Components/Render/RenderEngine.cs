@@ -456,6 +456,7 @@ namespace Satrabel.OpenContent.Components.Render
         #endregion
 
         #region ExecuteTemplates
+
         private string ExecuteRazor(FileUri template, dynamic model)
         {
             string webConfig = template.PhysicalFullDirectory;
@@ -511,7 +512,7 @@ namespace Satrabel.OpenContent.Components.Render
             return output;
         }
 
-        #endregion
+        #endregion ExecuteTemplates
 
         #region Generate output
 

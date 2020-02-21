@@ -109,7 +109,7 @@ namespace Satrabel.OpenContent.Components.Render
                         {
                             context["EditUrl"] = _module.EditUrl("id", item.Id, _module.ViewModule.ModuleId);
                         }
-                        context["DetailUrl"] = GenerateDetailUrl(item, dyn, _manifest, _detailTabId);
+                        context["DetailUrl"] = GenerateDetailUrl(item, dyn, _manifest, GetCurrentCultureCode(), _detailTabId);
                         context["MainUrl"] = mainUrl;
                     }
                     items.Add(dyn);
