@@ -30,6 +30,8 @@ namespace Satrabel.OpenContent
         {
             pHelp.Visible = false;
             phCurrentTemplate.Visible = false;
+            ddlPortals.Enabled = ModuleContext.PortalSettings.UserInfo.IsSuperUser;
+            rblDataSource.Items[2].Enabled = ModuleContext.PortalSettings.UserInfo.IsSuperUser;
 
             foreach (ListItem item in rblDataSource.Items)
             {
