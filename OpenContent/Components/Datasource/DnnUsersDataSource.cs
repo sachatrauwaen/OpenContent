@@ -155,7 +155,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                     }
                     if (ruleApproved!= null)
                     {
-                        var val = ruleApproved.Value.AsBoolean;
+                        var val = bool.Parse(ruleApproved.Value.AsString);
                         users = users.Where(u => u.Membership.Approved == val);
                     }
                 }
