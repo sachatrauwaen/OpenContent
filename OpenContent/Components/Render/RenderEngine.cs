@@ -647,9 +647,16 @@ namespace Satrabel.OpenContent.Components.Render
                         else
                             model = mf.GetModelAsDynamic();
                     }
+                    if (!string.IsNullOrEmpty(_renderinfo.Template.Manifest.MainMeta))
+                    {
+                        HandlebarsEngine hbEngine = new HandlebarsEngine();
+                        //PageUtils.SetPageMeta(page, hbEngine.Execute(_renderinfo.Template.Manifest.DetailMeta, model));
+                        MetaOther = hbEngine.Execute(_renderinfo.Template.Manifest.MainMeta, model);
+                    }
                     return ExecuteTemplate(page, templateManifest, files, templateUri, model);
                 }
             }
+            
             return "";
         }
 

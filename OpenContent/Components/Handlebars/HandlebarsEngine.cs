@@ -621,7 +621,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     string lowerUrl = url.ToLower();
                     if (!lowerUrl.StartsWith("http://") &&
                         !lowerUrl.StartsWith("https://") &&
-                        !lowerUrl.StartsWith("phone:") &&
+                        !lowerUrl.StartsWith("tel:") &&
                         !lowerUrl.StartsWith("mail:"))
                     {
                         if (IsEmailAdress(url))
@@ -630,7 +630,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                         }
                         else if (IsPhoneNumber(url))
                         {
-                            url = "phone:" + url;
+                            url = "tel:" + url;
                         }
                         else
                         {

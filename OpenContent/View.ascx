@@ -29,6 +29,12 @@
                         </tr>
                     </table>
                 </div>
+               <%--  <div v-if="UseContent=='1'" class="dnnFormItem">
+                    <label class="dnnLabel"><%= Resource("lDataSource") %></label>
+                    <select v-model="portalId" @change="portalChange">
+                        <option v-for="p in portals" :value="p.PortalId">{{p.Text}}</option>
+                    </select>
+                </div>--%>
                 <div v-if="UseContent=='1'" class="dnnFormItem">
                     <label class="dnnLabel"><%= Resource("lDataSource") %></label>
                     <select v-model="tabModuleId" @change="moduleChange">
@@ -155,6 +161,8 @@
                     advanced: false,
                     templates: [],
                     tabModuleId: 0,
+                    portalId: 0,
+                    portals: [],
                     modules: [],
                     detailPages: [],
                     detailPage: -1,
@@ -233,6 +241,12 @@
                             }
                         }
                     },
+                    portals: function (val, oldval) {
+                        if (val.length) {
+                            this.PortalId = val[0].PortalId;
+                            this.portalChange();
+                        }
+                    },
                     modules: function (val, oldval) {
                         if (val.length) {
                             this.tabModuleId = val[0].TabModuleId;
@@ -268,6 +282,9 @@
                         this.tabModuleId = 0;
                         this.Template = '';
                         var self = this;
+                        //this.apiGet('GetPortals', {}, function (data) {
+                        //    self.portals = data;
+                        //});
                         this.apiGet('GetModules', {}, function (data) {
                             self.modules = data;
                         });
