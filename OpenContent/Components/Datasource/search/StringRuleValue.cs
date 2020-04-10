@@ -8,5 +8,10 @@
             _value = value;
         }
         public override string AsString => _value;
+
+        public override float AsFloat => float.Parse(_value);
+        public override int AsInteger => int.Parse(_value);
+        public override bool AsBoolean => bool.Parse(_value);
+        public override long AsLong => long.Parse(_value);
     }
 }
