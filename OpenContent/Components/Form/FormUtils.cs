@@ -343,6 +343,7 @@ namespace Satrabel.OpenContent.Components.Form
                 }
                 var res = new JObject();
                 res["message"] = message;
+                res["errors"] = new JArray(errors);
                 return res;
             }
             return null;
