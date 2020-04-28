@@ -114,7 +114,7 @@ namespace Satrabel.OpenContent.Components
 
             var module = OpenContentModuleConfig.Create(modInfo, PortalSettings.Current);
 
-            //App.Services.Logger.Trace($"Debugging Indexing index {module.Settings.Manifest.Index.ToString()} ");
+            App.Services.Logger.Trace($"Debugging Indexing index {module.Settings.Manifest.Index.ToString()} ");
             //App.Services.Logger.Trace($"Debugging Indexing dir {module.Settings.Manifest.ManifestDir.ToString()} ");
             //App.Services.Logger.Trace($"Debugging Indexing has templates {module.Settings.Manifest.HasTemplates.ToString()} ");
             //App.Services.Logger.Trace($"Debugging Indexing count {module.Settings.Manifest.Templates.Count} ");
