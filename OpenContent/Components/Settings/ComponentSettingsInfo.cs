@@ -14,6 +14,7 @@ namespace Satrabel.OpenContent.Components
             };
 
             //normalize TabId & ModuleId
+            var sPortalId = moduleSettings["portalid"] as string;
             var sTabId = moduleSettings["tabid"] as string;
             var sModuleId = moduleSettings["moduleid"] as string;
             retval.TabId = -1;
@@ -22,6 +23,11 @@ namespace Satrabel.OpenContent.Components
             {
                 retval.TabId = int.Parse(sTabId);
                 retval.ModuleId = int.Parse(sModuleId);
+            }
+            retval.PortalId = -1;
+            if (sPortalId != null )
+            {
+                retval.PortalId = int.Parse(sPortalId);
             }
 
             //normalize DetailTabId
@@ -43,6 +49,7 @@ namespace Satrabel.OpenContent.Components
         public int ModuleId { get; set; }
 
         public int TabId { get; set; }
+        public int PortalId { get; set; }
 
         /// <summary>
         /// Gets or sets the template.

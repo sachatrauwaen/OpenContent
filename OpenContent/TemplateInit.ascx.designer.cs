@@ -40,6 +40,24 @@ namespace Satrabel.OpenContent {
         protected global::System.Web.UI.WebControls.RadioButtonList rblDataSource;
         
         /// <summary>
+        /// Contrôle phPortals.
+        /// </summary>
+        /// <remarks>
+        /// Champ généré automatiquement.
+        /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.PlaceHolder phPortals;
+        
+        /// <summary>
+        /// Contrôle ddlPortals.
+        /// </summary>
+        /// <remarks>
+        /// Champ généré automatiquement.
+        /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlPortals;
+        
+        /// <summary>
         /// Contrôle phDataSource.
         /// </summary>
         /// <remarks>

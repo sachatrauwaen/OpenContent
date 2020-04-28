@@ -140,6 +140,8 @@ namespace Satrabel.OpenContent.Components.Datasource
                     pageSize = selectQuery.PageSize;
                     var ruleDisplayName = selectQuery.Query.FilterRules.FirstOrDefault(f => f.Field == "DisplayName");
                     var ruleRoles = selectQuery.Query.FilterRules.FirstOrDefault(f => f.Field == "Roles");
+                    var ruleApproved = selectQuery.Query.FilterRules.FirstOrDefault(f => f.Field == "Approved");
+
                     if (ruleDisplayName != null)
                     {
                         string displayName = ruleDisplayName.Value.AsString + "%";
@@ -155,6 +157,11 @@ namespace Satrabel.OpenContent.Components.Datasource
                         var roleNames = ruleRoles.MultiValue.Select(r => r.AsString).ToList();
                         users = users.Where(u => u.Roles.Intersect(roleNames).Any());
                     }
+                    if (ruleApproved!= null)
+                    {
+                        var val = bool.Parse(ruleApproved.Value.AsString);
+                        users = users.Where(u => u.Membership.Approved == val);
+                    }
                 }
                 else
                 {
@@ -162,6 +169,8 @@ namespace Satrabel.OpenContent.Components.Datasource
                 }
                 int excluded = users.Count() - users.Count(u => u.IsInRole("Administrators"));
                 users = users.Where(u => !u.IsInRole("Administrators"));
+                
+
                 //users = users.Skip(pageIndex * pageSize).Take(pageSize);
                 var dataList = new List<IDataItem>();
                 foreach (var user in users)

@@ -359,7 +359,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 {
                     ModuleId = GetModuleId(context),
                     Collection = "Submissions",
-                    Title = item.Data["Title"] == null ? "Form" : item.Data["Title"].ToString(),
+                    Title = item?.Data["Title"] == null ? "Form" : item.Data["Title"].ToString(),
                     Json = data["form"].ToString(),
                     CreatedByUserId = context.UserId,
                     CreatedOnDate = DateTime.Now,
@@ -374,7 +374,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 //    LuceneController.Instance.Add(content, indexConfig);
                 //    LuceneController.Instance.Commit();
                 //}
-                return FormUtils.FormSubmit(data as JObject, item.Data.DeepClone() as JObject);
+                return FormUtils.FormSubmit(data as JObject, item?.Data?.DeepClone() as JObject);
             }
             return null;
         }

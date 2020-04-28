@@ -18,6 +18,7 @@ namespace Satrabel.OpenContent.Components
                 Manifest = ManifestUtils.GetManifest(TemplateKey, out templateManifest);
                 Template = templateManifest;
             }
+            PortalId = moduleSettings.PortalId;
             TabId = moduleSettings.TabId;
             ModuleId = moduleSettings.ModuleId;
 
@@ -29,6 +30,7 @@ namespace Satrabel.OpenContent.Components
 
         internal TemplateKey TemplateKey { get; }
 
+        public int PortalId { get; }
         public int TabId { get; }
 
         /// <summary>
@@ -50,6 +52,7 @@ namespace Satrabel.OpenContent.Components
         public JObject Query => !string.IsNullOrEmpty(_query) ? JObject.Parse(_query) : new JObject();
 
         public bool IsOtherModule => TabId > 0 && ModuleId > 0;
+        public bool IsOtherPortal => PortalId > 0 &&  TabId > 0 && ModuleId > 0;
 
         public bool TemplateAvailable => TemplateKey != null;
 

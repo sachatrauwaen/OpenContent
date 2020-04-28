@@ -55,7 +55,7 @@ namespace Satrabel.OpenContent.Components.Render
                 var context = model["Context"];
                 if (Detail)
                 {
-                    context["DetailUrl"] = GenerateDetailUrl(_data, model, _manifest, _detailTabId);
+                    context["DetailUrl"] = GenerateDetailUrl(_data, model, _manifest, GetCurrentCultureCode(), _detailTabId);
                     context["Id"] = _data.Id;
                     var editIsAllowed = !_manifest.DisableEdit && IsEditAllowed(_data.CreatedByUserId);
                     context["EditUrl"] = editIsAllowed ? _module.EditUrl("id", _data.Id, _module.ViewModule.ModuleId) : "";

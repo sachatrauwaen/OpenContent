@@ -523,7 +523,7 @@ namespace Satrabel.OpenContent.Components.Render
                         var context = new JObject();
                         json["Context"] = context;
                         context["Id"] = dataItem.Id;
-                        context["DetailUrl"] = GenerateDetailUrl(dataItem, json, module.Settings.Manifest, tabId > 0 ? tabId : _detailTabId);
+                        context["DetailUrl"] = GenerateDetailUrl(dataItem, json, module.Settings.Manifest, GetCurrentCultureCode(), tabId > 0 ? tabId : _detailTabId);
                     }
                     return json;
                 }
@@ -534,7 +534,7 @@ namespace Satrabel.OpenContent.Components.Render
             return res;
         }
 
-        protected string GenerateDetailUrl(IDataItem item, JObject dyn, Manifest.Manifest manifest, int detailTabId)
+        protected string GenerateDetailUrl(IDataItem item, JObject dyn, Manifest.Manifest manifest, string cultureCode, int detailTabId)
         {
             string url = "";
             if (!string.IsNullOrEmpty(manifest.DetailUrl))
@@ -545,7 +545,7 @@ namespace Satrabel.OpenContent.Components.Render
                 url = hbEngine.Execute(manifest.DetailUrl, dynForHBS);
                 url = HttpUtility.HtmlDecode(url);
             }
-            return _module.GetUrl(_detailTabId, url.CleanupUrl(), "id=" + item.Id);            
+            return _module.GetUrl(_detailTabId, cultureCode, url.CleanupUrl(), "id=" + item.Id);            
         }
     }
 }

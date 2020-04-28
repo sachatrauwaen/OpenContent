@@ -58,7 +58,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             catch (Exception ex)
             {
                 App.Services.Logger.Error($"Failed to render Handlebar template source:[{source}]", ex);
-                throw new TemplateException("Failed to render Handlebar template " + source, ex, null, source);
+                throw new TemplateException("Failed to render Handlebar template " + ex.Message, ex, null, source);
             }
         }
 
@@ -72,7 +72,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             catch (Exception ex)
             {
                 App.Services.Logger.Error(string.Format("Failed to execute Handlebar template with model:[{1}]", "", model), ex);
-                throw new TemplateException("Failed to render Handlebar template ", ex, model, "");
+                throw new TemplateException("Failed to render Handlebar template : "+ex.Message, ex, model, "");
             }
         }
 
@@ -87,7 +87,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             catch (Exception ex)
             {
                 App.Services.Logger.Error($"Failed to render Handlebar template source:[{source}], model:[{model}]", ex);
-                throw new TemplateException("Failed to render Handlebar template ", ex, model, source);
+                throw new TemplateException("Failed to render Handlebar template : " + ex.Message, ex, model, source);
             }
         }
         public string ExecuteWithoutFaillure(string source, Dictionary<string, object> model, string defaultValue)
@@ -621,7 +621,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     string lowerUrl = url.ToLower();
                     if (!lowerUrl.StartsWith("http://") &&
                         !lowerUrl.StartsWith("https://") &&
-                        !lowerUrl.StartsWith("phone:") &&
+                        !lowerUrl.StartsWith("tel:") &&
                         !lowerUrl.StartsWith("mail:"))
                     {
                         if (IsEmailAdress(url))
@@ -630,7 +630,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                         }
                         else if (IsPhoneNumber(url))
                         {
-                            url = "phone:" + url;
+                            url = "tel:" + url;
                         }
                         else
                         {
