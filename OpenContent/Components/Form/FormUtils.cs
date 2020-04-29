@@ -136,7 +136,7 @@ namespace Satrabel.OpenContent.Components.Form
             DotNetNuke.Services.Mail.MailPriority priority = DotNetNuke.Services.Mail.MailPriority.Normal;
             MailFormat bodyFormat = MailFormat.Html;
             Encoding bodyEncoding = Encoding.UTF8;
-            
+
             string smtpServer = Host.SMTPServer;
             string smtpAuthentication = Host.SMTPAuthentication;
             string smtpUsername = Host.SMTPUsername;
@@ -301,7 +301,26 @@ namespace Satrabel.OpenContent.Components.Form
                             string body = formData;
                             if (!string.IsNullOrEmpty(notification.EmailBody))
                             {
-                                body = hbs.Execute(notification.EmailBody, data);
+                                try
+                                {
+                                    body = hbs.Execute(notification.EmailBody, data);
+                                }
+                                catch (Exception ex)
+                                {
+                                    throw new Exception("Email Body : " + ex.Message, ex);
+                                }
+                            }
+                            string subject = notification.EmailSubject;
+                            if (!string.IsNullOrEmpty(notification.EmailSubject))
+                            {
+                                try
+                                {
+                                    subject = hbs.Execute(notification.EmailSubject, data);
+                                }
+                                catch (Exception ex)
+                                {
+                                    throw new Exception("Email Subject : " + ex.Message, ex);
+                                }
                             }
                             var attachements = new List<Attachment>();
                             if (form["Files"] is JArray)
@@ -312,7 +331,7 @@ namespace Satrabel.OpenContent.Components.Form
                                     attachements.Add(new Attachment(FileManager.Instance.GetFileContent(file), fileItem["name"].ToString()));
                                 }
                             }
-                            string send = FormUtils.SendMail(from.ToString(), to.ToString(), reply?.ToString() ?? "", notification.CcEmails, notification.BccEmails, notification.EmailSubject, body, attachements);
+                            string send = FormUtils.SendMail(from.ToString(), to.ToString(), reply?.ToString() ?? "", notification.CcEmails, notification.BccEmails, subject, body, attachements);
                             if (!string.IsNullOrEmpty(send))
                             {
                                 errors.Add("From:" + from.ToString() + " - To:" + to.ToString() + " - " + send);
@@ -320,7 +339,7 @@ namespace Satrabel.OpenContent.Components.Form
                         }
                         catch (Exception exc)
                         {
-                            errors.Add("Notification " + (settings.Notifications.IndexOf(notification) + 1) + " : " + exc.Message);
+                            errors.Add("Error in Email Notification " + (settings.Notifications.IndexOf(notification) + 1) + " : " + exc.Message);
                             App.Services.Logger.Error(exc);
                         }
                     }
