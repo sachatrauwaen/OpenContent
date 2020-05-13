@@ -110,7 +110,13 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
             ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/alpaca/js/fields/dnn/dnnfields.js", FileOrder.Js.DefaultPriority + 3);
 
-            ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/alpacaengine.js", FileOrder.Js.DefaultPriority + 10);
+            //ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/alpacaengine.js", FileOrder.Js.DefaultPriority + 10);
+
+            //ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/chunk-2d225015.js", FileOrder.Js.DefaultPriority + 10);
+            ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/chunk-vendors.js", FileOrder.Js.DefaultPriority + 10);
+            ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/app.js", FileOrder.Js.DefaultPriority + 10);
+
+            ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/lamaengine.js", FileOrder.Js.DefaultPriority + 10);
 
             ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/css/font-awesome/css/font-awesome.min.css", FileOrder.Css.DefaultPriority + 1);
 
