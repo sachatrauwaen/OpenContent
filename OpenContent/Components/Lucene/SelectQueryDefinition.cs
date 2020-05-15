@@ -23,12 +23,21 @@ namespace Satrabel.OpenContent.Components.Lucene
         public Sort Sort { get; private set; }
         public int PageSize { get; private set; }
         public int PageIndex { get; private set; }
-
+        
         public SelectQueryDefinition Build(Select select)
         {
             BuildPage(select);
             Filter = BuildFilter(select.Filter);
-            Query = BuildFilter(select.Query);
+            Query = BuildFilter(select.Query, "");
+            BuildSort(select);
+            return this;
+        }
+
+        public SelectQueryDefinition Build(Select select, string CultureCode)
+        {
+            BuildPage(select);
+            Filter = BuildFilter(select.Filter);
+            Query = BuildFilter(select.Query, CultureCode);
             BuildSort(select);
             return this;
         }
@@ -43,16 +52,19 @@ namespace Satrabel.OpenContent.Components.Lucene
             return this;
         }
 
-        private static Query BuildFilter(FilterGroup filter)
+        private static Query BuildFilter(FilterGroup filter, string CultureCode="")
         {
             BooleanQuery q = new BooleanQuery();
-            q.Add(new MatchAllDocsQuery(), Occur.MUST);
+            //if (filter.FilterRules.Count == 0 && filter.FilterGroups.Count == 0)
+            //{
+            //    q.Add(new MatchAllDocsQuery(), Occur.MUST);
+            //}
             Occur cond = Occur.MUST; // AND
             if (filter.Condition == ConditionEnum.OR)
             {
                 cond = Occur.SHOULD;
             }
-            AddRules(q, filter.FilterRules, cond);
+            AddRules(q, filter.FilterRules, cond, CultureCode);
             foreach (var rule in filter.FilterGroups)
             {
                 Occur groupCond = Occur.MUST; // AND
@@ -61,14 +73,14 @@ namespace Satrabel.OpenContent.Components.Lucene
                     groupCond = Occur.SHOULD;
                 }
                 BooleanQuery groupQ = new BooleanQuery();
-                AddRules(groupQ, rule.FilterRules, groupCond);
+                AddRules(groupQ, rule.FilterRules, groupCond, CultureCode);
                 q.Add(groupQ, cond);
             }
             q = q.Clauses.Count > 0 ? q : null;
             return q;
         }
 
-        private static void AddRules(BooleanQuery q, List<FilterRule> filterRules, Occur cond)
+        private static void AddRules(BooleanQuery q, List<FilterRule> filterRules, Occur cond, string CultureCode="")
         {
             foreach (var rule in filterRules)
             {
@@ -90,7 +102,7 @@ namespace Satrabel.OpenContent.Components.Lucene
                     }
                     else if (rule.FieldType == FieldTypeEnum.STRING || rule.FieldType == FieldTypeEnum.TEXT || rule.FieldType == FieldTypeEnum.HTML)
                     {
-                        q.Add(ParseQuery(rule.Value.AsString + "*", fieldName), cond);
+                        q.Add(ParseQuery(rule.Value.AsString + "*", fieldName, CultureCode), cond);
                     }
                     else
                     {
@@ -106,7 +118,7 @@ namespace Satrabel.OpenContent.Components.Lucene
                 {
                     if (rule.FieldType == FieldTypeEnum.STRING || rule.FieldType == FieldTypeEnum.TEXT || rule.FieldType == FieldTypeEnum.HTML)
                     {
-                        q.Add(ParseQuery(rule.Value.AsString + "*", fieldName), cond);
+                        q.Add(ParseQuery(rule.Value.AsString + "*", fieldName, CultureCode), cond);                        
                     }
                     else
                     {
@@ -182,9 +194,9 @@ namespace Satrabel.OpenContent.Components.Lucene
             }
         }
 
-        public static Query ParseQuery(string searchQuery, string defaultFieldName)
+        public static Query ParseQuery(string searchQuery, string defaultFieldName, string CultureCode="")
         {
-            var parser = new QueryParser(Version.LUCENE_30, defaultFieldName, JsonMappingUtils.GetAnalyser());
+            var parser = new QueryParser(Version.LUCENE_30, defaultFieldName, JsonMappingUtils.GetAnalyser(CultureCode));
             Query query;
             try
             {
@@ -219,6 +231,8 @@ namespace Satrabel.OpenContent.Components.Lucene
             }
 
             var sortFields = new List<SortField>();
+            sortFields.Add(SortField.FIELD_SCORE);
+
             foreach (var rule in select.Sort)
             {
                 int sortfieldtype;

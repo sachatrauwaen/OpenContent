@@ -231,13 +231,13 @@ namespace Satrabel.OpenContent.Components.Datasource
         private static SelectQueryDefinition BuildQuery(DataSourceContext context, Select selectQuery)
         {
             SelectQueryDefinition def = new SelectQueryDefinition();
-            def.Build(selectQuery);
+            def.Build(selectQuery, context.CurrentCultureCode);
             if (LogContext.IsLogActive)
             {
                 var logKey = "Lucene query";
-                LogContext.Log(context.ActiveModuleId, logKey, "Filter", def.Filter.ToString());
-                LogContext.Log(context.ActiveModuleId, logKey, "Query", def.Query.ToString());
-                LogContext.Log(context.ActiveModuleId, logKey, "Sort", def.Sort.ToString());
+                LogContext.Log(context.ActiveModuleId, logKey, "Filter", def.Filter?.ToString());
+                LogContext.Log(context.ActiveModuleId, logKey, "Query", def.Query?.ToString());
+                LogContext.Log(context.ActiveModuleId, logKey, "Sort", def.Sort?.ToString());
                 LogContext.Log(context.ActiveModuleId, logKey, "PageIndex", def.PageIndex);
                 LogContext.Log(context.ActiveModuleId, logKey, "PageSize", def.PageSize);
             }
