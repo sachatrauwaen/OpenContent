@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Text;
 using Lucene.Net.Index;
 using Lucene.Net.QueryParsers;
 using Lucene.Net.Search;
@@ -59,6 +61,12 @@ namespace Satrabel.OpenContent.Components.Lucene
             //{
             //    q.Add(new MatchAllDocsQuery(), Occur.MUST);
             //}
+
+            if (filter.FilterRules.Count > 0 && filter.FilterRules.All(r=> r.FieldOperator== OperatorEnum.NOT_EQUAL))
+            {
+                q.Add(new MatchAllDocsQuery(), Occur.MUST);
+            }
+
             Occur cond = Occur.MUST; // AND
             if (filter.Condition == ConditionEnum.OR)
             {
@@ -94,6 +102,12 @@ namespace Satrabel.OpenContent.Components.Lucene
                     {
                         int ival = rule.Value.AsBoolean ? 1 : 0;
                         q.Add(NumericRangeQuery.NewIntRange(fieldName, ival, ival, true, true), cond);
+                    }
+                    else if (rule.FieldType == FieldTypeEnum.DATETIME)
+                    {
+                        var startDate = rule.Value.AsDateTime;
+                        var endDate = rule.Value.AsDateTime;
+                        q.Add(NumericRangeQuery.NewLongRange(fieldName, startDate.Ticks, endDate.Ticks, true, true), cond);
                     }
                     else if (rule.FieldType == FieldTypeEnum.FLOAT)
                     {
@@ -196,6 +210,7 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         public static Query ParseQuery(string searchQuery, string defaultFieldName, string CultureCode="")
         {
+            searchQuery = RemoveDiacritics(searchQuery);
             var parser = new QueryParser(Version.LUCENE_30, defaultFieldName, JsonMappingUtils.GetAnalyser(CultureCode));
             Query query;
             try
@@ -214,6 +229,16 @@ namespace Satrabel.OpenContent.Components.Lucene
                 query = searchQuery != null ? parser.Parse(QueryParser.Escape(searchQuery.Trim())) : new MatchAllDocsQuery();
             }
             return query;
+        }
+
+        public static string RemoveDiacritics(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+                return text;
+
+            text = text.Normalize(NormalizationForm.FormD);
+            var chars = text.Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark).ToArray();
+            return new string(chars).Normalize(NormalizationForm.FormC);
         }
 
         private SelectQueryDefinition BuildSort(Select select)

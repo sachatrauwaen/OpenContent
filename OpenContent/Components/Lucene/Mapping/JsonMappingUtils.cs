@@ -9,6 +9,7 @@ using Lucene.Net.QueryParsers;
 using Lucene.Net.Search;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Lucene.Config;
+using System.IO;
 
 namespace Satrabel.OpenContent.Components.Lucene.Mapping
 {
@@ -86,6 +87,23 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
         public static TermQuery CreateTypeQuery(string type)
         {
             return new TermQuery(new Term(FIELD_TYPE, type));
+        }
+    }
+
+    public class ASCIIFoldingAnalyzer : Analyzer
+    {
+        private readonly Analyzer subAnalyzer;
+
+        public ASCIIFoldingAnalyzer(Analyzer subAnalyzer)
+        {
+            this.subAnalyzer = subAnalyzer;
+        }
+
+        public override TokenStream TokenStream(string fieldName, TextReader reader)
+        {
+            var result = subAnalyzer.TokenStream(fieldName, reader);
+            result = new ASCIIFoldingFilter(result);
+            return result;
         }
     }
 }

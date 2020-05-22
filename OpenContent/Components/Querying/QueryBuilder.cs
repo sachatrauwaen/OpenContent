@@ -124,6 +124,19 @@ namespace Satrabel.OpenContent.Components.Querying
                                 });
                             }
                         }
+                        else if (fieldConfig != null && fieldConfig.IndexType == "datetime")
+                        {
+                            DateTime dval;
+                            if (DateTime.TryParse(val, null, System.Globalization.DateTimeStyles.RoundtripKind, out dval))
+                            {
+                                workFlowFilter.AddRule(new FilterRule()
+                                {
+                                    Field = item.Name,
+                                    FieldType = FieldTypeEnum.DATETIME,
+                                    Value = new DateTimeRuleValue(dval)
+                                });
+                            }
+                        }
                         else if (!string.IsNullOrEmpty(val))
                         {
                             workFlowFilter.AddRule(FieldConfigUtils.CreateFilterRule(_indexConfig, cultureCode,
