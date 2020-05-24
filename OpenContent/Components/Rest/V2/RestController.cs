@@ -18,6 +18,7 @@ using DotNetNuke.Services.Exceptions;
 using System.Web;
 using Satrabel.OpenContent.Components.Dnn;
 using Satrabel.OpenContent.Components.Querying;
+using System.Collections.Specialized;
 
 namespace Satrabel.OpenContent.Components.Rest.V2
 {
@@ -122,7 +123,13 @@ namespace Satrabel.OpenContent.Components.Rest.V2
                     var indexConfig = OpenContentUtils.GetIndexConfig(settings.TemplateDir, collection);
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
                     bool isEditable = module.ViewModule.CheckIfEditable(module);
-                    queryBuilder.Build(settings.Query, !isEditable, UserInfo.UserID, DnnLanguageUtils.GetCurrentCultureCode(), UserInfo.Social.Roles.FromDnnRoles());
+
+                    var Query = settings.Query;
+                    // manipulate settingsfilter for the userroles key in case of social groups, the only items we want to see are the items from the social group/role
+                    //Query = 
+                    SocialGroupUtils.AddSocialGroupQueryFilter(settings.Manifest, Query, HttpContext.Current.Request.QueryString);
+
+                    queryBuilder.Build(Query, !isEditable, UserInfo.UserID, DnnLanguageUtils.GetCurrentCultureCode(), UserInfo.Social.Roles.FromDnnRoles());
 
                     RestQueryBuilder.MergeQuery(indexConfig, queryBuilder.Select, restSelect, DnnLanguageUtils.GetCurrentCultureCode());
                     IDataItems dsItems;

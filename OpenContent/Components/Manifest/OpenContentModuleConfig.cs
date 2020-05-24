@@ -4,6 +4,10 @@ using System.Collections.Generic;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Entities.Users;
 using Satrabel.OpenContent.Components.Dnn;
+using Satrabel.OpenContent.Components.Manifest;
+using System.Collections.Specialized;
+using System.Web;
+using DotNetNuke.Common.Utilities;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -83,27 +87,42 @@ namespace Satrabel.OpenContent.Components
 
         public string GetUrl(int detailTabId, string getCurrentCultureCode)
         {
+            string groupid = SocialGroupUtils.GetSocialGroupParameter(_settings.Manifest, HttpContext.Current.Request.QueryString);
+            if (groupid != null)
+            {
+                return DnnUrlUtils.NavigateUrl(detailTabId, _portalSettings, getCurrentCultureCode, groupid);
+            }
             return DnnUrlUtils.NavigateUrl(detailTabId, _portalSettings, getCurrentCultureCode);
         }
 
         internal string GetUrl(int detailTabId, string cultureCode, string pagename, string idParam)
         {
-            return DnnUrlUtils.NavigateUrl(detailTabId, cultureCode, _portalSettings,  pagename, idParam);
+            var urlparams = new List<string>();
+            urlparams.Add(idParam);
+            string groupid = SocialGroupUtils.GetSocialGroupParameter(_settings.Manifest, HttpContext.Current.Request.QueryString);
+            if (groupid != null)
+            {
+                urlparams.Add(groupid);
+            }
+            return DnnUrlUtils.NavigateUrl(detailTabId, cultureCode, _portalSettings,  pagename, urlparams.ToArray());
         }
 
         public string EditUrl(string id, string itemId, int viewModuleModuleId)
         {
-            return DnnUrlUtils.EditUrl(id, itemId, viewModuleModuleId, _portalSettings);
+            string groupid = SocialGroupUtils.GetSocialGroupParameter(_settings.Manifest, HttpContext.Current.Request.QueryString);
+            return DnnUrlUtils.EditUrl(id, itemId, viewModuleModuleId, _portalSettings, groupid);
         }
 
         public string EditAddDataUrl(string id, string itemId, int viewModuleModuleId)
         {
-            return DnnUrlUtils.EditAddDataUrl(id, itemId, viewModuleModuleId, _portalSettings);
+            var parameters = new string[] { };
+            return DnnUrlUtils.EditAddDataUrl(id, itemId, viewModuleModuleId, _portalSettings, parameters);
         }
         
         internal string EditUrl(int moduleId)
         {
-            return DnnUrlUtils.EditUrl(moduleId, _portalSettings);
+            string groupid = SocialGroupUtils.GetSocialGroupParameter(_settings.Manifest, HttpContext.Current.Request.QueryString);
+            return DnnUrlUtils.EditUrl(moduleId, _portalSettings, groupid);
         }
 
         #endregion

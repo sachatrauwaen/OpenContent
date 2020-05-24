@@ -396,6 +396,7 @@
     <Compile Include="Components\Common\Utils.cs" />
     <Compile Include="Components\UrlRewriter\OpenContentUrlRule.cs" />
     <Compile Include="Components\UrlRewriter\OpenContentUrlProvider.cs" />
+    <Compile Include="Components\Utils\SocialGroupUtils.cs" />
     <Compile Include="Components\Utils\ZipUtils.cs" />
     <Compile Include="CloneModule.ascx.cs">
       <DependentUpon>CloneModule.ascx</DependentUpon>

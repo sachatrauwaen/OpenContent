@@ -27,6 +27,9 @@ namespace Satrabel.OpenContent.Components.Manifest
         [JsonProperty(PropertyName = "editRole")]
         public string EditRole { get; set; }
 
+        [JsonProperty(PropertyName = "socialGroupFilter")]
+        public bool SocialGroupFilter { get; set; }
+
         [JsonProperty(PropertyName = "index")]
         public bool Index { get; set; }
 

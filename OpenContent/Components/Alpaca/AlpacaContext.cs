@@ -84,5 +84,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
         public bool Horizontal { get; set; }
         [JsonProperty(PropertyName = "isNew")]
         public bool IsNew { get; set; }
+        [JsonProperty(PropertyName = "groupId")]
+        public string GroupId { get; set; }
     }
 }

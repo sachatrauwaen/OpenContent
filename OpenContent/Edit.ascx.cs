@@ -41,6 +41,7 @@ namespace Satrabel.OpenContent
             AlpacaContext.Bootstrap = bootstrap;
             AlpacaContext.Horizontal = App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetEditLayout() == AlpacaLayoutEnum.BootstrapHorizontal;
             AlpacaContext.IsNew = settings.Template.IsListTemplate && string.IsNullOrEmpty(itemId);
+            AlpacaContext.GroupId = Request.QueryString["groupid"];
         }
         public AlpacaContext AlpacaContext { get; private set; }
     }

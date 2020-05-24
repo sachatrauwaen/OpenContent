@@ -8,27 +8,29 @@ namespace Satrabel.OpenContent.Components.Dnn
 {
     public static class DnnUrlUtils
     {
-        public static string EditUrl(int moduleId, PortalSettings ps)
+        public static string EditUrl(int moduleId, PortalSettings ps, params string[] additionalParameters)
         {
-            return EditUrl("", "", "Edit", moduleId, ps);
+            return EditUrl("", "", "Edit", moduleId, ps, additionalParameters);
         }
-        public static string EditUrl(string controlKey, int moduleId, PortalSettings ps)
+        public static string EditUrl(string controlKey, int moduleId, PortalSettings ps, params string[] additionalParameters)
         {
-            return EditUrl("", "", controlKey, moduleId, ps);
+            return EditUrl("", "", controlKey, moduleId, ps, additionalParameters);
         }
-        public static string EditUrl(string keyName, string keyValue, int moduleId, PortalSettings ps)
+        public static string EditUrl(string keyName, string keyValue, int moduleId, PortalSettings ps, params string[] additionalParameters)
         {
-            return EditUrl(keyName, keyValue, "Edit", moduleId, ps);
+            return EditUrl(keyName, keyValue, "Edit", moduleId, ps, additionalParameters);
         }
-        public static string EditAddDataUrl(string keyName, string keyValue, int moduleId, PortalSettings ps)
+        public static string EditAddDataUrl(string keyName, string keyValue, int moduleId, PortalSettings ps, params string[] additionalParameters)
         {
-            return EditUrl(keyName, keyValue, "EditAddData", moduleId, ps);
+            return EditUrl(keyName, keyValue, "EditAddData", moduleId, ps, additionalParameters);
         }
-        private static string EditUrl(string keyName, string keyValue, string controlKey, int moduleId, PortalSettings ps)
-        {
-            var parameters = new string[] { };
-            return EditUrl(keyName, keyValue, controlKey, moduleId, ps, parameters);
-        }
+
+        //
+        //private static string EditUrl(string keyName, string keyValue, string controlKey, int moduleId, PortalSettings ps)
+        //{
+        //    var parameters = new string[] { };
+        //    return EditUrl(keyName, keyValue, controlKey, moduleId, ps, parameters);
+        //}
 
         private static string EditUrl(string keyName, string keyValue, string controlKey, int moduleId, PortalSettings ps, params string[] additionalParameters)
         {
@@ -66,10 +68,10 @@ namespace Satrabel.OpenContent.Components.Dnn
             return Globals.NavigateURL(tabId);
         }
 
-        internal static string NavigateUrl(int tabId, PortalSettings portalSettings, string currentCultureCode)
+        internal static string NavigateUrl(int tabId, PortalSettings portalSettings, string currentCultureCode, params string[] additionalParameters)
         {
             var isSuperTab = Globals.IsHostTab(tabId);
-            return Globals.NavigateURL(tabId, isSuperTab, portalSettings, "", currentCultureCode);
+            return Globals.NavigateURL(tabId, isSuperTab, portalSettings, "", currentCultureCode, additionalParameters);
         }
 
         internal static string NavigateUrl(int detailTabId, string currentCultureCode, PortalSettings portalSettings, string pagename, params string[] additionalParameters)

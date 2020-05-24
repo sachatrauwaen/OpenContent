@@ -23,6 +23,14 @@ alpacaEngine.engine = function (config) {
     self.data = {};
     self.rootUrl = config.appPath;
     self.bootstrap = config.bootstrap;    
+    if (config.groupId != null) 
+    { 
+        self.groupId = config.groupId; 
+    } 
+    else { 
+        self.groupId = -1; 
+    }
+
     var createEdit = config.isNew ? "create" : "edit";
     self.view = "dnn-"+createEdit;
     if (config.bootstrap) {
@@ -46,6 +54,10 @@ alpacaEngine.engine = function (config) {
     if (config.itemId) {
         self.data.id = config.itemId;
     }
+    var cancelHref = $("#" + self.cancelButton).attr('href')
+    if (self.groupId != -1) cancelHref = cancelHref + "/groupid/" + self.groupId;
+    $("#" + self.cancelButton).attr('href', cancelHref);
+
     self.init = function () {
         var windowTop = parent;
         var popup = windowTop.jQuery("#iPopUp");
@@ -96,7 +108,8 @@ alpacaEngine.engine = function (config) {
                 beforeSend: self.sf.setModuleHeaders
             }).done(function (data) {
 
-                var href = $("#" + self.saveButton).attr('href');
+                var href = $("#" + self.saveButton).attr('href'); // view.ascx should be improved such that deleteButton can be used 
+                if (self.groupId != -1) href = href + "/groupid/" + self.groupId;
                 var windowTop = parent; //needs to be assign to a varaible for Opera compatibility issues.
                 var popup = windowTop.jQuery("#iPopUp");
                 if (popup.length > 0 && windowTop.WebForm_GetElementById('dnn_ctr' + self.moduleId + '_View__UP')) {
@@ -122,8 +135,8 @@ alpacaEngine.engine = function (config) {
         var postData = {};
         var getData = "";
         //var action = "Edit";
-        if (self.itemId) getData = "id=" + self.itemId;
-
+        // always return with a groupid, null values return as empty parameter
+        self.data.groupid =  self.groupId;
         $.ajax({
             type: "GET",
             url: self.sf.getServiceRoot('OpenContent') + "OpenContentAPI/" + self.editAction,
@@ -137,7 +150,7 @@ alpacaEngine.engine = function (config) {
             });
             */
             self.FormEdit(config);
-
+            
         }).fail(function (xhr, result, status) {
             alert("Uh-oh, something broke: " + status);
         });
@@ -255,13 +268,16 @@ alpacaEngine.engine = function (config) {
     };
 
     self.FormSubmit = function (data, href, copy) {
+        // fill userroles with groupId when it has a value
+        if (self.groupId != -1) data.userroles = self.groupId;
+        delete self.data.groupid;
         var postData = $.extend({ form: data }, self.data);
         //var postData = JSON.stringify({ form: data, id: self.itemId });
         //var action = "Update"; //self.getUpdateAction();
         if (copy) {
             delete postData.id;
         }
-
+        if (self.groupId != -1) href = href + "/groupid/" + self.groupId;
         $.ajax({
             type: "POST",
             url: self.sf.getServiceRoot('OpenContent') + "OpenContentAPI/" + self.updateAction,

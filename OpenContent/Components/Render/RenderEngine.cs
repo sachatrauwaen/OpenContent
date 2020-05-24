@@ -302,9 +302,14 @@ namespace Satrabel.OpenContent.Components.Render
                     {
                         templateKey = GetTemplateKey(indexConfig);
                     }
+
+                    var Query = ocModuleConfig.Settings.Query as JObject;
+                    // manipulate settingsfilter for the userroles key in case of social groups, the only items we want to see are the items from the social group/role
+                    SocialGroupUtils.AddSocialGroupQueryFilter(info.Template.Manifest, Query, QueryString);
+                    
                     bool isEditable = _module.ViewModule.CheckIfEditable(ocModuleConfig);
                     QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
-                    queryBuilder.Build(ocModuleConfig.Settings.Query, !isEditable, ocModuleConfig.UserId, DnnLanguageUtils.GetCurrentCultureCode(), ocModuleConfig.UserRoles.FromDnnRoles(), QueryString);
+                    queryBuilder.Build(Query, !isEditable, ocModuleConfig.UserId, DnnLanguageUtils.GetCurrentCultureCode(), ocModuleConfig.UserRoles.FromDnnRoles(), QueryString);
 
                     resultList = ds.GetAll(dsContext, queryBuilder.Select).Items;
                     if (LogContext.IsLogActive)

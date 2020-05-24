@@ -42,7 +42,15 @@ namespace Satrabel.OpenContent.Components
         [HttpGet]
         public HttpResponseMessage Edit()
         {
-            return Edit(null);
+            return Edit(null, null);
+        }
+
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
+        [HttpGet]
+        public HttpResponseMessage Edit(string groupid)
+        {
+            return Edit(null, groupid);
         }
 
         /// <summary>
@@ -51,10 +59,11 @@ namespace Satrabel.OpenContent.Components
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         [HttpGet]
-        public HttpResponseMessage Edit(string id)
+        public HttpResponseMessage Edit(string id, string groupid)
         {
             try
             {
+                if (groupid == "-1") groupid = null;
                 var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
                 IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(module);
@@ -129,6 +138,13 @@ namespace Satrabel.OpenContent.Components
 
                 //todo: can't we do some of these checks at the beginning of this method to fail faster?
                 if (!DnnPermissionsUtils.HasEditPermissions(module, module.Settings.Manifest.GetEditRole(), createdByUserid))
+                {
+                    return Request.CreateResponse(HttpStatusCode.Unauthorized);
+                }
+
+
+                // check whether the user may edit an item for the group 
+                if (module.Settings.Manifest.GetSocialGroupFilter() && !SocialGroupUtils.HasSocialGroupEditPermissions(PortalSettings.PortalId, groupid, UserInfo.UserID))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
@@ -595,6 +611,12 @@ namespace Satrabel.OpenContent.Components
 
                 //todo: can't we do some of these checks at the beginning of this method to fail faster?
                 if (!DnnPermissionsUtils.HasEditPermissions(module, editRole, createdByUserid))
+                {
+                    return Request.CreateResponse(HttpStatusCode.Unauthorized);
+                }
+
+                // check whether the use can create an the item given the data in "userroles" 
+                if (!SocialGroupUtils.HasSocialGroupCreateItemPermissions(dsContext, module.Settings.Manifest, json))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
