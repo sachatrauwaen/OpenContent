@@ -162,5 +162,24 @@ namespace Satrabel.OpenContent.Components.Manifest
         {
             return manifest == null ? false : manifest.SocialGroupFilter;
         }
+
+        internal static string GetJournalTypeName(this Manifest manifest)
+        {
+            return manifest == null ? "" : manifest.JournalTypeName;
+        }
+
+        internal static string GetJournalAudience(this Manifest manifest)
+        {
+            return manifest == null ? "" : manifest.JournalAudience;
+        }
+
+        internal static string GetJournalContentTitle(this Manifest manifest)
+        {
+            return manifest == null ? "" : manifest.JournalContentTitle;
+        }
+        internal static string GetJournalContent(this Manifest manifest)
+        {
+            return manifest == null ? "" : manifest.JournalContent;
+        }
     }
 }

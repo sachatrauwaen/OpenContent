@@ -247,6 +247,7 @@
     <Compile Include="Components\TemplateHelpers\RazorUtils.cs" />
     <Compile Include="Components\UrlRewriter\UrlRulesCaching.cs" />
     <Compile Include="Components\Github\GithubTemplateUtils.cs" />
+    <Compile Include="Components\Utils\JournalUtils.cs" />
     <Compile Include="Components\Utils\Requires.cs" />
     <Compile Include="Components\Utils\ExcelUtils.cs" />
     <Compile Include="Components\Dnn\DnnFileUtils.cs" />

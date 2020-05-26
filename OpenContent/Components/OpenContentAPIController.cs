@@ -627,10 +627,14 @@ namespace Satrabel.OpenContent.Components
                     if (dsItem == null)
                     {
                         ds.Add(dsContext, json["form"] as JObject);
+                        // Add item to the journal
+                        JournalUtils.CreateJournalItem(module.Settings.Manifest, dsContext, json["form"] as JObject);
                     }
                     else
                     {
                         ds.Update(dsContext, dsItem, json["form"] as JObject);
+                        // Update journal item
+                        JournalUtils.UpdateJournalItem(module.Settings.Manifest, dsContext, json["form"] as JObject);
                     }
                     App.Services.CacheAdapter.SyncronizeCache(module);
                 }
