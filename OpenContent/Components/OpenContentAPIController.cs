@@ -634,7 +634,7 @@ namespace Satrabel.OpenContent.Components
                     {
                         ds.Update(dsContext, dsItem, json["form"] as JObject);
                         // Update journal item
-                        JournalUtils.UpdateJournalItem(module.Settings.Manifest, dsContext, json["form"] as JObject);
+                        JournalUtils.UpdateJournalItem(module.Settings.Manifest, dsItem, dsContext, json["form"] as JObject);
                     }
                     App.Services.CacheAdapter.SyncronizeCache(module);
                 }
@@ -844,6 +844,7 @@ namespace Satrabel.OpenContent.Components
                 if (content != null)
                 {
                     ds.Delete(dsContext, content);
+                    JournalUtils.DeleteJournalItem(module.Settings.Template.Manifest, dsContext, content);
                 }
                 App.Services.CacheAdapter.SyncronizeCache(module);
                 return Request.CreateResponse(HttpStatusCode.OK, "");

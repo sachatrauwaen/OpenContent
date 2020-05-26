@@ -124,12 +124,9 @@ namespace Satrabel.OpenContent.Components
                 ModuleInfo module = ModuleController.Instance.GetModule(context.TabId, context.ModuleId, false);
                 string taburl = Globals.ApplicationURL(context.TabId).Replace("~/", "");
                 string securitySet = GetItemSecurity(manifest, data);
-                Guid objectKey = Guid.Empty;
-                if (data["journalid"] != null)
-                {
-                    Guid.TryParse(data["journalid"].ToString(), out objectKey);
-                }
 
+                // reference key to connect OC item with journal item
+                string journalObjectKey = "OpenContent" + context.Id.ToString(); 
                 // used in the default templates see journal SharedResources.resx
                 string title = GetJournalItemContentTitle(manifest, data);
                 string summary = GetJournalItemContent(manifest, data);
@@ -157,7 +154,7 @@ namespace Satrabel.OpenContent.Components
                     Title = title,
                     Summary = summary,
                     JournalTypeId = journalItemType.JournalTypeId,
-                    ObjectKey = objectKey.ToString(),
+                    ObjectKey = journalObjectKey,
                     DateCreated = DateTime.Now,
                     DateUpdated = DateTime.Now,
                     SocialGroupId = groupId,
@@ -169,15 +166,16 @@ namespace Satrabel.OpenContent.Components
 
             }
         }
-        internal static void UpdateJournalItem(Manifest.Manifest manifest, DataSourceContext context, JToken data)
+        internal static void UpdateJournalItem(Manifest.Manifest manifest, IDataItem dItem, DataSourceContext context, JToken data)
         {
-            if (data["journalid"] != null)
+            var journalItemType = GetJournalTypeInfo(manifest);
+
+            if (journalItemType != null)
             {
                 ModuleInfo module = ModuleController.Instance.GetModule(context.TabId, context.ModuleId, false);
 
-                Guid journalGuid = Guid.Empty;
-                Guid.TryParse(data["journalid"].ToString(), out journalGuid);
-                var journalItem = JournalController.Instance.GetJournalItemByKey(context.PortalId, journalGuid.ToString());
+                string journalObjectKey = "OpenContent" + dItem.Id.ToString();
+                var journalItem = JournalController.Instance.GetJournalItemByKey(context.PortalId, journalObjectKey);
 
                 // update security
                 string securitySet = GetItemSecurity(manifest, data);
@@ -203,19 +201,20 @@ namespace Satrabel.OpenContent.Components
                     CreateJournalItem(manifest, context, data);
                 }
 
+               
             }
 
         }
-        internal static void DeleteJournalItem(IDataItem item, DataSourceContext context, JToken data)
+        internal static void DeleteJournalItem(Manifest.Manifest manifest, DataSourceContext context, IDataItem dItem)
         {
-            Guid journalGuid = Guid.Empty;
-            if (data["journalid"] != null) 
+            var journalItemType = GetJournalTypeInfo(manifest);
+
+            if (journalItemType != null)
             {
-                Guid.TryParse(data["journalid"].ToString(), out journalGuid);
-                JournalController.Instance.DeleteJournalItemByKey(context.PortalId, journalGuid.ToString());
+                string journalObjectKey = "OpenContent" + dItem.Id.ToString();
+                JournalController.Instance.DeleteJournalItemByKey(context.PortalId, journalObjectKey);
             }
+
         }
-
-
     }
 }
