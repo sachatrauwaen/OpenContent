@@ -138,6 +138,10 @@ namespace Satrabel.OpenContent.Components
                     // Hack to prevent showing draft items to anyone but the user, to prevent draft post to become visisble
                     groupId = 1; // must be > 0
                 }
+                else if (securitySet.Contains("R"))
+                {
+                    int.TryParse(data["userroles"].ToString(), out groupId);
+                }
 
                 ItemData itemData = new ItemData()
                 {
