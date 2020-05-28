@@ -144,7 +144,7 @@ namespace Satrabel.OpenContent.Components
 
 
                 // check whether the user may edit an item for the group 
-                if (module.Settings.Manifest.GetSocialGroupFilter() && !SocialGroupUtils.HasSocialGroupEditPermissions(PortalSettings.PortalId, groupid, UserInfo.UserID))
+                if (module.Settings.Manifest.CheckSocialGroupFilter() && !SocialGroupUtils.HasSocialGroupEditPermissions(PortalSettings.PortalId, groupid, UserInfo.UserID))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }

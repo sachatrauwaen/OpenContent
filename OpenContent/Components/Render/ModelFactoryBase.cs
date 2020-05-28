@@ -289,6 +289,10 @@ namespace Satrabel.OpenContent.Components.Render
                 context["GoogleApiKey"] = App.Services.CreateGlobalSettingsRepository(_portalId).GetGoogleApiKey();
                 context["ModuleTitle"] = _module.ViewModule.ModuleTitle;
                 var editIsAllowed = !_manifest.DisableEdit && IsEditAllowed(-1);
+                if (!SocialGroupUtils.AllowEditAdd(_module))
+                {
+                    editIsAllowed = false;
+                }
                 context["IsEditable"] = editIsAllowed; //allowed to edit the item or list (meaning allow Add)
                 context["IsEditMode"] = IsEditMode;
                 context["PortalId"] = _portalId;
