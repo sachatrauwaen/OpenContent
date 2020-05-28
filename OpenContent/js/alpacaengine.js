@@ -55,7 +55,6 @@ alpacaEngine.engine = function (config) {
         self.data.id = config.itemId;
     }
     var cancelHref = $("#" + self.cancelButton).attr('href')
-    if (self.groupId != -1) cancelHref = cancelHref + "/groupid/" + self.groupId;
     $("#" + self.cancelButton).attr('href', cancelHref);
 
     self.init = function () {
@@ -109,7 +108,6 @@ alpacaEngine.engine = function (config) {
             }).done(function (data) {
 
                 var href = $("#" + self.saveButton).attr('href'); // view.ascx should be improved such that deleteButton can be used 
-                if (self.groupId != -1) href = href + "/groupid/" + self.groupId;
                 var windowTop = parent; //needs to be assign to a varaible for Opera compatibility issues.
                 var popup = windowTop.jQuery("#iPopUp");
                 if (popup.length > 0 && windowTop.WebForm_GetElementById('dnn_ctr' + self.moduleId + '_View__UP')) {
@@ -277,7 +275,6 @@ alpacaEngine.engine = function (config) {
         if (copy) {
             delete postData.id;
         }
-        if (self.groupId != -1) href = href + "/groupid/" + self.groupId;
         $.ajax({
             type: "POST",
             url: self.sf.getServiceRoot('OpenContent') + "OpenContentAPI/" + self.updateAction,

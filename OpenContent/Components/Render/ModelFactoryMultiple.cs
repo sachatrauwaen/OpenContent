@@ -107,9 +107,10 @@ namespace Satrabel.OpenContent.Components.Render
                         context["IsEditable"] = editStatus;
                         if (HasEditPermissions(item.CreatedByUserId))
                         {
-                            context["EditUrl"] = _module.EditUrl("id", item.Id, _module.ViewModule.ModuleId);
+                            // if social groups are active need to append the existing groupid to the edit url (in client side functions)
+                            context["EditUrl"] = SocialGroupUtils.GenerateSocialGroupEditUrl(_manifest, item, _module.EditUrl("id", item.Id, _module.ViewModule.ModuleId));
                         }
-                        context["DetailUrl"] = GenerateDetailUrl(item, dyn, _manifest, GetCurrentCultureCode(), _detailTabId);
+                        context["DetailUrl"] = SocialGroupUtils.GenerateSocialGroupEditUrl(_manifest, item, GenerateDetailUrl(item, dyn, _manifest, GetCurrentCultureCode(), _detailTabId));
                         context["MainUrl"] = mainUrl;
                     }
                     items.Add(dyn);

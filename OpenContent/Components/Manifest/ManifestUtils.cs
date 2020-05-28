@@ -158,7 +158,7 @@ namespace Satrabel.OpenContent.Components.Manifest
             return manifest == null ? "" : manifest.EditRole;
         }
 
-        internal static bool GetSocialGroupFilter(this Manifest manifest)
+        internal static bool CheckSocialGroupFilter(this Manifest manifest)
         {
             return manifest == null ? false : manifest.SocialGroupFilter;
         }

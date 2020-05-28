@@ -14,6 +14,8 @@ using DotNetNuke.Entities.Modules;
 using DotNetNuke.Common;
 using Satrabel.OpenContent.Components;
 using Satrabel.OpenContent.Components.Alpaca;
+using Satrabel.OpenContent.Components.Manifest;
+using System.Web;
 
 #endregion
 
@@ -31,7 +33,12 @@ namespace Satrabel.OpenContent
             cmdSave.NavigateUrl = Globals.NavigateURL();
             cmdCopy.NavigateUrl = Globals.NavigateURL();
             OpenContentSettings settings = this.OpenContentSettings();
-
+            if (ManifestUtils.CheckSocialGroupFilter(settings.Manifest))
+            {
+                hlCancel.NavigateUrl = SocialGroupUtils.CreateSocialGroupReturnUrl(settings.Manifest, hlCancel.NavigateUrl);
+                cmdCopy.NavigateUrl = SocialGroupUtils.CreateSocialGroupReturnUrl(settings.Manifest, cmdCopy.NavigateUrl);
+                cmdSave.NavigateUrl = SocialGroupUtils.CreateSocialGroupReturnUrl(settings.Manifest, cmdSave.NavigateUrl);
+            }
             string prefix = (string.IsNullOrEmpty(settings.Template.Collection) || settings.Template.Collection == "Items") ? "" : settings.Template.Collection;
 
             AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext.PortalId, settings.Template.ManifestFolderUri.FolderPath, prefix);

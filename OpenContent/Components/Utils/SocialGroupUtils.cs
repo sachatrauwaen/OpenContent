@@ -37,7 +37,7 @@ namespace Satrabel.OpenContent.Components
         public static string GetSocialGroupParameter(Manifest.Manifest manifest, NameValueCollection queryString)
         {
             string groupquery = null;
-            if (manifest.GetSocialGroupFilter())
+            if (manifest.CheckSocialGroupFilter())
             {
                 if (queryString?["groupid"] != null)
                 {
@@ -55,7 +55,7 @@ namespace Satrabel.OpenContent.Components
         /// <param name="queryString"></param>
         public static void AddSocialGroupQueryFilter(Manifest.Manifest manifest, JObject filterQuery, NameValueCollection queryString)
         {
-            if (manifest.GetSocialGroupFilter())
+            if (manifest.CheckSocialGroupFilter())
             {
                 var UserRolesFilter = filterQuery["Filter"] as JObject;
                 JArray UserRoles = (JArray)UserRolesFilter["userroles"];
@@ -75,14 +75,38 @@ namespace Satrabel.OpenContent.Components
         #endregion
 
         #region Edit functions
+        /// <summary>
+        /// if in social group context add groupid querystring variable to url
+        /// </summary>
+        /// <param name="manifest"></param>
+        /// <param name="returnUrl"></param>
+        /// <returns></returns>
+        public static string CreateSocialGroupReturnUrl (Manifest.Manifest manifest, string returnUrl)
+        {
+            string socialGroupQs = SocialGroupUtils.GetSocialGroupParameter(manifest, HttpContext.Current.Request.QueryString);
+            if (socialGroupQs != null)
+            {
+                if (socialGroupQs.Contains("?"))
+                {
+                    socialGroupQs = "&" + socialGroupQs;
+                }
+                else
+                {
+                    socialGroupQs = "?" + socialGroupQs;
+                }
+                return returnUrl + socialGroupQs;
+            }
+            return returnUrl;
+        }
+
         public static bool AllowEditAdd(OpenContentModuleConfig config)
         {
-            if (config.Settings.Manifest.GetSocialGroupFilter())
+            if (config.Settings.Manifest.CheckSocialGroupFilter())
             {
                 NameValueCollection queryString = HttpContext.Current.Request.QueryString;
                 if (queryString?["groupid"] != null)
                 {
-                    if (config.Settings.Manifest.GetSocialGroupFilter())
+                    if (config.Settings.Manifest.CheckSocialGroupFilter())
                     {
                         int roleid = -1;
                         Int32.TryParse(queryString?["groupid"], out roleid);
@@ -120,7 +144,7 @@ namespace Satrabel.OpenContent.Components
         /// <returns></returns>
         internal static bool HasSocialGroupCreateItemPermissions(DataSourceContext dsContext, Manifest.Manifest manifest, JObject json)
         {
-            if (manifest.GetSocialGroupFilter())
+            if (manifest.CheckSocialGroupFilter())
             {
                 JObject formdata = (JObject)json["form"];
                 int roleid = -1;
@@ -136,6 +160,42 @@ namespace Satrabel.OpenContent.Components
                 return false;
             }
             return true;
+        }
+
+        /// <summary>
+        /// Generate group url when in list mode
+        /// </summary>
+        /// <param name="manifest"></param>
+        /// <param name="item"></param>
+        /// <param name="editUrl"></param>
+        /// <returns></returns>
+        internal static string GenerateSocialGroupEditUrl(Manifest.Manifest manifest, IDataItem item, string editUrl)
+        {
+
+            if (ManifestUtils.CheckSocialGroupFilter(manifest))
+            {
+                if (!editUrl.ToLower().Contains("groupid"))
+                {
+                    string groupId = ""; 
+                    if (item.Data["userroles"] !=null)
+                    {
+                        groupId = item.Data["userroles"].ToString();
+                    }
+                    if (groupId != null || groupId != "")
+                    {
+                        if (editUrl.Contains("?"))
+                        {
+                            editUrl = editUrl + "&groupid=" + groupId;
+                        }
+                        else
+                        {
+                            editUrl = editUrl + "?groupid=" + groupId;
+                        }
+                    }
+                }
+            }
+            return editUrl;
+
         }
 
         #endregion
