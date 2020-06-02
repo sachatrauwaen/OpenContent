@@ -91,6 +91,13 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
                 {
                     index = fieldconfig.Index;
                     sort = fieldconfig.Sort;
+                    if (fieldconfig.IndexType == "datetime" && value.Type == JTokenType.String)
+                    {
+                        if (DateTime.TryParse(value.Value.ToString(), null, System.Globalization.DateTimeStyles.RoundtripKind, out DateTime d))
+                        {
+                            value = new JValue(d);
+                        }
+                    }
                 }
 
                 switch (value.Type) //todo: simple date gets detected as string 
