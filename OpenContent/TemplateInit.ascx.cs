@@ -146,7 +146,7 @@ namespace Satrabel.OpenContent
             {
                 ModuleController mc = new ModuleController();
                 if (rblDataSource.SelectedIndex == 0) // this module
-                {
+                {                    
                     mc.DeleteModuleSetting(ModuleContext.ModuleId, "portalid");
                     mc.DeleteModuleSetting(ModuleContext.ModuleId, "tabid");
                     mc.DeleteModuleSetting(ModuleContext.ModuleId, "moduleid");
@@ -193,7 +193,7 @@ namespace Satrabel.OpenContent
                         ModuleContext.Settings["template"] = template;
                     }
                 }
-                mc.UpdateModuleSetting(ModuleContext.ModuleId, "detailtabid", ddlDetailPage.SelectedValue);
+                mc.UpdateTabModuleSetting(ModuleContext.TabModuleId, "detailtabid", ddlDetailPage.SelectedValue);
 
 
                 //don't reset settings. Sure they might be invalid, but maybe not. And you can't ever revert.
@@ -446,19 +446,27 @@ namespace Satrabel.OpenContent
                 {
                     var tc = new TabController();
                     var tab = tc.GetTab(item.TabID, SelectedPortalId, false);
+                    var tabpath = tab.TabPath.Replace("//", "/").Trim('/');
+
                     if (!tab.IsNeutralCulture && tab.CultureCode != DnnLanguageUtils.GetCurrentCultureCode())
                     {
+                        if (item.TabID == tabId && item.ModuleID == moduleId)                        
+                        {
+                            var li = new ListItem(string.Format("{1} - {0} ({2})", item.ModuleTitle, tabpath, tab.CultureCode), item.TabModuleID.ToString());
+                            li.Selected = true;
+                            listItems.Add(li);
+                        }
                         // skip other cultures
-                        continue;
+                        //continue;
                     }
-
-                    var tabpath = tab.TabPath.Replace("//", "/").Trim('/');
-                    var li = new ListItem(string.Format("{1} - {0}", item.ModuleTitle, tabpath), item.TabModuleID.ToString());
-
-                    listItems.Add(li);
-                    if (item.TabID == tabId && item.ModuleID == moduleId)
+                    else
                     {
-                        li.Selected = true;
+                        var li = new ListItem(string.Format("{1} - {0}", item.ModuleTitle, tabpath), item.TabModuleID.ToString());
+                        listItems.Add(li);
+                        if (item.TabID == tabId && item.ModuleID == moduleId)
+                        {
+                            li.Selected = true;
+                        }
                     }
                 }
             }

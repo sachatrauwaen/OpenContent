@@ -16,6 +16,7 @@ namespace Satrabel.OpenContent.Components
         private OpenContentModuleInfo _dataModule;
         private OpenContentSettings _settings;
         private readonly IDictionary _moduleSettings;
+        private readonly IDictionary _tabModuleSettings;
         private readonly PortalSettings _portalSettings;
 
         private OpenContentModuleConfig(ModuleInfo viewModule, PortalSettings portalSettings)
@@ -23,6 +24,7 @@ namespace Satrabel.OpenContent.Components
             ViewModule = new OpenContentModuleInfo(viewModule);
             PortalId = viewModule.PortalID;
             _moduleSettings = viewModule.ModuleSettings;
+            _tabModuleSettings = viewModule.TabModuleSettings;
             _portalSettings = portalSettings;
         }
 
@@ -59,7 +61,7 @@ namespace Satrabel.OpenContent.Components
             get
             {
                 if (_settings == null)
-                    _settings = new OpenContentSettings(ComponentSettingsInfo.Create(_moduleSettings));
+                    _settings = new OpenContentSettings(ComponentSettingsInfo.Create(_moduleSettings, _tabModuleSettings));
                 return _settings;
             }
         }

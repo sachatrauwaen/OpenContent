@@ -73,18 +73,26 @@ namespace Satrabel.OpenContent.Components
                 {
                     var tc = new TabController();
                     var tab = tc.GetTab(item.TabID, ActiveModule.PortalID, false);
+                    //if (!tab.IsNeutralCulture && tab.CultureCode != DnnLanguageUtils.GetCurrentCultureCode())
+                    //{
+                    //    // skip other cultures
+                    //    continue;
+                    //}
+                    var tabpath = tab.TabPath.Replace("//", "/").Trim('/');
                     if (!tab.IsNeutralCulture && tab.CultureCode != DnnLanguageUtils.GetCurrentCultureCode())
                     {
                         // skip other cultures
-                        continue;
+                       //continue;
                     }
-                    var tabpath = tab.TabPath.Replace("//", "/").Trim('/');
-                    var li = new ModuleDto()
+                    else
                     {
-                        Text = string.Format("{1} - {0}", item.ModuleTitle, tabpath),
-                        TabModuleId = item.TabModuleID
-                    };
-                    listItems.Add(li);
+                        var li = new ModuleDto()
+                        {
+                            Text = string.Format("{1} - {0}", item.ModuleTitle, tabpath),
+                            TabModuleId = item.TabModuleID
+                        };
+                        listItems.Add(li);
+                    }
                 }
             }
             return listItems.OrderBy(x => x.Text).ToList();
