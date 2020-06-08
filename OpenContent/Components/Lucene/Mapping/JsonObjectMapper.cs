@@ -93,7 +93,8 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
                     sort = fieldconfig.Sort;
                     if (fieldconfig.IndexType == "datetime" && value.Type == JTokenType.String)
                     {
-                        if (DateTime.TryParse(value.Value.ToString(), null, System.Globalization.DateTimeStyles.RoundtripKind, out DateTime d))
+                        DateTime d;
+                        if (DateTime.TryParse(value.Value.ToString(), null, System.Globalization.DateTimeStyles.RoundtripKind, out d))
                         {
                             value = new JValue(d);
                         }
