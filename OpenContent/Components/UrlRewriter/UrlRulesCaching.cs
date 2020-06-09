@@ -234,6 +234,9 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
         public static void PurgeCache(int portalId)
         {
             PurgeCache(GetCacheFolder(portalId));
+
+            var portalCacheKey = UrlRulesCaching.GeneratePortalCacheKey(portalId, null);
+            App.Services.CacheAdapter.ClearCache(portalCacheKey);
         }
 
         public static PurgeResult PurgeExpiredItems(int portalId)
