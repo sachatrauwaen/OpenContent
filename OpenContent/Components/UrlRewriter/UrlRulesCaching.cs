@@ -329,7 +329,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                 throw new IOException("Deleted " + i + " files, however, some files are locked.  Could not delete the following files: " + filesNotDeleted);
             }
 
-            DataCache.ClearCache(string.Format(UrlRuleConfigCacheKey, portalId));
+            App.Services.CacheAdapter.ClearCache(string.Format(UrlRuleConfigCacheKey, portalId));
         }
 
         #endregion
