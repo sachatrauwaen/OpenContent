@@ -381,6 +381,7 @@ namespace Satrabel.OpenContent.Components.Datasource
 
         private static void ReIndexIfNeeded(int moduleid, int tabid, int portalId)
         {
+            if (PortalSettings.Current == null) return; // we can not reindex even if we wanted, because we are not in a regular http context (maybe console? scheduler? ashx?)
             var currentUserCount = UserController.GetUserCountByPortal(portalId);
             var userCountAtLastIndex = DnnUtils.GetPortalSetting("UserCountAtLastIndex", 0);
             if (currentUserCount != userCountAtLastIndex)
