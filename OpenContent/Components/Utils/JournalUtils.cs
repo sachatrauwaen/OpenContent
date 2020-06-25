@@ -79,10 +79,14 @@ namespace Satrabel.OpenContent.Components
             string securitySet = "U";
 
             // check for view permissions on the item based on whether the item is still in draft mode
-            string publishStatus = data["publishstatus"].ToString();
-            if (publishStatus == "draft")
+            if (data["publishstatus"] != null)
             {
-                return securitySet;
+                string publishStatus = data["publishstatus"].ToString();
+
+                if (publishStatus == "draft")
+                {
+                    return securitySet;
+                }
             }
             // check for view permissions on the item through the userroles property
             string groupId = null;
@@ -202,6 +206,7 @@ namespace Satrabel.OpenContent.Components
                 else
                 {
                     // should not happen (unless some template or manifest change)
+                    context.Id = dItem.Id;
                     CreateJournalItem(manifest, context, data);
                 }
 
