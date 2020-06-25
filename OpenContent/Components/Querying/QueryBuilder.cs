@@ -203,7 +203,7 @@ namespace Satrabel.OpenContent.Components.Querying
             BuildQueryStringFilter(queryString, workFlowFilter);
             if (addWorkflowFilter)
             {
-                AddWorkflowFilter(workFlowFilter);
+                AddWorkflowFilter(workFlowFilter, userId);
                 AddRolesFilter(workFlowFilter, roles);
             }
             //Filter = Filter.FilterRules.Any() || Filter.FilterGroups.Any() > 0 ? q : null;
@@ -243,17 +243,43 @@ namespace Satrabel.OpenContent.Components.Querying
             return this;
         }
 
-        private void AddWorkflowFilter(FilterGroup filter)
+        private void AddWorkflowFilter(FilterGroup filter, int userid = -1)
         {
 
             if (_indexConfig?.Fields != null && _indexConfig.Fields.ContainsKey(App.Config.FieldNamePublishStatus))
             {
-                filter.AddRule(new FilterRule()
+
+                var group = new FilterGroup() { Condition = ConditionEnum.OR };
+                filter.FilterGroups.Add(group);
+
+                group.AddRule(new FilterRule()
                 {
                     Field = App.Config.FieldNamePublishStatus,
                     Value = new StringRuleValue("published"),
                     FieldType = FieldTypeEnum.KEY
                 });
+
+                // also show own draft items
+                if (userid > 0)
+                {
+                    var draftgroup = new FilterGroup() { Condition = ConditionEnum.AND };
+                    group.FilterGroups.Add(draftgroup);
+                    draftgroup.AddRule(new FilterRule()
+                    {
+                        Field = App.Config.FieldNamePublishStatus,
+                        Value = new StringRuleValue("draft"),
+                        FieldType = FieldTypeEnum.KEY
+                    });
+                    draftgroup.AddRule(new FilterRule()
+                    {
+                        Field = "userid",
+                        Value = new StringRuleValue(userid.ToString()),
+                        FieldOperator = OperatorEnum.EQUAL
+                    });
+                }
+
+
+
             }
             if (_indexConfig?.Fields != null && _indexConfig.Fields.ContainsKey(App.Config.FieldNamePublishStartDate))
             {

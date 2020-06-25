@@ -53,16 +53,57 @@ namespace Satrabel.OpenContent.Components.Lucene
                 cond = Occur.SHOULD;
             }
             AddRules(q, filter.FilterRules, cond);
-            foreach (var rule in filter.FilterGroups)
+            foreach (var topgroup in filter.FilterGroups)
             {
-                Occur groupCond = Occur.MUST; // AND
-                if (rule.Condition == ConditionEnum.OR)
+
+                // this whole group thing should be recursive...
+                BooleanQuery topgroupQ = new BooleanQuery();
+                BooleanQuery subgroupQ = new BooleanQuery();
+
+                Occur topgroupCond = Occur.MUST; // AND
+                Occur subgroupCond = Occur.MUST;
+
+                if (topgroup.FilterGroups != null)
                 {
-                    groupCond = Occur.SHOULD;
+                    foreach (var subgroup in topgroup.FilterGroups)
+                    { 
+                        if (subgroup.Condition == ConditionEnum.OR)
+                        {
+                            subgroupCond = Occur.SHOULD;
+                        }
+                        AddRules(subgroupQ, subgroup.FilterRules, subgroupCond);
+                    }
+
                 }
-                BooleanQuery groupQ = new BooleanQuery();
-                AddRules(groupQ, rule.FilterRules, groupCond);
-                q.Add(groupQ, cond);
+
+                if (topgroup.FilterRules != null)
+                {
+                    if (topgroup.Condition == ConditionEnum.OR)
+                    {
+                        topgroupCond = Occur.SHOULD;
+                    }
+                    AddRules(topgroupQ, topgroup.FilterRules, topgroupCond);
+                }
+
+                // it has both filtergroups and filterrules
+                // it does not make sense to have only subgroups without filterrules (allthough technically possible)
+                if (subgroupQ.Clauses.Count > 0)
+                {
+                    // combine with topgroupCond
+                    BooleanQuery combigroupQ = new BooleanQuery();
+                    combigroupQ.Add(subgroupQ, topgroupCond);
+                    combigroupQ.Add(topgroupQ, topgroupCond);
+                    q.Add(combigroupQ, cond);
+                }
+                else if (topgroupQ.Clauses.Count > 0)
+                {
+                    q.Add(topgroupQ, topgroupCond);
+                }
+
+
+                //AddRules(topgroupQ, topgroup.FilterRules, topgroupCond);
+                //q.Add(topgroupQ, cond);
+
             }
             q = q.Clauses.Count > 0 ? q : null;
             return q;
