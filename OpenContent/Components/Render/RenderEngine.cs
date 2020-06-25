@@ -637,29 +637,36 @@ namespace Satrabel.OpenContent.Components.Render
             if (!string.IsNullOrEmpty(files.Template))
             {
                 FileUri templateUri = CheckFiles(templateManifest, files);
+
                 if (dataList != null)
-                {
-                    ModelFactoryMultiple mf = new ModelFactoryMultiple(dataList, settingsJson, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module);
-                    object model;
-                    if (templateUri.Extension != ".hbs") // razor
+                    // do not render in the social context when there is no groupid
+                    if (SocialGroupUtils.CheckSocialGroupConditions(_settings.Manifest, HttpContext.Current.Request.QueryString, _module))
                     {
-                        model = mf.GetModelAsDynamic();
-                    }
-                    else // handlebars
-                    {
-                        if (!App.Services.CreateGlobalSettingsRepository(_module.PortalId).GetLegacyHandlebars())
-                            model = mf.GetModelAsDictionary();
-                        else
+                        ModelFactoryMultiple mf = new ModelFactoryMultiple(dataList, settingsJson, _renderinfo.Template.Manifest, _renderinfo.Template, files, _module);
+                        object model;
+                        if (templateUri.Extension != ".hbs") // razor
+                        {
                             model = mf.GetModelAsDynamic();
+                        }
+                        else // handlebars
+                        {
+                            if (!App.Services.CreateGlobalSettingsRepository(_module.PortalId).GetLegacyHandlebars())
+                                model = mf.GetModelAsDictionary();
+                            else
+                                model = mf.GetModelAsDynamic();
+                        }
+                        if (!string.IsNullOrEmpty(_renderinfo.Template.Manifest.MainMeta))
+                        {
+                            HandlebarsEngine hbEngine = new HandlebarsEngine();
+                            //PageUtils.SetPageMeta(page, hbEngine.Execute(_renderinfo.Template.Manifest.DetailMeta, model));
+                            MetaOther = hbEngine.Execute(_renderinfo.Template.Manifest.MainMeta, model);
+                        }
+                        return ExecuteTemplate(page, templateManifest, files, templateUri, model);
                     }
-                    if (!string.IsNullOrEmpty(_renderinfo.Template.Manifest.MainMeta))
+                    else
                     {
-                        HandlebarsEngine hbEngine = new HandlebarsEngine();
-                        //PageUtils.SetPageMeta(page, hbEngine.Execute(_renderinfo.Template.Manifest.DetailMeta, model));
-                        MetaOther = hbEngine.Execute(_renderinfo.Template.Manifest.MainMeta, model);
+                        return SocialGroupUtils.GetSocialGroupNoItemsMessage(_settings.Manifest);
                     }
-                    return ExecuteTemplate(page, templateManifest, files, templateUri, model);
-                }
             }
             
             return "";

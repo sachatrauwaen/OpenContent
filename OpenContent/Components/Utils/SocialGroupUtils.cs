@@ -28,6 +28,33 @@ namespace Satrabel.OpenContent.Components
     public static class SocialGroupUtils
     {
         #region View fitering
+
+        /// <summary>
+        /// check for correct social group conditions
+        /// </summary>
+        /// <param name="manifest"></param>
+        /// <param name="queryString"></param>
+        /// <returns></returns>
+        public static bool CheckSocialGroupConditions(Manifest.Manifest manifest, NameValueCollection queryString, OpenContentModuleConfig moduleInstance)
+        {
+            if (manifest.CheckSocialGroupFilter())
+            {
+                if (queryString?["groupid"] != null)
+                {
+                    int roleid = -1;
+                    Int32.TryParse(queryString?["groupid"], out roleid);
+                    var role = DotNetNuke.Security.Roles.RoleController.Instance.GetRoleById(moduleInstance.PortalId, roleid);
+                    if (role != null)
+                    {
+                        return moduleInstance.IsInRole(role.RoleName);
+                    }
+                }
+                return false;
+            }
+            // not in social group context
+            return true;
+        }
+
         /// <summary>
         /// get the group for extending the details en edit url's
         /// </summary>
@@ -59,6 +86,10 @@ namespace Satrabel.OpenContent.Components
             {
                 var UserRolesFilter = filterQuery["Filter"] as JObject;
                 JArray UserRoles = (JArray)UserRolesFilter["userroles"];
+                if (UserRoles == null)
+                {
+                    UserRoles = new JArray();
+                }
                 if (queryString?["groupid"] != null)
                 {
                     UserRoles.Add(queryString?["groupid"]);
@@ -71,6 +102,7 @@ namespace Satrabel.OpenContent.Components
                 }
             }
         }
+
 
         #endregion
 
@@ -196,6 +228,16 @@ namespace Satrabel.OpenContent.Components
             }
             return editUrl;
 
+        }
+
+        internal static string GetSocialGroupNoItemsMessage(Manifest.Manifest manifest)
+        {
+            var message = ManifestUtils.GetSocialGroupNoItemsMessage(manifest);
+            if (message != null)
+            {
+                return message;
+            }
+            return "";
         }
 
         #endregion
