@@ -24,9 +24,11 @@ Structured Content editing for DNN (Dotnetnuke)
 
 Documentation : [url:https://opencontent.readme.io]
 
+** Starter Templates
 Demos : [url:http://www.openextensions.net/dnn-modules/opencontent/bootstrap]
-
 Templates download : [url:http://www.openextensions.net/templates/open-content]
+Templates on GitHub [url:https://github.com/sachatrauwaen/OpenContent-Templates]
+
 
 
 
