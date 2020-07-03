@@ -7,7 +7,7 @@
             <div class="fb-left">
                 <div class="fb-wrap">
                     <h2>Fields</h2>
-                    <div id="form"></div>
+                    <div id="form" class="alpaca"></div>
                     <div class="loading">
                         <img src="/DesktopModules/OpenContent/images/loading.gif" alt="Loading" />
                     </div>
