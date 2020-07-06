@@ -31,6 +31,7 @@ using System.Security;
 using DotNetNuke.Entities.Urls;
 using Satrabel.OpenContent.Components.Handlebars;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Logical;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -145,6 +146,8 @@ namespace Satrabel.OpenContent.Components
                 else if (securitySet.Contains("R"))
                 {
                     int.TryParse(data["userroles"].ToString(), out groupId);
+                    // refer to the group
+                    taburl = taburl + "&groupid=" + groupId.ToString();
                 }
 
                 ItemData itemData = new ItemData()
@@ -153,6 +156,7 @@ namespace Satrabel.OpenContent.Components
                     Description = description,
                     Url = taburl + "&id=" + context.Id
                 };
+
                 JournalItem journalItem = new JournalItem()
                 {
                     UserId = context.UserId,
@@ -171,6 +175,16 @@ namespace Satrabel.OpenContent.Components
                 JournalController.Instance.SaveJournalItem(journalItem, module);
                 // toDo
                 // publish date time
+
+                // correct security set, not sure why, dnn does not use the socialgroupid in the creation of the journal item
+                if (securitySet.Contains("R") && !journalItem.SecuritySet.Contains("R") && groupId > 0)
+                {
+                    string CorrectedSecuritySet = journalItem.SecuritySet;
+                    CorrectedSecuritySet = CorrectedSecuritySet + "," + "R" + groupId.ToString();
+                    journalItem.SecuritySet = CorrectedSecuritySet;
+                    JournalController.Instance.UpdateJournalItem(journalItem, module);
+
+                }
 
             }
         }

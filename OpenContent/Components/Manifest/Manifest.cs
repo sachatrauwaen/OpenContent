@@ -30,6 +30,9 @@ namespace Satrabel.OpenContent.Components.Manifest
         [JsonProperty(PropertyName = "socialGroupFilter")]
         public bool SocialGroupFilter { get; set; }
 
+        [JsonProperty(PropertyName = "socialGroupNoItemsMessage")]
+        public string SocialGroupNoItemsMessage { get; set; }
+
         [JsonProperty(PropertyName = "journalTypeName")]
         public string JournalTypeName { get; set; }
 
