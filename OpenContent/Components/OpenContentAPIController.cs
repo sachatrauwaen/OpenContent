@@ -671,6 +671,7 @@ namespace Satrabel.OpenContent.Components
                 int i = 1;
                 foreach (var id in ids)
                 {
+                    if (id == "-1") continue; // ignore items explicitly marked with id -1;
                     var dsItem = ds.Get(dsContext, id);
                     if (dsItem == null)
                     {
