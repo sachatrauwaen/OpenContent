@@ -550,7 +550,7 @@ namespace Satrabel.OpenContent.Components
             {
                 //we should log this
                 App.Services.Logger.Error($"Error while parsing json", ex);
-                if (Debugger.IsAttached) Debugger.Break();
+                Utils.DebuggerBreak();
                 return null;
             }
         }

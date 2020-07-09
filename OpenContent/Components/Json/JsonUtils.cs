@@ -105,13 +105,13 @@ namespace Satrabel.OpenContent.Components.Json
         {
             var jsSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
 
-            if(json.Length >= jsSerializer.MaxJsonLength )
+            if (json.Length >= jsSerializer.MaxJsonLength)
             {
                 //jsSerializer.MaxJsonLength = jsSerializer.MaxJsonLength + 40000; //temp fix
                 throw new Exception($"Too much data to deserialize. Please use a client side template to circumvent that.");
             }
             // next line fails with large amount of data (>4MB). Use a client side template to fix that.
-            Dictionary<string, object> model = (Dictionary<string, object>)jsSerializer.DeserializeObject(json); 
+            Dictionary<string, object> model = (Dictionary<string, object>)jsSerializer.DeserializeObject(json);
             return model;
             //return ToDictionaryNoCase(model);
         }
@@ -311,7 +311,7 @@ namespace Satrabel.OpenContent.Components.Json
                                 }
                                 catch (System.Exception)
                                 {
-                                    Debugger.Break();
+                                    Utils.DebuggerBreak();
                                 }
                             }
                         }
@@ -330,7 +330,7 @@ namespace Satrabel.OpenContent.Components.Json
                                 }
                                 catch (System.Exception)
                                 {
-                                    Debugger.Break();
+                                    Utils.DebuggerBreak();
                                 }
                             }
                         }
@@ -362,7 +362,7 @@ namespace Satrabel.OpenContent.Components.Json
                         }
                         catch (System.Exception)
                         {
-                            Debugger.Break();
+                            Utils.DebuggerBreak();
                         }
                     }
                     else if (include && !string.IsNullOrEmpty(collection))
@@ -374,7 +374,7 @@ namespace Satrabel.OpenContent.Components.Json
                         }
                         catch (System.Exception)
                         {
-                            Debugger.Break();
+                            Utils.DebuggerBreak();
                         }
                     }
                     else if (includelabels && enums != null && labels != null)

@@ -675,7 +675,7 @@ namespace Satrabel.OpenContent.Components
                     var dsItem = ds.Get(dsContext, id);
                     if (dsItem == null)
                     {
-                        Debugger.Break(); // this should never happen: investigate!
+                        Utils.DebuggerBreak(); // this should never happen: investigate!
                         throw new Exception($"Reorder failed. Unknown item {id}. Reindex module and try again.");
                     }
 

@@ -469,7 +469,7 @@ namespace Satrabel.OpenContent.Components.Render
                                 }
                                 catch (System.Exception)
                                 {
-                                    Debugger.Break();
+                                    Utils.DebuggerBreak();
                                 }
                             }
                         }
@@ -495,7 +495,7 @@ namespace Satrabel.OpenContent.Components.Render
                         }
                         catch (System.Exception )
                         {
-                            Debugger.Break();
+                            Utils.DebuggerBreak();
                         }
                     }
                 }
