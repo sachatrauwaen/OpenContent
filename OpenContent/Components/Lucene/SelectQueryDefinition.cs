@@ -245,7 +245,6 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         private static Sort BuildSort(Select select)
         {
-            var sort = Sort.RELEVANCE;
             if (!select.Sort.Any())
             {
                 var sortOnCreateDate = new SortRule
@@ -270,7 +269,7 @@ namespace Satrabel.OpenContent.Components.Lucene
 
                 sortFields.Add(new SortField(sortFieldPrefix + rule.Field, sortfieldtype, rule.Descending));
             }
-            sort = new Sort(sortFields.ToArray());
+            var sort = new Sort(sortFields.ToArray());
 
             return sort;
         }
