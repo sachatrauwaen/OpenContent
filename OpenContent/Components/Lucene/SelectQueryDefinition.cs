@@ -33,7 +33,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             BuildPage(select);
             Filter = BuildFilter(select.Filter);
             Query = BuildFilter(select.Query, "");
-            BuildSort(select);
+            Sort = BuildSort(select);
             return this;
         }
 
@@ -42,7 +42,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             BuildPage(select);
             Filter = BuildFilter(select.Filter);
             Query = BuildFilter(select.Query, cultureCode);
-            BuildSort(select);
+            Sort = BuildSort(select);
             return this;
         }
 
@@ -243,7 +243,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             return new string(chars).Normalize(NormalizationForm.FormC);
         }
 
-        private SelectQueryDefinition BuildSort(Select select)
+        private static Sort BuildSort(Select select)
         {
             var sort = Sort.RELEVANCE;
             if (!select.Sort.Any())
@@ -272,8 +272,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             }
             sort = new Sort(sortFields.ToArray());
 
-            Sort = sort;
-            return this;
+            return sort;
         }
 
         private static void Sortfieldtype(FieldTypeEnum fieldType, out int sortfieldtype, ref string sortFieldPrefix)
