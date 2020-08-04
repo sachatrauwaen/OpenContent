@@ -154,7 +154,7 @@ namespace Satrabel.OpenContent.Components
                 {
                     Title = title,
                     Description = description,
-                    Url = taburl + "&id=" + context.Id
+                    Url = "/" + taburl + "&id=" + context.Id
                 };
 
                 JournalItem journalItem = new JournalItem()

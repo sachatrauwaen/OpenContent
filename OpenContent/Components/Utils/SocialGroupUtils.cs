@@ -215,7 +215,11 @@ namespace Satrabel.OpenContent.Components
                     }
                     if (groupId != null || groupId != "")
                     {
-                        if (editUrl.Contains("?"))
+                        if (editUrl.Contains("popUp=true"))
+                        {
+                            editUrl = editUrl.Replace("popUp=true", "popUp=true&groupId=" + groupId);
+                        }
+                        else if (editUrl.Contains("?"))
                         {
                             editUrl = editUrl + "&groupid=" + groupId;
                         }
