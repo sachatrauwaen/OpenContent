@@ -87,6 +87,10 @@ namespace Satrabel.OpenContent.Components.Lucene
                 q.Add(groupQ, cond);
             }
             q = q.Clauses.Count > 0 ? q : null;
+
+            if (q == null)
+                return _DefaultQuery;
+
             return q;
         }
 
