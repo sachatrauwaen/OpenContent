@@ -249,8 +249,13 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         private static Sort BuildSort(Select select)
         {
+            var sortFields = new List<SortField>();
+
             if (!select.Sort.Any())
             {
+                // if no sorting is specified, then sort on score and on sortOnCreateDate
+                sortFields.Add(SortField.FIELD_SCORE);
+
                 var sortOnCreateDate = new SortRule
                 {
                     Field = "createdondate",
@@ -259,10 +264,7 @@ namespace Satrabel.OpenContent.Components.Lucene
                 };
                 select.Sort.Add(sortOnCreateDate);
             }
-
-            var sortFields = new List<SortField>();
-            sortFields.Add(SortField.FIELD_SCORE);
-
+            
             foreach (var rule in select.Sort)
             {
                 int sortfieldtype;
