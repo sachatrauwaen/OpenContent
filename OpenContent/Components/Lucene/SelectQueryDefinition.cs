@@ -14,9 +14,11 @@ namespace Satrabel.OpenContent.Components.Lucene
 {
     public class SelectQueryDefinition
     {
+        private static readonly Query _DefaultQuery = new MatchAllDocsQuery();
+
         public SelectQueryDefinition()
         {
-            Query = new MatchAllDocsQuery();
+            Query = _DefaultQuery;
             Sort = Sort.RELEVANCE;
             PageSize = 100;
         }
@@ -25,7 +27,7 @@ namespace Satrabel.OpenContent.Components.Lucene
         public Sort Sort { get; private set; }
         public int PageSize { get; private set; }
         public int PageIndex { get; private set; }
-        
+
         public SelectQueryDefinition Build(Select select)
         {
             BuildPage(select);
@@ -35,11 +37,11 @@ namespace Satrabel.OpenContent.Components.Lucene
             return this;
         }
 
-        public SelectQueryDefinition Build(Select select, string CultureCode)
+        public SelectQueryDefinition Build(Select select, string cultureCode)
         {
             BuildPage(select);
             Filter = BuildFilter(select.Filter);
-            Query = BuildFilter(select.Query, CultureCode);
+            Query = BuildFilter(select.Query, cultureCode);
             BuildSort(select);
             return this;
         }
@@ -54,7 +56,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             return this;
         }
 
-        private static Query BuildFilter(FilterGroup filter, string CultureCode="")
+        private static Query BuildFilter(FilterGroup filter, string cultureCode = "")
         {
             BooleanQuery q = new BooleanQuery();
             //if (filter.FilterRules.Count == 0 && filter.FilterGroups.Count == 0)
@@ -62,7 +64,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             //    q.Add(new MatchAllDocsQuery(), Occur.MUST);
             //}
 
-            if (filter.FilterRules.Count > 0 && filter.FilterRules.All(r=> r.FieldOperator== OperatorEnum.NOT_EQUAL))
+            if (filter.FilterRules.Count > 0 && filter.FilterRules.All(r => r.FieldOperator == OperatorEnum.NOT_EQUAL))
             {
                 q.Add(new MatchAllDocsQuery(), Occur.MUST);
             }
@@ -72,7 +74,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             {
                 cond = Occur.SHOULD;
             }
-            AddRules(q, filter.FilterRules, cond, CultureCode);
+            AddRules(q, filter.FilterRules, cond, cultureCode);
             foreach (var rule in filter.FilterGroups)
             {
                 Occur groupCond = Occur.MUST; // AND
@@ -81,14 +83,14 @@ namespace Satrabel.OpenContent.Components.Lucene
                     groupCond = Occur.SHOULD;
                 }
                 BooleanQuery groupQ = new BooleanQuery();
-                AddRules(groupQ, rule.FilterRules, groupCond, CultureCode);
+                AddRules(groupQ, rule.FilterRules, groupCond, cultureCode);
                 q.Add(groupQ, cond);
             }
             q = q.Clauses.Count > 0 ? q : null;
             return q;
         }
 
-        private static void AddRules(BooleanQuery q, List<FilterRule> filterRules, Occur cond, string CultureCode="")
+        private static void AddRules(BooleanQuery q, List<FilterRule> filterRules, Occur cond, string cultureCode = "")
         {
             foreach (var rule in filterRules)
             {
@@ -116,7 +118,7 @@ namespace Satrabel.OpenContent.Components.Lucene
                     }
                     else if (rule.FieldType == FieldTypeEnum.STRING || rule.FieldType == FieldTypeEnum.TEXT || rule.FieldType == FieldTypeEnum.HTML)
                     {
-                        q.Add(ParseQuery(rule.Value.AsString + "*", fieldName, CultureCode), cond);
+                        q.Add(ParseQuery(rule.Value.AsString + "*", fieldName, cultureCode), cond);
                     }
                     else
                     {
@@ -132,7 +134,7 @@ namespace Satrabel.OpenContent.Components.Lucene
                 {
                     if (rule.FieldType == FieldTypeEnum.STRING || rule.FieldType == FieldTypeEnum.TEXT || rule.FieldType == FieldTypeEnum.HTML)
                     {
-                        q.Add(ParseQuery(rule.Value.AsString + "*", fieldName, CultureCode), cond);                        
+                        q.Add(ParseQuery(rule.Value.AsString + "*", fieldName, cultureCode), cond);
                     }
                     else
                     {
@@ -208,7 +210,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             }
         }
 
-        public static Query ParseQuery(string searchQuery, string defaultFieldName, string CultureCode="")
+        public static Query ParseQuery(string searchQuery, string defaultFieldName, string CultureCode = "")
         {
             searchQuery = RemoveDiacritics(searchQuery);
             var parser = new QueryParser(Version.LUCENE_30, defaultFieldName, JsonMappingUtils.GetAnalyser(CultureCode));
@@ -217,7 +219,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             {
                 if (string.IsNullOrEmpty(searchQuery))
                 {
-                    query = new MatchAllDocsQuery();
+                    query = _DefaultQuery;
                 }
                 else
                 {
@@ -226,7 +228,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             }
             catch (ParseException)
             {
-                query = searchQuery != null ? parser.Parse(QueryParser.Escape(searchQuery.Trim())) : new MatchAllDocsQuery();
+                query = searchQuery != null ? parser.Parse(QueryParser.Escape(searchQuery.Trim())) : _DefaultQuery;
             }
             return query;
         }
@@ -246,13 +248,13 @@ namespace Satrabel.OpenContent.Components.Lucene
             var sort = Sort.RELEVANCE;
             if (!select.Sort.Any())
             {
-                SortRule sortOneCreateDate = new SortRule
+                var sortOnCreateDate = new SortRule
                 {
                     Field = "createdondate",
                     FieldType = FieldTypeEnum.DATETIME,
                     Descending = false
                 };
-                select.Sort.Add(sortOneCreateDate);
+                select.Sort.Add(sortOnCreateDate);
             }
 
             var sortFields = new List<SortField>();

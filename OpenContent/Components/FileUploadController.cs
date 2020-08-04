@@ -205,8 +205,6 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
-
-
         public static string CleanUpFileName(string filename)
         {
             var newName = HttpUtility.UrlDecode(filename);
