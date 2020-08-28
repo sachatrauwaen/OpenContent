@@ -682,8 +682,25 @@ namespace Satrabel.OpenContent.Components
                     var json = dsItem.Data;
                     if (ml) // multi language
                     {
-                        if (json["SortIndex"] == null || json["SortIndex"].Type != JTokenType.Object) // old data-format (single-language) detected. Migrate to ML version.
+                        #region Normalize irregulatities with SortIndex field
+                        // if old data-format (single-language) detected. Migrate to ML version.
+                        if (json["SortIndex"] == null || json["SortIndex"].Type != JTokenType.Object) 
+                        {
                             json["SortIndex"] = new JObject();
+                        }
+
+                        // if not all site languages initialized, then give them a default value.
+                        var langList = DnnLanguageUtils.GetPortalLocales(this.PortalSettings.PortalId);
+                        if (json["SortIndex"].Count() != langList.Count)
+                        {
+                            foreach (var locale in langList)
+                            {
+                                json["SortIndex"][locale.Key] = i;
+                            }
+                        }
+                        #endregion
+
+                        // Set the new SortIndex value for this item.
                         json["SortIndex"][DnnLanguageUtils.GetCurrentCultureCode()] = i;
                     }
                     else
