@@ -6,6 +6,5 @@ namespace Satrabel.OpenContent.Components.Datasource
     public interface IDataIndex
     {
         IEnumerable<IIndexableItem> GetIndexableData(DataSourceContext context);
-       // void Reindex(DataSourceContext context);
     }
 }

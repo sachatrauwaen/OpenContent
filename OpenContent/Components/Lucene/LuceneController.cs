@@ -75,7 +75,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             }
             if (query == null)
             {
-                query  = new MatchAllDocsQuery(); 
+                query = new MatchAllDocsQuery();
             }
             var searcher = Store.GetSearcher();
             TopDocs topDocs;
