@@ -71,6 +71,7 @@ namespace Satrabel.OpenContent
         {
             return Localization.GetString(key + ".Text", ResourceFile);
         }
+
         protected void rblFrom_SelectedIndexChanged(object sender, EventArgs e)
         {
             ddlTemplate.Items.Clear();
@@ -154,7 +155,7 @@ namespace Satrabel.OpenContent
             {
                 ModuleController mc = new ModuleController();
                 if (rblDataSource.SelectedIndex == 0) // this module
-                {                    
+                {
                     mc.DeleteModuleSetting(ModuleContext.ModuleId, "portalid");
                     mc.DeleteModuleSetting(ModuleContext.ModuleId, "tabid");
                     mc.DeleteModuleSetting(ModuleContext.ModuleId, "moduleid");
@@ -352,7 +353,7 @@ namespace Satrabel.OpenContent
             pHelp.Visible = true;
             if (!Page.IsPostBack || ddlTemplate.Items.Count == 0)
             {
-                rblDataSource.SelectedIndex = (Settings.IsOtherPortal ? 2 : (Settings.IsOtherModule ? 1 : 0) );
+                rblDataSource.SelectedIndex = (Settings.IsOtherPortal ? 2 : (Settings.IsOtherModule ? 1 : 0));
                 BindOtherPortals(Settings.PortalId);
                 BindOtherModules(Settings.TabId, Settings.ModuleId);
 
@@ -421,7 +422,7 @@ namespace Satrabel.OpenContent
             {
                 ddlPortals.SelectedValue = ModuleContext.PortalId.ToString();
             }
-            
+
             //ddlPortals.Items[1].Enabled = ddlDataSource.Items.Count > 0;
         }
         private void BindOtherModules(int tabId, int moduleId)
@@ -458,7 +459,7 @@ namespace Satrabel.OpenContent
 
                     if (!tab.IsNeutralCulture && tab.CultureCode != DnnLanguageUtils.GetCurrentCultureCode())
                     {
-                        if (item.TabID == tabId && item.ModuleID == moduleId)                        
+                        if (item.TabID == tabId && item.ModuleID == moduleId)
                         {
                             var li = new ListItem(string.Format("{1} - {0} ({2})", item.ModuleTitle, tabpath, tab.CultureCode), item.TabModuleID.ToString());
                             li.Selected = true;
