@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Web.UI.WebControls;
@@ -28,6 +29,13 @@ namespace Satrabel.OpenContent
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (ddlPortals == null)
+            {
+                // this happens sometimes. Not clear yet under which circomstances. RS had it once on the homepage.
+                if (Debugger.IsAttached) Debugger.Break(); // investigate it now!
+                return; 
+            }
+
             pHelp.Visible = false;
             phCurrentTemplate.Visible = false;
             ddlPortals.Enabled = ModuleContext.PortalSettings.UserInfo.IsSuperUser;
