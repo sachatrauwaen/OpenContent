@@ -231,13 +231,13 @@ namespace Satrabel.OpenContent.Components.Datasource
         private static SelectQueryDefinition BuildQuery(DataSourceContext context, Select selectQuery)
         {
             SelectQueryDefinition def = new SelectQueryDefinition();
-            def.Build(selectQuery);
+            def.Build(selectQuery, context.CurrentCultureCode);
             if (LogContext.IsLogActive)
             {
                 var logKey = "Lucene query";
-                LogContext.Log(context.ActiveModuleId, logKey, "Filter", def.Filter.ToString());
-                LogContext.Log(context.ActiveModuleId, logKey, "Query", def.Query.ToString());
-                LogContext.Log(context.ActiveModuleId, logKey, "Sort", def.Sort.ToString());
+                LogContext.Log(context.ActiveModuleId, logKey, "Filter", def.Filter?.ToString());
+                LogContext.Log(context.ActiveModuleId, logKey, "Query", def.Query?.ToString());
+                LogContext.Log(context.ActiveModuleId, logKey, "Sort", def.Sort?.ToString());
                 LogContext.Log(context.ActiveModuleId, logKey, "PageIndex", def.PageIndex);
                 LogContext.Log(context.ActiveModuleId, logKey, "PageSize", def.PageSize);
             }
@@ -359,7 +359,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 {
                     ModuleId = GetModuleId(context),
                     Collection = "Submissions",
-                    Title = item.Data["Title"] == null ? "Form" : item.Data["Title"].ToString(),
+                    Title = item?.Data["Title"] == null ? "Form" : item.Data["Title"].ToString(),
                     Json = data["form"].ToString(),
                     CreatedByUserId = context.UserId,
                     CreatedOnDate = DateTime.Now,
@@ -374,7 +374,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 //    LuceneController.Instance.Add(content, indexConfig);
                 //    LuceneController.Instance.Commit();
                 //}
-                return FormUtils.FormSubmit(data as JObject, item.Data.DeepClone() as JObject);
+                return FormUtils.FormSubmit(data as JObject, item?.Data?.DeepClone() as JObject);
             }
             return null;
         }

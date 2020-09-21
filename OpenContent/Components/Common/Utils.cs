@@ -1,10 +1,22 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Web;
 
 namespace Satrabel.OpenContent.Components
 {
     public static class Utils
     {
+        /// <summary>
+        /// Use to safely call Debugger.Break() 
+        /// </summary>
+        /// <remarks>
+        /// Never call Debugger.Break() without checking if Debugger is attached. We have observed weird errors when doing so.
+        /// </remarks>
+        public static void DebuggerBreak()
+        {
+            if (Debugger.IsAttached) Debugger.Break();
+        }
+
         #region Url utils
 
         public static string RemoveQueryParams(this string url)

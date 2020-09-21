@@ -16,6 +16,7 @@ namespace Satrabel.OpenContent.Components
         private OpenContentModuleInfo _dataModule;
         private OpenContentSettings _settings;
         private readonly IDictionary _moduleSettings;
+        private readonly IDictionary _tabModuleSettings;
         private readonly PortalSettings _portalSettings;
 
         private OpenContentModuleConfig(ModuleInfo viewModule, PortalSettings portalSettings)
@@ -23,6 +24,7 @@ namespace Satrabel.OpenContent.Components
             ViewModule = new OpenContentModuleInfo(viewModule);
             PortalId = viewModule.PortalID;
             _moduleSettings = viewModule.ModuleSettings;
+            _tabModuleSettings = viewModule.TabModuleSettings;
             _portalSettings = portalSettings;
         }
 
@@ -59,7 +61,7 @@ namespace Satrabel.OpenContent.Components
             get
             {
                 if (_settings == null)
-                    _settings = new OpenContentSettings(ComponentSettingsInfo.Create(_moduleSettings));
+                    _settings = new OpenContentSettings(ComponentSettingsInfo.Create(_moduleSettings, _tabModuleSettings));
                 return _settings;
             }
         }
@@ -86,9 +88,9 @@ namespace Satrabel.OpenContent.Components
             return DnnUrlUtils.NavigateUrl(detailTabId, _portalSettings, getCurrentCultureCode);
         }
 
-        internal string GetUrl(int detailTabId, string pagename, string idParam)
+        internal string GetUrl(int detailTabId, string cultureCode, string pagename, string idParam)
         {
-            return DnnUrlUtils.NavigateUrl(detailTabId, _portalSettings, pagename, idParam);
+            return DnnUrlUtils.NavigateUrl(detailTabId, cultureCode, _portalSettings,  pagename, idParam);
         }
 
         public string EditUrl(string id, string itemId, int viewModuleModuleId)

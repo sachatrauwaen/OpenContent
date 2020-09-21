@@ -72,10 +72,10 @@ namespace Satrabel.OpenContent.Components.Dnn
             return Globals.NavigateURL(tabId, isSuperTab, portalSettings, "", currentCultureCode);
         }
 
-        internal static string NavigateUrl(int detailTabId, PortalSettings portalSettings, string pagename, params string[] additionalParameters)
+        internal static string NavigateUrl(int detailTabId, string currentCultureCode, PortalSettings portalSettings, string pagename, params string[] additionalParameters)
         {
             var isSuperTab = Globals.IsHostTab(detailTabId);
-            var url = Globals.NavigateURL(detailTabId, isSuperTab, portalSettings, "", DnnLanguageUtils.GetCurrentCultureCode(), pagename, additionalParameters);
+            var url = Globals.NavigateURL(detailTabId, isSuperTab, portalSettings, "", currentCultureCode, pagename, additionalParameters);
             return url;
         }
 

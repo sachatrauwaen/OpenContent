@@ -234,6 +234,9 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
         public static void PurgeCache(int portalId)
         {
             PurgeCache(GetCacheFolder(portalId));
+
+            var portalCacheKey = UrlRulesCaching.GeneratePortalCacheKey(portalId, null);
+            App.Services.CacheAdapter.ClearCache(portalCacheKey);
         }
 
         public static PurgeResult PurgeExpiredItems(int portalId)
@@ -326,7 +329,7 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                 throw new IOException("Deleted " + i + " files, however, some files are locked.  Could not delete the following files: " + filesNotDeleted);
             }
 
-            DataCache.ClearCache(string.Format(UrlRuleConfigCacheKey, portalId));
+            App.Services.CacheAdapter.ClearCache(string.Format(UrlRuleConfigCacheKey, portalId));
         }
 
         #endregion

@@ -42,6 +42,9 @@ namespace Satrabel.OpenContent.Components.Manifest
         [JsonProperty(PropertyName = "detailUrl")]
         public string DetailUrl { get; set; }
 
+        [JsonProperty(PropertyName = "mainMeta")]
+        public string MainMeta { get; set; }
+
         [JsonProperty(PropertyName = "additionalData")]
         public Dictionary<string, AdditionalDataManifest> AdditionalDataDefinition
         {

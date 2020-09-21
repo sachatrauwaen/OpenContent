@@ -671,18 +671,36 @@ namespace Satrabel.OpenContent.Components
                 int i = 1;
                 foreach (var id in ids)
                 {
+                    if (id == "-1") continue; // ignore items explicitly marked with id -1;
                     var dsItem = ds.Get(dsContext, id);
                     if (dsItem == null)
                     {
-                        Debugger.Break(); // this should never happen: investigate!
+                        Utils.DebuggerBreak(); // this should never happen: investigate!
                         throw new Exception($"Reorder failed. Unknown item {id}. Reindex module and try again.");
                     }
 
                     var json = dsItem.Data;
                     if (ml) // multi language
                     {
-                        if (json["SortIndex"].Type != JTokenType.Object) // old data-format (single-language) detected. Migrate to ML version.
+                        #region Normalize irregulatities with SortIndex field
+                        // if old data-format (single-language) detected. Migrate to ML version.
+                        if (json["SortIndex"] == null || json["SortIndex"].Type != JTokenType.Object) 
+                        {
                             json["SortIndex"] = new JObject();
+                        }
+
+                        // if not all site languages initialized, then give them a default value.
+                        var langList = DnnLanguageUtils.GetPortalLocales(this.PortalSettings.PortalId);
+                        if (json["SortIndex"].Count() != langList.Count)
+                        {
+                            foreach (var locale in langList)
+                            {
+                                json["SortIndex"][locale.Key] = i;
+                            }
+                        }
+                        #endregion
+
+                        // Set the new SortIndex value for this item.
                         json["SortIndex"][DnnLanguageUtils.GetCurrentCultureCode()] = i;
                     }
                     else

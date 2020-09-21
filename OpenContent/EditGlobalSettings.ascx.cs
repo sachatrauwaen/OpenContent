@@ -128,7 +128,7 @@ namespace Satrabel.OpenContent
                     var modules = DnnUtils.GetDnnOpenContentModules(ModuleContext.PortalId);
                     foreach (var module in modules)
                     {
-                        Log.Logger.Info("Updating all OpenContent Xml data for module " + module.ModuleId);
+                        App.Services.Logger.Info("Updating all OpenContent Xml data for module " + module.ModuleId);
                         var contents = ctrl.GetContents(module.ModuleId);
                         foreach (var item in contents)
                         {
@@ -143,7 +143,7 @@ namespace Satrabel.OpenContent
                 finally
                 {
                 }
-                Log.Logger.Info("Finished Updating all OpenContent Xml data for portal " + ModuleContext.PortalId);
+                App.Services.Logger.Info("Finished Updating all OpenContent Xml data for portal " + ModuleContext.PortalId);
             }
             //Response.Redirect(Globals.NavigateURL(), true);
         }

@@ -83,15 +83,15 @@ namespace Satrabel.OpenContent.Components
 
         public static OpenContentSettings OpenContentSettings(this ModuleInfo module)
         {
-            return new OpenContentSettings(ComponentSettingsInfo.Create(module.ModuleSettings));
+            return new OpenContentSettings(ComponentSettingsInfo.Create(module.ModuleSettings, module.TabModuleSettings));
         }
         public static OpenContentSettings OpenContentSettings(this ModuleInstanceContext module)
         {
-            return new OpenContentSettings(ComponentSettingsInfo.Create(module.Settings));
+            return new OpenContentSettings(ComponentSettingsInfo.Create(module.Settings, null));
         }
         public static OpenContentSettings OpenContentSettings(this PortalModuleBase module)
         {
-            return new OpenContentSettings(ComponentSettingsInfo.Create(module.Settings));
+            return new OpenContentSettings(ComponentSettingsInfo.Create(module.Settings, null));
         }
 
         internal static void RegisterScript(Page page, string sourceFolder, string jsfilename, int jsOrder, string provider = "DnnBodyProvider")

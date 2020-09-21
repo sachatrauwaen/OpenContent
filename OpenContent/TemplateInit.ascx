@@ -7,9 +7,17 @@
             <asp:RadioButtonList runat="server" ID="rblDataSource" AutoPostBack="true" OnSelectedIndexChanged="rblDataSource_SelectedIndexChanged"
                 RepeatDirection="Horizontal" CssClass="dnnFormRadioButtons">
                 <asp:ListItem Text="This module" Selected="True" ResourceKey="liThisModule" />
-                <asp:ListItem Text="xOther module" ResourceKey="liOtherModule" />
+                <asp:ListItem Text="Other module" ResourceKey="liOtherModule" />
+                <asp:ListItem Text="Other portal" ResourceKey="liOtherPortal" />
             </asp:RadioButtonList>
         </div>
+        <asp:PlaceHolder ID="phPortals" runat="server" Visible="false">
+            <div class="dnnFormItem">
+                <asp:Label runat="server" ControlName="ddlPortals" ResourceKey="lPortals" CssClass="dnnLabel" />
+                <asp:DropDownList runat="server" ID="ddlPortals" AutoPostBack="true" OnSelectedIndexChanged="ddlPotals_SelectedIndexChanged">
+                </asp:DropDownList>
+            </div>
+        </asp:PlaceHolder>
         <asp:PlaceHolder ID="phDataSource" runat="server" Visible="false">
             <div class="dnnFormItem">
                 <asp:Label runat="server" ControlName="ddlDataSource" ResourceKey="lDataSource" CssClass="dnnLabel" />

@@ -69,7 +69,7 @@ namespace Satrabel.OpenContent.Components.Lucene
                 foreach (var module in modules)
                 {
                     if (!OpenContentUtils.CheckOpenContentTemplateFiles(module)) { continue; }
-                    if (module.IsListMode() &&  module.Settings.Manifest.Index)
+                    if (module.IsListMode() && module.Settings.Manifest.Index)
                     {
                         RegisterModuleDataForIndexing(lc, module);
                     }
@@ -81,7 +81,7 @@ namespace Satrabel.OpenContent.Components.Lucene
         private static void RegisterModuleDataForIndexing(LuceneController lc, OpenContentModuleConfig module)
         {
             var indexableData = GetModuleIndexableData(module);
-            var dataExample = indexableData?.ToList().FirstOrDefault();
+            var dataExample = indexableData.FirstOrDefault();
             if (dataExample == null) return;
 
             var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template); //todo index is being build from schema & options. But they should be provided by the provider, not directly from the files
@@ -91,7 +91,7 @@ namespace Satrabel.OpenContent.Components.Lucene
             lc.AddList(indexableData, indexConfig, scope);
         }
 
-        private static IEnumerable<IIndexableItem> GetModuleIndexableData(OpenContentModuleConfig module)
+        private static List<IIndexableItem> GetModuleIndexableData(OpenContentModuleConfig module)
         {
             bool index = false;
             var settings = module.Settings;
@@ -107,7 +107,7 @@ namespace Satrabel.OpenContent.Components.Lucene
 
             var dsContext = OpenContentUtils.CreateDataContext(module);
             var dataIndex = (IDataIndex)ds;
-            return dataIndex.GetIndexableData(dsContext);
+            return dataIndex.GetIndexableData(dsContext).ToList();
         }
 
         #endregion

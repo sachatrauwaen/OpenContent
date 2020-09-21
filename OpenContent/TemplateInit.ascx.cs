@@ -13,6 +13,7 @@ using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.Rss;
 using Satrabel.OpenContent.Components.Logging;
 using DotNetNuke.Services.Localization;
+using DotNetNuke.Entities.Portals;
 
 namespace Satrabel.OpenContent
 {
@@ -29,6 +30,8 @@ namespace Satrabel.OpenContent
         {
             pHelp.Visible = false;
             phCurrentTemplate.Visible = false;
+            ddlPortals.Enabled = ModuleContext.PortalSettings.UserInfo.IsSuperUser;
+            rblDataSource.Items[2].Enabled = ModuleContext.PortalSettings.UserInfo.IsSuperUser;
 
             foreach (ListItem item in rblDataSource.Items)
             {
@@ -60,6 +63,7 @@ namespace Satrabel.OpenContent
         {
             return Localization.GetString(key + ".Text", ResourceFile);
         }
+
         protected void rblFrom_SelectedIndexChanged(object sender, EventArgs e)
         {
             ddlTemplate.Items.Clear();
@@ -103,6 +107,14 @@ namespace Satrabel.OpenContent
                 var dsSettings = dsModule.OpenContentSettings();
                 BindTemplates(dsSettings.Template, dsSettings.Template.MainTemplateUri());
             }
+            if (rblDataSource.SelectedIndex == 2) // other portal
+            {
+                BindOtherPortals(-1);
+                BindOtherModules(-1, -1);
+                var dsModule = (new ModuleController()).GetTabModule(int.Parse(ddlDataSource.SelectedValue));
+                var dsSettings = dsModule.OpenContentSettings();
+                BindTemplates(dsSettings.Template, dsSettings.Template.MainTemplateUri());
+            }
             else // this module
             {
                 BindOtherModules(-1, -1);
@@ -136,12 +148,22 @@ namespace Satrabel.OpenContent
                 ModuleController mc = new ModuleController();
                 if (rblDataSource.SelectedIndex == 0) // this module
                 {
+                    mc.DeleteModuleSetting(ModuleContext.ModuleId, "portalid");
                     mc.DeleteModuleSetting(ModuleContext.ModuleId, "tabid");
                     mc.DeleteModuleSetting(ModuleContext.ModuleId, "moduleid");
                 }
-                else // other module
+                else if (rblDataSource.SelectedIndex == 1) // other module
                 {
                     var dsModule = (new ModuleController()).GetTabModule(int.Parse(ddlDataSource.SelectedValue));
+                    mc.DeleteModuleSetting(ModuleContext.ModuleId, "portalid");
+                    mc.UpdateModuleSetting(ModuleContext.ModuleId, "tabid", dsModule.TabID.ToString());
+                    mc.UpdateModuleSetting(ModuleContext.ModuleId, "moduleid", dsModule.ModuleID.ToString());
+                }
+                else // other portal
+                {
+                    var dsModule = (new ModuleController()).GetTabModule(int.Parse(ddlDataSource.SelectedValue));
+                    var dsPortal = int.Parse(ddlPortals.SelectedValue);
+                    mc.UpdateModuleSetting(ModuleContext.ModuleId, "portalid", dsModule.PortalID.ToString());
                     mc.UpdateModuleSetting(ModuleContext.ModuleId, "tabid", dsModule.TabID.ToString());
                     mc.UpdateModuleSetting(ModuleContext.ModuleId, "moduleid", dsModule.ModuleID.ToString());
                 }
@@ -172,7 +194,7 @@ namespace Satrabel.OpenContent
                         ModuleContext.Settings["template"] = template;
                     }
                 }
-                mc.UpdateModuleSetting(ModuleContext.ModuleId, "detailtabid", ddlDetailPage.SelectedValue);
+                mc.UpdateTabModuleSetting(ModuleContext.TabModuleId, "detailtabid", ddlDetailPage.SelectedValue);
 
 
                 //don't reset settings. Sure they might be invalid, but maybe not. And you can't ever revert.
@@ -226,8 +248,13 @@ namespace Satrabel.OpenContent
 
         private void BindTemplates(TemplateManifest template, FileUri otherModuleTemplate)
         {
+            var SelectedPortalSettings = ModuleContext.PortalSettings;
+            if (rblDataSource.SelectedIndex == 2)// other portal
+            {
+                SelectedPortalSettings = new PortalSettings(int.Parse(ddlPortals.SelectedValue));
+            }
             ddlTemplate.Items.Clear();
-            ddlTemplate.Items.AddRange(OpenContentUtils.ListOfTemplatesFiles(ModuleContext.PortalSettings, ModuleContext.ModuleId, template, App.Config.Opencontent, otherModuleTemplate).ToArray());
+            ddlTemplate.Items.AddRange(OpenContentUtils.ListOfTemplatesFiles(SelectedPortalSettings, ModuleContext.ModuleId, template, App.Config.Opencontent, otherModuleTemplate).ToArray());
             if (ddlTemplate.Items.Count == 0)
             {
                 rblUseTemplate.Items[0].Enabled = false;
@@ -318,13 +345,14 @@ namespace Satrabel.OpenContent
             pHelp.Visible = true;
             if (!Page.IsPostBack || ddlTemplate.Items.Count == 0)
             {
-                rblDataSource.SelectedIndex = (Settings.IsOtherModule ? 1 : 0);
+                rblDataSource.SelectedIndex = (Settings.IsOtherPortal ? 2 : (Settings.IsOtherModule ? 1 : 0));
+                BindOtherPortals(Settings.PortalId);
                 BindOtherModules(Settings.TabId, Settings.ModuleId);
 
                 BindTemplates(Settings.Template, (Renderinfo.IsOtherModule ? Renderinfo.Template.MainTemplateUri() : null));
                 BindDetailPage(Settings.DetailTabId, Settings.TabId, Settings.GetModuleId(ModuleContext.ModuleId));
             }
-            if (rblDataSource.SelectedIndex == 1) // other module
+            if (rblDataSource.SelectedIndex == 1 || rblDataSource.SelectedIndex == 2) // other module or other portal
             {
                 var dsModule = (new ModuleController()).GetTabModule(int.Parse(ddlDataSource.SelectedValue));
                 Renderinfo.IsOtherModule = (dsModule.TabID > 0 && dsModule.ModuleID > 0);
@@ -358,41 +386,88 @@ namespace Satrabel.OpenContent
             }
 
         }
+        private void BindOtherPortals(int portalId)
+        {
+            phPortals.Visible = rblDataSource.SelectedIndex == 2; // other portal
+            IEnumerable<PortalInfo> portals = (new PortalController()).GetPortals().Cast<PortalInfo>();
 
+            ddlPortals.Items.Clear();
+
+            var listItems = new List<ListItem>();
+            foreach (var item in portals)
+            {
+
+                var li = new ListItem(item.PortalName, item.PortalID.ToString());
+
+                listItems.Add(li);
+                if (item.PortalID == portalId)
+                {
+                    li.Selected = true;
+                }
+
+            }
+            foreach (ListItem li in listItems.OrderBy(x => x.Text))
+            {
+                ddlPortals.Items.Add(li);
+            }
+            if (portalId < 0)
+            {
+                ddlPortals.SelectedValue = ModuleContext.PortalId.ToString();
+            }
+
+            //ddlPortals.Items[1].Enabled = ddlDataSource.Items.Count > 0;
+        }
         private void BindOtherModules(int tabId, int moduleId)
         {
-            IEnumerable<ModuleInfo> modules = (new ModuleController()).GetModules(ModuleContext.PortalId).Cast<ModuleInfo>();
+            int SelectedPortalId = ModuleContext.PortalId;
+            if (rblDataSource.SelectedIndex == 2) // other portal
+            {
+                SelectedPortalId = int.Parse(ddlPortals.SelectedValue);
+            }
+            IEnumerable<ModuleInfo> modules = (new ModuleController()).GetModules(SelectedPortalId).Cast<ModuleInfo>();
             modules = modules.Where(m => m.ModuleDefinition.DefinitionName == App.Config.Opencontent && m.IsDeleted == false && !m.OpenContentSettings().IsOtherModule);
             rblDataSource.Items[1].Enabled = modules.Any();
-            phDataSource.Visible = rblDataSource.SelectedIndex == 1; // other module
-            if (rblDataSource.SelectedIndex == 1) // other module
+            phPortals.Visible = rblDataSource.SelectedIndex == 2; // other portal
+            phDataSource.Visible = rblDataSource.SelectedIndex == 1 || rblDataSource.SelectedIndex == 2; // other module
+            if (rblDataSource.SelectedIndex == 1 || rblDataSource.SelectedIndex == 2) // other module
             {
                 rblUseTemplate.SelectedIndex = 0; // existing template
                 phFrom.Visible = false;
                 phTemplateName.Visible = false;
             }
             rblUseTemplate.Items[1].Enabled = rblDataSource.SelectedIndex == 0; // this module
+
+
             ddlDataSource.Items.Clear();
+
             var listItems = new List<ListItem>();
             foreach (var item in modules)
             {
                 if (item.TabModuleID != ModuleContext.TabModuleId)
                 {
                     var tc = new TabController();
-                    var tab = tc.GetTab(item.TabID, ModuleContext.PortalId, false);
+                    var tab = tc.GetTab(item.TabID, SelectedPortalId, false);
+                    var tabpath = tab.TabPath.Replace("//", "/").Trim('/');
+
                     if (!tab.IsNeutralCulture && tab.CultureCode != DnnLanguageUtils.GetCurrentCultureCode())
                     {
+                        if (item.TabID == tabId && item.ModuleID == moduleId)
+                        {
+                            var li = new ListItem(string.Format("{1} - {0} ({2})", item.ModuleTitle, tabpath, tab.CultureCode), item.TabModuleID.ToString());
+                            li.Selected = true;
+                            listItems.Add(li);
+                        }
                         // skip other cultures
-                        continue;
+                        //continue;
                     }
-
-                    var tabpath = tab.TabPath.Replace("//", "/").Trim('/');
-                    var li = new ListItem(string.Format("{1} - {0}", item.ModuleTitle, tabpath), item.TabModuleID.ToString());
-
-                    listItems.Add(li);
-                    if (item.TabID == tabId && item.ModuleID == moduleId)
+                    else
                     {
-                        li.Selected = true;
+                        var li = new ListItem(string.Format("{1} - {0}", item.ModuleTitle, tabpath), item.TabModuleID.ToString());
+                        listItems.Add(li);
+                        if (item.TabID == tabId && item.ModuleID == moduleId)
+                        {
+                            li.Selected = true;
+                        }
                     }
                 }
             }
@@ -411,7 +486,7 @@ namespace Satrabel.OpenContent
             ddlDetailPage.Items.Clear();
 
             int othermoduleDetailTabId = GetOtherModuleDetailTabId(othermoduleTabId, dataModuleId);
-            if (othermoduleDetailTabId > 0)
+            if (othermoduleDetailTabId > 0 && rblDataSource.SelectedIndex != 2)
             {
                 //add extra li with "Default Detail Page" directly to dropdown
                 format = LogContext.IsLogActive ? "Main Module Detail Page - [{0}]" : "Main Module Detail Page";
@@ -523,7 +598,12 @@ namespace Satrabel.OpenContent
             }
         }
 
-
-
+        protected void ddlPotals_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            BindOtherModules(-1, -1);
+            var dsModule = (new ModuleController()).GetTabModule(int.Parse(ddlDataSource.SelectedValue));
+            var dsSettings = dsModule.OpenContentSettings();
+            BindTemplates(dsSettings.Template, dsSettings.Template.MainTemplateUri());
+        }
     }
 }

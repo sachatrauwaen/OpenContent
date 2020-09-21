@@ -165,4 +165,10 @@
   <data name="lUseTemplate.Text" xml:space="preserve">
     <value>I want</value>
   </data>
+  <data name="liOtherPortal.Text" xml:space="preserve">
+    <value>Other Portal</value>
+  </data>
+  <data name="lPortals.Text" xml:space="preserve">
+    <value>Portal</value>
+  </data>
 </root>
