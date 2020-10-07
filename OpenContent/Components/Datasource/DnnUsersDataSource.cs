@@ -146,8 +146,8 @@ namespace Satrabel.OpenContent.Components.Datasource
                     else
                     {
                         users = UserController.GetUsers(context.PortalId, pageIndex, pageSize, ref total, true, false).Cast<UserInfo>();
-                        total = users.Count();
                     }
+                    var userCount = users.Count();
                     if (ruleRoles != null)
                     {
                         var roleNames = ruleRoles.MultiValue.Select(r => r.AsString).ToList();
@@ -158,14 +158,14 @@ namespace Satrabel.OpenContent.Components.Datasource
                         var val = bool.Parse(ruleApproved.Value.AsString);
                         users = users.Where(u => u.Membership.Approved == val);
                     }
+                    total = total - (userCount - users.Count());
                 }
                 else
                 {
                     users = UserController.GetUsers(context.PortalId, pageIndex, pageSize, ref total, true, false).Cast<UserInfo>();
                 }
-                int excluded = users.Count() - users.Count(u => u.IsInRole("Administrators"));
+                int excluded = users.Count(u => u.IsInRole("Administrators"));
                 users = users.Where(u => !u.IsInRole("Administrators"));
-                
 
                 //users = users.Skip(pageIndex * pageSize).Take(pageSize);
                 var dataList = new List<IDataItem>();
