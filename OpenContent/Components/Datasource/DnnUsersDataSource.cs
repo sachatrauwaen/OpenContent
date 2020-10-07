@@ -127,13 +127,12 @@ namespace Satrabel.OpenContent.Components.Datasource
             else
             {
                 int pageIndex = 0;
-                int pageSize = 1000;
+                int pageSize = 100000;
                 int total = 0;
                 IEnumerable<UserInfo> users;
                 if (selectQuery != null)
                 {
-                    pageIndex = selectQuery.PageIndex;
-                    pageSize = selectQuery.PageSize;
+                    
                     var ruleDisplayName = selectQuery.Query.FilterRules.FirstOrDefault(f => f.Field == "DisplayName");
                     var ruleRoles = selectQuery.Query.FilterRules.FirstOrDefault(f => f.Field == "Roles");
                     var ruleApproved = selectQuery.Query.FilterRules.FirstOrDefault(f => f.Field == "Approved");
@@ -146,7 +145,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                     else
                     {
                         users = UserController.GetUsers(context.PortalId, pageIndex, pageSize, ref total, true, false).Cast<UserInfo>();
-                        total = users.Count();
+                     
                     }
                     var userCount = users.Count();
                     if (ruleRoles != null)
@@ -159,7 +158,10 @@ namespace Satrabel.OpenContent.Components.Datasource
                         var val = bool.Parse(ruleApproved.Value.AsString);
                         users = users.Where(u => u.Membership.Approved == val);
                     }
-                    total = total - (userCount - users.Count());
+                    total = users.Count();
+                    pageIndex = selectQuery.PageIndex;
+                    pageSize = selectQuery.PageSize;
+                    users = users.Skip(pageIndex * pageSize).Take(pageSize);
                 }
                 else
                 {
@@ -167,8 +169,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 }
                 int excluded = users.Count(u => u.IsInRole("Administrators"));
                 users = users.Where(u => !u.IsInRole("Administrators"));
-
-                //users = users.Skip(pageIndex * pageSize).Take(pageSize);
+                
                 var dataList = new List<IDataItem>();
                 foreach (var user in users)
                 {
