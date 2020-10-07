@@ -146,6 +146,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                     else
                     {
                         users = UserController.GetUsers(context.PortalId, pageIndex, pageSize, ref total, true, false).Cast<UserInfo>();
+                        total = users.Count();
                     }
                     var userCount = users.Count();
                     if (ruleRoles != null)
