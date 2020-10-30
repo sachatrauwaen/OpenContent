@@ -41,6 +41,10 @@
     <Reference Include="DotNetNuke.Instrumentation">
       <HintPath>..\ref\dnn740\DotNetNuke.Instrumentation.dll</HintPath>
     </Reference>
+    <Reference Include="EPPlus, Version=4.5.2.1, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\ref\EPPlus.dll</HintPath>
+    </Reference>
     <Reference Include="Handlebars, Version=1.0.0.0, Culture=neutral, PublicKeyToken=22225d0bf33cd661, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ref\Handlebars.dll</HintPath>

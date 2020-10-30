@@ -217,6 +217,7 @@ namespace Satrabel.OpenContent.Components.Lucene
         public static Query ParseQuery(string searchQuery, string defaultFieldName, string CultureCode = "")
         {
             searchQuery = RemoveDiacritics(searchQuery);
+            searchQuery = searchQuery.Replace('-', ' '); // concider '-' as a space
             var parser = new QueryParser(Version.LUCENE_30, defaultFieldName, JsonMappingUtils.GetAnalyser(CultureCode));
             Query query;
             try
