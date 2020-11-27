@@ -670,14 +670,17 @@ namespace Satrabel.OpenContent.Components
                     return Request.CreateResponse(HttpStatusCode.OK, new { isValid = true });
 
                 int i = 1;
+                string errorOccured = "";
                 foreach (var id in ids)
                 {
                     if (id == "-1") continue; // ignore items explicitly marked with id -1;
                     var dsItem = ds.Get(dsContext, id);
                     if (dsItem == null)
                     {
-                        Utils.DebuggerBreak(); // this should never happen: investigate!
-                        throw new Exception($"Reorder failed. Unknown item {id}. Reindex module and try again.");
+                        Utils.DebuggerBreak(); // item not found. investigate!
+                        errorOccured = $"Reorder failed. Unknown item {id}. Reindex module and try again.";
+                        App.Services.Logger.Error(errorOccured);
+                        continue;
                     }
 
                     var json = dsItem.Data;
@@ -711,7 +714,8 @@ namespace Satrabel.OpenContent.Components
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, new
                 {
-                    isValid = true
+                    isValid = string.IsNullOrEmpty(errorOccured),
+                    errorMsg = errorOccured
                 });
             }
             catch (Exception exc)
