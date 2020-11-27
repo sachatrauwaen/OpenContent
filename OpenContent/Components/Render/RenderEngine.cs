@@ -695,7 +695,7 @@ namespace Satrabel.OpenContent.Components.Render
             bool isDetailPageRequest = _renderinfo.IsDetailPageRequest;
 
             //Add item / Edit Item
-            if (templateDefined && template.DataNeeded() && !_settings.Manifest.DisableEdit)
+            if (templateDefined && template.DataNeeded() && !_settings.Manifest.DisableEdit && !template.DisableEdit)
             {
                 string title = App.Services.Localizer.GetString(isListPageRequest ? "Add.Action" : "Edit.Action", ResourceFile);
                 if (!string.IsNullOrEmpty(_settings.Manifest.Title))
@@ -714,7 +714,7 @@ namespace Satrabel.OpenContent.Components.Render
             }
 
             //Add AdditionalData manage actions
-            if (templateDefined && template.Manifest.AdditionalDataDefined() && !_settings.Manifest.DisableEdit)
+            if (templateDefined && template.Manifest.AdditionalDataDefined() && !_settings.Manifest.DisableEdit && !template.DisableEdit)
             {
                 foreach (var addData in template.Manifest.AdditionalDataDefinition)
                 {
@@ -865,7 +865,7 @@ namespace Satrabel.OpenContent.Components.Render
 
             //Edit Raw Data
             if (templateDefined && _settings.Manifest != null &&
-               (template.DataNeeded() || template.SettingsNeeded() || template.Manifest.AdditionalDataDefined()) && !_settings.Manifest.DisableEdit)
+               (template.DataNeeded() || template.SettingsNeeded() || template.Manifest.AdditionalDataDefined()) && !_settings.Manifest.DisableEdit && !template.DisableEdit)
             {
                 actions.Add(
                     new MenuAction(

@@ -145,14 +145,16 @@ namespace Satrabel.OpenContent.Components
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
         [HttpGet]
-        public HttpResponseMessage ImagesLookupExt(string q, string folder)
+        public HttpResponseMessage ImagesLookupExt(string q, string folder, string itemId)
         {
             try
             {
-
                 var folderManager = FolderManager.Instance;
                 string imageFolder = "OpenContent/Files/" + ActiveModule.ModuleID;
-
+                if (!string.IsNullOrEmpty(itemId))
+                {
+                    imageFolder += "/" + itemId;
+                }
                 if (!string.IsNullOrEmpty(folder))
                 {
                     imageFolder = folder;

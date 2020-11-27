@@ -35,6 +35,9 @@ namespace Satrabel.OpenContent.Components.Manifest
         [JsonProperty(PropertyName = "collection")]
         public string Collection { get; set; } = "Items";
 
+        [JsonProperty(PropertyName = "disableEdit")]
+        public bool DisableEdit { get; set; }
+
         public bool IsListTemplate => Type == "multiple";
 
         public TemplateKey Key { get; private set; }

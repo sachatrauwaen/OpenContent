@@ -308,7 +308,10 @@ namespace Satrabel.OpenContent
             }
             else if (sourceList.SelectedValue == DATATYPE_FILTER)
             {
-                //SaveFilter();
+                var module = OpenContentModuleConfig.Create(this.ModuleConfiguration, PortalSettings);
+                TemplateManifest template = module.Settings.Template;
+                var settingsFilename = template.MainTemplateUri().PhysicalFullDirectory + "\\" + "filter-data.json";
+                File.WriteAllText(settingsFilename, txtSource.Text);
             }
             else
             {
