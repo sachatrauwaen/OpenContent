@@ -144,28 +144,40 @@ alpacaEngine.engine = function (config) {
     };
 
     self.FormEdit = function (config) {
-        var ConnectorClass = Alpaca.getConnectorClass("default");
-        var connector = new ConnectorClass("default");
-        connector.servicesFramework = self.sf;
-        connector.culture = self.currentCulture;
-        connector.defaultCulture = self.defaultCulture;
-        connector.numberDecimalSeparator = self.numberDecimalSeparator;
-        connector.rootUrl = self.rootUrl;
-        if (config.versions) {
-            $.each(config.versions, function (i, item) {
-                $("#" + self.ddlVersions).append($('<option>', {
-                    value: item.ticks,
-                    text: item.text
-                }));
-                //$("#<%=ddlVersions.ClientID%>").data(item.CreatedOnDate, item.Json);
-            });
-        } else {
-            $("#" + self.ddlVersions).hide();
-        }
+        //var ConnectorClass = Alpaca.getConnectorClass("default");
+        //var connector = new ConnectorClass("default");
+        //connector.servicesFramework = self.sf;
+        //connector.culture = self.currentCulture;
+        //connector.defaultCulture = self.defaultCulture;
+        //connector.numberDecimalSeparator = self.numberDecimalSeparator;
+        //connector.rootUrl = self.rootUrl;
+        //if (config.versions) {
+        //    $.each(config.versions, function (i, item) {
+        //        $("#" + self.ddlVersions).append($('<option>', {
+        //            value: item.ticks,
+        //            text: item.text
+        //        }));
+                
+        //    });
+        //} else {
+        //    $("#" + self.ddlVersions).hide();
+        //}
 
-        $.alpaca.setDefaultLocale(self.alpacaCulture);
+        //$.alpaca.setDefaultLocale(self.alpacaCulture);
+
+        var connector = Lama.getConnectorClass("default");
+        //{
+        //    currentCulture: "fr-FR",
+        //    connect() {
+
+        //    },
+        //    loadAll: function (resources, onSuccess) {
+        //        onSuccess();
+        //    }
+        //};
         self.CreateForm(connector, config, config.data);
 
+        
     };
 
     self.CreateForm = function (connector, config, data) {
@@ -202,7 +214,7 @@ alpacaEngine.engine = function (config) {
             delete config.options.form;
         }
 
-        var app = Lama.mount("#demoappx", {
+        var app = Lama.mount("#field1", {
             "schema": config.schema,
             "options": config.options,
             "data": data,
