@@ -307,6 +307,7 @@ namespace Satrabel.OpenContent.Components.Render
             if (_additionalData == null && _manifest.AdditionalDataDefined())
             {
                 _additionalData = new JObject();
+                var _additionalDataContext = _additionalData["Context"] = new JObject();
                 foreach (var item in _manifest.AdditionalDataDefinition)
                 {
                     var dataManifest = item.Value;
@@ -322,11 +323,16 @@ namespace Satrabel.OpenContent.Components.Render
                         additionalDataJson = json;
 
                         //optionally add editurl for AdditionalData. Only for Single items (not arrays)
-                        if (!onlyData && json is JObject && IsEditMode)
+                        if (!onlyData && json is JObject && IsEditMode)                        
                         {
                             var context = new JObject();
                             context["EditUrl"] = GetAdditionalDataEditUrl(item.Key);
                             additionalDataJson["Context"] = context;
+                        }
+                        if (!onlyData)
+                        {
+                            var context = _additionalDataContext[item.Value.ModelKey ?? item.Key] = new JObject();
+                            context["EditUrl"] = GetAdditionalDataEditUrl(item.Key);
                         }
                     }
                     if (!App.Services.CreateGlobalSettingsRepository(_portalId).GetLegacyHandlebars())
