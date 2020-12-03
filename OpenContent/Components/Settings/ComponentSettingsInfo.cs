@@ -4,8 +4,10 @@ namespace Satrabel.OpenContent.Components
 {
     public class ComponentSettingsInfo
     {
-        public static ComponentSettingsInfo Create(IDictionary moduleSettings)
+        public static ComponentSettingsInfo Create(IDictionary moduleSettings, IDictionary tabModuleSettings)
         {
+            // moduleSettings is somethimes a concatanation of module settings and tabmodule settings, somethimes not
+
             var retval = new ComponentSettingsInfo()
             {
                 Template = moduleSettings["template"] as string,    //templatepath+file  or  //manifestpath+key
@@ -31,11 +33,25 @@ namespace Satrabel.OpenContent.Components
             }
 
             //normalize DetailTabId
-            var sDetailTabId = moduleSettings["detailtabid"] as string;
             retval.DetailTabId = -1;
-            if (!string.IsNullOrEmpty(sDetailTabId))
+
+            // try tabmodule settings
+            if (tabModuleSettings != null)
             {
-                retval.DetailTabId = int.Parse(sDetailTabId);
+                var sDetailTabId = tabModuleSettings["detailtabid"] as string;
+                if (!string.IsNullOrEmpty(sDetailTabId))
+                {
+                    retval.DetailTabId = int.Parse(sDetailTabId);
+                }
+            }
+            if (retval.DetailTabId == -1)
+            {
+                // try module settings
+                var sDetailTabId = moduleSettings["detailtabid"] as string;
+                if (!string.IsNullOrEmpty(sDetailTabId))
+                {
+                    retval.DetailTabId = int.Parse(sDetailTabId);
+                }
             }
             return retval;
         }

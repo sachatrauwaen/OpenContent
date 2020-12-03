@@ -12,7 +12,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         /// </summary>
         public static void Break()
         {
-            Debugger.Break();
+            Utils.DebuggerBreak();
         }
 
         /// <summary>

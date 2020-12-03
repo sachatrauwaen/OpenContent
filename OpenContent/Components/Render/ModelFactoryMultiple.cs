@@ -103,7 +103,7 @@ namespace Satrabel.OpenContent.Components.Render
                     }
                     else
                     {
-                        var editStatus = !_manifest.DisableEdit && IsEditAllowed(item.CreatedByUserId);
+                        var editStatus = !_manifest.DisableEdit && !_templateManifest.DisableEdit && IsEditAllowed(item.CreatedByUserId);
                         context["IsEditable"] = editStatus;
                         if (HasEditPermissions(item.CreatedByUserId))
                         {

@@ -73,7 +73,10 @@ namespace Satrabel.OpenContent.Components.Lucene
                 App.Config.LuceneIndexAllDelegate();  //execute the IndexAll delegate
                 return luceneResults;
             }
-
+            if (query == null)
+            {
+                query = new MatchAllDocsQuery();
+            }
             var searcher = Store.GetSearcher();
             TopDocs topDocs;
             var numOfItemsToReturn = (pageIndex + 1) * pageSize;
@@ -82,6 +85,9 @@ namespace Satrabel.OpenContent.Components.Lucene
             else
                 topDocs = Search(searcher, type, filter, query, numOfItemsToReturn, sort);
             luceneResults.TotalResults = topDocs.TotalHits;
+
+            //App.Services.Logger.Error("Search:" + string.Join(",", topDocs.ScoreDocs.Select(d => d.Score.ToString())));
+
             luceneResults.ids = topDocs.ScoreDocs.Skip(pageIndex * pageSize)
                 .Select(d => searcher.Doc(d.Doc).GetField(JsonMappingUtils.FIELD_ID).StringValue)
                 .ToArray();

@@ -27,6 +27,7 @@ using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Dnn;
+using DotNetNuke.Services.FileSystem;
 
 #endregion
 
@@ -669,20 +670,41 @@ namespace Satrabel.OpenContent.Components
                     return Request.CreateResponse(HttpStatusCode.OK, new { isValid = true });
 
                 int i = 1;
+                string errorOccured = "";
                 foreach (var id in ids)
                 {
+                    if (id == "-1") continue; // ignore items explicitly marked with id -1;
                     var dsItem = ds.Get(dsContext, id);
                     if (dsItem == null)
                     {
-                        Debugger.Break(); // this should never happen: investigate!
-                        throw new Exception($"Reorder failed. Unknown item {id}. Reindex module and try again.");
+                        Utils.DebuggerBreak(); // item not found. investigate!
+                        errorOccured = $"Reorder failed. Unknown item {id}. Reindex module and try again.";
+                        App.Services.Logger.Error(errorOccured);
+                        continue;
                     }
 
                     var json = dsItem.Data;
                     if (ml) // multi language
                     {
-                        if (json["SortIndex"] == null || json["SortIndex"].Type != JTokenType.Object) // old data-format (single-language) detected. Migrate to ML version.
+                        #region Normalize irregulatities with SortIndex field
+                        // if old data-format (single-language) detected. Migrate to ML version.
+                        if (json["SortIndex"] == null || json["SortIndex"].Type != JTokenType.Object)
+                        {
                             json["SortIndex"] = new JObject();
+                        }
+
+                        // if not all site languages initialized, then give them a default value.
+                        var langList = DnnLanguageUtils.GetPortalLocales(this.PortalSettings.PortalId);
+                        if (json["SortIndex"].Count() != langList.Count)
+                        {
+                            foreach (var locale in langList)
+                            {
+                                json["SortIndex"][locale.Key] = i;
+                            }
+                        }
+                        #endregion
+
+                        // Set the new SortIndex value for this item.
                         json["SortIndex"][DnnLanguageUtils.GetCurrentCultureCode()] = i;
                     }
                     else
@@ -692,7 +714,8 @@ namespace Satrabel.OpenContent.Components
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, new
                 {
-                    isValid = true
+                    isValid = string.IsNullOrEmpty(errorOccured),
+                    errorMsg = errorOccured
                 });
             }
             catch (Exception exc)
@@ -820,6 +843,22 @@ namespace Satrabel.OpenContent.Components
                     ds.Delete(dsContext, content);
                 }
                 App.Services.CacheAdapter.SyncronizeCache(module);
+
+                if (module.IsListMode() && module.Settings.Manifest.DeleteFiles)
+                {
+                    string uploadfolder = "OpenContent/Files/" + ActiveModule.ModuleID;
+                    if (module.IsListMode())
+                    {
+                        uploadfolder += "/" + json["id"].ToString();
+                    }
+                    var folderManager = FolderManager.Instance;
+                    var fileManager = FileManager.Instance;
+                    var moduleFolder = folderManager.GetFolder(PortalSettings.PortalId, uploadfolder);
+                    var files = folderManager.GetFiles(moduleFolder);
+                    fileManager.DeleteFiles(files);
+                    folderManager.DeleteFolder(moduleFolder);
+                }
+
                 return Request.CreateResponse(HttpStatusCode.OK, "");
             }
             catch (Exception exc)

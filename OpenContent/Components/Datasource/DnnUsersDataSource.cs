@@ -127,13 +127,12 @@ namespace Satrabel.OpenContent.Components.Datasource
             else
             {
                 int pageIndex = 0;
-                int pageSize = 1000;
+                int pageSize = 100000;
                 int total = 0;
                 IEnumerable<UserInfo> users;
                 if (selectQuery != null)
                 {
-                    pageIndex = selectQuery.PageIndex;
-                    pageSize = selectQuery.PageSize;
+                    
                     var ruleDisplayName = selectQuery.Query.FilterRules.FirstOrDefault(f => f.Field == "DisplayName");
                     var ruleRoles = selectQuery.Query.FilterRules.FirstOrDefault(f => f.Field == "Roles");
                     var ruleApproved = selectQuery.Query.FilterRules.FirstOrDefault(f => f.Field == "Approved");
@@ -146,8 +145,9 @@ namespace Satrabel.OpenContent.Components.Datasource
                     else
                     {
                         users = UserController.GetUsers(context.PortalId, pageIndex, pageSize, ref total, true, false).Cast<UserInfo>();
-                        total = users.Count();
+                     
                     }
+                    var userCount = users.Count();
                     if (ruleRoles != null)
                     {
                         var roleNames = ruleRoles.MultiValue.Select(r => r.AsString).ToList();
@@ -158,16 +158,18 @@ namespace Satrabel.OpenContent.Components.Datasource
                         var val = bool.Parse(ruleApproved.Value.AsString);
                         users = users.Where(u => u.Membership.Approved == val);
                     }
+                    total = users.Count();
+                    pageIndex = selectQuery.PageIndex;
+                    pageSize = selectQuery.PageSize;
+                    users = users.Skip(pageIndex * pageSize).Take(pageSize);
                 }
                 else
                 {
                     users = UserController.GetUsers(context.PortalId, pageIndex, pageSize, ref total, true, false).Cast<UserInfo>();
                 }
-                int excluded = users.Count() - users.Count(u => u.IsInRole("Administrators"));
+                int excluded = users.Count(u => u.IsInRole("Administrators"));
                 users = users.Where(u => !u.IsInRole("Administrators"));
                 
-
-                //users = users.Skip(pageIndex * pageSize).Take(pageSize);
                 var dataList = new List<IDataItem>();
                 foreach (var user in users)
                 {
@@ -381,6 +383,7 @@ namespace Satrabel.OpenContent.Components.Datasource
 
         private static void ReIndexIfNeeded(int moduleid, int tabid, int portalId)
         {
+            if (PortalSettings.Current == null) return; // we can not reindex even if we wanted, because we are not in a regular http context (maybe console? scheduler? ashx?)
             var currentUserCount = UserController.GetUserCountByPortal(portalId);
             var userCountAtLastIndex = DnnUtils.GetPortalSetting("UserCountAtLastIndex", 0);
             if (currentUserCount != userCountAtLastIndex)

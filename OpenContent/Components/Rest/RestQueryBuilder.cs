@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Datasource.Search;
 using Satrabel.OpenContent.Components.Lucene.Config;
 
@@ -28,29 +29,22 @@ namespace Satrabel.OpenContent.Components.Rest
                     }
                     else if (rule.FieldOperator == OperatorEnum.BETWEEN)
                     {
-                        // not yet implemented
+                        var val1 = GenerateValue(rule.LowerValue);
+                        var val2 = GenerateValue(rule.UpperValue);
+                        query.AddRule(FieldConfigUtils.CreateFilterRule(config, cultureCode,
+                                 rule.Field,
+                                 rule.FieldOperator,
+                                 val1, val2
+                             ));
                     }
                     else
                     {
+                        // EQUAL
                         if (rule.Value != null)
                         {
                             RuleValue val;
-                            if(rule.Value.Type == Newtonsoft.Json.Linq.JTokenType.Boolean)
-                            {
-                                val = new BooleanRuleValue((bool)rule.Value.Value);
-                            }
-                            else if (rule.Value.Type == Newtonsoft.Json.Linq.JTokenType.Integer)
-                            {
-                                val = new IntegerRuleValue((int)rule.Value.Value);
-                            }
-                            else if (rule.Value.Type == Newtonsoft.Json.Linq.JTokenType.Float)
-                            {
-                                val = new FloatRuleValue((float)rule.Value.Value);
-                            }
-                            else
-                            {
-                                val = new StringRuleValue(rule.Value.ToString());
-                            }
+
+                            val = GenerateValue(rule.Value);
 
                             query.AddRule(FieldConfigUtils.CreateFilterRule(config, cultureCode,
                                 rule.Field,
@@ -76,6 +70,29 @@ namespace Satrabel.OpenContent.Components.Rest
             return select;
         }
 
+        private static RuleValue GenerateValue(JValue jvalue)
+        {
+            
+            RuleValue val;
+            if (jvalue.Type == Newtonsoft.Json.Linq.JTokenType.Boolean)
+            {
+                val = new BooleanRuleValue((bool)jvalue.Value);
+            }
+            else if (jvalue.Type == Newtonsoft.Json.Linq.JTokenType.Integer)
+            {
+                val = new IntegerRuleValue((int)jvalue.Value);
+            }
+            else if (jvalue.Type == Newtonsoft.Json.Linq.JTokenType.Float)
+            {
+                val = new FloatRuleValue((float)jvalue.Value);
+            }
+            else
+            {
+                val = new StringRuleValue(jvalue.ToString());
+            }
+
+            return val;
+        }
     }
 
 }

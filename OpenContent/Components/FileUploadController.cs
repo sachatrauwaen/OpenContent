@@ -81,7 +81,8 @@ namespace Satrabel.OpenContent.Components
             }
             return new HttpResponseMessage
             {
-                Content = new StringContent(JsonConvert.SerializeObject(new ImageStatus{
+                Content = new StringContent(JsonConvert.SerializeObject(new ImageStatus
+                {
                     Default = statuses[0].url
                 }))
             };
@@ -130,11 +131,20 @@ namespace Satrabel.OpenContent.Components
                 if (IsAllowedExtension(fileName))
                 {
                     bool? overwrite = null;
+
+                    var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
                     if (!string.IsNullOrEmpty(context.Request.Form["overwrite"]))
                     {
                         overwrite = context.Request.Form["overwrite"] == "true";
                     }
                     string uploadfolder = "OpenContent/Files/" + ActiveModule.ModuleID;
+                    if (module.Settings.Manifest.DeleteFiles)
+                    {
+                        if (!string.IsNullOrEmpty(context.Request.Form["itemId"]))
+                        {
+                            uploadfolder += "/" + context.Request.Form["itemId"];
+                        }
+                    }
                     if (!string.IsNullOrEmpty(context.Request.Form["uploadfolder"]))
                     {
                         uploadfolder = context.Request.Form["uploadfolder"];
@@ -204,8 +214,6 @@ namespace Satrabel.OpenContent.Components
                 }
             }
         }
-
-
 
         public static string CleanUpFileName(string filename)
         {

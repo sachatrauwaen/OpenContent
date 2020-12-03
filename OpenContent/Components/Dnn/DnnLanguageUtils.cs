@@ -12,7 +12,7 @@ namespace Satrabel.OpenContent.Components
     public static class DnnLanguageUtils
     {
         /// <summary>
-        /// Gets the current culture code.
+        /// Gets the current culture code. Format en-US.
         /// This code is based on long expierence of how hard it is to get the correct value.
         /// </summary>
         public static string GetCurrentCultureCode()

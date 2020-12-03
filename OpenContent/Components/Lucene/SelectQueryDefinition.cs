@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Text;
 using Lucene.Net.Index;
 using Lucene.Net.QueryParsers;
 using Lucene.Net.Search;
@@ -12,9 +14,11 @@ namespace Satrabel.OpenContent.Components.Lucene
 {
     public class SelectQueryDefinition
     {
+        private static readonly Query _DefaultQuery = new MatchAllDocsQuery();
+
         public SelectQueryDefinition()
         {
-            Query = new MatchAllDocsQuery();
+            Query = _DefaultQuery;
             Sort = Sort.RELEVANCE;
             PageSize = 100;
         }
@@ -28,8 +32,17 @@ namespace Satrabel.OpenContent.Components.Lucene
         {
             BuildPage(select);
             Filter = BuildFilter(select.Filter);
-            Query = BuildFilter(select.Query);
-            BuildSort(select);
+            Query = BuildFilter(select.Query, "");
+            Sort = BuildSort(select);
+            return this;
+        }
+
+        public SelectQueryDefinition Build(Select select, string cultureCode)
+        {
+            BuildPage(select);
+            Filter = BuildFilter(select.Filter);
+            Query = BuildFilter(select.Query, cultureCode);
+            Sort = BuildSort(select);
             return this;
         }
 
@@ -43,16 +56,25 @@ namespace Satrabel.OpenContent.Components.Lucene
             return this;
         }
 
-        private static Query BuildFilter(FilterGroup filter)
+        private static Query BuildFilter(FilterGroup filter, string cultureCode = "")
         {
             BooleanQuery q = new BooleanQuery();
-            q.Add(new MatchAllDocsQuery(), Occur.MUST);
+            //if (filter.FilterRules.Count == 0 && filter.FilterGroups.Count == 0)
+            //{
+            //    q.Add(new MatchAllDocsQuery(), Occur.MUST);
+            //}
+
+            if (filter.FilterRules.Count > 0 && filter.FilterRules.All(r => r.FieldOperator == OperatorEnum.NOT_EQUAL))
+            {
+                q.Add(new MatchAllDocsQuery(), Occur.MUST);
+            }
+
             Occur cond = Occur.MUST; // AND
             if (filter.Condition == ConditionEnum.OR)
             {
                 cond = Occur.SHOULD;
             }
-            AddRules(q, filter.FilterRules, cond);
+            AddRules(q, filter.FilterRules, cond, cultureCode);
             foreach (var rule in filter.FilterGroups)
             {
                 Occur groupCond = Occur.MUST; // AND
@@ -61,14 +83,18 @@ namespace Satrabel.OpenContent.Components.Lucene
                     groupCond = Occur.SHOULD;
                 }
                 BooleanQuery groupQ = new BooleanQuery();
-                AddRules(groupQ, rule.FilterRules, groupCond);
+                AddRules(groupQ, rule.FilterRules, groupCond, cultureCode);
                 q.Add(groupQ, cond);
             }
             q = q.Clauses.Count > 0 ? q : null;
+
+            if (q == null)
+                return _DefaultQuery;
+
             return q;
         }
 
-        private static void AddRules(BooleanQuery q, List<FilterRule> filterRules, Occur cond)
+        private static void AddRules(BooleanQuery q, List<FilterRule> filterRules, Occur cond, string cultureCode = "")
         {
             foreach (var rule in filterRules)
             {
@@ -83,6 +109,12 @@ namespace Satrabel.OpenContent.Components.Lucene
                         int ival = rule.Value.AsBoolean ? 1 : 0;
                         q.Add(NumericRangeQuery.NewIntRange(fieldName, ival, ival, true, true), cond);
                     }
+                    else if (rule.FieldType == FieldTypeEnum.DATETIME)
+                    {
+                        var startDate = rule.Value.AsDateTime;
+                        var endDate = rule.Value.AsDateTime;
+                        q.Add(NumericRangeQuery.NewLongRange(fieldName, startDate.Ticks, endDate.Ticks, true, true), cond);
+                    }
                     else if (rule.FieldType == FieldTypeEnum.FLOAT)
                     {
                         float fval = rule.Value.AsFloat;
@@ -90,7 +122,7 @@ namespace Satrabel.OpenContent.Components.Lucene
                     }
                     else if (rule.FieldType == FieldTypeEnum.STRING || rule.FieldType == FieldTypeEnum.TEXT || rule.FieldType == FieldTypeEnum.HTML)
                     {
-                        q.Add(ParseQuery(rule.Value.AsString + "*", fieldName), cond);
+                        q.Add(ParseQuery(rule.Value.AsString + "*", fieldName, cultureCode), cond);
                     }
                     else
                     {
@@ -106,7 +138,7 @@ namespace Satrabel.OpenContent.Components.Lucene
                 {
                     if (rule.FieldType == FieldTypeEnum.STRING || rule.FieldType == FieldTypeEnum.TEXT || rule.FieldType == FieldTypeEnum.HTML)
                     {
-                        q.Add(ParseQuery(rule.Value.AsString + "*", fieldName), cond);
+                        q.Add(ParseQuery(rule.Value.AsString + "*", fieldName, cultureCode), cond);
                     }
                     else
                     {
@@ -182,15 +214,17 @@ namespace Satrabel.OpenContent.Components.Lucene
             }
         }
 
-        public static Query ParseQuery(string searchQuery, string defaultFieldName)
+        public static Query ParseQuery(string searchQuery, string defaultFieldName, string CultureCode = "")
         {
-            var parser = new QueryParser(Version.LUCENE_30, defaultFieldName, JsonMappingUtils.GetAnalyser());
+            searchQuery = RemoveDiacritics(searchQuery);
+            searchQuery = searchQuery.Replace('-', ' '); // concider '-' as a space
+            var parser = new QueryParser(Version.LUCENE_30, defaultFieldName, JsonMappingUtils.GetAnalyser(CultureCode));
             Query query;
             try
             {
                 if (string.IsNullOrEmpty(searchQuery))
                 {
-                    query = new MatchAllDocsQuery();
+                    query = _DefaultQuery;
                 }
                 else
                 {
@@ -199,26 +233,39 @@ namespace Satrabel.OpenContent.Components.Lucene
             }
             catch (ParseException)
             {
-                query = searchQuery != null ? parser.Parse(QueryParser.Escape(searchQuery.Trim())) : new MatchAllDocsQuery();
+                query = searchQuery != null ? parser.Parse(QueryParser.Escape(searchQuery.Trim())) : _DefaultQuery;
             }
             return query;
         }
 
-        private SelectQueryDefinition BuildSort(Select select)
+        public static string RemoveDiacritics(string text)
         {
-            var sort = Sort.RELEVANCE;
+            if (string.IsNullOrWhiteSpace(text))
+                return text;
+
+            text = text.Normalize(NormalizationForm.FormD);
+            var chars = text.Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark).ToArray();
+            return new string(chars).Normalize(NormalizationForm.FormC);
+        }
+
+        private static Sort BuildSort(Select select)
+        {
+            var sortFields = new List<SortField>();
+
             if (!select.Sort.Any())
             {
-                SortRule sortOneCreateDate = new SortRule
+                // if no sorting is specified, then sort on score and on sortOnCreateDate
+                sortFields.Add(SortField.FIELD_SCORE);
+
+                var sortOnCreateDate = new SortRule
                 {
                     Field = "createdondate",
                     FieldType = FieldTypeEnum.DATETIME,
                     Descending = false
                 };
-                select.Sort.Add(sortOneCreateDate);
+                select.Sort.Add(sortOnCreateDate);
             }
-
-            var sortFields = new List<SortField>();
+            
             foreach (var rule in select.Sort)
             {
                 int sortfieldtype;
@@ -229,10 +276,9 @@ namespace Satrabel.OpenContent.Components.Lucene
 
                 sortFields.Add(new SortField(sortFieldPrefix + rule.Field, sortfieldtype, rule.Descending));
             }
-            sort = new Sort(sortFields.ToArray());
+            var sort = new Sort(sortFields.ToArray());
 
-            Sort = sort;
-            return this;
+            return sort;
         }
 
         private static void Sortfieldtype(FieldTypeEnum fieldType, out int sortfieldtype, ref string sortFieldPrefix)
