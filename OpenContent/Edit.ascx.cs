@@ -41,6 +41,11 @@ namespace Satrabel.OpenContent
             AlpacaContext.Bootstrap = bootstrap;
             AlpacaContext.Horizontal = App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetEditLayout() == AlpacaLayoutEnum.BootstrapHorizontal;
             AlpacaContext.IsNew = settings.Template.IsListTemplate && string.IsNullOrEmpty(itemId);
+            AlpacaContext.DeleteConfirmMessage = LocalizeSafeJsString("txtDeleteConfirmMessage");
+            if (DnnLanguageUtils.IsMultiLingualPortal(PortalId))
+            {
+                AlpacaContext.DeleteConfirmMessage = LocalizeSafeJsString("txtMLDeleteConfirmMessage");
+            }
         }
         public AlpacaContext AlpacaContext { get; private set; }
     }

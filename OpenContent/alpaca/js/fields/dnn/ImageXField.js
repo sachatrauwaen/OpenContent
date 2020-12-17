@@ -6,6 +6,7 @@
                 var self = this;
                 this.base(container, data, options, schema, view, connector);
                 this.sf = connector.servicesFramework;
+                this.itemId = connector.itemId;
                 this.dataSource = {};
             },
             getFieldType: function () {
@@ -185,7 +186,7 @@
                             model.selectOptions = self.selectOptions;
                             callback();
                         };
-                        var postData = { q: "*", folder: self.options.uploadfolder };
+                        var postData = { q: "*", folder: self.options.uploadfolder, itemId: self.itemId };
                         $.ajax({
                             url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "ImagesLookupExt",
                             beforeSend: self.sf.setModuleHeaders,
@@ -302,6 +303,7 @@
                                     } else if (self.options.overwrite) {
                                         formData.push({ name: 'overwrite', value: true });
                                     }
+                                    formData.push({ name: 'itemId', value: self.itemId });                                    
                                     return formData;
                                     //{ uploadfolder: self.options.uploadfolder, overwrite: self.isOverwrite() }
                                 },

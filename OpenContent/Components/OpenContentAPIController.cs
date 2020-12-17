@@ -27,6 +27,7 @@ using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Dnn;
+using DotNetNuke.Services.FileSystem;
 
 #endregion
 
@@ -687,7 +688,7 @@ namespace Satrabel.OpenContent.Components
                     {
                         #region Normalize irregulatities with SortIndex field
                         // if old data-format (single-language) detected. Migrate to ML version.
-                        if (json["SortIndex"] == null || json["SortIndex"].Type != JTokenType.Object) 
+                        if (json["SortIndex"] == null || json["SortIndex"].Type != JTokenType.Object)
                         {
                             json["SortIndex"] = new JObject();
                         }
@@ -842,6 +843,22 @@ namespace Satrabel.OpenContent.Components
                     ds.Delete(dsContext, content);
                 }
                 App.Services.CacheAdapter.SyncronizeCache(module);
+
+                if (module.IsListMode() && module.Settings.Manifest.DeleteFiles)
+                {
+                    string uploadfolder = "OpenContent/Files/" + ActiveModule.ModuleID;
+                    if (module.IsListMode())
+                    {
+                        uploadfolder += "/" + json["id"].ToString();
+                    }
+                    var folderManager = FolderManager.Instance;
+                    var fileManager = FileManager.Instance;
+                    var moduleFolder = folderManager.GetFolder(PortalSettings.PortalId, uploadfolder);
+                    var files = folderManager.GetFiles(moduleFolder);
+                    fileManager.DeleteFiles(files);
+                    folderManager.DeleteFolder(moduleFolder);
+                }
+
                 return Request.CreateResponse(HttpStatusCode.OK, "");
             }
             catch (Exception exc)

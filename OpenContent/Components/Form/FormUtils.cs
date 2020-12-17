@@ -316,6 +316,8 @@ namespace Satrabel.OpenContent.Components.Form
                                 try
                                 {
                                     subject = hbs.Execute(notification.EmailSubject, data);
+                                    subject = HttpUtility.HtmlDecode(subject);
+                                    
                                 }
                                 catch (Exception ex)
                                 {
