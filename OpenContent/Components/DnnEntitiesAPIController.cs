@@ -140,12 +140,13 @@ namespace Satrabel.OpenContent.Components
         /// Imageses the lookup.
         /// </summary>
         /// <param name="q">The string that should be Contained in the name of the file (case insensitive). Use * to get all the files.</param>
-        /// <param name="d">The Folder path to retrieve</param>
+        /// <param name="folder">The Folder path to retrieve</param>
+        /// <param name="itemId"></param>
         /// <returns></returns>
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
         [HttpGet]
-        public HttpResponseMessage ImagesLookupExt(string q, string folder, string itemId)
+        public HttpResponseMessage ImagesLookupExt(string q, string folder, string itemId = "")
         {
             try
             {
