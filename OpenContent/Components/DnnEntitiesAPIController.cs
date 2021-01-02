@@ -145,15 +145,15 @@ namespace Satrabel.OpenContent.Components
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
         [HttpGet]
-        public HttpResponseMessage ImagesLookupExt(string q, string folder, string itemId)
+        public HttpResponseMessage ImagesLookupExt(string q, string folder, string itemKey)
         {
             try
             {
                 var folderManager = FolderManager.Instance;
                 string imageFolder = "OpenContent/Files/" + ActiveModule.ModuleID;
-                if (!string.IsNullOrEmpty(itemId))
+                if (!string.IsNullOrEmpty(itemKey))
                 {
-                    imageFolder += "/" + itemId;
+                    imageFolder += "/" + itemKey;
                 }
                 if (!string.IsNullOrEmpty(folder))
                 {
@@ -469,6 +469,10 @@ namespace Satrabel.OpenContent.Components
                 rawImageUrl = rawImageUrl.Replace(PortalSettings.HomeDirectory, "");
                 var file = fileManager.GetFile(ActiveModule.PortalID, rawImageUrl);
                 string cropfolder = "OpenContent/Cropped/" + ActiveModule.ModuleID;
+                if (!string.IsNullOrEmpty(cropData.itemKey))
+                {
+                    cropfolder += "/" + cropData.itemKey;
+                }
                 if (!string.IsNullOrEmpty(cropData.cropfolder))
                 {
                     cropfolder = cropData.cropfolder;
@@ -851,6 +855,7 @@ namespace Satrabel.OpenContent.Components
             public CropDTO crop { get; set; }
             public ResizeDTO resize { get; set; }
             public string cropfolder { get; set; }
+            public string itemKey { get; set; }
         }
         public class CropResizeResultDTO
         {

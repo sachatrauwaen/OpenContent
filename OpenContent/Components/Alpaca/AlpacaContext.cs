@@ -1,5 +1,6 @@
 ﻿using DotNetNuke.Services.Localization;
 using Newtonsoft.Json;
+
 namespace Satrabel.OpenContent.Components.Alpaca
 {
     public class AlpacaContext
@@ -37,6 +38,9 @@ namespace Satrabel.OpenContent.Components.Alpaca
         public int ModuleId { get; private set; }
         [JsonProperty(PropertyName = "itemId")]
         public string ItemId { get; set; }
+
+
+
         [JsonProperty(PropertyName = "currentCulture")]
         public string CurrentCulture
         {
@@ -86,6 +90,5 @@ namespace Satrabel.OpenContent.Components.Alpaca
         public bool IsNew { get; set; }
         [JsonProperty(PropertyName = "deleteConfirmMessage")]
         public string DeleteConfirmMessage { get; set; }
-        
     }
 }

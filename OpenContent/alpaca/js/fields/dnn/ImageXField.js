@@ -6,7 +6,7 @@
                 var self = this;
                 this.base(container, data, options, schema, view, connector);
                 this.sf = connector.servicesFramework;
-                this.itemId = connector.itemId;
+                this.itemKey = connector.itemKey;
                 this.dataSource = {};
             },
             getFieldType: function () {
@@ -186,7 +186,7 @@
                             model.selectOptions = self.selectOptions;
                             callback();
                         };
-                        var postData = { q: "*", folder: self.options.uploadfolder, itemId: self.itemId };
+                        var postData = { q: "*", folder: self.options.uploadfolder, itemKey: self.itemKey };
                         $.ajax({
                             url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "ImagesLookupExt",
                             beforeSend: self.sf.setModuleHeaders,
@@ -303,7 +303,7 @@
                                     } else if (self.options.overwrite) {
                                         formData.push({ name: 'overwrite', value: true });
                                     }
-                                    formData.push({ name: 'itemId', value: self.itemId });                                    
+                                    formData.push({ name: 'itemKey', value: self.itemKey });                                    
                                     return formData;
                                     //{ uploadfolder: self.options.uploadfolder, overwrite: self.isOverwrite() }
                                 },
@@ -366,7 +366,7 @@
                 $image = self.getImage();
                 var crop = $image.cropper('getData', { rounded: true }); 
                 
-                var postData = { url: data.url, cropfolder: self.options.cropfolder, crop: crop, id: "crop" };
+                var postData = { url: data.url, cropfolder: self.options.cropfolder, crop: crop, id: "crop", itemKey: self.itemKey };
                 if (self.options.width && self.options.height) {
                     postData.resize = { width: self.options.width, height: self.options.height };
                 }
