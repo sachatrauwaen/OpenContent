@@ -137,6 +137,8 @@ alpacaEngine.engine = function (config) {
         connector.numberDecimalSeparator = self.numberDecimalSeparator;
         connector.rootUrl = self.rootUrl;
         connector.itemId = self.itemId;
+        connector.itemKey = config.context.itemKey;
+        this.itemKey = config.context.itemKey;
         if (config.versions) {
             $.each(config.versions, function (i, item) {
                 $("#" + self.ddlVersions).append($('<option>', {
@@ -244,6 +246,8 @@ alpacaEngine.engine = function (config) {
         var postData = $.extend({ form: data }, self.data);
         if (copy) {
             delete postData.id;
+        } else if (!postData.id) {
+            postData.form["_id"] = this.itemKey;
         }
         $.ajax({
             type: "POST",

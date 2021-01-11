@@ -28,6 +28,7 @@ using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Dnn;
 using DotNetNuke.Services.FileSystem;
+using Satrabel.OpenContent.Components.Common;
 
 #endregion
 
@@ -95,8 +96,14 @@ namespace Satrabel.OpenContent.Components
                     }
                     json["options"]["form"]["buttons"] = newButtons;
                 }
-                if (dsItem != null)
+                string itemKey; 
+                if (dsItem == null)
                 {
+                    itemKey= ObjectId.NewObjectId().ToString();
+                }
+                else
+                {
+                    itemKey = dsItem.Key;
                     json["data"] = dsItem.Data;
                     if (json["schema"]["properties"]["ModuleTitle"] is JObject)
                     {
@@ -126,6 +133,7 @@ namespace Satrabel.OpenContent.Components
                 context["alpacaCulture"] = AlpacaEngine.AlpacaCulture(currentLocale.Code);
                 context["bootstrap"] = App.Services.CreateGlobalSettingsRepository(PortalSettings.PortalId).GetEditLayout() != AlpacaLayoutEnum.DNN;
                 context["horizontal"] = App.Services.CreateGlobalSettingsRepository(PortalSettings.PortalId).GetEditLayout() == AlpacaLayoutEnum.BootstrapHorizontal;
+                context["itemKey"] = itemKey;
                 json["context"] = context;
 
                 //todo: can't we do some of these checks at the beginning of this method to fail faster?
@@ -849,7 +857,7 @@ namespace Satrabel.OpenContent.Components
                     string uploadfolder = "OpenContent/Files/" + ActiveModule.ModuleID;
                     if (module.IsListMode())
                     {
-                        uploadfolder += "/" + json["id"].ToString();
+                        uploadfolder += "/" + content.Key;// json["_id"].ToString();
                     }
                     var folderManager = FolderManager.Instance;
                     var fileManager = FileManager.Instance;
@@ -857,6 +865,19 @@ namespace Satrabel.OpenContent.Components
                     var files = folderManager.GetFiles(moduleFolder);
                     fileManager.DeleteFiles(files);
                     folderManager.DeleteFolder(moduleFolder);
+
+                    uploadfolder = "OpenContent/Cropped/" + ActiveModule.ModuleID;
+                    if (module.IsListMode())
+                    {
+                        uploadfolder += "/" + content.Key;// json["_id"].ToString();
+                    }
+                    moduleFolder = folderManager.GetFolder(PortalSettings.PortalId, uploadfolder);
+                    if (moduleFolder != null)
+                    {
+                        files = folderManager.GetFiles(moduleFolder);
+                        fileManager.DeleteFiles(files);
+                        folderManager.DeleteFolder(moduleFolder);
+                    }
                 }
 
                 return Request.CreateResponse(HttpStatusCode.OK, "");

@@ -6,3 +6,4 @@ obj/
 Install/
 *.user
 OpenContentDnnHost/bin/
+OpenContent/lama/node_modules/

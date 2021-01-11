@@ -460,6 +460,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             return new DefaultDataItem
             {
                 Id = content.Id,
+                Key= content.Key,
                 Collection = content.Collection,
                 Title = content.Title,
                 Data = content.JsonAsJToken,

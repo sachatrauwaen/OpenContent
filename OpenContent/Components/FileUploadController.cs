@@ -140,9 +140,9 @@ namespace Satrabel.OpenContent.Components
                     string uploadfolder = "OpenContent/Files/" + ActiveModule.ModuleID;
                     if (module.Settings.Manifest.DeleteFiles)
                     {
-                        if (!string.IsNullOrEmpty(context.Request.Form["itemId"]))
+                        if (!string.IsNullOrEmpty(context.Request.Form["itemKey"]))
                         {
-                            uploadfolder += "/" + context.Request.Form["itemId"];
+                            uploadfolder += "/" + context.Request.Form["itemKey"];
                         }
                     }
                     if (!string.IsNullOrEmpty(context.Request.Form["uploadfolder"]))
