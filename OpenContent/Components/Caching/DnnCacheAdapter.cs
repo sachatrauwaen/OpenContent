@@ -44,7 +44,7 @@ namespace Satrabel.OpenContent.Components
         public void SyncronizeCache(OpenContentModuleConfig ocModuleConfig)
         {
             int dataModuleId = ocModuleConfig.DataModule.ModuleId;
-            var dataModuleHasCrossPortalData = Json.JsonExtensions.GetValue(ocModuleConfig.DataModule.ModuleInfo.OpenContentSettings().Manifest.Permissions, "AllowCrossPortalData", false);
+            var dataModuleHasCrossPortalData = Json.JsonExtensions.GetValue(ocModuleConfig.DataModule.ModuleInfo.OpenContentSettings().Manifest?.Permissions, "AllowCrossPortalData", false);
             if (dataModuleHasCrossPortalData)
                 foreach (PortalInfo portal in PortalController.Instance.GetPortals())
                 {
