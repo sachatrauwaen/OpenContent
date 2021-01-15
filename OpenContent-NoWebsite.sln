@@ -1,11 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30503.244
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenContent", "OpenContent\OpenContent.csproj", "{7D61A32C-0F21-453F-A981-BD8E5A3A5304}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenContentTests", "OpenContentTests\OpenContentTests.csproj", "{5703831E-F8C9-4832-9B06-1A2D24426CDF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DDFBA7DA-A5EB-47CF-952C-C2D6B8BC2951}"
+	ProjectSection(SolutionItems) = preProject
+		custom.targets = custom.targets
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,5 +29,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0AEF2EF6-FF7E-4F28-A7AB-0DDB2FAE6921}
 	EndGlobalSection
 EndGlobal
