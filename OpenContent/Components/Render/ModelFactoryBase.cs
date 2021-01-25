@@ -258,10 +258,11 @@ namespace Satrabel.OpenContent.Components.Render
                 try
                 {
                     var jsonSettings = JToken.Parse(_settingsJson);
-                    if (DnnLanguageUtils.GetPortalLocales(_portalId).Count > 1)
-                    {
-                        JsonUtils.SimplifyJson(jsonSettings, GetCurrentCultureCode());
-                    }
+                    //if (DnnLanguageUtils.GetPortalLocales(_portalId).Count > 1)
+                    //{
+                    //    JsonUtils.SimplifyJson(jsonSettings, GetCurrentCultureCode());
+                    //}
+                    JsonUtils.SimplifyJson(jsonSettings, GetCurrentCultureCode());
                     model["Settings"] = jsonSettings;
                 }
                 catch (Exception ex)
