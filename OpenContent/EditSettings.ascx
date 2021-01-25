@@ -90,6 +90,7 @@
             connector.culture = '<%=CurrentCulture%>';
             connector.defaultCulture = '<%=DefaultCulture%>';
             connector.numberDecimalSeparator = '<%=NumberDecimalSeparator%>';
+            connector.rootUrl = '<%=RootUrl%>';
             $("#field1").alpaca({
                 "schema": config.schema,
                 "options": config.options,
