@@ -17,6 +17,7 @@ using System.Xml;
 using System.Linq;
 using DotNetNuke.Common;
 using System;
+using System.Collections;
 using DotNetNuke.Services.Search.Entities;
 using Newtonsoft.Json.Linq;
 using DotNetNuke.Entities.Portals;
@@ -42,6 +43,11 @@ namespace Satrabel.OpenContent.Components
         {
             string xml = "";
             OpenContentController ctrl = new OpenContentController(PortalSettings.Current.PortalId);
+
+            var tabModules = ModuleController.Instance.GetTabModulesByModule(moduleId);
+
+            Hashtable moduleSettings = tabModules.Any() ? tabModules.First().ModuleSettings : new Hashtable();
+            
             var items = ctrl.GetContents(moduleId);
             xml += "<opencontent>";
             foreach (var item in items)
@@ -52,6 +58,15 @@ namespace Satrabel.OpenContent.Components
                 xml += "<key>" + XmlUtils.XMLEncode(item.Id) + "</key>";
                 xml += "</item>";
             }
+
+            foreach (DictionaryEntry moduleSetting in moduleSettings)
+            {
+                xml += "<moduleSetting>";
+                xml += "<settingName>" + XmlUtils.XMLEncode(moduleSetting.Key.ToString()) + "</settingName>";
+                xml += "<settingValue>" + XmlUtils.XMLEncode(moduleSetting.Value.ToString()) + "</settingValue>";
+                xml += "</moduleSetting>";
+            }
+            
             xml += "</opencontent>";
             return xml;
         }
@@ -83,6 +98,23 @@ namespace Satrabel.OpenContent.Components
                     }
                 }
             }
+            var settings = xml.SelectNodes("moduleSetting");
+            if (settings != null)
+            {
+                foreach (XmlNode setting in settings)
+                {
+                    XmlNode settingName = setting.SelectSingleNode("settingName");
+                    XmlNode settingValue = setting.SelectSingleNode("settingValue");
+
+                    if (!string.IsNullOrEmpty(settingName?.InnerText))
+                    {
+                        ModuleController.Instance.UpdateModuleSetting(moduleId, settingName.InnerText, settingValue?.InnerText ?? "");
+                    }
+                }
+            }
+            module = OpenContentModuleConfig.Create(moduleId, Null.NullInteger, PortalSettings.Current);
+            
+            LuceneUtils.ReIndexModuleData(module);
         }
 
         #region ModuleSearchBase
