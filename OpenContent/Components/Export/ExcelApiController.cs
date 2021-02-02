@@ -30,69 +30,76 @@ namespace Satrabel.OpenContent.Components.Export
         [HttpGet]
         public HttpResponseMessage GetExcelByQuery(int moduleId, int tabId, string queryName, string filter = null, string sort = null)
         {
-            RestSelect restSelect = new RestSelect()
+            try
             {
-                PageIndex = 0,
-                PageSize = 100000
-            };
-            if (!string.IsNullOrEmpty(filter))
-            {
-                restSelect.Query = JsonConvert.DeserializeObject<RestGroup>(filter);
-            }
-            if (!string.IsNullOrEmpty(sort))
-            {
-                restSelect.Sort = JsonConvert.DeserializeObject<List<RestSort>>(sort);
-            }
-            IEnumerable<IDataItem> dataList = new List<IDataItem>();
-            var module = OpenContentModuleConfig.Create(moduleId, tabId, PortalSettings);
-            var manifest = module.Settings.Template.Manifest;
-
-            if (!module.HasAllUsersViewPermissions())
-            {
-                return Request.CreateResponse(HttpStatusCode.Unauthorized);
-            }
-            string filename = queryName;
-            bool useLucene = module.Settings.Template.Manifest.Index;
-            if (useLucene)
-            {
-                var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template);
-
-                QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
-                queryBuilder.Build(module.Settings.Query, true, UserInfo.UserID, DnnLanguageUtils.GetCurrentCultureCode(), UserInfo.Social.Roles.FromDnnRoles());
-                RestQueryBuilder.MergeQuery(indexConfig, queryBuilder.Select, restSelect, DnnLanguageUtils.GetCurrentCultureCode());
-                IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
-                var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
-
-                if (string.IsNullOrEmpty(queryName))
+                RestSelect restSelect = new RestSelect()
                 {
-                    var dsItems = ds.GetAll(dsContext, queryBuilder.Select);
-                    dataList = dsItems.Items;
-                    filename = dsContext.Collection;
+                    PageIndex = 0,
+                    PageSize = 100000
+                };
+                if (!string.IsNullOrEmpty(filter))
+                {
+                    restSelect.Query = JsonConvert.DeserializeObject<RestGroup>(filter);
                 }
-                else
+                if (!string.IsNullOrEmpty(sort))
                 {
-                    var qds = ds as IDataQueries;
-                    var query = qds?.GetQueries(dsContext).SingleOrDefault(q => q.Name == queryName);
-                    if (query != null)
+                    restSelect.Sort = JsonConvert.DeserializeObject<List<RestSort>>(sort);
+                }
+                IEnumerable<IDataItem> dataList = new List<IDataItem>();
+                var module = OpenContentModuleConfig.Create(moduleId, tabId, PortalSettings);
+                var manifest = module.Settings.Template.Manifest;
+
+                if (!module.HasAllUsersViewPermissions())
+                {
+                    return Request.CreateResponse(HttpStatusCode.Unauthorized);
+                }
+                string filename = queryName;
+                bool useLucene = module.Settings.Template.Manifest.Index;
+                if (useLucene)
+                {
+                    var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template);
+
+                    QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
+                    queryBuilder.Build(module.Settings.Query, true, UserInfo.UserID, DnnLanguageUtils.GetCurrentCultureCode(), UserInfo.Social.Roles.FromDnnRoles());
+                    RestQueryBuilder.MergeQuery(indexConfig, queryBuilder.Select, restSelect, DnnLanguageUtils.GetCurrentCultureCode());
+                    IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
+                    var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
+
+                    if (string.IsNullOrEmpty(queryName))
                     {
-                        var dsItems = query.GetAll(dsContext, queryBuilder.Select);
+                        var dsItems = ds.GetAll(dsContext, queryBuilder.Select);
                         dataList = dsItems.Items;
+                        filename = dsContext.Collection;
+                    }
+                    else
+                    {
+                        var qds = ds as IDataQueries;
+                        var query = qds?.GetQueries(dsContext).SingleOrDefault(q => q.Name == queryName);
+                        if (query != null)
+                        {
+                            var dsItems = query.GetAll(dsContext, queryBuilder.Select);
+                            dataList = dsItems.Items;
+                        }
                     }
                 }
+
+                var mf = new ModelFactoryMultiple(dataList, null, manifest, null, null, module);
+                dynamic model = mf.GetModelAsDictionary(true);
+
+                var rssTemplate = new FileUri(module.Settings.TemplateDir, filename + "-excel.hbs");
+                string source = rssTemplate.FileExists ? FileUriUtils.ReadFileFromDisk(rssTemplate) : GenerateTemplateFromModel(model, rssTemplate);
+
+                HandlebarsEngine hbEngine = new HandlebarsEngine();
+                string res = hbEngine.Execute(source, model);
+
+                var fileBytes = ExcelUtils.CreateExcel(res);
+                return ExcelUtils.CreateExcelResponseMessage(filename + ".xlsx", fileBytes);
             }
-
-            var mf = new ModelFactoryMultiple(dataList, null, manifest, null, null, module);
-            dynamic model = mf.GetModelAsDictionary(true);
-
-            var rssTemplate = new FileUri(module.Settings.TemplateDir, filename + "-excel.hbs");
-            string source = rssTemplate.FileExists ? FileUriUtils.ReadFileFromDisk(rssTemplate) : GenerateTemplateFromModel(model, rssTemplate);
-
-            HandlebarsEngine hbEngine = new HandlebarsEngine();
-            string res = hbEngine.Execute(source, model);
-
-            var fileBytes = ExcelUtils.CreateExcel(res);
-            return ExcelUtils.CreateExcelResponseMessage(filename + ".xlsx", fileBytes);
-
+            catch (Exception e)
+            {
+                App.Services.Logger.Error(e);
+                throw;
+            }
         }
 
         [AllowAnonymous]
