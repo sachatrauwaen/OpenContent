@@ -49,8 +49,8 @@
                             newHeight,
                             newWidth;
 
-            newHeight = $window.height() - 36;
-            newWidth = Math.min($window.width() - 40, 1600);
+            newHeight = $window.height() - 110;
+            newWidth = Math.min($window.width() - 110, 1600);
 
             popup.dialog("option", {
                 close: function () { window.dnnModal.closePopUp(false, ""); },
