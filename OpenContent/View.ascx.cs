@@ -93,7 +93,7 @@ namespace Satrabel.OpenContent
             if (!Page.IsPostBack)
             {
                 AddEditorRole();
-                AutoEditMode();
+                //AutoEditMode();
             }
             try
             {

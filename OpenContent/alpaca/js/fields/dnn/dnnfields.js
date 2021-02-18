@@ -8699,7 +8699,7 @@
             var self = this;
             this.base(container, data, options, schema, view, connector);
             this.sf = connector.servicesFramework;
-            this.itemId = connector.itemId;
+            this.itemKey = connector.itemKey;
 
         },
 
@@ -8795,7 +8795,7 @@
                     dataType: 'json',
                     url: self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
                     maxFileSize: 25000000,
-                    formData: { uploadfolder: self.options.uploadfolder, itemId: self.itemId },
+                    formData: { uploadfolder: self.options.uploadfolder, itemKey: self.itemKey },
                     beforeSend: self.sf.setModuleHeaders,
                     add: function (e, data) {
                         //data.context = $(opts.progressContextSelector);
