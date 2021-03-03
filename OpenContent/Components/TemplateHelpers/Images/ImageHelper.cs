@@ -113,15 +113,15 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
                 var fileurl = DnnFileUtils.ToUrl(file);
                 if (!fileurl.Contains("LinkClick"))
                 {
-                    if (DnnImageHandlerExist)
-                    {
-                        fileurl = fileurl.RemoveQueryParams();
-                        return $"/DnnImageHandler.ashx?mode=file&file={fileurl}&resizemode=Crop&w={requestedCropRatio.Width}&h={requestedCropRatio.Height}";
-                    }
-                    else if (ImageProcessorExist)
+                    if (ImageProcessorExist)
                     {
                         fileurl = fileurl.RemoveQueryParams();
                         return fileurl.AppendQueryParams($"width={requestedCropRatio.Width}&height={requestedCropRatio.Height}&mode=crop");
+                    }
+                    else if (DnnImageHandlerExist)
+                    {
+                        fileurl = fileurl.RemoveQueryParams();
+                        return $"/DnnImageHandler.ashx?mode=file&file={fileurl}&resizemode=Crop&w={requestedCropRatio.Width}&h={requestedCropRatio.Height}";
                     }
                 }
                 return fileurl;
