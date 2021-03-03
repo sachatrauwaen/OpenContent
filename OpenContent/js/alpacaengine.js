@@ -137,8 +137,10 @@ alpacaEngine.engine = function (config) {
         connector.numberDecimalSeparator = self.numberDecimalSeparator;
         connector.rootUrl = self.rootUrl;
         connector.itemId = self.itemId;
-        connector.itemKey = config.context.itemKey;
-        this.itemKey = config.context.itemKey;
+        if (config && config.context) {
+            connector.itemKey = config.context.itemKey;
+            this.itemKey = config.context.itemKey;
+        }
         if (config.versions) {
             $.each(config.versions, function (i, item) {
                 $("#" + self.ddlVersions).append($('<option>', {

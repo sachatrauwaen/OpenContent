@@ -150,11 +150,15 @@ namespace Satrabel.OpenContent.Components
         {
             try
             {
+                var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
                 var folderManager = FolderManager.Instance;
                 string imageFolder = "OpenContent/Files/" + ActiveModule.ModuleID;
-                if (!string.IsNullOrEmpty(itemKey))
+                if (module.Settings.Manifest.DeleteFiles)
                 {
-                    imageFolder += "/" + itemKey;
+                    if (!string.IsNullOrEmpty(itemKey))
+                    {
+                        imageFolder += "/" + itemKey;
+                    }
                 }
                 if (!string.IsNullOrEmpty(folder))
                 {
