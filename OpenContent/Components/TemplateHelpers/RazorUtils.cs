@@ -51,17 +51,17 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         /// <summary>
         /// Replace all occurences of a set of email addresses with their protected mailto version
         /// </summary>
-        /// <param name="candidates">a list of email addresses</param>
+        /// <param name="emailaddresses">a list of email addresses</param>
         /// <param name="content">an html string in which we replace all the given email addresses with there protected mailto version</param>
         /// <returns></returns>
-        public static string ProtectEmails(IEnumerable<string> candidates, string content)
+        public static string ProtectEmails(IEnumerable<string> emailaddresses, string content)
         {
             var retval = content;
-            foreach (var candidate in candidates)
+            foreach (var emailaddress in emailaddresses)
             {
-                if (retval.Contains(candidate))
+                if (retval.Contains(emailaddress))
                 {
-                    retval = retval.Replace(candidate, candidate.ProtectEmail());
+                    retval = retval.Replace(emailaddress, emailaddress.ProtectEmail());
                 }
             }
             return retval;
