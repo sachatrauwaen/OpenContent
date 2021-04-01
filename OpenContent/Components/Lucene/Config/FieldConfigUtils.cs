@@ -7,6 +7,7 @@ using Lucene.Net.QueryParsers;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Datasource.Search;
 using Satrabel.OpenContent.Components.FileIndexer;
+using Satrabel.OpenContent.Components.Lucene.Mapping;
 
 namespace Satrabel.OpenContent.Components.Lucene.Config
 {
@@ -99,6 +100,11 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
             var fieldConfig = GetField(parentFieldConfig, field);
             var cultureSuffix = fieldConfig != null && fieldConfig.MultiLanguage ? "." + cultureCode : string.Empty;
             var indexType = GetFieldType(fieldConfig != null ? fieldConfig.IndexType : string.Empty);
+            if (field == JsonMappingUtils.FIELD_TIMESTAMP)
+            {
+                indexType = FieldTypeEnum.DATETIME;
+            }
+
             var rule = new SortRule()
             {
                 Field = field + cultureSuffix,

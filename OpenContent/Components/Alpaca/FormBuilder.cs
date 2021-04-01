@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Lucene.Config;
+using Satrabel.OpenContent.Components.Lucene.Mapping;
 
 namespace Satrabel.OpenContent.Components.Alpaca
 {
@@ -65,6 +66,8 @@ namespace Satrabel.OpenContent.Components.Alpaca
             }
             List<string> fieldLst = new List<string>();
             GetFields(newSchemaFilter, newOptionsFilter, schemaConfig, optionsConfig, fieldLst, indexConfig);
+
+            fieldLst.Add(JsonMappingUtils.FIELD_TIMESTAMP);
             // Sort
             SchemaConfig newSchemaSort = new SchemaConfig()
             {

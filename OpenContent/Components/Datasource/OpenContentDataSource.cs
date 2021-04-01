@@ -353,6 +353,10 @@ namespace Satrabel.OpenContent.Components.Datasource
         {
             if (action == "FormSubmit")
             {
+                if (data["form"]["approvalEnabled"] != null && data["form"]["approvalEnabled"].Value<bool>() == true )
+                {
+                    data["form"]["approved"] = false;
+                }
                 OpenContentController ctrl = new OpenContentController(context.PortalId);
                 //var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), "Submissions");
                 var content = new OpenContentInfo()
@@ -369,11 +373,13 @@ namespace Satrabel.OpenContent.Components.Datasource
                 ctrl.AddContent(content);
 
                 //Index the content item
-                //if (context.Index)
-                //{
-                //    LuceneController.Instance.Add(content, indexConfig);
-                //    LuceneController.Instance.Commit();
-                //}
+                
+                if (context.Index)
+                {
+                    var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), "Submissions");
+                    LuceneController.Instance.Add(content, indexConfig);
+                    LuceneController.Instance.Commit();
+                }
                 return FormUtils.FormSubmit(data as JObject, item?.Data?.DeepClone() as JObject);
             }
             return null;
