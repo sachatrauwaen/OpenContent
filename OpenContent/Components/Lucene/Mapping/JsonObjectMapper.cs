@@ -213,6 +213,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
                             
                             var val = SelectQueryDefinition.RemoveDiacritics(value.Value.ToString());
                             val = val.Replace('-', ' '); // concider '-' as a space
+                            val = val.Replace(',', ' '); // concider ',' as a space
                             //var val = LuceneUtils.CleanupText(value.Value.ToString());
                             if (index)
                             {
