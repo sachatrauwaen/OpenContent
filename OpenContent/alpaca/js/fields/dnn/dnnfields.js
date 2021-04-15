@@ -8428,6 +8428,10 @@
                     if (!self.options.showOverwrite) {
                         $(self.control).parent().find('#' + self.id + '-overwriteLabel').hide();
                     }
+                    if (self.options.overwrite) {
+                        var checkbox = $(self.control).parent().find('#' + self.id + '-overwrite');
+                        Alpaca.checked(checkbox, true);
+                    }
                     callback();
                 });
             },
