@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 
@@ -46,6 +46,25 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             }
             var result = $"<a href='#' {dataAttribs} onfocus=\"{onfocus}\">{visibleText}{onload}</a>";
             return result;
+        }
+
+        /// <summary>
+        /// Replace all occurences of a set of email addresses with their protected mailto version
+        /// </summary>
+        /// <param name="emailaddresses">a list of email addresses</param>
+        /// <param name="content">an html string in which we replace all the given email addresses with there protected mailto version</param>
+        /// <returns></returns>
+        public static string ProtectEmails(IEnumerable<string> emailaddresses, string content)
+        {
+            var retval = content;
+            foreach (var emailaddress in emailaddresses)
+            {
+                if (retval.Contains(emailaddress))
+                {
+                    retval = retval.Replace(emailaddress, emailaddress.ProtectEmail());
+                }
+            }
+            return retval;
         }
 
         /// <summary>

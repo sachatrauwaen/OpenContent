@@ -8078,7 +8078,7 @@
                 var self = this;
                 this.base(container, data, options, schema, view, connector);
                 this.sf = connector.servicesFramework;
-                this.itemId = connector.itemId;
+                this.itemKey = connector.itemKey;
                 this.dataSource = {};
             },
             getFieldType: function () {
@@ -8258,7 +8258,7 @@
                             model.selectOptions = self.selectOptions;
                             callback();
                         };
-                        var postData = { q: "*", folder: self.options.uploadfolder, itemId: self.itemId };
+                        var postData = { q: "*", folder: self.options.uploadfolder, itemKey: self.itemKey };
                         $.ajax({
                             url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "ImagesLookupExt",
                             beforeSend: self.sf.setModuleHeaders,
@@ -8375,7 +8375,7 @@
                                     } else if (self.options.overwrite) {
                                         formData.push({ name: 'overwrite', value: true });
                                     }
-                                    formData.push({ name: 'itemId', value: self.itemId });                                    
+                                    formData.push({ name: 'itemKey', value: self.itemKey });                                    
                                     return formData;
                                     //{ uploadfolder: self.options.uploadfolder, overwrite: self.isOverwrite() }
                                 },
@@ -8428,6 +8428,10 @@
                     if (!self.options.showOverwrite) {
                         $(self.control).parent().find('#' + self.id + '-overwriteLabel').hide();
                     }
+                    if (self.options.overwrite) {
+                        var checkbox = $(self.control).parent().find('#' + self.id + '-overwrite');
+                        Alpaca.checked(checkbox, true);
+                    }
                     callback();
                 });
             },
@@ -8438,7 +8442,7 @@
                 $image = self.getImage();
                 var crop = $image.cropper('getData', { rounded: true }); 
                 
-                var postData = { url: data.url, cropfolder: self.options.cropfolder, crop: crop, id: "crop" };
+                var postData = { url: data.url, cropfolder: self.options.cropfolder, crop: crop, id: "crop", itemKey: self.itemKey };
                 if (self.options.width && self.options.height) {
                     postData.resize = { width: self.options.width, height: self.options.height };
                 }
@@ -8699,7 +8703,7 @@
             var self = this;
             this.base(container, data, options, schema, view, connector);
             this.sf = connector.servicesFramework;
-            this.itemId = connector.itemId;
+            this.itemKey = connector.itemKey;
 
         },
 
@@ -8795,7 +8799,7 @@
                     dataType: 'json',
                     url: self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
                     maxFileSize: 25000000,
-                    formData: { uploadfolder: self.options.uploadfolder, itemId: self.itemId },
+                    formData: { uploadfolder: self.options.uploadfolder, itemKey: self.itemKey },
                     beforeSend: self.sf.setModuleHeaders,
                     add: function (e, data) {
                         //data.context = $(opts.progressContextSelector);

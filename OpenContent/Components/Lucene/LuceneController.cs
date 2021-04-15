@@ -32,7 +32,8 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         private LuceneController()
         {
-            _serviceStoreInstance = new LuceneService(App.Config.LuceneIndexFolder, JsonMappingUtils.GetAnalyser());
+            var lang = System.Configuration.ConfigurationManager.AppSettings["LuceneDefaultCulture"];
+            _serviceStoreInstance = new LuceneService(App.Config.LuceneIndexFolder, JsonMappingUtils.GetAnalyser(lang));
         }
 
         public static void ClearInstance()

@@ -74,14 +74,16 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
             return resultFilter;
         }
 
-        public static Analyzer GetAnalyser(string cultureCode="")
+        public static Analyzer GetAnalyser(string cultureCode = "")
         {
-            if (cultureCode.StartsWith("fr"))
-                return new FrenchAnalyzer(global::Lucene.Net.Util.Version.LUCENE_30);
-            else if (cultureCode.StartsWith("nl"))
-                return new DutchAnalyzer(global::Lucene.Net.Util.Version.LUCENE_30);
-            else
-                return new StandardAnalyzer(global::Lucene.Net.Util.Version.LUCENE_30);
+            if (!string.IsNullOrEmpty(cultureCode))
+            {
+                if (cultureCode.StartsWith("fr"))
+                    return new FrenchAnalyzer(global::Lucene.Net.Util.Version.LUCENE_30);
+                else if (cultureCode.StartsWith("nl"))
+                    return new DutchAnalyzer(global::Lucene.Net.Util.Version.LUCENE_30);
+            }
+            return new StandardAnalyzer(global::Lucene.Net.Util.Version.LUCENE_30);
         }
 
         public static TermQuery CreateTypeQuery(string type)

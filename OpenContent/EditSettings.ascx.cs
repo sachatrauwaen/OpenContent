@@ -97,6 +97,14 @@ namespace Satrabel.OpenContent
                 return AlpacaEngine.AlpacaCulture(cultureCode);
             }
         }
+
+        public string RootUrl
+        {
+            get
+            {
+                return System.Web.VirtualPathUtility.ToAbsolute(string.Concat(System.Web.HttpRuntime.AppDomainAppVirtualPath, "/"));
+            }
+        }
     }
 }
 

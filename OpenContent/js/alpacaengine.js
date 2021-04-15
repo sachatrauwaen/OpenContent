@@ -56,8 +56,8 @@ alpacaEngine.engine = function (config) {
                 newHeight,
                 newWidth;
 
-            newHeight = $window.height() - 36;
-            newWidth = Math.min($window.width() - 40, 1200);
+            newHeight = $window.height() - 110;
+            newWidth = Math.min($window.width() - 110, 1200);
 
             popup.dialog("option", {
                 close: function () { window.dnnModal.closePopUp(false, ""); },
@@ -137,6 +137,10 @@ alpacaEngine.engine = function (config) {
         connector.numberDecimalSeparator = self.numberDecimalSeparator;
         connector.rootUrl = self.rootUrl;
         connector.itemId = self.itemId;
+        if (config && config.context) {
+            connector.itemKey = config.context.itemKey;
+            this.itemKey = config.context.itemKey;
+        }
         if (config.versions) {
             $.each(config.versions, function (i, item) {
                 $("#" + self.ddlVersions).append($('<option>', {
@@ -244,6 +248,8 @@ alpacaEngine.engine = function (config) {
         var postData = $.extend({ form: data }, self.data);
         if (copy) {
             delete postData.id;
+        } else if (!postData.id) {
+            postData.form["_id"] = this.itemKey;
         }
         $.ajax({
             type: "POST",

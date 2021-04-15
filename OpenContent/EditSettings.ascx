@@ -28,8 +28,8 @@
                             newHeight,
                             newWidth;
 
-                newHeight = $window.height() - 36;
-                newWidth = Math.min($window.width() - 40, 1200);
+                newHeight = $window.height() - 110;
+                newWidth = Math.min($window.width() - 110, 1200);
 
                 popup.dialog("option", {
                     close: function () { window.dnnModal.closePopUp(false, ""); },
@@ -90,6 +90,7 @@
             connector.culture = '<%=CurrentCulture%>';
             connector.defaultCulture = '<%=DefaultCulture%>';
             connector.numberDecimalSeparator = '<%=NumberDecimalSeparator%>';
+            connector.rootUrl = '<%=RootUrl%>';
             $("#field1").alpaca({
                 "schema": config.schema,
                 "options": config.options,

@@ -12,6 +12,7 @@ using Satrabel.OpenContent.Components.Querying;
 using Satrabel.OpenContent.Components.TemplateHelpers;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -195,7 +196,7 @@ namespace Satrabel.OpenContent.Components.Render
 
         
 
-        protected void ExtendModel(JObject model, bool onlyData, bool onlyMainData)
+        protected void ExtendModel(JObject model, bool onlyData, bool onlyMainData, string id=null)
         {
             if (_module.CanvasUnavailable) onlyData = true;
 
@@ -224,7 +225,13 @@ namespace Satrabel.OpenContent.Components.Render
                                 var indexConfig = OpenContentUtils.GetIndexConfig(_module.Settings.TemplateDir, item.Key);
                                 QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
                                 var u = PortalSettings.Current.UserInfo;
-                                queryBuilder.Build(item.Value.Query, true, u.UserID, DnnLanguageUtils.GetCurrentCultureCode(), u.Social.Roles.FromDnnRoles());
+                                NameValueCollection queryString = null;
+                                if (item.Value.Query["RelatedField"] != null)
+                                {
+                                    queryString = new NameValueCollection();
+                                    queryString.Add(item.Value.Query["RelatedField"].ToString(), id);
+                                }
+                                queryBuilder.Build(item.Value.Query, true, u.UserID, DnnLanguageUtils.GetCurrentCultureCode(), u.Social.Roles.FromDnnRoles(), queryString);
                                 select = queryBuilder.Select;
                             }
                             IDataItems dataItems = _ds.GetAll(dsColContext, select);
@@ -258,10 +265,11 @@ namespace Satrabel.OpenContent.Components.Render
                 try
                 {
                     var jsonSettings = JToken.Parse(_settingsJson);
-                    if (DnnLanguageUtils.GetPortalLocales(_portalId).Count > 1)
-                    {
-                        JsonUtils.SimplifyJson(jsonSettings, GetCurrentCultureCode());
-                    }
+                    //if (DnnLanguageUtils.GetPortalLocales(_portalId).Count > 1)
+                    //{
+                    //    JsonUtils.SimplifyJson(jsonSettings, GetCurrentCultureCode());
+                    //}
+                    JsonUtils.SimplifyJson(jsonSettings, GetCurrentCultureCode());
                     model["Settings"] = jsonSettings;
                 }
                 catch (Exception ex)

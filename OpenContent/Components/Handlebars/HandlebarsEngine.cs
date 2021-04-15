@@ -16,6 +16,7 @@ using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components.Logging;
 using Newtonsoft.Json.Linq;
 using System.Text.RegularExpressions;
+using DotNetNuke.Common.Utilities;
 
 namespace Satrabel.OpenContent.Components.Handlebars
 {
@@ -1048,6 +1049,8 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 }
             });
         }
+
+        private static readonly Regex RemoveInlineStylesRegEx = new Regex("<style>.*?</style>", RegexOptions.Compiled | RegexOptions.Multiline);
         private static void RegisterConvertHtmlToTextHelper(HandlebarsDotNet.IHandlebars hbs)
         {
             hbs.RegisterHelper("convertHtmlToText", (writer, context, parameters) =>
@@ -1055,7 +1058,13 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 try
                 {
                     string html = parameters[0].ToString();
-                    string res = DotNetNuke.Services.Mail.Mail.ConvertToText(html);
+                    //string res = DotNetNuke.Services.Mail.Mail.ConvertToText(html);
+
+                    var formattedHtml = HtmlUtils.FormatText(html, true);
+                    //var styleLessHtml = HtmlUtils.RemoveInlineStyle(formattedHtml);
+                    var styleLessHtml = RemoveInlineStylesRegEx.Replace(formattedHtml, string.Empty);
+                    string res =  HtmlUtils.StripTags(styleLessHtml, true);
+
                     writer.WriteSafeString(res);
                 }
                 catch (Exception)

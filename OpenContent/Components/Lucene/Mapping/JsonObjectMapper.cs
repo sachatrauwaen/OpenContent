@@ -210,13 +210,18 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
                         }
                         else
                         {
+                            
+                            var val = SelectQueryDefinition.RemoveDiacritics(value.Value.ToString());
+                            val = val.Replace('-', ' '); // concider '-' as a space
+                            val = val.Replace(',', ' '); // concider ',' as a space
+                            //var val = LuceneUtils.CleanupText(value.Value.ToString());
                             if (index)
                             {
-                                doc.Add(new Field(prefix, value.Value.ToString(), Field.Store.NO, Field.Index.ANALYZED));
+                                doc.Add(new Field(prefix, val, Field.Store.NO, Field.Index.ANALYZED));
                             }
                             if (sort)
                             {
-                                doc.Add(new Field("@" + prefix, Truncate(value.Value.ToString(), 100), Field.Store.NO, Field.Index.NOT_ANALYZED));
+                                doc.Add(new Field("@" + prefix, Truncate(val, 100), Field.Store.NO, Field.Index.NOT_ANALYZED));
                             }
                         }
                         break;
