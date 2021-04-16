@@ -6,6 +6,26 @@
 <Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="MSBuild.Community.Tasks.Targets" />
 
+  <PropertyGroup>
+    <AssemblyInfoFile>$(MSBuildProjectDirectory)\Properties\AssemblyInfo.cs</AssemblyInfoFile>
+  </PropertyGroup>
+
+  <Target Name="BeforeBuild">
+    <CallTarget Targets="SetVersionInfo" />
+  </Target>
+
+  <!-- Set the version numbers in AssemblyInfo -->
+  <Target Name="SetVersionInfo">
+    <XmlRead Prefix="n"
+           Namespace="http://schemas.microsoft.com/developer/msbuild/2003"
+           XPath="dotnetnuke/packages/package[1]/@version"
+           XmlFileName="$(DNNFileName).dnn">
+      <Output TaskParameter="Value" PropertyName="Version" />
+    </XmlRead>
+    <!-- Write new version to assemblyinfo.cs -->
+    <FileUpdate Files="$(AssemblyInfoFile)" Encoding="ASCII" Regex="AssemblyVersion\(&quot;.*&quot;\)" ReplacementText="AssemblyVersion(&quot;$(Version)&quot;)" />
+    <FileUpdate Files="$(AssemblyInfoFile)" Encoding="ASCII" Regex="AssemblyFileVersion\(&quot;.*&quot;\)" ReplacementText="AssemblyFileVersion(&quot;$(Version)&quot;)" />
+  </Target>
 
   <Target Name="PackageModule" Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <XmlRead Prefix="n"
