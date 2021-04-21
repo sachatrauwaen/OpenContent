@@ -1076,7 +1076,7 @@ var fieldOptions =
     "fieldtype": {
         "optionLabels": ["Text", "Checkbox", "Multi checkbox", "Dropdown list (select)", "Radio buttons", "Text area", "Email address", "Date", "Number",
 
-            "File (upload & autocomplete)", "Image (upload & autocomplete)", "ImageX (cropper, overwrite, ...)",  "Url (autocomplete for pages)", "Font Awesome Icons", "Guid (auto id)", "Address (autocomplete & geocode)",
+            "File (uploadload & autocomplete)", "Image (upload & autocomplete)", "ImageX (cropper, overwrite, ...)",  "Url (autocomplete for pages)", "Font Awesome Icons", "Guid (auto id)", "Address (autocomplete & geocode)",
             "List (Panels)", "List (Table)", "List (Accordion)", "Relation (Additional Data)", "Related",
             "Folder2 (folderID)", "File2 (fileID)", "Url2 (tabID)", "Role2 (roleID)",
             "Html (Wysihtml)", "Html (Summernote)", "Html (CK Editor)", "Image Gallery", "Documents", "Group (object)",

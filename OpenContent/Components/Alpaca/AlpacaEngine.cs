@@ -38,7 +38,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
         private Page Page { get; set; }
         private int PortalId { get; set; }
 
-        public bool LamaVue { get; set; } = true;
+        
 
         public AlpacaEngine(Page page, int portalId, string virtualDir, string filePrefix)
         {
@@ -59,33 +59,41 @@ namespace Satrabel.OpenContent.Components.Alpaca
 
         public void RegisterAll() // for openform
         {
-            RegisterAll(false, false, false);
+            RegisterAll(false, false, false, false);
         }
 
         public void RegisterAll(bool bootstrap) // for openform
         {
-            RegisterAll(bootstrap, false, false);
+            RegisterAll(bootstrap, false, false, false);
         }
 
         public void RegisterAll(bool bootstrapLayoutEnabled, bool loadBootstrap) // for openform
         {
-            RegisterAll(bootstrapLayoutEnabled, loadBootstrap, false);
+            RegisterAll(bootstrapLayoutEnabled, loadBootstrap, false, false);
         }
 
-        public void RegisterAll(bool bootstrapLayoutEnabled, bool loadBootstrap, bool loadGlyphicons)
+        public void RegisterAll(bool bootstrapLayoutEnabled, bool loadBootstrap, bool loadGlyphicons, bool builderV2)
         {
-            RegisterAlpaca(bootstrapLayoutEnabled, loadBootstrap, loadGlyphicons);
+            RegisterAlpaca(bootstrapLayoutEnabled, loadBootstrap, loadGlyphicons, builderV2);
             RegisterTemplates();
             RegisterScripts(bootstrapLayoutEnabled);
             RegisterFields(bootstrapLayoutEnabled);
         }
 
-        private void RegisterAlpaca(bool bootstrap, bool loadBootstrap, bool loadGlyphicons)
+        private void RegisterAlpaca(bool bootstrap, bool loadBootstrap, bool loadGlyphicons, bool builderV2)
         {
             if (loadBootstrap)
             {
-                ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/bootstrap/js/bootstrap.min.js", FileOrder.Js.DefaultPriority);
-                ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/bootstrap/css/bootstrap.min.css", FileOrder.Css.DefaultPriority);                
+                if (builderV2)
+                {
+                    ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/bootstrap4/js/bootstrap.bundle.min.js", FileOrder.Js.DefaultPriority);
+                    ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/bootstrap4/css/bootstrap.min.css", FileOrder.Css.DefaultPriority);
+                }
+                else
+                {
+                    ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/bootstrap/js/bootstrap.min.js", FileOrder.Js.DefaultPriority);
+                    ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/bootstrap/css/bootstrap.min.css", FileOrder.Css.DefaultPriority);
+                }
             }
 
 
@@ -94,9 +102,9 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/bootstrap/css/glyphicons.css", FileOrder.Css.DefaultPriority);
             }
             //ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/css/font-awesome/css/font-awesome.min.css", FileOrder.Css.DefaultPriority);
-            if (LamaVue)
+            if (builderV2)
             {
-                ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/lamavue/0.js", FileOrder.Js.DefaultPriority + 10);
+                //ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/lamavue/0.js", FileOrder.Js.DefaultPriority + 10);
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/lamavue/chunk-vendors.js", FileOrder.Js.DefaultPriority + 10);
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/lamavue/app.js", FileOrder.Js.DefaultPriority + 10);
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/lamaengine.js", FileOrder.Js.DefaultPriority + 10);

@@ -41,5 +41,8 @@ namespace Satrabel.OpenContent.Components.Dnn
         string GetGithubRepository();
         void SetGithubRepository(string value);
 
+        bool IsBuilderV2();
+        void SetBuilderV2(bool builderV2);
+
     }
 }

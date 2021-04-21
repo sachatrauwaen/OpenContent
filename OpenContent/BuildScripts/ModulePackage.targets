@@ -27,6 +27,7 @@
       <InstallInclude Include="**\*.resx" Exclude="packages\**" />
       <InstallInclude Include="**\*.aspx" Exclude="packages\**" />
       <InstallInclude Include="**\*.js" Exclude="packages\**;**\_*.js" />
+      <InstallInclude Include="**\*.js.map" Exclude="packages\**;**\_*.js.map" />
       <InstallInclude Include="**\*-schema.json" Exclude="packages\**" />
       <InstallInclude Include="**\*-options.json" Exclude="packages\**" />
       <InstallInclude Include="**\*.txt"  Exclude="**\obj\**;**\_ReSharper*\**;packages\**;**\.git\**;" />
@@ -48,6 +49,7 @@
       <SourceInclude Include="**\*.xml" Exclude="**\obj\**;**\_ReSharper*\**;**\.git\**;" />
       <SourceInclude Include="**\*.aspx" />
       <SourceInclude Include="**\*.js" />
+      <SourceInclude Include="**\*.js.map" />
       <SourceInclude Include="**\*.json" />
       <SourceInclude Include="**\*.txt" Exclude="**\obj\**;**\_ReSharper*\**;**\.git\**;" />
       <SourceInclude Include="**\images\**" />

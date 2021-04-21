@@ -124,9 +124,16 @@ namespace Satrabel.OpenContent.Components
             {
                 var file = context.Request.Files[i];
                 if (file == null) continue;
-
-                var fileName = CleanUpFileName(Path.GetFileName(file.FileName));
-
+                string fileName;
+                if (!string.IsNullOrEmpty(context.Request.Form["name"]))
+                {
+                    var name = context.Request.Form["name"];
+                    fileName = CleanUpFileName(Path.GetFileName(name));
+                }
+                else
+                {
+                    fileName = CleanUpFileName(Path.GetFileName(file.FileName));
+                }
 
                 if (IsAllowedExtension(fileName))
                 {
@@ -148,6 +155,19 @@ namespace Satrabel.OpenContent.Components
                     if (!string.IsNullOrEmpty(context.Request.Form["uploadfolder"]))
                     {
                         uploadfolder = context.Request.Form["uploadfolder"];
+                    }
+                    if (!string.IsNullOrEmpty(context.Request.Form["hidden"]) &&
+                        context.Request.Form["hidden"] == "true")
+                    {
+                        uploadfolder = "OpenContent/Cropped/" + ActiveModule.ModuleID;
+                        if (!string.IsNullOrEmpty(context.Request.Form["itemKey"]))
+                        {
+                            uploadfolder += "/" + context.Request.Form["itemKey"];
+                        }
+                        if (!string.IsNullOrEmpty(context.Request.Form["cropfolder"]))
+                        {
+                            uploadfolder = context.Request.Form["cropfolder"];
+                        }
                     }
                     var userFolder = _folderManager.GetFolder(PortalSettings.PortalId, uploadfolder);
                     if (userFolder == null)

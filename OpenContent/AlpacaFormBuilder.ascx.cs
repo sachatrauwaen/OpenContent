@@ -35,10 +35,10 @@ namespace Satrabel.OpenContent
             var bootstrap = globalSettingsController.GetEditLayout() != AlpacaLayoutEnum.DNN;
             bool loadBootstrap = bootstrap && globalSettingsController.GetLoadBootstrap();
             bool loadGlyphicons = bootstrap && App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetLoadGlyphicons();
-
+            bool builderV2 = App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).IsBuilderV2();
             OpenContentSettings settings = this.OpenContentSettings();
             AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext.PortalId, "" /*settings.Template.Uri().FolderPath*/, "builder");
-            alpaca.RegisterAll(bootstrap, loadBootstrap, loadGlyphicons);
+            alpaca.RegisterAll(bootstrap, loadBootstrap, loadGlyphicons, builderV2);
 
             //string ItemId = Request.QueryString["id"];
             //AlpacaContext = new AlpacaContext(PortalId, ModuleId, ItemId, ScopeWrapper.ClientID, null, cmdSave.ClientID, null, null);
@@ -47,12 +47,12 @@ namespace Satrabel.OpenContent
             //ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/bootstrap/js/bootstrap.min.js", FileOrder.Js.DefaultPriority);
             //ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/bootstrap/css/bootstrap.min.css", FileOrder.Css.DefaultPriority);
 
-            if (OpenContentUtils.BuilderExist(settings.Template.ManifestFolderUri))
+            if (builderV2 || OpenContentUtils.BuilderExist(settings.Template.ManifestFolderUri))
             {
                 string title = string.IsNullOrEmpty(settings.Template.Manifest.Title) ? "Data" : settings.Template.Manifest.Title + " ";
                 ddlForms.Items.Add(new ListItem(title, ""));
             }
-            if (OpenContentUtils.BuilderExist(settings.Template.ManifestFolderUri, settings.Template.Key.ShortKey))
+            if (builderV2 || OpenContentUtils.BuilderExist(settings.Template.ManifestFolderUri, settings.Template.Key.ShortKey))
             {
                 ddlForms.Items.Add(new ListItem("Settings", settings.Template.Key.ShortKey));
             }
@@ -60,14 +60,14 @@ namespace Satrabel.OpenContent
             {
                 foreach (var addData in settings.Template.Manifest.AdditionalDataDefinition)
                 {
-                    if (OpenContentUtils.BuilderExist(settings.Template.ManifestFolderUri, addData.Key))
+                    if (builderV2 || OpenContentUtils.BuilderExist(settings.Template.ManifestFolderUri, addData.Key))
                     {
                         string title = string.IsNullOrEmpty(addData.Value.Title) ? addData.Key : addData.Value.Title;
                         ddlForms.Items.Add(new ListItem(title, addData.Key));
                     }
                 }
             }
-            if (OpenContentUtils.BuilderExist(settings.Template.ManifestFolderUri, "form"))
+            if (builderV2 || OpenContentUtils.BuilderExist(settings.Template.ManifestFolderUri, "form"))
             {
                 ddlForms.Items.Add(new ListItem("Form", "form"));
             }
@@ -75,6 +75,7 @@ namespace Satrabel.OpenContent
             AlpacaContext = new AlpacaContext(PortalId, ModuleId, null, ScopeWrapper.ClientID, hlCancel.ClientID, cmdSave.ClientID, null, null, null);
             AlpacaContext.Bootstrap = bootstrap;
             AlpacaContext.Horizontal = globalSettingsController.GetEditLayout() == AlpacaLayoutEnum.BootstrapHorizontal;
+            AlpacaContext.BuilderV2 = builderV2;
         }
         public AlpacaContext AlpacaContext { get; private set; }
 

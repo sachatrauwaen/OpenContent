@@ -84,6 +84,7 @@ namespace Satrabel.OpenContent
                 cbLegacyHandlebars.Checked = globalSettingsRepository.GetLegacyHandlebars();
                 //cbCompositeCss.Checked = globalSettingsRepository.GetCompositeCss();
                 cbSaveXml.Checked = globalSettingsRepository.IsSaveXml();
+                cbBuilderV2.Checked = globalSettingsRepository.IsBuilderV2();
                 tbGithubRepository.Text = globalSettingsRepository.GetGithubRepository();
                 cmdUpgradeXml.Visible = cbSaveXml.Checked;
             }
@@ -111,6 +112,7 @@ namespace Satrabel.OpenContent
             globalSettingsRepository.SetLegacyHandlebars(cbLegacyHandlebars.Checked);
             //globalSettingsRepository.SetCompositeCss(cbCompositeCss.Checked);
             globalSettingsRepository.SetSaveXml(cbSaveXml.Checked);
+            globalSettingsRepository.SetBuilderV2(cbBuilderV2.Checked);
             globalSettingsRepository.SetGithubRepository(tbGithubRepository.Text);
 
             Response.Redirect(Globals.NavigateURL(), true);

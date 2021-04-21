@@ -204,5 +204,21 @@ namespace Satrabel.OpenContent.Components.Settings
             else
                 PortalController.UpdatePortalSetting(_portalId, SETTINGS_GITHUB_REPOSITORY, value, true);
         }
+
+        private const string SETTINGS_BUILDER_V2 = "OpenContent_BuilderV2";
+        private const bool SETTINGS_DEFAULT_BUILDER_V2 = false;
+        public bool IsBuilderV2()
+        {
+            var saveBuilderV2Setting = PortalController.GetPortalSetting(SETTINGS_BUILDER_V2, _portalId, string.Empty);
+            bool saveBuilderV2;
+            if (!string.IsNullOrWhiteSpace(saveBuilderV2Setting) && bool.TryParse(saveBuilderV2Setting, out saveBuilderV2))
+                return saveBuilderV2;
+            return SETTINGS_DEFAULT_BUILDER_V2;
+        }
+
+        public void SetBuilderV2(bool saveBuilderV2)
+        {
+            PortalController.UpdatePortalSetting(_portalId, SETTINGS_BUILDER_V2, saveBuilderV2.ToString(), true);
+        }
     }
 }

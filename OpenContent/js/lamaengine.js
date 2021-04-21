@@ -22,11 +22,11 @@ alpacaEngine.engine = function (config) {
     self.actionAction = "Action";
     self.data = {};
     self.rootUrl = config.appPath;
-    self.bootstrap = config.bootstrap;    
+    self.bootstrap = config.bootstrap;
     var createEdit = config.isNew ? "create" : "edit";
-    self.view = "dnn-"+createEdit;
+    self.view = "dnn-" + createEdit;
     if (config.bootstrap) {
-        self.view = config.horizontal ? "dnnbootstrap-"+createEdit+"-horizontal" : "dnnbootstrap-"+createEdit;
+        self.view = config.horizontal ? "dnnbootstrap-" + createEdit + "-horizontal" : "dnnbootstrap-" + createEdit;
     }
     if (config.bootstrap && $.fn.select2) {
         $.fn.select2.defaults.set("theme", "bootstrap");
@@ -151,33 +151,24 @@ alpacaEngine.engine = function (config) {
         //connector.defaultCulture = self.defaultCulture;
         //connector.numberDecimalSeparator = self.numberDecimalSeparator;
         //connector.rootUrl = self.rootUrl;
-        //if (config.versions) {
-        //    $.each(config.versions, function (i, item) {
-        //        $("#" + self.ddlVersions).append($('<option>', {
-        //            value: item.ticks,
-        //            text: item.text
-        //        }));
-                
-        //    });
-        //} else {
-        //    $("#" + self.ddlVersions).hide();
-        //}
+        if (config.versions) {
+            $.each(config.versions, function (i, item) {
+                $("#" + self.ddlVersions).append($('<option>', {
+                    value: item.ticks,
+                    text: item.text
+                }));
+
+            });
+        } else {
+            $("#" + self.ddlVersions).hide();
+        }
 
         //$.alpaca.setDefaultLocale(self.alpacaCulture);
 
-        var connector = Lama.getConnectorClass("default");
-        //{
-        //    currentCulture: "fr-FR",
-        //    connect() {
+        //var connector = Lama.getConnectorClass("default");
+        self.CreateForm(self.connector, config, config.data);
 
-        //    },
-        //    loadAll: function (resources, onSuccess) {
-        //        onSuccess();
-        //    }
-        //};
-        self.CreateForm(connector, config, config.data);
 
-        
     };
 
     self.CreateForm = function (connector, config, data) {
@@ -207,7 +198,7 @@ alpacaEngine.engine = function (config) {
                             }
                         });
                         return false;
-                        
+
                     });
                 }
             }
@@ -224,69 +215,22 @@ alpacaEngine.engine = function (config) {
         $("#" + self.saveButton).click(function () {
             var button = this;
             app.validate(function () {
-                
-                    var value = app.getValue();
-                    //alert(JSON.stringify(value, null, "  "));
-                    var href = $(button).attr('href');
-                    $(document).trigger("beforeSubmit.opencontent", [value, self.moduleId, self.data.id, self.sf, self.editAction]);
-                    self.FormSubmit(value, href);
-                    $(document).trigger("afterSubmit.opencontent", [value, self.moduleId, self.data.id, self.sf, self.editAction]);
-                
+
+                var value = app.getValue();
+                //alert(JSON.stringify(value, null, "  "));
+                var href = $(button).attr('href');
+                $(document).trigger("beforeSubmit.opencontent", [value, self.moduleId, self.data.id, self.sf, self.editAction]);
+                self.FormSubmit(value, href);
+                $(document).trigger("afterSubmit.opencontent", [value, self.moduleId, self.data.id, self.sf, self.editAction]);
+
             });
             return false;
         });
 
-        return;
-        $("#field1").alpaca({
-            "schema": config.schema,
-            "options": config.options,
-            "data": data,
-            "view": view,
-            "connector": connector,
-            "postRender": function (control) {
-                selfControl = control;
-                $("#" + self.saveButton).click(function () {
-                    var button = this;
-                    selfControl.refreshValidationState(true, function () {
-                        if (selfControl.isValid(true)) {
-                            var value = selfControl.getValue();
-                            //alert(JSON.stringify(value, null, "  "));
-                            var href = $(button).attr('href');
-                            $(document).trigger("beforeSubmit.opencontent", [value, self.moduleId, self.data.id, self.sf, self.editAction]);
-                            self.FormSubmit(value, href);
-                            $(document).trigger("afterSubmit.opencontent", [value, self.moduleId, self.data.id, self.sf, self.editAction]);
-                        }
-                    });
-                    return false;
-                });
-                $("#" + self.copyButton).click(function () {
-                    var button = this;
-                    selfControl.refreshValidationState(true, function () {
-                        if (selfControl.isValid(true)) {
-                            var value = selfControl.getValue();
-                            var href = $(button).attr('href');
-                            $(document).trigger("beforeSubmit.opencontent", [value, self.moduleId, self.data.id, self.sf, self.editAction]);
-                            self.FormSubmit(value, href, true);
-                            $(document).trigger("afterSubmit.opencontent", [value, self.moduleId, self.data.id, self.sf, self.editAction]);
-                        }
-                    });
-                    return false;
-                });
-
-                $("#" + self.ddlVersions).change(function () {
-                    //var versions = config.versions;
-                    //var ver = $("#<%=ddlVersions.ClientID%>").data($(this).val());
-                    //$("#field1").empty();
-                    //$("#<%=cmdSave.ClientID%>").off("click");
-                    //self.CreateForm(connector, config, ver);
-                    //selfControl.setValue(ver);
-                    self.Version(self.itemId, $(this).val(), control);
-                    return false;
-                });
-                $(document).trigger("postRender.opencontent", [selfControl, self.moduleId, self.data.id, self.sf, self.editAction]);
-            }
+        $("#" + self.ddlVersions).change(function () {
+            self.Version(self.itemId, $(this).val(), app);
+            return false;
         });
-
     };
 
     self.FormSubmit = function (data, href, copy) {
@@ -378,6 +322,143 @@ alpacaEngine.engine = function (config) {
         }).fail(function (xhr, result, status) {
             alert("Uh-oh, something broke: " + status);
         });
+    };
+
+    self.connector = {
+        currentCulture: "fr-FR",
+        connect() {
+
+        },
+        loadAll: function (resources, onSuccess) {
+            onSuccess();
+        },
+        getMessage() {
+
+        },
+        /*
+        * Loads data source (value/text) pairs from a remote source.
+        * This default implementation allows for config to be a string identifying a URL.
+        */
+        loadDataSource: function (config, successCallback, errorCallback) {
+
+            console.log("loadDataSource");
+            console.log(config);
+
+            if (config && config.query && config.query) {
+                if (config.query.type == "folders") {
+                    successCallback([{ id: "1", name: "Files", url: "/Files" }]);
+                }
+
+                if (config.query.type == "files") {
+                    //var files = [{ id: "1", url: "https://agontuk.github.io/assets/images/berserk.jpg", name: "berserk.jpg", folderId: "1" }];
+                    var files = [];
+                    //var completionFunction = function () {
+                    //    self.schema.enum = [];
+                    //    self.options.optionLabels = [];
+                    //    for (var i = 0; i < self.selectOptions.length; i++) {
+                    //        self.schema.enum.push(self.selectOptions[i].value);
+                    //        self.options.optionLabels.push(self.selectOptions[i].text);
+                    //    }
+                    //    // push back to model
+                    //    model.selectOptions = self.selectOptions;
+                    //    callback();
+                    //};
+
+                    var postData = { q: "*", folder: ""/*self.options.uploadfolder*/, itemKey: ""/*self.itemKey*/ };
+                    $.ajax({
+                        url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "ImagesLookupExt",
+                        beforeSend: self.sf.setModuleHeaders,
+                        type: "get",
+                        dataType: "json",
+                        //contentType: "application/json; charset=utf-8",
+                        data: postData,
+                        success: function (jsonDocument) {
+                            var ds = jsonDocument;
+                            if (ds) {
+                                    $.each(ds, function (index, value) {
+                                        files.push({
+                                            id: value.id,
+                                            url: value.url,
+                                            filename: value.filename,
+                                            folderId: "1"
+                                            //"thumbUrl": value.thumbUrl,
+                                            //"text": value.text,
+                                            //"width": value.width,
+                                            //"height": value.height,
+                                        });
+                                    });
+                                    //completionFunction();
+                                successCallback(files);
+                            }
+                        },
+                        "error": function (jqXHR, textStatus, errorThrown) {
+                            errorCallback({
+                                "message": "Unable to load data from uri : " ,
+                                "stage": "DATASOURCE_LOADING_ERROR",
+                                "details": {
+                                    "jqXHR": jqXHR,
+                                    "textStatus": textStatus,
+                                    "errorThrown": errorThrown
+                                }
+                            });
+                        }
+                    });
+
+
+                    //successCallback(files.filter((f) => {
+                    //    if (config.query.folder)
+                    //        return f.folderId == config.query.folder;
+                    //    else
+                    //        return false;
+                    //}).map(f => {
+                    //    return {
+                    //        id: f.id,
+                    //        filename: f.name,
+                    //        url: f.url
+                    //    };
+                    //}));
+                }
+            }
+            else {
+                errorCallback();
+            }
+
+
+        },
+        // eslint-disable-next-line no-unused-vars
+        upload(config, successCallback, errorCallback) {
+            //debugger;
+            var uploadImage = function (name, file, hidden, callbackFn) {
+                var formData = new FormData();
+                formData.append('file', file);
+                formData.append('name', name);
+                if (hidden)
+                    formData.append('hidden', true);
+
+                var url = self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile";
+
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    beforeSend: self.sf.setModuleHeaders,
+                    success: function (response) {
+                        callbackFn(response);
+                    }
+                });
+            };
+            uploadImage(config.file.name || config.name, config.file,config.hidden, function (statuses) {
+                var status = JSON.parse(statuses)[0];
+                if (status.success) {
+                    successCallback({ id: status.id, url: status.url, filename: status.name });
+                } else {
+                    errorCallback(status.message);
+                    console.log(status.name +" : "+status.message);
+                }
+            });
+        }
     };
 
 };

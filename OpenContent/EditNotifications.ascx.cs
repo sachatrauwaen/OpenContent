@@ -33,7 +33,7 @@ namespace Satrabel.OpenContent
             OpenContentSettings settings = this.OpenContentSettings();
             AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext.PortalId, "DeskTopModules/OpenContent", "notifications");
             //AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, "", "");
-            alpaca.RegisterAll(bootstrap, loadBootstrap, loadGlyphicons);
+            alpaca.RegisterAll(bootstrap, loadBootstrap, loadGlyphicons, false);
             string itemId = null;
             AlpacaContext = new AlpacaContext(PortalId, ModuleId, itemId, ScopeWrapper.ClientID, hlCancel.ClientID, cmdSave.ClientID, null, null, null);
             AlpacaContext.Bootstrap = true;

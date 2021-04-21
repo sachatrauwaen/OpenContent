@@ -29,13 +29,15 @@ namespace Satrabel.OpenContent
             bool bootstrap = App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetEditLayout() != AlpacaLayoutEnum.DNN;
             bool loadBootstrap = bootstrap && App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetLoadBootstrap();
             bool loadGlyphicons = bootstrap && App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetLoadGlyphicons();
+            bool builderV2 = App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).IsBuilderV2();
             OpenContentSettings settings = this.OpenContentSettings();
             AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext.PortalId, "DeskTopModules/OpenContent", "formsettings");
             //AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, "", "");
-            alpaca.RegisterAll(bootstrap, loadBootstrap, loadGlyphicons);
+            alpaca.RegisterAll(bootstrap, loadBootstrap, loadGlyphicons, builderV2);
             string itemId = null;
             AlpacaContext = new AlpacaContext(PortalId, ModuleId, itemId, ScopeWrapper.ClientID, hlCancel.ClientID, cmdSave.ClientID, null, null, null);
             AlpacaContext.Bootstrap = true;
+            AlpacaContext.BuilderV2 = builderV2;
         }
 
         public AlpacaContext AlpacaContext { get; private set; }

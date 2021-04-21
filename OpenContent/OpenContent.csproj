@@ -1136,6 +1136,9 @@
     <Content Include="js\jplist\thumbs-btn-disabled.png" />
     <Content Include="js\jplist\thumbs-btn.png" />
     <Content Include="js\lamaengine.js" />
+    <Content Include="js\lamavue\0.js" />
+    <Content Include="js\lamavue\app.js" />
+    <Content Include="js\lamavue\chunk-vendors.js" />
     <Content Include="js\oc.jquery.js" />
     <Content Include="js\select2\select2-bootstrap.css" />
     <Content Include="js\select2\select2-bootstrap.min.css" />
@@ -1467,6 +1470,8 @@
     <Content Include="js\fontIconPicker\css\themes\dark-grey-theme\jquery.fonticonpicker.darkgrey.css.map" />
     <Content Include="js\fontIconPicker\css\themes\grey-theme\jquery.fonticonpicker.grey.css.map" />
     <Content Include="js\fontIconPicker\css\themes\inverted-theme\jquery.fonticonpicker.inverted.css.map" />
+    <Content Include="js\lamavue\app.js.map" />
+    <Content Include="js\lamavue\chunk-vendors.js.map" />
     <None Include="packages.config" />
     <None Include="Scripts\_references.js" />
     <Content Include="js\select2\i18n\az.js" />

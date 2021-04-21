@@ -556,6 +556,14 @@ namespace Satrabel.OpenContent.Components
                 if (dataJson != null)
                     json["data"] = dataJson;
 
+                var schemaJson = JsonUtils.LoadJsonFromCacheOrDisk(new FileUri(settings.TemplateDir, $"{prefix}schema.json"));
+                if (schemaJson != null)
+                    json["schema"] = schemaJson;
+
+                var optionsJson = JsonUtils.LoadJsonFromCacheOrDisk(new FileUri(settings.TemplateDir, $"{prefix}options.json"));
+                if (optionsJson != null)
+                    json["options"] = optionsJson;
+
                 return Request.CreateResponse(HttpStatusCode.OK, json);
             }
             catch (Exception exc)

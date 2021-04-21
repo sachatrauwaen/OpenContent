@@ -1,7 +1,7 @@
 ﻿{
     "fields": {
         "Notifications": {
-            "type": "accordion",
+        
             "titleField": "EmailSubject",
             "items": {
 
@@ -93,7 +93,7 @@
                     "EmailSubject": {
                     },
                     "EmailBody": {
-                        "type": "summernote"
+                        "type": "ckeditor"
                     }
 
                 }
@@ -102,7 +102,7 @@
         "Settings": {
             "fields": {
                 "Message": {
-                    "type": "summernote"
+                    "type": "ckeditor"
                 },
                 "Tracking": {
                     "type": "textarea",
