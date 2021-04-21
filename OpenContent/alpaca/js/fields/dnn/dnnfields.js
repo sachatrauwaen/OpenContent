@@ -3541,320 +3541,318 @@
     var Alpaca = $.alpaca;
 
     Alpaca.Fields.FileField = Alpaca.Fields.TextField.extend(
-    /**
-     * @lends Alpaca.Fields.ImageField.prototype
-     */
-    {
-        constructor: function (container, data, options, schema, view, connector) {
-            var self = this;
-            this.base(container, data, options, schema, view, connector);
-            this.sf = connector.servicesFramework;
-        },
-
         /**
-         * @see Alpaca.Fields.TextField#getFieldType
+         * @lends Alpaca.Fields.ImageField.prototype
          */
-        getFieldType: function () {
-            return "file";
-        }
-        ,
-        setup: function () {
-            if (!this.options.uploadfolder) {
-                this.options.uploadfolder = "";
+        {
+            constructor: function (container, data, options, schema, view, connector) {
+                var self = this;
+                this.base(container, data, options, schema, view, connector);
+                this.sf = connector.servicesFramework;
+                this.itemId = connector.itemId;
+            },
+
+            getFieldType: function () {
+                return "file";
             }
-            if (!this.options.downloadButton) {
-                this.options.downloadButton = false;
-            }
-            if (this.options.downloadButton) {
-                this.options.buttons = {
-                    "downloadButton": {
-                        "value": "Download",
-                        "click": function () {
-                            this.DownLoadFile();
+            ,
+            setup: function () {
+                if (!this.options.uploadfolder) {
+                    this.options.uploadfolder = "";
+                }
+                if (!this.options.downloadButton) {
+                    this.options.downloadButton = false;
+                }
+                if (this.options.downloadButton) {
+                    this.options.buttons = {
+                        "downloadButton": {
+                            "value": "Download",
+                            "click": function () {
+                                this.DownLoadFile();
+                            }
+                        }
+                    };
+                }
+                this.base();
+            },
+
+            /**
+             * @see Alpaca.Fields.TextField#getTitle
+             */
+            getTitle: function () {
+                return "File Field";
+            },
+
+            /**
+             * @see Alpaca.Fields.TextField#getDescription
+             */
+            getDescription: function () {
+                return "File Field.";
+            },
+            getTextControlEl: function () {
+                return $(this.control.get(0)).find('input[type=text]#' + this.id);
+            },
+            setValue: function (value) {
+
+                //var el = $( this.control).filter('#'+this.id);
+                //var el = $(this.control.get(0)).find('input[type=text]');
+                var el = this.getTextControlEl();
+
+                if (el && el.length > 0) {
+                    if (Alpaca.isEmpty(value)) {
+                        el.val("");
+                    }
+                    else {
+                        //if (value) value = value.split("?")[0];
+                        el.val(value);
+                    }
+                }
+
+                // be sure to call into base method
+                //this.base(value);
+
+                // if applicable, update the max length indicator
+                this.updateMaxLengthIndicator();
+            },
+
+            getValue: function () {
+                var value = null;
+
+                //var el = $(this.control).filter('#' + this.id);
+                //var el = $(this.control.get(0)).find('input[type=text]');
+                var el = this.getTextControlEl();
+                if (el && el.length > 0) {
+                    value = el.val();
+                }
+                return value;
+            },
+
+            afterRenderControl: function (model, callback) {
+                var self = this;
+                this.base(model, function () {
+                    self.handlePostRender(function () {
+                        callback();
+                    });
+                });
+            },
+            handlePostRender: function (callback) {
+                var self = this;
+
+                //var el = this.control;
+                var el = this.getTextControlEl();
+                if (self.sf) {
+
+                    $(this.control.get(0)).find('input[type=file]').fileupload({
+                        dataType: 'json',
+                        url: self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
+                        maxFileSize: 25000000,
+                        formData: { uploadfolder: self.options.uploadfolder, itemId: self.itemId },
+                        beforeSend: self.sf.setModuleHeaders,
+                        add: function (e, data) {
+                            //data.context = $(opts.progressContextSelector);
+                            //data.context.find($(opts.progressFileNameSelector)).html(data.files[0].name);
+                            //data.context.show('fade');
+                            data.submit();
+                        },
+                        progress: function (e, data) {
+                            if (data.context) {
+                                var progress = parseInt(data.loaded / data.total * 100, 10);
+                                data.context.find(opts.progressBarSelector).css('width', progress + '%').find('span').html(progress + '%');
+                            }
+                        },
+                        done: function (e, data) {
+                            if (data.result) {
+                                $.each(data.result, function (index, file) {
+                                    self.setValue(file.url);
+                                    $(el).change();
+                                    //$(el).change();
+                                    //$(e.target).parent().find('input[type=text]').val(file.url);
+                                    //el.val(file.url);
+                                    //$(e.target).parent().find('.alpaca-image-display img').attr('src', file.url);
+                                });
+                            }
+                        }
+                    }).data('loaded', true);
+                }
+
+                callback();
+            },
+            applyTypeAhead: function () {
+                var self = this;
+
+                if (self.control.typeahead && self.options.typeahead && !Alpaca.isEmpty(self.options.typeahead) && self.sf) {
+
+                    var tConfig = self.options.typeahead.config;
+                    if (!tConfig) {
+                        tConfig = {};
+                    }
+                    var tDatasets = tDatasets = {};
+                    if (!tDatasets.name) {
+                        tDatasets.name = self.getId();
+                    }
+
+                    var tFolder = self.options.typeahead.Folder;
+                    if (!tFolder) {
+                        tFolder = "";
+                    }
+
+                    var tEvents = tEvents = {};
+
+                    var bloodHoundConfig = {
+                        datumTokenizer: function (d) {
+                            return Bloodhound.tokenizers.whitespace(d.value);
+                        },
+                        queryTokenizer: Bloodhound.tokenizers.whitespace
+                    };
+
+                    /*
+                    if (tDatasets.type === "prefetch") {
+                        bloodHoundConfig.prefetch = {
+                            url: tDatasets.source,
+                            ajax: {
+                                //url: sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
+                                beforeSend: connector.servicesFramework.setModuleHeaders,
+            
+                            }
+                        };
+            
+                        if (tDatasets.filter) {
+                            bloodHoundConfig.prefetch.filter = tDatasets.filter;
                         }
                     }
-                };
-            }
-            this.base();
-        },
+                    */
 
-        /**
-         * @see Alpaca.Fields.TextField#getTitle
-         */
-        getTitle: function () {
-            return "File Field";
-        },
-
-        /**
-         * @see Alpaca.Fields.TextField#getDescription
-         */
-        getDescription: function () {
-            return "File Field.";
-        },
-        getTextControlEl: function () {
-            return $(this.control.get(0)).find('input[type=text]#' + this.id);
-        },
-        setValue: function (value) {
-
-            //var el = $( this.control).filter('#'+this.id);
-            //var el = $(this.control.get(0)).find('input[type=text]');
-            var el = this.getTextControlEl();
-
-            if (el && el.length > 0) {
-                if (Alpaca.isEmpty(value)) {
-                    el.val("");
-                }
-                else {
-                    //if (value) value = value.split("?")[0];
-                    el.val(value);
-                }
-            }
-
-            // be sure to call into base method
-            //this.base(value);
-
-            // if applicable, update the max length indicator
-            this.updateMaxLengthIndicator();
-        },
-
-        getValue: function () {
-            var value = null;
-
-            //var el = $(this.control).filter('#' + this.id);
-            //var el = $(this.control.get(0)).find('input[type=text]');
-            var el = this.getTextControlEl();
-            if (el && el.length > 0) {
-                value = el.val();
-            }
-            return value;
-        },
-
-        afterRenderControl: function (model, callback) {
-            var self = this;
-            this.base(model, function () {
-                self.handlePostRender(function () {
-                    callback();
-                });
-            });
-        },
-        handlePostRender: function (callback) {
-            var self = this;
-
-            //var el = this.control;
-            var el = this.getTextControlEl();
-            if (self.sf) {
-
-                $(this.control.get(0)).find('input[type=file]').fileupload({
-                    dataType: 'json',
-                    url: self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
-                    maxFileSize: 25000000,
-                    formData: { uploadfolder: self.options.uploadfolder },
-                    beforeSend: self.sf.setModuleHeaders,
-                    add: function (e, data) {
-                        //data.context = $(opts.progressContextSelector);
-                        //data.context.find($(opts.progressFileNameSelector)).html(data.files[0].name);
-                        //data.context.show('fade');
-                        data.submit();
-                    },
-                    progress: function (e, data) {
-                        if (data.context) {
-                            var progress = parseInt(data.loaded / data.total * 100, 10);
-                            data.context.find(opts.progressBarSelector).css('width', progress + '%').find('span').html(progress + '%');
+                    bloodHoundConfig.remote = {
+                        url: self.sf.getServiceRoot('OpenContent') + "DnnEntitiesAPI/Files?q=%QUERY&d=" + tFolder,
+                        ajax: {
+                            beforeSend: self.sf.setModuleHeaders,
                         }
-                    },
-                    done: function (e, data) {
-                        if (data.result) {
-                            $.each(data.result, function (index, file) {
-                                self.setValue(file.url);
-                                $(el).change();
-                                //$(el).change();
-                                //$(e.target).parent().find('input[type=text]').val(file.url);
-                                //el.val(file.url);
-                                //$(e.target).parent().find('.alpaca-image-display img').attr('src', file.url);
+                    };
+
+                    if (tDatasets.filter) {
+                        bloodHoundConfig.remote.filter = tDatasets.filter;
+                    }
+
+                    if (tDatasets.replace) {
+                        bloodHoundConfig.remote.replace = tDatasets.replace;
+                    }
+
+
+                    var engine = new Bloodhound(bloodHoundConfig);
+                    engine.initialize();
+                    tDatasets.source = engine.ttAdapter();
+
+                    tDatasets.templates = {
+                        "empty": "Nothing found...",
+                        "suggestion": "{{name}}"
+                    };
+
+                    // compile templates
+                    if (tDatasets.templates) {
+                        for (var k in tDatasets.templates) {
+                            var template = tDatasets.templates[k];
+                            if (typeof (template) === "string") {
+                                tDatasets.templates[k] = Handlebars.compile(template);
+                            }
+                        }
+                    }
+
+                    //var el = $(this.control.get(0)).find('input[type=text]');
+                    var el = this.getTextControlEl();
+                    // process typeahead
+                    $(el).typeahead(tConfig, tDatasets);
+
+                    // listen for "autocompleted" event and set the value of the field
+                    $(el).on("typeahead:autocompleted", function (event, datum) {
+                        self.setValue(datum.value);
+                        $(el).change();
+                        //$(self.control).parent().find('input[type=text]').val(datum.value);
+                        //$(self.control).parent().find('.alpaca-image-display img').attr('src', datum.value);
+                    });
+
+                    // listen for "selected" event and set the value of the field
+                    $(el).on("typeahead:selected", function (event, datum) {
+                        self.setValue(datum.value);
+                        $(el).change();
+                        //$(self.control).parent().find('input[type=text]').val(datum.value);
+                        //$(self.control).parent().find('.alpaca-image-display img').attr('src', datum.value);
+                    });
+
+                    // custom events
+                    if (tEvents) {
+                        if (tEvents.autocompleted) {
+                            $(el).on("typeahead:autocompleted", function (event, datum) {
+                                tEvents.autocompleted(event, datum);
+                            });
+                        }
+                        if (tEvents.selected) {
+                            $(el).on("typeahead:selected", function (event, datum) {
+                                tEvents.selected(event, datum);
                             });
                         }
                     }
-                }).data('loaded', true);
-            }
 
-            callback();
-        },
-        applyTypeAhead: function () {
-            var self = this;
+                    // when the input value changes, change the query in typeahead
+                    // this is to keep the typeahead control sync'd with the actual dom value
+                    // only do this if the query doesn't already match
+                    //var fi = $(self.control);
+                    $(el).change(function () {
 
-            if (self.control.typeahead && self.options.typeahead && !Alpaca.isEmpty(self.options.typeahead)  && self.sf) {
+                        var value = $(this).val();
 
-                var tConfig = self.options.typeahead.config;
-                if (!tConfig) {
-                    tConfig = {};
-                }
-                var tDatasets = tDatasets = {};
-                if (!tDatasets.name) {
-                    tDatasets.name = self.getId();
-                }
-
-                var tFolder = self.options.typeahead.Folder;
-                if (!tFolder) {
-                    tFolder = "";
-                }
-
-                var tEvents = tEvents = {};
-
-                var bloodHoundConfig = {
-                    datumTokenizer: function (d) {
-                        return Bloodhound.tokenizers.whitespace(d.value);
-                    },
-                    queryTokenizer: Bloodhound.tokenizers.whitespace
-                };
-
-                /*
-                if (tDatasets.type === "prefetch") {
-                    bloodHoundConfig.prefetch = {
-                        url: tDatasets.source,
-                        ajax: {
-                            //url: sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
-                            beforeSend: connector.servicesFramework.setModuleHeaders,
-        
+                        var newValue = $(el).typeahead('val');
+                        if (newValue !== value) {
+                            $(el).typeahead('val', value);
                         }
-                    };
-        
-                    if (tDatasets.filter) {
-                        bloodHoundConfig.prefetch.filter = tDatasets.filter;
-                    }
+
+                    });
+
+                    // some UI cleanup (we don't want typeahead to restyle)
+                    $(self.field).find("span.twitter-typeahead").first().css("display", "block"); // SPAN to behave more like DIV, next line
+                    $(self.field).find("span.twitter-typeahead input.tt-input").first().css("background-color", "");
                 }
-                */
+            },
 
-                bloodHoundConfig.remote = {
-                    url: self.sf.getServiceRoot('OpenContent') + "DnnEntitiesAPI/Files?q=%QUERY&d=" + tFolder,
-                    ajax: {
-                        beforeSend: self.sf.setModuleHeaders,
-                    }
-                };
-
-                if (tDatasets.filter) {
-                    bloodHoundConfig.remote.filter = tDatasets.filter;
-                }
-
-                if (tDatasets.replace) {
-                    bloodHoundConfig.remote.replace = tDatasets.replace;
-                }
-
-
-                var engine = new Bloodhound(bloodHoundConfig);
-                engine.initialize();
-                tDatasets.source = engine.ttAdapter();
-
-                tDatasets.templates = {
-                    "empty": "Nothing found...",
-                    "suggestion": "{{name}}"
-                };
-
-                // compile templates
-                if (tDatasets.templates) {
-                    for (var k in tDatasets.templates) {
-                        var template = tDatasets.templates[k];
-                        if (typeof (template) === "string") {
-                            tDatasets.templates[k] = Handlebars.compile(template);
-                        }
-                    }
-                }
-
-                //var el = $(this.control.get(0)).find('input[type=text]');
+            DownLoadFile: function () {
+                var self = this;
                 var el = this.getTextControlEl();
-                // process typeahead
-                $(el).typeahead(tConfig, tDatasets);
-
-                // listen for "autocompleted" event and set the value of the field
-                $(el).on("typeahead:autocompleted", function (event, datum) {
-                    self.setValue(datum.value);
-                    $(el).change();
-                    //$(self.control).parent().find('input[type=text]').val(datum.value);
-                    //$(self.control).parent().find('.alpaca-image-display img').attr('src', datum.value);
-                });
-
-                // listen for "selected" event and set the value of the field
-                $(el).on("typeahead:selected", function (event, datum) {
-                    self.setValue(datum.value);
-                    $(el).change();
-                    //$(self.control).parent().find('input[type=text]').val(datum.value);
-                    //$(self.control).parent().find('.alpaca-image-display img').attr('src', datum.value);
-                });
-
-                // custom events
-                if (tEvents) {
-                    if (tEvents.autocompleted) {
-                        $(el).on("typeahead:autocompleted", function (event, datum) {
-                            tEvents.autocompleted(event, datum);
-                        });
-                    }
-                    if (tEvents.selected) {
-                        $(el).on("typeahead:selected", function (event, datum) {
-                            tEvents.selected(event, datum);
-                        });
-                    }
+                var data = self.getValue();
+                var urlPattern = new RegExp("^(http[s]?:\\/\\/(www\\.)?|ftp:\\/\\/(www\\.)?|(www\‌​\.)?){1}([0-9A-Za-z-‌​\\.@:%_\+~#=]+)+((\\‌​.[a-zA-Z]{2,3})+)(/(‌​.)*)?(\\?(.)*)?");
+                if (!data || !self.isURL(data)) {
+                    alert("url not valid");
+                    return;
                 }
-
-                // when the input value changes, change the query in typeahead
-                // this is to keep the typeahead control sync'd with the actual dom value
-                // only do this if the query doesn't already match
-                //var fi = $(self.control);
-                $(el).change(function () {
-
-                    var value = $(this).val();
-
-                    var newValue = $(el).typeahead('val');
-                    if (newValue !== value) {
-                        $(el).typeahead('val', value);
+                var postData = { url: data, uploadfolder: self.options.uploadfolder };
+                $(self.getControlEl()).css('cursor', 'wait');
+                $.ajax({
+                    type: "POST",
+                    url: self.sf.getServiceRoot('OpenContent') + "DnnEntitiesAPI/DownloadFile",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify(postData),
+                    beforeSend: self.sf.setModuleHeaders
+                }).done(function (res) {
+                    if (res.error) {
+                        alert(res.error);
+                    } else {
+                        self.setValue(res.url);
+                        $(el).change();
                     }
-
-                });
-
-                // some UI cleanup (we don't want typeahead to restyle)
-                $(self.field).find("span.twitter-typeahead").first().css("display", "block"); // SPAN to behave more like DIV, next line
-                $(self.field).find("span.twitter-typeahead input.tt-input").first().css("background-color", "");
-            }
-        },
-
-        DownLoadFile: function () {
-            var self = this;
-            var el = this.getTextControlEl();
-            var data = self.getValue();
-            var urlPattern = new RegExp("^(http[s]?:\\/\\/(www\\.)?|ftp:\\/\\/(www\\.)?|(www\‌​\.)?){1}([0-9A-Za-z-‌​\\.@:%_\+~#=]+)+((\\‌​.[a-zA-Z]{2,3})+)(/(‌​.)*)?(\\?(.)*)?");
-            if (!data || !self.isURL(data)) {
-                alert("url not valid");
-                return;
-            }
-            var postData = { url: data, uploadfolder: self.options.uploadfolder };
-            $(self.getControlEl()).css('cursor', 'wait');
-            $.ajax({
-                type: "POST",
-                url: self.sf.getServiceRoot('OpenContent') + "DnnEntitiesAPI/DownloadFile",
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                data: JSON.stringify(postData),
-                beforeSend: self.sf.setModuleHeaders
-            }).done(function (res) {
-                if (res.error) {
-                    alert(res.error);
-                }else {
-                    self.setValue(res.url);
-                    $(el).change();
-                }
-                setTimeout(function () {
+                    setTimeout(function () {
+                        $(self.getControlEl()).css('cursor', 'initial');
+                    }, 500);
+                }).fail(function (xhr, result, status) {
+                    alert("Uh-oh, something broke: " + status);
                     $(self.getControlEl()).css('cursor', 'initial');
-                }, 500);
-            }).fail(function (xhr, result, status) {
-                alert("Uh-oh, something broke: " + status);
-                $(self.getControlEl()).css('cursor', 'initial');
-            });
-        },
-        isURL: function (str) {
-            var urlRegex = '^(?!mailto:)(?:(?:http|https|ftp)://)(?:\\S+(?::\\S*)?@)?(?:(?:(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[0-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)(?:\\.(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)*(?:\\.(?:[a-z\\u00a1-\\uffff]{2,})))|localhost)(?::\\d{2,5})?(?:(/|\\?|#)[^\\s]*)?$';
-            var url = new RegExp(urlRegex, 'i');
-            return str.length < 2083 && url.test(str);
-        }
-        /* end_builder_helpers */
-    });
+                });
+            },
+            isURL: function (str) {
+                var urlRegex = '^(?!mailto:)(?:(?:http|https|ftp)://)(?:\\S+(?::\\S*)?@)?(?:(?:(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[0-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)(?:\\.(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)*(?:\\.(?:[a-z\\u00a1-\\uffff]{2,})))|localhost)(?::\\d{2,5})?(?:(/|\\?|#)[^\\s]*)?$';
+                var url = new RegExp(urlRegex, 'i');
+                return str.length < 2083 && url.test(str);
+            }
+            /* end_builder_helpers */
+        });
 
     Alpaca.registerFieldClass("file", Alpaca.Fields.FileField);
 
@@ -8080,6 +8078,7 @@
                 var self = this;
                 this.base(container, data, options, schema, view, connector);
                 this.sf = connector.servicesFramework;
+                this.itemKey = connector.itemKey;
                 this.dataSource = {};
             },
             getFieldType: function () {
@@ -8259,7 +8258,7 @@
                             model.selectOptions = self.selectOptions;
                             callback();
                         };
-                        var postData = { q: "*", folder: self.options.uploadfolder };
+                        var postData = { q: "*", folder: self.options.uploadfolder, itemKey: self.itemKey };
                         $.ajax({
                             url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "ImagesLookupExt",
                             beforeSend: self.sf.setModuleHeaders,
@@ -8376,6 +8375,7 @@
                                     } else if (self.options.overwrite) {
                                         formData.push({ name: 'overwrite', value: true });
                                     }
+                                    formData.push({ name: 'itemKey', value: self.itemKey });                                    
                                     return formData;
                                     //{ uploadfolder: self.options.uploadfolder, overwrite: self.isOverwrite() }
                                 },
@@ -8428,6 +8428,10 @@
                     if (!self.options.showOverwrite) {
                         $(self.control).parent().find('#' + self.id + '-overwriteLabel').hide();
                     }
+                    if (self.options.overwrite) {
+                        var checkbox = $(self.control).parent().find('#' + self.id + '-overwrite');
+                        Alpaca.checked(checkbox, true);
+                    }
                     callback();
                 });
             },
@@ -8438,7 +8442,7 @@
                 $image = self.getImage();
                 var crop = $image.cropper('getData', { rounded: true }); 
                 
-                var postData = { url: data.url, cropfolder: self.options.cropfolder, crop: crop, id: "crop" };
+                var postData = { url: data.url, cropfolder: self.options.cropfolder, crop: crop, id: "crop", itemKey: self.itemKey };
                 if (self.options.width && self.options.height) {
                     postData.resize = { width: self.options.width, height: self.options.height };
                 }
@@ -8699,6 +8703,8 @@
             var self = this;
             this.base(container, data, options, schema, view, connector);
             this.sf = connector.servicesFramework;
+            this.itemKey = connector.itemKey;
+
         },
 
         /**
@@ -8793,7 +8799,7 @@
                     dataType: 'json',
                     url: self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile",
                     maxFileSize: 25000000,
-                    formData: { uploadfolder : self.options.uploadfolder },
+                    formData: { uploadfolder: self.options.uploadfolder, itemKey: self.itemKey },
                     beforeSend: self.sf.setModuleHeaders,
                     add: function (e, data) {
                         //data.context = $(opts.progressContextSelector);

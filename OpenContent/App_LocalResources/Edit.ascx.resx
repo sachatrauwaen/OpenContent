@@ -129,4 +129,13 @@
   <data name="cmdCopy.Text" xml:space="preserve">
     <value>Copy</value>
   </data>
+  <data name="errInvalid.Text" xml:space="preserve">
+    <value>Some fields are required or invalid.</value>
+  </data>
+  <data name="txtDeleteConfirmMessage.Text" xml:space="preserve">
+    <value>Are you sure you want to delete this Item?</value>
+  </data>
+  <data name="txtMLDeleteConfirmMessage.Text" xml:space="preserve">
+    <value>Are you sure you want to delete this Item (this may affect all languages)?</value>
+  </data>
 </root>

@@ -20,6 +20,7 @@ alpacaEngine.engine = function (config) {
     self.updateAction = "Update";
     self.deleteAction = "Delete";
     self.actionAction = "Action";
+    self.deleteConfirmMessage = config.deleteConfirmMessage;
     self.data = {};
     self.rootUrl = config.appPath;
     self.bootstrap = config.bootstrap;    
@@ -52,11 +53,11 @@ alpacaEngine.engine = function (config) {
         if (popup.length) {
 
             var $window = $(windowTop),
-                            newHeight,
-                            newWidth;
+                newHeight,
+                newWidth;
 
-            newHeight = $window.height() - 36;
-            newWidth = Math.min($window.width() - 40, 1200);
+            newHeight = $window.height() - 110;
+            newWidth = Math.min($window.width() - 110, 1200);
 
             popup.dialog("option", {
                 close: function () { window.dnnModal.closePopUp(false, ""); },
@@ -80,68 +81,52 @@ alpacaEngine.engine = function (config) {
             $("#" + self.deleteButton).hide();
             $("#" + self.copyButton).hide();
         }
-
+        // Delete
         $("#" + self.deleteButton).dnnConfirm({
+            text: self.deleteConfirmMessage,
             callbackTrue: function () {
-        
-        
-            var postData = JSON.stringify({ id: self.itemId });
-            //var action = "Delete";
-            $.ajax({
-                type: "POST",
-                url: self.sf.getServiceRoot('OpenContent') + "OpenContentAPI/" + self.deleteAction,
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                data: postData,
-                beforeSend: self.sf.setModuleHeaders
-            }).done(function (data) {
+                var postData = JSON.stringify({ id: self.itemId });
+                $.ajax({
+                    type: "POST",
+                    url: self.sf.getServiceRoot('OpenContent') + "OpenContentAPI/" + self.deleteAction,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: postData,
+                    beforeSend: self.sf.setModuleHeaders
+                }).done(function (data) {
 
-                var href = $("#" + self.saveButton).attr('href');
-                var windowTop = parent; //needs to be assign to a varaible for Opera compatibility issues.
-                var popup = windowTop.jQuery("#iPopUp");
-                if (popup.length > 0 && windowTop.WebForm_GetElementById('dnn_ctr' + self.moduleId + '_View__UP')) {
-                    setTimeout(function () { windowTop.__doPostBack('dnn_ctr' + self.moduleId + '_View__UP', ''); }, 1);                                                                 
-                    dnnModal.closePopUp(false, "");
-                }
-                else {
-                    window.location.href = href;
-                }
-            }).fail(function (xhr, result, status) {
-                alert("Uh-oh, something broke: " + status);
-            });
-            return false;
+                    var href = $("#" + self.saveButton).attr('href');
+                    var windowTop = parent; //needs to be assign to a varaible for Opera compatibility issues.
+                    var popup = windowTop.jQuery("#iPopUp");
+                    if (popup.length > 0 && windowTop.WebForm_GetElementById('dnn_ctr' + self.moduleId + '_View__UP')) {
+                        setTimeout(function () { windowTop.__doPostBack('dnn_ctr' + self.moduleId + '_View__UP', ''); }, 1);
+                        dnnModal.closePopUp(false, "");
+                    }
+                    else {
+                        window.location.href = href;
+                    }
+                }).fail(function (xhr, result, status) {
+                    alert("Uh-oh, something broke: " + status);
+                });
+                return false;
             }
         });
-
-        //var moduleScope = $('#'+self.scopeWrapper),
-        //self = moduleScope,
-        //sf = $.ServicesFramework(self.moduleId);
-
+        // edit
         self.sf = $.ServicesFramework(self.moduleId);
-
         var postData = {};
         var getData = "";
-        //var action = "Edit";
         if (self.itemId) getData = "id=" + self.itemId;
-
         $.ajax({
             type: "GET",
             url: self.sf.getServiceRoot('OpenContent') + "OpenContentAPI/" + self.editAction,
             data: self.data,
             beforeSend: self.sf.setModuleHeaders
         }).done(function (config) {
-
-            /*
-            oc_loadmodules(config.options, function () {
-                self.FormEdit(config);
-            });
-            */
             self.FormEdit(config);
-
         }).fail(function (xhr, result, status) {
             alert("Uh-oh, something broke: " + status);
         });
-    }
+    };
 
     self.FormEdit = function (config) {
         var ConnectorClass = Alpaca.getConnectorClass("default");
@@ -151,6 +136,11 @@ alpacaEngine.engine = function (config) {
         connector.defaultCulture = self.defaultCulture;
         connector.numberDecimalSeparator = self.numberDecimalSeparator;
         connector.rootUrl = self.rootUrl;
+        connector.itemId = self.itemId;
+        if (config && config.context) {
+            connector.itemKey = config.context.itemKey;
+            this.itemKey = config.context.itemKey;
+        }
         if (config.versions) {
             $.each(config.versions, function (i, item) {
                 $("#" + self.ddlVersions).append($('<option>', {
@@ -162,14 +152,11 @@ alpacaEngine.engine = function (config) {
         } else {
             $("#" + self.ddlVersions).hide();
         }
-
         $.alpaca.setDefaultLocale(self.alpacaCulture);
         self.CreateForm(connector, config, config.data);
-
     };
 
     self.CreateForm = function (connector, config, data) {
-
         var view = self.view;
         if (config.view) {
             view = config.view;
@@ -189,13 +176,11 @@ alpacaEngine.engine = function (config) {
                         selfControl.refreshValidationState(true, function () {
                             if (selfControl.isValid(true)) {
                                 var value = selfControl.getValue();
-                                //alert(JSON.stringify(value, null, "  "));
                                 var href = $(button).attr('href');
                                 self.FormAction(value, action, selfControl, button, buttons[i].after);
                             }
                         });
                         return false;
-                        
                     });
                 }
             }
@@ -214,12 +199,17 @@ alpacaEngine.engine = function (config) {
                     var button = this;
                     selfControl.refreshValidationState(true, function () {
                         if (selfControl.isValid(true)) {
+                            $('#field1validation').hide();
+                            $('#field1validation span').hide();
                             var value = selfControl.getValue();
                             //alert(JSON.stringify(value, null, "  "));
                             var href = $(button).attr('href');
                             $(document).trigger("beforeSubmit.opencontent", [value, self.moduleId, self.data.id, self.sf, self.editAction]);
                             self.FormSubmit(value, href);
                             $(document).trigger("afterSubmit.opencontent", [value, self.moduleId, self.data.id, self.sf, self.editAction]);
+                        }else {
+                            $('#field1validation .clientside').show();
+                            $('#field1validation').show();
                         }
                     });
                     return false;
@@ -256,12 +246,11 @@ alpacaEngine.engine = function (config) {
 
     self.FormSubmit = function (data, href, copy) {
         var postData = $.extend({ form: data }, self.data);
-        //var postData = JSON.stringify({ form: data, id: self.itemId });
-        //var action = "Update"; //self.getUpdateAction();
         if (copy) {
             delete postData.id;
+        } else if (!postData.id) {
+            postData.form["_id"] = this.itemKey;
         }
-
         $.ajax({
             type: "POST",
             url: self.sf.getServiceRoot('OpenContent') + "OpenContentAPI/" + self.updateAction,
@@ -270,8 +259,6 @@ alpacaEngine.engine = function (config) {
             data: JSON.stringify(postData),
             beforeSend: self.sf.setModuleHeaders
         }).done(function (data) {
-            //self.loadSettings();
-            //window.location.href = href;
             if (data.isValid) {
                 var windowTop = parent; //needs to be assign to a varaible for Opera compatibility issues.
                 var popup = windowTop.jQuery("#iPopUp");
@@ -283,11 +270,12 @@ alpacaEngine.engine = function (config) {
                     window.location.href = href;
                 }
                 $('#field1validation').hide();
+                $('#field1validation span').hide();
             } else {
-                $('#field1validation').text(data.validMessage);
+                $('#field1validation .serverside').text(data.validMessage);
+                $('#field1validation .serverside').show();
                 $('#field1validation').show();
             }
-
         }).fail(function (xhr, result, status) {
             alert("Uh-oh, something broke: " + status);
         });
@@ -316,9 +304,11 @@ alpacaEngine.engine = function (config) {
                     $(button).addClass('alpaca-disabled');
                 }
                 $('#field1validation').hide();
+                $('#field1validation span').hide();
             } else {
-                $('#field1validation').text(data.validMessage);
+                $('#field1validation .serverside').text(data.validMessage);
                 $('#field1validation').show();
+                $('#field1validation .serverside').show();
             }
         }).fail(function (xhr, result, status) {
             alert("Uh-oh, something broke: " + status);

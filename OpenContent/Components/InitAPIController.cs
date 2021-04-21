@@ -49,12 +49,12 @@ namespace Satrabel.OpenContent.Components
             var listItems = new List<PortalDto>();
             foreach (var item in portals)
             {
-                    var li = new PortalDto()
-                    {
-                        Text = item.PortalName,
-                        PortalId= item.PortalID
-                    };
-                    listItems.Add(li);
+                var li = new PortalDto()
+                {
+                    Text = item.PortalName,
+                    PortalId = item.PortalID
+                };
+                listItems.Add(li);
             }
             return listItems.OrderBy(x => x.Text).ToList();
         }
@@ -82,7 +82,7 @@ namespace Satrabel.OpenContent.Components
                     if (!tab.IsNeutralCulture && tab.CultureCode != DnnLanguageUtils.GetCurrentCultureCode())
                     {
                         // skip other cultures
-                       //continue;
+                        //continue;
                     }
                     else
                     {
@@ -253,6 +253,15 @@ namespace Satrabel.OpenContent.Components
                     ActiveModule.ModuleSettings["data"] = settingContent;
                     settings = ActiveModule.OpenContentSettings();
                 }
+            }
+            // filter settings
+            var filterFilename = templateManifest.MainTemplateUri().PhysicalFullDirectory + "\\" + "filter-data.json";
+            if (File.Exists(filterFilename))
+            {
+                var settingContent = File.ReadAllText(filterFilename);
+                mc.UpdateModuleSetting(ActiveModule.ModuleID, "query", settingContent);
+                ActiveModule.ModuleSettings["query"] = settingContent;
+                settings = ActiveModule.OpenContentSettings();
             }
             bool defaultData = false;
             if (templateManifest.DataNeeded())

@@ -16,6 +16,25 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
 {
     public static class ImageHelper
     {
+        //static bool DnnImageHandlerExist = AppDomain.CurrentDomain.GetAssemblies().Any(a => a.FullName.StartsWith(assemblyName) == "DotNetNuke.Services.GeneratedImage.DnnImageHandler, DotNetNuke");
+
+        //static bool DnnImageHandlerExist = (from assembly in AppDomain.CurrentDomain.GetAssemblies()
+        //            from type in assembly.GetTypes()
+        //            where type.Name == "DotNetNuke.Services.GeneratedImage.DnnImageHandler, DotNetNuke"
+        //            select type).Any();
+
+
+        static bool DnnImageHandlerExist = Type.GetType("DotNetNuke.Services.GeneratedImage.DnnImageHandler, DotNetNuke") != null;
+
+        //static bool ImageProcessorExist = AppDomain.CurrentDomain.GetAssemblies().Any(a => a.FullName == "ImageProcessor.Web.HttpModules.ImageProcessingModule, ImageProcessor.Web");
+
+        //static bool ImageProcessorExist = (from assembly in AppDomain.CurrentDomain.GetAssemblies()
+        //                                    from type in assembly.GetTypes()
+        //                                    where type.Name == "ImageProcessor.Web.HttpModules.ImageProcessingModule, ImageProcessor.Web"
+        //                                    select type).Any();
+
+        static bool ImageProcessorExist = Type.GetType("ImageProcessor.Web.HttpModules.ImageProcessingModule, ImageProcessor.Web") != null;
+
         public static bool IsImageFile(this IFileInfo file)
         {
             return (Globals.glbImageFileTypes + ",").IndexOf(file.Extension.ToLower().Replace(".", "") + ",") > -1;
@@ -91,7 +110,21 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
 
             if (ModuleDefinitionController.GetModuleDefinitionByFriendlyName("OpenFiles") == null)
             {
-                return DnnFileUtils.ToUrl(file);
+                var fileurl = DnnFileUtils.ToUrl(file);
+                if (!fileurl.Contains("LinkClick"))
+                {
+                    if (ImageProcessorExist)
+                    {
+                        fileurl = fileurl.RemoveQueryParams();
+                        return fileurl.AppendQueryParams($"width={requestedCropRatio.Width}&height={requestedCropRatio.Height}&mode=crop");
+                    }
+                    else if (DnnImageHandlerExist)
+                    {
+                        fileurl = fileurl.RemoveQueryParams();
+                        return $"/DnnImageHandler.ashx?mode=file&file={fileurl}&resizemode=Crop&w={requestedCropRatio.Width}&h={requestedCropRatio.Height}";
+                    }
+                }
+                return fileurl;
             }
             var url = file.ToLinkClickSafeUrl();
             url = url.RemoveQueryParams(); //imageprocessor does not tolerate unknow querystrings (for security reasons). Remove them

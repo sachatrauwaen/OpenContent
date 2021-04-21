@@ -12,6 +12,7 @@ using Satrabel.OpenContent.Components.Querying;
 using Satrabel.OpenContent.Components.TemplateHelpers;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -195,7 +196,7 @@ namespace Satrabel.OpenContent.Components.Render
 
         
 
-        protected void ExtendModel(JObject model, bool onlyData, bool onlyMainData)
+        protected void ExtendModel(JObject model, bool onlyData, bool onlyMainData, string id=null)
         {
             if (_module.CanvasUnavailable) onlyData = true;
 
@@ -224,7 +225,13 @@ namespace Satrabel.OpenContent.Components.Render
                                 var indexConfig = OpenContentUtils.GetIndexConfig(_module.Settings.TemplateDir, item.Key);
                                 QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
                                 var u = PortalSettings.Current.UserInfo;
-                                queryBuilder.Build(item.Value.Query, true, u.UserID, DnnLanguageUtils.GetCurrentCultureCode(), u.Social.Roles.FromDnnRoles());
+                                NameValueCollection queryString = null;
+                                if (item.Value.Query["RelatedField"] != null)
+                                {
+                                    queryString = new NameValueCollection();
+                                    queryString.Add(item.Value.Query["RelatedField"].ToString(), id);
+                                }
+                                queryBuilder.Build(item.Value.Query, true, u.UserID, DnnLanguageUtils.GetCurrentCultureCode(), u.Social.Roles.FromDnnRoles(), queryString);
                                 select = queryBuilder.Select;
                             }
                             IDataItems dataItems = _ds.GetAll(dsColContext, select);
@@ -258,10 +265,11 @@ namespace Satrabel.OpenContent.Components.Render
                 try
                 {
                     var jsonSettings = JToken.Parse(_settingsJson);
-                    if (DnnLanguageUtils.GetPortalLocales(_portalId).Count > 1)
-                    {
-                        JsonUtils.SimplifyJson(jsonSettings, GetCurrentCultureCode());
-                    }
+                    //if (DnnLanguageUtils.GetPortalLocales(_portalId).Count > 1)
+                    //{
+                    //    JsonUtils.SimplifyJson(jsonSettings, GetCurrentCultureCode());
+                    //}
+                    JsonUtils.SimplifyJson(jsonSettings, GetCurrentCultureCode());
                     model["Settings"] = jsonSettings;
                 }
                 catch (Exception ex)
@@ -288,7 +296,7 @@ namespace Satrabel.OpenContent.Components.Render
                 context["ModuleId"] = _module.ViewModule.ModuleId;
                 context["GoogleApiKey"] = App.Services.CreateGlobalSettingsRepository(_portalId).GetGoogleApiKey();
                 context["ModuleTitle"] = _module.ViewModule.ModuleTitle;
-                var editIsAllowed = !_manifest.DisableEdit && IsEditAllowed(-1);
+                var editIsAllowed = !_manifest.DisableEdit && !_templateManifest.DisableEdit && IsEditAllowed(-1);
                 context["IsEditable"] = editIsAllowed; //allowed to edit the item or list (meaning allow Add)
                 context["IsEditMode"] = IsEditMode;
                 context["PortalId"] = _portalId;
@@ -296,6 +304,9 @@ namespace Satrabel.OpenContent.Components.Render
                 context["HomeDirectory"] = _module.HomeDirectory;
                 context["HTTPAlias"] = _module.HostName;
                 context["PortalName"] = _module.PortalName;
+                context["TemplatePath"] = _module.Settings.TemplateDir.UrlFolder;
+                context["TemplateName"] = (String.IsNullOrEmpty(_manifest.Title) ? Path.GetFileName(_templateManifest.MainTemplateUri().FolderPath) : _manifest.Title) +" - "+ (string.IsNullOrEmpty(_templateManifest.Title) ? _templateManifest.Key.ShortKey : _templateManifest.Title);
+                //context["TemplateName"] = _templateManifest.MainTemplateUri().UrlFilePath ;
             }
         }
 
@@ -304,6 +315,7 @@ namespace Satrabel.OpenContent.Components.Render
             if (_additionalData == null && _manifest.AdditionalDataDefined())
             {
                 _additionalData = new JObject();
+                var _additionalDataContext = _additionalData["Context"] = new JObject();
                 foreach (var item in _manifest.AdditionalDataDefinition)
                 {
                     var dataManifest = item.Value;
@@ -319,11 +331,16 @@ namespace Satrabel.OpenContent.Components.Render
                         additionalDataJson = json;
 
                         //optionally add editurl for AdditionalData. Only for Single items (not arrays)
-                        if (!onlyData && json is JObject && IsEditMode)
+                        if (!onlyData && json is JObject && IsEditMode)                        
                         {
                             var context = new JObject();
                             context["EditUrl"] = GetAdditionalDataEditUrl(item.Key);
                             additionalDataJson["Context"] = context;
+                        }
+                        if (!onlyData)
+                        {
+                            var context = _additionalDataContext[item.Value.ModelKey ?? item.Key] = new JObject();
+                            context["EditUrl"] = GetAdditionalDataEditUrl(item.Key);
                         }
                     }
                     if (!App.Services.CreateGlobalSettingsRepository(_portalId).GetLegacyHandlebars())

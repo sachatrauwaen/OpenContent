@@ -27,6 +27,8 @@ using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Dnn;
+using DotNetNuke.Services.FileSystem;
+using Satrabel.OpenContent.Components.Common;
 
 #endregion
 
@@ -94,8 +96,14 @@ namespace Satrabel.OpenContent.Components
                     }
                     json["options"]["form"]["buttons"] = newButtons;
                 }
-                if (dsItem != null)
+                string itemKey; 
+                if (dsItem == null)
                 {
+                    itemKey= ObjectId.NewObjectId().ToString();
+                }
+                else
+                {
+                    itemKey = dsItem.Key;
                     json["data"] = dsItem.Data;
                     if (json["schema"]["properties"]["ModuleTitle"] is JObject)
                     {
@@ -125,6 +133,7 @@ namespace Satrabel.OpenContent.Components
                 context["alpacaCulture"] = AlpacaEngine.AlpacaCulture(currentLocale.Code);
                 context["bootstrap"] = App.Services.CreateGlobalSettingsRepository(PortalSettings.PortalId).GetEditLayout() != AlpacaLayoutEnum.DNN;
                 context["horizontal"] = App.Services.CreateGlobalSettingsRepository(PortalSettings.PortalId).GetEditLayout() == AlpacaLayoutEnum.BootstrapHorizontal;
+                context["itemKey"] = itemKey;
                 json["context"] = context;
 
                 //todo: can't we do some of these checks at the beginning of this method to fail faster?
@@ -669,14 +678,17 @@ namespace Satrabel.OpenContent.Components
                     return Request.CreateResponse(HttpStatusCode.OK, new { isValid = true });
 
                 int i = 1;
+                string errorOccured = "";
                 foreach (var id in ids)
                 {
                     if (id == "-1") continue; // ignore items explicitly marked with id -1;
                     var dsItem = ds.Get(dsContext, id);
                     if (dsItem == null)
                     {
-                        Utils.DebuggerBreak(); // this should never happen: investigate!
-                        throw new Exception($"Reorder failed. Unknown item {id}. Reindex module and try again.");
+                        Utils.DebuggerBreak(); // item not found. investigate!
+                        errorOccured = $"Reorder failed. Unknown item {id}. Reindex module and try again.";
+                        App.Services.Logger.Error(errorOccured);
+                        continue;
                     }
 
                     var json = dsItem.Data;
@@ -684,7 +696,7 @@ namespace Satrabel.OpenContent.Components
                     {
                         #region Normalize irregulatities with SortIndex field
                         // if old data-format (single-language) detected. Migrate to ML version.
-                        if (json["SortIndex"] == null || json["SortIndex"].Type != JTokenType.Object) 
+                        if (json["SortIndex"] == null || json["SortIndex"].Type != JTokenType.Object)
                         {
                             json["SortIndex"] = new JObject();
                         }
@@ -710,7 +722,8 @@ namespace Satrabel.OpenContent.Components
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, new
                 {
-                    isValid = true
+                    isValid = string.IsNullOrEmpty(errorOccured),
+                    errorMsg = errorOccured
                 });
             }
             catch (Exception exc)
@@ -838,6 +851,35 @@ namespace Satrabel.OpenContent.Components
                     ds.Delete(dsContext, content);
                 }
                 App.Services.CacheAdapter.SyncronizeCache(module);
+
+                if (module.IsListMode() && module.Settings.Manifest.DeleteFiles)
+                {
+                    string uploadfolder = "OpenContent/Files/" + ActiveModule.ModuleID;
+                    if (module.IsListMode())
+                    {
+                        uploadfolder += "/" + content.Key;// json["_id"].ToString();
+                    }
+                    var folderManager = FolderManager.Instance;
+                    var fileManager = FileManager.Instance;
+                    var moduleFolder = folderManager.GetFolder(PortalSettings.PortalId, uploadfolder);
+                    var files = folderManager.GetFiles(moduleFolder);
+                    fileManager.DeleteFiles(files);
+                    folderManager.DeleteFolder(moduleFolder);
+
+                    uploadfolder = "OpenContent/Cropped/" + ActiveModule.ModuleID;
+                    if (module.IsListMode())
+                    {
+                        uploadfolder += "/" + content.Key;// json["_id"].ToString();
+                    }
+                    moduleFolder = folderManager.GetFolder(PortalSettings.PortalId, uploadfolder);
+                    if (moduleFolder != null)
+                    {
+                        files = folderManager.GetFiles(moduleFolder);
+                        fileManager.DeleteFiles(files);
+                        folderManager.DeleteFolder(moduleFolder);
+                    }
+                }
+
                 return Request.CreateResponse(HttpStatusCode.OK, "");
             }
             catch (Exception exc)

@@ -45,7 +45,7 @@ namespace Satrabel.OpenContent.Components
         /// </summary>
         public Manifest.Manifest Manifest { get; }
 
-        public FolderUri TemplateDir => TemplateKey.TemplateDir;
+        public FolderUri TemplateDir => TemplateKey?.TemplateDir;
 
         public string Data { get; }
 

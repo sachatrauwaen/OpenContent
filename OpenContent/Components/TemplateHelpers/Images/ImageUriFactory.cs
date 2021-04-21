@@ -17,11 +17,19 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             {
                 if (imageInfo?["ImageId"] != null)
                 {
-                    retval = CreateImageUri(Convert.ToString(imageInfo["ImageId"])); //it might be an enhanced image object
+                    retval = CreateImageUri(Convert.ToString(imageInfo["ImageId"])); // it might be an enhanced image object
+                }
+                else if (imageInfo?["url"] != null)
+                {
+                    retval = CreateImageUri(Convert.ToString(imageInfo["url"])); // it might be an imageX object
+                }
+                else if (imageInfo?["id"] != null)
+                {
+                    retval = CreateImageUri(Convert.ToString(imageInfo["id"])); // it might be an imageX object
                 }
                 else
                 {
-                    retval = CreateImageUri(Convert.ToString(imageInfo)); //it might be just the image Id
+                    retval = CreateImageUri(Convert.ToString(imageInfo)); // it might be just the image Id
                 }
             }
             catch (Exception ex)

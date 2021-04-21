@@ -39,7 +39,7 @@ namespace Satrabel.OpenContent.Components.Render
             var model = _dataJson as JObject;
             var enhancedModel = new JObject();
             ExtendSchemaOptions(enhancedModel, onlyData || onlyMainData);
-            ExtendModel(enhancedModel, onlyData, onlyMainData);
+            ExtendModel(enhancedModel, onlyData, onlyMainData, _data?.Id);
             ExtendModelSingle(enhancedModel);
             EnhanceSelect2(model, onlyData);
             EnhanceImages(model);
@@ -57,9 +57,12 @@ namespace Satrabel.OpenContent.Components.Render
                 {
                     context["DetailUrl"] = GenerateDetailUrl(_data, model, _manifest, GetCurrentCultureCode(), _detailTabId);
                     context["Id"] = _data.Id;
-                    var editIsAllowed = !_manifest.DisableEdit && IsEditAllowed(_data.CreatedByUserId);
+                    var editIsAllowed = !_manifest.DisableEdit && !_templateManifest.DisableEdit && IsEditAllowed(_data.CreatedByUserId);
                     context["EditUrl"] = editIsAllowed ? _module.EditUrl("id", _data.Id, _module.ViewModule.ModuleId) : "";
+
+                   
                 }
+                //context["Comments"] = "comments...";
             }
         }
     }

@@ -60,6 +60,13 @@ namespace Satrabel.OpenContent.Components
             return SkinPath + moduleSubDir + "/Templates/";
         }
 
+        public static string GetHostTemplateFolder(PortalSettings portalSettings, string moduleSubDir)
+        {
+            var hostPath = "~/Portals/_Default/";
+            
+            return hostPath + moduleSubDir + "/Templates/";
+        }
+
         public static List<ListItem> GetTemplates(PortalSettings portalSettings, int moduleId, string selectedTemplate, string moduleSubDir)
         {
             return GetTemplates(portalSettings, moduleId, new FileUri(selectedTemplate), moduleSubDir);
@@ -153,7 +160,7 @@ namespace Satrabel.OpenContent.Components
                     {
                         FileUri manifestFileUri = FileUri.FromPath(manifestFile);
                         var manifest = ManifestUtils.LoadManifestFileFromCacheOrDisk(manifestFileUri);
-                        if (manifest != null && manifest.HasTemplates )
+                        if (manifest != null && manifest.HasTemplates)
                         {
                             manifestTemplateFound = true;
                             if (advanced || !manifest.Advanced)
@@ -213,86 +220,100 @@ namespace Satrabel.OpenContent.Components
             //if (!string.IsNullOrEmpty(portalSettings.ActiveTab.SkinPath))
             {
                 basePath = HostingEnvironment.MapPath(GetSkinTemplateFolder(portalSettings, moduleSubDir));
-                if (Directory.Exists(basePath))
-                {
-                    dirs = Directory.GetDirectories(basePath);
-                    if (otherModuleTemplate != null /*&& */ )
-                    {
-                        var selDir = otherModuleTemplate.PhysicalFullDirectory;
-                        if (!dirs.Contains(selDir))
-                        {
-                            selDir = Path.GetDirectoryName(selDir);
-                        }
-                        if (dirs.Contains(selDir))
-                            dirs = new string[] { selDir };
-                        else
-                            dirs = new string[] { };
-                    }
-
-                    foreach (var dir in dirs)
-                    {
-                        string templateCat = "Skin";
-
-                        IEnumerable<string> files = Directory.EnumerateFiles(dir, "*.*", SearchOption.AllDirectories);
-                        IEnumerable<string> manifestfiles = files.Where(s => s.EndsWith("manifest.json"));
-                        var manifestTemplateFound = false;
-
-                        if (manifestfiles.Any())
-                        {
-                            foreach (string manifestFile in manifestfiles)
-                            {
-                                FileUri manifestFileUri = FileUri.FromPath(manifestFile);
-                                var manifest = ManifestUtils.LoadManifestFileFromCacheOrDisk(manifestFileUri);
-                                if (manifest != null && manifest.HasTemplates)
-                                {
-                                    manifestTemplateFound = true;
-                                    foreach (var template in manifest.Templates)
-                                    {
-                                        FileUri templateUri = new FileUri(manifestFileUri.FolderPath, template.Key);
-                                        string templateName = Path.GetDirectoryName(manifestFile).Substring(basePath.Length).Replace("\\", " / ");
-                                        if (!String.IsNullOrEmpty(template.Value.Title))
-                                        {
-                                            if (advanced)
-                                                templateName = templateName + " - " + template.Value.Title;
-                                        }
-                                        var item = new ListItem((templateCat == "Site" ? "" : templateCat + " : ") + templateName, templateUri.FilePath);
-                                        if (selectedTemplate != null && templateUri.FilePath.ToLowerInvariant() == selectedTemplate.Key.ToString().ToLowerInvariant())
-                                        {
-                                            item.Selected = true;
-                                        }
-                                        lst.Add(item);
-                                        if (!advanced) break;
-                                    }
-                                }
-                            }
-                        }
-                        if (!manifestTemplateFound)
-                        {
-                            var scriptfiles =
-                                Directory.EnumerateFiles(dir, "*.*", SearchOption.AllDirectories)
-                                    .Where(s => s.EndsWith(".cshtml") || s.EndsWith(".vbhtml") || s.EndsWith(".hbs"));
-                            foreach (string script in scriptfiles)
-                            {
-                                string scriptName = script.Remove(script.LastIndexOf(".")).Replace(basePath, "");
-                                if (scriptName.ToLower().EndsWith("template")) scriptName = scriptName.Remove(scriptName.LastIndexOf("\\"));
-                                else scriptName = scriptName.Replace("\\", " - ");
-
-                                FileUri templateUri = FileUri.FromPath(script);
-                                var item = new ListItem(templateCat + " : " + scriptName, templateUri.FilePath);
-                                if (selectedTemplate != null
-                                    && templateUri.FilePath.ToLowerInvariant() == selectedTemplate.Key.ToString().ToLowerInvariant())
-                                {
-                                    item.Selected = true;
-                                }
-                                lst.Add(item);
-                            }
-                        }
-                    }
-
-                }
+                
+                dirs = GetDirs(selectedTemplate, otherModuleTemplate, advanced, basePath, dirs, lst, "Skin");
+            }
+            // Host
+            {
+                basePath = HostingEnvironment.MapPath(GetHostTemplateFolder(portalSettings, moduleSubDir));
+                dirs = GetDirs(selectedTemplate, otherModuleTemplate, advanced, basePath, dirs, lst, "Host");
             }
             return lst;
         }
+
+        private static string[] GetDirs(TemplateManifest selectedTemplate, FileUri otherModuleTemplate, bool advanced, string basePath, string[] dirs, List<ListItem> lst, string folderType)
+        {
+            if (Directory.Exists(basePath))
+            {
+                dirs = Directory.GetDirectories(basePath);
+                if (otherModuleTemplate != null /*&& */ )
+                {
+                    var selDir = otherModuleTemplate.PhysicalFullDirectory;
+                    if (!dirs.Contains(selDir))
+                    {
+                        selDir = Path.GetDirectoryName(selDir);
+                    }
+                    if (dirs.Contains(selDir))
+                        dirs = new string[] { selDir };
+                    else
+                        dirs = new string[] { };
+                }
+
+                foreach (var dir in dirs)
+                {
+                    string templateCat = folderType;
+
+                    IEnumerable<string> files = Directory.EnumerateFiles(dir, "*.*", SearchOption.AllDirectories);
+                    IEnumerable<string> manifestfiles = files.Where(s => s.EndsWith("manifest.json"));
+                    var manifestTemplateFound = false;
+
+                    if (manifestfiles.Any())
+                    {
+                        foreach (string manifestFile in manifestfiles)
+                        {
+                            FileUri manifestFileUri = FileUri.FromPath(manifestFile);
+                            var manifest = ManifestUtils.LoadManifestFileFromCacheOrDisk(manifestFileUri);
+                            if (manifest != null && manifest.HasTemplates)
+                            {
+                                manifestTemplateFound = true;
+                                foreach (var template in manifest.Templates)
+                                {
+                                    FileUri templateUri = new FileUri(manifestFileUri.FolderPath, template.Key);
+                                    string templateName = Path.GetDirectoryName(manifestFile).Substring(basePath.Length).Replace("\\", " / ");
+                                    if (!String.IsNullOrEmpty(template.Value.Title))
+                                    {
+                                        if (advanced)
+                                            templateName = templateName + " - " + template.Value.Title;
+                                    }
+                                    var item = new ListItem((templateCat == "Site" ? "" : templateCat + " : ") + templateName, templateUri.FilePath);
+                                    if (selectedTemplate != null && templateUri.FilePath.ToLowerInvariant() == selectedTemplate.Key.ToString().ToLowerInvariant())
+                                    {
+                                        item.Selected = true;
+                                    }
+                                    lst.Add(item);
+                                    if (!advanced) break;
+                                }
+                            }
+                        }
+                    }
+                    if (!manifestTemplateFound)
+                    {
+                        var scriptfiles =
+                            Directory.EnumerateFiles(dir, "*.*", SearchOption.AllDirectories)
+                                .Where(s => s.EndsWith(".cshtml") || s.EndsWith(".vbhtml") || s.EndsWith(".hbs"));
+                        foreach (string script in scriptfiles)
+                        {
+                            string scriptName = script.Remove(script.LastIndexOf(".")).Replace(basePath, "");
+                            if (scriptName.ToLower().EndsWith("template")) scriptName = scriptName.Remove(scriptName.LastIndexOf("\\"));
+                            else scriptName = scriptName.Replace("\\", " - ");
+
+                            FileUri templateUri = FileUri.FromPath(script);
+                            var item = new ListItem(templateCat + " : " + scriptName, templateUri.FilePath);
+                            if (selectedTemplate != null
+                                && templateUri.FilePath.ToLowerInvariant() == selectedTemplate.Key.ToString().ToLowerInvariant())
+                            {
+                                item.Selected = true;
+                            }
+                            lst.Add(item);
+                        }
+                    }
+                }
+
+            }
+
+            return dirs;
+        }
+
         public static List<ListItem> GetTemplates(PortalSettings portalSettings, int moduleId, TemplateManifest selectedTemplate, string moduleSubDir)
         {
             string basePath = HostingEnvironment.MapPath(GetSiteTemplateFolder(portalSettings, moduleSubDir));
@@ -340,6 +361,25 @@ namespace Satrabel.OpenContent.Components
                     foreach (var dir in Directory.GetDirectories(basePath))
                     {
                         string templateCat = "Skin";
+                        string scriptName = dir;
+                        scriptName = templateCat + ":" + scriptName.Substring(scriptName.LastIndexOf("\\") + 1);
+                        string scriptPath = FolderUri.ReverseMapPath(dir);
+                        var item = new ListItem(scriptName, scriptPath);
+                        if (selectedTemplate != null && scriptPath.ToLowerInvariant() == selectedTemplate.Key.ToString().ToLowerInvariant())
+                        {
+                            item.Selected = true;
+                        }
+                        lst.Add(item);
+                    }
+                }
+            }
+            {
+                basePath = HostingEnvironment.MapPath(GetHostTemplateFolder(portalSettings, moduleSubDir));
+                if (Directory.Exists(basePath))
+                {
+                    foreach (var dir in Directory.GetDirectories(basePath))
+                    {
+                        string templateCat = "Host";
                         string scriptName = dir;
                         scriptName = templateCat + ":" + scriptName.Substring(scriptName.LastIndexOf("\\") + 1);
                         string scriptPath = FolderUri.ReverseMapPath(dir);
@@ -512,9 +552,9 @@ namespace Satrabel.OpenContent.Components
                 TabId = module.ViewModule.TabId,
                 TabModuleId = module.ViewModule.TabModuleId,
                 ModuleId = module.DataModule.ModuleId,
-                TemplateFolder = module.Settings.TemplateDir.FolderPath,
+                TemplateFolder = module.Settings.TemplateDir?.FolderPath,
                 UserId = userId,
-                Config = module.Settings.Manifest.DataSourceConfig,
+                Config = module.Settings.Manifest?.DataSourceConfig,
                 Index = template?.Manifest?.Index ?? false,
                 Options = options,
                 Single = single,
