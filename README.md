@@ -4,7 +4,7 @@ Structured Content editing for DNN (Dotnetnuke)
 
 *Goals*
 
-* Html module remplacement for responsive websites
+* Html module replacement for responsive websites
 * Easy content editing of complex layouts by end users
 * Content editing for websites using frameworks like bootstrap
 
@@ -13,18 +13,22 @@ Structured Content editing for DNN (Dotnetnuke)
 *Features*
 
 * Structured content editing of complex data (from single item to multiple lists)
+* Field types for Text, HTML, Images (with cropper) and more. 
 * Template based rendering
 * Multi language
 * Template exchange with data definition and templates
 * Module title editing from the Content editing UI
 * Online template editing
+* And much more...
 
 
 Documentation : [url:https://opencontent.readme.io]
 
+** Starter Templates
 Demos : [url:http://www.openextensions.net/dnn-modules/opencontent/bootstrap]
-
 Templates download : [url:http://www.openextensions.net/templates/open-content]
+Templates on GitHub [url:https://github.com/sachatrauwaen/OpenContent-Templates]
+
 
 
 
