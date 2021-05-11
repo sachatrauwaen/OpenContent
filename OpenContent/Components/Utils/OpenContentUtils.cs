@@ -266,22 +266,25 @@ namespace Satrabel.OpenContent.Components
                             if (manifest != null && manifest.HasTemplates)
                             {
                                 manifestTemplateFound = true;
-                                foreach (var template in manifest.Templates)
+                                if (advanced || !manifest.Advanced)
                                 {
-                                    FileUri templateUri = new FileUri(manifestFileUri.FolderPath, template.Key);
-                                    string templateName = Path.GetDirectoryName(manifestFile).Substring(basePath.Length).Replace("\\", " / ");
-                                    if (!String.IsNullOrEmpty(template.Value.Title))
+                                    foreach (var template in manifest.Templates)
                                     {
-                                        if (advanced)
-                                            templateName = templateName + " - " + template.Value.Title;
+                                        FileUri templateUri = new FileUri(manifestFileUri.FolderPath, template.Key);
+                                        string templateName = Path.GetDirectoryName(manifestFile).Substring(basePath.Length).Replace("\\", " / ");
+                                        if (!String.IsNullOrEmpty(template.Value.Title))
+                                        {
+                                            if (advanced)
+                                                templateName = templateName + " - " + template.Value.Title;
+                                        }
+                                        var item = new ListItem((templateCat == "Site" ? "" : templateCat + " : ") + templateName, templateUri.FilePath);
+                                        if (selectedTemplate != null && templateUri.FilePath.ToLowerInvariant() == selectedTemplate.Key.ToString().ToLowerInvariant())
+                                        {
+                                            item.Selected = true;
+                                        }
+                                        lst.Add(item);
+                                        if (!advanced) break;
                                     }
-                                    var item = new ListItem((templateCat == "Site" ? "" : templateCat + " : ") + templateName, templateUri.FilePath);
-                                    if (selectedTemplate != null && templateUri.FilePath.ToLowerInvariant() == selectedTemplate.Key.ToString().ToLowerInvariant())
-                                    {
-                                        item.Selected = true;
-                                    }
-                                    lst.Add(item);
-                                    if (!advanced) break;
                                 }
                             }
                         }
