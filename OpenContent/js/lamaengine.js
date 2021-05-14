@@ -380,8 +380,8 @@ alpacaEngine.engine = function (config) {
                                             id: value.id,
                                             url: value.url,
                                             filename: value.filename,
-                                            folderId: "1"
-                                            //"thumbUrl": value.thumbUrl,
+                                            folderId: "1",
+                                            thumbUrl: value.thumbUrl,
                                             //"text": value.text,
                                             //"width": value.width,
                                             //"height": value.height,
