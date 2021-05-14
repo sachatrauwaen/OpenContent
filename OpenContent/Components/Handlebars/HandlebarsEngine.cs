@@ -584,6 +584,16 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     writer.WriteSafeString(imageUrl);
                 }
             });
+            hbs.RegisterHelper("imageediturl", (writer, context, parameters) =>
+            {
+                if (parameters.Length == 1) //{{imageediturl ImageId}}
+                {
+                    string imageId = parameters[0].ToString();
+                    ImageUri imageObject = ImageUriFactory.CreateImageUri(imageId);
+                    var imageUrl = imageObject == null ? string.Empty : imageObject.EditUrl();
+                    writer.WriteSafeString(imageUrl);
+                }
+            });
         }
 
         private static void RegisterEmailHelper(HandlebarsDotNet.IHandlebars hbs)
