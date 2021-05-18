@@ -424,9 +424,20 @@ namespace Satrabel.OpenContent.Components.Handlebars
                         try
                         {
                             DateTime publishstartdate = DateTime.Parse(item.publishstartdate, null, System.Globalization.DateTimeStyles.RoundtripKind);
-                            if (publishstartdate.Date >= DateTime.Today)
+                            // check if we need to compare the time
+                            if (publishstartdate.TimeOfDay.TotalMilliseconds > 0)
                             {
-                                show = false;
+                                if (publishstartdate >= DateTime.Now)
+                                {
+                                    show = false;
+                                }
+                            }
+                            else
+                            {
+                                if (publishstartdate.Date >= DateTime.Today)
+                                {
+                                    show = false;
+                                }
                             }
                         }
                         catch (Exception)
@@ -435,9 +446,20 @@ namespace Satrabel.OpenContent.Components.Handlebars
                         try
                         {
                             DateTime publishenddate = DateTime.Parse(item.publishenddate, null, System.Globalization.DateTimeStyles.RoundtripKind);
-                            if (publishenddate.Date <= DateTime.Today)
+                            // check if we need to compare the time
+                            if (publishenddate.TimeOfDay.TotalMilliseconds > 0)
                             {
-                                show = false;
+                                if (publishenddate <= DateTime.Now)
+                                {
+                                    show = false;
+                                }
+                            }
+                            else
+                            {
+                                if (publishenddate.Date <= DateTime.Today)
+                                {
+                                    show = false;
+                                }
                             }
                         }
                         catch (Exception)
