@@ -640,16 +640,48 @@ namespace Satrabel.OpenContent.Components
             }
             if (permissions && indexConfig?.Fields != null && indexConfig.Fields.ContainsKey(App.Config.FieldNamePublishStartDate))
             {
-                permissions = dsItem.Data[App.Config.FieldNamePublishStartDate] != null &&
-                                dsItem.Data[App.Config.FieldNamePublishStartDate].Type == JTokenType.Date &&
-                                ((DateTime)dsItem.Data[App.Config.FieldNamePublishStartDate]) <= DateTime.Today;
+                if (dsItem.Data[App.Config.FieldNamePublishStartDate] != null && dsItem.Data[App.Config.FieldNamePublishStartDate].Type == JTokenType.Date)
+                {
+                    var compareDate = (DateTime) dsItem.Data[App.Config.FieldNamePublishStartDate];
+                    // do we need to compare time?
+                    if (compareDate.TimeOfDay.TotalMilliseconds > 0)
+                    {
+                        permissions = compareDate <= DateTime.Now;
+                    }
+                    else
+                    {
+                        permissions = compareDate <= DateTime.Today;
+                    }
+                }
+                else
+                {
+                    // not a date
+                    permissions = false;
+                }
+                
                 if (!permissions) raison = App.Config.FieldNamePublishStartDate + $" being {dsItem.Data[App.Config.FieldNamePublishStartDate]}";
             }
             if (permissions && indexConfig?.Fields != null && indexConfig.Fields.ContainsKey(App.Config.FieldNamePublishEndDate))
             {
-                permissions = dsItem.Data[App.Config.FieldNamePublishEndDate] != null &&
-                                dsItem.Data[App.Config.FieldNamePublishEndDate].Type == JTokenType.Date &&
-                                ((DateTime)dsItem.Data[App.Config.FieldNamePublishEndDate]) >= DateTime.Today;
+                if (dsItem.Data[App.Config.FieldNamePublishEndDate] != null && dsItem.Data[App.Config.FieldNamePublishEndDate].Type == JTokenType.Date)
+                {
+                    var compareDate = (DateTime) dsItem.Data[App.Config.FieldNamePublishEndDate];
+                    // do we need to compare time?
+                    if (compareDate.TimeOfDay.TotalMilliseconds > 0)
+                    {
+                        permissions = compareDate >= DateTime.Now;
+                    }
+                    else
+                    {
+                        permissions = compareDate >= DateTime.Today;
+                    }
+                }
+                else
+                {
+                    // not a date
+                    permissions = false;
+                }
+
                 if (!permissions) raison = App.Config.FieldNamePublishEndDate + $" being {dsItem.Data[App.Config.FieldNamePublishEndDate]}";
             }
             if (permissions)
