@@ -54,7 +54,7 @@ namespace Satrabel.OpenContent.Components.Rest
                         var mf = new ModelFactorySingle(dsItem, module, collection);
 
                         string raison = "";
-                        if (!OpenContentUtils.HaveViewPermissions(dsItem, module.UserRoles.FromDnnRoles(), indexConfig, out raison))
+                        if (!OpenContentUtils.IsViewAllowed(dsItem, module.UserRoles.FromDnnRoles(), indexConfig, out raison))
                         {
                             Exceptions.ProcessHttpException(new HttpException(404, "No detail view permissions for id=" + id + " (" + raison + ")"));
                             //throw new UnauthorizedAccessException("No detail view permissions for id " + info.DetailItemId);
