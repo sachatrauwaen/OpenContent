@@ -163,6 +163,9 @@ namespace Satrabel.OpenContent.Components
             {
                 App.Services.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} - NOT - No content found");
             }
+
+            var ps = new PortalSettings(modInfo.PortalID);
+
             foreach (IDataItem content in contentList.Items)
             {
                 if (content == null)
@@ -173,29 +176,38 @@ namespace Satrabel.OpenContent.Components
                       && content.LastModifiedOnDate.ToUniversalTime() < DateTime.UtcNow)
                 {
                     SearchDocument searchDoc;
+
+                    var portalLocales = DnnLanguageUtils.GetPortalLocales(modInfo.PortalID);
+
                     if (DnnLanguageUtils.IsMultiLingualPortal(modInfo.PortalID))
                     {
-                        // first process the default language module
-                        var culture = modInfo.CultureCode;
-                        var localizedData = GetLocalizedContent(content.Data, culture);
-                        searchDoc = CreateSearchDocument(modInfo, module.Settings, localizedData, content.Id, culture, content.Title, content.LastModifiedOnDate.ToUniversalTime());
-                        searchDocuments.Add(searchDoc);
-                        App.Services.Logger.Trace($"Indexing content {modInfo.ModuleID}|{culture} -  OK!  {searchDoc.Title} ({modInfo.TabID}) of {content.LastModifiedOnDate.ToUniversalTime()}");
-
-                        // now do the same with any linked localized instances of this module
-                        if (modInfo.LocalizedModules != null)
-                            foreach (var localizedModule in modInfo.LocalizedModules)
-                            {
-                                culture = localizedModule.Value.CultureCode;
-                                localizedData = GetLocalizedContent(content.Data, culture);
-                                searchDoc = CreateSearchDocument(modInfo, module.Settings, localizedData, content.Id, culture, content.Title, content.LastModifiedOnDate.ToUniversalTime());
-                                searchDocuments.Add(searchDoc);
-                                App.Services.Logger.Trace($"Indexing content {modInfo.ModuleID}|{culture} -  OK!  {searchDoc.Title} ({modInfo.TabID}) of {content.LastModifiedOnDate.ToUniversalTime()}");
-                            }
+                        if (string.IsNullOrEmpty(modInfo.CultureCode))
+                        {
+                            // it's a neutral language module according to DNN, which means we will need to add the neutral language content too
+                            var culture = ps.DefaultLanguage;
+                            var localizedData = GetLocalizedContent(content.Data, culture);
+                            // pass "" as culture to indicate we're indexing the neutral language here
+                            searchDoc = CreateSearchDocument(ps, modInfo, module.Settings, localizedData, content.Id, "", content.Title, content.LastModifiedOnDate.ToUniversalTime());
+                            searchDocuments.Add(searchDoc);
+                            App.Services.Logger.Trace($"Indexing content {modInfo.ModuleID}|{culture} -  OK!  {searchDoc.Title} ({modInfo.TabID}) of {content.LastModifiedOnDate.ToUniversalTime()}");
+                        }
+                        // now start creating the docs for specific cultures
+                        foreach (var portalLocale in portalLocales.Keys)
+                        {
+                            var localizedData = GetLocalizedContent(content.Data, portalLocale);
+                            searchDoc = CreateSearchDocument(ps, modInfo, module.Settings, localizedData, content.Id, portalLocale, content.Title, content.LastModifiedOnDate.ToUniversalTime());
+                            searchDocuments.Add(searchDoc);
+                            App.Services.Logger.Trace($"Indexing content {modInfo.ModuleID}|{portalLocale} -  OK!  {searchDoc.Title} ({modInfo.TabID}) of {content.LastModifiedOnDate.ToUniversalTime()}");
+                        }
                     }
                     else
                     {
-                        searchDoc = CreateSearchDocument(modInfo, module.Settings, content.Data, content.Id, "", content.Title, content.LastModifiedOnDate.ToUniversalTime());
+                        // to make ML-Templates be correctly indexed by DNN, we need to use GetLocalizedContent with the default culture
+                        // for sites with only one culture
+                        var culture = portalLocales.First().Key ?? "";
+                        var localizedData = string.IsNullOrEmpty(culture) ? content.Data : GetLocalizedContent(content.Data, culture);
+                        // we are intentionally still passing "" as culture to tell DNN it's the neutral language content
+                        searchDoc = CreateSearchDocument(ps, modInfo, module.Settings, localizedData, content.Id, "", content.Title, content.LastModifiedOnDate.ToUniversalTime());
                         searchDocuments.Add(searchDoc);
                         App.Services.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} -  OK!  {searchDoc.Title} ({modInfo.TabID}) of {content.LastModifiedOnDate.ToUniversalTime()}");
                     }
@@ -217,11 +229,10 @@ namespace Satrabel.OpenContent.Components
             return retval;
         }
 
-        private static SearchDocument CreateSearchDocument(ModuleInfo modInfo, OpenContentSettings settings, JToken contentData, string itemId, string culture, string dataItemTitle, DateTime time)
+        private static SearchDocument CreateSearchDocument(PortalSettings ps, ModuleInfo modInfo, OpenContentSettings settings, JToken contentData, string itemId, string culture, string dataItemTitle, DateTime time)
         {
             // existance of settings.Template.Main has already been checked: we wouldn't be here if it doesn't exist
             // but still, we don't want to count on that too much
-            var ps = new PortalSettings(modInfo.PortalID);
             ps.PortalAlias = PortalAliasController.Instance.GetPortalAlias(ps.DefaultPortalAlias);
 
             string url = null;
