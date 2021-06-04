@@ -235,6 +235,14 @@ namespace Satrabel.OpenContent.Components
                 // With a signle template we don't want to identify the content by id.
                 url = TestableGlobals.Instance.NavigateURL(modInfo.TabID, ps, "");
             }
+            // chek if we have a dnnSearchUrl field
+            // if we have, we use the OpenContent url as default
+            if (!string.IsNullOrEmpty(settings.Template?.Main?.DnnSearchUrl))
+            {
+                var dicForHbs = JsonUtils.JsonToDictionary(contentData.ToString());
+                var hbEngine = new HandlebarsEngine();
+                url = hbEngine.ExecuteWithoutFaillure(settings.Template.Main.DnnSearchUrl, dicForHbs, url);
+            }
 
             // instanciate the search document
             var retval = new SearchDocument
