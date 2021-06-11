@@ -26,13 +26,17 @@ using System.IO;
 using System.Web;
 using System.Web.Hosting;
 using DotNetNuke.Common.Internal;
+using DotNetNuke.Modules.Dashboard.Components.Portals;
 using DotNetNuke.Services.Search.Controllers;
 using Satrabel.OpenContent.Components.Datasource;
+using Satrabel.OpenContent.Components.Datasource.Search;
 using Satrabel.OpenContent.Components.Dnn;
 using Satrabel.OpenContent.Components.Handlebars;
 using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Lucene;
+using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.TemplateHelpers;
+using PortalInfo = DotNetNuke.Entities.Portals.PortalInfo;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -47,7 +51,7 @@ namespace Satrabel.OpenContent.Components
             var tabModules = ModuleController.Instance.GetTabModulesByModule(moduleId);
 
             Hashtable moduleSettings = tabModules.Any() ? tabModules.First().ModuleSettings : new Hashtable();
-            
+
             var items = ctrl.GetContents(moduleId);
             xml += "<opencontent>";
             foreach (var item in items)
@@ -66,7 +70,7 @@ namespace Satrabel.OpenContent.Components
                 xml += "<settingValue>" + XmlUtils.XMLEncode(moduleSetting.Value.ToString()) + "</settingValue>";
                 xml += "</moduleSetting>";
             }
-            
+
             xml += "</opencontent>";
             return xml;
         }
@@ -113,7 +117,7 @@ namespace Satrabel.OpenContent.Components
                 }
             }
             module = OpenContentModuleConfig.Create(moduleId, Null.NullInteger, PortalSettings.Current);
-            
+
             LuceneUtils.ReIndexModuleData(module);
         }
 
@@ -410,6 +414,36 @@ namespace Satrabel.OpenContent.Components
             else if (version == "03.02.00")
             {
                 LuceneUtils.IndexAll();
+            }
+            else if (version == "04.07.00")
+            {
+                // Given the changed behavior with time int publishedEndDate, we need to Update the lucene index for all items.
+                foreach (var portalId in PortalsController.GetPortals().Select(p => p.PortalID))
+                {
+                    IEnumerable<ModuleInfo> modules = (new ModuleController()).GetModules(portalId).Cast<ModuleInfo>();
+                    modules = modules.Where(m => m.ModuleDefinition.DefinitionName == App.Config.Opencontent && m.IsDeleted == false && !m.OpenContentSettings().IsOtherModule);
+                    foreach (var module in modules)
+                    {
+                        var ocConfig = OpenContentModuleConfig.Create(module, new PortalSettings(portalId));
+                        var dsContext = OpenContentUtils.CreateDataContext(ocConfig);
+                        var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(dsContext.TemplateFolder), dsContext.Collection);
+                        if (dsContext.Index)
+                        {
+                            if (indexConfig.HasField(App.Config.FieldNamePublishEndDate))
+                            {
+                                IDataSource ds = DataSourceManager.GetDataSource(ocConfig.Settings.Manifest.DataSource);
+                                foreach (var dataItem in ds.GetAll(dsContext, new Select()).Items)
+                                {
+                                    var content = (OpenContentInfo)dataItem.Item;
+                                    content.HydrateDefaultFields(indexConfig);
+                                    LuceneController.Instance.Update(content, indexConfig);
+                                }
+                                LuceneController.Instance.Commit();
+                            }
+                        }
+                    }
+                }
+
             }
             return version + res;
         }

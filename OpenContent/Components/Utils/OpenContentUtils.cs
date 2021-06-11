@@ -50,7 +50,7 @@ namespace Satrabel.OpenContent.Components
                         content.JsonAsJToken = contentJToken;
                     }
                 }
-                
+
             }
             if (indexConfig.HasField(App.Config.FieldNamePublishStatus)
                 && content.JsonAsJToken != null && content.JsonAsJToken[App.Config.FieldNamePublishStatus] == null)
