@@ -33,9 +33,24 @@ namespace Satrabel.OpenContent.Components
                 content.JsonAsJToken[App.Config.FieldNamePublishStartDate] = DateTime.MinValue;
             }
             if (indexConfig.HasField(App.Config.FieldNamePublishEndDate)
-                && content.JsonAsJToken != null && content.JsonAsJToken[App.Config.FieldNamePublishEndDate] == null)
+                && content.JsonAsJToken != null)
             {
-                content.JsonAsJToken[App.Config.FieldNamePublishEndDate] = DateTime.MaxValue;
+                if (content.JsonAsJToken[App.Config.FieldNamePublishEndDate] == null)
+                {
+                    content.JsonAsJToken[App.Config.FieldNamePublishEndDate] = DateTime.MaxValue;
+                }
+                else
+                {
+                    // if the enddata has no time, we add 23:59:59.999 as a time
+                    var t = content.JsonAsJToken[App.Config.FieldNamePublishEndDate].Value<DateTime>();
+                    if (t.TimeOfDay.TotalMilliseconds == 0)
+                    {
+                        var contentJToken = content.JsonAsJToken;
+                        contentJToken[App.Config.FieldNamePublishEndDate] = t.AddDays(1).AddMilliseconds(-1);
+                        content.JsonAsJToken = contentJToken;
+                    }
+                }
+                
             }
             if (indexConfig.HasField(App.Config.FieldNamePublishStatus)
                 && content.JsonAsJToken != null && content.JsonAsJToken[App.Config.FieldNamePublishStatus] == null)
