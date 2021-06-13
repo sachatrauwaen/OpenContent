@@ -435,7 +435,7 @@ namespace Satrabel.OpenContent.Components
                                 foreach (var dataItem in ds.GetAll(dsContext, new Select()).Items)
                                 {
                                     var content = (OpenContentInfo)dataItem.Item;
-                                    content.HydrateDefaultFields(indexConfig);
+                                    content.HydrateDefaultFields(indexConfig, ocConfig.Settings?.Manifest?.UsePublishTime ?? false);
                                     LuceneController.Instance.Update(content, indexConfig);
                                 }
                                 LuceneController.Instance.Commit();

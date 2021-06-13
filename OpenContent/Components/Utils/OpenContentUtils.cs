@@ -25,7 +25,7 @@ namespace Satrabel.OpenContent.Components
 {
     public static class OpenContentUtils
     {
-        public static void HydrateDefaultFields(this OpenContentInfo content, FieldConfig indexConfig)
+        public static void HydrateDefaultFields(this OpenContentInfo content, FieldConfig indexConfig, bool usePublishTime = false)
         {
             if (indexConfig.HasField(App.Config.FieldNamePublishStartDate)
                    && content.JsonAsJToken != null && content.JsonAsJToken[App.Config.FieldNamePublishStartDate] == null)
@@ -41,9 +41,11 @@ namespace Satrabel.OpenContent.Components
                 }
                 else
                 {
-                    // if the enddata has no time, we add 23:59:59.999 as a time
+                    // if the enddata has no time,
+                    // and we don't need to usePublishTime
+                    // we add 23:59:59.999 as a time
                     var t = content.JsonAsJToken[App.Config.FieldNamePublishEndDate].Value<DateTime>();
-                    if (t.TimeOfDay.TotalMilliseconds == 0)
+                    if (!usePublishTime && t.TimeOfDay.TotalMilliseconds == 0)
                     {
                         var contentJToken = content.JsonAsJToken;
                         contentJToken[App.Config.FieldNamePublishEndDate] = t.AddDays(1).AddMilliseconds(-1);
