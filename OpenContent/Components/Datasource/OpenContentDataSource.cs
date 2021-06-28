@@ -4,6 +4,8 @@ using Satrabel.OpenContent.Components.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DotNetNuke.Entities.Modules;
+using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components.Datasource.Search;
 using Satrabel.OpenContent.Components.Logging;
 using Satrabel.OpenContent.Components.Form;
@@ -304,8 +306,9 @@ namespace Satrabel.OpenContent.Components.Datasource
             ctrl.UpdateContent(content);
             if (context.Index)
             {
+                var module = OpenContentModuleConfig.Create(ModuleController.Instance.GetModule(context.ModuleId, -1, false), new PortalSettings(context.PortalId));
                 var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection);
-                content.HydrateDefaultFields(indexConfig);
+                content.HydrateDefaultFields(indexConfig, module.Settings?.Manifest?.UsePublishTime ?? false);
                 LuceneController.Instance.Update(content, indexConfig);
                 LuceneController.Instance.Commit();
             }

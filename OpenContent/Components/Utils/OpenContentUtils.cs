@@ -25,7 +25,7 @@ namespace Satrabel.OpenContent.Components
 {
     public static class OpenContentUtils
     {
-        public static void HydrateDefaultFields(this OpenContentInfo content, FieldConfig indexConfig)
+        public static void HydrateDefaultFields(this OpenContentInfo content, FieldConfig indexConfig, bool usePublishTime = false)
         {
             if (indexConfig.HasField(App.Config.FieldNamePublishStartDate)
                    && content.JsonAsJToken != null && content.JsonAsJToken[App.Config.FieldNamePublishStartDate] == null)
@@ -33,9 +33,26 @@ namespace Satrabel.OpenContent.Components
                 content.JsonAsJToken[App.Config.FieldNamePublishStartDate] = DateTime.MinValue;
             }
             if (indexConfig.HasField(App.Config.FieldNamePublishEndDate)
-                && content.JsonAsJToken != null && content.JsonAsJToken[App.Config.FieldNamePublishEndDate] == null)
+                && content.JsonAsJToken != null)
             {
-                content.JsonAsJToken[App.Config.FieldNamePublishEndDate] = DateTime.MaxValue;
+                if (content.JsonAsJToken[App.Config.FieldNamePublishEndDate] == null)
+                {
+                    content.JsonAsJToken[App.Config.FieldNamePublishEndDate] = DateTime.MaxValue;
+                }
+                else
+                {
+                    // if the enddata has no time,
+                    // and we don't need to usePublishTime
+                    // we add 23:59:59.999 as a time
+                    var t = content.JsonAsJToken[App.Config.FieldNamePublishEndDate].Value<DateTime>();
+                    if (!usePublishTime && t.TimeOfDay.TotalMilliseconds == 0)
+                    {
+                        var contentJToken = content.JsonAsJToken;
+                        contentJToken[App.Config.FieldNamePublishEndDate] = t.AddDays(1).AddMilliseconds(-1);
+                        content.JsonAsJToken = contentJToken;
+                    }
+                }
+
             }
             if (indexConfig.HasField(App.Config.FieldNamePublishStatus)
                 && content.JsonAsJToken != null && content.JsonAsJToken[App.Config.FieldNamePublishStatus] == null)
@@ -63,7 +80,7 @@ namespace Satrabel.OpenContent.Components
         public static string GetHostTemplateFolder(PortalSettings portalSettings, string moduleSubDir)
         {
             var hostPath = "~/Portals/_Default/";
-            
+
             return hostPath + moduleSubDir + "/Templates/";
         }
 
@@ -220,7 +237,7 @@ namespace Satrabel.OpenContent.Components
             //if (!string.IsNullOrEmpty(portalSettings.ActiveTab.SkinPath))
             {
                 basePath = HostingEnvironment.MapPath(GetSkinTemplateFolder(portalSettings, moduleSubDir));
-                
+
                 dirs = GetDirs(selectedTemplate, otherModuleTemplate, advanced, basePath, dirs, lst, "Skin");
             }
             // Host
@@ -625,81 +642,140 @@ namespace Satrabel.OpenContent.Components
             return false;
         }
 
-        internal static bool HaveViewPermissions(IDataItem dsItem, IList<UserRoleInfo> userRoles, FieldConfig indexConfig, out string raison)
+        internal static bool IsViewAllowed(IDataItem dsItem, IList<UserRoleInfo> userRoles, FieldConfig indexConfig, out string raison)
         {
             raison = "";
             if (dsItem?.Data == null) return true;
 
-            bool permissions = true;
             //publish status , dates
-            if (indexConfig?.Fields != null && indexConfig.Fields.ContainsKey(App.Config.FieldNamePublishStatus))
+            var isAllowed = IsPublished(dsItem, indexConfig, out raison);
+            // user and roles
+            if (isAllowed) isAllowed = HaveViewPermissions(dsItem, userRoles, indexConfig, out raison);
+
+            return isAllowed;
+        }
+        /// <summary>
+        /// Check the user's permissions to view the item. NOTE: as of 2021-05-22 use IsViewAllowed to also check publish status and date.
+        /// </summary>
+        /// <param name="dsItem"></param>
+        /// <param name="userRoles"></param>
+        /// <param name="indexConfig"></param>
+        /// <param name="reason"></param>
+        /// <returns></returns>
+        internal static bool HaveViewPermissions(IDataItem dsItem, IList<UserRoleInfo> userRoles, FieldConfig indexConfig, out string reason)
+        {
+            reason = "";
+            if (dsItem?.Data == null) return true;
+
+            bool permissions = true;
+
+            // Roles                
+            string fieldName = "";
+            if (indexConfig?.Fields != null && indexConfig.Fields.ContainsKey("userrole"))
             {
-                permissions = dsItem.Data[App.Config.FieldNamePublishStatus] != null &&
-                    dsItem.Data[App.Config.FieldNamePublishStatus].ToString() == "published";
-                if (!permissions) raison = App.Config.FieldNamePublishStatus + $" being {dsItem.Data[App.Config.FieldNamePublishStatus]}";
+                fieldName = "userrole";
             }
-            if (permissions && indexConfig?.Fields != null && indexConfig.Fields.ContainsKey(App.Config.FieldNamePublishStartDate))
+            else if (indexConfig?.Fields != null && indexConfig.Fields.ContainsKey("userroles"))
             {
-                permissions = dsItem.Data[App.Config.FieldNamePublishStartDate] != null &&
-                                dsItem.Data[App.Config.FieldNamePublishStartDate].Type == JTokenType.Date &&
-                                ((DateTime)dsItem.Data[App.Config.FieldNamePublishStartDate]) <= DateTime.Today;
-                if (!permissions) raison = App.Config.FieldNamePublishStartDate + $" being {dsItem.Data[App.Config.FieldNamePublishStartDate]}";
+                fieldName = "userroles";
             }
-            if (permissions && indexConfig?.Fields != null && indexConfig.Fields.ContainsKey(App.Config.FieldNamePublishEndDate))
+            if (!String.IsNullOrEmpty(fieldName))
             {
-                permissions = dsItem.Data[App.Config.FieldNamePublishEndDate] != null &&
-                                dsItem.Data[App.Config.FieldNamePublishEndDate].Type == JTokenType.Date &&
-                                ((DateTime)dsItem.Data[App.Config.FieldNamePublishEndDate]) >= DateTime.Today;
-                if (!permissions) raison = App.Config.FieldNamePublishEndDate + $" being {dsItem.Data[App.Config.FieldNamePublishEndDate]}";
-            }
-            if (permissions)
-            {
-                // Roles                
-                string fieldName = "";
-                if (indexConfig?.Fields != null && indexConfig.Fields.ContainsKey("userrole"))
+                permissions = false;
+                string[] dataRoles = { };
+                if (dsItem.Data[fieldName] != null)
                 {
-                    fieldName = "userrole";
-                }
-                else if (indexConfig?.Fields != null && indexConfig.Fields.ContainsKey("userroles"))
-                {
-                    fieldName = "userroles";
-                }
-                if (!String.IsNullOrEmpty(fieldName))
-                {
-                    permissions = false;
-                    string[] dataRoles = { };
-                    if (dsItem.Data[fieldName] != null)
+                    if (dsItem.Data[fieldName].Type == JTokenType.Array)
                     {
-                        if (dsItem.Data[fieldName].Type == JTokenType.Array)
-                        {
-                            dataRoles = ((JArray)dsItem.Data[fieldName]).Select(d => d.ToString()).ToArray();
-                        }
-                        else
-                        {
-                            dataRoles = new string[] { dsItem.Data[fieldName].ToString() };
-                        }
-                    }
-                    if (dataRoles.Contains("AllUsers"))
-                    {
-                        permissions = true;
+                        dataRoles = ((JArray)dsItem.Data[fieldName]).Select(d => d.ToString()).ToArray();
                     }
                     else
                     {
-                        var roles = userRoles;
-                        if (roles.Any())
-                        {
-                            permissions = roles.Any(r => dataRoles.Contains(r.RoleId.ToString()));
-                        }
-                        else
-                        {
-                            permissions = dataRoles.Contains("Unauthenticated");
-                        }
+                        dataRoles = new string[] { dsItem.Data[fieldName].ToString() };
                     }
-                    if (!permissions) raison = fieldName;
                 }
+                if (dataRoles.Contains("AllUsers"))
+                {
+                    permissions = true;
+                }
+                else
+                {
+                    var roles = userRoles;
+                    if (roles.Any())
+                    {
+                        permissions = roles.Any(r => dataRoles.Contains(r.RoleId.ToString()));
+                    }
+                    else
+                    {
+                        permissions = dataRoles.Contains("Unauthenticated");
+                    }
+                }
+                if (!permissions) reason = fieldName;
             }
             return permissions;
 
+        }
+
+        internal static bool IsPublished(IDataItem dsItem, FieldConfig indexConfig, out string reason)
+        {
+            reason = "";
+            if (dsItem?.Data == null) return true;
+
+            bool isPublished = true;
+            if (indexConfig?.Fields != null && indexConfig.Fields.ContainsKey(App.Config.FieldNamePublishStatus))
+            {
+                isPublished = dsItem.Data[App.Config.FieldNamePublishStatus] != null &&
+                    dsItem.Data[App.Config.FieldNamePublishStatus].ToString() == "published";
+                if (!isPublished) reason = App.Config.FieldNamePublishStatus + $" being {dsItem.Data[App.Config.FieldNamePublishStatus]}";
+            }
+            if (isPublished && indexConfig?.Fields != null && indexConfig.Fields.ContainsKey(App.Config.FieldNamePublishStartDate))
+            {
+                if (dsItem.Data[App.Config.FieldNamePublishStartDate] != null && dsItem.Data[App.Config.FieldNamePublishStartDate].Type == JTokenType.Date)
+                {
+                    var compareDate = (DateTime)dsItem.Data[App.Config.FieldNamePublishStartDate];
+                    // do we need to compare time?
+                    if (compareDate.TimeOfDay.TotalMilliseconds > 0)
+                    {
+                        isPublished = compareDate <= DateTime.Now;
+                    }
+                    else
+                    {
+                        isPublished = compareDate <= DateTime.Today;
+                    }
+                }
+                else
+                {
+                    // not a date
+                    isPublished = false;
+                }
+
+                if (!isPublished) reason = App.Config.FieldNamePublishStartDate + $" being {dsItem.Data[App.Config.FieldNamePublishStartDate]}";
+            }
+            if (isPublished && indexConfig?.Fields != null && indexConfig.Fields.ContainsKey(App.Config.FieldNamePublishEndDate))
+            {
+                if (dsItem.Data[App.Config.FieldNamePublishEndDate] != null && dsItem.Data[App.Config.FieldNamePublishEndDate].Type == JTokenType.Date)
+                {
+                    var compareDate = (DateTime)dsItem.Data[App.Config.FieldNamePublishEndDate];
+                    // do we need to compare time?
+                    if (compareDate.TimeOfDay.TotalMilliseconds > 0)
+                    {
+                        isPublished = compareDate >= DateTime.Now;
+                    }
+                    else
+                    {
+                        isPublished = compareDate >= DateTime.Today;
+                    }
+                }
+                else
+                {
+                    // not a date
+                    isPublished = false;
+                }
+
+                if (!isPublished) reason = App.Config.FieldNamePublishEndDate + $" being {dsItem.Data[App.Config.FieldNamePublishEndDate]}";
+            }
+
+            return isPublished;
         }
     }
 }

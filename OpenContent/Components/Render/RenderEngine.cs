@@ -366,7 +366,7 @@ namespace Satrabel.OpenContent.Components.Render
                 {
                     var indexConfig = OpenContentUtils.GetIndexConfig(info.Template);
                     string raison;
-                    if (!OpenContentUtils.HaveViewPermissions(dsItem, module.UserRoles.FromDnnRoles(), indexConfig, out raison))
+                    if (!OpenContentUtils.IsViewAllowed(dsItem, module.UserRoles.FromDnnRoles(), indexConfig, out raison))
                     {
                         App.Services.Logger.Error($"Error accessing {HttpContext.Current?.Request?.Url?.AbsoluteUri}. Referrer {HttpContext.Current?.Request?.UrlReferrer?.AbsoluteUri}");
                         if (module.ViewModule.HasEditRightsOnModule())
