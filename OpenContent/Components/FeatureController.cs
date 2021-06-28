@@ -26,7 +26,6 @@ using System.IO;
 using System.Web;
 using System.Web.Hosting;
 using DotNetNuke.Common.Internal;
-using DotNetNuke.Modules.Dashboard.Components.Portals;
 using DotNetNuke.Services.Search.Controllers;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Datasource.Search;
@@ -437,28 +436,36 @@ namespace Satrabel.OpenContent.Components
             else if (version == "04.07.00")
             {
                 // Given the changed behavior with time int publishedEndDate, we need to Update the lucene index for all items.
-                foreach (var portalId in PortalsController.GetPortals().Select(p => p.PortalID))
+                foreach (PortalInfo portal in PortalController.Instance.GetPortals())
                 {
+                    var portalId = portal.PortalID;
                     IEnumerable<ModuleInfo> modules = (new ModuleController()).GetModules(portalId).Cast<ModuleInfo>();
                     modules = modules.Where(m => m.ModuleDefinition.DefinitionName == App.Config.Opencontent && m.IsDeleted == false && !m.OpenContentSettings().IsOtherModule);
                     foreach (var module in modules)
                     {
-                        var ocConfig = OpenContentModuleConfig.Create(module, new PortalSettings(portalId));
-                        var dsContext = OpenContentUtils.CreateDataContext(ocConfig);
-                        var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(dsContext.TemplateFolder), dsContext.Collection);
-                        if (dsContext.Index)
+                        try
                         {
-                            if (indexConfig.HasField(App.Config.FieldNamePublishEndDate))
+                            var ocConfig = OpenContentModuleConfig.Create(module, new PortalSettings(portalId));
+                            var dsContext = OpenContentUtils.CreateDataContext(ocConfig);
+                            var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(dsContext.TemplateFolder), dsContext.Collection);
+                            if (dsContext.Index)
                             {
-                                IDataSource ds = DataSourceManager.GetDataSource(ocConfig.Settings.Manifest.DataSource);
-                                foreach (var dataItem in ds.GetAll(dsContext, new Select()).Items)
+                                if (indexConfig.HasField(App.Config.FieldNamePublishEndDate))
                                 {
-                                    var content = (OpenContentInfo)dataItem.Item;
-                                    content.HydrateDefaultFields(indexConfig, ocConfig.Settings?.Manifest?.UsePublishTime ?? false);
-                                    LuceneController.Instance.Update(content, indexConfig);
+                                    IDataSource ds = DataSourceManager.GetDataSource(ocConfig.Settings.Manifest.DataSource);
+                                    foreach (var dataItem in ds.GetAll(dsContext, new Select()).Items)
+                                    {
+                                        var content = (OpenContentInfo)dataItem.Item;
+                                        content.HydrateDefaultFields(indexConfig, ocConfig.Settings?.Manifest?.UsePublishTime ?? false);
+                                        LuceneController.Instance.Update(content, indexConfig);
+                                    }
+                                    LuceneController.Instance.Commit();
                                 }
-                                LuceneController.Instance.Commit();
                             }
+                        }
+                        catch (Exception e)
+                        {
+                            App.Services.Logger.Error("Error during upgrade to 4.7.0: reindex all modules to fix.", e);
                         }
                     }
                 }
