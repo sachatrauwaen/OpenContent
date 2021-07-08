@@ -1156,7 +1156,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 {
                     var arg1 = arguments[0].ToString();
                     var arg2 = arguments[1].ToString();
-                    res = arg2.Contains(arg1);
+                    res = arg1.Contains(arg2);
                 }
 
                 if (res)
