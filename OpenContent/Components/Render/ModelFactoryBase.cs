@@ -296,8 +296,7 @@ namespace Satrabel.OpenContent.Components.Render
                 context["ModuleId"] = _module.ViewModule.ModuleId;
                 context["GoogleApiKey"] = App.Services.CreateGlobalSettingsRepository(_portalId).GetGoogleApiKey();
                 context["ModuleTitle"] = _module.ViewModule.ModuleTitle;
-                var editIsAllowed = !_manifest.DisableEdit && !_templateManifest.DisableEdit && IsEditAllowed(-1);
-                context["IsEditable"] = editIsAllowed; //allowed to edit the item or list (meaning allow Add)
+                
                 context["IsEditMode"] = IsEditMode;
                 context["PortalId"] = _portalId;
                 context["MainUrl"] = _module.GetUrl(_detailTabId, GetCurrentCultureCode());
@@ -305,8 +304,13 @@ namespace Satrabel.OpenContent.Components.Render
                 context["HTTPAlias"] = _module.HostName;
                 context["PortalName"] = _module.PortalName;
                 context["TemplatePath"] = _module.Settings.TemplateDir.UrlFolder;
-                context["TemplateName"] = (String.IsNullOrEmpty(_manifest.Title) ? Path.GetFileName(_templateManifest.MainTemplateUri().FolderPath) : _manifest.Title) +" - "+ (string.IsNullOrEmpty(_templateManifest.Title) ? _templateManifest.Key.ShortKey : _templateManifest.Title);
-                //context["TemplateName"] = _templateManifest.MainTemplateUri().UrlFilePath ;
+                if (_templateManifest != null)
+                {
+                    var editIsAllowed = !_manifest.DisableEdit && !_templateManifest.DisableEdit && IsEditAllowed(-1);
+                    context["IsEditable"] = editIsAllowed; //allowed to edit the item or list (meaning allow Add)
+                    context["TemplateName"] = (String.IsNullOrEmpty(_manifest.Title) ? Path.GetFileName(_templateManifest.MainTemplateUri().FolderPath) : _manifest.Title) + " - " + (string.IsNullOrEmpty(_templateManifest.Title) ? _templateManifest.Key.ShortKey : _templateManifest.Title);
+                    //context["TemplateName"] = _templateManifest.MainTemplateUri().UrlFilePath ;
+                }
             }
         }
 

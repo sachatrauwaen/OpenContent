@@ -103,8 +103,11 @@ namespace Satrabel.OpenContent.Components.Render
                     }
                     else
                     {
-                        var editStatus = !_manifest.DisableEdit && !_templateManifest.DisableEdit && IsEditAllowed(item.CreatedByUserId);
-                        context["IsEditable"] = editStatus;
+                        if (_templateManifest != null)
+                        {
+                            var editStatus = !_manifest.DisableEdit && !_templateManifest.DisableEdit && IsEditAllowed(item.CreatedByUserId);
+                            context["IsEditable"] = editStatus;
+                        }
                         if (HasEditPermissions(item.CreatedByUserId))
                         {
                             context["EditUrl"] = _module.EditUrl("id", item.Id, _module.ViewModule.ModuleId);
