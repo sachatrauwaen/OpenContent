@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Json;
 
@@ -144,7 +143,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
         }
         #endregion
 
-        #region Normalize JTokens and JObjects
+        #region NormalizeJson
 
         public static JObject JsonObject(JObject value, string key, JObject defaultValue)
         {
@@ -185,35 +184,5 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             return Normalize.DynamicValue(value.ToString(), defaultValue);
         }
         #endregion
-
-        /// <summary>
-        /// Perform a deep Copy of the object, using Json as a serialisation method. Useful to clone dynamic variables
-        /// NOTE: A null value source will return the default(T) for that object.
-        /// NOTE: Private members are not cloned using this method.
-        /// </summary>
-        /// <typeparam name="T">The type of object being copied.</typeparam>
-        /// <param name="source">The object instance you want to DeepClone.</param>
-        /// <returns>The copied object.</returns>
-        public static T CloneBySerialization<T>(this T source) where T : class
-        {
-            // Don't serialize a null object, simply return the default for that object
-            if (ReferenceEquals(source, null))
-            {
-                return default(T);
-            }
-
-            // initialize inner objects individually
-            // for example in default constructor some list property initialized with some values,
-            //   eg public A Test { get; set; } = new A("Default");  
-            // but in 'source' these items are cleaned -
-            //   eg A = new A("Fun");
-            // without ObjectCreationHandling.Replace default constructor values will be added to result
-            //   ==> A == A("Default")  instead of A("Fun")
-            // e.g. https://www.michalkomorowski.com/2017/08/jsonnet-also-tricked-me.html
-            var deserializeSettings = new JsonSerializerSettings { ObjectCreationHandling = ObjectCreationHandling.Replace };
-
-            var json = JsonConvert.SerializeObject(source);
-            return JsonConvert.DeserializeObject<T>(json, deserializeSettings);
-        }
     }
 }
