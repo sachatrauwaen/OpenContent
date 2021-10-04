@@ -356,7 +356,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         {
             if (action == "FormSubmit")
             {
-                if (data["form"]["approvalEnabled"] != null && data["form"]["approvalEnabled"].Value<bool>() == true )
+                if (data["form"]["approvalEnabled"] != null && data["form"]["approvalEnabled"].Value<bool>() == true)
                 {
                     data["form"]["approved"] = false;
                 }
@@ -376,7 +376,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 ctrl.AddContent(content);
 
                 //Index the content item
-                
+
                 if (context.Index)
                 {
                     var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), "Submissions");

@@ -37,8 +37,13 @@ namespace Satrabel.OpenContent.Components
         }
 
         public int ContentId { get; set; }
+
+        /// <summary>
+        /// OpenContent item Key, unique across all modules. Typically populated with ObjectId.NewObjectId().ToString()
+        /// </summary>
         [ColumnName("DocumentKey")]
         public string Key { get; internal set; }
+
         [IgnoreColumn]
         public string Id
         {
