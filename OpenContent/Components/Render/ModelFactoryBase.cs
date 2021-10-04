@@ -544,7 +544,8 @@ namespace Satrabel.OpenContent.Components.Render
                         var context = new JObject();
                         json["Context"] = context;
                         context["Id"] = dataItem.Id;
-                        context["DetailUrl"] = GenerateDetailUrl(dataItem, json, module.Settings.Manifest, GetCurrentCultureCode(), tabId > 0 ? tabId : _detailTabId);
+                        //context["DetailUrl"] = GenerateDetailUrl(dataItem, json, module.Settings.Manifest, GetCurrentCultureCode(), tabId > 0 ? tabId : _detailTabId);
+                        context["DetailUrl"] = GenerateDetailUrl(dataItem, json, module.Settings.Manifest, GetCurrentCultureCode(), _detailTabId);
                     }
                     return json;
                 }
@@ -566,7 +567,7 @@ namespace Satrabel.OpenContent.Components.Render
                 url = hbEngine.Execute(manifest.DetailUrl, dynForHBS);
                 url = HttpUtility.HtmlDecode(url);
             }
-            return _module.GetUrl(_detailTabId, cultureCode, url.CleanupUrl(), "id=" + item.Id);            
+            return _module.GetUrl(detailTabId, cultureCode, url.CleanupUrl(), "id=" + item.Id);            
         }
     }
 }
