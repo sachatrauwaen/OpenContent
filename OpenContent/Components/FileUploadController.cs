@@ -60,6 +60,7 @@ namespace Satrabel.OpenContent.Components
             catch (Exception exc)
             {
                 Logger.Error(exc);
+                throw;
             }
             return IframeSafeJson(statuses);
         }
@@ -78,6 +79,7 @@ namespace Satrabel.OpenContent.Components
             catch (Exception exc)
             {
                 Logger.Error(exc);
+                throw;
             }
             return new HttpResponseMessage
             {
