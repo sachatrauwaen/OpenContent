@@ -167,7 +167,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             var json = dc.GetData(scopeStorage, key);
             if (json != null)
             {
-                var dataItem = new DefaultDataItem
+                var dataItem = new DefaultDataItem("")
                 {
                     Data = json.Json.ToJObject("GetContent " + scope + "/" + key),
                     CreatedByUserId = json.CreatedByUserId,
@@ -466,10 +466,8 @@ namespace Satrabel.OpenContent.Components.Datasource
 
         private static DefaultDataItem CreateDefaultDataItem(OpenContentInfo content)
         {
-            return new DefaultDataItem
+            return new DefaultDataItem(content.Id)
             {
-                Id = content.Id,
-                Key= content.Key,
                 Collection = content.Collection,
                 Title = content.Title,
                 Data = content.JsonAsJToken,

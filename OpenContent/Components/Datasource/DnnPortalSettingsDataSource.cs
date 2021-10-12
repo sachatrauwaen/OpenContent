@@ -33,9 +33,8 @@ namespace Satrabel.OpenContent.Components.Datasource
         }
         private static IDataItem ToData(PortalSettingInfoBase setting)
         {
-            var item = new DefaultDataItem()
+            var item = new DefaultDataItem(setting.Id())
             {
-                Id = setting.Id(),
                 Title = $"{setting.SettingName}",
                 Data = JObject.FromObject(new
                 {
