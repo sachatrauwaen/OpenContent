@@ -69,185 +69,191 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
         /// <param name="fieldconfig"></param>
         private static void Add(Document doc, string prefix, JToken token, FieldConfig fieldconfig)
         {
-            if (token is JObject)
+            try
             {
-                AddProperties(doc, prefix, token as JObject, fieldconfig);
-            }
-            else if (token is JArray)
-            {
-                var itemsConfig = fieldconfig?.Items;
-                if (fieldconfig != null && fieldconfig.Index && itemsConfig == null)
+                if (token is JObject)
                 {
-                    throw new Exception($"Error indexing Array field {prefix}. No 'Items' section defined in index.json. Please fix your index.json.");
+                    AddProperties(doc, prefix, token as JObject, fieldconfig);
                 }
-                AddArray(doc, prefix, token as JArray, itemsConfig);
-            }
-            else if (token is JValue)
-            {
-                JValue value = token as JValue;
-                bool index = false;
-                bool sort = false;
-                if (fieldconfig != null)
+                else if (token is JArray)
                 {
-                    index = fieldconfig.Index;
-                    sort = fieldconfig.Sort;
-                    if (fieldconfig.IndexType == "datetime" && value.Type == JTokenType.String)
+                    var itemsConfig = fieldconfig?.Items;
+                    if (fieldconfig != null && fieldconfig.Index && itemsConfig == null)
                     {
-                        DateTime d;
-                        if (DateTime.TryParse(value.Value.ToString(), null, System.Globalization.DateTimeStyles.RoundtripKind, out d))
+                        throw new Exception($"Error indexing Array field {prefix}. No 'Items' section defined in index.json. Please fix your index.json.");
+                    }
+                    AddArray(doc, prefix, token as JArray, itemsConfig);
+                }
+                else if (token is JValue)
+                {
+                    JValue value = token as JValue;
+                    bool index = false;
+                    bool sort = false;
+                    if (fieldconfig != null)
+                    {
+                        index = fieldconfig.Index;
+                        sort = fieldconfig.Sort;
+                        if (fieldconfig.IndexType == "datetime" && value.Type == JTokenType.String)
                         {
-                            value = new JValue(d);
+                            DateTime d;
+                            if (DateTime.TryParse(value.Value.ToString(), null, System.Globalization.DateTimeStyles.RoundtripKind, out d))
+                            {
+                                value = new JValue(d);
+                            }
                         }
                     }
-                }
 
-                switch (value.Type) //todo: simple date gets detected as string 
-                {
-                    case JTokenType.Boolean:
-                        if (index || sort)
-                        {
-                            doc.Add(new NumericField(prefix, Field.Store.NO, true).SetIntValue((bool)value.Value ? 1 : 0));
-                        }
-                        break;
+                    switch (value.Type) //todo: simple date gets detected as string 
+                    {
+                        case JTokenType.Boolean:
+                            if (index || sort)
+                            {
+                                doc.Add(new NumericField(prefix, Field.Store.NO, true).SetIntValue((bool)value.Value ? 1 : 0));
+                            }
+                            break;
 
-                    case JTokenType.Date:
-                        if (index || sort)
-                        {
-                            doc.Add(new NumericField(prefix, Field.Store.NO, true).SetLongValue(((DateTime)value.Value).Ticks));
+                        case JTokenType.Date:
+                            if (index || sort)
+                            {
+                                doc.Add(new NumericField(prefix, Field.Store.NO, true).SetLongValue(((DateTime)value.Value).Ticks));
 
-                            //doc.Add(new Field(prefix, DateTools.DateToString((DateTime)value.Value, DateTools.Resolution.SECOND), Field.Store.NO, Field.Index.NOT_ANALYZED));
+                                //doc.Add(new Field(prefix, DateTools.DateToString((DateTime)value.Value, DateTools.Resolution.SECOND), Field.Store.NO, Field.Index.NOT_ANALYZED));
 
-                            /*
-                            if (field != null ){
-                                if (field.IndexType == "datetime")
+                                /*
+                                if (field != null ){
+                                    if (field.IndexType == "datetime")
+                                    {
+                                        doc.Add(new Field(prefix, DateTools.DateToString((DateTime)value.Value, DateTools.Resolution.SECOND), Field.Store.NO, Field.Index.NOT_ANALYZED));
+                                    }
+                                    else if (field.IndexType == "date")
+                                    {
+                                        doc.Add(new Field(prefix, DateTools.DateToString((DateTime)value.Value, DateTools.Resolution.DAY), Field.Store.NO, Field.Index.NOT_ANALYZED));
+                                    }
+                                    else if (field.IndexType == "time")
+                                    {
+                                        doc.Add(new Field(prefix, DateTools.DateToString((DateTime)value.Value, DateTools.Resolution.SECOND).Substring(8), Field.Store.NO, Field.Index.NOT_ANALYZED));
+                                    }
+                                }
+                                else
                                 {
                                     doc.Add(new Field(prefix, DateTools.DateToString((DateTime)value.Value, DateTools.Resolution.SECOND), Field.Store.NO, Field.Index.NOT_ANALYZED));
                                 }
-                                else if (field.IndexType == "date")
+                                */
+                            }
+                            break;
+
+                        case JTokenType.Float:
+                            if (index || sort)
+                            {
+                                if (value.Value is float)
                                 {
-                                    doc.Add(new Field(prefix, DateTools.DateToString((DateTime)value.Value, DateTools.Resolution.DAY), Field.Store.NO, Field.Index.NOT_ANALYZED));
+                                    doc.Add(new NumericField(prefix, Field.Store.NO, true).SetFloatValue((float)value.Value));
                                 }
-                                else if (field.IndexType == "time")
+                                else
                                 {
-                                    doc.Add(new Field(prefix, DateTools.DateToString((DateTime)value.Value, DateTools.Resolution.SECOND).Substring(8), Field.Store.NO, Field.Index.NOT_ANALYZED));
+                                    doc.Add(new NumericField(prefix, Field.Store.NO, true).SetFloatValue((float)Convert.ToDouble(value.Value)));
+                                }
+                            }
+                            break;
+
+                        case JTokenType.Guid:
+                            if (index || sort)
+                            {
+                                doc.Add(new Field(prefix, value.Value.ToString(), Field.Store.NO, Field.Index.NOT_ANALYZED));
+                            }
+                            break;
+
+                        case JTokenType.Integer:
+                            if (index || sort)
+                            {
+                                doc.Add(new NumericField(prefix, Field.Store.NO, true).SetFloatValue((float)Convert.ToInt64(value.Value)));
+                            }
+                            break;
+
+                        case JTokenType.Null:
+                            break;
+
+                        case JTokenType.String:
+                            if (fieldconfig != null && fieldconfig.IndexType == "key")
+                            {
+                                doc.Add(new Field(prefix, QueryParser.Escape(value.Value.ToString()), Field.Store.NO, Field.Index.NOT_ANALYZED));
+                            }
+                            else if (fieldconfig != null && fieldconfig.IndexType == "html")
+                            {
+                                if (index)
+                                {
+                                    doc.Add(new Field(prefix, CleanHtml(value.Value.ToString(), true), Field.Store.NO, Field.Index.ANALYZED));
+                                }
+                                if (sort)
+                                {
+                                    doc.Add(new Field("@" + prefix, CleanHtml(Truncate(value.Value.ToString(), 100), true), Field.Store.NO, Field.Index.NOT_ANALYZED));
+                                }
+                            }
+                            else if (fieldconfig != null && fieldconfig.IndexType == "file")
+                            {
+                                var val = value.Value.ToString();
+                                if (!string.IsNullOrEmpty(val))
+                                {
+                                    var fileIndexer = FileIndexerManager.GetFileIndexer(val);
+                                    if (fileIndexer != null)
+                                    {
+                                        var content = fileIndexer.GetContent(val);
+                                        if (index)
+                                        {
+                                            doc.Add(new Field(prefix, content, Field.Store.NO, Field.Index.ANALYZED));
+                                        }
+                                        if (sort)
+                                        {
+                                            doc.Add(new Field("@" + prefix, Truncate(content, 100), Field.Store.NO, Field.Index.NOT_ANALYZED));
+                                        }
+                                    }
                                 }
                             }
                             else
                             {
-                                doc.Add(new Field(prefix, DateTools.DateToString((DateTime)value.Value, DateTools.Resolution.SECOND), Field.Store.NO, Field.Index.NOT_ANALYZED));
-                            }
-                            */
-                        }
-                        break;
-
-                    case JTokenType.Float:
-                        if (index || sort)
-                        {
-                            if (value.Value is float)
-                            {
-                                doc.Add(new NumericField(prefix, Field.Store.NO, true).SetFloatValue((float)value.Value));
-                            }
-                            else
-                            {
-                                doc.Add(new NumericField(prefix, Field.Store.NO, true).SetFloatValue((float)Convert.ToDouble(value.Value)));
-                            }
-                        }
-                        break;
-
-                    case JTokenType.Guid:
-                        if (index || sort)
-                        {
-                            doc.Add(new Field(prefix, value.Value.ToString(), Field.Store.NO, Field.Index.NOT_ANALYZED));
-                        }
-                        break;
-
-                    case JTokenType.Integer:
-                        if (index || sort)
-                        {
-                            doc.Add(new NumericField(prefix, Field.Store.NO, true).SetFloatValue((float)Convert.ToInt64(value.Value)));
-                        }
-                        break;
-
-                    case JTokenType.Null:
-                        break;
-
-                    case JTokenType.String:
-
-                        if (fieldconfig != null && fieldconfig.IndexType == "key")
-                        {
-                            doc.Add(new Field(prefix, QueryParser.Escape(value.Value.ToString()), Field.Store.NO, Field.Index.NOT_ANALYZED));
-                        }
-                        else if (fieldconfig != null && fieldconfig.IndexType == "html")
-                        {
-                            if (index)
-                            {
-                                doc.Add(new Field(prefix, CleanHtml(value.Value.ToString(), true), Field.Store.NO, Field.Index.ANALYZED));
-                            }
-                            if (sort)
-                            {
-                                doc.Add(new Field("@" + prefix, CleanHtml(Truncate(value.Value.ToString(), 100), true), Field.Store.NO, Field.Index.NOT_ANALYZED));
-                            }
-                        }
-                        else if (fieldconfig != null && fieldconfig.IndexType == "file")
-                        {
-                            var val = value.Value.ToString();
-                            if (!string.IsNullOrEmpty(val))
-                            {
-                                var fileIndexer = FileIndexerManager.GetFileIndexer(val);
-                                if (fileIndexer != null)
+                                var val = SelectQueryDefinition.RemoveDiacritics(value.Value.ToString());
+                                val = val.Replace('-', ' '); // concider '-' as a space
+                                val = val.Replace(',', ' '); // concider ',' as a space
+                                                             //var val = LuceneUtils.CleanupText(value.Value.ToString());
+                                if (index)
                                 {
-                                    var content = fileIndexer.GetContent(val);
-                                    if (index)
-                                    {
-                                        doc.Add(new Field(prefix, content, Field.Store.NO, Field.Index.ANALYZED));
-                                    }
-                                    if (sort)
-                                    {
-                                        doc.Add(new Field("@" + prefix, Truncate(content, 100), Field.Store.NO, Field.Index.NOT_ANALYZED));
-                                    }
+                                    doc.Add(new Field(prefix, val, Field.Store.NO, Field.Index.ANALYZED));
+                                }
+                                if (sort)
+                                {
+                                    doc.Add(new Field("@" + prefix, Truncate(val, 100), Field.Store.NO, Field.Index.NOT_ANALYZED));
                                 }
                             }
-                        }
-                        else
-                        {
-                            
-                            var val = SelectQueryDefinition.RemoveDiacritics(value.Value.ToString());
-                            val = val.Replace('-', ' '); // concider '-' as a space
-                            val = val.Replace(',', ' '); // concider ',' as a space
-                            //var val = LuceneUtils.CleanupText(value.Value.ToString());
-                            if (index)
+                            break;
+
+                        case JTokenType.TimeSpan:
+                            if (index || sort)
                             {
-                                doc.Add(new Field(prefix, val, Field.Store.NO, Field.Index.ANALYZED));
+                                doc.Add(new NumericField(prefix, Field.Store.NO, true).SetLongValue(((TimeSpan)value.Value).Ticks));
                             }
-                            if (sort)
+                            break;
+
+                        case JTokenType.Uri:
+                            if (index || sort)
                             {
-                                doc.Add(new Field("@" + prefix, Truncate(val, 100), Field.Store.NO, Field.Index.NOT_ANALYZED));
+                                doc.Add(new Field(prefix, value.Value.ToString(), Field.Store.NO, Field.Index.ANALYZED));
                             }
-                        }
-                        break;
+                            break;
 
-                    case JTokenType.TimeSpan:
-                        if (index || sort)
-                        {
-                            doc.Add(new NumericField(prefix, Field.Store.NO, true).SetLongValue(((TimeSpan)value.Value).Ticks));
-                        }
-                        break;
-
-                    case JTokenType.Uri:
-                        if (index || sort)
-                        {
-                            doc.Add(new Field(prefix, value.Value.ToString(), Field.Store.NO, Field.Index.ANALYZED));
-                        }
-                        break;
-
-                    default:
-                        Debug.Fail("Unsupported JValue type: " + value.Type);
-                        break;
+                        default:
+                            Debug.Fail("Unsupported JValue type: " + value.Type);
+                            break;
+                    }
+                }
+                else
+                {
+                    Debug.Fail("Unsupported JToken: " + token);
                 }
             }
-            else
+            catch (Exception e)
             {
-                Debug.Fail("Unsupported JToken: " + token);
+                if(Debugger.IsAttached) Debugger.Break();
+                throw;
             }
         }
 
