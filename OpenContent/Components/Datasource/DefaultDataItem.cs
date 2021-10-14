@@ -5,6 +5,9 @@ namespace Satrabel.OpenContent.Components.Datasource
 {
     public class DefaultDataItem : IDataItem
     {
+        public DefaultDataItem()
+        {
+        }
         public DefaultDataItem(string id)
         {
             Id = id;
