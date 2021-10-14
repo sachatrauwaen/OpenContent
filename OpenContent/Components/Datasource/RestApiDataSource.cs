@@ -157,6 +157,11 @@ namespace Satrabel.OpenContent.Components.Datasource
         /// <returns></returns>
         public override IDataItem GetData(DataSourceContext context, string scope, string key)
         {
+            if (context.Config[key + "Url"] == null)
+            {
+                return base.GetData(context, scope, key);
+            }
+
             JToken item = new JArray();
             var url = context.Config[key+"Url"].ToString();
 
