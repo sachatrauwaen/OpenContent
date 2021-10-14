@@ -158,7 +158,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         public override IDataItem GetData(DataSourceContext context, string scope, string key)
         {
             JToken item = new JArray();
-            var url = context.Config["dataUrl"].ToString();
+            var url = context.Config[key+"Url"].ToString();
 
             using (var client = new HttpClient())
             {
@@ -173,7 +173,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 var dataItem = new DefaultDataItem()
                 {
                     Data = item,
-                    CreatedByUserId = 1,
+                    CreatedByUserId = 1, 
                     Item = null
                 };
                 if (LogContext.IsLogActive)
