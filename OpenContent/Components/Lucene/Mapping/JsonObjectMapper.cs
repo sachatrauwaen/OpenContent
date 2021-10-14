@@ -174,6 +174,9 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
                             break;
 
                         case JTokenType.String:
+                            if (value.Value == null)
+                                break;
+
                             if (fieldconfig != null && fieldconfig.IndexType == "key")
                             {
                                 doc.Add(new Field(prefix, QueryParser.Escape(value.Value.ToString()), Field.Store.NO, Field.Index.NOT_ANALYZED));
