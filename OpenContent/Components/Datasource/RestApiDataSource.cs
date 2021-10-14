@@ -60,12 +60,12 @@ namespace Satrabel.OpenContent.Components.Datasource
             }
             else
             {
-                string query = "";
+                string query = context.Config["listUrl"].ToString();
                 foreach (var f in selectQuery.Filter.FilterRules)
                 {
                     if (f.Value != null)
                     {
-                        if (string.IsNullOrEmpty(query))
+                        if (!query.Contains('?'))
                             query += "?";
                         else
                             query += "&";
@@ -74,21 +74,25 @@ namespace Satrabel.OpenContent.Components.Datasource
                     }
                 }
 
-                if (string.IsNullOrEmpty(query))
+                if (!query.Contains('?'))
                     query += "?";
                 else
                     query += "&";
+
                 query += "PageIndex=" + selectQuery.PageIndex;
 
-                if (string.IsNullOrEmpty(query))
+                if (!query.Contains('?'))
                     query += "?";
                 else
                     query += "&";
+
                 query += "PageSize=" + selectQuery.PageSize;
 
                 JArray items = new JArray();
 
-                var url = context.Config["listUrl"].ToString()+query;
+                //var url = context.Config["listUrl"].ToString()+query;
+
+                var url = query;
 
                 using (var client = new HttpClient())
                 {
