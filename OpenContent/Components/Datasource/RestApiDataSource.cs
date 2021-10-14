@@ -74,6 +74,22 @@ namespace Satrabel.OpenContent.Components.Datasource
                     }
                 }
 
+                foreach (var g in selectQuery.Filter.FilterGroups)
+                {
+                    foreach (var f in g.FilterRules)
+                    {
+                        if (f.Value != null)
+                        {
+                            if (!query.Contains('?'))
+                                query += "?";
+                            else
+                                query += "&";
+
+                            query += f.Field + "=" + f.Value.AsString;
+                        }
+                    }
+                }
+
                 if (!query.Contains('?'))
                     query += "?";
                 else
@@ -167,7 +183,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             }
 
             JToken item = new JArray();
-            var url = context.Config[key+"Url"].ToString();
+            var url = context.Config[key + "Url"].ToString();
 
             using (var client = new HttpClient())
             {
@@ -182,7 +198,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 var dataItem = new DefaultDataItem()
                 {
                     Data = item,
-                    CreatedByUserId = 1, 
+                    CreatedByUserId = 1,
                     Item = null
                 };
                 if (LogContext.IsLogActive)
