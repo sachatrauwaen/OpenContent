@@ -78,7 +78,14 @@ namespace Satrabel.OpenContent.Components
             {
                 if (_jsonAsJToken == null && !string.IsNullOrEmpty(this.Json))
                 {
-                    _jsonAsJToken = JToken.Parse(this.Json);
+                    try
+                    {
+                        _jsonAsJToken = JToken.Parse(this.Json);
+                    }
+                    catch (Exception e)
+                    {
+                        throw new Exception($"Failed to parse json from moduleId:{ModuleId}, contentId:{ContentId}", e);
+                    }
                 }
                 // JsonAsJToken is modified (to remove other cultures)
                 return _jsonAsJToken?.DeepClone();
