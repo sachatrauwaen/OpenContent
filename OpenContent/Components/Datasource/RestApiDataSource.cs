@@ -90,6 +90,33 @@ namespace Satrabel.OpenContent.Components.Datasource
                     }
                 }
 
+                foreach (var f in selectQuery.Query.FilterRules)
+                {
+                    if (f.Value != null)
+                    {
+                        if (!query.Contains('?'))
+                            query += "?";
+                        else
+                            query += "&";
+
+                        query += f.Field + "=" + f.Value.AsString;
+                    }
+                    else if (f.MultiValue != null)
+
+                    {
+                        foreach (var val in f.MultiValue)
+                        {
+                            if (!query.Contains('?'))
+                                query += "?";
+                            else
+                                query += "&";
+
+                            query += f.Field + "=" + val.AsString;
+                        }
+                       
+                    }
+                }
+
                 if (!query.Contains('?'))
                     query += "?";
                 else

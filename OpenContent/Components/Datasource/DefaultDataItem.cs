@@ -5,6 +5,7 @@ namespace Satrabel.OpenContent.Components.Datasource
 {
     public class DefaultDataItem : IDataItem
     {
+        [Obsolete("Please use constructor with parameters  12/10/2021")]
         public DefaultDataItem()
         {
         }

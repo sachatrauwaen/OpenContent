@@ -293,7 +293,7 @@
               <name>Handlebars.dll</name>
               <path>bin</path>
             </assembly>
-			<assembly>
+			      <assembly>
               <name>EPPlus.dll</name>
               <path>bin</path>
             </assembly>
