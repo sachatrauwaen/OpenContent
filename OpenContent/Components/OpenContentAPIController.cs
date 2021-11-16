@@ -96,10 +96,10 @@ namespace Satrabel.OpenContent.Components
                     }
                     json["options"]["form"]["buttons"] = newButtons;
                 }
-                string itemKey; 
+                string itemKey;
                 if (dsItem == null)
                 {
-                    itemKey= ObjectId.NewObjectId().ToString();
+                    itemKey = ObjectId.NewObjectId().ToString();
                 }
                 else
                 {

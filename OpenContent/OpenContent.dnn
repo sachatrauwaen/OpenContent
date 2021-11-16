@@ -1,6 +1,6 @@
 <dotnetnuke type="Package" version="5.0">
   <packages>
-    <package name="OpenContent" type="Module" version="04.06.00">
+    <package name="OpenContent" type="Module" version="04.07.00">
       <friendlyName>OpenContent</friendlyName>
       <description>OpenContent module by Satrabel.be</description>
       <iconFile>~/DesktopModules/OpenContent/Images/icon_extensions.png</iconFile>
@@ -272,7 +272,7 @@
             <attributes>
               <businessControllerClass>Satrabel.OpenContent.Components.FeatureController</businessControllerClass>
               <desktopModuleID>[DESKTOPMODULEID]</desktopModuleID>
-              <upgradeVersionsList>02.01.00</upgradeVersionsList>
+              <upgradeVersionsList>02.01.00,04.07.00</upgradeVersionsList>
             </attributes>
           </eventMessage>
         </component>
@@ -291,6 +291,10 @@
             </assembly>
             <assembly>
               <name>Handlebars.dll</name>
+              <path>bin</path>
+            </assembly>
+			      <assembly>
+              <name>EPPlus.dll</name>
               <path>bin</path>
             </assembly>
           </assemblies>

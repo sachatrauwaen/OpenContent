@@ -40,9 +40,8 @@ namespace Satrabel.OpenContent.Components.Datasource
         }
         private static IDataItem ToData(UserInfo user)
         {
-            var item = new DefaultDataItem()
+            var item = new DefaultDataItem(user.UserID.ToString())
             {
-                Id = user.UserID.ToString(),
                 Title = user.DisplayName,
                 Data = JObject.FromObject(new
                 {

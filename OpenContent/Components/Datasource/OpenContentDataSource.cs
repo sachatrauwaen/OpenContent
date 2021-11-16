@@ -4,6 +4,8 @@ using Satrabel.OpenContent.Components.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DotNetNuke.Entities.Modules;
+using DotNetNuke.Entities.Portals;
 using Satrabel.OpenContent.Components.Datasource.Search;
 using Satrabel.OpenContent.Components.Logging;
 using Satrabel.OpenContent.Components.Form;
@@ -165,7 +167,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             var json = dc.GetData(scopeStorage, key);
             if (json != null)
             {
-                var dataItem = new DefaultDataItem
+                var dataItem = new DefaultDataItem("")
                 {
                     Data = json.Json.ToJObject("GetContent " + scope + "/" + key),
                     CreatedByUserId = json.CreatedByUserId,
@@ -304,8 +306,9 @@ namespace Satrabel.OpenContent.Components.Datasource
             ctrl.UpdateContent(content);
             if (context.Index)
             {
+                var module = OpenContentModuleConfig.Create(ModuleController.Instance.GetModule(context.ModuleId, -1, false), new PortalSettings(context.PortalId));
                 var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection);
-                content.HydrateDefaultFields(indexConfig);
+                content.HydrateDefaultFields(indexConfig, module.Settings?.Manifest?.UsePublishTime ?? false);
                 LuceneController.Instance.Update(content, indexConfig);
                 LuceneController.Instance.Commit();
             }
@@ -353,7 +356,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         {
             if (action == "FormSubmit")
             {
-                if (data["form"]["approvalEnabled"] != null && data["form"]["approvalEnabled"].Value<bool>() == true )
+                if (data["form"]["approvalEnabled"] != null && data["form"]["approvalEnabled"].Value<bool>() == true)
                 {
                     data["form"]["approved"] = false;
                 }
@@ -373,7 +376,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 ctrl.AddContent(content);
 
                 //Index the content item
-                
+
                 if (context.Index)
                 {
                     var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), "Submissions");
@@ -463,10 +466,8 @@ namespace Satrabel.OpenContent.Components.Datasource
 
         private static DefaultDataItem CreateDefaultDataItem(OpenContentInfo content)
         {
-            return new DefaultDataItem
+            return new DefaultDataItem(content.Id)
             {
-                Id = content.Id,
-                Key= content.Key,
                 Collection = content.Collection,
                 Title = content.Title,
                 Data = content.JsonAsJToken,
