@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Satrabel")]
 [assembly: AssemblyProduct("OpenContent")]
-[assembly: AssemblyCopyright("Copyright ? 2015-2020")]
+[assembly: AssemblyCopyright("Copyright © 2015-2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
