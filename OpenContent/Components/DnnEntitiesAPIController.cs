@@ -526,7 +526,7 @@ namespace Satrabel.OpenContent.Components
                     {
                         imgFormat = ImageFormat.Gif;
                     }
-                    else if (file.Extension.ToLowerInvariant() == "jpg")
+                    else if (file.Extension.ToLowerInvariant() == "jpg" || file.Extension.ToLowerInvariant() == "jpeg")
                     {
                         imgFormat = ImageFormat.Jpeg;
                     }
@@ -657,7 +657,7 @@ namespace Satrabel.OpenContent.Components
             {
                 imgFormat = ImageFormat.Gif;
             }
-            else if (file.Extension.ToLowerInvariant() == "jpg")
+            else if (file.Extension.ToLowerInvariant() == "jpg" || file.Extension.ToLowerInvariant() == "jpzg")
             {
                 imgFormat = ImageFormat.Jpeg;
             }
