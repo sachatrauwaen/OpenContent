@@ -105,8 +105,8 @@ namespace Satrabel.OpenContent.Components.Alpaca
             if (builderV2)
             {
                 //ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/lamavue/0.js", FileOrder.Js.DefaultPriority + 10);
-                ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/lamavue/chunk-vendors.js", FileOrder.Js.DefaultPriority + 10);
-                ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/lamavue/app.js", FileOrder.Js.DefaultPriority + 10);
+                ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/lama/dist/js/chunk-vendors.js", FileOrder.Js.DefaultPriority + 10);
+                ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/lama/dist/js/app.js", FileOrder.Js.DefaultPriority + 10);
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/lamaengine.js", FileOrder.Js.DefaultPriority + 10);
             }
             else

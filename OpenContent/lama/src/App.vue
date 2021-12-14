@@ -1,3 +1,4 @@
+
 <template>
   <div id="app">
     <lama-vue v-if="false"></lama-vue>

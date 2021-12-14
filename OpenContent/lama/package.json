@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
-    "lamavue": "file:../../../../../vue/lamavue",
+    "lamavue": "github:sachatrauwaen/lamavue",
     "vue": "^2.6.11"
   },
   "devDependencies": {

@@ -210,7 +210,8 @@ alpacaEngine.engine = function (config) {
             "options": config.options,
             "data": data,
             "view": view,
-            "connector": connector
+            "connector": connector,
+            "init": Lama.isEmpty(data)
         });
         $("#" + self.saveButton).click(function () {
             var button = this;
@@ -325,7 +326,7 @@ alpacaEngine.engine = function (config) {
     };
 
     self.connector = {
-        currentCulture: "fr-FR",
+        currentCulture: self.currentCulture,
         connect() {
 
         },
@@ -345,11 +346,81 @@ alpacaEngine.engine = function (config) {
             console.log(config);
 
             if (config && config.query && config.query) {
-                if (config.query.type == "folders") {
-                    successCallback([{ id: "1", name: "Files", url: "/Files" }]);
-                }
+                if (config.query.type == "page") {
+                    var postData = {
+                        q: config.query.search || '*',
+                        l: "en-US"
+                    };
+                    $.ajax({
+                        
+                        url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "TabsLookup",
+                        beforeSend: self.sf.setModuleHeaders,
+                        type: "get",
+                        dataType: "json",
+                        //contentType: "application/json; charset=utf-8",
+                        data: postData,
+                        success: function (data) {
+                            if (data) {
+                                var pages = [];
+                                $.each(data, function (index, value) {
+                                    pages.push({
+                                        value: value.value,
+                                        text: value.text,
+                                        url: value.url
+                                    });
+                                });
+                                successCallback(pages);
+                            }
+                        },
+                        "error": function (jqXHR, textStatus, errorThrown) {
+                            errorCallback({
+                                "message": "Unable to load data from uri : ",
+                                "stage": "DATASOURCE_LOADING_ERROR",
+                                "details": {
+                                    "jqXHR": jqXHR,
+                                    "textStatus": textStatus,
+                                    "errorThrown": errorThrown
+                                }
+                            });
+                        }
+                    });
 
-                if (config.query.type == "files") {
+                } else if (config.query.type == "relation") {
+                    var postData = {
+                        "dataKey": config.query.dataKey,
+                        "valueField": config.query.valueField,
+                        "textField": config.query.textField
+                    };
+                    $.ajax({
+                        //url: self.sf.getServiceRoot(self.options.dataService.module) + self.options.dataService.controller + "/" + self.options.dataService.action,
+                        url: self.sf.getServiceRoot("OpenContent") + "OpenContentAPI" + "/" + "LookupData",
+                        beforeSend: self.sf.setModuleHeaders,
+
+                        type: "post",
+                        dataType: "json",
+                        //contentType: "application/json; charset=utf-8",
+                        data: postData,
+
+                        success: function (data) {
+                            if (data) {
+                                successCallback(data);
+                            }
+                        },
+                        "error": function (jqXHR, textStatus, errorThrown) {
+                            errorCallback({
+                                "message": "Unable to load data from uri : ",
+                                "stage": "DATASOURCE_LOADING_ERROR",
+                                "details": {
+                                    "jqXHR": jqXHR,
+                                    "textStatus": textStatus,
+                                    "errorThrown": errorThrown
+                                }
+                            });
+                        }
+                    });
+                } else if (config.query.type == "folders") {
+                    successCallback([{ id: "1", name: "Files", url: "/Files" }]);
+                } else if (config.query.type == "files") {
                     //var files = [{ id: "1", url: "https://agontuk.github.io/assets/images/berserk.jpg", name: "berserk.jpg", folderId: "1" }];
                     var files = [];
                     //var completionFunction = function () {
@@ -364,7 +435,11 @@ alpacaEngine.engine = function (config) {
                     //    callback();
                     //};
 
-                    var postData = { q: "*", folder: ""/*self.options.uploadfolder*/, itemKey: ""/*self.itemKey*/ };
+                    var postData = {
+                        q: "*",
+                        folder: ""/*self.options.uploadfolder*/,
+                        itemKey: ""/*self.itemKey*/
+                    };
                     $.ajax({
                         url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "ImagesLookupExt",
                         beforeSend: self.sf.setModuleHeaders,
@@ -422,17 +497,18 @@ alpacaEngine.engine = function (config) {
             else {
                 errorCallback();
             }
-
-
         },
         // eslint-disable-next-line no-unused-vars
         upload(config, successCallback, errorCallback) {
             //debugger;
-            var uploadImage = function (name, file, hidden, callbackFn) {
+            var uploadImage = function (config, callbackFn) {
                 var formData = new FormData();
-                formData.append('file', file);
-                formData.append('name', name);
-                if (hidden)
+                formData.append('file', config.file);
+                formData.append('name', config.file.name || config.name);
+                //formData.append('width', config.width);
+                //formData.append('height', config.height);
+                formData.append('overwrite', config.overwrite);
+                if (config.hidden)
                     formData.append('hidden', true);
 
                 var url = self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile";
@@ -449,7 +525,7 @@ alpacaEngine.engine = function (config) {
                     }
                 });
             };
-            uploadImage(config.file.name || config.name, config.file,config.hidden, function (statuses) {
+            uploadImage(config, function (statuses) {
                 var status = JSON.parse(statuses)[0];
                 if (status.success) {
                     successCallback({ id: status.id, url: status.url, filename: status.name });
