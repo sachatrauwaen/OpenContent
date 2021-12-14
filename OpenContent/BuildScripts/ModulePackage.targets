@@ -23,10 +23,11 @@
            XmlFileName="$(DNNFileName).dnn">
       <Output TaskParameter="Value" PropertyName="Version" />
     </XmlRead>
-    <!-- Write new version to assemblyinfo.cs -->
+    <!-- Write new version to assemblyinfo.cs 
     <FileUpdate Files="$(AssemblyInfoFile)" Encoding="ASCII" Regex="AssemblyVersion\(&quot;.*&quot;\)" ReplacementText="AssemblyVersion(&quot;$(Version).00&quot;)" />
     <FileUpdate Files="$(AssemblyInfoFile)" Encoding="ASCII" Regex="AssemblyFileVersion\(&quot;.*&quot;\)" ReplacementText="AssemblyFileVersion(&quot;$(Version).00&quot;)" />
     <FileUpdate Files="$(AppVeyorFile)" Encoding="ASCII" Regex="version: (.*)\.{build}-{branch}" ReplacementText="version: $(Version).{build}-{branch}" />
+    -->
   </Target>
 
   <Target Name="PackageModule" Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">

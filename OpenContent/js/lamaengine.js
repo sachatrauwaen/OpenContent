@@ -507,7 +507,8 @@ alpacaEngine.engine = function (config) {
                 formData.append('name', config.file.name || config.name);
                 //formData.append('width', config.width);
                 //formData.append('height', config.height);
-                formData.append('overwrite', config.overwrite);
+                if (typeof config.overwrite !== 'undefined')
+                    formData.append('overwrite', config.overwrite);
                 if (config.hidden)
                     formData.append('hidden', true);
 
