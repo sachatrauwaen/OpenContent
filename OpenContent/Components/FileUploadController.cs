@@ -66,7 +66,7 @@ namespace Satrabel.OpenContent.Components
             }
             return IframeSafeJson(statuses);
         }
-
+        /*
         [DnnAuthorize]
         [HttpPost]
         [IFrameSupportedValidateAntiForgeryToken]
@@ -84,7 +84,7 @@ namespace Satrabel.OpenContent.Components
             }
             return IframeSafeJson(statuses);
         }
-
+        */
         [DnnAuthorize]
         [HttpPost]
         [IFrameSupportedValidateAntiForgeryToken]
@@ -256,7 +256,7 @@ namespace Satrabel.OpenContent.Components
                 }
             }
         }
-
+        /*
         private void UploadWholeFile2(HttpContextBase context, ICollection<FilesStatus> statuses)
         {
             for (var i = 0; i < context.Request.Files.Count; i++)
@@ -409,7 +409,7 @@ namespace Satrabel.OpenContent.Components
                 }
             }
         }
-
+        */
         public static string CleanUpFileName(string filename)
         {
             var newName = HttpUtility.UrlDecode(filename);
