@@ -271,23 +271,23 @@ namespace Satrabel.OpenContent.Components.Querying
             if (_indexConfig?.Fields != null && _indexConfig.Fields.ContainsKey(App.Config.FieldNamePublishStartDate))
             {
                 //DateTime startDate = DateTime.MinValue;
-                //DateTime endDate = DateTime.Today;
+                //DateTime endDate = DateTime.Now;
                 filter.AddRule(new FilterRule()
                 {
                     Field = App.Config.FieldNamePublishStartDate,
-                    Value = new DateTimeRuleValue(DateTime.Today),
+                    Value = new DateTimeRuleValue(DateTime.Now),
                     FieldOperator = OperatorEnum.LESS_THEN_OR_EQUALS,
                     FieldType = FieldTypeEnum.DATETIME
                 });
             }
             if (_indexConfig?.Fields != null && _indexConfig.Fields.ContainsKey(App.Config.FieldNamePublishEndDate))
             {
-                //DateTime startDate = DateTime.Today;
+                //DateTime startDate = DateTime.Now;
                 //DateTime endDate = DateTime.MaxValue;
                 filter.AddRule(new FilterRule()
                 {
                     Field = App.Config.FieldNamePublishEndDate,
-                    Value = new DateTimeRuleValue(DateTime.Today),
+                    Value = new DateTimeRuleValue(DateTime.Now),
                     FieldOperator = OperatorEnum.GREATER_THEN_OR_EQUALS,
                     FieldType = FieldTypeEnum.DATETIME
                 });

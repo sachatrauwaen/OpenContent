@@ -177,6 +177,7 @@
       <DependentUpon>AddEdit.ascx</DependentUpon>
     </Compile>
     <Compile Include="Components\Alpaca\AlpacaLayoutEnum.cs" />
+    <Compile Include="Components\Datasource\RestApiDataSource.cs" />
     <Compile Include="Components\Datasource\DnnPortalSettingsDataSource.cs" />
     <Compile Include="Components\Datasource\IDataQuery.cs" />
     <Compile Include="Components\Datasource\IDataQueries.cs" />

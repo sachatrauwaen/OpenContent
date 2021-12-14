@@ -37,8 +37,13 @@ namespace Satrabel.OpenContent.Components
         }
 
         public int ContentId { get; set; }
+
+        /// <summary>
+        /// OpenContent item Key, unique across all modules. Typically populated with ObjectId.NewObjectId().ToString()
+        /// </summary>
         [ColumnName("DocumentKey")]
         public string Key { get; internal set; }
+
         [IgnoreColumn]
         public string Id
         {
@@ -73,7 +78,14 @@ namespace Satrabel.OpenContent.Components
             {
                 if (_jsonAsJToken == null && !string.IsNullOrEmpty(this.Json))
                 {
-                    _jsonAsJToken = JToken.Parse(this.Json);
+                    try
+                    {
+                        _jsonAsJToken = JToken.Parse(this.Json);
+                    }
+                    catch (Exception e)
+                    {
+                        throw new Exception($"Failed to parse json from moduleId:{ModuleId}, contentId:{ContentId}", e);
+                    }
                 }
                 // JsonAsJToken is modified (to remove other cultures)
                 return _jsonAsJToken?.DeepClone();

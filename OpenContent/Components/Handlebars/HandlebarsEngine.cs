@@ -424,9 +424,20 @@ namespace Satrabel.OpenContent.Components.Handlebars
                         try
                         {
                             DateTime publishstartdate = DateTime.Parse(item.publishstartdate, null, System.Globalization.DateTimeStyles.RoundtripKind);
-                            if (publishstartdate.Date >= DateTime.Today)
+                            // check if we need to compare the time
+                            if (publishstartdate.TimeOfDay.TotalMilliseconds > 0)
                             {
-                                show = false;
+                                if (publishstartdate >= DateTime.Now)
+                                {
+                                    show = false;
+                                }
+                            }
+                            else
+                            {
+                                if (publishstartdate.Date >= DateTime.Today)
+                                {
+                                    show = false;
+                                }
                             }
                         }
                         catch (Exception)
@@ -435,9 +446,20 @@ namespace Satrabel.OpenContent.Components.Handlebars
                         try
                         {
                             DateTime publishenddate = DateTime.Parse(item.publishenddate, null, System.Globalization.DateTimeStyles.RoundtripKind);
-                            if (publishenddate.Date <= DateTime.Today)
+                            // check if we need to compare the time
+                            if (publishenddate.TimeOfDay.TotalMilliseconds > 0)
                             {
-                                show = false;
+                                if (publishenddate <= DateTime.Now)
+                                {
+                                    show = false;
+                                }
+                            }
+                            else
+                            {
+                                if (publishenddate.Date <= DateTime.Today)
+                                {
+                                    show = false;
+                                }
                             }
                         }
                         catch (Exception)
@@ -581,6 +603,16 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     ImageUri imageObject = ImageUriFactory.CreateImageUri(imageId);
                     var imageUrl = imageObject == null ? string.Empty : imageObject.GetImageUrl(width, imageObject.RawRatio, isMobile);
 
+                    writer.WriteSafeString(imageUrl);
+                }
+            });
+            hbs.RegisterHelper("imageediturl", (writer, context, parameters) =>
+            {
+                if (parameters.Length == 1) //{{imageediturl ImageId}}
+                {
+                    string imageId = parameters[0].ToString();
+                    ImageUri imageObject = ImageUriFactory.CreateImageUri(imageId);
+                    var imageUrl = imageObject == null ? string.Empty : imageObject.EditUrl();
                     writer.WriteSafeString(imageUrl);
                 }
             });
@@ -1124,7 +1156,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 {
                     var arg1 = arguments[0].ToString();
                     var arg2 = arguments[1].ToString();
-                    res = arg2.Contains(arg1);
+                    res = arg1.Contains(arg2);
                 }
 
                 if (res)

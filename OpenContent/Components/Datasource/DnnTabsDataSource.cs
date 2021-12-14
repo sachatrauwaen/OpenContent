@@ -41,9 +41,8 @@ namespace Satrabel.OpenContent.Components.Datasource
             var dataList = new List<IDataItem>();
             foreach (var tab in tabs)
             {
-                var item = new DefaultDataItem()
+                var item = new DefaultDataItem(tab.TabID.ToString())
                 {
-                    Id = tab.TabID.ToString(),
                     Title = tab.TabName,
                     Data = JObject.FromObject(new
                     {

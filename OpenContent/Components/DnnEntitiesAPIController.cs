@@ -157,7 +157,7 @@ namespace Satrabel.OpenContent.Components
             {
                 var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
                 var folderManager = FolderManager.Instance;
-                string imageFolder = "OpenContent/Files/" + ActiveModule.ModuleID;
+                string imageFolder = "OpenContent/Files/" + module.DataModule.ModuleId;
                 if (module.Settings.Manifest.DeleteFiles)
                 {
                     if (!string.IsNullOrEmpty(itemKey))
@@ -459,6 +459,7 @@ namespace Satrabel.OpenContent.Components
         [HttpPost]
         public HttpResponseMessage CropImage(CropResizeDTO cropData)
         {
+            var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
             FilesStatus fs = null;
             try
             {
@@ -481,7 +482,7 @@ namespace Satrabel.OpenContent.Components
                 }
                 rawImageUrl = rawImageUrl.Replace(PortalSettings.HomeDirectory, "");
                 var file = fileManager.GetFile(ActiveModule.PortalID, rawImageUrl);
-                string cropfolder = "OpenContent/Cropped/" + ActiveModule.ModuleID;
+                string cropfolder = "OpenContent/Cropped/" + module.DataModule.ModuleId;
                 if (!string.IsNullOrEmpty(cropData.itemKey))
                 {
                     cropfolder += "/" + cropData.itemKey;
@@ -533,7 +534,7 @@ namespace Satrabel.OpenContent.Components
                     {
                         imgFormat = ImageFormat.Gif;
                     }
-                    else if (file.Extension.ToLowerInvariant() == "jpg")
+                    else if (file.Extension.ToLowerInvariant() == "jpg" || file.Extension.ToLowerInvariant() == "jpeg")
                     {
                         imgFormat = ImageFormat.Jpeg;
                     }
@@ -568,6 +569,7 @@ namespace Satrabel.OpenContent.Components
         [HttpPost]
         public HttpResponseMessage CropImages(CroppersDTO cropData)
         {
+            var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
             try
             {
                 var res = new CroppersResultDTO();
@@ -582,7 +584,7 @@ namespace Satrabel.OpenContent.Components
                 var file = fileManager.GetFile(ActiveModule.PortalID, rawImageUrl);
                 if (file != null)
                 {
-                    string cropfolder = "OpenContent/Files/" + ActiveModule.ModuleID;
+                    string cropfolder = "OpenContent/Files/" + module.DataModule.ModuleId;
                     if (!string.IsNullOrEmpty(cropData.cropfolder))
                     {
                         cropfolder = cropData.cropfolder;
@@ -663,7 +665,7 @@ namespace Satrabel.OpenContent.Components
             {
                 imgFormat = ImageFormat.Gif;
             }
-            else if (file.Extension.ToLowerInvariant() == "jpg")
+            else if (file.Extension.ToLowerInvariant() == "jpg" || file.Extension.ToLowerInvariant() == "jpzg")
             {
                 imgFormat = ImageFormat.Jpeg;
             }
@@ -683,6 +685,7 @@ namespace Satrabel.OpenContent.Components
         [HttpPost]
         public HttpResponseMessage DownloadFile(FileDTO req)
         {
+            var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
             try
             {
                 var folderManager = FolderManager.Instance;
@@ -694,7 +697,7 @@ namespace Satrabel.OpenContent.Components
                 }
                 RawImageUrl = RawImageUrl.Replace(PortalSettings.HomeDirectory, "");
                 var file = fileManager.GetFile(ActiveModule.PortalID, RawImageUrl);
-                string uploadfolder = "OpenContent/Files/" + ActiveModule.ModuleID;
+                string uploadfolder = "OpenContent/Files/" + module.DataModule.ModuleId;
                 if (!string.IsNullOrEmpty(req.uploadfolder))
                 {
                     uploadfolder = req.uploadfolder;

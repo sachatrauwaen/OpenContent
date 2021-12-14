@@ -5,14 +5,29 @@ namespace Satrabel.OpenContent.Components.Datasource
 {
     public class DefaultDataItem : IDataItem
     {
+        [Obsolete("Please use constructor with parameters  12/10/2021")]
         public DefaultDataItem()
         {
+        }
+        public DefaultDataItem(string id)
+        {
+            Id = id;
+            Key = id;
+        }
+
+        public DefaultDataItem(string id, string key)
+        {
+            Id = id;
+            Key = key;
         }
 
         public DefaultDataItem(JToken json)
         {
+            Id = null;
+            Key = null;
             Data = json;
         }
+
         public string Id { get; set; }
         public string Key { get; set; }
         public string Collection { get; set; }
@@ -23,6 +38,5 @@ namespace Satrabel.OpenContent.Components.Datasource
         public int LastModifiedByUserId { get; set; }
         public DateTime LastModifiedOnDate { get; set; }
         public object Item { get; set; }
-        
     }
 }
