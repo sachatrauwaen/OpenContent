@@ -38,6 +38,8 @@ namespace Satrabel.OpenContent.Components.Alpaca
         private Page Page { get; set; }
         private int PortalId { get; set; }
 
+        
+
         public AlpacaEngine(Page page, int portalId, string virtualDir, string filePrefix)
         {
             this.Page = page;
@@ -57,61 +59,81 @@ namespace Satrabel.OpenContent.Components.Alpaca
 
         public void RegisterAll() // for openform
         {
-            RegisterAll(false, false, false);
+            RegisterAll(false, false, false, false);
         }
 
         public void RegisterAll(bool bootstrap) // for openform
         {
-            RegisterAll(bootstrap, false, false);
+            RegisterAll(bootstrap, false, false, false);
         }
 
         public void RegisterAll(bool bootstrapLayoutEnabled, bool loadBootstrap) // for openform
         {
-            RegisterAll(bootstrapLayoutEnabled, loadBootstrap, false);
+            RegisterAll(bootstrapLayoutEnabled, loadBootstrap, false, false);
         }
 
-        public void RegisterAll(bool bootstrapLayoutEnabled, bool loadBootstrap, bool loadGlyphicons)
+        public void RegisterAll(bool bootstrapLayoutEnabled, bool loadBootstrap, bool loadGlyphicons, bool builderV2)
         {
-            RegisterAlpaca(bootstrapLayoutEnabled, loadBootstrap, loadGlyphicons);
+            RegisterAlpaca(bootstrapLayoutEnabled, loadBootstrap, loadGlyphicons, builderV2);
             RegisterTemplates();
             RegisterScripts(bootstrapLayoutEnabled);
             RegisterFields(bootstrapLayoutEnabled);
         }
 
-        private void RegisterAlpaca(bool bootstrap, bool loadBootstrap, bool loadGlyphicons)
+        private void RegisterAlpaca(bool bootstrap, bool loadBootstrap, bool loadGlyphicons, bool builderV2)
         {
             if (loadBootstrap)
             {
-                ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/bootstrap/js/bootstrap.min.js", FileOrder.Js.DefaultPriority);
-                ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/bootstrap/css/bootstrap.min.css", FileOrder.Css.DefaultPriority);                
+                if (builderV2)
+                {
+                    ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/bootstrap4/js/bootstrap.bundle.min.js", FileOrder.Js.DefaultPriority);
+                    ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/bootstrap4/css/bootstrap.min.css", FileOrder.Css.DefaultPriority);
+                }
+                else
+                {
+                    ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/bootstrap/js/bootstrap.min.js", FileOrder.Js.DefaultPriority);
+                    ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/bootstrap/css/bootstrap.min.css", FileOrder.Css.DefaultPriority);
+                }
             }
+
+
             if (loadGlyphicons)
             {
                 ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/bootstrap/css/glyphicons.css", FileOrder.Css.DefaultPriority);
             }
             //ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/css/font-awesome/css/font-awesome.min.css", FileOrder.Css.DefaultPriority);
-            ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/lib/handlebars/handlebars.js", FileOrder.Js.DefaultPriority);
-            ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/lib/typeahead.js/dist/typeahead.bundle.min.js", FileOrder.Js.DefaultPriority);
-
-            ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/wysihtml/wysihtml-toolbar.js", FileOrder.Js.DefaultPriority + 1);
-            ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/wysihtml/parser_rules/advanced_opencontent.js", FileOrder.Js.DefaultPriority + 1);
-            if (bootstrap)
+            if (builderV2)
             {
-                ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/alpaca/bootstrap/alpaca.css", FileOrder.Css.DefaultPriority);
-                ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/alpaca/css/alpaca-dnnbootstrap.css", FileOrder.Css.DefaultPriority);
-                ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/alpaca/bootstrap/alpaca.js", FileOrder.Js.DefaultPriority + 1);
-                ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/alpaca/js/views/dnnbootstrap.js", FileOrder.Js.DefaultPriority + 2);
+                //ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/lamavue/0.js", FileOrder.Js.DefaultPriority + 10);
+                ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/lama/dist/js/chunk-vendors.js", FileOrder.Js.DefaultPriority + 10);
+                ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/lama/dist/js/app.js", FileOrder.Js.DefaultPriority + 10);
+                ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/lamaengine.js", FileOrder.Js.DefaultPriority + 10);
             }
             else
             {
-                ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/alpaca/css/alpaca-dnn.css", FileOrder.Css.DefaultPriority);
-                ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/alpaca/web/alpaca.js", FileOrder.Js.DefaultPriority + 1);
-                ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/alpaca/js/views/dnn.js", FileOrder.Js.DefaultPriority + 2);
+                ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/lib/handlebars/handlebars.js", FileOrder.Js.DefaultPriority);
+                ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/lib/typeahead.js/dist/typeahead.bundle.min.js", FileOrder.Js.DefaultPriority);
+
+                ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/wysihtml/wysihtml-toolbar.js", FileOrder.Js.DefaultPriority + 1);
+                ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/wysihtml/parser_rules/advanced_opencontent.js", FileOrder.Js.DefaultPriority + 1);
+                if (bootstrap)
+                {
+                    ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/alpaca/bootstrap/alpaca.css", FileOrder.Css.DefaultPriority);
+                    ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/alpaca/css/alpaca-dnnbootstrap.css", FileOrder.Css.DefaultPriority);
+                    ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/alpaca/bootstrap/alpaca.js", FileOrder.Js.DefaultPriority + 1);
+                    ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/alpaca/js/views/dnnbootstrap.js", FileOrder.Js.DefaultPriority + 2);
+                }
+                else
+                {
+                    ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/alpaca/css/alpaca-dnn.css", FileOrder.Css.DefaultPriority);
+                    ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/alpaca/web/alpaca.js", FileOrder.Js.DefaultPriority + 1);
+                    ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/alpaca/js/views/dnn.js", FileOrder.Js.DefaultPriority + 2);
+                }
+                ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/alpaca/js/fields/dnn/dnnfields.js", FileOrder.Js.DefaultPriority + 3);
+
+                ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/alpacaengine.js", FileOrder.Js.DefaultPriority + 10);
             }
-            ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/alpaca/js/fields/dnn/dnnfields.js", FileOrder.Js.DefaultPriority + 3);
-
-            ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/alpacaengine.js", FileOrder.Js.DefaultPriority + 10);
-
+            
             ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/css/font-awesome/css/font-awesome.min.css", FileOrder.Css.DefaultPriority + 1);
 
 

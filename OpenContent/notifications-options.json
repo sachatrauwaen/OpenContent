@@ -1,7 +1,7 @@
 ﻿{
   "fields": {
     "Notifications": {
-      "type": "accordion",
+      
       "titleField": "EmailSubject",
       "items": {
         "fields": {
@@ -95,7 +95,7 @@
           "EmailSubject": {
           },
           "EmailBody": {
-            "type": "summernote"
+            "type": "ckeditor"
           }
         }
       }

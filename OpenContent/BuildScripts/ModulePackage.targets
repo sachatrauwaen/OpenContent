@@ -23,10 +23,11 @@
            XmlFileName="$(DNNFileName).dnn">
       <Output TaskParameter="Value" PropertyName="Version" />
     </XmlRead>
-    <!-- Write new version to assemblyinfo.cs -->
+    <!-- Write new version to assemblyinfo.cs 
     <FileUpdate Files="$(AssemblyInfoFile)" Encoding="ASCII" Regex="AssemblyVersion\(&quot;.*&quot;\)" ReplacementText="AssemblyVersion(&quot;$(Version).00&quot;)" />
     <FileUpdate Files="$(AssemblyInfoFile)" Encoding="ASCII" Regex="AssemblyFileVersion\(&quot;.*&quot;\)" ReplacementText="AssemblyFileVersion(&quot;$(Version).00&quot;)" />
     <FileUpdate Files="$(AppVeyorFile)" Encoding="ASCII" Regex="version: (.*)\.{build}-{branch}" ReplacementText="version: $(Version).{build}-{branch}" />
+    -->
   </Target>
 
   <Target Name="PackageModule" Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -49,6 +50,7 @@
       <InstallInclude Include="**\*.resx" Exclude="packages\**" />
       <InstallInclude Include="**\*.aspx" Exclude="packages\**" />
       <InstallInclude Include="**\*.js" Exclude="packages\**;**\_*.js" />
+      <InstallInclude Include="**\*.js.map" Exclude="packages\**;**\_*.js.map" />
       <InstallInclude Include="**\*-schema.json" Exclude="packages\**" />
       <InstallInclude Include="**\*-options.json" Exclude="packages\**" />
       <InstallInclude Include="**\*.txt"  Exclude="**\obj\**;**\_ReSharper*\**;packages\**;**\.git\**;" />
@@ -70,6 +72,7 @@
       <SourceInclude Include="**\*.xml" Exclude="**\obj\**;**\_ReSharper*\**;**\.git\**;" />
       <SourceInclude Include="**\*.aspx" />
       <SourceInclude Include="**\*.js" />
+      <SourceInclude Include="**\*.js.map" />
       <SourceInclude Include="**\*.json" />
       <SourceInclude Include="**\*.txt" Exclude="**\obj\**;**\_ReSharper*\**;**\.git\**;" />
       <SourceInclude Include="**\images\**" />

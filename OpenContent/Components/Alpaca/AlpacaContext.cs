@@ -90,5 +90,8 @@ namespace Satrabel.OpenContent.Components.Alpaca
         public bool IsNew { get; set; }
         [JsonProperty(PropertyName = "deleteConfirmMessage")]
         public string DeleteConfirmMessage { get; set; }
+
+        [JsonProperty(PropertyName = "builderV2")]
+        public bool BuilderV2 { get; set; } = true;
     }
 }

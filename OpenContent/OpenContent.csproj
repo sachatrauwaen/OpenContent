@@ -1,10 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
     <Use64BitIISExpress />
+    <TypeScriptToolsVersion>4.0</TypeScriptToolsVersion>
   </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -1136,6 +1138,10 @@
     <Content Include="js\jplist\rocket.png" />
     <Content Include="js\jplist\thumbs-btn-disabled.png" />
     <Content Include="js\jplist\thumbs-btn.png" />
+    <Content Include="js\lamaengine.js" />
+    <Content Include="js\lamavue\0.js" />
+    <Content Include="js\lamavue\app.js" />
+    <Content Include="js\lamavue\chunk-vendors.js" />
     <Content Include="js\oc.jquery.js" />
     <Content Include="js\select2\select2-bootstrap.css" />
     <Content Include="js\select2\select2-bootstrap.min.css" />
@@ -1231,242 +1237,24 @@
     <Content Include="js\swagger\swagger-ui.js" />
     <Content Include="js\swagger\swagger-ui.min.js" />
     <Content Include="js\oc.vue.js" />
-    <Content Include="RenderModule.ascx" />
-    <Content Include="Swagger.ascx" />
-    <Content Include="EditAddData.ascx" />
-    <Content Include="EditInit.ascx" />
-    <Content Include="EditQuery.ascx" />
-    <Content Include="EditGlobalSettings.ascx" />
-    <Content Include="EditSettings.ascx" />
-    <Content Include="images\edit.png" />
-    <Content Include="images\edittemplate.png" />
-    <Content Include="images\exchange.png" />
-    <Content Include="images\help.png" />
-    <Content Include="images\icon_extensions.png" />
-    <Content Include="images\settings.gif" />
-    <Content Include="images\settings.png" />
-    <Content Include="js\alpaca-1.5.8\lib\handlebars\handlebars.js" />
-    <Content Include="js\alpaca-1.5.8\lib\handlebars\handlebars.min.js" />
-    <Content Include="js\alpaca-1.5.8\lib\handlebars\handlebars.runtime.amd.js" />
-    <Content Include="js\alpaca-1.5.8\lib\handlebars\handlebars.runtime.amd.min.js" />
-    <Content Include="js\alpaca-1.5.8\lib\handlebars\handlebars.runtime.js" />
-    <Content Include="js\alpaca-1.5.8\lib\handlebars\handlebars.runtime.min.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\af.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\ar-ma.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\ar-sa.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\ar-tn.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\ar.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\az.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\be.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\bg.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\bn.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\bo.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\br.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\bs.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\ca.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\cs.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\cv.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\cy.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\da.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\de-at.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\de.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\el.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\en-au.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\en-ca.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\en-gb.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\eo.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\es.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\et.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\eu.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\fa.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\fi.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\fo.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\fr-ca.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\fr.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\fy.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\gl.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\he.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\hi.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\hr.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\hu.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\hy-am.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\id.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\is.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\it.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\ja.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\ka.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\km.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\ko.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\lb.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\lt.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\lv.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\mk.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\ml.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\mr.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\ms-my.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\my.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\nb.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\ne.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\nl.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\nn.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\pl.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\pt-br.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\pt.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\ro.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\ru.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\sk.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\sl.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\sq.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\sr-cyrl.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\sr.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\sv.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\ta.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\th.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\tl-ph.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\tr.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\tzm-latn.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\tzm.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\uk.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\uz.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\vi.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\zh-cn.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\locale\zh-tw.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\min\locales.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\min\locales.min.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\min\moment-with-locales.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\min\moment-with-locales.min.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\min\moment.min.js" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\moment.js" />
-    <Content Include="js\alpacaengine.js" />
-    <Content Include="js\alpaca\bootstrap\alpaca.css" />
-    <Content Include="js\alpaca\bootstrap\alpaca.js" />
-    <Content Include="js\alpaca\bootstrap\alpaca.min.css" />
-    <Content Include="js\alpaca\bootstrap\alpaca.min.js" />
-    <Content Include="js\alpaca\bootstrap\images\alpaca-icons.png" />
-    <Content Include="js\alpaca\bootstrap\images\date.png" />
-    <Content Include="js\alpaca\bootstrap\images\down.png" />
-    <Content Include="js\alpaca\bootstrap\images\email.png" />
-    <Content Include="js\alpaca\bootstrap\images\left.png" />
-    <Content Include="js\alpaca\bootstrap\images\phone.png" />
-    <Content Include="js\alpaca\bootstrap\images\time.png" />
-    <Content Include="js\alpaca\web\alpaca.css" />
-    <Content Include="js\alpaca\web\alpaca.js" />
-    <Content Include="js\alpaca\web\alpaca.min.css" />
-    <Content Include="js\alpaca\web\alpaca.min.js" />
-    <Content Include="js\alpaca\web\images\alpaca-icons.png" />
-    <Content Include="js\alpaca\web\images\date.png" />
-    <Content Include="js\alpaca\web\images\down.png" />
-    <Content Include="js\alpaca\web\images\email.png" />
-    <Content Include="js\alpaca\web\images\left.png" />
-    <Content Include="js\alpaca\web\images\phone.png" />
-    <Content Include="js\alpaca\web\images\time.png" />
-    <Content Include="js\builder\formbuilder.css" />
-    <Content Include="js\builder\formbuilder.html" />
-    <Content Include="js\builder\formbuilder.js" />
-    <Content Include="js\CodeMirror\addon\mode\loadmode.js" />
-    <Content Include="js\CodeMirror\addon\mode\multiplex.js" />
-    <Content Include="js\CodeMirror\addon\mode\multiplex_test.js" />
-    <Content Include="js\CodeMirror\addon\mode\overlay.js" />
-    <Content Include="js\CodeMirror\addon\mode\simple.js" />
-    <Content Include="js\CodeMirror\mode\handlebars\handlebars.js" />
-    <Content Include="js\cropper\cropper.css" />
-    <Content Include="js\cropper\cropper.js" />
-    <Content Include="js\cropper\cropper.min.css" />
-    <Content Include="js\cropper\cropper.min.js" />
-    <Content Include="js\fontIconPicker\themes\bootstrap-theme\jquery.fonticonpicker.bootstrap.css" />
-    <Content Include="js\fontIconPicker\themes\bootstrap-theme\jquery.fonticonpicker.bootstrap.min.css" />
-    <Content Include="js\fontIconPicker\themes\dark-grey-theme\jquery.fonticonpicker.darkgrey.css" />
-    <Content Include="js\fontIconPicker\themes\dark-grey-theme\jquery.fonticonpicker.darkgrey.min.css" />
-    <Content Include="js\fontIconPicker\themes\grey-theme\jquery.fonticonpicker.grey.css" />
-    <Content Include="js\fontIconPicker\themes\grey-theme\jquery.fonticonpicker.grey.min.css" />
-    <Content Include="js\fontIconPicker\themes\inverted-theme\jquery.fonticonpicker.inverted.css" />
-    <Content Include="js\fontIconPicker\themes\inverted-theme\jquery.fonticonpicker.inverted.min.css" />
-    <Content Include="js\lib\eonasdan-bootstrap-datetimepicker\build\css\bootstrap-datetimepicker.css" />
-    <Content Include="js\lib\eonasdan-bootstrap-datetimepicker\build\css\bootstrap-datetimepicker.min.css" />
-    <Content Include="js\lib\eonasdan-bootstrap-datetimepicker\build\js\bootstrap-datetimepicker.min.js" />
-    <Content Include="js\lib\handlebars\handlebars.js" />
-    <Content Include="js\lib\handlebars\handlebars.min.js" />
-    <Content Include="js\lib\moment\min\locales.js" />
-    <Content Include="js\lib\moment\min\locales.min.js" />
-    <Content Include="js\lib\moment\min\moment-with-locales.js" />
-    <Content Include="js\lib\moment\min\moment-with-locales.min.js" />
-    <Content Include="js\lib\moment\min\moment.min.js" />
-    <Content Include="js\lib\moment\moment.js" />
-    <Content Include="js\lib\typeahead.js\dist\bloodhound.js" />
-    <Content Include="js\lib\typeahead.js\dist\bloodhound.min.js" />
-    <Content Include="js\lib\typeahead.js\dist\typeahead.bundle.js" />
-    <Content Include="js\lib\typeahead.js\dist\typeahead.bundle.min.js" />
-    <Content Include="js\lib\typeahead.js\dist\typeahead.jquery.js" />
-    <Content Include="js\lib\typeahead.js\dist\typeahead.jquery.min.js" />
-    <Content Include="js\opencontent.js" />
-    <Content Include="Providers\DataProviders\SqlDataProvider\01.04.01.SqlDataProvider" />
-    <Content Include="Providers\DataProviders\SqlDataProvider\02.00.03.SqlDataProvider" />
-    <Content Include="js\alpaca-1.5.8\lib\handlebars\README.md" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\CHANGELOG.md" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\LICENSE" />
-    <Content Include="js\alpaca-1.5.8\lib\moment\README.md" />
-    <Content Include="js\lib\eonasdan-bootstrap-datetimepicker\LICENSE" />
-    <Content Include="js\lib\moment\LICENSE" />
-    <Content Include="js\lib\moment\scripts\npm_prepublish.sh" />
-    <Content Include="js\lib\typeahead.js\LICENSE" />
-    <Content Include="js\swagger\fonts\DroidSans-Bold.ttf" />
-    <Content Include="js\swagger\fonts\DroidSans.ttf" />
-    <Content Include="js\swagger\swagger-ui.min.js.map">
-      <DependentUpon>swagger-ui.min.js</DependentUpon>
-    </Content>
-    <Content Include="js\bootstrap\fonts\glyphicons-halflings-regular.eot" />
-    <Content Include="js\bootstrap\fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="js\bootstrap\fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="js\bootstrap\fonts\glyphicons-halflings-regular.woff2" />
-    <Content Include="css\glyphicons\fonts\glyphicons-regular.eot" />
-    <Content Include="css\glyphicons\fonts\glyphicons-regular.ttf" />
-    <Content Include="css\glyphicons\fonts\glyphicons-regular.woff" />
-    <Content Include="css\glyphicons\fonts\glyphicons-social-regular.eot" />
-    <Content Include="css\glyphicons\fonts\glyphicons-social-regular.ttf" />
-    <Content Include="css\glyphicons\fonts\glyphicons-social-regular.woff" />
-    <Content Include="BuildScripts\ModuleDeploy.targets">
-      <SubType>Designer</SubType>
-    </Content>
-    <None Include="bundleconfig.json" />
-    <Content Include="js\summernote\font\summernote.eot" />
-    <Content Include="js\summernote\font\summernote.ttf" />
-    <Content Include="js\summernote\font\summernote.woff" />
-    <Content Include="formsettings-options.json" />
-    <Content Include="formsettings-schema.json" />
-    <Content Include="Providers\DataProviders\SqlDataProvider\03.02.00.SqlDataProvider" />
-    <Content Include="README.md" />
-    <Content Include="js\oc.codemirror.js" />
+    <Content Include="lama\.gitignore" />
+    <Content Include="lama\babel.config.js" />
+    <Content Include="lama\dist\favicon.ico" />
+    <Content Include="lama\dist\index.html" />
+    <Content Include="lama\dist\js\app.js" />
+    <Content Include="lama\dist\js\chunk-vendors.js" />
+    <Content Include="lama\package-lock.json" />
+    <Content Include="lama\package.json" />
+    <Content Include="lama\README.md" />
+    <Content Include="lama\src\App.vue" />
+    <Content Include="lama\src\components\HelloWorld.vue" />
+    <Content Include="lama\yarn-error.log" />
+    <Content Include="lama\yarn.lock" />
     <Content Include="css\font-awesome\fonts\fontawesome-webfont.eot" />
     <Content Include="css\font-awesome\fonts\fontawesome-webfont.ttf" />
     <Content Include="css\font-awesome\fonts\fontawesome-webfont.woff" />
     <Content Include="css\font-awesome\fonts\fontawesome-webfont.woff2" />
     <Content Include="css\font-awesome\fonts\FontAwesome.otf" />
-    <Content Include="Providers\DataProviders\SqlDataProvider\03.05.00.SqlDataProvider" />
-    <Content Include="notifications-schema.json" />
-    <Content Include="notifications-options.json" />
-    <Content Include="Components\Razor\ViewPage1.cshtml" />
-    <Content Include="js\ckeditor\plugins\copyformatting\cursors\cursor-disabled.svg" />
-    <Content Include="js\ckeditor\plugins\copyformatting\cursors\cursor.svg" />
-    <Content Include="js\ckeditor\plugins\scayt\CHANGELOG.md" />
-    <Content Include="js\ckeditor\plugins\scayt\LICENSE.md" />
-    <Content Include="js\ckeditor\plugins\scayt\README.md" />
-    <Content Include="js\ckeditor\plugins\wsc\LICENSE.md" />
-    <Content Include="js\ckeditor\plugins\wsc\README.md" />
-    <Content Include="js\ckeditor\skins\moono-lisa\readme.md" />
-    <Content Include="js\ckeditor\Tabs.ashx" />
-    <Compile Include="js\ckeditor\Tabs.ashx.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Content Include="js\fontIconPicker\fonts\iconpicker.eot" />
-    <Content Include="js\fontIconPicker\fonts\iconpicker.svg" />
-    <Content Include="js\fontIconPicker\fonts\iconpicker.ttf" />
-    <Content Include="js\fontIconPicker\fonts\iconpicker.woff" />
-    <Content Include="js\fontIconPicker\js\jquery.fonticonpicker.js.map" />
-    <Content Include="js\fontIconPicker\css\base\jquery.fonticonpicker.css.map" />
-    <Content Include="js\fontIconPicker\css\themes\bootstrap-theme\jquery.fonticonpicker.bootstrap.css.map" />
-    <Content Include="js\fontIconPicker\css\themes\dark-grey-theme\jquery.fonticonpicker.darkgrey.css.map" />
-    <Content Include="js\fontIconPicker\css\themes\grey-theme\jquery.fonticonpicker.grey.css.map" />
-    <Content Include="js\fontIconPicker\css\themes\inverted-theme\jquery.fonticonpicker.inverted.css.map" />
     <None Include="packages.config" />
     <None Include="Scripts\_references.js" />
     <Content Include="js\select2\i18n\az.js" />
@@ -1660,10 +1448,14 @@
   <ItemGroup>
     <Content Include="App_LocalResources\CloneModule.ascx.resx" />
   </ItemGroup>
+  <ItemGroup>
+    <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
   <ProjectExtensions>
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">

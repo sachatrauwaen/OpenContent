@@ -58,6 +58,10 @@
         <asp:CheckBox ID="cbSaveXml" runat="server" />
     </div>
     <div class="dnnFormItem">
+        <dnn:Label ID="lBuilderV2" ControlName="cbBuilderV2" runat="server" />
+        <asp:CheckBox ID="cbBuilderV2" runat="server" />
+    </div>
+    <div class="dnnFormItem">
         <dnn:Label ID="lGithubRepository" ControlName="tbGithubRepository" runat="server" />
         <asp:TextBox ID="tbGithubRepository" runat="server" placeholder="user/repository" />
     </div>

@@ -2,9 +2,11 @@
 <%@ Import Namespace="Newtonsoft.Json" %>
 
 <asp:Panel ID="ScopeWrapper" runat="server">
-    <div id="field1" class="alpaca"></div>
+    <div class="container-fluid">
+        <div id="field1" class="alpaca"></div>
+    </div>
     <ul class="dnnActions dnnClear" style="display: block; padding-left: 35%">
-        
+
         <li>
             <asp:HyperLink ID="cmdSave" runat="server" class="dnnPrimaryAction" resourcekey="cmdSave" />
         </li>
@@ -21,10 +23,10 @@
             <asp:DropDownList ID="ddlVersions" runat="server" CssClass="oc-ddl-versions" />
         </li>
     </ul>
-    <div id="field1validation" style="display: none; color: #b94a48;padding-left: 35%">
-        <i class="glyphicon glyphicon-exclamation-sign"  ></i>
-        <span class="serverside"  style="display: none;"></span>
-        <asp:Label runat="server" style="display: none;" CssClass="clientside" resourcekey="errInvalid"></asp:Label>
+    <div id="field1validation" style="display: none; color: #b94a48; padding-left: 35%">
+        <i class="glyphicon glyphicon-exclamation-sign"></i>
+        <span class="serverside" style="display: none;"></span>
+        <asp:Label runat="server" Style="display: none;" CssClass="clientside" resourcekey="errInvalid"></asp:Label>
     </div>
 </asp:Panel>
 

@@ -202,6 +202,24 @@ namespace Satrabel.OpenContent {
         protected global::System.Web.UI.WebControls.CheckBox cbSaveXml;
         
         /// <summary>
+        /// Contrôle lBuilderV2.
+        /// </summary>
+        /// <remarks>
+        /// Champ généré automatiquement.
+        /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.UserControl lBuilderV2;
+        
+        /// <summary>
+        /// Contrôle cbBuilderV2.
+        /// </summary>
+        /// <remarks>
+        /// Champ généré automatiquement.
+        /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox cbBuilderV2;
+        
+        /// <summary>
         /// Contrôle lGithubRepository.
         /// </summary>
         /// <remarks>

@@ -23,6 +23,7 @@ namespace Satrabel.OpenContent.Components.Settings
         private const bool SETTINGS_DEFAULT_COMPOSITE_CSS = false;
         private const string SETTINGS_GITHUB_REPOSITORY = "OpenContent_GithubRepository";
         private const string DEFAULT_GITHUB_REPOSITORY = "sachatrauwaen/OpenContent-Templates";
+        private const string DEFAULT_GITHUB_REPOSITORY2 = "sachatrauwaen/OpenContent-Templates2";
 
         public DnnGlobalSettingsRepository(int portalId)
         {
@@ -199,10 +200,29 @@ namespace Satrabel.OpenContent.Components.Settings
 
         public void SetGithubRepository(string value)
         {
+            if (value == DEFAULT_GITHUB_REPOSITORY && IsBuilderV2())
+                value = DEFAULT_GITHUB_REPOSITORY2;
+
             if (string.IsNullOrEmpty(value))
                 PortalController.DeletePortalSetting(_portalId, SETTINGS_GITHUB_REPOSITORY);
             else
                 PortalController.UpdatePortalSetting(_portalId, SETTINGS_GITHUB_REPOSITORY, value, true);
+        }
+
+        private const string SETTINGS_BUILDER_V2 = "OpenContent_BuilderV2";
+        private const bool SETTINGS_DEFAULT_BUILDER_V2 = false;
+        public bool IsBuilderV2()
+        {
+            var saveBuilderV2Setting = PortalController.GetPortalSetting(SETTINGS_BUILDER_V2, _portalId, string.Empty);
+            bool saveBuilderV2;
+            if (!string.IsNullOrWhiteSpace(saveBuilderV2Setting) && bool.TryParse(saveBuilderV2Setting, out saveBuilderV2))
+                return saveBuilderV2;
+            return SETTINGS_DEFAULT_BUILDER_V2;
+        }
+
+        public void SetBuilderV2(bool saveBuilderV2)
+        {
+            PortalController.UpdatePortalSetting(_portalId, SETTINGS_BUILDER_V2, saveBuilderV2.ToString(), true);
         }
     }
 }

@@ -840,7 +840,8 @@ namespace Satrabel.OpenContent.Components.Render
             }
 
             //Form Builder
-            if (templateDefined && OpenContentUtils.BuildersExist(_settings.Template.ManifestFolderUri))
+            if (templateDefined && (OpenContentUtils.BuildersExist(_settings.Template.ManifestFolderUri) ||
+                        App.Services.CreateGlobalSettingsRepository(PortalSettings.Current.PortalId).IsBuilderV2()))
                 actions.Add(
                     new MenuAction(
                         App.Services.Localizer.GetString("Builder.Action", ResourceFile),
