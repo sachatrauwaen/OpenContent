@@ -61,7 +61,12 @@ namespace Satrabel.OpenContent.Components
                 if (response != null)
                 {
                     //content = JArray.Parse(response);
-                    contents .AddRange(Contents.FromJson(response));
+                    var content = Contents.FromJson(response);
+                    foreach (var item in content)
+                    {
+                        item.Path = repo + "/contents/" + item.Path;
+                    }
+                    contents.AddRange(content);
                 }
             }
             return contents;
@@ -75,7 +80,8 @@ namespace Satrabel.OpenContent.Components
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             }
             List<Contents> contents = null;
-            string url = "https://api.github.com/repos/" + GetGitRepository(portalId) + "/contents/" + path;
+            //string url = "https://api.github.com/repos/" + GetGitRepository(portalId) + "/contents/" + path;
+            string url = "https://api.github.com/repos/" + path;
             HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36");
             var response = client.GetStringAsync(new Uri(url)).Result;
@@ -87,12 +93,12 @@ namespace Satrabel.OpenContent.Components
         }
 
         // all registed github templates (datasource for the repeater)
-        public static List<Contents> ProcessGithubTemplatesNames(int portalId)
-        {
-            return GetTemplateList(portalId)
-                .Where(t => t.Type == Components.Github.TypeEnum.Dir)
-                .OrderBy(t => t.Name).ToList();
-        }
+        //public static List<Contents> ProcessGithubTemplatesNames(int portalId)
+        //{
+        //    return GetTemplateList(portalId)
+        //        .Where(t => t.Type == Components.Github.TypeEnum.Dir)
+        //        .OrderBy(t => t.Name).ToList();
+        //}
 
         /*
         public static JObject GetManifestFile(string templatename)

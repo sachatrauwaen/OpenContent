@@ -23,6 +23,7 @@ namespace Satrabel.OpenContent.Components.Settings
         private const bool SETTINGS_DEFAULT_COMPOSITE_CSS = false;
         private const string SETTINGS_GITHUB_REPOSITORY = "OpenContent_GithubRepository";
         private const string DEFAULT_GITHUB_REPOSITORY = "sachatrauwaen/OpenContent-Templates";
+        private const string DEFAULT_GITHUB_REPOSITORY2 = "sachatrauwaen/OpenContent-Templates2";
 
         public DnnGlobalSettingsRepository(int portalId)
         {
@@ -199,6 +200,9 @@ namespace Satrabel.OpenContent.Components.Settings
 
         public void SetGithubRepository(string value)
         {
+            if (value == DEFAULT_GITHUB_REPOSITORY && IsBuilderV2())
+                value = DEFAULT_GITHUB_REPOSITORY2;
+
             if (string.IsNullOrEmpty(value))
                 PortalController.DeletePortalSetting(_portalId, SETTINGS_GITHUB_REPOSITORY);
             else
