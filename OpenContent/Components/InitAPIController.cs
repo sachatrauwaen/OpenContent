@@ -221,7 +221,7 @@ namespace Satrabel.OpenContent.Components
                         //ModuleContext.Settings["template"] = template;
                         //string fileName = ddlTemplate.SelectedValue;
 
-                        var template = GithubTemplateUtils.ImportFromGithub(ActiveModule.PortalID, input.template, input.template, input.templateName);
+                        var template = GithubTemplateUtils.ImportFromGithub(ActiveModule.PortalID, Path.GetFileNameWithoutExtension(input.template), input.template, input.templateName);
 
                         mc.UpdateModuleSetting(ActiveModule.ModuleID, "template", template);
                         ActiveModule.ModuleSettings["template"] = template;
