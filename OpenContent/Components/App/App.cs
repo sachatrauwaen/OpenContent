@@ -2,9 +2,9 @@
 
 namespace Satrabel.OpenContent.Components
 {
-    public class App
+    public static class App
     {
-        public static IAppConfig Config = new DnnConfig();
-        public static IAppServices Services = new DnnServices();
+        public static readonly IAppConfig Config = new DnnConfig();
+        public static readonly IAppServices Services = new DnnServices();
     }
 }
