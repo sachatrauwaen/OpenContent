@@ -1248,6 +1248,7 @@
     <Content Include="lama\README.md" />
     <Content Include="lama\src\App.vue" />
     <Content Include="lama\src\components\HelloWorld.vue" />
+    <Content Include="lama\vue.config.js" />
     <Content Include="lama\yarn-error.log" />
     <Content Include="lama\yarn.lock" />
     <Content Include="css\font-awesome\fonts\fontawesome-webfont.eot" />
@@ -1255,6 +1256,7 @@
     <Content Include="css\font-awesome\fonts\fontawesome-webfont.woff" />
     <Content Include="css\font-awesome\fonts\fontawesome-webfont.woff2" />
     <Content Include="css\font-awesome\fonts\FontAwesome.otf" />
+    <Content Include="lama\update-lamavue.cmd" />
     <None Include="packages.config" />
     <None Include="Scripts\_references.js" />
     <Content Include="js\select2\i18n\az.js" />
