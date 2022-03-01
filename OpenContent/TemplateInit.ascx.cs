@@ -103,17 +103,23 @@ namespace Satrabel.OpenContent
             if (rblDataSource.SelectedIndex == 1) // other module
             {
                 BindOtherModules(-1, -1);
-                var dsModule = (new ModuleController()).GetTabModule(int.Parse(ddlDataSource.SelectedValue));
-                var dsSettings = dsModule.OpenContentSettings();
-                BindTemplates(dsSettings.Template, dsSettings.Template.MainTemplateUri());
+                if (ddlDataSource.SelectedIndex >= 0)
+                {
+                    var dsModule = (new ModuleController()).GetTabModule(int.Parse(ddlDataSource.SelectedValue));
+                    var dsSettings = dsModule.OpenContentSettings();
+                    BindTemplates(dsSettings.Template, dsSettings.Template.MainTemplateUri());
+                }
             }
             if (rblDataSource.SelectedIndex == 2) // other portal
             {
                 BindOtherPortals(-1);
                 BindOtherModules(-1, -1);
-                var dsModule = (new ModuleController()).GetTabModule(int.Parse(ddlDataSource.SelectedValue));
-                var dsSettings = dsModule.OpenContentSettings();
-                BindTemplates(dsSettings.Template, dsSettings.Template.MainTemplateUri());
+                if (ddlDataSource.SelectedIndex >= 0)
+                {
+                    var dsModule = (new ModuleController()).GetTabModule(int.Parse(ddlDataSource.SelectedValue));
+                    var dsSettings = dsModule.OpenContentSettings();
+                    BindTemplates(dsSettings.Template, dsSettings.Template.MainTemplateUri());
+                }
             }
             else // this module
             {
@@ -354,8 +360,11 @@ namespace Satrabel.OpenContent
             }
             if (rblDataSource.SelectedIndex == 1 || rblDataSource.SelectedIndex == 2) // other module or other portal
             {
-                var dsModule = (new ModuleController()).GetTabModule(int.Parse(ddlDataSource.SelectedValue));
-                Renderinfo.IsOtherModule = (dsModule.TabID > 0 && dsModule.ModuleID > 0);
+                if (ddlDataSource.SelectedIndex >= 0)
+                {
+                    var dsModule = (new ModuleController()).GetTabModule(int.Parse(ddlDataSource.SelectedValue));
+                    Renderinfo.IsOtherModule = (dsModule.TabID > 0 && dsModule.ModuleID > 0);
+                }
             }
             BindButtons(Settings, Renderinfo);
             if (rblUseTemplate.SelectedIndex == 0) // existing template
@@ -601,9 +610,12 @@ namespace Satrabel.OpenContent
         protected void ddlPotals_SelectedIndexChanged(object sender, EventArgs e)
         {
             BindOtherModules(-1, -1);
-            var dsModule = (new ModuleController()).GetTabModule(int.Parse(ddlDataSource.SelectedValue));
-            var dsSettings = dsModule.OpenContentSettings();
-            BindTemplates(dsSettings.Template, dsSettings.Template.MainTemplateUri());
+            if (ddlDataSource.SelectedIndex >= 0)
+            {
+                var dsModule = (new ModuleController()).GetTabModule(int.Parse(ddlDataSource.SelectedValue));
+                var dsSettings = dsModule.OpenContentSettings();
+                BindTemplates(dsSettings.Template, dsSettings.Template.MainTemplateUri());
+            }
         }
     }
 }
