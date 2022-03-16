@@ -24,20 +24,30 @@ namespace Satrabel.OpenContent.Components
     {
 
         [AllowAnonymous]
-        public HttpResponseMessage GetAllItems(int tabId, int moduleId)
+        public HttpResponseMessage GetAllItems(string apiKey, int tabId, int moduleId)
         {
             try
             {
+                string _apikey = App.Services.CreateGlobalSettingsRepository(PortalSettings.PortalId).GetRestApiKey();
+                if (string.IsNullOrEmpty(apiKey))
+                {
+                    return Request.CreateResponse(HttpStatusCode.Unauthorized);
+                }
+                if (apiKey != _apikey)
+                {
+                    return Request.CreateResponse(HttpStatusCode.Unauthorized);
+                }
+
                 var viewModule = DnnUtils.GetDnnModule(tabId, moduleId);
 
                 var collection = "Items";
 
                 OpenContentSettings settings = viewModule.OpenContentSettings();
                 OpenContentModuleConfig module = OpenContentModuleConfig.Create(viewModule, PortalSettings);
-                if (!module.HasAllUsersViewPermissions())
-                {
-                    return Request.CreateResponse(HttpStatusCode.Unauthorized);
-                }
+                //if (!module.HasAllUsersViewPermissions())
+                //{
+                //    return Request.CreateResponse(HttpStatusCode.Unauthorized);
+                //}
                 JObject reqOptions = null;
 
                 if (module.IsListMode())
@@ -80,10 +90,20 @@ namespace Satrabel.OpenContent.Components
         }
 
         [AllowAnonymous]
-        public HttpResponseMessage GetItem(int tabId, int moduleId, string id)
+        public HttpResponseMessage GetItem(string apiKey, int tabId, int moduleId, string id)
         {
             try
             {
+                string _apikey = App.Services.CreateGlobalSettingsRepository(PortalSettings.PortalId).GetRestApiKey();
+                if (string.IsNullOrEmpty(apiKey))
+                {
+                    return Request.CreateResponse(HttpStatusCode.Unauthorized);
+                }
+                if (apiKey != _apikey)
+                {
+                    return Request.CreateResponse(HttpStatusCode.Unauthorized);
+                }
+
                 var collection = "Items";
 
                 var viewModule = DnnUtils.GetDnnModule(tabId, moduleId);
@@ -107,12 +127,12 @@ namespace Satrabel.OpenContent.Components
                     {
                         var mf = new ModelFactorySingle(dsItem, module, collection);
 
-                        string raison = "";
-                        if (!OpenContentUtils.IsViewAllowed(dsItem, module.UserRoles.FromDnnRoles(), indexConfig, out raison))
-                        {
-                            Exceptions.ProcessHttpException(new HttpException(404, "No detail view permissions for id=" + id + " (" + raison + ")"));
-                            //throw new UnauthorizedAccessException("No detail view permissions for id " + info.DetailItemId);
-                        }
+                        //string raison = "";
+                        //if (!OpenContentUtils.IsViewAllowed(dsItem, module.UserRoles.FromDnnRoles(), indexConfig, out raison))
+                        //{
+                        //    Exceptions.ProcessHttpException(new HttpException(404, "No detail view permissions for id=" + id + " (" + raison + ")"));
+                        //    //throw new UnauthorizedAccessException("No detail view permissions for id " + info.DetailItemId);
+                        //}
 
                         mf.Options = reqOptions;
                         var model = mf.GetModelAsJson(false);
@@ -144,10 +164,20 @@ namespace Satrabel.OpenContent.Components
 
 
         [AllowAnonymous]
-        public HttpResponseMessage Get(int tabId, int moduleId, string entity, int pageIndex, int pageSize, string filter = null, string sort = null)
+        public HttpResponseMessage Get(string apiKey, int tabId, int moduleId, string entity, int pageIndex, int pageSize, string filter = null, string sort = null)
         {
             try
             {
+                string _apikey = App.Services.CreateGlobalSettingsRepository(PortalSettings.PortalId).GetRestApiKey();
+                if (string.IsNullOrEmpty(apiKey))
+                {
+                    return Request.CreateResponse(HttpStatusCode.Unauthorized);
+                }
+                if (apiKey != _apikey)
+                {
+                    return Request.CreateResponse(HttpStatusCode.Unauthorized);
+                }
+
                 var viewModule = DnnUtils.GetDnnModule(tabId, moduleId);
 
                 var collection = entity;

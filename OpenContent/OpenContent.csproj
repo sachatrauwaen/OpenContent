@@ -431,6 +431,11 @@
     <Content Include="alpaca\js\fields\dnn\MLNumberField.js" />
     <Content Include="alpaca\templates\dnn-edit\control-imagex.html" />
     <Content Include="CloneModule.ascx" />
+    <Content Include="EditAddData.ascx" />
+    <Content Include="EditGlobalSettings.ascx" />
+    <Content Include="EditInit.ascx" />
+    <Content Include="EditQuery.ascx" />
+    <Content Include="EditSettings.ascx" />
     <Content Include="js\bootstrap\css\glyphicons.css" />
     <Content Include="js\ckeditor\adapters\jquery.js" />
     <Content Include="js\ckeditor\ckeditor.js" />
@@ -1257,6 +1262,10 @@
     <Content Include="css\font-awesome\fonts\fontawesome-webfont.woff2" />
     <Content Include="css\font-awesome\fonts\FontAwesome.otf" />
     <Content Include="lama\update-lamavue.cmd" />
+    <Content Include="formsettings-options.json" />
+    <Content Include="formsettings-schema.json" />
+    <Content Include="notifications-options.json" />
+    <Content Include="notifications-schema.json" />
     <None Include="packages.config" />
     <None Include="Scripts\_references.js" />
     <Content Include="js\select2\i18n\az.js" />

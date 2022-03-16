@@ -33,7 +33,13 @@ namespace Satrabel.OpenContent
             cmdSave.Click += cmdSave_Click;
             cmdUpgradeXml.Click += cmdUpgradeXml_Click;
             cmdPurgeUrlCache.Click += cmdPurgeUrlCache_Click;
+            cmdGenerateRestApiKey.Click += cmdGenerateRestApiKey_Click;
             //cmdCancel.Click += cmdCancel_Click;
+        }
+
+        private void cmdGenerateRestApiKey_Click(object sender, EventArgs e)
+        {
+            tbRestApiKey.Text = Guid.NewGuid().ToString(); 
         }
 
         private void cmdPurgeUrlCache_Click(object sender, EventArgs e)
@@ -81,6 +87,7 @@ namespace Satrabel.OpenContent
                 cbLoadGlyphicons.Checked = globalSettingsRepository.GetLoadGlyphicons();
                 cbLoadGlyphicons.Visible = cbLoadBootstrap.Visible;
                 tbGoogleApiKey.Text = globalSettingsRepository.GetGoogleApiKey();
+                tbRestApiKey.Text = globalSettingsRepository.GetRestApiKey();
                 cbLegacyHandlebars.Checked = globalSettingsRepository.GetLegacyHandlebars();
                 //cbCompositeCss.Checked = globalSettingsRepository.GetCompositeCss();
                 cbSaveXml.Checked = globalSettingsRepository.IsSaveXml();
@@ -109,6 +116,7 @@ namespace Satrabel.OpenContent
             globalSettingsRepository.SetLoadBootstrap(cbLoadBootstrap.Checked);
             globalSettingsRepository.SetLoadGlyphicons(cbLoadGlyphicons.Checked);
             globalSettingsRepository.SetGoogleApiKey(tbGoogleApiKey.Text);
+            globalSettingsRepository.SetRestApiKey(tbRestApiKey.Text);
             globalSettingsRepository.SetLegacyHandlebars(cbLegacyHandlebars.Checked);
             //globalSettingsRepository.SetCompositeCss(cbCompositeCss.Checked);
             globalSettingsRepository.SetSaveXml(cbSaveXml.Checked);

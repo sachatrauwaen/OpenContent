@@ -21,9 +21,9 @@ namespace Satrabel.OpenContent.Components.Dnn
             return blnHasModuleViewPermissions;
         }
 
-        public static bool HasEditPermissions(OpenContentModuleConfig ocModuleConfig, string editrole, int createdByUserId)
+        public static bool HasEditPermissions(OpenContentModuleConfig ocModuleConfig, string editrole, bool editroleAllItems, int createdByUserId)
         {
-            return ocModuleConfig.ViewModule.HasEditRightsOnModule() || HasEditRole(ocModuleConfig, editrole, createdByUserId);
+            return ocModuleConfig.ViewModule.HasEditRightsOnModule() || HasEditRole(ocModuleConfig, editrole, editroleAllItems, createdByUserId);
         }
 
         /// <summary>
@@ -46,12 +46,12 @@ namespace Satrabel.OpenContent.Components.Dnn
             }
             return blnHasModuleEditPermissions;
         }
-        
-        public static bool HasEditRole(OpenContentModuleConfig ocModuleConfig, string editrole, int createdByUserId)
+
+        public static bool HasEditRole(OpenContentModuleConfig ocModuleConfig, string editrole, bool editroleAllItems, int createdByUserId)
         {
             if (String.IsNullOrEmpty(editrole)) return false;
             if (editrole.ToLower() == "all") return true;
-            if (ocModuleConfig.IsInRole(editrole) && (createdByUserId == -1 || createdByUserId == ocModuleConfig.UserId)) return true;
+            if (ocModuleConfig.IsInRole(editrole) && (editroleAllItems || createdByUserId == -1 || createdByUserId == ocModuleConfig.UserId)) return true;
             return false;
         }
 

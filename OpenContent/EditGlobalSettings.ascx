@@ -27,6 +27,10 @@
         <dnn:Label ID="lGoogleApiKey" ControlName="tbGoogleApiKey" runat="server" />
         <asp:TextBox ID="tbGoogleApiKey" runat="server"></asp:TextBox>
     </div>
+     <div class="dnnFormItem">
+        <dnn:Label ID="lRestApiKey" ControlName="tbRestApiKey" runat="server" />
+        <asp:TextBox ID="tbRestApiKey" runat="server"></asp:TextBox>
+    </div>
     <div class="dnnFormItem">
         <dnn:Label ID="lEditLayout" ControlName="ddlEditLayout" runat="server" />
         <asp:DropDownList ID="ddlEditLayout" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlEditLayout_SelectedIndexChanged">
@@ -77,6 +81,9 @@
         </li>
         <li>
             <asp:LinkButton ID="cmdPurgeUrlCache" runat="server" class="dnnSecondaryAction" resourcekey="cmdPurgeUrlCache" />
+        </li>
+        <li>
+            <asp:LinkButton ID="cmdGenerateRestApiKey" runat="server" class="dnnSecondaryAction" resourcekey="cmdGenerateRestApiKey" />
         </li>
     </ul>
 </asp:Panel>

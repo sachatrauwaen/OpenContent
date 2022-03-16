@@ -168,4 +168,10 @@
   <data name="lBuilderV2.Text" xml:space="preserve">
     <value>Buider V2 (require Bootstrap 4)</value>
   </data>
+  <data name="lRestApiKey.Text" xml:space="preserve">
+    <value>External Rest Api Key</value>
+  </data>
+  <data name="cmdGenerateRestApiKey.Text" xml:space="preserve">
+    <value>Generate Rest ApiKey</value>
+  </data>
 </root>

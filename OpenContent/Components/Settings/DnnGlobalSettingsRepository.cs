@@ -17,6 +17,7 @@ namespace Satrabel.OpenContent.Components.Settings
         private const string SETTINGS_LOAD_BOOTSTRAP = "OpenContent_LoadBootstrap";
         private const bool SETTINGS_DEFAULT_LOAD_BOOTSTRAP = true;
         private const string SETTINGS_GOOGLE_API_KEY = "OpenContent_GoogleApiKey";
+        private const string SETTINGS_REST_API_KEY = "OpenContent_RestApiKey";
         private const string SETTINGS_LEGACY_HANDLEBARS = "OpenContent_LegacyHandlebars";
         private const bool SETTINGS_DEFAULT_LEGACY_HANDLEBARS = false;
         private const string SETTINGS_COMPOSITE_CSS = "OpenContent_CompositeCss";
@@ -223,6 +224,16 @@ namespace Satrabel.OpenContent.Components.Settings
         public void SetBuilderV2(bool saveBuilderV2)
         {
             PortalController.UpdatePortalSetting(_portalId, SETTINGS_BUILDER_V2, saveBuilderV2.ToString(), true);
+        }
+
+        public string GetRestApiKey()
+        {
+            if (_portalId == -1) return string.Empty;
+            return PortalController.GetPortalSetting(SETTINGS_REST_API_KEY, _portalId, string.Empty);
+        }
+        public void SetRestApiKey(string restApiKey)
+        {
+            PortalController.UpdatePortalSetting(_portalId, SETTINGS_REST_API_KEY, restApiKey, true);
         }
     }
 }
