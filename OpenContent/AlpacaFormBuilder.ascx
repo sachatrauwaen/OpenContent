@@ -69,10 +69,11 @@
             });
 
             if (!BuilderV2) {
+                $(".form-builder .fb-container").show();
                 $('body').css('overflow', 'hidden');
                 $(".form-builder .fb-left .fb-wrap").height('100%').css('overflow', 'hidden');
-                var formHeight = newHeight - 100 - 20;
-                $(".form-builder .fb-left .fb-wrap #form").height(formHeight - 62 + 'px').css('overflow-y', 'auto').css('overflow-x', 'hidden');
+                var formHeight = newHeight - 100 - 20 - 62;
+                $(".form-builder .fb-left .fb-wrap #form").height(formHeight + 'px').css('overflow-y', 'auto').css('overflow-x', 'hidden');
                 $(".form-builder .fb-left .fb-wrap #form > .alpaca-field-object").css('margin', '0');
                 $(".form-builder .fb-right .fb-wrap #form2").height(formHeight + 'px').css('overflow-x', 'hidden').css('overflow-y', 'auto').css('overflow-x', 'hidden');
             }
@@ -91,8 +92,9 @@
             Indexable = true;
         }
 
-        var BootstrapForm = <%= AlpacaContext.Bootstrap ? "true" : "false"%>;
-        var BootstrapHorizontal = <%= AlpacaContext.Horizontal ? "true" : "false"%>;
+        // global variables for formbuilmder.js
+        BootstrapForm = <%= AlpacaContext.Bootstrap ? "true" : "false"%>;
+        BootstrapHorizontal = <%= AlpacaContext.Horizontal ? "true" : "false"%>;
 
 
         if (BootstrapForm) {
@@ -123,7 +125,7 @@
                 $("#form").alpaca(
                     formbuilderConfig
                 );
-                $(".form-builder fb-container").show();
+                
             }
 
         }).fail(function (xhr, result, status) {

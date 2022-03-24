@@ -349,7 +349,7 @@ alpacaEngine.engine = function (config) {
                 if (config.query.type == "page") {
                     var postData = {
                         q: config.query.search || '*',
-                        l: "en-US"
+                        l: self.currentCulture
                     };
                     $.ajax({
                         
