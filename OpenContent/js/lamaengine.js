@@ -83,8 +83,6 @@ alpacaEngine.engine = function (config) {
 
         $("#" + self.deleteButton).dnnConfirm({
             callbackTrue: function () {
-
-
                 var postData = JSON.stringify({ id: self.itemId });
                 //var action = "Delete";
                 $.ajax({

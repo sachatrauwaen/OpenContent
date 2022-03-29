@@ -1430,9 +1430,13 @@
     <Content Include="lama\dist\js\chunk-vendors.js" />
     <Content Include="lama\package-lock.json" />
     <Content Include="lama\package.json" />
+    <Content Include="lama\public\favicon.ico" />
+    <Content Include="lama\public\index.html" />
     <Content Include="lama\README.md" />
     <Content Include="lama\src\App.vue" />
+    <Content Include="lama\src\assets\logo.png" />
     <Content Include="lama\src\components\HelloWorld.vue" />
+    <Content Include="lama\src\main.js" />
     <Content Include="lama\vue.config.js" />
     <Content Include="lama\yarn-error.log" />
     <Content Include="lama\yarn.lock" />
