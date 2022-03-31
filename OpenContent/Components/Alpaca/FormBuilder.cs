@@ -192,7 +192,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                         if (optType == "relation")
                         {
                             newProp.Type = "array";
-                            newField.Type = "relation";
+                            newField.Type = "select2"; // relation
                             newField.DataService = opts?.DataService;
                         }
                         fieldLst.Add(propKey);
