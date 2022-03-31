@@ -166,7 +166,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
 
                         fieldLst.Add(propKey);
                     }
-                    else if (optType == "text" || optType == "mltext" || optType == "checkbox" || optType == "select" || optType == "select2" || optType == "radio")
+                    else if (optType == "text" || optType == "mltext" || optType == "checkbox" || optType == "select" || optType == "select2" || optType == "radio" || optType == "relation")
                     {
                         var newProp = new SchemaConfig()
                         {
@@ -187,6 +187,12 @@ namespace Satrabel.OpenContent.Components.Alpaca
                         {
                             newProp.Type = "array";
                             newField.Type = "select2";
+                            newField.DataService = opts?.DataService;
+                        }
+                        if (optType == "relation")
+                        {
+                            newProp.Type = "array";
+                            newField.Type = "relation";
                             newField.DataService = opts?.DataService;
                         }
                         fieldLst.Add(propKey);
@@ -322,7 +328,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 if (prop.Value.Type == "array")
                 {
                     string optType = (opts == null) ? "array" : opts.Type ?? "array";
-                    if (prop.Value.Enum != null || optType == "select" || optType == "select2" || optType == "role2")
+                    if (prop.Value.Enum != null || optType == "select" || optType == "select2" || optType == "role2" || optType == "relation" )
                     {
                         var newField = new FieldConfig()
                         {
@@ -341,7 +347,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 else
                 {
                     string optType = (opts == null) ? "text" : opts.Type ?? "text";
-                    if (prop.Value.Enum != null || optType == "select" || optType == "select2" || optType == "role2")
+                    if (prop.Value.Enum != null || optType == "select" || optType == "select2" || optType == "role2" || optType == "relation")
                     {
                         var newField = new FieldConfig()
                         {
