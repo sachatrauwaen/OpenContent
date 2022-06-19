@@ -2,16 +2,18 @@
 // <généré automatiquement>
 //     Ce code a été généré par un outil.
 //
-//     Les modifications apportées à ce fichier peuvent provoquer un comportement incorrect et seront perdues si
+//     Les changements apportés à ce fichier peuvent provoquer un comportement incorrect et seront perdues si
 //     le code est régénéré.
 // </généré automatiquement>
 //------------------------------------------------------------------------------
 
-namespace Satrabel.OpenContent {
-    
-    
-    public partial class EditGlobalSettings {
-        
+namespace Satrabel.OpenContent
+{
+
+
+    public partial class EditGlobalSettings
+    {
+
         /// <summary>
         /// Contrôle ScopeWrapper.
         /// </summary>
@@ -20,7 +22,7 @@ namespace Satrabel.OpenContent {
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Panel ScopeWrapper;
-        
+
         /// <summary>
         /// Contrôle lRoles.
         /// </summary>
@@ -29,7 +31,7 @@ namespace Satrabel.OpenContent {
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
         protected global::System.Web.UI.UserControl lRoles;
-        
+
         /// <summary>
         /// Contrôle ddlRoles.
         /// </summary>
@@ -38,7 +40,7 @@ namespace Satrabel.OpenContent {
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList ddlRoles;
-        
+
         /// <summary>
         /// Contrôle lMLContent.
         /// </summary>
@@ -47,7 +49,7 @@ namespace Satrabel.OpenContent {
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
         protected global::System.Web.UI.UserControl lMLContent;
-        
+
         /// <summary>
         /// Contrôle cbMLContent.
         /// </summary>
@@ -56,7 +58,7 @@ namespace Satrabel.OpenContent {
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
         protected global::System.Web.UI.WebControls.CheckBox cbMLContent;
-        
+
         /// <summary>
         /// Contrôle lMaxVersions.
         /// </summary>
@@ -65,7 +67,7 @@ namespace Satrabel.OpenContent {
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
         protected global::System.Web.UI.UserControl lMaxVersions;
-        
+
         /// <summary>
         /// Contrôle ddlMaxVersions.
         /// </summary>
@@ -74,7 +76,7 @@ namespace Satrabel.OpenContent {
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList ddlMaxVersions;
-        
+
         /// <summary>
         /// Contrôle lLogging.
         /// </summary>
@@ -83,7 +85,7 @@ namespace Satrabel.OpenContent {
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
         protected global::System.Web.UI.UserControl lLogging;
-        
+
         /// <summary>
         /// Contrôle ddlLogging.
         /// </summary>
@@ -92,7 +94,7 @@ namespace Satrabel.OpenContent {
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList ddlLogging;
-        
+
         /// <summary>
         /// Contrôle lGoogleApiKey.
         /// </summary>
@@ -101,7 +103,7 @@ namespace Satrabel.OpenContent {
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
         protected global::System.Web.UI.UserControl lGoogleApiKey;
-        
+
         /// <summary>
         /// Contrôle tbGoogleApiKey.
         /// </summary>
@@ -110,7 +112,25 @@ namespace Satrabel.OpenContent {
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox tbGoogleApiKey;
-        
+
+        /// <summary>
+        /// Contrôle lRestApiKey.
+        /// </summary>
+        /// <remarks>
+        /// Champ généré automatiquement.
+        /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.UserControl lRestApiKey;
+
+        /// <summary>
+        /// Contrôle tbRestApiKey.
+        /// </summary>
+        /// <remarks>
+        /// Champ généré automatiquement.
+        /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox tbRestApiKey;
+
         /// <summary>
         /// Contrôle lEditLayout.
         /// </summary>
@@ -119,7 +139,7 @@ namespace Satrabel.OpenContent {
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
         protected global::System.Web.UI.UserControl lEditLayout;
-        
+
         /// <summary>
         /// Contrôle ddlEditLayout.
         /// </summary>
@@ -128,7 +148,7 @@ namespace Satrabel.OpenContent {
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList ddlEditLayout;
-        
+
         /// <summary>
         /// Contrôle lLoadBootstrap.
         /// </summary>
@@ -137,7 +157,7 @@ namespace Satrabel.OpenContent {
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
         protected global::System.Web.UI.UserControl lLoadBootstrap;
-        
+
         /// <summary>
         /// Contrôle cbLoadBootstrap.
         /// </summary>
@@ -146,7 +166,7 @@ namespace Satrabel.OpenContent {
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
         protected global::System.Web.UI.WebControls.CheckBox cbLoadBootstrap;
-        
+
         /// <summary>
         /// Contrôle lLoadGlyphicons.
         /// </summary>
@@ -155,7 +175,7 @@ namespace Satrabel.OpenContent {
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
         protected global::System.Web.UI.UserControl lLoadGlyphicons;
-        
+
         /// <summary>
         /// Contrôle cbLoadGlyphicons.
         /// </summary>
@@ -164,7 +184,7 @@ namespace Satrabel.OpenContent {
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
         protected global::System.Web.UI.WebControls.CheckBox cbLoadGlyphicons;
-        
+
         /// <summary>
         /// Contrôle lLegacyHandlebars.
         /// </summary>
@@ -173,7 +193,7 @@ namespace Satrabel.OpenContent {
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
         protected global::System.Web.UI.UserControl lLegacyHandlebars;
-        
+
         /// <summary>
         /// Contrôle cbLegacyHandlebars.
         /// </summary>
@@ -182,7 +202,7 @@ namespace Satrabel.OpenContent {
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
         protected global::System.Web.UI.WebControls.CheckBox cbLegacyHandlebars;
-        
+
         /// <summary>
         /// Contrôle lSaveXml.
         /// </summary>
@@ -191,7 +211,7 @@ namespace Satrabel.OpenContent {
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
         protected global::System.Web.UI.UserControl lSaveXml;
-        
+
         /// <summary>
         /// Contrôle cbSaveXml.
         /// </summary>
@@ -200,7 +220,7 @@ namespace Satrabel.OpenContent {
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
         protected global::System.Web.UI.WebControls.CheckBox cbSaveXml;
-        
+
         /// <summary>
         /// Contrôle lBuilderV2.
         /// </summary>
@@ -209,7 +229,7 @@ namespace Satrabel.OpenContent {
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
         protected global::System.Web.UI.UserControl lBuilderV2;
-        
+
         /// <summary>
         /// Contrôle cbBuilderV2.
         /// </summary>
@@ -218,7 +238,7 @@ namespace Satrabel.OpenContent {
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
         protected global::System.Web.UI.WebControls.CheckBox cbBuilderV2;
-        
+
         /// <summary>
         /// Contrôle lGithubRepository.
         /// </summary>
@@ -227,7 +247,7 @@ namespace Satrabel.OpenContent {
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
         protected global::System.Web.UI.UserControl lGithubRepository;
-        
+
         /// <summary>
         /// Contrôle tbGithubRepository.
         /// </summary>
@@ -236,7 +256,7 @@ namespace Satrabel.OpenContent {
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox tbGithubRepository;
-        
+
         /// <summary>
         /// Contrôle cmdSave.
         /// </summary>
@@ -245,7 +265,7 @@ namespace Satrabel.OpenContent {
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
         protected global::System.Web.UI.WebControls.LinkButton cmdSave;
-        
+
         /// <summary>
         /// Contrôle hlCancel.
         /// </summary>
@@ -254,7 +274,7 @@ namespace Satrabel.OpenContent {
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
         protected global::System.Web.UI.WebControls.HyperLink hlCancel;
-        
+
         /// <summary>
         /// Contrôle cmdUpgradeXml.
         /// </summary>
@@ -263,7 +283,7 @@ namespace Satrabel.OpenContent {
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
         protected global::System.Web.UI.WebControls.LinkButton cmdUpgradeXml;
-        
+
         /// <summary>
         /// Contrôle cmdPurgeUrlCache.
         /// </summary>
@@ -272,5 +292,14 @@ namespace Satrabel.OpenContent {
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
         protected global::System.Web.UI.WebControls.LinkButton cmdPurgeUrlCache;
+
+        /// <summary>
+        /// Contrôle cmdGenerateRestApiKey.
+        /// </summary>
+        /// <remarks>
+        /// Champ généré automatiquement.
+        /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton cmdGenerateRestApiKey;
     }
 }

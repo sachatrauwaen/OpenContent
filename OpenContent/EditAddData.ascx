@@ -2,7 +2,9 @@
 <%@ Import Namespace="Newtonsoft.Json" %>
 
 <asp:Panel ID="ScopeWrapper" runat="server">
-    <div id="field1" class="alpaca"></div>
+    <div class="container-fluid">
+        <div id="field1" class="alpaca"></div>
+    </div>
     <ul class="dnnActions dnnClear" style="display: block; padding-left: 35%">
         <li>
             <asp:HyperLink ID="cmdSave" runat="server" class="dnnPrimaryAction" resourcekey="cmdSave" />
@@ -16,8 +18,8 @@
 <script type="text/javascript">
     $(document).ready(function () {
         var config = <%=JsonConvert.SerializeObject(AlpacaContext)%>;
-        config.data = { 
-            "key": "<%=Key%>", 
+        config.data = {
+            "key": "<%=Key%>",
         };
         config.editAction = "EditData";
         config.updateAction = "UpdateData";

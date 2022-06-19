@@ -83,8 +83,6 @@ alpacaEngine.engine = function (config) {
 
         $("#" + self.deleteButton).dnnConfirm({
             callbackTrue: function () {
-
-
                 var postData = JSON.stringify({ id: self.itemId });
                 //var action = "Delete";
                 $.ajax({
@@ -349,7 +347,7 @@ alpacaEngine.engine = function (config) {
                 if (config.query.type == "page") {
                     var postData = {
                         q: config.query.search || '*',
-                        l: "en-US"
+                        l: self.currentCulture
                     };
                     $.ajax({
                         

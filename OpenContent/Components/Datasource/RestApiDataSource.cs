@@ -61,22 +61,9 @@ namespace Satrabel.OpenContent.Components.Datasource
             else
             {
                 string query = context.Config["listUrl"].ToString();
-                foreach (var f in selectQuery.Filter.FilterRules)
+                if (selectQuery.Filter != null && selectQuery.Filter.FilterRules != null)
                 {
-                    if (f.Value != null)
-                    {
-                        if (!query.Contains('?'))
-                            query += "?";
-                        else
-                            query += "&";
-
-                        query += f.Field + "=" + f.Value.AsString;
-                    }
-                }
-
-                foreach (var g in selectQuery.Filter.FilterGroups)
-                {
-                    foreach (var f in g.FilterRules)
+                    foreach (var f in selectQuery.Filter.FilterRules)
                     {
                         if (f.Value != null)
                         {
@@ -89,34 +76,53 @@ namespace Satrabel.OpenContent.Components.Datasource
                         }
                     }
                 }
-
-                foreach (var f in selectQuery.Query.FilterRules)
+                if (selectQuery.Filter != null && selectQuery.Filter.FilterGroups != null)
                 {
-                    if (f.Value != null)
+                    foreach (var g in selectQuery.Filter.FilterGroups)
                     {
-                        if (!query.Contains('?'))
-                            query += "?";
-                        else
-                            query += "&";
+                        foreach (var f in g.FilterRules)
+                        {
+                            if (f.Value != null)
+                            {
+                                if (!query.Contains('?'))
+                                    query += "?";
+                                else
+                                    query += "&";
 
-                        query += f.Field + "=" + f.Value.AsString;
+                                query += f.Field + "=" + f.Value.AsString;
+                            }
+                        }
                     }
-                    else if (f.MultiValue != null)
-
+                }
+                if (selectQuery.Query != null && selectQuery.Query.FilterRules != null)
+                {
+                    foreach (var f in selectQuery.Query.FilterRules)
                     {
-                        foreach (var val in f.MultiValue)
+                        if (f.Value != null)
                         {
                             if (!query.Contains('?'))
                                 query += "?";
                             else
                                 query += "&";
 
-                            query += f.Field + "=" + val.AsString;
+                            query += f.Field + "=" + f.Value.AsString;
                         }
-                       
+                        else if (f.MultiValue != null)
+
+                        {
+                            foreach (var val in f.MultiValue)
+                            {
+                                if (!query.Contains('?'))
+                                    query += "?";
+                                else
+                                    query += "&";
+
+                                query += f.Field + "=" + val.AsString;
+                            }
+
+                        }
                     }
                 }
-
                 if (!query.Contains('?'))
                     query += "?";
                 else

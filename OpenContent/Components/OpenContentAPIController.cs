@@ -136,8 +136,9 @@ namespace Satrabel.OpenContent.Components
                 context["itemKey"] = itemKey;
                 json["context"] = context;
 
+                var manifest = module.Settings.Manifest;
                 //todo: can't we do some of these checks at the beginning of this method to fail faster?
-                if (!DnnPermissionsUtils.HasEditPermissions(module, module.Settings.Manifest.GetEditRole(), createdByUserid))
+                if (!DnnPermissionsUtils.HasEditPermissions(module, manifest.GetEditRole(), manifest.GetEditRoleAllItems(), createdByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
@@ -244,9 +245,11 @@ namespace Satrabel.OpenContent.Components
                     }
                 }
 
-                string editRole = module.Settings.Template.Manifest.GetEditRole();
+                
+
+                var manifest = module.Settings.Template.Manifest;
                 //todo: can't we do some of these checks at the beginning of this method to fail faster?
-                if (!DnnPermissionsUtils.HasEditPermissions(module, editRole, createdByUserid))
+                if (!DnnPermissionsUtils.HasEditPermissions(module, manifest.GetEditRole(), manifest.GetEditRoleAllItems(), createdByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
@@ -585,7 +588,7 @@ namespace Satrabel.OpenContent.Components
             try
             {
                 var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
-                string editRole = module.Settings.Template.Manifest.GetEditRole();
+                var manifest = module.Settings.Template.Manifest;
                 int createdByUserid = -1;
 
                 IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
@@ -611,7 +614,7 @@ namespace Satrabel.OpenContent.Components
                 }
 
                 //todo: can't we do some of these checks at the beginning of this method to fail faster?
-                if (!DnnPermissionsUtils.HasEditPermissions(module, editRole, createdByUserid))
+                if (!DnnPermissionsUtils.HasEditPermissions(module, manifest.GetEditRole(), manifest.GetEditRoleAllItems(), createdByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
@@ -760,7 +763,7 @@ namespace Satrabel.OpenContent.Components
             try
             {
                 var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
-                string editRole = module.Settings.Template.Manifest.GetEditRole();
+                var manifest = module.Settings.Template.Manifest;
                 int createdByUserid = -1;
 
                 IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
@@ -786,7 +789,7 @@ namespace Satrabel.OpenContent.Components
                 }
 
                 //todo: can't we do some of these checks at the beginning of this method to fail faster?
-                if (!DnnPermissionsUtils.HasEditPermissions(module, editRole, createdByUserid))
+                if (!DnnPermissionsUtils.HasEditPermissions(module, manifest.GetEditRole(), manifest.GetEditRoleAllItems(), createdByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
@@ -823,7 +826,7 @@ namespace Satrabel.OpenContent.Components
             try
             {
                 var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
-                string editRole = module.Settings.Template.Manifest.GetEditRole();
+                var manifest = module.Settings.Template.Manifest;
                 int createdByUserid = -1;
 
                 IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
@@ -849,7 +852,7 @@ namespace Satrabel.OpenContent.Components
                 }
 
                 //todo: can't we do some of these checks at the beginning of this method to fail faster?
-                if (!DnnPermissionsUtils.HasEditPermissions(module, editRole, createdByUserid))
+                if (!DnnPermissionsUtils.HasEditPermissions(module, manifest.GetEditRole(),manifest.GetEditRoleAllItems(), createdByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }

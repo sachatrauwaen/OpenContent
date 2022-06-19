@@ -43,6 +43,7 @@ namespace Satrabel.OpenContent.Components.Dnn
 
         bool IsBuilderV2();
         void SetBuilderV2(bool builderV2);
-
+        string GetRestApiKey();
+        void SetRestApiKey(string text);
     }
 }

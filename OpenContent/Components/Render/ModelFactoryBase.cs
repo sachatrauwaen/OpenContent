@@ -194,9 +194,9 @@ namespace Satrabel.OpenContent.Components.Render
             }
         }
 
-        
 
-        protected void ExtendModel(JObject model, bool onlyData, bool onlyMainData, string id=null)
+
+        protected void ExtendModel(JObject model, bool onlyData, bool onlyMainData, string id = null)
         {
             if (_module.CanvasUnavailable) onlyData = true;
 
@@ -239,7 +239,7 @@ namespace Satrabel.OpenContent.Components.Render
                             foreach (var dataItem in dataItems.Items)
                             {
                                 var json = dataItem.Data;
-                                if (json != null )
+                                if (json != null)
                                 {
                                     JsonUtils.SimplifyJson(json, GetCurrentCultureCode());
                                 }
@@ -296,7 +296,7 @@ namespace Satrabel.OpenContent.Components.Render
                 context["ModuleId"] = _module.ViewModule.ModuleId;
                 context["GoogleApiKey"] = App.Services.CreateGlobalSettingsRepository(_portalId).GetGoogleApiKey();
                 context["ModuleTitle"] = _module.ViewModule.ModuleTitle;
-                
+
                 context["IsEditMode"] = IsEditMode;
                 context["PortalId"] = _portalId;
                 context["MainUrl"] = _module.GetUrl(_detailTabId, GetCurrentCultureCode());
@@ -335,7 +335,7 @@ namespace Satrabel.OpenContent.Components.Render
                         additionalDataJson = json;
 
                         //optionally add editurl for AdditionalData. Only for Single items (not arrays)
-                        if (!onlyData && json is JObject && IsEditMode)                        
+                        if (!onlyData && json is JObject && IsEditMode)
                         {
                             var context = new JObject();
                             context["EditUrl"] = GetAdditionalDataEditUrl(item.Key);
@@ -396,14 +396,14 @@ namespace Satrabel.OpenContent.Components.Render
         protected bool IsEditAllowed(int createdByUser)
         {
             string editRole = _manifest.GetEditRole();
-            return (IsEditMode || DnnPermissionsUtils.HasEditRole(_module, editRole, createdByUser)) // edit Role can edit without being in edit mode
-                    && DnnPermissionsUtils.HasEditPermissions(_module, editRole, createdByUser);
+            return (IsEditMode || DnnPermissionsUtils.HasEditRole(_module, editRole, _manifest.GetEditRoleAllItems(), createdByUser)) // edit Role can edit without being in edit mode
+                    && DnnPermissionsUtils.HasEditPermissions(_module, editRole, _manifest.GetEditRoleAllItems(), createdByUser);
         }
 
         protected bool HasEditPermissions(int createdByUser)
         {
             string editRole = _manifest.GetEditRole();
-            return DnnPermissionsUtils.HasEditPermissions(_module, editRole, createdByUser);
+            return DnnPermissionsUtils.HasEditPermissions(_module, editRole, _manifest.GetEditRoleAllItems(), createdByUser);
         }
 
         protected string GetCurrentCultureCode()
@@ -450,9 +450,9 @@ namespace Satrabel.OpenContent.Components.Render
                     opt["type"].ToString() == "select2" &&
                     opt["dataService"]?["action"] != null &&
                     opt["dataService"]?["action"].ToString() == "Lookup";
- 
-                    //opt["dataService"]?["data"]?["moduleId"] != null &&
-                    //opt["dataService"]?["data"]?["tabId"] != null;
+
+                //opt["dataService"]?["data"]?["moduleId"] != null &&
+                //opt["dataService"]?["data"]?["tabId"] != null;
 
                 string dataMember = "";
                 string valueField = "Id";
@@ -511,10 +511,10 @@ namespace Satrabel.OpenContent.Components.Render
                     {
                         string val = childProperty.Value.ToString();
                         try
-                        {                            
+                        {
                             model[childProperty.Name] = GenerateObject(val, int.Parse(tabId), int.Parse(moduleId), onlyData);
                         }
-                        catch (System.Exception )
+                        catch (System.Exception)
                         {
                             Utils.DebuggerBreak();
                         }
@@ -525,7 +525,7 @@ namespace Satrabel.OpenContent.Components.Render
 
         private JToken GenerateObject(string id, int tabId, int moduleId, bool onlyData)
         {
-            var module = moduleId> 0 ? OpenContentModuleConfig.Create(moduleId, tabId, PortalSettings.Current) : _module;
+            var module = moduleId > 0 ? OpenContentModuleConfig.Create(moduleId, tabId, PortalSettings.Current) : _module;
             var ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
             var dsContext = OpenContentUtils.CreateDataContext(module);
             IDataItem dataItem = ds.Get(dsContext, id);
@@ -567,7 +567,7 @@ namespace Satrabel.OpenContent.Components.Render
                 url = hbEngine.Execute(manifest.DetailUrl, dynForHBS);
                 url = HttpUtility.HtmlDecode(url);
             }
-            return _module.GetUrl(detailTabId, cultureCode, url.CleanupUrl(), "id=" + item.Id);            
+            return _module.GetUrl(detailTabId, cultureCode, url.CleanupUrl(), "id=" + item.Id);
         }
     }
 }
