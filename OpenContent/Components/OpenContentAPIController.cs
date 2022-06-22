@@ -966,6 +966,7 @@ namespace Satrabel.OpenContent.Components
         [HttpPost]
         public HttpResponseMessage UpdateBuilder(JObject json)
         {
+            bool builderV2 = App.Services.CreateGlobalSettingsRepository(ActiveModule.PortalID).IsBuilderV2();
             try
             {
                 OpenContentSettings settings = ActiveModule.OpenContentSettings();
@@ -979,32 +980,36 @@ namespace Satrabel.OpenContent.Components
                     var view = json["view"].ToString();
                     var index = json["index"].ToString();
                     var data = json["data"].ToString();
-                    var datafile = new FileUri(settings.TemplateDir, $"{prefix}builder.json");
+                    var builderfile = new FileUri(settings.TemplateDir, $"{prefix}builder.json");
                     var schemafile = new FileUri(settings.TemplateDir, $"{prefix}schema.json");
                     var optionsfile = new FileUri(settings.TemplateDir, $"{prefix}options.json");
                     var viewfile = new FileUri(settings.TemplateDir, $"{prefix}view.json");
                     var indexfile = new FileUri(settings.TemplateDir, $"{prefix}index.json");
                     try
                     {
-                        File.WriteAllText(datafile.PhysicalFilePath, data);
+                        
                         File.WriteAllText(schemafile.PhysicalFilePath, schema);
                         File.WriteAllText(optionsfile.PhysicalFilePath, options);
-                        File.WriteAllText(viewfile.PhysicalFilePath, view);
-                        if (string.IsNullOrEmpty(index))
+                        if (!builderV2)
                         {
-                            if (indexfile.FileExists)
+                            File.WriteAllText(builderfile.PhysicalFilePath, data);
+                            File.WriteAllText(viewfile.PhysicalFilePath, view);
+                            if (string.IsNullOrEmpty(index))
                             {
-                                File.Delete(indexfile.PhysicalFilePath);
+                                if (indexfile.FileExists)
+                                {
+                                    File.Delete(indexfile.PhysicalFilePath);
+                                }
                             }
-                        }
-                        else
-                        {
-                            File.WriteAllText(indexfile.PhysicalFilePath, index);
+                            else
+                            {
+                                File.WriteAllText(indexfile.PhysicalFilePath, index);
+                            }
                         }
                     }
                     catch (Exception ex)
                     {
-                        string mess = $"Error while saving file [{datafile.FilePath}]";
+                        string mess = $"Error while saving file [{builderfile.FilePath}]";
                         App.Services.Logger.Error(mess, ex);
                         throw new Exception(mess, ex);
                     }

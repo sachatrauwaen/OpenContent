@@ -78,6 +78,7 @@ namespace Satrabel.OpenContent.Components.Manifest
 
         [JsonProperty(PropertyName = "deleteFiles")]
         public bool DeleteFiles { get; set; }
+
         [JsonProperty(PropertyName = "usePublishTime")]
         public bool UsePublishTime { get; set; }
 

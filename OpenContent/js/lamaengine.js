@@ -418,9 +418,11 @@ alpacaEngine.engine = function (config) {
                     });
                 } else if (config.query.type == "folders") {
                     successCallback([{ id: "1", name: "Files", url: "/Files" }]);
-                } else if (config.query.type == "files") {
+                } else if (config.query.type == "images") {
                     //var files = [{ id: "1", url: "https://agontuk.github.io/assets/images/berserk.jpg", name: "berserk.jpg", folderId: "1" }];
+
                     var files = [];
+
                     //var completionFunction = function () {
                     //    self.schema.enum = [];
                     //    self.options.optionLabels = [];
@@ -436,10 +438,11 @@ alpacaEngine.engine = function (config) {
                     var postData = {
                         q: "*",
                         folder: ""/*self.options.uploadfolder*/,
+                        secure: config.query.secure,
                         itemKey: ""/*self.itemKey*/
                     };
                     $.ajax({
-                        url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "ImagesLookupExt",
+                        url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "ImagesLookupSecure",
                         beforeSend: self.sf.setModuleHeaders,
                         type: "get",
                         dataType: "json",
@@ -477,6 +480,79 @@ alpacaEngine.engine = function (config) {
                         }
                     });
 
+                    //successCallback(files.filter((f) => {
+                    //    if (config.query.folder)
+                    //        return f.folderId == config.query.folder;
+                    //    else
+                    //        return false;
+                    //}).map(f => {
+                    //    return {
+                    //        id: f.id,
+                    //        filename: f.name,
+                    //        url: f.url
+                    //    };
+                    //}));
+                } else if (config.query.type == "files") {
+                    //var files = [{ id: "1", url: "https://agontuk.github.io/assets/images/berserk.jpg", name: "berserk.jpg", folderId: "1" }];
+
+                    var files = [];
+
+                    //var completionFunction = function () {
+                    //    self.schema.enum = [];
+                    //    self.options.optionLabels = [];
+                    //    for (var i = 0; i < self.selectOptions.length; i++) {
+                    //        self.schema.enum.push(self.selectOptions[i].value);
+                    //        self.options.optionLabels.push(self.selectOptions[i].text);
+                    //    }
+                    //    // push back to model
+                    //    model.selectOptions = self.selectOptions;
+                    //    callback();
+                    //};
+
+                    var postData = {
+                        q: "*",
+                        folder: ""/*self.options.uploadfolder*/,
+                        secure: config.query.secure,
+                        itemKey: ""/*self.itemKey*/
+                    };
+                    $.ajax({
+                        url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "FilesLookupSecure",
+                        beforeSend: self.sf.setModuleHeaders,
+                        type: "get",
+                        dataType: "json",
+                        //contentType: "application/json; charset=utf-8",
+                        data: postData,
+                        success: function (jsonDocument) {
+                            var ds = jsonDocument;
+                            if (ds) {
+                                $.each(ds, function (index, value) {
+                                    files.push({
+                                        id: value.id,
+                                        url: value.url,
+                                        filename: value.filename,
+                                        folderId: "1",
+                                        thumbUrl: value.thumbUrl,
+                                        //"text": value.text,
+                                        //"width": value.width,
+                                        //"height": value.height,
+                                    });
+                                });
+                                //completionFunction();
+                                successCallback(files);
+                            }
+                        },
+                        "error": function (jqXHR, textStatus, errorThrown) {
+                            errorCallback({
+                                "message": "Unable to load data from uri : ",
+                                "stage": "DATASOURCE_LOADING_ERROR",
+                                "details": {
+                                    "jqXHR": jqXHR,
+                                    "textStatus": textStatus,
+                                    "errorThrown": errorThrown
+                                }
+                            });
+                        }
+                    });
 
                     //successCallback(files.filter((f) => {
                     //    if (config.query.folder)
@@ -507,6 +583,9 @@ alpacaEngine.engine = function (config) {
                 //formData.append('height', config.height);
                 if (typeof config.overwrite !== 'undefined')
                     formData.append('overwrite', config.overwrite);
+                if (typeof config.secure !== 'undefined')
+                    formData.append('secure', config.secure);
+
                 if (config.hidden)
                     formData.append('hidden', true);
 

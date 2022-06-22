@@ -141,6 +141,14 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [HttpGet]
+        public HttpResponseMessage ImagesLookupExt(string q, string folder, string itemKey = "")
+        {
+            return ImagesLookupSecure(q, folder, false, itemKey);
+        }
+
         /// <summary>
         /// Imageses the lookup.
         /// </summary>
@@ -151,13 +159,13 @@ namespace Satrabel.OpenContent.Components
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
         [HttpGet]
-        public HttpResponseMessage ImagesLookupExt(string q, string folder, string itemKey = "")
+        public HttpResponseMessage ImagesLookupSecure(string q, string folder, bool secure, string itemKey = "")
         {
             try
             {
                 var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
                 var folderManager = FolderManager.Instance;
-                string imageFolder = "OpenContent/Files/" + module.DataModule.ModuleId;
+                string imageFolder = "OpenContent/"+ (secure ? "Secure":"")+ "Files/" + module.DataModule.ModuleId;
                 if (module.Settings.Manifest.DeleteFiles)
                 {
                     if (!string.IsNullOrEmpty(itemKey))
@@ -172,7 +180,8 @@ namespace Satrabel.OpenContent.Components
                 var dnnFolder = folderManager.GetFolder(PortalSettings.PortalId, imageFolder);
                 if (dnnFolder == null)
                 {
-                    dnnFolder = folderManager.AddFolder(PortalSettings.PortalId, imageFolder);
+                    //dnnFolder = folderManager.AddFolder(PortalSettings.PortalId, imageFolder);
+                    return Request.CreateResponse(HttpStatusCode.OK, new string[0]);
                 }
 
                 var files = folderManager.GetFiles(dnnFolder, true);
@@ -245,6 +254,60 @@ namespace Satrabel.OpenContent.Components
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
         [HttpGet]
+        public HttpResponseMessage FilesLookupSecure(string q, string folder, bool secure, string filter = "")
+        {
+            try
+            {
+                var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
+                var folderManager = FolderManager.Instance;
+                string filesFolder = "OpenContent/" + (secure ? "Secure" : "") + "Files/" + module.DataModule.ModuleId;
+                //if (module.Settings.Manifest.DeleteFiles)
+                //{
+                //    if (!string.IsNullOrEmpty(itemKey))
+                //    {
+                //        filesFolder += "/" + itemKey;
+                //    }
+                //}
+                if (!string.IsNullOrEmpty(folder))
+                {
+                    filesFolder = folder;
+                }
+
+
+                var fileManager = FileManager.Instance;
+                var portalFolder = folderManager.GetFolder(PortalSettings.PortalId, filesFolder);
+                if (portalFolder == null)
+                {
+                    return Request.CreateResponse(HttpStatusCode.OK, new string[0]);
+                }
+                var files = folderManager.GetFiles(portalFolder, true);
+                if (q != "*" && !string.IsNullOrEmpty(q))
+                {
+                    files = files.Where(f => f.FileName.ToLower().Contains(q.ToLower()));
+                }
+                if (!string.IsNullOrEmpty(filter))
+                {
+                    var rx = new Regex(filter, RegexOptions.IgnoreCase);
+                    files = files.Where(f => rx.IsMatch(f.FileName));
+                }
+                int folderLength = folder?.Length ?? 0;
+                var res = files.Select(f => new { 
+                    value = f.FileId.ToString(), 
+                    url = fileManager.GetUrl(f),
+                    filename = f.FileName,
+                    text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName /*+ (string.IsNullOrEmpty(f.Folder) ? "" : " (" + f.Folder.Trim('/') + ")")*/ });
+                return Request.CreateResponse(HttpStatusCode.OK, res);
+            }
+            catch (Exception exc)
+            {
+                Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
+
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [HttpGet]
         public HttpResponseMessage FilesLookup(string q, string d, string filter, int pageIndex, int pageSize)
         {
             try
@@ -283,6 +346,8 @@ namespace Satrabel.OpenContent.Components
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
+
+
 
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]

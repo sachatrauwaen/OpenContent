@@ -39,20 +39,31 @@ using Satrabel.OpenContent.Components.Dnn;
 using System.Net;
 using System.Drawing;
 using System.Drawing.Imaging;
+using Satrabel.OpenContent.Components.Manifest;
+using DotNetNuke.Security;
 
 namespace Satrabel.OpenContent.Components
 {
+    [SupportedModules("OpenContent")]
     public class FileUploadController : DnnApiController
     {
         private static readonly ILogAdapter Logger = App.Services.CreateLogger(typeof(FileUploadController));
         private readonly IFileManager _fileManager = FileManager.Instance;
         private readonly IFolderManager _folderManager = FolderManager.Instance;
 
-        [DnnAuthorize]
+        //[DnnAuthorize]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         [HttpPost]
         [IFrameSupportedValidateAntiForgeryToken]
         public HttpResponseMessage UploadFile()
         {
+            var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
+            var manifest = module.Settings.Template.Manifest;
+            if (!DnnPermissionsUtils.HasEditPermissions(module, manifest.GetEditRole(), manifest.GetEditRoleAllItems(), -1))
+            {
+                return Request.CreateResponse(HttpStatusCode.Unauthorized);
+            }
+
             var statuses = new List<FilesStatus>();
             try
             {
@@ -85,11 +96,19 @@ namespace Satrabel.OpenContent.Components
             return IframeSafeJson(statuses);
         }
         */
-        [DnnAuthorize]
+        //[DnnAuthorize]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         [HttpPost]
         [IFrameSupportedValidateAntiForgeryToken]
         public HttpResponseMessage UploadEasyImage()
         {
+            var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
+            var manifest = module.Settings.Template.Manifest;
+            if (!DnnPermissionsUtils.HasEditPermissions(module, manifest.GetEditRole(), manifest.GetEditRoleAllItems(), -1))
+            {
+                return Request.CreateResponse(HttpStatusCode.Unauthorized);
+            }
+
             var statuses = new List<FilesStatus>();
             try
             {
@@ -142,6 +161,9 @@ namespace Satrabel.OpenContent.Components
         // Upload entire file
         private void UploadWholeFile(HttpContextBase context, ICollection<FilesStatus> statuses)
         {
+           
+
+
             for (var i = 0; i < context.Request.Files.Count; i++)
             {
                 var file = context.Request.Files[i];
@@ -160,13 +182,35 @@ namespace Satrabel.OpenContent.Components
                 if (IsAllowedExtension(fileName))
                 {
                     bool? overwrite = null;
+                    bool secure = false;
 
                     var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
+                    if (!string.IsNullOrEmpty(context.Request.Form["secure"]))
+                    {
+                        secure = context.Request.Form["secure"] == "true";
+                    }
                     if (!string.IsNullOrEmpty(context.Request.Form["overwrite"]))
                     {
                         overwrite = context.Request.Form["overwrite"] == "true";
                     }
-                    string uploadfolder = "OpenContent/Files/" + ActiveModule.ModuleID;
+
+                    string uploadParentFolder = "OpenContent/" + (secure ? "Secure" : "") + "Files/";
+                    var parentFolder = _folderManager.GetFolder(PortalSettings.PortalId, uploadParentFolder);
+                    if (parentFolder == null)
+                    {
+                        if (secure)
+                        {
+                            var folderMapping = FolderMappingController.Instance.GetFolderMapping(PortalSettings.PortalId, "Secure");
+                            _folderManager.AddFolder(folderMapping, uploadParentFolder);
+                        }
+                        else
+                        {
+                            _folderManager.AddFolder(PortalSettings.PortalId, uploadParentFolder);
+                        }
+                    }
+
+
+                    string uploadfolder = "OpenContent/"+ (secure ? "Secure":"")+ "Files/" + ActiveModule.ModuleID+"/";
                     if (module.Settings.Manifest.DeleteFiles)
                     {
                         if (!string.IsNullOrEmpty(context.Request.Form["itemKey"]))
@@ -181,7 +225,7 @@ namespace Satrabel.OpenContent.Components
                     if (!string.IsNullOrEmpty(context.Request.Form["hidden"]) &&
                         context.Request.Form["hidden"] == "true")
                     {
-                        uploadfolder = "OpenContent/Cropped/" + ActiveModule.ModuleID;
+                        uploadfolder = "OpenContent/" + (secure ? "Secure" : "") + "Cropped/" + ActiveModule.ModuleID;
                         if (!string.IsNullOrEmpty(context.Request.Form["itemKey"]))
                         {
                             uploadfolder += "/" + context.Request.Form["itemKey"];
@@ -194,7 +238,15 @@ namespace Satrabel.OpenContent.Components
                     var userFolder = _folderManager.GetFolder(PortalSettings.PortalId, uploadfolder);
                     if (userFolder == null)
                     {
-                        userFolder = _folderManager.AddFolder(PortalSettings.PortalId, uploadfolder);
+                        if (secure)
+                        {
+                            var folderMapping = FolderMappingController.Instance.GetFolderMapping(PortalSettings.PortalId, "Secure");
+                            userFolder = _folderManager.AddFolder(folderMapping, uploadfolder);
+                        }
+                        else
+                        {
+                            userFolder = _folderManager.AddFolder(PortalSettings.PortalId, uploadfolder);
+                        }
                     }
                     int suffix = 0;
                     string baseFileName = Path.GetFileNameWithoutExtension(fileName);
