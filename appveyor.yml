@@ -1,4 +1,4 @@
-version: 05.00.00.{build}-{branch}
+version: 05.00.01.{build}-{branch}
 assembly_info:
   patch: true
   file: '**\AssemblyInfo.*'
