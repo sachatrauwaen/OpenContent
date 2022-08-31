@@ -268,6 +268,57 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
+        [AllowAnonymous]
+        public HttpResponseMessage GetData(string apiKey, int tabId, int moduleId, string scope, string key)
+        {
+            try
+            {
+                string _apikey = App.Services.CreateGlobalSettingsRepository(PortalSettings.PortalId).GetRestApiKey();
+                if (string.IsNullOrEmpty(apiKey))
+                {
+                    return Request.CreateResponse(HttpStatusCode.Unauthorized);
+                }
+                if (apiKey != _apikey)
+                {
+                    return Request.CreateResponse(HttpStatusCode.Unauthorized);
+                }
+
+                var viewModule = DnnUtils.GetDnnModule(tabId, moduleId);
+
+                string scopeStorage = AdditionalDataUtils.GetScope(scope, PortalSettings.PortalId, tabId, moduleId, viewModule.TabModuleID);
+                var dc = new AdditionalDataController();
+                var json = dc.GetData(scopeStorage, key);
+                if (json != null)
+                {
+                    //var dataItem = new DefaultDataItem("")
+                    //{
+                    //    Data = json.Json.ToJObject("GetContent " + scope + "/" + key),
+                    //    CreatedByUserId = json.CreatedByUserId,
+                    //    Item = json
+                    //};
+                    //if (LogContext.IsLogActive)
+                    //{
+                    //    LogContext.Log(context.ActiveModuleId, "Get Data", key, dataItem.Data);
+                    //}
+                    //return dataItem;
+                    //OpenContentSettings settings = viewModule.OpenContentSettings();
+                    OpenContentModuleConfig module = OpenContentModuleConfig.Create(viewModule, PortalSettings);
+                    if (!module.HasAllUsersViewPermissions())
+                    {
+                        return Request.CreateResponse(HttpStatusCode.Unauthorized);
+                    }
+                    return Request.CreateResponse(HttpStatusCode.OK, json.Json.ToJObject("GetContent " + scope + "/" + key));
+                }
+                return Request.CreateResponse(HttpStatusCode.OK, new { });
+            }
+            catch (Exception exc)
+            {
+                App.Services.Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
+
+
         /*
                 [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
                 [ValidateAntiForgeryToken]
