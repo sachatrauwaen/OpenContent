@@ -44,14 +44,13 @@ using DotNetNuke.Security;
 
 namespace Satrabel.OpenContent.Components
 {
-    [SupportedModules("OpenContent")]
+    //[SupportedModules("OpenContent")]
     public class FileUploadController : DnnApiController
     {
         private static readonly ILogAdapter Logger = App.Services.CreateLogger(typeof(FileUploadController));
         private readonly IFileManager _fileManager = FileManager.Instance;
         private readonly IFolderManager _folderManager = FolderManager.Instance;
 
-        //[DnnAuthorize]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         [HttpPost]
         [IFrameSupportedValidateAntiForgeryToken]
@@ -96,7 +95,6 @@ namespace Satrabel.OpenContent.Components
             return IframeSafeJson(statuses);
         }
         */
-        //[DnnAuthorize]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         [HttpPost]
         [IFrameSupportedValidateAntiForgeryToken]
@@ -161,9 +159,6 @@ namespace Satrabel.OpenContent.Components
         // Upload entire file
         private void UploadWholeFile(HttpContextBase context, ICollection<FilesStatus> statuses)
         {
-           
-
-
             for (var i = 0; i < context.Request.Files.Count; i++)
             {
                 var file = context.Request.Files[i];
