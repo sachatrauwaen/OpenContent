@@ -210,7 +210,7 @@ namespace Satrabel.OpenContent.Components
                     {
                         if (!string.IsNullOrEmpty(context.Request.Form["itemKey"]))
                         {
-                            uploadfolder += "/" + context.Request.Form["itemKey"];
+                            uploadfolder += context.Request.Form["itemKey"];
                         }
                     }
                     if (!string.IsNullOrEmpty(context.Request.Form["uploadfolder"]))

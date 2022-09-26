@@ -28,6 +28,7 @@ using Satrabel.OpenContent.Components.TemplateHelpers;
 using System.Text.RegularExpressions;
 using Satrabel.OpenContent.Components.Dnn;
 using DotNetNuke.Entities.Users;
+using Satrabel.OpenContent.Components.Manifest;
 
 #endregion
 
@@ -142,7 +143,7 @@ namespace Satrabel.OpenContent.Components
         }
 
         [ValidateAntiForgeryToken]
-        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         [HttpGet]
         public HttpResponseMessage ImagesLookupExt(string q, string folder, string itemKey = "")
         {
@@ -157,13 +158,20 @@ namespace Satrabel.OpenContent.Components
         /// <param name="itemId"></param>
         /// <returns></returns>
         [ValidateAntiForgeryToken]
-        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         [HttpGet]
         public HttpResponseMessage ImagesLookupSecure(string q, string folder, bool secure, string itemKey = "")
         {
+            var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
+            var manifest = module.Settings.Template.Manifest;
+            if (!DnnPermissionsUtils.HasEditPermissions(module, manifest.GetEditRole(), manifest.GetEditRoleAllItems(), -1))
+            {
+                return Request.CreateResponse(HttpStatusCode.Unauthorized);
+            }
+
             try
             {
-                var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
+                //var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
                 var folderManager = FolderManager.Instance;
                 string imageFolder = "OpenContent/"+ (secure ? "Secure":"")+ "Files/" + module.DataModule.ModuleId;
                 if (module.Settings.Manifest.DeleteFiles)
@@ -213,10 +221,17 @@ namespace Satrabel.OpenContent.Components
 
 
         [ValidateAntiForgeryToken]
-        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         [HttpGet]
         public HttpResponseMessage FilesLookup(string q, string d, string filter = "")
         {
+            var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
+            var manifest = module.Settings.Template.Manifest;
+            if (!DnnPermissionsUtils.HasEditPermissions(module, manifest.GetEditRole(), manifest.GetEditRoleAllItems(), -1))
+            {
+                return Request.CreateResponse(HttpStatusCode.Unauthorized);
+            }
+
             try
             {
                 var folderManager = FolderManager.Instance;
@@ -252,13 +267,19 @@ namespace Satrabel.OpenContent.Components
         }
 
         [ValidateAntiForgeryToken]
-        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         [HttpGet]
         public HttpResponseMessage FilesLookupSecure(string q, string folder, bool secure, string filter = "")
         {
+            var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
+            var manifest = module.Settings.Template.Manifest;
+            if (!DnnPermissionsUtils.HasEditPermissions(module, manifest.GetEditRole(), manifest.GetEditRoleAllItems(), -1))
+            {
+                return Request.CreateResponse(HttpStatusCode.Unauthorized);
+            }
             try
             {
-                var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
+                //var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
                 var folderManager = FolderManager.Instance;
                 string filesFolder = "OpenContent/" + (secure ? "Secure" : "") + "Files/" + module.DataModule.ModuleId;
                 //if (module.Settings.Manifest.DeleteFiles)
@@ -306,10 +327,16 @@ namespace Satrabel.OpenContent.Components
         }
 
         [ValidateAntiForgeryToken]
-        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         [HttpGet]
         public HttpResponseMessage FilesLookup(string q, string d, string filter, int pageIndex, int pageSize)
         {
+            var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
+            var manifest = module.Settings.Template.Manifest;
+            if (!DnnPermissionsUtils.HasEditPermissions(module, manifest.GetEditRole(), manifest.GetEditRoleAllItems(), -1))
+            {
+                return Request.CreateResponse(HttpStatusCode.Unauthorized);
+            }
             try
             {
                 var folderManager = FolderManager.Instance;
@@ -493,10 +520,16 @@ namespace Satrabel.OpenContent.Components
         }
 
         [ValidateAntiForgeryToken]
-        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         [HttpGet]
         public HttpResponseMessage Files(string q, string d)
         {
+            var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
+            var manifest = module.Settings.Template.Manifest;
+            if (!DnnPermissionsUtils.HasEditPermissions(module, manifest.GetEditRole(), manifest.GetEditRoleAllItems(), -1))
+            {
+                return Request.CreateResponse(HttpStatusCode.Unauthorized);
+            }
             try
             {
                 var folderManager = FolderManager.Instance;

@@ -466,7 +466,7 @@ namespace Satrabel.OpenContent.Components.Datasource
 
         private static DefaultDataItem CreateDefaultDataItem(OpenContentInfo content)
         {
-            return new DefaultDataItem(content.Id)
+            return new DefaultDataItem(content.Id, content.Key)
             {
                 Collection = content.Collection,
                 Title = content.Title,
