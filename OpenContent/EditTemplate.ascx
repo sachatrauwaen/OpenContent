@@ -73,7 +73,7 @@
         </div>
     </fieldset>
 
-    <ul class="dnnActions dnnClear" style="padding-top: 8px;">
+    <ul class="dnnActions dnnClear" style="padding-top: 30px;">
         <li>
             <asp:LinkButton ID="cmdSave" resourcekey="cmdSave" runat="server" CssClass="dnnPrimaryAction" /></li>
         <li>
@@ -127,7 +127,7 @@
             var resizeModule = function resizeDnnEditHtml() {
                 //$('#dnnEditScript fieldset').height($(window).height() - $('#dnnEditScript ul dnnActions').height() - 18 - 52);
                 //$('window.frameElement, body, html').css('overflow', 'hidden');
-                var containerHeight = $(window).height() - 52 - 32 - 0;
+                var containerHeight = $(window).height() - 52 - 32 - 0 -22;
                 //$('.editorContainer').height(containerHeight - $('.editorContainer').offset().top - 110);
                 //$('.editorContainer').height(containerHeight - 250);
                 $('#dnnEditScript .CodeMirror').height(containerHeight);
