@@ -553,11 +553,18 @@ namespace Satrabel.OpenContent.Components
         }
 
         [ValidateAntiForgeryToken]
-        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         [HttpPost]
         public HttpResponseMessage CropImage(CropResizeDTO cropData)
         {
             var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
+            var manifest = module.Settings.Template.Manifest;
+            if (!DnnPermissionsUtils.HasEditPermissions(module, manifest.GetEditRole(), manifest.GetEditRoleAllItems(), -1))
+            {
+                return Request.CreateResponse(HttpStatusCode.Unauthorized);
+            }
+
+            //var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
             FilesStatus fs = null;
             try
             {
@@ -663,11 +670,17 @@ namespace Satrabel.OpenContent.Components
         }
 
         [ValidateAntiForgeryToken]
-        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         [HttpPost]
         public HttpResponseMessage CropImages(CroppersDTO cropData)
         {
             var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
+            var manifest = module.Settings.Template.Manifest;
+            if (!DnnPermissionsUtils.HasEditPermissions(module, manifest.GetEditRole(), manifest.GetEditRoleAllItems(), -1))
+            {
+                return Request.CreateResponse(HttpStatusCode.Unauthorized);
+            }
+            //var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
             try
             {
                 var res = new CroppersResultDTO();
