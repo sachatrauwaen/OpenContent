@@ -75,7 +75,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
         [Obsolete("Use RegisterAll with 4 params")]
         public void RegisterAll(bool bootstrapLayoutEnabled, bool loadBootstrap, bool loadGlyphicons)
         {
-            RegisterAlpaca(bootstrapLayoutEnabled, loadBootstrap, loadGlyphicons, false);
+            RegisterAll(bootstrapLayoutEnabled, loadBootstrap, loadGlyphicons, false);
         }
 
         public void RegisterAll(bool bootstrapLayoutEnabled, bool loadBootstrap, bool loadGlyphicons, bool builderV2)
