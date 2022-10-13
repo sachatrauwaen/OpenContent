@@ -667,7 +667,7 @@ namespace Satrabel.OpenContent.Components
         }
 
 
-        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public HttpResponseMessage ReOrder(List<string> ids)
@@ -675,6 +675,12 @@ namespace Satrabel.OpenContent.Components
             try
             {
                 var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
+                int createdByUserid = -1;
+                if (!DnnPermissionsUtils.HasEditPermissions(module, module.Settings.Manifest.GetEditRole(), module.Settings.Manifest.GetEditRoleAllItems(), createdByUserid))
+                {
+                    return Request.CreateResponse(HttpStatusCode.Unauthorized);
+                }
+
                 IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
 
