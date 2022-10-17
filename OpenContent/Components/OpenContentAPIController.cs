@@ -668,7 +668,7 @@ namespace Satrabel.OpenContent.Components
 
 
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
-        [ValidateAntiForgeryToken]
+        //[ValidateAntiForgeryToken]
         [HttpPost]
         public HttpResponseMessage ReOrder(List<string> ids)
         {
