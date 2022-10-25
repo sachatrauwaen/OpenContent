@@ -245,7 +245,7 @@ namespace Satrabel.OpenContent.Components
                     }
                 }
 
-                
+
 
                 var manifest = module.Settings.Template.Manifest;
                 //todo: can't we do some of these checks at the beginning of this method to fail faster?
@@ -708,7 +708,12 @@ namespace Satrabel.OpenContent.Components
                         continue;
                     }
 
+
+
                     var json = dsItem.Data;
+
+
+
                     if (ml) // multi language
                     {
                         #region Normalize irregulatities with SortIndex field
@@ -730,11 +735,22 @@ namespace Satrabel.OpenContent.Components
                         #endregion
 
                         // Set the new SortIndex value for this item.
-                        json["SortIndex"][DnnLanguageUtils.GetCurrentCultureCode()] = i;
+                        var sortIndex = json["SortIndex"][DnnLanguageUtils.GetCurrentCultureCode()].Value<int>();
+                        if (sortIndex != i)
+                        {
+                            json["SortIndex"][DnnLanguageUtils.GetCurrentCultureCode()] = i;
+                            ds.Update(dsContext, dsItem, json);
+                        }
                     }
                     else
-                        json["SortIndex"] = i;
-                    ds.Update(dsContext, dsItem, json);
+                    {
+                        var sortIndex = json["SortIndex"].Value<int>();
+                        if (sortIndex != i)
+                        {
+                            json["SortIndex"] = i;
+                            ds.Update(dsContext, dsItem, json);
+                        }
+                    }
                     i++;
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, new
@@ -858,7 +874,7 @@ namespace Satrabel.OpenContent.Components
                 }
 
                 //todo: can't we do some of these checks at the beginning of this method to fail faster?
-                if (!DnnPermissionsUtils.HasEditPermissions(module, manifest.GetEditRole(),manifest.GetEditRoleAllItems(), createdByUserid))
+                if (!DnnPermissionsUtils.HasEditPermissions(module, manifest.GetEditRole(), manifest.GetEditRoleAllItems(), createdByUserid))
                 {
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
                 }
@@ -993,7 +1009,7 @@ namespace Satrabel.OpenContent.Components
                     var indexfile = new FileUri(settings.TemplateDir, $"{prefix}index.json");
                     try
                     {
-                        
+
                         File.WriteAllText(schemafile.PhysicalFilePath, schema);
                         File.WriteAllText(optionsfile.PhysicalFilePath, options);
                         if (!builderV2)
