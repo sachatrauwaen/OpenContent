@@ -41,6 +41,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using Satrabel.OpenContent.Components.Manifest;
 using DotNetNuke.Security;
+using Satrabel.OpenContent.Components.TemplateHelpers;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -287,7 +288,8 @@ namespace Satrabel.OpenContent.Components
                         size = file.ContentLength,
                         progress = "1.0",
                         url = fileInfo.ToUrl().RemoveCachebuster(),
-                        thumbnail_url = fileIcon,
+                        //thumbnail_url = fileIcon,
+                        thumbnail_url = ImageHelper.GetImageUrl(fileInfo, new Ratio(40, 40)),  //todo for install in application folder is dat niet voldoende ???
                         message = "success",
                         id = fileInfo.FileId,
                     });

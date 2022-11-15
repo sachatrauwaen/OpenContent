@@ -153,7 +153,7 @@ namespace Satrabel.OpenContent.Components
         }
 
         [ValidateAntiForgeryToken]
-        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         [HttpGet]
         public HttpResponseMessage EditData(string key)
         {
@@ -161,6 +161,13 @@ namespace Satrabel.OpenContent.Components
             {
                 var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
                 var dataManifest = module.Settings.Manifest.GetAdditionalData(key);
+
+                var manifest = module.Settings.Manifest;
+                //todo: can't we do some of these checks at the beginning of this method to fail faster?
+                if (!DnnPermissionsUtils.HasEditPermissions(module, manifest.GetEditRole(), manifest.GetEditRoleAllItems(), -1))
+                {
+                    return Request.CreateResponse(HttpStatusCode.Unauthorized);
+                }
 
                 IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
@@ -185,7 +192,7 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
-        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public HttpResponseMessage UpdateData(JObject json)
@@ -193,6 +200,14 @@ namespace Satrabel.OpenContent.Components
             try
             {
                 var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
+
+                var manifest = module.Settings.Manifest;
+                //todo: can't we do some of these checks at the beginning of this method to fail faster?
+                if (!DnnPermissionsUtils.HasEditPermissions(module, manifest.GetEditRole(), manifest.GetEditRoleAllItems(), -1))
+                {
+                    return Request.CreateResponse(HttpStatusCode.Unauthorized);
+                }
+
                 string key = json["key"].ToString();
                 var dataManifest = module.Settings.Template.Manifest.GetAdditionalData(key);
 

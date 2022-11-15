@@ -1,6 +1,6 @@
 <dotnetnuke type="Package" version="5.0">
   <packages>
-    <package name="OpenContent" type="Module" version="05.00.03">
+    <package name="OpenContent" type="Module" version="05.00.04">
       <friendlyName>OpenContent</friendlyName>
       <description>OpenContent module by Satrabel.be</description>
       <iconFile>~/DesktopModules/OpenContent/Images/icon_extensions.png</iconFile>
@@ -113,7 +113,7 @@
                     <controlSrc>DesktopModules/OpenContent/EditAddData.ascx</controlSrc>
                     <supportsPartialRendering>False</supportsPartialRendering>
                     <controlTitle>Edit Additional Content</controlTitle>
-                    <controlType>Edit</controlType>
+                    <controlType>View</controlType>
                     <iconFile />
                     <helpUrl />
                     <viewOrder>0</viewOrder>

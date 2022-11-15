@@ -437,7 +437,7 @@ alpacaEngine.engine = function (config) {
 
                     var postData = {
                         q: "*",
-                        folder: ""/*self.options.uploadfolder*/,
+                        folder: config.query.folder || ""/*self.options.uploadfolder*/,
                         secure: config.query.secure,
                         itemKey: ""/*self.itemKey*/
                     };
@@ -511,7 +511,7 @@ alpacaEngine.engine = function (config) {
 
                     var postData = {
                         q: "*",
-                        folder: ""/*self.options.uploadfolder*/,
+                        folder: config.query.folder ||"" /*self.options.uploadfolder*/,
                         secure: config.query.secure,
                         itemKey: ""/*self.itemKey*/
                     };
@@ -586,8 +586,14 @@ alpacaEngine.engine = function (config) {
                 if (typeof config.secure !== 'undefined')
                     formData.append('secure', config.secure);
 
-                if (config.hidden)
+                if (typeof config.folder !== 'undefined')
+                    formData.append('uploadfolder', config.folder);
+
+                if (config.hidden) {
                     formData.append('hidden', true);
+                    if (typeof config.folder !== 'undefined')
+                        formData.append('cropfolder', config.folder);
+                }
 
                 var url = self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile";
 

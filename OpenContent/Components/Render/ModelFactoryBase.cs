@@ -341,11 +341,12 @@ namespace Satrabel.OpenContent.Components.Render
                             context["EditUrl"] = GetAdditionalDataEditUrl(item.Key);
                             additionalDataJson["Context"] = context;
                         }
-                        if (!onlyData)
-                        {
-                            var context = _additionalDataContext[item.Value.ModelKey ?? item.Key] = new JObject();
-                            context["EditUrl"] = GetAdditionalDataEditUrl(item.Key);
-                        }
+                        
+                    }
+                    if (!onlyData)
+                    {
+                        var context = _additionalDataContext[item.Value.ModelKey ?? item.Key] = new JObject();
+                        context["EditUrl"] = GetAdditionalDataEditUrl(item.Key);
                     }
                     if (!App.Services.CreateGlobalSettingsRepository(_portalId).GetLegacyHandlebars())
                         _additionalData[(item.Value.ModelKey ?? item.Key)] = additionalDataJson;
