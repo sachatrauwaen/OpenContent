@@ -38,7 +38,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
         private Page Page { get; set; }
         private int PortalId { get; set; }
 
-        
+
 
         public AlpacaEngine(Page page, int portalId, string virtualDir, string filePrefix)
         {
@@ -139,16 +139,18 @@ namespace Satrabel.OpenContent.Components.Alpaca
 
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/alpacaengine.js", FileOrder.Js.DefaultPriority + 10);
             }
-            
+
             ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/css/font-awesome/css/font-awesome.min.css", FileOrder.Css.DefaultPriority + 1);
 
 
-            string prefix = (string.IsNullOrEmpty(Prefix) ? "" : $"{Prefix}-");
+            //string prefix = (string.IsNullOrEmpty(Prefix) ? "" : $"{Prefix}-");
             string physicalDirectory = HostingEnvironment.MapPath("~/" + VirtualDirectory);
-            string jsFilename = physicalDirectory + "\\" + $"{prefix}edit.js";
+            //string jsFilename = physicalDirectory + "\\" + $"{prefix}edit.js";
+            string jsFilename = physicalDirectory + "\\" + $"edit.js";
             if (File.Exists(jsFilename))
             {
-                ClientResourceManager.RegisterScript(Page, $"~/{VirtualDirectory}/{prefix}edit.js", FileOrder.Js.DefaultPriority + 11);
+                //ClientResourceManager.RegisterScript(Page, $"~/{VirtualDirectory}/{prefix}edit.js", FileOrder.Js.DefaultPriority + 11);
+                ClientResourceManager.RegisterScript(Page, $"~/{VirtualDirectory}/edit.js", FileOrder.Js.DefaultPriority + 11);
             }
 
         }
@@ -184,7 +186,8 @@ namespace Satrabel.OpenContent.Components.Alpaca
 
         private void RegisterFields(bool bootstrap)
         {
-            bool allFields = string.IsNullOrEmpty(VirtualDirectory);
+            //bool allFields = string.IsNullOrEmpty(VirtualDirectory);
+            bool allFields = Prefix == "builder";
             List<string> fieldTypes = new List<string>();
             if (!allFields)
             {
@@ -249,7 +252,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 RegisterStartupScript("oc-ckdnnporid", $@"<input type=""hidden"" id=""CKDNNporid"" value=""{PortalId}"">", false);
                 GenerateEditorLoadScript(PortalId);
 
-                
+
             }
             if (allFields || fieldTypes.Contains("icon"))
             {
@@ -258,7 +261,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 //if (bootstrap)
                 //    ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/fontIconPicker/css/themes/bootstrap-theme/jquery.fonticonpicker.bootstrap.min.css", FileOrder.Css.DefaultPriority);
                 //else
-                    ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/fontIconPicker/css/themes/grey-theme/jquery.fonticonpicker.grey.min.css", FileOrder.Css.DefaultPriority);
+                ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/fontIconPicker/css/themes/grey-theme/jquery.fonticonpicker.grey.min.css", FileOrder.Css.DefaultPriority);
                 ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/css/glyphicons/glyphicons.css", FileOrder.Css.DefaultPriority + 1);
             }
             if (allFields || fieldTypes.Contains("summernote") || fieldTypes.Contains("mlsummernote"))

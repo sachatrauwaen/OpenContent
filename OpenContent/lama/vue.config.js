@@ -1,5 +1,5 @@
 module.exports = {
-  
+  runtimeCompiler: true,
   css: {
     extract: true
   },
