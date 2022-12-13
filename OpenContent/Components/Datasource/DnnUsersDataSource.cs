@@ -459,7 +459,14 @@ namespace Satrabel.OpenContent.Components.Datasource
                         {
                             if (prop.Name.ToLower() == "photo")
                             {
-                                user.Profile.SetProfileProperty(prop.Name, profile[prop.Name].ToString());
+                                //if (profile[prop.Name].Type == JTokenType.Object)
+                                //{
+                                //    user.Profile.SetProfileProperty(prop.Name, profile[prop.Name].ToString());
+                                //}
+                                //else
+                                //{
+                                    user.Profile.SetProfileProperty(prop.Name, profile[prop.Name].ToString());
+                                //}
                             }
                             else
                             {
