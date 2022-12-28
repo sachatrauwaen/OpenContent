@@ -18,6 +18,7 @@ using Satrabel.OpenContent.Components.Logging;
 using Satrabel.OpenContent.Components.Lucene;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.Form;
+using DotNetNuke.Services.FileSystem;
 
 namespace Satrabel.OpenContent.Components.Datasource
 {
@@ -69,6 +70,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 {
                     item.Data["Profile"]["PhotoURL"] = user.Profile.PhotoURL;
                     item.Data["Profile"][def.PropertyName] = def.PropertyValue;
+
                 }
                 else
                 {
@@ -457,6 +459,11 @@ namespace Satrabel.OpenContent.Components.Datasource
                     {
                         if (profile[prop.Name] != null)
                         {
+                            //if (prop.Name.ToLower() == "photourl")
+                            //{
+                            //    FileManager.Instance.GetFile(portalId, profile[prop.Name].ToString());
+                            //    user.Profile.SetProfileProperty(prop.Name, profile[prop.Name].ToString());
+                            //}
                             if (prop.Name.ToLower() == "photo")
                             {
                                 //if (profile[prop.Name].Type == JTokenType.Object)
@@ -526,6 +533,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             if (schema == null || !(schema["properties"] is JObject)) return false;
 
             return ((JObject)schema["properties"]).Properties().Any(p => p.Name == property);
+
         }
 
         private static void Notify(DataSourceContext context, JToken data, string action)

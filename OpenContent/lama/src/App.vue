@@ -10,11 +10,12 @@
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+//import HelloWorld from './components/HelloWorld.vue'
 import { App, Builder, Lama } from "lamavue";
 //import from 'lamavue'
 
-Lama.registerFieldComponent("helloworld", HelloWorld);
+//Lama.registerFieldComponent("helloworld", HelloWorld);
+
 
 export default {
   name: "App",

@@ -1059,6 +1059,10 @@
     <Content Include="js\fontIconPicker\js\jquery.fonticonpicker.js" />
     <Content Include="js\fontIconPicker\js\jquery.fonticonpicker.min.js" />
     <Content Include="js\jplist\jplisthelper.js" />
+    <Compile Include="js\ckeditor\Tabs.ashx.cs">
+      <DependentUpon>Tabs.ashx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Providers\SitemapProviders\OpenContentSitemapProvider\OpenContentSitemapProvider.cs" />
     <Compile Include="Providers\SitemapProviders\OpenContentSitemapProvider\OpenSitemapUrl.cs" />
     <Compile Include="RenderModule.ascx.cs">
@@ -1468,6 +1472,7 @@
     <Content Include="js\alpaca-1.5.8\lib\moment\CHANGELOG.md" />
     <Content Include="js\alpaca-1.5.8\lib\moment\LICENSE" />
     <Content Include="js\alpaca-1.5.8\lib\moment\README.md" />
+    <Content Include="js\ckeditor\Tabs.ashx" />
     <None Include="packages.config" />
     <None Include="Scripts\_references.js" />
     <Content Include="js\select2\i18n\az.js" />
