@@ -817,7 +817,7 @@
                         removeDialogTabs: 'image:advanced;link:advanced',
 
                         // Remove one plugin.
-                        removePlugins: 'elementspath',
+                        removePlugins: 'elementspath,link',
 
                         extraPlugins: 'dnnpages',
 
