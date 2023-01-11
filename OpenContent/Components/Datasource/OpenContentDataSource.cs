@@ -188,7 +188,8 @@ namespace Satrabel.OpenContent.Components.Datasource
 
             var dataList = ctrl.GetContents(GetModuleId(context), context.Collection)
                 .OrderBy(i => i.CreatedOnDate)
-                .Select(content => CreateDefaultDataItem(content));
+                .Select(content => CreateDefaultDataItem(content))
+                .ToList();
 
             return new DefaultDataItems()
             {

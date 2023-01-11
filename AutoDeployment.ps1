@@ -16,7 +16,7 @@ function Deploy()
     }
 }
 
-Write-Host (Get-Date -Format "HH:mm") "Auto Deployment is running, press STRG+C to stop ..."
+Write-Host (Get-Date -Format "HH:mm") "Auto Deployment is running, press Ctrl+C to stop ..."
 Write-Host 
 
 Write-Host (Get-Date -Format "HH:mm") "Start initial project deploy ..."
