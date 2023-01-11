@@ -325,6 +325,7 @@ alpacaEngine.engine = function (config) {
 
     self.connector = {
         currentCulture: self.currentCulture,
+        viewType: config.isNew ? "create" : "edit",
         connect() {
 
         },
@@ -434,12 +435,17 @@ alpacaEngine.engine = function (config) {
                     //    model.selectOptions = self.selectOptions;
                     //    callback();
                     //};
+                    var itemId = '';
+                    if (self.data && self.data.id) {
+                        itemId= self.data.id;
+                    }
 
                     var postData = {
                         q: "*",
                         folder: config.query.folder || ""/*self.options.uploadfolder*/,
                         secure: config.query.secure,
-                        itemKey: ""/*self.itemKey*/
+                        itemKey: ""/*self.itemKey*/,
+                        itemId: itemId
                     };
                     $.ajax({
                         url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "ImagesLookupSecure",
@@ -594,7 +600,9 @@ alpacaEngine.engine = function (config) {
                     if (typeof config.folder !== 'undefined')
                         formData.append('cropfolder', config.folder);
                 }
-
+                if (self.data && self.data.id) {
+                    formData.append('itemId', self.data.id);
+                }
                 var url = self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile";
 
                 $.ajax({

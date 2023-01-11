@@ -48,7 +48,8 @@ namespace Satrabel.OpenContent.Components
             {
                 var tabs = TabController.GetTabsBySortOrder(PortalSettings.PortalId).Where(t => t.ParentId != PortalSettings.AdminTabId)
                     .Where(t => t.TabName.ToLower().Contains(q.ToLower()))
-                    .Select(t => new {
+                    .Select(t => new
+                    {
                         name = t.TabName + " (" + t.TabPath.Replace("//", "/").Replace("/" + t.TabName + "/", "") + " " + l + ")",
                         value = (new System.Uri(NavigateUrl(t, l, PortalSettings))).PathAndQuery
                     });
@@ -160,7 +161,7 @@ namespace Satrabel.OpenContent.Components
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         [HttpGet]
-        public HttpResponseMessage ImagesLookupSecure(string q, string folder, bool secure, string itemKey = "")
+        public HttpResponseMessage ImagesLookupSecure(string q, string folder, bool secure, string itemKey = "", string itemId = "")
         {
             var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
             var manifest = module.Settings.Template.Manifest;
@@ -173,7 +174,7 @@ namespace Satrabel.OpenContent.Components
             {
                 //var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
                 var folderManager = FolderManager.Instance;
-                string imageFolder = "OpenContent/"+ (secure ? "Secure":"")+ "Files/" + module.DataModule.ModuleId;
+                string imageFolder = "OpenContent/" + (secure ? "Secure" : "") + "Files/" + module.DataModule.ModuleId;
                 if (module.Settings.Manifest.DeleteFiles)
                 {
                     if (!string.IsNullOrEmpty(itemKey))
@@ -184,6 +185,29 @@ namespace Satrabel.OpenContent.Components
                 if (!string.IsNullOrEmpty(folder))
                 {
                     imageFolder = folder;
+                    if (folder.Contains("[ITEMUSERFOLDER]"))
+                    {
+                        if (!string.IsNullOrEmpty(itemId))
+                        {
+                            if (int.TryParse(itemId, out int userId))
+                            {
+                                var user = DotNetNuke.Entities.Users.UserController.GetUserById(PortalSettings.PortalId, userId);
+                                if (user != null)
+                                {
+                                    var userFolder = folderManager.GetUserFolder(user).FolderPath;
+                                    imageFolder = imageFolder.Replace("[ITEMUSERFOLDER]", userFolder);
+                                }
+                            }
+                        }
+                    }
+                    if (folder.Contains("[USERFOLDER]"))
+                    {
+                        if (PortalSettings.UserId > -1)
+                        {
+                            var userFolder = folderManager.GetUserFolder(PortalSettings.UserInfo).FolderPath;
+                            imageFolder = imageFolder.Replace("[USERFOLDER]", userFolder);
+                        }
+                    }
                 }
                 var dnnFolder = folderManager.GetFolder(PortalSettings.PortalId, imageFolder);
                 if (dnnFolder == null)
@@ -243,7 +267,7 @@ namespace Satrabel.OpenContent.Components
                     //if (d != null)
                     //    portalFolder = FolderManager.Instance.AddFolder(PortalSettings.PortalId, d);
                     //else
-                        throw new Exception($"folder {d ?? ""} does not exist");
+                    throw new Exception($"folder {d ?? ""} does not exist");
                 }
                 var files = folderManager.GetFiles(portalFolder, true);
                 if (q != "*" && !string.IsNullOrEmpty(q))
@@ -312,11 +336,13 @@ namespace Satrabel.OpenContent.Components
                     files = files.Where(f => rx.IsMatch(f.FileName));
                 }
                 int folderLength = folder?.Length ?? 0;
-                var res = files.Select(f => new { 
-                    value = f.FileId.ToString(), 
+                var res = files.Select(f => new
+                {
+                    value = f.FileId.ToString(),
                     url = fileManager.GetUrl(f),
                     filename = f.FileName,
-                    text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName /*+ (string.IsNullOrEmpty(f.Folder) ? "" : " (" + f.Folder.Trim('/') + ")")*/ });
+                    text = f.Folder.Substring(folderLength).TrimStart('/') + f.FileName /*+ (string.IsNullOrEmpty(f.Folder) ? "" : " (" + f.Folder.Trim('/') + ")")*/
+                });
                 return Request.CreateResponse(HttpStatusCode.OK, res);
             }
             catch (Exception exc)
@@ -438,10 +464,12 @@ namespace Satrabel.OpenContent.Components
                 {
                     tabs = tabs.Where(t => t.TabName.ToLower().Contains(q.ToLower()));
                 }
-                var tabsDtos = tabs.Select(t => new {
+                var tabsDtos = tabs.Select(t => new
+                {
                     value = t.TabID.ToString(),
                     text = t.TabName + " (" + t.TabPath.Replace("//", "/").Replace("/" + t.TabName + "/", "") + " " + l + ")",
-                    url = (new System.Uri(NavigateUrl(t, l, PortalSettings))).PathAndQuery });
+                    url = (new System.Uri(NavigateUrl(t, l, PortalSettings))).PathAndQuery
+                });
                 return Request.CreateResponse(HttpStatusCode.OK, tabsDtos);
             }
             catch (Exception exc)

@@ -190,68 +190,71 @@ namespace Satrabel.OpenContent.Components
                         overwrite = context.Request.Form["overwrite"] == "true";
                     }
 
-                    string uploadParentFolder = "OpenContent/" + (secure ? "Secure" : "") + "Files/";
-                    var parentFolder = _folderManager.GetFolder(PortalSettings.PortalId, uploadParentFolder);
-                    if (parentFolder == null)
-                    {
-                        if (secure)
-                        {
-                            var folderMapping = FolderMappingController.Instance.GetFolderMapping(PortalSettings.PortalId, "Secure");
-                            _folderManager.AddFolder(folderMapping, uploadParentFolder);
-                        }
-                        else
-                        {
-                            _folderManager.AddFolder(PortalSettings.PortalId, uploadParentFolder);
-                        }
-                    }
-
-
-                    string uploadfolder = "OpenContent/"+ (secure ? "Secure":"")+ "Files/" + ActiveModule.ModuleID+"/";
-                    if (module.Settings.Manifest.DeleteFiles)
-                    {
-                        if (!string.IsNullOrEmpty(context.Request.Form["itemKey"]))
-                        {
-                            uploadfolder += context.Request.Form["itemKey"];
-                        }
-                    }
-                    if (!string.IsNullOrEmpty(context.Request.Form["uploadfolder"]))
-                    {
-                        uploadfolder = context.Request.Form["uploadfolder"];
-                    }
-                    if (!string.IsNullOrEmpty(context.Request.Form["hidden"]) &&
+                    string uploadfolder;
+                    if (!string.IsNullOrEmpty(context.Request.Form["hidden"]) && // cropped file
                         context.Request.Form["hidden"] == "true")
                     {
                         uploadfolder = "OpenContent/" + (secure ? "Secure" : "") + "Cropped/" + ActiveModule.ModuleID;
+                        GetOrCreateFolder(secure, uploadfolder);
                         if (!string.IsNullOrEmpty(context.Request.Form["itemKey"]))
                         {
                             uploadfolder += "/" + context.Request.Form["itemKey"];
+                            GetOrCreateFolder(secure, uploadfolder);
                         }
                         if (!string.IsNullOrEmpty(context.Request.Form["cropfolder"]))
                         {
                             uploadfolder = context.Request.Form["cropfolder"];
                         }
                     }
-                    var userFolder = _folderManager.GetFolder(PortalSettings.PortalId, uploadfolder);
-                    if (userFolder == null)
+                    else if (!string.IsNullOrEmpty(context.Request.Form["uploadfolder"])) // custom upload folder
                     {
-                        if (secure)
+                        uploadfolder = context.Request.Form["uploadfolder"];
+                        if (uploadfolder.Contains("[ITEMUSERFOLDER]"))
                         {
-                            var folderMapping = FolderMappingController.Instance.GetFolderMapping(PortalSettings.PortalId, "Secure");
-                            userFolder = _folderManager.AddFolder(folderMapping, uploadfolder);
+                            if (!string.IsNullOrEmpty(context.Request.Form["itemId"]))
+                            {
+                                if (int.TryParse(context.Request.Form["itemId"],out int itemId))
+                                {
+                                    var user = DotNetNuke.Entities.Users.UserController.GetUserById(PortalSettings.PortalId, itemId);
+                                    if (user != null)
+                                    {
+                                        var userFolder = _folderManager.GetUserFolder(user).FolderPath;
+                                        uploadfolder = uploadfolder.Replace("[ITEMUSERFOLDER]", userFolder);
+                                    }
+                                }
+                            }
+                            
                         }
-                        else
+                        if (uploadfolder.Contains("[USERFOLDER]") && PortalSettings.UserId > -1)
                         {
-                            userFolder = _folderManager.AddFolder(PortalSettings.PortalId, uploadfolder);
+                            var userFolder = _folderManager.GetUserFolder(PortalSettings.UserInfo).FolderPath;
+                            uploadfolder = uploadfolder.Replace("[USERFOLDER]", userFolder);
+                        }
+                        //uploadfolder = uploadfolder.Replace("[MODULEID]", PortalSettings.UserId.ToString());                        
+                    }
+                    else
+                    {
+                        string uploadParentFolder = "OpenContent/" + (secure ? "Secure" : "") + "Files/";
+                        GetOrCreateFolder(secure, uploadParentFolder);
+                        uploadfolder = uploadParentFolder + ActiveModule.ModuleID + "/";
+                        if (module.Settings.Manifest.DeleteFiles)
+                        {
+                            if (!string.IsNullOrEmpty(context.Request.Form["itemKey"]))
+                            {
+                                uploadfolder += context.Request.Form["itemKey"];
+                            }
+                            GetOrCreateFolder(secure, uploadfolder);
                         }
                     }
+                    IFolderInfo uploadFolderInfo = GetOrCreateFolder(secure, uploadfolder);
                     int suffix = 0;
                     string baseFileName = Path.GetFileNameWithoutExtension(fileName);
                     string extension = Path.GetExtension(fileName);
-                    var fileInfo = _fileManager.GetFile(userFolder, fileName);
+                    var fileInfo = _fileManager.GetFile(uploadFolderInfo, fileName);
                     if (fileInfo != null && overwrite.HasValue && overwrite.Value)
                     {
                         //fileInfo = _fileManager.UpdateFile(fileInfo, file.InputStream);
-                        fileInfo = _fileManager.AddFile(userFolder, fileName, file.InputStream, true);
+                        fileInfo = _fileManager.AddFile(uploadFolderInfo, fileName, file.InputStream, true);
                     }
                     else if (fileInfo != null && overwrite.HasValue && !overwrite.Value)
                     {
@@ -269,9 +272,9 @@ namespace Satrabel.OpenContent.Components
                         {
                             suffix++;
                             fileName = baseFileName + "-" + suffix + extension;
-                            fileInfo = _fileManager.GetFile(userFolder, fileName);
+                            fileInfo = _fileManager.GetFile(uploadFolderInfo, fileName);
                         }
-                        fileInfo = _fileManager.AddFile(userFolder, fileName, file.InputStream, true);
+                        fileInfo = _fileManager.AddFile(uploadFolderInfo, fileName, file.InputStream, true);
                     }
 
                     var fileIcon = IconController.IconURL("Ext" + fileInfo.Extension, "32x32");
@@ -305,160 +308,180 @@ namespace Satrabel.OpenContent.Components
                 }
             }
         }
-        /*
-        private void UploadWholeFile2(HttpContextBase context, ICollection<FilesStatus> statuses)
+
+        private IFolderInfo GetOrCreateFolder(bool secure, string uploadfolder)
         {
-            for (var i = 0; i < context.Request.Files.Count; i++)
+            var userFolder = _folderManager.GetFolder(PortalSettings.PortalId, uploadfolder);
+            if (userFolder == null)
             {
-                var file = context.Request.Files[i];
-                if (file == null) continue;
-                string fileName;
-                if (!string.IsNullOrEmpty(context.Request.Form["name"]))
+                if (secure)
                 {
-                    var name = context.Request.Form["name"];
-                    fileName = CleanUpFileName(Path.GetFileName(name));
+                    var folderMapping = FolderMappingController.Instance.GetFolderMapping(PortalSettings.PortalId, "Secure");
+                    userFolder = _folderManager.AddFolder(folderMapping, uploadfolder);
                 }
                 else
                 {
-                    fileName = CleanUpFileName(Path.GetFileName(file.FileName));
-                }
-
-                if (IsAllowedExtension(fileName))
-                {
-                    bool? overwrite = null;
-
-                    var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
-                    if (!string.IsNullOrEmpty(context.Request.Form["overwrite"]))
-                    {
-                        overwrite = context.Request.Form["overwrite"] == "true";
-                    }
-                    string uploadfolder = "OpenContent/Files/" + ActiveModule.ModuleID;
-                    if (module.Settings.Manifest.DeleteFiles)
-                    {
-                        if (!string.IsNullOrEmpty(context.Request.Form["itemKey"]))
-                        {
-                            uploadfolder += "/" + context.Request.Form["itemKey"];
-                        }
-                    }
-                    if (!string.IsNullOrEmpty(context.Request.Form["uploadfolder"]))
-                    {
-                        uploadfolder = context.Request.Form["uploadfolder"];
-                    }
-                    var userFolder = _folderManager.GetFolder(PortalSettings.PortalId, uploadfolder);
-                    if (userFolder == null)
-                    {
-                        userFolder = _folderManager.AddFolder(PortalSettings.PortalId, uploadfolder);
-                    }
-                    int suffix = 0;
-                    string baseFileName = Path.GetFileNameWithoutExtension(fileName);
-                    string extension = Path.GetExtension(fileName);
-                    var fileInfo = _fileManager.GetFile(userFolder, fileName);
-                    if (fileInfo != null && overwrite.HasValue && overwrite.Value)
-                    {
-                        //fileInfo = _fileManager.UpdateFile(fileInfo, file.InputStream);
-                        fileInfo = _fileManager.AddFile(userFolder, fileName, file.InputStream, true);
-                    }
-                    else if (fileInfo != null && overwrite.HasValue && !overwrite.Value)
-                    {
-                        statuses.Add(new FilesStatus
-                        {
-                            success = false,
-                            name = fileName,
-                            message = "File exist already."
-                        });
-                        return;
-                    }
-                    else
-                    {
-                        while (fileInfo != null)
-                        {
-                            suffix++;
-                            fileName = baseFileName + "-" + suffix + extension;
-                            fileInfo = _fileManager.GetFile(userFolder, fileName);
-                        }
-                        fileInfo = _fileManager.AddFile(userFolder, fileName, file.InputStream, true);
-                    }
-
-                    var fileIcon = IconController.IconURL("Ext" + fileInfo.Extension, "32x32");
-                    if (!File.Exists(context.Server.MapPath(fileIcon)))
-                    {
-                        fileIcon = IconController.IconURL("File", "32x32");
-                    }
-                    if (int.TryParse(context.Request.Form["width"], out int width) && width > 0 &&
-                        int.TryParse(context.Request.Form["height"], out int height) && height > 0)
-                    {
-
-                        var image = Image.FromFile(fileInfo.PhysicalPath);
-                        Image imageCropped;
-
-                        int cropleft = 0;
-                        int croptop = 0;
-                        int cropwidth = 0;
-                        int cropheight = 0;
-                        imageCropped = TemplateHelpers.ImageHelper.SaveCroppedImage(image, width, height, out cropleft, out croptop, out cropwidth, out cropheight);
-                        Stream content = new MemoryStream();
-                        ImageFormat imgFormat = ImageFormat.Bmp;
-                        if (fileInfo.Extension.ToLowerInvariant() == "png")
-                        {
-                            imgFormat = ImageFormat.Png;
-                        }
-                        else if (fileInfo.Extension.ToLowerInvariant() == "gif")
-                        {
-                            imgFormat = ImageFormat.Gif;
-                        }
-                        else if (fileInfo.Extension.ToLowerInvariant() == "jpg")
-                        {
-                            imgFormat = ImageFormat.Jpeg;
-                        }
-                        imageCropped.Save(content, imgFormat);
-                        
-                        uploadfolder = "OpenContent/Cropped/" + ActiveModule.ModuleID;
-                        if (!string.IsNullOrEmpty(context.Request.Form["itemKey"]))
-                        {
-                            uploadfolder += "/" + context.Request.Form["itemKey"];
-                        }
-                        if (!string.IsNullOrEmpty(context.Request.Form["cropfolder"]))
-                        {
-                            uploadfolder = context.Request.Form["cropfolder"];
-                        }
-                        userFolder = _folderManager.GetFolder(PortalSettings.PortalId, uploadfolder);
-                        if (userFolder == null)
-                        {
-                            userFolder = _folderManager.AddFolder(PortalSettings.PortalId, uploadfolder);
-                        }
-                        fileInfo = _fileManager.GetFile(userFolder, fileName);
-                        if (fileInfo != null )
-                        {
-                            fileInfo = _fileManager.AddFile(userFolder, fileName, content, true);
-                        }
-                    }
-
-                    statuses.Add(new FilesStatus
-                    {
-                        success = true,
-                        name = fileName,
-                        extension = fileInfo.Extension,
-                        type = fileInfo.ContentType,
-                        size = file.ContentLength,
-                        progress = "1.0",
-                        url = fileInfo.ToUrl().RemoveCachebuster(),
-                        thumbnail_url = fileIcon,
-                        message = "success",
-                        id = fileInfo.FileId,
-                    });
-                }
-                else
-                {
-                    statuses.Add(new FilesStatus
-                    {
-                        success = false,
-                        name = fileName,
-                        message = "File type not allowed."
-                    });
+                    userFolder = _folderManager.AddFolder(PortalSettings.PortalId, uploadfolder);
                 }
             }
+
+            return userFolder;
         }
-        */
+
+        /*
+private void UploadWholeFile2(HttpContextBase context, ICollection<FilesStatus> statuses)
+{
+   for (var i = 0; i < context.Request.Files.Count; i++)
+   {
+       var file = context.Request.Files[i];
+       if (file == null) continue;
+       string fileName;
+       if (!string.IsNullOrEmpty(context.Request.Form["name"]))
+       {
+           var name = context.Request.Form["name"];
+           fileName = CleanUpFileName(Path.GetFileName(name));
+       }
+       else
+       {
+           fileName = CleanUpFileName(Path.GetFileName(file.FileName));
+       }
+
+       if (IsAllowedExtension(fileName))
+       {
+           bool? overwrite = null;
+
+           var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
+           if (!string.IsNullOrEmpty(context.Request.Form["overwrite"]))
+           {
+               overwrite = context.Request.Form["overwrite"] == "true";
+           }
+           string uploadfolder = "OpenContent/Files/" + ActiveModule.ModuleID;
+           if (module.Settings.Manifest.DeleteFiles)
+           {
+               if (!string.IsNullOrEmpty(context.Request.Form["itemKey"]))
+               {
+                   uploadfolder += "/" + context.Request.Form["itemKey"];
+               }
+           }
+           if (!string.IsNullOrEmpty(context.Request.Form["uploadfolder"]))
+           {
+               uploadfolder = context.Request.Form["uploadfolder"];
+           }
+           var userFolder = _folderManager.GetFolder(PortalSettings.PortalId, uploadfolder);
+           if (userFolder == null)
+           {
+               userFolder = _folderManager.AddFolder(PortalSettings.PortalId, uploadfolder);
+           }
+           int suffix = 0;
+           string baseFileName = Path.GetFileNameWithoutExtension(fileName);
+           string extension = Path.GetExtension(fileName);
+           var fileInfo = _fileManager.GetFile(userFolder, fileName);
+           if (fileInfo != null && overwrite.HasValue && overwrite.Value)
+           {
+               //fileInfo = _fileManager.UpdateFile(fileInfo, file.InputStream);
+               fileInfo = _fileManager.AddFile(userFolder, fileName, file.InputStream, true);
+           }
+           else if (fileInfo != null && overwrite.HasValue && !overwrite.Value)
+           {
+               statuses.Add(new FilesStatus
+               {
+                   success = false,
+                   name = fileName,
+                   message = "File exist already."
+               });
+               return;
+           }
+           else
+           {
+               while (fileInfo != null)
+               {
+                   suffix++;
+                   fileName = baseFileName + "-" + suffix + extension;
+                   fileInfo = _fileManager.GetFile(userFolder, fileName);
+               }
+               fileInfo = _fileManager.AddFile(userFolder, fileName, file.InputStream, true);
+           }
+
+           var fileIcon = IconController.IconURL("Ext" + fileInfo.Extension, "32x32");
+           if (!File.Exists(context.Server.MapPath(fileIcon)))
+           {
+               fileIcon = IconController.IconURL("File", "32x32");
+           }
+           if (int.TryParse(context.Request.Form["width"], out int width) && width > 0 &&
+               int.TryParse(context.Request.Form["height"], out int height) && height > 0)
+           {
+
+               var image = Image.FromFile(fileInfo.PhysicalPath);
+               Image imageCropped;
+
+               int cropleft = 0;
+               int croptop = 0;
+               int cropwidth = 0;
+               int cropheight = 0;
+               imageCropped = TemplateHelpers.ImageHelper.SaveCroppedImage(image, width, height, out cropleft, out croptop, out cropwidth, out cropheight);
+               Stream content = new MemoryStream();
+               ImageFormat imgFormat = ImageFormat.Bmp;
+               if (fileInfo.Extension.ToLowerInvariant() == "png")
+               {
+                   imgFormat = ImageFormat.Png;
+               }
+               else if (fileInfo.Extension.ToLowerInvariant() == "gif")
+               {
+                   imgFormat = ImageFormat.Gif;
+               }
+               else if (fileInfo.Extension.ToLowerInvariant() == "jpg")
+               {
+                   imgFormat = ImageFormat.Jpeg;
+               }
+               imageCropped.Save(content, imgFormat);
+
+               uploadfolder = "OpenContent/Cropped/" + ActiveModule.ModuleID;
+               if (!string.IsNullOrEmpty(context.Request.Form["itemKey"]))
+               {
+                   uploadfolder += "/" + context.Request.Form["itemKey"];
+               }
+               if (!string.IsNullOrEmpty(context.Request.Form["cropfolder"]))
+               {
+                   uploadfolder = context.Request.Form["cropfolder"];
+               }
+               userFolder = _folderManager.GetFolder(PortalSettings.PortalId, uploadfolder);
+               if (userFolder == null)
+               {
+                   userFolder = _folderManager.AddFolder(PortalSettings.PortalId, uploadfolder);
+               }
+               fileInfo = _fileManager.GetFile(userFolder, fileName);
+               if (fileInfo != null )
+               {
+                   fileInfo = _fileManager.AddFile(userFolder, fileName, content, true);
+               }
+           }
+
+           statuses.Add(new FilesStatus
+           {
+               success = true,
+               name = fileName,
+               extension = fileInfo.Extension,
+               type = fileInfo.ContentType,
+               size = file.ContentLength,
+               progress = "1.0",
+               url = fileInfo.ToUrl().RemoveCachebuster(),
+               thumbnail_url = fileIcon,
+               message = "success",
+               id = fileInfo.FileId,
+           });
+       }
+       else
+       {
+           statuses.Add(new FilesStatus
+           {
+               success = false,
+               name = fileName,
+               message = "File type not allowed."
+           });
+       }
+   }
+}
+*/
         public static string CleanUpFileName(string filename)
         {
             var newName = HttpUtility.UrlDecode(filename);
