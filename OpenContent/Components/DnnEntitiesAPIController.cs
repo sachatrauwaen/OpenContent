@@ -189,7 +189,8 @@ namespace Satrabel.OpenContent.Components
                     {
                         if (!string.IsNullOrEmpty(itemId))
                         {
-                            if (int.TryParse(itemId, out int userId))
+                            int userId;
+                            if (int.TryParse(itemId, out userId))
                             {
                                 var user = DotNetNuke.Entities.Users.UserController.GetUserById(PortalSettings.PortalId, userId);
                                 if (user != null)
