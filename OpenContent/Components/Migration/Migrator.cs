@@ -35,7 +35,9 @@ namespace Satrabel.OpenContent.Components.Migration
 
         private FieldMigrator(FolderUri folder, int portalId)
         {
-            DetectMigrationFields(out OcFieldInfo sourceField, out OcFieldInfo targetField);
+            OcFieldInfo targetField;
+            OcFieldInfo sourceField;
+            DetectMigrationFields(out sourceField, out targetField);
 
             IEnumerable<ModuleInfo> modules = (new ModuleController()).GetModules(portalId).Cast<ModuleInfo>();
             modules = modules.Where(m => m.ModuleDefinition.DefinitionName == App.Config.Opencontent && !m.IsDeleted && !m.OpenContentSettings().IsOtherModule);
