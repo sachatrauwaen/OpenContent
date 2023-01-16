@@ -1,7 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
+using System.Web.Hosting;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Portals;
 using Newtonsoft.Json.Linq;
@@ -26,20 +27,23 @@ namespace Satrabel.OpenContent.Components.Migration
         /// <summary>
         /// A Factory class that creates a FieldMigrator and executes the migration
         /// </summary>
-        public static HtmlString Migrate(object caller, string folder, bool overwriteTargetData, int portalId)
+        public static HtmlString Migrate(OpenContentWebPage caller, string folder, bool overwriteTargetData)
         {
-            var validatedFolder = new FolderUri(folder);
-            var migrator = new FieldMigrator(validatedFolder, portalId);
+            int portalId = caller.Dnn.Portal.PortalId;
+            string templateFolder = HostingEnvironment.MapPath("~/" + caller.Dnn.Portal.HomeDirectory + "OpenContent/Templates/" + folder);
+            if (!Directory.Exists(templateFolder)) return new HtmlString($"The folder '{templateFolder}' does not exist.");
+            if (!HasOptionsFile(templateFolder)) return new HtmlString($"The folder '{templateFolder}' does not have an options.json file.");
+            var migrator = new FieldMigrator(templateFolder, portalId, overwriteTargetData);
             return new HtmlString("Migration Succesful");
         }
 
-        private FieldMigrator(FolderUri folder, int portalId)
+        private FieldMigrator(string folder, int portalId, bool overwriteTargetData)
         {
             OcFieldInfo targetField;
             OcFieldInfo sourceField;
             DetectMigrationFields(out sourceField, out targetField);
 
-            IEnumerable<ModuleInfo> modules = (new ModuleController()).GetModules(portalId).Cast<ModuleInfo>();
+            var modules = (new ModuleController()).GetModules(portalId).Cast<ModuleInfo>();
             modules = modules.Where(m => m.ModuleDefinition.DefinitionName == App.Config.Opencontent && !m.IsDeleted && !m.OpenContentSettings().IsOtherModule);
             foreach (var module in modules)
             {
@@ -54,7 +58,7 @@ namespace Satrabel.OpenContent.Components.Migration
                         var ocDataItem = (OpenContentInfo)dataItem.Item;
                         JToken sourceData = GetFieldData(ocDataItem, sourceField);
                         var targetData = ConvertToTargetData(sourceField, targetField, sourceData);
-                        SetFieldData(ocDataItem, targetField, targetData);
+                        SetFieldData(ocDataItem, targetField, targetData, overwriteTargetData);
                         //todo: save ocDataItem
                     }
                 }
@@ -65,9 +69,18 @@ namespace Satrabel.OpenContent.Components.Migration
             }
         }
 
-        private void SetFieldData(OpenContentInfo openContentInfo, OcFieldInfo targetField, JToken targetData)
+        private static bool HasOptionsFile(string folder)
+        {
+            string path = Path.Combine(folder, "options.json");
+            return File.Exists(path);
+        }
+
+        private void SetFieldData(OpenContentInfo openContentInfo, OcFieldInfo targetField, JToken targetData, bool overwriteTargetData)
         {
             // todo
+            // check if target field contains data.
+            // if yes and !overwriteTargetData: return
+            // write target data and return
         }
 
         private JToken ConvertToTargetData(OcFieldInfo sourceField, OcFieldInfo targetField, JToken sourceData)
@@ -83,7 +96,7 @@ namespace Satrabel.OpenContent.Components.Migration
         private JToken GetFieldData(OpenContentInfo ocDataItem, OcFieldInfo sourceField)
         {
             // todo
-            return ocDataItem.JsonAsJToken.First; 
+            return ocDataItem.JsonAsJToken.First;
         }
 
         /// <summary>
