@@ -1,7 +1,7 @@
-npm i github:sachatrauwaen/lamavue
+call npm i github:sachatrauwaen/lamavue
 
 pause
 
-npm run build
+call npm run build
 
 pause
