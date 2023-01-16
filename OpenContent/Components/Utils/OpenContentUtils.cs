@@ -730,17 +730,22 @@ namespace Satrabel.OpenContent.Components
             }
             if (isPublished && indexConfig?.Fields != null && indexConfig.Fields.ContainsKey(App.Config.FieldNamePublishStartDate))
             {
-                if (dsItem.Data[App.Config.FieldNamePublishStartDate] != null && dsItem.Data[App.Config.FieldNamePublishStartDate].Type == JTokenType.Date)
+
+                if (dsItem.Data[App.Config.FieldNamePublishStartDate] != null /*&& dsItem.Data[App.Config.FieldNamePublishStartDate].Type == JTokenType.Date*/)
                 {
-                    var compareDate = (DateTime)dsItem.Data[App.Config.FieldNamePublishStartDate];
-                    // do we need to compare time?
-                    if (compareDate.TimeOfDay.TotalMilliseconds > 0)
+                    DateTime compareDate;
+                    if (DateTime.TryParse(dsItem.Data[App.Config.FieldNamePublishStartDate].ToString(), null, System.Globalization.DateTimeStyles.RoundtripKind, out compareDate))
                     {
-                        isPublished = compareDate <= DateTime.Now;
-                    }
-                    else
-                    {
-                        isPublished = compareDate <= DateTime.Today;
+                        //var compareDate = (DateTime)dsItem.Data[App.Config.FieldNamePublishStartDate];
+                        // do we need to compare time?
+                        if (compareDate.TimeOfDay.TotalMilliseconds > 0)
+                        {
+                            isPublished = compareDate <= DateTime.Now;
+                        }
+                        else
+                        {
+                            isPublished = compareDate <= DateTime.Today;
+                        }
                     }
                 }
                 else
@@ -753,17 +758,21 @@ namespace Satrabel.OpenContent.Components
             }
             if (isPublished && indexConfig?.Fields != null && indexConfig.Fields.ContainsKey(App.Config.FieldNamePublishEndDate))
             {
-                if (dsItem.Data[App.Config.FieldNamePublishEndDate] != null && dsItem.Data[App.Config.FieldNamePublishEndDate].Type == JTokenType.Date)
+                if (dsItem.Data[App.Config.FieldNamePublishEndDate] != null /*&& dsItem.Data[App.Config.FieldNamePublishEndDate].Type == JTokenType.Date*/)
                 {
-                    var compareDate = (DateTime)dsItem.Data[App.Config.FieldNamePublishEndDate];
-                    // do we need to compare time?
-                    if (compareDate.TimeOfDay.TotalMilliseconds > 0)
+                    DateTime compareDate;
+                    if (DateTime.TryParse(dsItem.Data[App.Config.FieldNamePublishEndDate].ToString(), null, System.Globalization.DateTimeStyles.RoundtripKind, out compareDate))
                     {
-                        isPublished = compareDate >= DateTime.Now;
-                    }
-                    else
-                    {
-                        isPublished = compareDate >= DateTime.Today;
+                        //var compareDate = (DateTime)dsItem.Data[App.Config.FieldNamePublishEndDate];
+                        // do we need to compare time?
+                        if (compareDate.TimeOfDay.TotalMilliseconds > 0)
+                        {
+                            isPublished = compareDate >= DateTime.Now;
+                        }
+                        else
+                        {
+                            isPublished = compareDate >= DateTime.Today;
+                        }
                     }
                 }
                 else
