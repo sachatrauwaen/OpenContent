@@ -190,6 +190,7 @@
     <Compile Include="Components\ImageStatus.cs" />
     <Compile Include="Components\Migration\Migrator.cs" />
     <Compile Include="Components\Migration\MigratorHelper.cs" />
+    <Compile Include="Components\Migration\OcFieldInfo.cs" />
     <Compile Include="Components\ResourceController.cs" />
     <Compile Include="Components\Localization\LocalizationUtils.cs" />
     <Compile Include="Components\Logging\Logger.cs" />

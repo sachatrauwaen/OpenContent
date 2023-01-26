@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.Web.Services.Description;
 using DotNetNuke.Services.FileSystem;
 using Newtonsoft.Json.Linq;
 
@@ -8,6 +6,23 @@ namespace Satrabel.OpenContent.Components.Migration
 {
     public static class MigratorHelper
     {
+        /// <summary>
+        /// List of supported migrations
+        /// </summary>
+        /// <exception cref="NotImplementedException"></exception>
+        public static JToken ConvertTo(JToken sourceData, OcFieldInfo sourceField, OcFieldInfo targetField, int portalId, int moduleID)
+        {
+            if (sourceField.Type == "image2" && targetField.Type == "imagex")
+            {
+                return MigratorHelper.Image2ToImageX(sourceData, sourceField, targetField, portalId, moduleID);
+            }
+            if (sourceField.Type == "text" && targetField.Type == "textarea")
+            {
+                return MigratorHelper.TextToTextArea(sourceData, sourceField, targetField);
+            }
+            throw new NotImplementedException($"Migration from field type {sourceField.Type} to {targetField.Type} is not supported. Consider implementing it yourself.");
+        }
+
         public static JToken Image2ToImageX(JToken input, OcFieldInfo sourceField, OcFieldInfo targetField, int portalId, int moduleId)
         {
             var fileManager = FileManager.Instance;
@@ -76,7 +91,7 @@ namespace Satrabel.OpenContent.Components.Migration
 
         public static JToken TextToTextArea(JToken input, OcFieldInfo sourceField, OcFieldInfo targetField)
         {
-            // create ImageX JToken, but also copy the original image to the new image location
+            // create TextArea JToken from the original data
             JToken output = new JValue(input.ToString());
             
             return output;
