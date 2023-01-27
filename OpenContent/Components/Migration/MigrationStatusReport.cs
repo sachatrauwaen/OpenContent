@@ -12,14 +12,16 @@ namespace Satrabel.OpenContent.Components.Migration
         private int _alreadyUpdatedDataCounter;
         private readonly string _templateFolder;
         private readonly string _migrationVersion;
+        private readonly bool _dryRun;
         private int _donotOverwrite;
         private readonly Dictionary<string, int> _skipped = new Dictionary<string, int>();
         private int _migrated;
 
-        public MigrationStatusReport(string templateFolder, string migrationVersion)
+        public MigrationStatusReport(string templateFolder, string migrationVersion, bool dryRun)
         {
             _templateFolder = templateFolder;
             _migrationVersion = migrationVersion;
+            _dryRun = dryRun;
         }
 
         public HtmlString Print()
@@ -33,6 +35,10 @@ namespace Satrabel.OpenContent.Components.Migration
             html.Append($"<li>Number of data items found for that template: <strong>{_moduleDataCounter}</strong>.</li>");
             if (_migrateToCounter > 0)
             {
+                if (_dryRun)
+                {
+                    html.Append($"<li><strong>DRY RUN - No modification have been made.</strong>.</li>");
+                }
                 html.Append($"<li>Number of Data items ready for migration: <strong>{_moduleDataCounter - _alreadyUpdatedDataCounter}</strong>.</li>");
                 html.Append($"<li>Number of Data items skipped because already migrated: <strong>{_alreadyUpdatedDataCounter} items with '{_migrationVersion}' tag</strong>.</li>");
                 html.Append($"<li>Number of Data items skipped because OverWrite==false: <strong>{_donotOverwrite} items</strong>.</li>");

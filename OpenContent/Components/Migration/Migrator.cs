@@ -19,7 +19,7 @@ namespace Satrabel.OpenContent.Components.Migration
         /// <summary>
         /// A Factory class that creates a FieldMigrator and executes the migration
         /// </summary>
-        public static HtmlString Migrate(OpenContentWebPage caller, string folder, string migrationVersion, bool overwriteTargetData)
+        public static HtmlString Migrate(OpenContentWebPage caller, string folder, string migrationVersion, bool overwriteTargetData, bool dryRun)
         {
             try
             {
@@ -27,7 +27,7 @@ namespace Satrabel.OpenContent.Components.Migration
                 string templateFolder = HostingEnvironment.MapPath("~/" + caller.Dnn.Portal.HomeDirectory + "OpenContent/Templates/" + folder);
                 if (!Directory.Exists(templateFolder)) return new HtmlString($"The folder '{templateFolder}' does not exist.");
                 if (!HasOptionsFile(templateFolder)) return new HtmlString($"The folder '{templateFolder}' does not have an options.json file.");
-                var migrator = new FieldMigrator(templateFolder, portalId, overwriteTargetData, migrationVersion);
+                var migrator = new FieldMigrator(templateFolder, portalId, overwriteTargetData, migrationVersion, dryRun);
 
                 return migrator.Report.Print();
             }
@@ -40,10 +40,10 @@ namespace Satrabel.OpenContent.Components.Migration
 
         private MigrationStatusReport Report { get; }
 
-        private FieldMigrator(string folder, int portalId, bool overwriteTargetData, string migrationVersion)
+        private FieldMigrator(string folder, int portalId, bool overwriteTargetData, string migrationVersion, bool dryRun)
         {
             // Initialize status report
-            Report = new MigrationStatusReport(folder, migrationVersion);
+            Report = new MigrationStatusReport(folder, migrationVersion, dryRun);
 
             // fetch all modules with data and with the requested template
             var modules = (new ModuleController()).GetModules(portalId).Cast<ModuleInfo>();
@@ -80,7 +80,7 @@ namespace Satrabel.OpenContent.Components.Migration
                         JToken sourceData = dataItem.Data;
                         if (sourceData["migration"] == null || sourceData["migration"].ToString() != migrationVersion)
                         {
-                            MigrateData(Report, sourceData, schema, options, portalId, module.ModuleID, overwriteTargetData);
+                            MigrateData(Report, sourceData, schema, options, portalId, module.ModuleID, overwriteTargetData, dryRun);
                             sourceData["migration"] = migrationVersion; // mark an item as migrated
                             ds.Update(dsContext, dataItem, sourceData);
                         }
@@ -98,7 +98,7 @@ namespace Satrabel.OpenContent.Components.Migration
         /// <summary>
         /// Recursive method that traverses the schema and Migrates the data of any field that is marked with 'migrateto'
         /// </summary>
-        private static void MigrateData(MigrationStatusReport report, JToken data, JObject schema, JObject options, int portalId, int moduleID, bool overwriteTargetData)
+        private static void MigrateData(MigrationStatusReport report, JToken data, JObject schema, JObject options, int portalId, int moduleID, bool overwriteTargetData, bool dryRun)
         {
             if (schema?["properties"] == null)
                 return;
@@ -121,7 +121,7 @@ namespace Satrabel.OpenContent.Components.Migration
                         if (obj != null && optionsOfCurrentField != null && schemaOfCurrentField["items"] != null && optionsOfCurrentField["items"] != null)
                         {
                             // loop again to check the next level
-                            MigrateData(report, obj, schemaOfCurrentField["items"] as JObject, optionsOfCurrentField["items"] as JObject, portalId, moduleID, overwriteTargetData);
+                            MigrateData(report, obj, schemaOfCurrentField["items"] as JObject, optionsOfCurrentField["items"] as JObject, portalId, moduleID, overwriteTargetData, dryRun);
                         }
                         else // we are dealing with array of JValues 
                         {
@@ -149,7 +149,7 @@ namespace Satrabel.OpenContent.Components.Migration
                     var obj = childProperty.Value as JObject;
                     if (obj != null && schemaOfCurrentField != null && optionsOfCurrentField != null)
                     {
-                        MigrateData(report, obj, schemaOfCurrentField, optionsOfCurrentField, portalId, moduleID, overwriteTargetData);
+                        MigrateData(report, obj, schemaOfCurrentField, optionsOfCurrentField, portalId, moduleID, overwriteTargetData, dryRun);
                     }
                 }
                 else if (childProperty.Value is JValue)  // the property is an Value
@@ -178,7 +178,9 @@ namespace Satrabel.OpenContent.Components.Migration
                         }
 
                         JToken val = childProperty.Value;
-                        data[migrateTo] = MigratorHelper.ConvertTo(report, val, sourceField, targetField, portalId, moduleID);
+                        var newData = MigratorHelper.ConvertTo(report, val, sourceField, targetField, portalId, moduleID, dryRun);
+                        if (!dryRun)
+                            data[migrateTo] = newData;
                     }
                 }
             }
