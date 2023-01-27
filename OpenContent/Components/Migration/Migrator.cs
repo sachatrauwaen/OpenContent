@@ -118,10 +118,10 @@ namespace Satrabel.OpenContent.Components.Migration
                     foreach (var value in array)
                     {
                         var obj = value as JObject; // are we dealing with an data object? 
-                        if (obj != null && optionsOfCurrentField != null && schemaOfCurrentField["items"] != null && optionsOfCurrentField["items"] != null)
+                        if (obj != null && optionsOfCurrentField != null && schemaOfCurrentField["items"] != null && optionsOfCurrentField["fields"]?["item"] != null)
                         {
                             // loop again to check the next level
-                            MigrateData(report, obj, schemaOfCurrentField["items"] as JObject, optionsOfCurrentField["items"] as JObject, portalId, moduleID, overwriteTargetData, dryRun);
+                            MigrateData(report, obj, schemaOfCurrentField["items"] as JObject, optionsOfCurrentField["fields"]["item"] as JObject, portalId, moduleID, overwriteTargetData, dryRun);
                         }
                         else // we are dealing with array of JValues 
                         {
