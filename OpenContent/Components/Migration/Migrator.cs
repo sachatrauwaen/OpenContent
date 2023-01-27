@@ -7,7 +7,6 @@ using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Portals;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Datasource;
-using Satrabel.OpenContent.Components.Datasource.Search;
 
 namespace Satrabel.OpenContent.Components.Migration
 {
@@ -29,7 +28,8 @@ namespace Satrabel.OpenContent.Components.Migration
                 if (!Directory.Exists(templateFolder)) return new HtmlString($"The folder '{templateFolder}' does not exist.");
                 if (!HasOptionsFile(templateFolder)) return new HtmlString($"The folder '{templateFolder}' does not have an options.json file.");
                 var migrator = new FieldMigrator(templateFolder, portalId, overwriteTargetData, migrationVersion);
-                return new HtmlString("Migration ran without errors");
+
+                return migrator.Report.Print();
             }
 
             catch (Exception ex)
@@ -38,8 +38,13 @@ namespace Satrabel.OpenContent.Components.Migration
             }
         }
 
+        private MigrationStatusReport Report { get; }
+
         private FieldMigrator(string folder, int portalId, bool overwriteTargetData, string migrationVersion)
         {
+            // Initialize status report
+            Report = new MigrationStatusReport(folder, migrationVersion);
+
             // fetch all modules with data and with the requested template
             var modules = (new ModuleController()).GetModules(portalId).Cast<ModuleInfo>();
             modules = modules.Where(m => m.ModuleDefinition.DefinitionName == App.Config.Opencontent &&
@@ -53,6 +58,7 @@ namespace Satrabel.OpenContent.Components.Migration
             {
                 try
                 {
+                    Report.FoundModule();
                     var ocConfig = OpenContentModuleConfig.Create(module, new PortalSettings(portalId));
                     var dsContext = OpenContentUtils.CreateDataContext(ocConfig);
                     var ds = DataSourceManager.GetDataSource(ocConfig.Settings.Manifest.DataSource);
@@ -70,13 +76,16 @@ namespace Satrabel.OpenContent.Components.Migration
 
                     foreach (var dataItem in ds.GetAll(dsContext, null).Items)
                     {
+                        Report.FoundModuleData();
                         JToken sourceData = dataItem.Data;
                         if (sourceData["migration"] == null || sourceData["migration"].ToString() != migrationVersion)
                         {
-                            MigrateData(sourceData, schema, options, portalId, module.ModuleID, overwriteTargetData);
+                            MigrateData(Report, sourceData, schema, options, portalId, module.ModuleID, overwriteTargetData);
                             sourceData["migration"] = migrationVersion; // mark an item as migrated
                             ds.Update(dsContext, dataItem, sourceData);
                         }
+                        else
+                            Report.FoundAlreadyUpgradedData();
                     }
                 }
                 catch (Exception e)
@@ -89,7 +98,7 @@ namespace Satrabel.OpenContent.Components.Migration
         /// <summary>
         /// Recursive method that traverses the schema and Migrates the data of any field that is marked with 'migrateto'
         /// </summary>
-        private void MigrateData(JToken data, JObject schema, JObject options, int portalId, int moduleID, bool overwriteTargetData)
+        private static void MigrateData(MigrationStatusReport report, JToken data, JObject schema, JObject options, int portalId, int moduleID, bool overwriteTargetData)
         {
             if (schema?["properties"] == null)
                 return;
@@ -112,7 +121,7 @@ namespace Satrabel.OpenContent.Components.Migration
                         if (obj != null && optionsOfCurrentField != null && schemaOfCurrentField["items"] != null && optionsOfCurrentField["items"] != null)
                         {
                             // loop again to check the next level
-                            MigrateData(obj, schemaOfCurrentField["items"] as JObject, optionsOfCurrentField["items"] as JObject, portalId, moduleID, overwriteTargetData);
+                            MigrateData(report, obj, schemaOfCurrentField["items"] as JObject, optionsOfCurrentField["items"] as JObject, portalId, moduleID, overwriteTargetData);
                         }
                         else // we are dealing with array of JValues 
                         {
@@ -140,31 +149,36 @@ namespace Satrabel.OpenContent.Components.Migration
                     var obj = childProperty.Value as JObject;
                     if (obj != null && schemaOfCurrentField != null && optionsOfCurrentField != null)
                     {
-                        MigrateData(obj, schemaOfCurrentField, optionsOfCurrentField, portalId, moduleID, overwriteTargetData);
+                        MigrateData(report, obj, schemaOfCurrentField, optionsOfCurrentField, portalId, moduleID, overwriteTargetData);
                     }
                 }
                 else if (childProperty.Value is JValue)  // the property is an Value
                 {
                     if (optionsOfCurrentField != null && optionsOfCurrentField["migrateTo"] != null)
                     {
-                        string migrateTo = optionsOfCurrentField["migrateTo"].ToString();
-                        if (!string.IsNullOrEmpty(migrateTo))
-                        {
-                            var schemaOfTargetField = schema["properties"][migrateTo] as JObject;
-                            var optionsOfTargetField = options["fields"][migrateTo] as JObject;
-                            if (schemaOfTargetField == null || optionsOfTargetField == null)
-                            {
-                                throw new ArgumentOutOfRangeException($"Migration target field {migrateTo} doesn't exist.");
-                            }
-                            var sourceField = new OcFieldInfo(schemaOfCurrentField, optionsOfCurrentField);
-                            var targetField = new OcFieldInfo(schemaOfTargetField, optionsOfTargetField);
+                        report.FoundMigrateTo();
 
-                            if (data[migrateTo] == null || overwriteTargetData)
-                            {
-                                JToken val = childProperty.Value;
-                                data[migrateTo] = MigratorHelper.ConvertTo(val, sourceField, targetField, portalId, moduleID);
-                            }
+                        string migrateTo = optionsOfCurrentField["migrateTo"].ToString();
+                        if (string.IsNullOrEmpty(migrateTo))
+                            throw new Exception("Found 'migrateTo' tag which was empty.  Remove it first and try again.");
+
+                        var schemaOfTargetField = schema["properties"][migrateTo] as JObject;
+                        var optionsOfTargetField = options["fields"][migrateTo] as JObject;
+                        if (schemaOfTargetField == null || optionsOfTargetField == null)
+                        {
+                            throw new ArgumentOutOfRangeException($"Migration target field {migrateTo} doesn't exist.");
                         }
+                        var sourceField = new OcFieldInfo(schemaOfCurrentField, optionsOfCurrentField);
+                        var targetField = new OcFieldInfo(schemaOfTargetField, optionsOfTargetField);
+
+                        if (data[migrateTo] != null && !overwriteTargetData)
+                        {
+                            report.FoundDoNotOverwrite();
+                            continue;
+                        }
+
+                        JToken val = childProperty.Value;
+                        data[migrateTo] = MigratorHelper.ConvertTo(report, val, sourceField, targetField, portalId, moduleID);
                     }
                 }
             }

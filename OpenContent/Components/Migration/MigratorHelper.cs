@@ -10,24 +10,24 @@ namespace Satrabel.OpenContent.Components.Migration
         /// List of supported migrations
         /// </summary>
         /// <exception cref="NotImplementedException"></exception>
-        public static JToken ConvertTo(JToken sourceData, OcFieldInfo sourceField, OcFieldInfo targetField, int portalId, int moduleID)
+        public static JToken ConvertTo(MigrationStatusReport report, JToken sourceData, OcFieldInfo sourceField, OcFieldInfo targetField, int portalId, int moduleID)
         {
             var migratorType = $"{sourceField.Type} => {targetField.Type}";
 
             switch (migratorType)
             {
                 case "file2 => imagex":
-                    return MigratorHelper.File2ToImageX(sourceData, sourceField, targetField, portalId, moduleID);
+                    return MigratorHelper.File2ToImageX(report, sourceData, sourceField, targetField, portalId, moduleID);
                 case "image2 => imagex":
-                    return MigratorHelper.Image2ToImageX(sourceData, sourceField, targetField, portalId, moduleID);
+                    return MigratorHelper.Image2ToImageX(report, sourceData, sourceField, targetField, portalId, moduleID);
                 case "text => textarea":
-                    return MigratorHelper.TextToTextArea(sourceData, sourceField, targetField);
+                    return MigratorHelper.TextToTextArea(report, sourceData, sourceField, targetField);
                 default:
                     throw new NotImplementedException($"Migration from field type {sourceField.Type} to {targetField.Type} is not supported. Consider implementing it yourself.");
             }
         }
 
-        private static JToken File2ToImageX(JToken input, OcFieldInfo sourceField, OcFieldInfo targetField, int portalId, int moduleId)
+        private static JToken File2ToImageX(MigrationStatusReport report, JToken input, OcFieldInfo sourceField, OcFieldInfo targetField, int portalId, int moduleId)
         {
             var fileManager = FileManager.Instance;
             var folderManager = FolderManager.Instance;
@@ -35,8 +35,13 @@ namespace Satrabel.OpenContent.Components.Migration
             var file = fileManager.GetFile(fileId);
 
             // check if extention is allowed in target field
-            if (!targetField.Options["fileExtensions"].Value<string>().ToLowerInvariant().Contains(file.Extension.ToLowerInvariant())) return new JObject(); 
+            if (!targetField.Options["fileExtensions"].Value<string>().ToLowerInvariant().Contains(file.Extension.ToLowerInvariant()))
+            {
+                report.Skipped($"Item with FileExtention {file.Extension} skipped. Reason: not allowed in target field.");
+                return new JObject();
+            } 
 
+            // Copy file to default upload folder, if not already there.
             if (sourceField.Options["folder"] != targetField.Options["uploadfolder"])
             {
                 bool secure = targetField.Options["secure"] != null && targetField.Options["secure"].Value<Boolean>();
@@ -93,16 +98,18 @@ namespace Satrabel.OpenContent.Components.Migration
             //output["cropUrl"] = "";
             //output["crop"] = new JObject();
 
+            report.Migrated();
             return output;
         }
 
-        private static JToken Image2ToImageX(JToken input, OcFieldInfo sourceField, OcFieldInfo targetField, int portalId, int moduleId)
+        private static JToken Image2ToImageX(MigrationStatusReport report, JToken input, OcFieldInfo sourceField, OcFieldInfo targetField, int portalId, int moduleId)
         {
             var fileManager = FileManager.Instance;
             var folderManager = FolderManager.Instance;
             int fileId = int.Parse(input.ToString());
             var file = fileManager.GetFile(fileId);
 
+            // Copy file to default upload folder, if not already there.
             if (sourceField.Options["folder"] != targetField.Options["uploadfolder"])
             {
                 bool secure = targetField.Options["secure"] != null && targetField.Options["secure"].Value<Boolean>();
@@ -159,14 +166,16 @@ namespace Satrabel.OpenContent.Components.Migration
             //output["cropUrl"] = "";
             //output["crop"] = new JObject();
 
+            report.Migrated();
             return output;
         }
 
-        private static JToken TextToTextArea(JToken input, OcFieldInfo sourceField, OcFieldInfo targetField)
+        private static JToken TextToTextArea(MigrationStatusReport report, JToken input, OcFieldInfo sourceField, OcFieldInfo targetField)
         {
             // create TextArea JToken from the original data
             JToken output = new JValue(input.ToString());
             
+            report.Migrated();
             return output;
         }
     }
