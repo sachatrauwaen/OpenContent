@@ -183,6 +183,10 @@ namespace Satrabel.OpenContent.Components.Migration
                             data[migrateTo] = newData;
                     }
                 }
+                else
+                {
+                    throw new NotImplementedException("unknown childProperty type");
+                }
             }
         }
 
