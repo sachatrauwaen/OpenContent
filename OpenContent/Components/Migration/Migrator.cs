@@ -51,7 +51,7 @@ namespace Satrabel.OpenContent.Components.Migration
                                         !m.IsDeleted &&
                                         !m.OpenContentSettings().IsOtherModule &&
                                         m.OpenContentSettings().TemplateDir != null &&
-                                        m.OpenContentSettings().TemplateDir.PhysicalFullDirectory == folder);
+                                        m.OpenContentSettings().TemplateDir.PhysicalFullDirectory.ToLowerInvariant() == folder.ToLowerInvariant());
 
             // migrate the data of each module
             foreach (var module in modules)
