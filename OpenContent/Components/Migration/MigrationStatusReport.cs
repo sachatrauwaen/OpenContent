@@ -9,7 +9,7 @@ namespace Satrabel.OpenContent.Components.Migration
         private int _migrateToCounter;
         private int _moduleCounter;
         private int _moduleDataCounter;
-        private int _alreadyUpdatedDataCounter;
+        private int _alreadyMigratedDataCounter;
         private readonly string _templateFolder;
         private readonly string _migrationVersion;
         private readonly bool _dryRun;
@@ -31,23 +31,23 @@ namespace Satrabel.OpenContent.Components.Migration
             html.Append("<p>Migration ran without errors.</p>");
             html.Append("<ul>");
             html.Append($"<li>Number of 'MigrateTo' tags found in options.json: <strong>{_migrateToCounter}</strong>.</li>");
-            html.Append($"<li>Number of Modules found of template {_templateFolder}: <strong>{_moduleCounter}</strong>.</li>");
-            html.Append($"<li>Number of data items found for that template: <strong>{_moduleDataCounter}</strong>.</li>");
-            if (_migrateToCounter > 0)
+            html.Append($"<li>Number of Modules found with template {_templateFolder}: <strong>{_moduleCounter}</strong>.</li>");
+            html.Append($"<li>Number of data items found in those modules: <strong>{_moduleDataCounter}</strong>.</li>");
+            if (_dryRun)
             {
-                if (_dryRun)
-                {
-                    html.Append($"<li><strong>DRY RUN - No modification have been made.</strong>.</li>");
-                }
-                html.Append($"<li>Number of Data items ready for migration: <strong>{_moduleDataCounter - _alreadyUpdatedDataCounter}</strong>.</li>");
-                html.Append($"<li>Number of Data items skipped because already migrated: <strong>{_alreadyUpdatedDataCounter} items with '{_migrationVersion}' tag</strong>.</li>");
-                html.Append($"<li>Number of Data items skipped because OverWrite==false: <strong>{_donotOverwrite} items</strong>.</li>");
-                foreach (var skipped in _skipped)
-                {
-                    html.Append($"<li>{skipped.Key}: <strong>{skipped.Value} items</strong>.</li>");
-                }
-                html.Append($"<li>Number of Data items actually migrated: <strong>{_migrated} items</strong>.</li>");
+                html.Append($"<li><strong>DRY RUN - No modification have been made.</strong>.</li>");
             }
+            html.Append(
+                $"<li>Number of Data items ready for migration: <strong>{_moduleDataCounter - _alreadyMigratedDataCounter}</strong>.</li>");
+            html.Append(
+                $"<li>Number of Data items skipped because already migrated: <strong>{_alreadyMigratedDataCounter} items</strong> with '{_migrationVersion}' tag.</li>");
+            html.Append(
+                $"<li>Number of Data items skipped because OverWrite==false: <strong>{_donotOverwrite} items</strong>.</li>");
+            foreach (var skipped in _skipped)
+            {
+                html.Append($"<li>{skipped.Key}: <strong>{skipped.Value} items</strong>.</li>");
+            }
+            html.Append($"<li>Number of Data items actually migrated: <strong>{_migrated} items</strong>.</li>");
             html.Append("</ul>");
             return new HtmlString(html.ToString());
         }
@@ -67,9 +67,9 @@ namespace Satrabel.OpenContent.Components.Migration
             _moduleDataCounter += 1;
         }
 
-        public void FoundAlreadyUpgradedData()
+        public void FoundAlreadyMigratedData()
         {
-            _alreadyUpdatedDataCounter += 1;
+            _alreadyMigratedDataCounter += 1;
         }
 
         public void FoundDoNotOverwrite()

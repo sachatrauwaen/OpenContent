@@ -85,7 +85,7 @@ namespace Satrabel.OpenContent.Components.Migration
                             ds.Update(dsContext, dataItem, sourceData);
                         }
                         else
-                            Report.FoundAlreadyUpgradedData();
+                            Report.FoundAlreadyMigratedData();
                     }
                 }
                 catch (Exception e)
