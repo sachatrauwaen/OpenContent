@@ -12,8 +12,10 @@ namespace Satrabel.OpenContent.Components.Migration
         /// <exception cref="NotImplementedException"></exception>
         public static JToken ConvertTo(MigrationStatusReport report, JToken sourceData, OcFieldInfo sourceField, OcFieldInfo targetField, MigrationConfig config, int moduleId)
         {
-            var migratorType = $"{sourceField.Type} => {targetField.Type}";
+            if (sourceField.Type == targetField.Type)
+                return MigratorHelper.SameType(report, sourceData);
 
+            var migratorType = $"{sourceField.Type} => {targetField.Type}";
             switch (migratorType)
             {
                 case "file2 => imagex":
@@ -177,6 +179,12 @@ namespace Satrabel.OpenContent.Components.Migration
 
             report.Migrated();
             return output;
+        }
+
+        private static JToken SameType(MigrationStatusReport report, JToken input)
+        {
+            report.Migrated();
+            return input;
         }
     }
 }
