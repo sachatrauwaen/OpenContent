@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Web;
 using System.Web.Hosting;
 using DotNetNuke.Entities.Modules;
@@ -27,66 +28,45 @@ namespace Satrabel.OpenContent.Components.Migration
                 string templateFolder = HostingEnvironment.MapPath("~/" + caller.Dnn.Portal.HomeDirectory + "OpenContent/Templates/" + folder);
                 if (!Directory.Exists(templateFolder)) return new HtmlString($"The folder '{templateFolder}' does not exist.");
                 if (!HasOptionsFile(templateFolder)) return new HtmlString($"The folder '{templateFolder}' does not have an options.json file.");
-                var migrator = new FieldMigrator(templateFolder, portalId, overwriteTargetData, migrationVersion, dryRun);
+                var config = new MigrationConfig(templateFolder, portalId, overwriteTargetData, migrationVersion, dryRun);
+                var migrator = new FieldMigrator(config);
 
                 return migrator.Report.Print();
             }
 
             catch (Exception ex)
             {
-                return new HtmlString("Migration Error : " + ex.Message);
+                return new HtmlString("Migration Error : " + ex);
             }
         }
 
         private MigrationStatusReport Report { get; }
 
-        private FieldMigrator(string folder, int portalId, bool overwriteTargetData, string migrationVersion, bool dryRun)
+        private FieldMigrator(MigrationConfig config)
         {
             // Initialize status report
-            Report = new MigrationStatusReport(folder, migrationVersion, dryRun);
+            Report = new MigrationStatusReport(config);
 
             // fetch all modules with data and with the requested template
-            var modules = (new ModuleController()).GetModules(portalId).Cast<ModuleInfo>();
+            var modules = (new ModuleController()).GetModules(config.PortalId).Cast<ModuleInfo>();
             modules = modules.Where(m => m.ModuleDefinition.DefinitionName == App.Config.Opencontent &&
                                         !m.IsDeleted &&
                                         !m.OpenContentSettings().IsOtherModule &&
                                         m.OpenContentSettings().TemplateDir != null &&
-                                        m.OpenContentSettings().TemplateDir.PhysicalFullDirectory.ToLowerInvariant() == folder.ToLowerInvariant());
+                                        m.OpenContentSettings().TemplateDir.PhysicalFullDirectory.ToLowerInvariant() == config.TemplateFolder.ToLowerInvariant());
 
-            // migrate the data of each module
+            // migrate the data and additional data of each module
             foreach (var module in modules)
             {
                 try
                 {
                     Report.FoundModule();
-                    var ocConfig = OpenContentModuleConfig.Create(module, new PortalSettings(portalId));
+                    var ocConfig = OpenContentModuleConfig.Create(module, new PortalSettings(config.PortalId));
                     var dsContext = OpenContentUtils.CreateDataContext(ocConfig);
                     var ds = DataSourceManager.GetDataSource(ocConfig.Settings.Manifest.DataSource);
-                    var alpaca = ds.GetAlpaca(dsContext, true, true, false);
-                    JObject schema = null;
-                    JObject options = null;
-                    if (alpaca != null)
-                    {
-                        schema = alpaca["schema"] as JObject; // cache
-                        options = alpaca["options"] as JObject; // cache
-                    }
 
-                    if (schema == null || options == null)
-                        throw new Exception("Cannot Migrate: no Options found.");
-
-                    foreach (var dataItem in ds.GetAll(dsContext, null).Items)
-                    {
-                        Report.FoundModuleData();
-                        JToken sourceData = dataItem.Data;
-                        if (sourceData["migration"] == null || sourceData["migration"].ToString() != migrationVersion)
-                        {
-                            MigrateData(Report, sourceData, schema, options, portalId, module.ModuleID, overwriteTargetData, dryRun);
-                            sourceData["migration"] = migrationVersion; // mark an item as migrated
-                            ds.Update(dsContext, dataItem, sourceData);
-                        }
-                        else
-                            Report.FoundAlreadyMigratedData();
-                    }
+                    MigrateOpenContentData(dsContext, ds, config, module.ModuleID);
+                    MigrateAdditionalData(ocConfig, dsContext, ds, config, module.ModuleID);
                 }
                 catch (Exception e)
                 {
@@ -95,10 +75,89 @@ namespace Satrabel.OpenContent.Components.Migration
             }
         }
 
+        private void MigrateAdditionalData(OpenContentModuleConfig ocConfig, DataSourceContext dsContext, IDataSource ds, MigrationConfig config, int moduleId)
+        {
+            foreach (var additionalDataManifest in ocConfig.Settings.Manifest.AdditionalDataDefinition)
+            {
+                if (additionalDataManifest.Value.ScopeType != null && !additionalDataManifest.Value.ScopeType.StartsWith("module"))
+                {
+                    throw new Exception($"Sorry, your AdditionalData Scope '{additionalDataManifest.Value.ScopeType}' is not supported.");
+                }
+
+                var alpaca = ds.GetDataAlpaca(dsContext, true, true, false, additionalDataManifest.Key);
+                var dataItem = ds.GetData(dsContext, additionalDataManifest.Value.ScopeType, additionalDataManifest.Key);
+
+                if (dataItem == null)
+                    continue;
+
+                JObject schema = null;
+                JObject options = null;
+                if (alpaca != null)
+                {
+                    schema = alpaca["schema"] as JObject; // cache
+                    options = alpaca["options"] as JObject; // cache
+                }
+
+                if (schema == null || options == null)
+                    throw new Exception("Cannot Migrate: no Options found.");
+
+                Report.FoundModuleData();
+                JToken sourceData = dataItem.Data;
+                var array = sourceData as JArray;
+                if (array != null)
+                {
+                    foreach (var value in array)
+                    {
+                        if (value != null && schema["items"] != null && options["items"] != null)
+                            MigrateData(Report, value, schema["items"] as JObject, options["items"] as JObject, config, moduleId);
+                        else
+                            throw new Exception("Not implemented - err 128");
+                    }
+                }
+                else
+                {
+                    MigrateData(Report, sourceData, schema, options, config, moduleId);
+                }
+
+                ds.UpdateData(dsContext, dataItem, sourceData);
+            }
+        }
+
+        private void MigrateOpenContentData(DataSourceContext dsContext, IDataSource ds, MigrationConfig config, int moduleId)
+        {
+            var alpaca = ds.GetAlpaca(dsContext, true, true, false);
+            var dataItems = ds.GetAll(dsContext, null).Items;
+
+            JObject schema = null;
+            JObject options = null;
+            if (alpaca != null)
+            {
+                schema = alpaca["schema"] as JObject; // cache
+                options = alpaca["options"] as JObject; // cache
+            }
+
+            if (schema == null || options == null)
+                throw new Exception("Cannot Migrate: no Options found.");
+
+            foreach (var dataItem in dataItems)
+            {
+                Report.FoundModuleData();
+                JToken sourceData = dataItem.Data;
+                if (sourceData["migration"] == null || sourceData["migration"].ToString() != config.MigrationVersion)
+                {
+                    MigrateData(Report, sourceData, schema, options, config, moduleId);
+                    sourceData["migration"] = config.MigrationVersion; // mark an item as migrated
+                    ds.Update(dsContext, dataItem, sourceData);
+                }
+                else
+                    Report.FoundAlreadyMigratedData();
+            }
+        }
+
         /// <summary>
         /// Recursive method that traverses the schema and Migrates the data of any field that is marked with 'migrateto'
         /// </summary>
-        private static void MigrateData(MigrationStatusReport report, JToken data, JObject schema, JObject options, int portalId, int moduleID, bool overwriteTargetData, bool dryRun)
+        private static void MigrateData(MigrationStatusReport report, JToken data, JObject schema, JObject options, MigrationConfig config, int moduleID)
         {
             if (schema?["properties"] == null)
                 return;
@@ -118,10 +177,16 @@ namespace Satrabel.OpenContent.Components.Migration
                     foreach (var value in array)
                     {
                         var obj = value as JObject; // are we dealing with an data object? 
-                        if (obj != null && optionsOfCurrentField != null && schemaOfCurrentField["items"] != null && optionsOfCurrentField["fields"]?["item"] != null)
+                        if (optionsOfCurrentField["items"] == null && optionsOfCurrentField["fields"]?["item"] != null)
+                        {
+                            // Oh, this options file is using a deprecated way of defining arrays
+                            throw new Exception("Your option file uses a deprecated way to define arrays. It uses { fields { item { fields }}}  construct instead of { items { fields }}. Remove the outer 'fields' tag.");
+                        }
+
+                        if (obj != null && optionsOfCurrentField != null && schemaOfCurrentField["items"] != null && optionsOfCurrentField["items"] != null)
                         {
                             // loop again to check the next level
-                            MigrateData(report, obj, schemaOfCurrentField["items"] as JObject, optionsOfCurrentField["fields"]["item"] as JObject, portalId, moduleID, overwriteTargetData, dryRun);
+                            MigrateData(report, obj, schemaOfCurrentField["items"] as JObject, optionsOfCurrentField["items"] as JObject, config, moduleID);
                         }
                         else // we are dealing with array of JValues 
                         {
@@ -149,7 +214,7 @@ namespace Satrabel.OpenContent.Components.Migration
                     var obj = childProperty.Value as JObject;
                     if (obj != null && schemaOfCurrentField != null && optionsOfCurrentField != null)
                     {
-                        MigrateData(report, obj, schemaOfCurrentField, optionsOfCurrentField, portalId, moduleID, overwriteTargetData, dryRun);
+                        MigrateData(report, obj, schemaOfCurrentField, optionsOfCurrentField, config, moduleID);
                     }
                 }
                 else if (childProperty.Value is JValue)  // the property is an Value
@@ -171,15 +236,15 @@ namespace Satrabel.OpenContent.Components.Migration
                         var sourceField = new OcFieldInfo(schemaOfCurrentField, optionsOfCurrentField);
                         var targetField = new OcFieldInfo(schemaOfTargetField, optionsOfTargetField);
 
-                        if (data[migrateTo] != null && !overwriteTargetData)
+                        if (data[migrateTo] != null && !config.OverwriteTargetData)
                         {
                             report.FoundDoNotOverwrite();
                             continue;
                         }
 
                         JToken val = childProperty.Value;
-                        var newData = MigratorHelper.ConvertTo(report, val, sourceField, targetField, portalId, moduleID, dryRun);
-                        if (!dryRun)
+                        var newData = MigratorHelper.ConvertTo(report, val, sourceField, targetField, config, moduleID);
+                        if (!config.DryRun)
                             data[migrateTo] = newData;
                     }
                 }

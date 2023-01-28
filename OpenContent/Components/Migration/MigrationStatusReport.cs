@@ -6,22 +6,18 @@ namespace Satrabel.OpenContent.Components.Migration
 {
     public class MigrationStatusReport
     {
+        private readonly MigrationConfig _migrationConfig;
         private int _migrateToCounter;
         private int _moduleCounter;
         private int _moduleDataCounter;
         private int _alreadyMigratedDataCounter;
-        private readonly string _templateFolder;
-        private readonly string _migrationVersion;
-        private readonly bool _dryRun;
         private int _donotOverwrite;
         private readonly Dictionary<string, int> _skipped = new Dictionary<string, int>();
         private int _migrated;
 
-        public MigrationStatusReport(string templateFolder, string migrationVersion, bool dryRun)
+        public MigrationStatusReport(MigrationConfig migrationConfig)
         {
-            _templateFolder = templateFolder;
-            _migrationVersion = migrationVersion;
-            _dryRun = dryRun;
+            _migrationConfig = migrationConfig;
         }
 
         public HtmlString Print()
@@ -31,16 +27,16 @@ namespace Satrabel.OpenContent.Components.Migration
             html.Append("<p>Migration ran without errors.</p>");
             html.Append("<ul>");
             html.Append($"<li>Number of 'MigrateTo' tags found in options.json: <strong>{_migrateToCounter}</strong>.</li>");
-            html.Append($"<li>Number of Modules found with template {_templateFolder}: <strong>{_moduleCounter}</strong>.</li>");
+            html.Append($"<li>Number of Modules found with template {_migrationConfig.TemplateFolder}: <strong>{_moduleCounter}</strong>.</li>");
             html.Append($"<li>Number of data items found in those modules: <strong>{_moduleDataCounter}</strong>.</li>");
-            if (_dryRun)
+            if (_migrationConfig.DryRun)
             {
                 html.Append($"<li><strong>DRY RUN - No modification have been made.</strong>.</li>");
             }
             html.Append(
                 $"<li>Number of Data items ready for migration: <strong>{_moduleDataCounter - _alreadyMigratedDataCounter}</strong>.</li>");
             html.Append(
-                $"<li>Number of Data items skipped because already migrated: <strong>{_alreadyMigratedDataCounter} items</strong> with '{_migrationVersion}' tag.</li>");
+                $"<li>Number of Data items skipped because already migrated: <strong>{_alreadyMigratedDataCounter} items</strong> with '{_migrationConfig.MigrationVersion}' tag.</li>");
             html.Append(
                 $"<li>Number of Data items skipped because OverWrite==false: <strong>{_donotOverwrite} items</strong>.</li>");
             foreach (var skipped in _skipped)

@@ -10,16 +10,16 @@ namespace Satrabel.OpenContent.Components.Migration
         /// List of supported migrations
         /// </summary>
         /// <exception cref="NotImplementedException"></exception>
-        public static JToken ConvertTo(MigrationStatusReport report, JToken sourceData, OcFieldInfo sourceField, OcFieldInfo targetField, int portalId, int moduleID, bool dryRun)
+        public static JToken ConvertTo(MigrationStatusReport report, JToken sourceData, OcFieldInfo sourceField, OcFieldInfo targetField, MigrationConfig config, int moduleId)
         {
             var migratorType = $"{sourceField.Type} => {targetField.Type}";
 
             switch (migratorType)
             {
                 case "file2 => imagex":
-                    return MigratorHelper.File2ToImageX(report, sourceData, sourceField, targetField, portalId, moduleID, dryRun);
+                    return MigratorHelper.File2ToImageX(report, sourceData, sourceField, targetField, config, moduleId);
                 case "image2 => imagex":
-                    return MigratorHelper.Image2ToImageX(report, sourceData, sourceField, targetField, portalId, moduleID, dryRun);
+                    return MigratorHelper.Image2ToImageX(report, sourceData, sourceField, targetField, config, moduleId);
                 case "text => textarea":
                     return MigratorHelper.TextToTextArea(report, sourceData, sourceField, targetField);
                 default:
@@ -27,7 +27,7 @@ namespace Satrabel.OpenContent.Components.Migration
             }
         }
 
-        private static JToken File2ToImageX(MigrationStatusReport report, JToken input, OcFieldInfo sourceField, OcFieldInfo targetField, int portalId, int moduleId, bool dryRun)
+        private static JToken File2ToImageX(MigrationStatusReport report, JToken input, OcFieldInfo sourceField, OcFieldInfo targetField, MigrationConfig config, int moduleId)
         {
             var fileManager = FileManager.Instance;
             var folderManager = FolderManager.Instance;
@@ -39,24 +39,24 @@ namespace Satrabel.OpenContent.Components.Migration
             {
                 report.Skipped($"Item with FileExtention {file.Extension} skipped. Reason: not allowed in target field.");
                 return new JObject();
-            } 
+            }
 
             // Copy file to default upload folder, if not already there.
-            if (sourceField.Options["folder"] != targetField.Options["uploadfolder"] && !dryRun)
+            if (sourceField.Options["folder"] != targetField.Options["uploadfolder"] && !config.DryRun)
             {
-                bool secure = targetField.Options["secure"] != null && targetField.Options["secure"].Value<Boolean>();
+                bool secure = targetField.Options["secure"] != null && targetField.Options["secure"].Value<bool>();
                 string uploadParentFolder = "OpenContent/" + (secure ? "Secure" : "") + "Files/";
-                var parentFolder = folderManager.GetFolder(portalId, uploadParentFolder);
+                var parentFolder = folderManager.GetFolder(config.PortalId, uploadParentFolder);
                 if (parentFolder == null)
                 {
                     if (secure)
                     {
-                        var folderMapping = FolderMappingController.Instance.GetFolderMapping(portalId, "Secure");
+                        var folderMapping = FolderMappingController.Instance.GetFolderMapping(config.PortalId, "Secure");
                         folderManager.AddFolder(folderMapping, uploadParentFolder);
                     }
                     else
                     {
-                        folderManager.AddFolder(portalId, uploadParentFolder);
+                        folderManager.AddFolder(config.PortalId, uploadParentFolder);
                     }
                 }
                 string uploadfolder = "OpenContent/" + (secure ? "Secure" : "") + "Files/" + moduleId + "/";
@@ -72,17 +72,17 @@ namespace Satrabel.OpenContent.Components.Migration
                 {
                     uploadfolder = targetField.Options["uploadfolder"].ToString();
                 }
-                var targetFolder = folderManager.GetFolder(portalId, uploadfolder);
+                var targetFolder = folderManager.GetFolder(config.PortalId, uploadfolder);
                 if (targetFolder == null)
                 {
                     if (secure)
                     {
-                        var folderMapping = FolderMappingController.Instance.GetFolderMapping(portalId, "Secure");
+                        var folderMapping = FolderMappingController.Instance.GetFolderMapping(config.PortalId, "Secure");
                         targetFolder = folderManager.AddFolder(folderMapping, uploadfolder);
                     }
                     else
                     {
-                        targetFolder = folderManager.AddFolder(portalId, uploadfolder);
+                        targetFolder = folderManager.AddFolder(config.PortalId, uploadfolder);
                     }
                 }
                 file = fileManager.CopyFile(file, targetFolder);
@@ -102,7 +102,7 @@ namespace Satrabel.OpenContent.Components.Migration
             return output;
         }
 
-        private static JToken Image2ToImageX(MigrationStatusReport report, JToken input, OcFieldInfo sourceField, OcFieldInfo targetField, int portalId, int moduleId, bool dryRun)
+        private static JToken Image2ToImageX(MigrationStatusReport report, JToken input, OcFieldInfo sourceField, OcFieldInfo targetField, MigrationConfig config, int moduleId)
         {
             var fileManager = FileManager.Instance;
             var folderManager = FolderManager.Instance;
@@ -110,21 +110,21 @@ namespace Satrabel.OpenContent.Components.Migration
             var file = fileManager.GetFile(fileId);
 
             // Copy file to default upload folder, if not already there.
-            if (sourceField.Options["folder"] != targetField.Options["uploadfolder"] && !dryRun)
+            if (sourceField.Options["folder"] != targetField.Options["uploadfolder"] && !config.DryRun)
             {
                 bool secure = targetField.Options["secure"] != null && targetField.Options["secure"].Value<Boolean>();
                 string uploadParentFolder = "OpenContent/" + (secure ? "Secure" : "") + "Files/";
-                var parentFolder = folderManager.GetFolder(portalId, uploadParentFolder);
+                var parentFolder = folderManager.GetFolder(config.PortalId, uploadParentFolder);
                 if (parentFolder == null)
                 {
                     if (secure)
                     {
-                        var folderMapping = FolderMappingController.Instance.GetFolderMapping(portalId, "Secure");
+                        var folderMapping = FolderMappingController.Instance.GetFolderMapping(config.PortalId, "Secure");
                         folderManager.AddFolder(folderMapping, uploadParentFolder);
                     }
                     else
                     {
-                        folderManager.AddFolder(portalId, uploadParentFolder);
+                        folderManager.AddFolder(config.PortalId, uploadParentFolder);
                     }
                 }
                 string uploadfolder = "OpenContent/" + (secure ? "Secure" : "") + "Files/" + moduleId + "/";
@@ -135,22 +135,22 @@ namespace Satrabel.OpenContent.Components.Migration
                 //        uploadfolder += context.Request.Form["itemKey"];
                 //    }
                 //}
-                if (targetField.Options["uploadfolder"] != null && 
+                if (targetField.Options["uploadfolder"] != null &&
                     !string.IsNullOrEmpty(targetField.Options["uploadfolder"].ToString()))
                 {
                     uploadfolder = targetField.Options["uploadfolder"].ToString();
                 }
-                var targetFolder = folderManager.GetFolder(portalId, uploadfolder);
+                var targetFolder = folderManager.GetFolder(config.PortalId, uploadfolder);
                 if (targetFolder == null)
                 {
                     if (secure)
                     {
-                        var folderMapping = FolderMappingController.Instance.GetFolderMapping(portalId, "Secure");
+                        var folderMapping = FolderMappingController.Instance.GetFolderMapping(config.PortalId, "Secure");
                         targetFolder = folderManager.AddFolder(folderMapping, uploadfolder);
                     }
                     else
                     {
-                        targetFolder = folderManager.AddFolder(portalId, uploadfolder);
+                        targetFolder = folderManager.AddFolder(config.PortalId, uploadfolder);
                     }
                 }
                 file = fileManager.CopyFile(file, targetFolder);
@@ -174,7 +174,7 @@ namespace Satrabel.OpenContent.Components.Migration
         {
             // create TextArea JToken from the original data
             JToken output = new JValue(input.ToString());
-            
+
             report.Migrated();
             return output;
         }
