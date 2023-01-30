@@ -92,6 +92,37 @@ namespace Satrabel.OpenContent.Components.Migration
             }
         }
 
+        private void MigrateOpenContentData(DataSourceContext dsContext, IDataSource ds, MigrationConfig config, int moduleId)
+        {
+            var alpaca = ds.GetAlpaca(dsContext, true, true, false);
+            var dataItems = ds.GetAll(dsContext, null).Items;
+
+            JObject schema = null;
+            JObject options = null;
+            if (alpaca != null)
+            {
+                schema = alpaca["schema"] as JObject; // cache
+                options = alpaca["options"] as JObject; // cache
+            }
+
+            if (schema == null || options == null)
+                throw new Exception("Cannot Migrate: no Options found.");
+
+            foreach (var dataItem in dataItems)
+            {
+                Report.FoundModuleData();
+                JToken sourceData = dataItem.Data;
+                if (sourceData["migration"] == null || sourceData["migration"].ToString() != config.MigrationVersion)
+                {
+                    MigrateData(Report, sourceData, schema, options, config, moduleId);
+                    sourceData["migration"] = config.MigrationVersion; // mark an item as migrated
+                    ds.Update(dsContext, dataItem, sourceData);
+                }
+                else
+                    Report.FoundAlreadyMigratedData();
+            }
+        }
+
         private void MigrateAdditionalData(OpenContentModuleConfig ocConfig, DataSourceContext dsContext, IDataSource ds, MigrationConfig config, int moduleId)
         {
             foreach (var additionalDataManifest in ocConfig.Settings.Manifest.AdditionalDataDefinition)
@@ -137,37 +168,6 @@ namespace Satrabel.OpenContent.Components.Migration
                 }
 
                 ds.UpdateData(dsContext, dataItem, sourceData);
-            }
-        }
-
-        private void MigrateOpenContentData(DataSourceContext dsContext, IDataSource ds, MigrationConfig config, int moduleId)
-        {
-            var alpaca = ds.GetAlpaca(dsContext, true, true, false);
-            var dataItems = ds.GetAll(dsContext, null).Items;
-
-            JObject schema = null;
-            JObject options = null;
-            if (alpaca != null)
-            {
-                schema = alpaca["schema"] as JObject; // cache
-                options = alpaca["options"] as JObject; // cache
-            }
-
-            if (schema == null || options == null)
-                throw new Exception("Cannot Migrate: no Options found.");
-
-            foreach (var dataItem in dataItems)
-            {
-                Report.FoundModuleData();
-                JToken sourceData = dataItem.Data;
-                if (sourceData["migration"] == null || sourceData["migration"].ToString() != config.MigrationVersion)
-                {
-                    MigrateData(Report, sourceData, schema, options, config, moduleId);
-                    sourceData["migration"] = config.MigrationVersion; // mark an item as migrated
-                    ds.Update(dsContext, dataItem, sourceData);
-                }
-                else
-                    Report.FoundAlreadyMigratedData();
             }
         }
 
@@ -240,7 +240,7 @@ namespace Satrabel.OpenContent.Components.Migration
                     {
                         report.FoundMigrateTo();
 
-                        string migrateTo = optionsOfCurrentField["migrateTo"].ToString();
+                        var migrateTo = optionsOfCurrentField["migrateTo"].ToString();
                         if (string.IsNullOrEmpty(migrateTo))
                             throw new Exception("Found 'migrateTo' tag which was empty.  Remove it first and try again.");
 

@@ -13,12 +13,6 @@ namespace Satrabel.OpenContent.Components.Migration
         public JObject Schema { get; }
         public JObject Options { get; }
 
-        public string Type
-        {
-            get
-            {
-                return Options["type"].ToString();
-            }
-        }
+        public string Type => Options["type"].ToString();
     }
 }
