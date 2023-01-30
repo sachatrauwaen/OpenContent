@@ -17,13 +17,24 @@ namespace Satrabel.OpenContent.Components.Migration
     /// </summary>
     public class FieldMigrator
     {
+        private static readonly ConcurrentDictionary<string, string> _currentRuns = new ConcurrentDictionary<string, string>();
+        private static readonly object _lockObject = new object();
+
         /// <summary>
         /// A Factory class that creates a FieldMigrator and executes the migration
         /// </summary>
         public static HtmlString Migrate(OpenContentWebPage caller, string folder, string migrationVersion, bool overwriteTargetData, bool dryRun)
         {
+            if (!Monitor.TryEnter(_lockObject))
+            {
+                return new HtmlString("Migrations already running. Try again later.");
+            }
+
             try
             {
+                var isFirstAttempt = _currentRuns.TryAdd(folder + migrationVersion, DateTime.Now.ToString(CultureInfo.InvariantCulture));
+                if (!isFirstAttempt) { return new HtmlString($"Migrations '{migrationVersion}' for template '{folder}' already ran."); }
+
                 int portalId = caller.Dnn.Portal.PortalId;
                 string templateFolder = HostingEnvironment.MapPath("~/" + caller.Dnn.Portal.HomeDirectory + "OpenContent/Templates/" + folder);
                 if (!Directory.Exists(templateFolder)) return new HtmlString($"The folder '{templateFolder}' does not exist.");
@@ -33,10 +44,13 @@ namespace Satrabel.OpenContent.Components.Migration
 
                 return migrator.Report.Print();
             }
-
             catch (Exception ex)
             {
                 return new HtmlString("Migration Error : " + ex);
+            }
+            finally
+            {
+                Monitor.Exit(_lockObject);
             }
         }
 
