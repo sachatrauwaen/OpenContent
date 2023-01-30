@@ -11,6 +11,7 @@ using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Portals;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Datasource;
+using Satrabel.OpenContent.Components.Json;
 
 namespace Satrabel.OpenContent.Components.Migration
 {
@@ -236,7 +237,7 @@ namespace Satrabel.OpenContent.Components.Migration
                 }
                 else if (childProperty.Value is JValue)  // the property is an Value
                 {
-                    if (optionsOfCurrentField != null && optionsOfCurrentField["migrateTo"] != null)
+                    if (optionsOfCurrentField != null && optionsOfCurrentField["migrateTo"].IsNotEmpty())
                     {
                         report.FoundMigrateTo();
 
@@ -253,7 +254,7 @@ namespace Satrabel.OpenContent.Components.Migration
                         var sourceField = new OcFieldInfo(schemaOfCurrentField, optionsOfCurrentField);
                         var targetField = new OcFieldInfo(schemaOfTargetField, optionsOfTargetField);
 
-                        if (data[migrateTo] != null && !config.OverwriteTargetData)
+                        if (data[migrateTo].IsNotEmpty() && !config.OverwriteTargetData)
                         {
                             report.FoundDoNotOverwrite();
                             continue;
