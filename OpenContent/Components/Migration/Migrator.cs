@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Threading;
 using System.Web;
 using System.Web.Hosting;
+using DotNetNuke.Common.Utilities;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Portals;
 using Newtonsoft.Json.Linq;
@@ -115,7 +116,7 @@ namespace Satrabel.OpenContent.Components.Migration
                 JToken sourceData = dataItem.Data;
                 if (sourceData["migration"] == null || sourceData["migration"].ToString() != config.MigrationVersion)
                 {
-                    MigrateData(Report, sourceData, schema, options, config, moduleId);
+                    TraverseDataTree(Report, sourceData, schema, options, config, moduleId);
                     sourceData["migration"] = config.MigrationVersion; // mark an item as migrated
                     ds.Update(dsContext, dataItem, sourceData);
                 }
@@ -158,14 +159,14 @@ namespace Satrabel.OpenContent.Components.Migration
                     foreach (var value in array)
                     {
                         if (value != null && schema["items"] != null && options["items"] != null)
-                            MigrateData(Report, value, schema["items"] as JObject, options["items"] as JObject, config, moduleId);
+                            TraverseDataTree(Report, value, schema["items"] as JObject, options["items"] as JObject, config, moduleId);
                         else
                             throw new Exception("Not implemented - err 128");
                     }
                 }
                 else
                 {
-                    MigrateData(Report, sourceData, schema, options, config, moduleId);
+                    TraverseDataTree(Report, sourceData, schema, options, config, moduleId);
                 }
 
                 ds.UpdateData(dsContext, dataItem, sourceData);
@@ -175,7 +176,7 @@ namespace Satrabel.OpenContent.Components.Migration
         /// <summary>
         /// Recursive method that traverses the schema and Migrates the data of any field that is marked with 'migrateto'
         /// </summary>
-        private static void MigrateData(MigrationStatusReport report, JToken data, JObject schema, JObject options, MigrationConfig config, int moduleID)
+        private static void TraverseDataTree(MigrationStatusReport report, JToken data, JObject schema, JObject options, MigrationConfig config, int moduleID)
         {
             if (schema?["properties"] == null)
                 return;
@@ -188,89 +189,92 @@ namespace Satrabel.OpenContent.Components.Migration
                 var optionsOfCurrentField = options["fields"][childProperty.Name] as JObject;
                 if (schemaOfCurrentField == null) continue;
                 if (optionsOfCurrentField == null) continue;
-                if (childProperty.Value is JArray) // the property is of type Array
+
+                JToken childValue = childProperty.Value;
+                switch (childValue.Type)
                 {
-                    var array = childProperty.Value as JArray;
-                    //JArray newArray = new JArray();
-                    foreach (var value in array)
-                    {
-                        var obj = value as JObject; // are we dealing with an data object? 
-                        if (optionsOfCurrentField["items"] == null && optionsOfCurrentField["fields"]?["item"] != null)
+                    case JTokenType.Array:
+                        var array = (JArray)childValue;
+                        foreach (var arrayItem in array)
                         {
-                            // Oh, this options file is using a deprecated way of defining arrays
-                            throw new Exception("Your option file uses a deprecated way to define arrays. It uses { fields { item { fields }}}  construct instead of { items { fields }}. Remove the outer 'fields' tag.");
+                            if (optionsOfCurrentField["items"] == null && optionsOfCurrentField["fields"]?["item"] != null)
+                            {
+                                // Oh, this options file is using a deprecated way of defining arrays
+                                throw new Exception("Your option file uses a deprecated way to define arrays. It uses { fields { item { fields }}}  construct instead of { items { fields }}. Remove the outer 'fields' tag.");
+                            }
+
+                            switch (arrayItem.Type)
+                            {
+                                case JTokenType.Object:
+                                {
+                                    if (schemaOfCurrentField["items"] != null && optionsOfCurrentField["items"] != null)
+                                        TraverseDataTree(report, arrayItem as JObject, schemaOfCurrentField["items"] as JObject, optionsOfCurrentField["items"] as JObject, config, moduleID);
+                                    break;
+
+                                }
+                                case JTokenType.Array:
+                                    // throw new NotImplementedException("Arrays of JArrays are not supported.");
+                                    break;
+
+                                default:
+                                    // throw new NotImplementedException("Arrays of Values are not supported.");
+                                    break;
+                            }
                         }
 
-                        if (obj != null && optionsOfCurrentField != null && schemaOfCurrentField["items"] != null && optionsOfCurrentField["items"] != null)
-                        {
-                            // loop again to check the next level
-                            MigrateData(report, obj, schemaOfCurrentField["items"] as JObject, optionsOfCurrentField["items"] as JObject, config, moduleID);
-                        }
-                        else // we are dealing with array of JValues 
-                        {
-                            // This Migration is not yet supported. It probably never will, as the builder does not allow creating Arrays of values.
-                            //var val = value as JValue;
-                            //if (val != null)
-                            //{
-                            //    try
-                            //    {
-                            //        newArray.Add(GenerateImage(reqOpt, val.ToString(), isEditable));
-                            //    }
-                            //    catch (Exception)
-                            //    {
-                            //    }
-                            //}
-                        }
-                    }
-                    //if (image)
-                    //{
-                    //    childProperty.Value = newArray;
-                    //}
-                }
-                else if (childProperty.Value is JObject) // the property is an Object
-                {
-                    var obj = childProperty.Value as JObject;
-                    if (obj != null && schemaOfCurrentField != null && optionsOfCurrentField != null)
-                    {
-                        MigrateData(report, obj, schemaOfCurrentField, optionsOfCurrentField, config, moduleID);
-                    }
-                }
-                else if (childProperty.Value is JValue)  // the property is an Value
-                {
-                    if (optionsOfCurrentField != null && optionsOfCurrentField["migrateTo"].IsNotEmpty())
-                    {
-                        report.FoundMigrateTo();
+                        break;
 
-                        var migrateTo = optionsOfCurrentField["migrateTo"].ToString();
-                        if (string.IsNullOrEmpty(migrateTo))
-                            throw new Exception("Found 'migrateTo' tag which was empty.  Remove it first and try again.");
+                    case JTokenType.Object:
+                        if (optionsOfCurrentField["migrateTo"].IsNotEmpty()) // a migrateTo field has been found
+                            MigrateData(report, childProperty, schema, options, schemaOfCurrentField, optionsOfCurrentField, config, moduleID, data);
+                        else
+                            TraverseDataTree(report, (JObject)childValue, schemaOfCurrentField, optionsOfCurrentField, config, moduleID);
 
-                        var schemaOfTargetField = schema["properties"][migrateTo] as JObject;
-                        var optionsOfTargetField = options["fields"][migrateTo] as JObject;
-                        if (schemaOfTargetField == null || optionsOfTargetField == null)
-                        {
-                            throw new ArgumentOutOfRangeException($"Migration target field {migrateTo} doesn't exist.");
-                        }
-                        var sourceField = new OcFieldInfo(schemaOfCurrentField, optionsOfCurrentField);
-                        var targetField = new OcFieldInfo(schemaOfTargetField, optionsOfTargetField);
+                        break;
 
-                        if (data[migrateTo].IsNotEmpty() && !config.OverwriteTargetData)
-                        {
-                            report.FoundDoNotOverwrite();
-                            continue;
-                        }
+                    default:
+                        if (!(childValue is JValue)) // the property is an Value
+                            throw new NotImplementedException("unknown childProperty type");
 
-                        JToken val = childProperty.Value;
-                        var newData = MigratorHelper.ConvertTo(report, val, sourceField, targetField, config, moduleID);
-                        if (!config.DryRun)
-                            data[migrateTo] = newData;
-                    }
-                }
-                else
-                {
-                    throw new NotImplementedException("unknown childProperty type");
+                        if (optionsOfCurrentField["migrateTo"].IsNotEmpty()) // a migrateTo field has been found
+                            MigrateData(report, childProperty, schema, options, schemaOfCurrentField, optionsOfCurrentField, config, moduleID, data);
+
+                        break;
                 }
             }
+        }
+
+        /// <summary>
+        /// A migrateTo field has been found, let us process it here
+        /// </summary>
+        private static void MigrateData(MigrationStatusReport report, JProperty childProperty, JObject schema, JObject options,
+            JObject schemaOfCurrentField, JObject optionsOfCurrentField, MigrationConfig config, int moduleId, JToken data)
+        {
+            report.FoundMigrateTo();
+
+            var migrateTo = optionsOfCurrentField["migrateTo"].ToString();
+            if (string.IsNullOrEmpty(migrateTo))
+                throw new Exception("Found 'migrateTo' tag which was empty.  Remove it first and try again.");
+
+            var schemaOfTargetField = schema["properties"][migrateTo] as JObject;
+            var optionsOfTargetField = options["fields"][migrateTo] as JObject;
+            if (schemaOfTargetField == null || optionsOfTargetField == null)
+            {
+                throw new ArgumentOutOfRangeException($"Migration target field {migrateTo} doesn't exist.");
+            }
+            var sourceField = new OcFieldInfo(schemaOfCurrentField, optionsOfCurrentField);
+            var targetField = new OcFieldInfo(schemaOfTargetField, optionsOfTargetField);
+
+            if (data[migrateTo].IsNotEmpty() && !config.OverwriteTargetData)
+            {
+                report.FoundDoNotOverwrite();
+                return;
+            }
+
+            JToken val = childProperty.Value;
+            var newData = MigratorHelper.ConvertTo(report, val, sourceField, targetField, config, moduleId);
+            if (!config.DryRun)
+                data[migrateTo] = newData;
         }
 
         private static bool HasOptionsFile(string folder)
