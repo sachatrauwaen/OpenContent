@@ -15,6 +15,7 @@ namespace Satrabel.OpenContent.Components.Migration
         private readonly Dictionary<string, int> _skipped = new Dictionary<string, int>();
         private int _migrated;
         private int _ignoreExistingFile;
+        private readonly List<string> _messages = new List<string>();
 
         public MigrationStatusReport(MigrationConfig migrationConfig)
         {
@@ -46,6 +47,15 @@ namespace Satrabel.OpenContent.Components.Migration
             }
             html.Append($"<li>Number of Data items actually migrated: <strong>{_migrated} items</strong>.</li>");
             html.Append("</ul>");
+
+            html.Append("<p>Extra messages:</p>");
+            html.Append("<ul>");
+            foreach (var msg in _messages)
+            {
+                html.Append($"<li>{msg}</li>");
+            }
+            html.Append("</ul>");
+            
             return new HtmlString(html.ToString());
         }
 
@@ -91,6 +101,11 @@ namespace Satrabel.OpenContent.Components.Migration
         {
             _ignoreExistingFile += 1;
 
+        }
+
+        public void AddMessage(string message)
+        {
+            _messages.Add(message);
         }
     }
 }

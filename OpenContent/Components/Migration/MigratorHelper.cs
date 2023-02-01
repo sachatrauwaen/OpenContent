@@ -38,13 +38,19 @@ namespace Satrabel.OpenContent.Components.Migration
             int fileId = int.Parse(input.ToString());
             var file = fileManager.GetFile(fileId);
 
+            if (file == null)
+            {
+                report.AddMessage($"Error in File2ToImageX: Source file not found: id='{fileId}', module='{moduleId}'");
+                return null;
+            }
+
             // check if extention is allowed in target field
             if (!targetField.Options["fileExtensions"].Value<string>().ToLowerInvariant().Contains(file.Extension.ToLowerInvariant()))
             {
                 report.Skipped($"Item with FileExtention {file.Extension} skipped. Reason: not allowed in target field.");
                 return new JObject();
             }
-
+           
             file = CopyFileIfNeeded(fileId, report, sourceField, targetField, config, moduleId);
 
             // create ImageX JToken, but also copy the original image to the new image location
@@ -66,6 +72,12 @@ namespace Satrabel.OpenContent.Components.Migration
             var fileManager = FileManager.Instance;
             int fileId = int.Parse(input.ToString());
             var file = CopyFileIfNeeded(fileId, report, sourceField, targetField, config, moduleId);
+
+            if (file == null)
+            {
+                report.AddMessage($"Error in Image2ToImageX: Source file not found: id='{fileId}', module='{moduleId}'");
+                return null;
+            }
 
             // create ImageX JToken, but also copy the original image to the new image location
             JToken output = new JObject();
