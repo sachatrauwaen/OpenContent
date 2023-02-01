@@ -273,7 +273,7 @@ namespace Satrabel.OpenContent.Components.Migration
 
             JToken val = childProperty.Value;
             var newData = MigratorHelper.ConvertTo(report, val, sourceField, targetField, config, moduleId);
-            if (!config.DryRun)
+            if (!config.DryRun && newData != null)
                 data[migrateTo] = newData;
         }
 
