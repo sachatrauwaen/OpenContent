@@ -1,8 +1,5 @@
 ﻿using System;
-using DotNetNuke.Common.Utilities;
-using System.Reflection;
 using DotNetNuke.Services.FileSystem;
-using Lucene.Net.Search;
 using Newtonsoft.Json.Linq;
 
 namespace Satrabel.OpenContent.Components.Migration
@@ -32,6 +29,15 @@ namespace Satrabel.OpenContent.Components.Migration
             }
         }
 
+        private static JToken TextToTextArea(MigrationStatusReport report, JToken input, OcFieldInfo sourceField, OcFieldInfo targetField)
+        {
+            // create TextArea JToken from the original data
+            JToken output = new JValue(input.ToString());
+
+            report.Migrated();
+            return output;
+        }
+
         private static JToken File2ToImageX(MigrationStatusReport report, JToken input, OcFieldInfo sourceField, OcFieldInfo targetField, MigrationConfig config, int moduleId)
         {
             var fileManager = FileManager.Instance;
@@ -40,7 +46,7 @@ namespace Satrabel.OpenContent.Components.Migration
 
             if (file == null)
             {
-                report.AddMessage($"Error in File2ToImageX: Source file not found: id='{fileId}', module='{moduleId}'");
+                report.LogError($"Error in File2ToImageX: Source file not found: id='{fileId}', module='{moduleId}'");
                 return null;
             }
 
@@ -50,7 +56,7 @@ namespace Satrabel.OpenContent.Components.Migration
                 report.Skipped($"Item with FileExtention {file.Extension} skipped. Reason: not allowed in target field.");
                 return new JObject();
             }
-           
+
             file = CopyFileIfNeeded(fileId, report, sourceField, targetField, config, moduleId);
 
             // create ImageX JToken, but also copy the original image to the new image location
@@ -75,7 +81,7 @@ namespace Satrabel.OpenContent.Components.Migration
 
             if (file == null)
             {
-                report.AddMessage($"Error in Image2ToImageX: Source file not found: id='{fileId}', module='{moduleId}'");
+                report.LogError($"Error in Image2ToImageX: Source file not found: id='{fileId}', module='{moduleId}'");
                 return null;
             }
 
@@ -93,15 +99,6 @@ namespace Satrabel.OpenContent.Components.Migration
             return output;
         }
 
-        private static JToken TextToTextArea(MigrationStatusReport report, JToken input, OcFieldInfo sourceField, OcFieldInfo targetField)
-        {
-            // create TextArea JToken from the original data
-            JToken output = new JValue(input.ToString());
-
-            report.Migrated();
-            return output;
-        }
-
         private static JToken SameType(MigrationStatusReport report, JToken input)
         {
             report.Migrated();
@@ -113,13 +110,16 @@ namespace Satrabel.OpenContent.Components.Migration
             var fileManager = FileManager.Instance;
             var file = fileManager.GetFile(fileId);
 
+            if (file == null)
+                return null;
+
             // Copy file to default upload folder, if not already there.
             if (sourceField.Options["folder"] != targetField.Options["uploadfolder"] && !config.DryRun)
             {
                 var folderManager = FolderManager.Instance;
 
-                bool secure = targetField.Options["secure"] != null && targetField.Options["secure"].Value<bool>();
-                string uploadParentFolder = "OpenContent/" + (secure ? "Secure" : "") + "Files/";
+                var secure = targetField.Options["secure"] != null && targetField.Options["secure"].Value<bool>();
+                var uploadParentFolder = "OpenContent/" + (secure ? "Secure" : "") + "Files/";
                 var parentFolder = folderManager.GetFolder(config.PortalId, uploadParentFolder);
                 if (parentFolder == null)
                 {
@@ -133,7 +133,7 @@ namespace Satrabel.OpenContent.Components.Migration
                         folderManager.AddFolder(config.PortalId, uploadParentFolder);
                     }
                 }
-                string uploadfolder = "OpenContent/" + (secure ? "Secure" : "") + "Files/" + moduleId + "/";
+                var uploadfolder = "OpenContent/" + (secure ? "Secure" : "") + "Files/" + moduleId + "/";
                 //if (module.Settings.Manifest.DeleteFiles)
                 //{
                 //    if (!string.IsNullOrEmpty(context.Request.Form["itemKey"]))

@@ -15,7 +15,7 @@ namespace Satrabel.OpenContent.Components.Migration
         private readonly Dictionary<string, int> _skipped = new Dictionary<string, int>();
         private int _migrated;
         private int _ignoreExistingFile;
-        private readonly List<string> _messages = new List<string>();
+        private readonly List<string> _errors = new List<string>();
 
         public MigrationStatusReport(MigrationConfig migrationConfig)
         {
@@ -26,7 +26,18 @@ namespace Satrabel.OpenContent.Components.Migration
         {
             StringBuilder html = new StringBuilder();
             html.Append("<h2>Migration status Report</h2>");
-            html.Append("<p>Migration ran without errors.</p>");
+            if (_errors.Count == 0)
+                html.Append("<p>Migration ran without errors.</p>");
+            else
+            {
+                foreach (var error in _errors)
+                {
+                    html.Append("<ul>");
+                    html.Append($"<li><strong>ERROR: {error}</strong></li>");
+                    html.Append("</ul>");
+                }
+            }
+
             html.Append("<ul>");
             html.Append($"<li>Number of 'MigrateTo' tags found in options.json: <strong>{_migrateToCounter}</strong>.</li>");
             html.Append($"<li>Number of Modules found with template {_migrationConfig.TemplateFolder}: <strong>{_moduleCounter}</strong>.</li>");
@@ -48,14 +59,6 @@ namespace Satrabel.OpenContent.Components.Migration
             html.Append($"<li>Number of Data items actually migrated: <strong>{_migrated} items</strong>.</li>");
             html.Append("</ul>");
 
-            html.Append("<p>Extra messages:</p>");
-            html.Append("<ul>");
-            foreach (var msg in _messages)
-            {
-                html.Append($"<li>{msg}</li>");
-            }
-            html.Append("</ul>");
-            
             return new HtmlString(html.ToString());
         }
 
@@ -103,9 +106,9 @@ namespace Satrabel.OpenContent.Components.Migration
 
         }
 
-        public void AddMessage(string message)
+        public void LogError(string errMsg)
         {
-            _messages.Add(message);
+            _errors.Add(errMsg);
         }
     }
 }
