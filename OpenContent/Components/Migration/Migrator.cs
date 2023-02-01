@@ -3,11 +3,9 @@ using System.Collections.Concurrent;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Web;
 using System.Web.Hosting;
-using DotNetNuke.Common.Utilities;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Portals;
 using Newtonsoft.Json.Linq;
@@ -131,7 +129,8 @@ namespace Satrabel.OpenContent.Components.Migration
             {
                 if (additionalDataManifest.Value.ScopeType != null && !additionalDataManifest.Value.ScopeType.StartsWith("module"))
                 {
-                    throw new Exception($"Sorry, your AdditionalData Scope '{additionalDataManifest.Value.ScopeType}' is not supported.");
+                    Report.LogError($"Sorry, your AdditionalData Scope '{additionalDataManifest.Value.ScopeType}' is not supported.");
+                    return;
                 }
 
                 var alpaca = ds.GetDataAlpaca(dsContext, true, true, false, additionalDataManifest.Key);
@@ -149,7 +148,7 @@ namespace Satrabel.OpenContent.Components.Migration
                 }
 
                 if (schema == null || options == null)
-                    throw new Exception("Cannot Migrate: no Options found.");
+                    throw new Exception("Cannot Migrate Additional Data: no Options found.");
 
                 Report.FoundModuleData();
                 JToken sourceData = dataItem.Data;
@@ -206,12 +205,12 @@ namespace Satrabel.OpenContent.Components.Migration
                             switch (arrayItem.Type)
                             {
                                 case JTokenType.Object:
-                                {
-                                    if (schemaOfCurrentField["items"] != null && optionsOfCurrentField["items"] != null)
-                                        TraverseDataTree(report, arrayItem as JObject, schemaOfCurrentField["items"] as JObject, optionsOfCurrentField["items"] as JObject, config, moduleID);
-                                    break;
+                                    {
+                                        if (schemaOfCurrentField["items"] != null && optionsOfCurrentField["items"] != null)
+                                            TraverseDataTree(report, arrayItem as JObject, schemaOfCurrentField["items"] as JObject, optionsOfCurrentField["items"] as JObject, config, moduleID);
+                                        break;
 
-                                }
+                                    }
                                 case JTokenType.Array:
                                     // throw new NotImplementedException("Arrays of JArrays are not supported.");
                                     break;
@@ -259,9 +258,8 @@ namespace Satrabel.OpenContent.Components.Migration
             var schemaOfTargetField = schema["properties"][migrateTo] as JObject;
             var optionsOfTargetField = options["fields"][migrateTo] as JObject;
             if (schemaOfTargetField == null || optionsOfTargetField == null)
-            {
                 throw new ArgumentOutOfRangeException($"Migration target field {migrateTo} doesn't exist.");
-            }
+
             var sourceField = new OcFieldInfo(schemaOfCurrentField, optionsOfCurrentField);
             var targetField = new OcFieldInfo(schemaOfTargetField, optionsOfTargetField);
 
