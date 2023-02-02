@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
+using System.Linq;
 using System.Web.Script.Serialization;
 
 
@@ -17,6 +18,7 @@ namespace Satrabel.OpenContent.Components.Json
         public static bool IsEmpty(this JObject json)
         {
             if (json == null) return true;
+            return json.Children().All(child => child.IsEmpty());
             return !json.HasValues;
         }
 
@@ -24,11 +26,15 @@ namespace Satrabel.OpenContent.Components.Json
         {
             //tried using HasValues, but string value are not detected that way.
             if (jtoken == null) return true;
-            if (jtoken.Type == JTokenType.Object)
-                return (jtoken as JObject).IsEmpty();
-
-            if (jtoken.Type == JTokenType.Array)
-                return (jtoken as JArray).HasValues;
+            switch (jtoken.Type)
+            {
+                case JTokenType.Object:
+                    return (jtoken as JObject).IsEmpty();
+                case JTokenType.Array:
+                    return (jtoken as JArray).HasValues;
+                case JTokenType.Property:
+                    return ((jtoken as JProperty).Value as JValue).IsEmpty();
+            }
 
             string json = jtoken.ToString();
             if (json == "{}") return true;

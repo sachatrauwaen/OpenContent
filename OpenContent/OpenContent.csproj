@@ -188,6 +188,11 @@
     <Compile Include="Components\Files\FileUriUtils.cs" />
     <Compile Include="Components\Github\GithubDtos.cs" />
     <Compile Include="Components\ImageStatus.cs" />
+    <Compile Include="Components\Migration\MigrationConfig.cs" />
+    <Compile Include="Components\Migration\MigrationStatusReport.cs" />
+    <Compile Include="Components\Migration\Migrator.cs" />
+    <Compile Include="Components\Migration\MigratorHelper.cs" />
+    <Compile Include="Components\Migration\OcFieldInfo.cs" />
     <Compile Include="Components\ResourceController.cs" />
     <Compile Include="Components\Localization\LocalizationUtils.cs" />
     <Compile Include="Components\Logging\Logger.cs" />

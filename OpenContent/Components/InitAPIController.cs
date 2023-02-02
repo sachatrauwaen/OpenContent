@@ -291,7 +291,6 @@ namespace Satrabel.OpenContent.Components
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Admin)]
         public List<PageDto> GetDetailPages(string template, int tabModuleId)
         {
-            string format;
             int othermoduleTabId = ActiveModule.TabID;
             int moduleId = ActiveModule.ModuleID;
 
@@ -356,7 +355,7 @@ namespace Satrabel.OpenContent.Components
                         infoText.Add("Current");
                     }
 
-                    format = LogContext.IsLogActive ? "{0} [{1}]" : "{0}";
+                    var format = LogContext.IsLogActive ? "{0} [{1}]" : "{0}";
                     if (othermoduleTabId > 0 && tabId.Value == ActiveModule.TabID)
                     {
                         listItems.Add(new PageDto()
@@ -373,7 +372,6 @@ namespace Satrabel.OpenContent.Components
                             TabId = tabId.Value
                         });
                     }
-
                 }
 
                 return listItems.OrderBy(x => x.Text).ToList();
