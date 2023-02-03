@@ -10,7 +10,6 @@ namespace Satrabel.OpenContent.Components.Migration
         private int _migrateToCounter;
         private int _moduleCounter;
         private int _moduleDataCounter;
-        private int _alreadyMigratedDataCounter;
         private int _donotOverwrite;
         private readonly Dictionary<string, int> _skipped = new Dictionary<string, int>();
         private int _migrated;
@@ -46,8 +45,6 @@ namespace Satrabel.OpenContent.Components.Migration
             {
                 html.Append($"<li><strong>DRY RUN - No modification have been made.</strong>.</li>");
             }
-            html.Append($"<li>Number of Data items ready for migration: <strong>{_moduleDataCounter - _alreadyMigratedDataCounter}</strong>.</li>");
-            html.Append($"<li>Number of Data items skipped because already migrated: <strong>{_alreadyMigratedDataCounter} items</strong> with '{_migrationConfig.MigrationVersion}' tag.</li>");
             html.Append($"<li>Number of Data items skipped because OverWrite==false: <strong>{_donotOverwrite} items</strong>.</li>");
             if (_ignoreExistingFile > 0)
                 html.Append($"<li>Number of Files skipped because already Existed: <strong>{_ignoreExistingFile} items</strong>.</li>");
@@ -75,11 +72,6 @@ namespace Satrabel.OpenContent.Components.Migration
         public void FoundModuleData()
         {
             _moduleDataCounter += 1;
-        }
-
-        public void FoundAlreadyMigratedData()
-        {
-            _alreadyMigratedDataCounter += 1;
         }
 
         public void FoundDoNotOverwrite()

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -20,13 +18,12 @@ namespace Satrabel.OpenContent.Components.Migration
     /// </summary>
     public class FieldMigrator
     {
-        private static readonly ConcurrentDictionary<string, string> _currentRuns = new ConcurrentDictionary<string, string>();
         private static readonly object _lockObject = new object();
 
         /// <summary>
         /// A Factory class that creates a FieldMigrator and executes the migration
         /// </summary>
-        public static HtmlString Migrate(OpenContentWebPage caller, string folder, string migrationVersion, bool overwriteTargetData, bool dryRun)
+        public static HtmlString Migrate(OpenContentWebPage caller, string folder, bool overwriteTargetData, bool dryRun)
         {
             if (!Monitor.TryEnter(_lockObject))
             {
@@ -35,14 +32,11 @@ namespace Satrabel.OpenContent.Components.Migration
 
             try
             {
-                var isFirstAttempt = _currentRuns.TryAdd(folder + migrationVersion, DateTime.Now.ToString(CultureInfo.InvariantCulture));
-                if (!isFirstAttempt) { return new HtmlString($"Migrations '{migrationVersion}' for template '{folder}' already ran."); }
-
                 int portalId = caller.Dnn.Portal.PortalId;
                 string templateFolder = HostingEnvironment.MapPath("~/" + caller.Dnn.Portal.HomeDirectory + "OpenContent/Templates/" + folder);
                 if (!Directory.Exists(templateFolder)) return new HtmlString($"The folder '{templateFolder}' does not exist.");
                 if (!HasOptionsFile(templateFolder)) return new HtmlString($"The folder '{templateFolder}' does not have an options.json file.");
-                var config = new MigrationConfig(templateFolder, portalId, overwriteTargetData, migrationVersion, dryRun);
+                var config = new MigrationConfig(templateFolder, portalId, overwriteTargetData, dryRun);
                 var migrator = new FieldMigrator(config);
 
                 return migrator.Report.Print();
@@ -112,14 +106,8 @@ namespace Satrabel.OpenContent.Components.Migration
             {
                 Report.FoundModuleData();
                 JToken sourceData = dataItem.Data;
-                if (sourceData["migration"] == null || sourceData["migration"].ToString() != config.MigrationVersion)
-                {
-                    TraverseDataTree(Report, sourceData, schema, options, config, moduleId);
-                    sourceData["migration"] = config.MigrationVersion; // mark an item as migrated
-                    ds.Update(dsContext, dataItem, sourceData);
-                }
-                else
-                    Report.FoundAlreadyMigratedData();
+                TraverseDataTree(Report, sourceData, schema, options, config, moduleId);
+                ds.Update(dsContext, dataItem, sourceData);
             }
         }
 
@@ -168,7 +156,7 @@ namespace Satrabel.OpenContent.Components.Migration
                     TraverseDataTree(Report, sourceData, schema, options, config, moduleId);
                 }
 
-                ds.UpdateData(dsContext, dataItem, sourceData);
+                ds.UpdateData(dsContext, dataItem, sourceData); // sourceData has been mutated in TraverseDataTree
             }
         }
 
