@@ -41,9 +41,14 @@ namespace Satrabel.OpenContent.Components.Migration
         private static JToken File2ToImageX(MigrationStatusReport report, JToken input, OcFieldInfo sourceField, OcFieldInfo targetField, MigrationConfig config, int moduleId)
         {
             var fileManager = FileManager.Instance;
-            int fileId = int.Parse(input.ToString());
-            var file = fileManager.GetFile(fileId);
+            int fileId;
+            if (int.TryParse(input.ToString(), out fileId) == false)
+            {
+                report.LogError($"Error in Image2ToImageX: Source json is not an int: id='{fileId}', module='{moduleId}'");
+                return null;
+            }
 
+            var file = fileManager.GetFile(fileId);
             if (file == null)
             {
                 report.LogError($"Error in File2ToImageX: Source file not found: id='{fileId}', module='{moduleId}'");
@@ -76,7 +81,13 @@ namespace Satrabel.OpenContent.Components.Migration
         private static JToken Image2ToImageX(MigrationStatusReport report, JToken input, OcFieldInfo sourceField, OcFieldInfo targetField, MigrationConfig config, int moduleId)
         {
             var fileManager = FileManager.Instance;
-            int fileId = int.Parse(input.ToString());
+            int fileId;
+            if (int.TryParse(input.ToString(), out fileId) == false)
+            {
+                report.LogError($"Error in Image2ToImageX: Source json is not an int: id='{fileId}', module='{moduleId}'");
+                return null;
+            }
+
             var file = CopyFileIfNeeded(fileId, report, sourceField, targetField, config, moduleId);
 
             if (file == null)
