@@ -43,17 +43,20 @@
       <InstallInclude Include="**\*.ascx" Exclude="packages\**" />
       <InstallInclude Include="**\*.asmx" Exclude="packages\**" />
       <InstallInclude Include="**\*.ashx" Exclude="packages\**" />
-      <InstallInclude Include="**\*.css" Exclude="packages\**;**\node_modules\**;" />
+
+		
+
+	<InstallInclude Include="**\*.css" Exclude="packages\**;**\node_modules\**;" />
       <InstallInclude Include="**\*.png" Exclude="packages\**;**\node_modules\**;" />
       <InstallInclude Include="**\*.html" Exclude="packages\**;**\node_modules\**;" />
       <InstallInclude Include="**\*.htm" Exclude="packages\**;**\node_modules\**;" />
+		
       <InstallInclude Include="**\*.resx" Exclude="packages\**" />
       <InstallInclude Include="**\*.aspx" Exclude="packages\**" />
       <InstallInclude Include="**\*.js" Exclude="packages\**;**\_*.js;**\node_modules\**;" />
-      <InstallInclude Include="**\*.js.map" Exclude="packages\**;**\_*.js.map;**\node_modules\**;" />
       <InstallInclude Include="**\*-schema.json" Exclude="packages\**" />
       <InstallInclude Include="**\*-options.json" Exclude="packages\**" />
-      <InstallInclude Include="**\*.txt"  Exclude="**\obj\**;**\_ReSharper*\**;packages\**;**\.git\**;" />
+      <InstallInclude Include="**\*.txt"  Exclude="**\obj\**;**\_ReSharper*\**;packages\**;**\.git\**;**\node_modules\**;" />
       <InstallInclude Include="**\images\**" Exclude="packages\**;**\*.cs;**\node_modules\**;" />
       <InstallInclude Include="**\web.config" Exclude="packages\**" />
       <InstallInclude Include="**\css\**" Exclude="packages\**;**\node_modules\**;" />

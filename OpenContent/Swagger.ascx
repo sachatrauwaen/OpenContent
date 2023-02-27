@@ -22,7 +22,6 @@
 <asp:Panel ID="ScopeWrapper" runat="server">
 </asp:Panel>
 
-
 <script type="text/javascript">
     $(document).ready(function () {
         var url = "/Desktopmodules/OpenContent/api/Swagger/Json?moduleid=<%=ModuleId%>&tabid=<%=TabId%>";
