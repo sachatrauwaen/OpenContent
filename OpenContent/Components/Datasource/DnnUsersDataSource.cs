@@ -475,6 +475,10 @@ namespace Satrabel.OpenContent.Components.Datasource
                                     user.Profile.SetProfileProperty(prop.Name, profile[prop.Name].ToString());
                                 //}
                             }
+                            else if (profile[prop.Name].Type == JTokenType.Date)
+                            {
+                                user.Profile.SetProfileProperty(prop.Name, profile[prop.Name].Value<DateTime>().ToString("yyyy-MM-ddThh:mm:ss"));
+                            }
                             else
                             {
                                 user.Profile.SetProfileProperty(prop.Name, profile[prop.Name].ToString());
