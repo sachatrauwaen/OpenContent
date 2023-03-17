@@ -194,7 +194,8 @@ namespace Satrabel.OpenContent.Components
                     if (!string.IsNullOrEmpty(context.Request.Form["hidden"]) && // cropped file
                         context.Request.Form["hidden"] == "true")
                     {
-                        uploadfolder = "OpenContent/" + (secure ? "Secure" : "") + "Cropped/" + ActiveModule.ModuleID;
+                        //uploadfolder = "OpenContent/" + (secure ? "Secure" : "") + "Cropped/" + ActiveModule.ModuleID;
+                        uploadfolder = "OpenContent/" + (secure ? "Secure" : "") + "Cropped/" + module.DataModule.ModuleId;
                         GetOrCreateFolder(secure, uploadfolder);
                         if (!string.IsNullOrEmpty(context.Request.Form["itemKey"]))
                         {
@@ -237,7 +238,7 @@ namespace Satrabel.OpenContent.Components
                     {
                         string uploadParentFolder = "OpenContent/" + (secure ? "Secure" : "") + "Files/";
                         GetOrCreateFolder(secure, uploadParentFolder);
-                        uploadfolder = uploadParentFolder + ActiveModule.ModuleID + "/";
+                        uploadfolder = uploadParentFolder + module.DataModule.ModuleId + "/";
                         if (module.Settings.Manifest.DeleteFiles)
                         {
                             if (!string.IsNullOrEmpty(context.Request.Form["itemKey"]))
