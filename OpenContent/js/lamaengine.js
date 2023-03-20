@@ -24,10 +24,10 @@ alpacaEngine.engine = function (config) {
     self.rootUrl = config.appPath;
     self.bootstrap = config.bootstrap;
     var createEdit = config.isNew ? "create" : "edit";
-    self.view = "dnn-" + createEdit;
-    if (config.bootstrap) {
-        self.view = config.horizontal ? "dnnbootstrap-" + createEdit + "-horizontal" : "dnnbootstrap-" + createEdit;
-    }
+    self.view = "bootstrap4-" + createEdit;
+    //if (config.bootstrap) {
+    //    self.view = config.horizontal ? "bootstrap4-" + createEdit + "-horizontal" : "dnnbootstrap-" + createEdit;
+    //}
     if (config.bootstrap && $.fn.select2) {
         $.fn.select2.defaults.set("theme", "bootstrap");
     }
