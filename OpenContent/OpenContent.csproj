@@ -1260,7 +1260,7 @@
     <Content Include="lama\README.md" />
     <Content Include="lama\src\App.vue" />
     <Content Include="lama\src\assets\logo.png" />
-    <Content Include="lama\src\components\HelloWorld.vue" />
+    <Content Include="lama\src\components\UserRoleField.vue" />
     <Content Include="lama\src\main.js" />
     <Content Include="lama\vue.config.js" />
     <Content Include="lama\yarn-error.log" />

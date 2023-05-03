@@ -573,7 +573,40 @@ alpacaEngine.engine = function (config) {
                     //    };
                     //}));
                 }
+                else if (config.query.type == "userrole") {
+                    var postData = {
+                        q: "*"
+                    };
+                    $.ajax({
+                        //url: self.sf.getServiceRoot(self.options.dataService.module) + self.options.dataService.controller + "/" + self.options.dataService.action,
+                        url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "UserRoleLookup",
+                        beforeSend: self.sf.setModuleHeaders,
+
+                        type: "get",
+                        dataType: "json",
+                        //contentType: "application/json; charset=utf-8",
+                        data: postData,
+
+                        success: function (data) {
+                            if (data) {
+                                successCallback(data);
+                            }
+                        },
+                        "error": function (jqXHR, textStatus, errorThrown) {
+                            errorCallback({
+                                "message": "Unable to load data from uri : ",
+                                "stage": "DATASOURCE_LOADING_ERROR",
+                                "details": {
+                                    "jqXHR": jqXHR,
+                                    "textStatus": textStatus,
+                                    "errorThrown": errorThrown
+                                }
+                            });
+                        }
+                    });
+                }
             }
+            
             else {
                 errorCallback();
             }

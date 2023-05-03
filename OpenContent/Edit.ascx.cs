@@ -48,6 +48,9 @@ namespace Satrabel.OpenContent
                 AlpacaContext.DeleteConfirmMessage = LocalizeSafeJsString("txtMLDeleteConfirmMessage");
             }
             AlpacaContext.BuilderV2 = builderV2;
+
+            cmdCopy.Visible = !settings.Template.Manifest.DisableCopy;
+            hlDelete.Visible = !settings.Template.Manifest.DisableDelete;
         }
         public AlpacaContext AlpacaContext { get; private set; }
     }
