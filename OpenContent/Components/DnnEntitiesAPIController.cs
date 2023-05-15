@@ -514,7 +514,9 @@ namespace Satrabel.OpenContent.Components
             {
                 var roles = DotNetNuke.Security.Roles.RoleController.Instance.GetRoles(PortalSettings.PortalId).AsQueryable();
 
-                roles = roles.Where(r => r.RoleName != "Administrators" && r.RoleName != "Registered Users");
+                roles = roles.Where(r => r.RoleName != "Administrators" 
+                                    && r.RoleName != "Registered Users" 
+                                    && r.RoleName != "Unverified Users");
                 if (q != "*" && !string.IsNullOrEmpty(q))
                 {
                     roles = roles.Where(t => t.RoleName.ToLower().Contains(q.ToLower()));

@@ -123,6 +123,8 @@ namespace Satrabel.OpenContent.Components
         public bool PreviewEnabled => _portalSettings != null && (_portalSettings.UserMode == PortalSettings.Mode.View);
 
         public string PortalName => _portalSettings.PortalName;
+
+        public string TabName => _portalSettings.ActiveTab.TabName;
         #endregion
     }
 
