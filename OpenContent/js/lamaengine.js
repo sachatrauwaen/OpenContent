@@ -386,13 +386,14 @@ alpacaEngine.engine = function (config) {
 
                 } else if (config.query.type == "relation") {
                     var postData = {
+                        "collection": config.query.collection,
                         "dataKey": config.query.dataKey,
                         "valueField": config.query.valueField,
                         "textField": config.query.textField
                     };
                     $.ajax({
                         //url: self.sf.getServiceRoot(self.options.dataService.module) + self.options.dataService.controller + "/" + self.options.dataService.action,
-                        url: self.sf.getServiceRoot("OpenContent") + "OpenContentAPI" + "/" + "LookupData",
+                        url: self.sf.getServiceRoot("OpenContent") + "OpenContentAPI" + "/" + config.query.action,
                         beforeSend: self.sf.setModuleHeaders,
 
                         type: "post",

@@ -140,7 +140,7 @@ namespace Satrabel.OpenContent.Components.Datasource
 
                     if (ruleDisplayName != null)
                     {
-                        string displayName = ruleDisplayName.Value.AsString + "%";
+                        string displayName = "%"+ruleDisplayName.Value.AsString + "%";
                         users = UserController.GetUsersByDisplayName(context.PortalId, displayName, pageIndex, pageSize, ref total, true, false).Cast<UserInfo>();
                     }
                     else

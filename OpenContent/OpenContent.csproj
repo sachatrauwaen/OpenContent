@@ -1281,6 +1281,7 @@
     <Content Include="js\summernote\font\summernote.woff" />
     <Content Include="js\swagger\fonts\DroidSans-Bold.ttf" />
     <Content Include="js\swagger\fonts\DroidSans.ttf" />
+    <Content Include="lama\src\components\CollectionField.vue" />
     <None Include="packages.config" />
     <None Include="Scripts\_references.js" />
     <Content Include="js\select2\select2.css" />
