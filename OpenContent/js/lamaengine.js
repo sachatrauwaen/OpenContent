@@ -24,10 +24,10 @@ alpacaEngine.engine = function (config) {
     self.rootUrl = config.appPath;
     self.bootstrap = config.bootstrap;
     var createEdit = config.isNew ? "create" : "edit";
-    self.view = "dnn-" + createEdit;
-    if (config.bootstrap) {
-        self.view = config.horizontal ? "dnnbootstrap-" + createEdit + "-horizontal" : "dnnbootstrap-" + createEdit;
-    }
+    self.view = "bootstrap4-" + createEdit;
+    //if (config.bootstrap) {
+    //    self.view = config.horizontal ? "bootstrap4-" + createEdit + "-horizontal" : "dnnbootstrap-" + createEdit;
+    //}
     if (config.bootstrap && $.fn.select2) {
         $.fn.select2.defaults.set("theme", "bootstrap");
     }
@@ -386,13 +386,14 @@ alpacaEngine.engine = function (config) {
 
                 } else if (config.query.type == "relation") {
                     var postData = {
+                        "collection": config.query.collection,
                         "dataKey": config.query.dataKey,
                         "valueField": config.query.valueField,
                         "textField": config.query.textField
                     };
                     $.ajax({
                         //url: self.sf.getServiceRoot(self.options.dataService.module) + self.options.dataService.controller + "/" + self.options.dataService.action,
-                        url: self.sf.getServiceRoot("OpenContent") + "OpenContentAPI" + "/" + "LookupData",
+                        url: self.sf.getServiceRoot("OpenContent") + "OpenContentAPI" + "/" + config.query.action,
                         beforeSend: self.sf.setModuleHeaders,
 
                         type: "post",
@@ -573,7 +574,40 @@ alpacaEngine.engine = function (config) {
                     //    };
                     //}));
                 }
+                else if (config.query.type == "userrole") {
+                    var postData = {
+                        q: "*"
+                    };
+                    $.ajax({
+                        //url: self.sf.getServiceRoot(self.options.dataService.module) + self.options.dataService.controller + "/" + self.options.dataService.action,
+                        url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "UserRoleLookup",
+                        beforeSend: self.sf.setModuleHeaders,
+
+                        type: "get",
+                        dataType: "json",
+                        //contentType: "application/json; charset=utf-8",
+                        data: postData,
+
+                        success: function (data) {
+                            if (data) {
+                                successCallback(data);
+                            }
+                        },
+                        "error": function (jqXHR, textStatus, errorThrown) {
+                            errorCallback({
+                                "message": "Unable to load data from uri : ",
+                                "stage": "DATASOURCE_LOADING_ERROR",
+                                "details": {
+                                    "jqXHR": jqXHR,
+                                    "textStatus": textStatus,
+                                    "errorThrown": errorThrown
+                                }
+                            });
+                        }
+                    });
+                }
             }
+            
             else {
                 errorCallback();
             }

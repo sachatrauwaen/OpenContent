@@ -6,7 +6,6 @@
         <div id="field1" class="alpaca"></div>
     </div>
     <ul class="dnnActions dnnClear" style="display: block; padding-left: 35%">
-
         <li>
             <asp:HyperLink ID="cmdSave" runat="server" class="dnnPrimaryAction" resourcekey="cmdSave" />
         </li>
@@ -20,7 +19,7 @@
             <asp:HyperLink ID="hlDelete" runat="server" class="dnnSecondaryAction" resourcekey="cmdDelete" NavigateUrl="#" />
         </li>
         <li style="padding-left: 10px;">
-            <asp:DropDownList ID="ddlVersions" runat="server" CssClass="oc-ddl-versions" />
+            <asp:DropDownList ID="ddlVersions" runat="server" CssClass="oc-ddl-versions form-control" />
         </li>
     </ul>
     <div id="field1validation" style="display: none; color: #b94a48; padding-left: 35%">

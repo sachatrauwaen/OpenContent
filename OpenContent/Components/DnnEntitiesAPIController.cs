@@ -508,6 +508,32 @@ namespace Satrabel.OpenContent.Components
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
         [HttpGet]
+        public HttpResponseMessage UserRoleLookup(string q)
+        {
+            try
+            {
+                var roles = DotNetNuke.Security.Roles.RoleController.Instance.GetRoles(PortalSettings.PortalId).AsQueryable();
+
+                roles = roles.Where(r => r.RoleName != "Administrators" 
+                                    && r.RoleName != "Registered Users" 
+                                    && r.RoleName != "Unverified Users");
+                if (q != "*" && !string.IsNullOrEmpty(q))
+                {
+                    roles = roles.Where(t => t.RoleName.ToLower().Contains(q.ToLower()));
+                }
+                var rolesDtos = roles.Select(t => new { value = t.RoleID.ToString(), text = t.RoleName }).ToList();
+                return Request.CreateResponse(HttpStatusCode.OK, rolesDtos);
+            }
+            catch (Exception exc)
+            {
+                Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
+
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [HttpGet]
         public HttpResponseMessage FileUrl(int fileid)
         {
             try
@@ -893,6 +919,30 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        [HttpGet]
+        public HttpResponseMessage UsersLookup(string q, string role)
+        {
+            try
+            {
+                q += "%";
+                int totalRecords = 0;
+                var users = UserController.GetUsersByDisplayName(PortalSettings.PortalId, q, 0, 1000, ref totalRecords, false, false).Cast<UserInfo>();
+                if (role != null)
+                {
+                    users = users.Where(u => u.Roles.Any(r => role.Contains(r)));
+                }
+                users = users.Where(u => u.IsSuperUser == false); // exclude the superUsers
+                var res = users.Select(u => new { value = u.UserID.ToString(), text = u.DisplayName });
+                return Request.CreateResponse(HttpStatusCode.OK, res);
+            }
+            catch (Exception exc)
+            {
+                Logger.Error(exc);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
+            }
+        }
 
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]

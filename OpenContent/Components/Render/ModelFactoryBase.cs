@@ -296,6 +296,7 @@ namespace Satrabel.OpenContent.Components.Render
                 context["ModuleId"] = _module.ViewModule.ModuleId;
                 context["GoogleApiKey"] = App.Services.CreateGlobalSettingsRepository(_portalId).GetGoogleApiKey();
                 context["ModuleTitle"] = _module.ViewModule.ModuleTitle;
+                context["TabName"] = _module.TabName;
 
                 context["IsEditMode"] = IsEditMode;
                 context["PortalId"] = _portalId;

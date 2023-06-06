@@ -227,7 +227,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
             {
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/lib/moment/min/moment-with-locales.min.js", FileOrder.Js.DefaultPriority, "DnnPageHeaderProvider");
                 ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/lib/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js", FileOrder.Js.DefaultPriority + 1, "DnnPageHeaderProvider");
-                ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/lib/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css", FileOrder.Css.DefaultPriority);
+                ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/lib/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css", FileOrder.Css.DefaultPriority);
             }
             if (allFields || fieldTypes.Contains("ckeditor") || fieldTypes.Contains("mlckeditor"))
             {

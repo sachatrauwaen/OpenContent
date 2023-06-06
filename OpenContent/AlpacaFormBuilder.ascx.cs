@@ -51,7 +51,8 @@ namespace Satrabel.OpenContent
             if (builderV2 || OpenContentUtils.BuilderExist(settings.Template.ManifestFolderUri))
             {
                 string title = string.IsNullOrEmpty(settings.Template.Manifest.Title) ? "Data" : settings.Template.Manifest.Title + " ";
-                ddlForms.Items.Add(new ListItem(title, ""));
+                string key = settings.Template.Collection == "Items" ? "": settings.Template.Collection;   
+                ddlForms.Items.Add(new ListItem(title, key));
             }
             if (builderV2 || OpenContentUtils.BuilderExist(settings.Template.ManifestFolderUri, settings.Template.Key.ShortKey))
             {

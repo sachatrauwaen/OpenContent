@@ -133,20 +133,19 @@ namespace Satrabel.OpenContent.Components.Datasource
                 IEnumerable<UserInfo> users;
                 if (selectQuery != null)
                 {
-                    
+
                     var ruleDisplayName = selectQuery.Query.FilterRules.FirstOrDefault(f => f.Field == "DisplayName");
                     var ruleRoles = selectQuery.Query.FilterRules.FirstOrDefault(f => f.Field == "Roles");
                     var ruleApproved = selectQuery.Query.FilterRules.FirstOrDefault(f => f.Field == "Approved");
 
                     if (ruleDisplayName != null)
                     {
-                        string displayName = ruleDisplayName.Value.AsString + "%";
+                        string displayName = "%"+ruleDisplayName.Value.AsString + "%";
                         users = UserController.GetUsersByDisplayName(context.PortalId, displayName, pageIndex, pageSize, ref total, true, false).Cast<UserInfo>();
                     }
                     else
                     {
                         users = UserController.GetUsers(context.PortalId, pageIndex, pageSize, ref total, true, false).Cast<UserInfo>();
-                     
                     }
                     var userCount = users.Count();
                     if (ruleRoles != null)
@@ -154,7 +153,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                         var roleNames = ruleRoles.MultiValue.Select(r => r.AsString).ToList();
                         users = users.Where(u => u.Roles.Intersect(roleNames).Any());
                     }
-                    if (ruleApproved!= null)
+                    if (ruleApproved != null)
                     {
                         var val = bool.Parse(ruleApproved.Value.AsString);
                         users = users.Where(u => u.Membership.Approved == val);
@@ -170,7 +169,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 }
                 int excluded = users.Count(u => u.IsInRole("Administrators"));
                 users = users.Where(u => !u.IsInRole("Administrators"));
-                
+
                 var dataList = new List<IDataItem>();
                 foreach (var user in users)
                 {
@@ -401,6 +400,14 @@ namespace Satrabel.OpenContent.Components.Datasource
         {
             if (HasProperty(schema, "", "Roles"))
             {
+                List<string> rolesInSchema = new List<string>();
+                var rolesSchema = Property(schema, "", "Roles");
+                var rolesEnum = rolesSchema["enum"] as JArray;
+                if (rolesEnum != null)
+                {
+                    rolesInSchema = rolesEnum.Select(r => r.Value<string>()).ToList();
+                }
+
                 List<string> rolesToRemove = new List<string>(user.Roles); //@todo : enkel deze van het schema
                 var roles = data["Roles"] as JArray;
                 foreach (var role in roles)
@@ -415,7 +422,9 @@ namespace Satrabel.OpenContent.Components.Datasource
                 }
                 foreach (var roleName in rolesToRemove)
                 {
-                    if (roleName != REGISTERED_USERS)
+                    if (roleName != REGISTERED_USERS && 
+                        (!rolesInSchema.Any() || rolesInSchema.Contains(roleName)) 
+                       )
                     {
                         var roleInfo = RoleController.Instance.GetRoleByName(context.PortalId, roleName);
                         RoleController.DeleteUserRole(user, roleInfo, PortalSettings.Current, false);
@@ -472,7 +481,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                                 //}
                                 //else
                                 //{
-                                    user.Profile.SetProfileProperty(prop.Name, profile[prop.Name].ToString());
+                                user.Profile.SetProfileProperty(prop.Name, profile[prop.Name].ToString());
                                 //}
                             }
                             else if (profile[prop.Name].Type == JTokenType.Date)
@@ -538,6 +547,22 @@ namespace Satrabel.OpenContent.Components.Datasource
 
             return ((JObject)schema["properties"]).Properties().Any(p => p.Name == property);
 
+        }
+
+        private static JObject Property(JObject schema, string subobject, string property)
+        {
+            if (!string.IsNullOrEmpty(subobject))
+            {
+                schema = schema[subobject] as JObject;
+            }
+            if (schema == null || !(schema["properties"] is JObject)) return null;
+
+            var prop = ((JObject)schema["properties"]).Properties().FirstOrDefault(p => p.Name == property);
+            if (prop == null)
+            {
+                return null;
+            }
+            return prop.Value as JObject;
         }
 
         private static void Notify(DataSourceContext context, JToken data, string action)
