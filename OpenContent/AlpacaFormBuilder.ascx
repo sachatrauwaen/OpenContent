@@ -56,14 +56,17 @@
                 newHeight,
                 newWidth;
 
+            
             newHeight = $window.height() - 110;
-            newWidth = Math.min($window.width() - 110, 1600);
+            newWidth = Math.min($window.width() - 110, 1200);
 
             popup.dialog("option", {
                 close: function () { window.dnnModal.closePopUp(false, ""); },
                 //'position': 'top',
                 height: newHeight,
                 width: newWidth,
+                minWidth: newWidth,
+                minHeight: newHeight,
                 //position: 'center'
                 resizable: false,
             });

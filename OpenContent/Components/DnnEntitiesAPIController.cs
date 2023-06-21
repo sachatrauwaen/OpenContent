@@ -467,7 +467,7 @@ namespace Satrabel.OpenContent.Components
                 }
                 var tabsDtos = tabs.Select(t => new
                 {
-                    value = t.TabID.ToString(),
+                    value = t.TabID,
                     text = t.TabName + " (" + t.TabPath.Replace("//", "/").Replace("/" + t.TabName + "/", "") + " " + l + ")",
                     url = (new System.Uri(NavigateUrl(t, l, PortalSettings))).PathAndQuery
                 });

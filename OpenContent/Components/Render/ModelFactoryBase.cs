@@ -9,6 +9,7 @@ using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Localization;
 using Satrabel.OpenContent.Components.Manifest;
 using Satrabel.OpenContent.Components.Querying;
+using Satrabel.OpenContent.Components.Rest.Swagger;
 using Satrabel.OpenContent.Components.TemplateHelpers;
 using System;
 using System.Collections.Generic;
@@ -41,6 +42,8 @@ namespace Satrabel.OpenContent.Components.Render
         protected readonly TemplateManifest _templateManifest;
         protected readonly OpenContentModuleConfig _module;
         protected readonly int _detailTabId;
+
+        protected  JToken _jsonSettings = null;
 
         protected ModelFactoryBase(string settingsJson, Manifest.Manifest manifest, TemplateManifest templateManifest, TemplateFiles templateFiles, OpenContentModuleConfig module)
         {
@@ -170,18 +173,34 @@ namespace Satrabel.OpenContent.Components.Render
                         // collection enhancement
                         dsContext.Collection = col;
                         var dsItem = ds.Get(dsContext, id);
-                        if (dsItem != null && dsItem.Data is JObject)
+                        if (dsItem != null)
                         {
-                            return dsItem.Data as JObject;
+                            var json = dsItem?.Data?.DeepClone() as JObject;
+                            if (json != null)
+                            {
+                                JsonUtils.SimplifyJson(json, GetCurrentCultureCode());
+                                if (!onlyData)
+                                {
+                                    var context = new JObject();
+                                    json["Context"] = context;
+                                    context["Id"] = dsItem.Id;
+                                    var colDetailId = _detailTabId;
+                                    var detailIdKey = col + "DetailTabId";
+                                    if (_jsonSettings!= null && _jsonSettings[detailIdKey] != null)
+                                    {
+                                        int.TryParse(_jsonSettings[detailIdKey].ToString(), out colDetailId);
+                                        context["DetailUrl"] = GenerateDetailUrl(dsItem, json, _module.Settings.Manifest, GetCurrentCultureCode(), colDetailId);
+                                    }
+                                }
+                                return json;
+                            }
                         }
-                        else
-                        {
-                            JObject res = new JObject();
-                            res["Id"] = id;
-                            res["Collection"] = col;
-                            res["Title"] = "unknow";
-                            return res;
-                        }
+                        JObject res = new JObject();
+                        res["Id"] = id;
+                        res["Collection"] = col;
+                        res["Title"] = "unknow";
+                        return res;
+
                     },
                     (key) =>
                     {
@@ -200,6 +219,26 @@ namespace Satrabel.OpenContent.Components.Render
         {
             if (_module.CanvasUnavailable) onlyData = true;
 
+            
+            // include settings in the Model
+            if (!onlyMainData && _templateManifest != null && _templateManifest.SettingsNeeded() && !string.IsNullOrEmpty(_settingsJson))
+            {
+                try
+                {
+                    _jsonSettings = JToken.Parse(_settingsJson);
+                    //if (DnnLanguageUtils.GetPortalLocales(_portalId).Count > 1)
+                    //{
+                    //    JsonUtils.SimplifyJson(jsonSettings, GetCurrentCultureCode());
+                    //}
+                    JsonUtils.SimplifyJson(_jsonSettings, GetCurrentCultureCode());
+                    model["Settings"] = _jsonSettings;
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Error parsing Json of Settings", ex);
+                }
+            }
+            // enhance data
             if (_templateFiles != null)
             {
                 // include additional data in the Model
@@ -259,24 +298,7 @@ namespace Satrabel.OpenContent.Components.Render
                     }
                 }
             }
-            // include settings in the Model
-            if (!onlyMainData && _templateManifest != null && _templateManifest.SettingsNeeded() && !string.IsNullOrEmpty(_settingsJson))
-            {
-                try
-                {
-                    var jsonSettings = JToken.Parse(_settingsJson);
-                    //if (DnnLanguageUtils.GetPortalLocales(_portalId).Count > 1)
-                    //{
-                    //    JsonUtils.SimplifyJson(jsonSettings, GetCurrentCultureCode());
-                    //}
-                    JsonUtils.SimplifyJson(jsonSettings, GetCurrentCultureCode());
-                    model["Settings"] = jsonSettings;
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception("Error parsing Json of Settings", ex);
-                }
-            }
+            
 
             // include static localization in the Model
             if (!onlyMainData)
@@ -342,7 +364,7 @@ namespace Satrabel.OpenContent.Components.Render
                             context["EditUrl"] = GetAdditionalDataEditUrl(item.Key);
                             additionalDataJson["Context"] = context;
                         }
-                        
+
                     }
                     if (!onlyData)
                     {
