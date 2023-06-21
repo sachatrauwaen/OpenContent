@@ -460,7 +460,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             return version.LastModifiedOnDate == null ? version.CreatedOnDate : version.LastModifiedOnDate;
         }
 
-        private static int GetTabId(DataSourceContext context)
+        protected static int GetTabId(DataSourceContext context)
         {
             return context.Config.GetValue("TabId", context.TabId);
         }

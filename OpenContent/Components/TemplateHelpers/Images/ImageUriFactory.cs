@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Web;
 
 namespace Satrabel.OpenContent.Components.TemplateHelpers
 {
@@ -34,7 +35,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
             }
             catch (Exception ex)
             {
-                App.Services.Logger.Error($"Error while trying to create ImageUri from dynamic string [{Convert.ToString(imageInfo) }].  Error: {ex}" );
+                App.Services.Logger.Error($"Error while trying to create ImageUri from dynamic string [{Convert.ToString(imageInfo)}].  Error: {ex}");
             }
             return retval;
         }
@@ -53,10 +54,16 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
                 }
                 catch (Exception)
                 {
-                    App.Services.Logger.Error($"Failed to create ImageUri with parameter {imageId}" );
+                    App.Services.Logger.Error($"Failed to create ImageUri with parameter {imageId}. See " + GetDebugInfo(HttpContext.Current));
                 }
             }
             return retval;
+        }
+
+        private static string GetDebugInfo(HttpContext current)
+        {
+            if (current == null) return "No httpcontext; thus no extra info";
+            return HttpContext.Current?.Request?.Url?.AbsoluteUri;
         }
 
         public static ImageUri CreateImageUri(int imageId)
