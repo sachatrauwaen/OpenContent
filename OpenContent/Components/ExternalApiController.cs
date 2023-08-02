@@ -197,10 +197,10 @@ namespace Satrabel.OpenContent.Components
 
                 OpenContentSettings settings = viewModule.OpenContentSettings();
                 OpenContentModuleConfig module = OpenContentModuleConfig.Create(viewModule, PortalSettings);
-                if (!module.HasAllUsersViewPermissions())
-                {
-                    return Request.CreateResponse(HttpStatusCode.Unauthorized);
-                }
+                //if (!module.HasAllUsersViewPermissions())
+                //{
+                //    return Request.CreateResponse(HttpStatusCode.Unauthorized);
+                //}
                 JObject reqOptions = null;
 
                 if (module.IsListMode())
@@ -303,10 +303,11 @@ namespace Satrabel.OpenContent.Components
                     //return dataItem;
                     //OpenContentSettings settings = viewModule.OpenContentSettings();
                     OpenContentModuleConfig module = OpenContentModuleConfig.Create(viewModule, PortalSettings);
-                    if (!module.HasAllUsersViewPermissions())
-                    {
-                        return Request.CreateResponse(HttpStatusCode.Unauthorized);
-                    }
+
+                    //if (!module.HasAllUsersViewPermissions())
+                    //{
+                    //    return Request.CreateResponse(HttpStatusCode.Unauthorized);
+                    //}
                     return Request.CreateResponse(HttpStatusCode.OK, json.Json.ToJObject("GetContent " + scope + "/" + key));
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, new { });
