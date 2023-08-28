@@ -17,6 +17,7 @@ using Satrabel.OpenContent.Components.Logging;
 using Newtonsoft.Json.Linq;
 using System.Text.RegularExpressions;
 using DotNetNuke.Common.Utilities;
+using Satrabel.OpenContent.Components.Rest.Swagger;
 
 namespace Satrabel.OpenContent.Components.Handlebars
 {
@@ -124,6 +125,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterIfAndHelper(hbs);
             RegisterIfOrHelper(hbs);
             RegisterIfInHelper(hbs);
+            RegisterIfMobileHelper(hbs);
             RegisterEachPublishedHelper(hbs);
             RegisterConvertHtmlToTextHelper(hbs);
             RegisterConvertToJsonHelper(hbs);
@@ -616,6 +618,8 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     writer.WriteSafeString(imageUrl);
                 }
             });
+                     
+
         }
 
         private static void RegisterEmailHelper(HandlebarsDotNet.IHandlebars hbs)
@@ -1071,6 +1075,22 @@ namespace Satrabel.OpenContent.Components.Handlebars
                         res = res || arguments[0].Equals(arguments[i]);
                     }
                 }
+                if (res)
+                {
+                    options.Template(writer, (object)context);
+                }
+                else
+                {
+                    options.Inverse(writer, (object)context);
+                }
+            });
+        }
+
+        private static void RegisterIfMobileHelper(IHandlebars hbs)
+        {
+            hbs.RegisterHelper("ifmobile", (writer, options, context, arguments) =>
+            {
+                bool res = HttpContext.Current.Request.Browser.IsMobileDevice;
                 if (res)
                 {
                     options.Template(writer, (object)context);
