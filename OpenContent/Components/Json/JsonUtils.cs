@@ -282,6 +282,7 @@ namespace Satrabel.OpenContent.Components.Json
                         if (obj != null)
                         {
                             LookupJson(obj, additionalData, sch["items"] as JObject, opt["items"] as JObject, includelabels, includes, objFromCollection, alpacaForAddData, field);
+                            newArray.Add(obj); // forRestapi datasource
                         }
                         else if (lookup)
                         {
