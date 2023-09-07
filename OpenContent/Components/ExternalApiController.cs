@@ -72,7 +72,7 @@ namespace Satrabel.OpenContent.Components
                     foreach (var item in model["Items"] as JArray)
                     {
                         item["id"] = item["Context"]["Id"];
-                        JsonUtils.IdJson(item);
+                        //JsonUtils.IdJson(item);
                     }
 
                     return Request.CreateResponse(HttpStatusCode.OK, model["Items"]);
@@ -248,7 +248,7 @@ namespace Satrabel.OpenContent.Components
                     foreach (var item in model["Items"] as JArray)
                     {
                         item["id"] = item["Context"]["Id"];
-                        JsonUtils.IdJson(item);
+                        //JsonUtils.IdJson(item);
                     }
                     res[entity] = model["Items"];
                     res["meta"]["total"] = dsItems.Total;
