@@ -162,7 +162,7 @@ namespace Satrabel.OpenContent.Components.Rest
                     foreach (var item in model["Items"] as JArray)
                     {
                         item["id"] = item["Context"]["Id"];
-                        JsonUtils.IdJson(item);
+                        //JsonUtils.IdJson(item);
                     }
                     res[entity] = model[collection];
                     res["meta"]["total"] = dsItems.Total;
