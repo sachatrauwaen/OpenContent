@@ -427,11 +427,16 @@ namespace Satrabel.OpenContent
                 if (!OpenContentUtils.BuilderExist(settings.Template.ManifestFolderUri))
                 {
                     string title = string.IsNullOrEmpty(template.Manifest.Title) ? "Data" : template.Manifest.Title;
-                    scriptList.Items.Add(NewListItem("Schema", "schema.json", title, template));
-                    scriptList.Items.Add(NewListItem("Options", "options.json", title, template));
+                    string prefix = "";
+                    if (!string.IsNullOrEmpty(template.Collection)){
+                        prefix= template.Collection+"-";
+                        title += " (" + template.Collection + ")";
+                    }
+                    scriptList.Items.Add(NewListItem("Schema", prefix+"schema.json", title, template));
+                    scriptList.Items.Add(NewListItem("Options", prefix + "options.json", title, template));
                     foreach (Locale item in LocaleController.Instance.GetLocales(PortalId).Values)
                     {
-                        scriptList.Items.Add(NewListItem("Options (" + item.Code + ")", "options." + item.Code + ".json", title, template));
+                        scriptList.Items.Add(NewListItem("Options (" + item.Code + ")", prefix + "options." + item.Code + ".json", title, template));
                     }
                 }
 
