@@ -428,7 +428,7 @@ namespace Satrabel.OpenContent
                 {
                     string title = string.IsNullOrEmpty(template.Manifest.Title) ? "Data" : template.Manifest.Title;
                     string prefix = "";
-                    if (!string.IsNullOrEmpty(template.Collection)){
+                    if (template.Collection != "Items"){
                         prefix= template.Collection+"-";
                         title += " (" + template.Collection + ")";
                     }
