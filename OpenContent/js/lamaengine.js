@@ -325,6 +325,7 @@ alpacaEngine.engine = function (config) {
 
     self.connector = {
         currentCulture: self.currentCulture,
+        defaultCulture: self.defaultCulture,
         viewType: config.isNew ? "create" : "edit",
         connect() {
 
