@@ -775,12 +775,31 @@ namespace Satrabel.OpenContent.Components
                     isPublished = false;
                 }
 
-                if (!isPublished) reason = App.Config.FieldNamePublishStartDate + $" being {dsItem.Data[App.Config.FieldNamePublishStartDate].ToString(Newtonsoft.Json.Formatting.None)}";
+                if (!isPublished) reason = App.Config.FieldNamePublishStartDate + $" being {dsItem.Data[App.Config.FieldNamePublishStartDate]?.ToString(Newtonsoft.Json.Formatting.None)}";
             }
             if (isPublished && indexConfig?.Fields != null && indexConfig.Fields.ContainsKey(App.Config.FieldNamePublishEndDate))
             {
                 if (dsItem.Data[App.Config.FieldNamePublishEndDate] != null /*&& dsItem.Data[App.Config.FieldNamePublishEndDate].Type == JTokenType.Date*/)
                 {
+
+                    try
+                    {
+                        DateTime compareDate = dsItem.Data[App.Config.FieldNamePublishEndDate].Value<DateTime>();
+                        if (compareDate.TimeOfDay.TotalMilliseconds > 0)
+                        {
+                            isPublished = compareDate >= DateTime.Now;
+                        }
+                        else
+                        {
+                            isPublished = compareDate >= DateTime.Today;
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        // not a date
+                        isPublished = false;
+                    }
+                    /*
                     DateTime compareDate;
                     if (DateTime.TryParse(dsItem.Data[App.Config.FieldNamePublishEndDate].ToString(), null, System.Globalization.DateTimeStyles.RoundtripKind, out compareDate))
                     {
@@ -795,6 +814,7 @@ namespace Satrabel.OpenContent.Components
                             isPublished = compareDate >= DateTime.Today;
                         }
                     }
+                    */
                 }
                 else
                 {
@@ -802,7 +822,7 @@ namespace Satrabel.OpenContent.Components
                     isPublished = false;
                 }
 
-                if (!isPublished) reason = App.Config.FieldNamePublishEndDate + $" being {dsItem.Data[App.Config.FieldNamePublishEndDate]}";
+                if (!isPublished) reason = App.Config.FieldNamePublishEndDate + $" being {dsItem.Data[App.Config.FieldNamePublishEndDate]?.ToString(Newtonsoft.Json.Formatting.None)}";
             }
 
             return isPublished;
