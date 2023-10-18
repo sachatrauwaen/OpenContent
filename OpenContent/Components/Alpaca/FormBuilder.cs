@@ -68,6 +68,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
             GetFields(newSchemaFilter, newOptionsFilter, schemaConfig, optionsConfig, fieldLst, indexConfig);
 
             fieldLst.Add(JsonMappingUtils.FIELD_TIMESTAMP);
+            fieldLst.Add(JsonMappingUtils.FIELD_CREATED_ON_DATE);
             // Sort
             SchemaConfig newSchemaSort = new SchemaConfig()
             {

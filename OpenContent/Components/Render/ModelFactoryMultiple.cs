@@ -62,6 +62,7 @@ namespace Satrabel.OpenContent.Components.Render
                     JObject context = new JObject();
                     model["Context"] = context;
                     context["Id"] = item.Id;
+                    context["CreatedOnDate"] = item.CreatedOnDate.ToString("yyyy-MM-ddTHH:mm:ss");                    
                     JsonUtils.SimplifyJson(model, GetCurrentCultureCode());
                     EnhanceSelect2(model, true);
                     yield return JsonUtils.JsonToDictionary(model.ToString());
@@ -93,6 +94,7 @@ namespace Satrabel.OpenContent.Components.Render
                     JObject context = new JObject();
                     dyn["Context"] = context;
                     context["Id"] = item.Id;
+                    context["CreatedOnDate"] = item.CreatedOnDate.ToString("yyyy-MM-ddTHH:mm:ss");
                     JsonUtils.SimplifyJson(dyn, GetCurrentCultureCode());
                     EnhanceSelect2(dyn, onlyData);
                     EnhanceUser(dyn, item.CreatedByUserId);
