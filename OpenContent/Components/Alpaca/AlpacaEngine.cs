@@ -92,7 +92,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
             {
                 if (builderV2)
                 {
-                    ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/bootstrap4/js/bootstrap.bundle.min.js", FileOrder.Js.DefaultPriority);
+                    ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/bootstrap4/js/bootstrap.min.js", FileOrder.Js.DefaultPriority);
                     ClientResourceManager.RegisterStyleSheet(Page, "~/DesktopModules/OpenContent/js/bootstrap4/css/bootstrap.min.css", FileOrder.Css.DefaultPriority);
                 }
                 else
