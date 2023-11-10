@@ -55,8 +55,8 @@ alpacaEngine.engine = function (config) {
                 newHeight,
                 newWidth;
 
-            newHeight = $window.height() - 36;
-            newWidth = Math.min($window.width() - 40, 1200);
+            newHeight = $window.height() - 200;
+            newWidth = Math.min($window.width() - 200, 1200);
 
             popup.dialog("option", {
                 close: function () { window.dnnModal.closePopUp(false, ""); },
