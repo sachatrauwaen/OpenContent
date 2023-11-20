@@ -266,14 +266,25 @@ namespace Satrabel.OpenContent.Components
             bool defaultData = false;
             if (templateManifest.DataNeeded())
             {
+                var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
+                IDataSource ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
+                var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
                 var dataFilename = templateManifest.MainTemplateUri().PhysicalFullDirectory + "\\data.json";
                 if (File.Exists(dataFilename))
                 {
-                    var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
-                    IDataSource ds = DataSourceManager.GetDataSource(settings.Manifest.DataSource);
-                    var dsContext = OpenContentUtils.CreateDataContext(module, UserInfo.UserID);
                     ds.Add(dsContext, JObject.Parse(File.ReadAllText(dataFilename)));
                     defaultData = true;
+                }
+                else
+                {
+                    var dsItems = ds.GetAll(dsContext, new Datasource.Search.Select()
+                    {
+                        PageSize = 1,
+                    });
+                    if (dsItems != null && dsItems.Total > 0)
+                    {
+                        defaultData = true;
+                    }
                 }
             }
 
