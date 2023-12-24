@@ -81,7 +81,7 @@ namespace Satrabel.OpenContent.Components.Lucene
         private static void RegisterModuleDataForIndexing(LuceneController lc, OpenContentModuleConfig module)
         {
             var indexableData = GetModuleIndexableData(module);
-            var dataExample = indexableData.FirstOrDefault();
+            var dataExample = indexableData?.FirstOrDefault();
             if (dataExample == null) return;
 
             var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.Template); //todo index is being build from schema & options. But they should be provided by the provider, not directly from the files
