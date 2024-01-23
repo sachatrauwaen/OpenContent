@@ -14,48 +14,18 @@ namespace Satrabel.OpenContent.Components.Rest
             select.PageIndex = restSelect.PageIndex;
             if (restSelect.Query?.FilterRules != null)
             {
-                foreach (var rule in restSelect.Query.FilterRules)
+                GenerateRules(config, restSelect.Query.FilterRules, cultureCode, query);
+            }
+            if (restSelect.Query?.FilterGroups != null)
+            {
+                foreach (var group in restSelect.Query.FilterGroups)
                 {
-                    if (rule.FieldOperator == OperatorEnum.IN)
-                    {
-                        if (rule.MultiValue != null)
-                        {
-                            query.AddRule(FieldConfigUtils.CreateFilterRule(config, cultureCode,
-                                rule.Field,
-                                rule.FieldOperator,
-                                rule.MultiValue.Select(v => new StringRuleValue(v.ToString()))
-                            ));
-                        }
-                    }
-                    else if (rule.FieldOperator == OperatorEnum.BETWEEN)
-                    {
-                        var val1 = GenerateValue(rule.LowerValue);
-                        var val2 = GenerateValue(rule.UpperValue);
-                        query.AddRule(FieldConfigUtils.CreateFilterRule(config, cultureCode,
-                                 rule.Field,
-                                 rule.FieldOperator,
-                                 val1, val2
-                             ));
-                    }
-                    else
-                    {
-                        // EQUAL
-                        if (rule.Value != null)
-                        {
-                            RuleValue val;
-
-                            val = GenerateValue(rule.Value);
-
-                            query.AddRule(FieldConfigUtils.CreateFilterRule(config, cultureCode,
-                                rule.Field,
-                                rule.FieldOperator,
-                                val
-                            ));
-                        }
-                    }
+                    var g = new FilterGroup();
+                    g.Condition = group.Condition;
+                    GenerateRules(config, group.FilterRules, cultureCode, g);
+                    query.AddRule(g);
                 }
             }
-
             if (restSelect.Sort != null && restSelect.Sort.Any())
             {
                 select.Sort.Clear();
@@ -68,6 +38,50 @@ namespace Satrabel.OpenContent.Components.Rest
                 }
             }
             return select;
+        }
+
+        private static void GenerateRules(FieldConfig config, System.Collections.Generic.List<RestRule> rules, string cultureCode, FilterGroup query)
+        {
+            foreach (var rule in rules)
+            {
+                if (rule.FieldOperator == OperatorEnum.IN)
+                {
+                    if (rule.MultiValue != null)
+                    {
+                        query.AddRule(FieldConfigUtils.CreateFilterRule(config, cultureCode,
+                            rule.Field,
+                            rule.FieldOperator,
+                            rule.MultiValue.Select(v => new StringRuleValue(v.ToString()))
+                        ));
+                    }
+                }
+                else if (rule.FieldOperator == OperatorEnum.BETWEEN)
+                {
+                    var val1 = GenerateValue(rule.LowerValue);
+                    var val2 = GenerateValue(rule.UpperValue);
+                    query.AddRule(FieldConfigUtils.CreateFilterRule(config, cultureCode,
+                             rule.Field,
+                             rule.FieldOperator,
+                             val1, val2
+                         ));
+                }
+                else
+                {
+                    // EQUAL
+                    if (rule.Value != null)
+                    {
+                        RuleValue val;
+
+                        val = GenerateValue(rule.Value);
+
+                        query.AddRule(FieldConfigUtils.CreateFilterRule(config, cultureCode,
+                            rule.Field,
+                            rule.FieldOperator,
+                            val
+                        ));
+                    }
+                }
+            }
         }
 
         private static RuleValue GenerateValue(JValue jvalue)
