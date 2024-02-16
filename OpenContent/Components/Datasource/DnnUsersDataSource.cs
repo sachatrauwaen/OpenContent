@@ -74,7 +74,15 @@ namespace Satrabel.OpenContent.Components.Datasource
                 }
                 else
                 {
-                    item.Data["Profile"][def.PropertyName] = def.PropertyValue;
+                    try
+                    {
+                        item.Data["Profile"][def.PropertyName] = string.IsNullOrEmpty(def.PropertyValue) ? null : JToken.Parse(def.PropertyValue);
+                    }
+                    catch (Exception)
+                    {
+                        item.Data["Profile"][def.PropertyName] = def.PropertyValue;
+                    }
+                    
                 }
             }
             var roles = new JArray();
