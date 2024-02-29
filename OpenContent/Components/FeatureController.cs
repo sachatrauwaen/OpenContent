@@ -36,6 +36,7 @@ using Satrabel.OpenContent.Components.Lucene;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.TemplateHelpers;
 using PortalInfo = DotNetNuke.Entities.Portals.PortalInfo;
+using System.Runtime.InteropServices;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -208,7 +209,7 @@ namespace Satrabel.OpenContent.Components
                         // to make ML-Templates be correctly indexed by DNN, we need to use GetLocalizedContent with the default culture
                         // for sites with only one culture
                         var culture = portalLocales.First().Key ?? "";
-                        var localizedData = string.IsNullOrEmpty(culture) ? content.Data : GetLocalizedContent(content.Data, culture);
+                        var localizedData = string.IsNullOrEmpty(culture) ? content.Data : GetLocalizedContent(content.Data, culture, modInfo);
                         // we are intentionally still passing "" as culture to tell DNN it's the neutral language content
                         searchDoc = CreateSearchDocument(ps, modInfo, module.Settings, localizedData, content.Id, "", content.Title, content.LastModifiedOnDate.ToUniversalTime());
                         searchDocuments.Add(searchDoc);
@@ -223,12 +224,17 @@ namespace Satrabel.OpenContent.Components
             return searchDocuments;
         }
 
-        private static JToken GetLocalizedContent(JToken contentData, string culture)
+        private static JToken GetLocalizedContent(JToken contentData, string culture, ModuleInfo modInfo)
         {
             JToken retval = contentData.DeepClone(); // clone to prevent from changing the original
             // remove all other culture data
             JsonUtils.SimplifyJson(retval, culture);
 
+            JObject context = new JObject();
+            retval["Context"] = context;
+            context["TabId"] = modInfo.TabID;
+            context["ModuleId"] = modInfo.ModuleID;            
+            context["ModuleTitle"] = modInfo.ModuleTitle;
             return retval;
         }
 
