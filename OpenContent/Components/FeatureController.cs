@@ -189,7 +189,7 @@ namespace Satrabel.OpenContent.Components
                         {
                             // it's a neutral language module according to DNN, which means we will need to add the neutral language content too
                             var culture = ps.DefaultLanguage;
-                            var localizedData = GetLocalizedContent(content.Data, culture);
+                            var localizedData = GetLocalizedContent(content.Data, culture, modInfo);
                             // pass "" as culture to indicate we're indexing the neutral language here
                             searchDoc = CreateSearchDocument(ps, modInfo, module.Settings, localizedData, content.Id, "", content.Title, content.LastModifiedOnDate.ToUniversalTime());
                             searchDocuments.Add(searchDoc);
@@ -198,7 +198,7 @@ namespace Satrabel.OpenContent.Components
                         // now start creating the docs for specific cultures
                         foreach (var portalLocale in portalLocales.Keys)
                         {
-                            var localizedData = GetLocalizedContent(content.Data, portalLocale);
+                            var localizedData = GetLocalizedContent(content.Data, portalLocale, modInfo);
                             searchDoc = CreateSearchDocument(ps, modInfo, module.Settings, localizedData, content.Id, portalLocale, content.Title, content.LastModifiedOnDate.ToUniversalTime());
                             searchDocuments.Add(searchDoc);
                             App.Services.Logger.Trace($"Indexing content {modInfo.ModuleID}|{portalLocale} -  OK!  {searchDoc.Title} ({modInfo.TabID}) of {content.LastModifiedOnDate.ToUniversalTime()}");
