@@ -70,15 +70,22 @@ namespace Satrabel.OpenContent.Components.Datasource
                 {
                     item.Data["Profile"]["PhotoURL"] = user.Profile.PhotoURL;
                     item.Data["Profile"][def.PropertyName] = def.PropertyValue;
-
                 }
                 else if (string.IsNullOrEmpty(def.PropertyValue))
                 {
                     item.Data["Profile"][def.PropertyName] = null;
                 }
-
+                else if (def.PropertyValue == bool.FalseString)
+                {
+                    item.Data["Profile"][def.PropertyName] = false;
+                }
+                else if (def.PropertyValue == bool.TrueString)
+                {
+                    item.Data["Profile"][def.PropertyName] = true;
+                }
                 else
                 {
+
                     try
                     {
                         var j = JToken.Parse(def.PropertyValue);
@@ -507,6 +514,10 @@ namespace Satrabel.OpenContent.Components.Datasource
                             else if (profile[prop.Name].Type == JTokenType.Date)
                             {
                                 user.Profile.SetProfileProperty(prop.Name, profile[prop.Name].Value<DateTime>().ToString("yyyy-MM-ddThh:mm:ss"));
+                            }
+                            else if (profile[prop.Name].Type == JTokenType.Boolean)
+                            {
+                                user.Profile.SetProfileProperty(prop.Name, profile[prop.Name].Value<bool>().ToString());
                             }
                             else
                             {
