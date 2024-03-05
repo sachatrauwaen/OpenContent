@@ -325,7 +325,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
 
         public static string AlpacaCulture(string cultureCode)
         {
-            string[] alpacaLocales = { "zh_CN", "hr_HR", "fr_FR", "de_AT", "it_IT", "ja_JP", "pl_PL", "pt_BR", "es_ES" };
+            string[] alpacaLocales = { "zh_CN", "hr_HR", "fr_FR", "de_AT", "it_IT", "ja_JP", "pl_PL", "pt_BR", "es_ES", "nl_BE" };
             string lang = cultureCode.Replace("-", "_");
             foreach (var item in alpacaLocales)
             {
@@ -339,7 +339,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
             {
                 if (item.Substring(0, 2) == lang2)
                 {
-                    return lang;
+                    return item;
                 }
             }
             return "en_US";
