@@ -93,5 +93,9 @@ namespace Satrabel.OpenContent.Components.Alpaca
 
         [JsonProperty(PropertyName = "builderV2")]
         public bool BuilderV2 { get; set; } = true;
+
+        [JsonProperty(PropertyName = "googleApiKey")]
+        public string GoogleApiKey { get; set; }
+
     }
 }

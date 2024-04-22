@@ -29,6 +29,7 @@ namespace Satrabel.OpenContent
             bool loadBootstrap = bootstrap && globalSettingsController.GetLoadBootstrap();
             bool loadGlyphicons = bootstrap && App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetLoadGlyphicons();
             bool builderV2 = App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).IsBuilderV2();
+            string apikey = App.Services.CreateGlobalSettingsRepository(PortalId).GetGoogleApiKey();
             Key = Request.QueryString["key"];
             hlCancel.NavigateUrl = Globals.NavigateURL();
             cmdSave.NavigateUrl = Globals.NavigateURL();
@@ -40,6 +41,7 @@ namespace Satrabel.OpenContent
             AlpacaContext.Bootstrap = bootstrap;
             AlpacaContext.Horizontal = globalSettingsController.GetEditLayout() == AlpacaLayoutEnum.BootstrapHorizontal;
             AlpacaContext.BuilderV2 = builderV2;
+            AlpacaContext.GoogleApiKey = apikey;
         }
 
         public AlpacaContext AlpacaContext { get; private set; }

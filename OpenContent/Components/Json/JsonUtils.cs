@@ -108,7 +108,7 @@ namespace Satrabel.OpenContent.Components.Json
             if (json.Length >= jsSerializer.MaxJsonLength)
             {
                 //jsSerializer.MaxJsonLength = jsSerializer.MaxJsonLength + 40000; //temp fix
-                throw new Exception($"Too much data to deserialize. Please use a client side template to circumvent that.");
+                throw new Exception($"Too much data to deserialize {json.Length} (max={jsSerializer.MaxJsonLength}). Please use a client side template to circumvent that.");
             }
             // next line fails with large amount of data (>4MB). Use a client side template to fix that.
             Dictionary<string, object> model = (Dictionary<string, object>)jsSerializer.DeserializeObject(json);

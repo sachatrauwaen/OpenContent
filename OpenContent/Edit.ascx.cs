@@ -28,6 +28,9 @@ namespace Satrabel.OpenContent
             bool loadBootstrap = bootstrap && App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetLoadBootstrap();
             bool loadGlyphicons = bootstrap && App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetLoadGlyphicons();
             bool builderV2 = App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).IsBuilderV2();
+
+            string apikey = App.Services.CreateGlobalSettingsRepository(PortalId).GetGoogleApiKey();
+
             hlCancel.NavigateUrl = Globals.NavigateURL();
             cmdSave.NavigateUrl = Globals.NavigateURL();
             cmdCopy.NavigateUrl = Globals.NavigateURL();
@@ -48,7 +51,7 @@ namespace Satrabel.OpenContent
                 AlpacaContext.DeleteConfirmMessage = LocalizeSafeJsString("txtMLDeleteConfirmMessage");
             }
             AlpacaContext.BuilderV2 = builderV2;
-
+            AlpacaContext.GoogleApiKey = apikey;
             cmdCopy.Visible = !settings.Template.Manifest.DisableCopy;
             hlDelete.Visible = !settings.Template.Manifest.DisableDelete;
         }

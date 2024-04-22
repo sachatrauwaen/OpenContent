@@ -30,6 +30,7 @@ namespace Satrabel.OpenContent
             bool loadBootstrap = bootstrap && App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetLoadBootstrap();
             bool loadGlyphicons = bootstrap && App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetLoadGlyphicons();
             bool builderV2 = App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).IsBuilderV2();
+            string apikey = App.Services.CreateGlobalSettingsRepository(PortalId).GetGoogleApiKey();
             OpenContentSettings settings = this.OpenContentSettings();
             AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext.PortalId, "DeskTopModules/OpenContent", "formsettings");
             //AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, "", "");
@@ -38,6 +39,7 @@ namespace Satrabel.OpenContent
             AlpacaContext = new AlpacaContext(PortalId, ModuleId, itemId, ScopeWrapper.ClientID, hlCancel.ClientID, cmdSave.ClientID, null, null, null);
             AlpacaContext.Bootstrap = true;
             AlpacaContext.BuilderV2 = builderV2;
+            AlpacaContext.GoogleApiKey = apikey;
         }
 
         public AlpacaContext AlpacaContext { get; private set; }

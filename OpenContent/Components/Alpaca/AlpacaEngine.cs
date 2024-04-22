@@ -83,7 +83,10 @@ namespace Satrabel.OpenContent.Components.Alpaca
             RegisterAlpaca(bootstrapLayoutEnabled, loadBootstrap, loadGlyphicons, builderV2);
             RegisterTemplates();
             RegisterScripts(bootstrapLayoutEnabled);
-            RegisterFields(bootstrapLayoutEnabled);
+            if (!builderV2)
+            {
+                RegisterFields(bootstrapLayoutEnabled);
+            }
         }
 
         private void RegisterAlpaca(bool bootstrap, bool loadBootstrap, bool loadGlyphicons, bool builderV2)

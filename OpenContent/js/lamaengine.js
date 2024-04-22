@@ -6,6 +6,7 @@ alpacaEngine.engine = function (config) {
     var self = this;
     self.defaultCulture = config.defaultCulture;
     self.currentCulture = config.currentCulture;
+    self.googleApiKey = config.googleApiKey;
     self.numberDecimalSeparator = config.numberDecimalSeparator;
     self.alpacaCulture = config.alpacaCulture;
     self.moduleId = config.moduleId;
@@ -327,6 +328,7 @@ alpacaEngine.engine = function (config) {
         currentCulture: self.currentCulture,
         defaultCulture: self.defaultCulture,
         viewType: config.isNew ? "create" : "edit",
+        googleApiKey: self.googleApiKey,
         connect() {
 
         },
