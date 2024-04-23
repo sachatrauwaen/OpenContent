@@ -173,10 +173,10 @@ alpacaEngine.engine = function (config) {
     self.CreateForm = function (connector, config, data) {
 
         var view = self.view;
-        if (config.view) {
-            view = config.view;
-            view.parent = self.view;
-        }
+        //if (config.view) {
+        //    view = config.view;
+        //    view.parent = self.view;
+        //}
         var selfControl = null;
         if (config.options && config.options.form) {
             if (config.options.form.buttons) {
