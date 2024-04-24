@@ -245,7 +245,7 @@
                             input.value = '';
 
                         });
-                        google.maps.event.addDomListener(input, 'keydown', function (e) {
+                        input.addEventListener('keydown', function (e) {
                             if (e.keyCode == 13) {
                                 e.preventDefault();
                             }

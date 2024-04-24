@@ -204,7 +204,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
             if (allFields || fieldTypes.Contains("address") || fieldTypes.Contains("mladdress"))
             {
                 string apikey = App.Services.CreateGlobalSettingsRepository(PortalId).GetGoogleApiKey();
-                ClientResourceManager.RegisterScript(Page, "//maps.googleapis.com/maps/api/js?v=3.exp&libraries=places" + (string.IsNullOrEmpty(apikey) ? "" : "&key=" + apikey), FileOrder.Js.DefaultPriority);
+                ClientResourceManager.RegisterScript(Page, "//maps.googleapis.com/maps/api/js?loading=async&libraries=places" + (string.IsNullOrEmpty(apikey) ? "" : "&key=" + apikey), FileOrder.Js.DefaultPriority);
             }
             if (allFields || fieldTypes.ContainsAny("imagecropper", "imagecrop", "imagecrop2", "imagex", "mlimagex"))
             {

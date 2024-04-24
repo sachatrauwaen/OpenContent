@@ -1282,6 +1282,7 @@
     <Content Include="js\swagger\fonts\DroidSans-Bold.ttf" />
     <Content Include="js\swagger\fonts\DroidSans.ttf" />
     <Content Include="lama\src\components\CollectionField.vue" />
+    <Content Include="bundleconfig.json" />
     <None Include="packages.config" />
     <None Include="Scripts\_references.js" />
     <Content Include="js\select2\select2.css" />
