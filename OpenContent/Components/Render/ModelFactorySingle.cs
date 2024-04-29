@@ -40,10 +40,10 @@ namespace Satrabel.OpenContent.Components.Render
             var enhancedModel = new JObject();
             ExtendSchemaOptions(enhancedModel, onlyData || onlyMainData);
             ExtendModel(enhancedModel, onlyData, onlyMainData, _data?.Id);
-            ExtendModelSingle(enhancedModel);
             EnhanceSelect2(model, onlyData);
             EnhanceImages(model);
             JsonUtils.Merge(model, enhancedModel);
+            ExtendModelSingle(model);
             JsonUtils.SimplifyJson(model, GetCurrentCultureCode());
             return model;
         }
