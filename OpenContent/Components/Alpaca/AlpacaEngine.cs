@@ -155,7 +155,12 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 //ClientResourceManager.RegisterScript(Page, $"~/{VirtualDirectory}/{prefix}edit.js", FileOrder.Js.DefaultPriority + 11);
                 ClientResourceManager.RegisterScript(Page, $"~/{VirtualDirectory}/edit.js", FileOrder.Js.DefaultPriority + 11);
             }
-
+            string cssFilename = physicalDirectory + "\\" + $"edit.css";
+            if (File.Exists(cssFilename))
+            {
+                //ClientResourceManager.RegisterScript(Page, $"~/{VirtualDirectory}/{prefix}edit.js", FileOrder.Js.DefaultPriority + 11);
+                ClientResourceManager.RegisterStyleSheet(Page, $"~/{VirtualDirectory}/edit.css", FileOrder.Css.DefaultPriority + 11);
+            }
         }
         public void RegisterTemplates()
         {

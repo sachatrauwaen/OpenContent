@@ -440,6 +440,9 @@ namespace Satrabel.OpenContent
                     }
                 }
 
+                scriptList.Items.Add(NewListItem("Stylesheet", "edit.css", "Edit", template));
+                scriptList.Items.Add(NewListItem("Javascript", "edit.js", "Edit", template));
+
                 if (!OpenContentUtils.BuilderExist(settings.Template.ManifestFolderUri, template.Key.ShortKey))
                 {
                     var title = "Settings";
