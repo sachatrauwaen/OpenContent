@@ -249,7 +249,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             {
                 user.DisplayName = user.FirstName + " " + user.LastName;
             }
-            user.Membership.Approved = true;  //chkAuthorize.Checked;
+            user.Membership.Approved = data["Approved"] != null ? ((bool)(data["Approved"] as JValue)?.Value) : true;
             var newUser = user;
             var createStatus = UserController.CreateUser(ref newUser);
             bool notify = true;
