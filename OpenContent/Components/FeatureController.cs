@@ -185,17 +185,9 @@ namespace Satrabel.OpenContent.Components
 
                     if (DnnLanguageUtils.IsMultiLingualPortal(modInfo.PortalID))
                     {
-                        if (string.IsNullOrEmpty(modInfo.CultureCode))
-                        {
-                            // it's a neutral language module according to DNN, which means we will need to add the neutral language content too
-                            var culture = ps.DefaultLanguage;
-                            var localizedData = GetLocalizedContent(content.Data, culture, modInfo);
-                            // pass "" as culture to indicate we're indexing the neutral language here
-                            searchDoc = CreateSearchDocument(ps, modInfo, module.Settings, localizedData, content.Id, "", content.Title, content.LastModifiedOnDate.ToUniversalTime());
-                            searchDocuments.Add(searchDoc);
-                            App.Services.Logger.Trace($"Indexing content {modInfo.ModuleID}|{culture} -  OK!  {searchDoc.Title} ({modInfo.TabID}) of {content.LastModifiedOnDate.ToUniversalTime()}");
-                        }
-                        // now start creating the docs for specific cultures
+                        // start creating the docs for specific cultures
+                        // we don't add a search docuement with the neutral language anymore,
+                        // because that results in duplicate documents in search results
                         foreach (var portalLocale in portalLocales.Keys)
                         {
                             var localizedData = GetLocalizedContent(content.Data, portalLocale, modInfo);
