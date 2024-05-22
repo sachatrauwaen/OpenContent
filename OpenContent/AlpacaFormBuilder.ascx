@@ -47,7 +47,9 @@
     $(document).ready(function () {
 
         var BuilderV2 = <%= AlpacaContext.BuilderV2 ? "true" : "false"%>;
-
+        if (!BuilderV2) {
+            $(".form-builder .fb-container").show();
+        }
         var windowTop = parent;
         var popup = windowTop.jQuery("#iPopUp");
         if (popup.length) {
@@ -72,7 +74,6 @@
             });
 
             if (!BuilderV2) {
-                $(".form-builder .fb-container").show();
                 $('body').css('overflow', 'hidden');
                 $(".form-builder .fb-left .fb-wrap").height('100%').css('overflow', 'hidden');
                 var formHeight = newHeight - 100 - 20 - 62;
