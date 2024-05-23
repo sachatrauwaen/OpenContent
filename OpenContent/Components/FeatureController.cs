@@ -154,10 +154,11 @@ namespace Satrabel.OpenContent.Components
             {
                 return searchDocuments;
             }
-            if (module.Settings.IsOtherModule)
-            {
-                return searchDocuments;
-            }
+            // commentend for multi collection templates
+            //if (module.Settings.IsOtherModule)
+            //{
+            //    return searchDocuments;
+            //}
 
             IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
             var dsContext = OpenContentUtils.CreateDataContext(module);
