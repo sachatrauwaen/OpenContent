@@ -87,6 +87,10 @@ namespace Satrabel.OpenContent.Components.Alpaca
             {
                 RegisterFields(bootstrapLayoutEnabled);
             }
+            else
+            {
+                RegisterStartupScript("oc-ckdnnporid", $@"<input type=""hidden"" id=""CKDNNporid"" value=""{PortalId}"">", false);
+            }
         }
 
         private void RegisterAlpaca(bool bootstrap, bool loadBootstrap, bool loadGlyphicons, bool builderV2)

@@ -9,6 +9,7 @@ import { App, Builder, Lama } from "lamavue";
 Vue.config.productionTip = false
 Lama.registerFieldComponent("userrole", UserRoleField);
 Lama.registerFieldComponent("collection", CollectionField);
+
 /*
 new Vue({
   render: h => h(App),

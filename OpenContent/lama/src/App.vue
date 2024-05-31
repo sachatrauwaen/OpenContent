@@ -15,9 +15,6 @@
 import { App, Builder, Lama } from "lamavue";
 //import from 'lamavue'
 
-
-
-
 export default {
   name: "App",
   data() {

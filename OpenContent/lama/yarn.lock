@@ -5211,7 +5211,7 @@ kind-of@^6.0.0, kind-of@^6.0.2:
 
 "lamavue@github:sachatrauwaen/lamavue":
   version "0.1.0"
-  resolved "git+ssh://git@github.com/sachatrauwaen/lamavue.git#c38754138445fe3b7b525313f9a658a35a741d22"
+  resolved "git+ssh://git@github.com/sachatrauwaen/lamavue.git#4efc3ef7523ff8465adeb77b68227042fcbc9892"
   dependencies:
     "@fortawesome/fontawesome-svg-core" "^1.2.35"
     "@fortawesome/free-brands-svg-icons" "^5.15.3"
