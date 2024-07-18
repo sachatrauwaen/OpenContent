@@ -657,7 +657,13 @@ alpacaEngine.engine = function (config) {
             uploadImage(config, function (statuses) {
                 var status = JSON.parse(statuses)[0];
                 if (status.success) {
-                    successCallback({ id: status.id, url: status.url, filename: status.name });
+                    successCallback({
+                        id: status.id,
+                        url: status.url,
+                        filename: status.name,
+                        name: status.name,
+                        thumbnailUrl: status.thumbnail_url
+                    });
                 } else {
                     errorCallback(status.message);
                     console.log(status.name +" : "+status.message);
