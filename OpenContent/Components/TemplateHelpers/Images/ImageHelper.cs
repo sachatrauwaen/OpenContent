@@ -118,7 +118,7 @@ namespace Satrabel.OpenContent.Components.TemplateHelpers
                         fileurl = fileurl.RemoveQueryParams();
                         return fileurl.AppendQueryParams($"width={requestedCropRatio.Width}&height={requestedCropRatio.Height}&mode=crop");
                     }
-                    else if (DnnImageHandlerExist)
+                    else if (DnnImageHandlerExist && file.Extension != "svg")
                     {
                         fileurl = fileurl.RemoveQueryParams();
                         return $"/DnnImageHandler.ashx?mode=file&file={fileurl}&resizemode=Crop&w={requestedCropRatio.Width}&h={requestedCropRatio.Height}";
