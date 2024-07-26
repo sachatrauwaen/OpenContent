@@ -18,6 +18,7 @@ using Newtonsoft.Json.Linq;
 using System.Text.RegularExpressions;
 using DotNetNuke.Common.Utilities;
 using Satrabel.OpenContent.Components.Rest.Swagger;
+using System.Net.Http;
 
 namespace Satrabel.OpenContent.Components.Handlebars
 {
@@ -618,8 +619,23 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     writer.WriteSafeString(imageUrl);
                 }
             });
-                     
+        }
 
+        private static void RegisterHttpContextHelper(HandlebarsDotNet.IHandlebars hbs)
+        {
+            hbs.RegisterHelper("sessionvar", (writer, context, parameters) =>
+            {
+                if (parameters.Length == 1) //{{sessionvar 'var1'}}
+                {
+                    string varName = parameters[0].ToString();
+                    string varValue = "";
+                    if (!string.IsNullOrEmpty(varName) && HttpContext.Current.Session[varName] != null)
+                    {
+                        varValue = HttpContext.Current.Session[varName].ToString();
+                    }
+                    writer.WriteSafeString(varValue);
+                }
+            });
         }
 
         private static void RegisterEmailHelper(HandlebarsDotNet.IHandlebars hbs)
