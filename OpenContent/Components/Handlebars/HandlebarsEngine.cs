@@ -42,6 +42,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 RegisterFormatNumberHelper(hbs);
                 RegisterFormatDateTimeHelper(hbs);
                 RegisterImageUrlHelper(hbs);
+                RegisterHttpContextHelper(hbs);
                 RegisterEmailHelper(hbs);
                 RegisterArrayIndexHelper(hbs);
                 RegisterArrayTranslateHelper(hbs);
@@ -119,6 +120,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             RegisterFormatNumberHelper(hbs);
             RegisterFormatDateTimeHelper(hbs);
             RegisterImageUrlHelper(hbs);
+            RegisterHttpContextHelper(hbs);
             RegisterEmailHelper(hbs);
             RegisterArrayIndexHelper(hbs);
             RegisterArrayTranslateHelper(hbs);
