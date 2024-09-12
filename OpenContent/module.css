@@ -48,27 +48,51 @@
 	margin: 6px 5px 6px 5px;
 }
 .DnnModule-OpenContent .oc-view .octemplate {
-	float: left;
-	width: 160px;
+    float: left;
+    width: 160px;
+    
+    position:relative;
 }
-.DnnModule-OpenContent .oc-view .octemplate a {
-	background-color: #3D3C3C;
-	display: block;
-	height: 2em;
-	padding: 0.3em 0.5em;
-	margin: 0.3em;
-	color: #ffffff;
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-	border-radius: 3px;
+    .DnnModule-OpenContent .oc-view .octemplate a, .DnnModule-OpenContent .oc-view .octabs a {
+        background-color: #3D3C3C;
+        display: block;
+        height: 2em;
+        padding: 0.3em 0.5em;
+        margin: 0.3em;
+        color: #ffffff;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        border-radius: 3px;
+    }
+
+    .DnnModule-OpenContent .oc-view .octabs {
+        float: left;
+        border-bottom: 1px solid #eee;
+        margin-bottom: 20px;
+        width: 180px;
+    }
+        .DnnModule-OpenContent .oc-view .octabs a.advanced {
+            background-color: #EEE;
+            color: #000;
+            border-radius: 5px 5px 0 0;
+            margin-bottom: 0;
+        }
+.DnnModule-OpenContent .oc-view .octabs a.advanced:hover {
+    background-color: #1DAFE5;
+    color: #3D3C3C;
 }
-.DnnModule-OpenContent .oc-view .octemplate a.advanced {
-	background-color: #1DAFE5;
+.DnnModule-OpenContent .oc-view .octabs a.active {
+    background-color: #1DAFE5;
+    color: #FFF;
+    border-radius: 5px 5px 0 0;
 }
-.DnnModule-OpenContent .oc-view .octemplate a.advanced:hover {
-	color: #3D3C3C;
-}
+
+    .DnnModule-OpenContent .oc-view .octemplate a.active:hover  {
+        color: #3D3C3C;
+    }
+
+
 .DnnModule-OpenContent .oc-view .octemplate a:visited {
 	color: #ffffff;
 }

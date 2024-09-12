@@ -400,6 +400,11 @@ namespace Satrabel.OpenContent
             pInit.Visible = true;
             //App.Services.ClientResourceManager.RegisterStyleSheet(page, cssfilename.UrlFilePath);
             App.Services.ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/vue/vue.js");
+
+            ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/lama/dist/js/chunk-vendors.js", FileOrder.Js.DefaultPriority + 10);
+            ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/lama/dist/js/init.js", FileOrder.Js.DefaultPriority + 10);
+
+
         }
         public string Resource(string key)
         {

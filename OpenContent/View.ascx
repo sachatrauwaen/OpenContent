@@ -4,7 +4,10 @@
 
 <asp:Panel ID="pInit" runat="server" Visible="false">
 
-<asp:Panel ID="pVue" runat="server"  >
+<asp:Panel ID="pVue2" runat="server"  >
+    </asp:Panel>
+
+<asp:Panel ID="pVue" runat="server" Visible="false"  >
     <div class="oc-view" v-if="step==1" v-cloak>
         <div v-if ="!advanced ">
             <p style="text-align:center">Choose a template</p>
@@ -146,7 +149,35 @@
     (function ($, Sys) {
         $(document).ready(function () {
             var sf = $.ServicesFramework(<%= ModuleContext.ModuleId %>);
-            var app = new Vue({
+
+            var app = OpenContent.init.mount('#<%= pVue2.ClientID %>', {
+                sf: sf,
+                settingsUrl:"<%= ModuleContext.EditUrl("EditSettings") %>",
+                editUrl: "<%= ModuleContext.EditUrl("Edit") %>",
+                IsPageAdmin:  <%=IsPageAdmin() ? "true" : "false"%>,
+                resources: {
+                    CreateHelp: '<%= Resource("CreateHelp") %>',
+                    lTemplate: '<%= Resource("lTemplate") %>',
+                    lUseContent: '<%= Resource("lUseContent") %>',
+                    lDetailPage: '<%= Resource("lDetailPage") %>',
+                    Advanced: '<%=Resource("Advanced")%>',
+                    lAddNewContent: '<%=Resource("lAddNewContent")%>',
+                    lUseExistingContent: '<%=Resource("lUseExistingContent")%>',
+                    lDataSource: '<%=Resource("lDataSource")%>',
+                    lTemplateName: '<%=Resource("lTemplateName")%>',
+                    liCreateNewTemplate: '<%=Resource("liCreateNewTemplate")%>',
+                    liFromSite: '<%=Resource("liFromSite")%>',
+                    liFromWeb: '<%=Resource("liFromWeb")%>',
+                    Create: '<%=Resource("Create")%>',
+                    Save: '<%=Resource("Save")%>',
+                    liUseExistingTemplate: '<%=Resource("liUseExistingTemplate")%>',
+                    liOtherModule: '<%=Resource("liOtherModule")%>',
+                    lTab: '<%=Resource("lTab")%>',
+                    lModule: '<%=Resource("lModule")%>',
+                }
+
+            });
+           <%-- var app = new Vue({
                 el: '#<%= pVue.ClientID %>',
                 data: {
                     templateDefined: false,
@@ -353,7 +384,7 @@
                             if (!data.DataNeeded) {
 
                                 self.loading = false;
-                                <%--
+                                %--
                                 var paneId= 'dnn_<%=ModuleContext.Configuration.PaneName%>';
                                     var pane = $('#' + paneId);
                                     var parentPane = pane.data('parentpane');
@@ -380,7 +411,7 @@
                                     } else {
                                         location.reload(true);
                                     }
-                                     --%>
+                                     --%
                                     location.reload(true);
                                     return;
                                 }
@@ -457,7 +488,7 @@
                         }
                     },
                 }
-            })
+            })--%>
         });
     }(jQuery, window.Sys));
 </script>

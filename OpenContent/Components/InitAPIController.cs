@@ -30,6 +30,8 @@ using DotNetNuke.Entities.Tabs;
 using System.Web.Hosting;
 using Satrabel.OpenContent.Components.Logging;
 using DotNetNuke.Entities.Portals;
+using ClientDependency.Core;
+
 
 #endregion
 
@@ -62,10 +64,11 @@ namespace Satrabel.OpenContent.Components
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Admin)]
         [HttpGet]
-        public List<ModuleDto> GetModules()
+        public List<ModuleDto> GetModules(bool shared = false)
         {
             IEnumerable<ModuleInfo> modules = (new ModuleController()).GetModules(ActiveModule.PortalID).Cast<ModuleInfo>();
             modules = modules.Where(m => m.ModuleDefinition.DefinitionName == App.Config.Opencontent && m.IsDeleted == false && !m.OpenContentSettings().IsOtherModule);
+
             var listItems = new List<ModuleDto>();
             foreach (var item in modules)
             {
@@ -101,6 +104,93 @@ namespace Satrabel.OpenContent.Components
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Admin)]
         [HttpGet]
+        public List<TabDto> GetTabs(bool shared = false)
+        {
+            IEnumerable<ModuleInfo> modules = (new ModuleController()).GetModules(ActiveModule.PortalID).Cast<ModuleInfo>();
+            modules = modules.Where(m => m.ModuleDefinition.DefinitionName == App.Config.Opencontent &&
+                                            m.IsDeleted == false &&
+                                            !m.OpenContentSettings().IsOtherModule &&
+                                            m.OpenContentSettings().Manifest != null &&
+                                            (!shared || m.OpenContentSettings().Manifest.Shared));
+
+            var listItems = new List<TabDto>();
+            /*
+             var listItems = new List<ModuleDto>();
+            foreach (var item in modules)
+            {
+                if (item.TabModuleID != ActiveModule.TabModuleID)
+                {
+                    var tc = new TabController();
+                    var tab = tc.GetTab(item.TabID, ActiveModule.PortalID, false);
+                    //if (!tab.IsNeutralCulture && tab.CultureCode != DnnLanguageUtils.GetCurrentCultureCode())
+                    //{
+                    //    // skip other cultures
+                    //    continue;
+                    //}
+                    var tabpath = tab.TabPath.Replace("//", "/").Trim('/');
+                    if (!tab.IsNeutralCulture && tab.CultureCode != DnnLanguageUtils.GetCurrentCultureCode())
+                    {
+                        // skip other cultures
+                        //continue;
+                    }
+                    else
+                    {
+                        var li = new ModuleDto()
+                        {
+                            Text = string.Format("{1} - {0}", item.ModuleTitle, tabpath),
+                            TabModuleId = item.TabModuleID
+                        };
+                        listItems.Add(li);
+                    }
+                }
+            }
+            */
+
+            foreach (var item in modules.Where(m => m.TabModuleID != ActiveModule.TabModuleID).GroupBy(m => m.TabID))
+            {
+
+                var tc = new TabController();
+                var tab = tc.GetTab(item.Key, ActiveModule.PortalID, false);
+                //if (!tab.IsNeutralCulture && tab.CultureCode != DnnLanguageUtils.GetCurrentCultureCode())
+                //{
+                //    // skip other cultures
+                //    continue;
+                //}
+                var tabpath = tab.TabPath.Replace("//", "/").Trim('/');
+                if (!tab.IsNeutralCulture && tab.CultureCode != DnnLanguageUtils.GetCurrentCultureCode())
+                {
+                    // skip other cultures
+                    //continue;
+                }
+                else
+                {
+                    var li = new TabDto()
+                    {
+                        Text = tabpath,
+                        TabId = item.Key,
+                        Modules = item.Select(m => new ModuleDto()
+                        {
+                            Text = m.ModuleTitle + " (" + (string.IsNullOrEmpty(m.OpenContentSettings().Manifest.Title) ?
+                                                                Path.GetFileName(m.OpenContentSettings().TemplateDir.FolderPath) :
+                                                                m.OpenContentSettings().Manifest.Title) + " - " +
+                                                                 (string.IsNullOrEmpty(m.OpenContentSettings().Template.Title) ?
+                                                                 m.OpenContentSettings().Template.Key.ShortKey :
+                                                                 m.OpenContentSettings().Template.Title) + ")",
+                            TabModuleId = m.TabModuleID
+                        }).ToList()
+                    };
+                    listItems.Add(li);
+                }
+
+            }
+
+            return listItems.OrderBy(x => x.Text).ToList();
+
+        }
+
+        [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Admin)]
+        [HttpGet]
         public List<TemplateDto> GetTemplates(bool advanced)
         {
             var scriptFileSetting = ActiveModule.OpenContentSettings().Template;
@@ -108,7 +198,9 @@ namespace Satrabel.OpenContent.Components
             return templates.Select(t => new TemplateDto()
             {
                 Value = t.Value,
-                Text = t.Text
+                Text = t.Text,
+                Description = t.Description,
+                ImageUrl = t.Image
             }).ToList();
         }
         [ValidateAntiForgeryToken]
@@ -118,7 +210,7 @@ namespace Satrabel.OpenContent.Components
         {
             var dsModule = (new ModuleController()).GetTabModule(tabModuleId);
             var dsSettings = dsModule.OpenContentSettings();
-            var templates = OpenContentUtils.ListOfTemplatesFiles(PortalSettings, ActiveModule.ModuleID, dsSettings.Template, App.Config.Opencontent, dsSettings.Template.MainTemplateUri());
+            var templates = OpenContentUtils.ListOfTemplatesFiles(PortalSettings, ActiveModule.ModuleID, dsSettings.Template, App.Config.Opencontent, dsSettings.Template.MainTemplateUri(), true, false, false);
             return templates.Select(t => new TemplateDto()
             {
                 Value = t.Value,
@@ -186,6 +278,8 @@ namespace Satrabel.OpenContent.Components
         public ModuleStateDto SaveTemplate(SaveDto input)
         {
             ModuleController mc = new ModuleController();
+
+
             if (!input.otherModule) // this module
             {
                 mc.DeleteModuleSetting(ActiveModule.ModuleID, "tabid");
@@ -287,7 +381,13 @@ namespace Satrabel.OpenContent.Components
                     }
                 }
             }
-
+            if (ActiveModule.ModuleTitle == "OpenContent")
+            {
+                //string basePath = HostingEnvironment.MapPath(GetSiteTemplateFolder(portalSettings, moduleSubDir));
+                string templateName = Path.GetDirectoryName(input.template);
+                templateName = templateName.Substring(templateName.LastIndexOf('\\')+1);
+                ActiveModule.UpdateModuleTitle(templateName + " - " + (string.IsNullOrEmpty(templateManifest.Title) ? templateManifest.Key.ShortKey : templateManifest.Title));
+            }
             return new ModuleStateDto()
             {
                 SettingsNeeded = templateManifest.SettingsNeeded(),
@@ -342,27 +442,12 @@ namespace Satrabel.OpenContent.Components
                     {
                         infoText.Add("Main Module Detail");
                     }
-
-                    if ((othermoduleTabId > 0 && tabId.Value == othermoduleTabId) || (othermoduleTabId == -1 && tabId.Value == ActiveModule.TabID))
+                    else if ((othermoduleTabId > 0 && tabId.Value == othermoduleTabId) || (othermoduleTabId == -1 && tabId.Value == ActiveModule.TabID))
                     {
-                        //add extra li with "Main Module Page" directly to dropdown
-                        //format = LogContext.IsLogActive ? "Main Module Page - {0} [{1}]" : "Main Module Page";
-                        //listItems.Add(new PageDto()
-                        //{
-                        //    Text = string.Format(format, tabname, tabId.Value),
-                        //    TabId = -1
-                        //});
                         infoText.Add("Main Module ");
                     }
                     if (othermoduleTabId > 0 && tabId.Value == ActiveModule.TabID)
                     {
-                        //add extra li with "CurrentPage" directly to dropdown
-                        //format = LogContext.IsLogActive ? "Current Page - {0} [{1}]" : "Current Page";
-                        //listItems.Add(new PageDto()
-                        //{
-                        //    Text = string.Format(format, tabname, tabId.Value),
-                        //    TabId = tabId.Value
-                        //});
                         infoText.Add("Current");
                     }
 
@@ -435,6 +520,13 @@ namespace Satrabel.OpenContent.Components
         }
     }
 
+    public class TabDto
+    {
+        public int TabId { get; set; }
+        public string Text { get; set; }
+        public List<ModuleDto> Modules { get; set; }
+    }
+
     public class PageDto
     {
         public int TabId { get; set; }
@@ -465,6 +557,8 @@ public class TemplateDto
 {
     public string Text { get; set; }
     public string Value { get; set; }
+    public string ImageUrl { get; internal set; }
+    public string Description { get; internal set; }
 }
 
 public class PortalDto

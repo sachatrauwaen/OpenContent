@@ -70,7 +70,11 @@ namespace Satrabel.OpenContent
             if (rblFrom.SelectedIndex == 0) // site
             {
                 var scriptFileSetting = ModuleContext.OpenContentSettings().Template;
-                ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplates(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, App.Config.Opencontent).ToArray());
+                ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplates(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, App.Config.Opencontent)
+                    .Select(i => new ListItem(i.Text, i.Value)
+                    {
+                        Selected = i.Selected,
+                    }).ToArray());
             }
             else if (rblFrom.SelectedIndex == 1) // web
             {
@@ -137,12 +141,20 @@ namespace Satrabel.OpenContent
             ddlTemplate.Items.Clear();
             if (rblUseTemplate.SelectedIndex == 0) // existing
             {
-                ddlTemplate.Items.AddRange(OpenContentUtils.ListOfTemplatesFiles(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, App.Config.Opencontent).ToArray());
+                ddlTemplate.Items.AddRange(OpenContentUtils.ListOfTemplatesFiles(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, App.Config.Opencontent)
+                                           .Select(i => new ListItem(i.Text, i.Value)
+                                           {
+                                               Selected = i.Selected,
+                                           }).ToArray());
             }
             else if (rblUseTemplate.SelectedIndex == 1) // new
             {
 
-                ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplates(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, App.Config.Opencontent).ToArray());
+                ddlTemplate.Items.AddRange(OpenContentUtils.GetTemplates(ModuleContext.PortalSettings, ModuleContext.ModuleId, scriptFileSetting, App.Config.Opencontent)
+                    .Select(i => new ListItem(i.Text, i.Value)
+                    {
+                        Selected = i.Selected,
+                    }).ToArray());
             }
             ActivateDetailPage();
         }
@@ -260,7 +272,12 @@ namespace Satrabel.OpenContent
                 SelectedPortalSettings = new PortalSettings(int.Parse(ddlPortals.SelectedValue));
             }
             ddlTemplate.Items.Clear();
-            ddlTemplate.Items.AddRange(OpenContentUtils.ListOfTemplatesFiles(SelectedPortalSettings, ModuleContext.ModuleId, template, App.Config.Opencontent, otherModuleTemplate).ToArray());
+            ddlTemplate.Items.AddRange(OpenContentUtils.ListOfTemplatesFiles(SelectedPortalSettings, ModuleContext.ModuleId, template, App.Config.Opencontent, otherModuleTemplate)
+                                                           .Select(i => new ListItem(i.Text, i.Value)
+                                                           {
+                                                               Selected = i.Selected,
+                                                           }).ToArray());
+    
             if (ddlTemplate.Items.Count == 0)
             {
                 rblUseTemplate.Items[0].Enabled = false;

@@ -82,6 +82,9 @@ namespace Satrabel.OpenContent.Components.Manifest
         [JsonProperty(PropertyName = "advanced")]
         public bool Advanced { get; set; }
 
+        [JsonProperty(PropertyName = "shared")]
+        public bool Shared { get; set; }
+
         [JsonProperty(PropertyName = "deleteFiles")]
         public bool DeleteFiles { get; set; }
 

@@ -171,4 +171,16 @@
   <data name="lPortals.Text" xml:space="preserve">
     <value>Portal</value>
   </data>
+  <data name="lAddNewContent.Text" xml:space="preserve">
+    <value>Add New Content</value>
+  </data>
+  <data name="lUseExistingContent.Text" xml:space="preserve">
+    <value>Use Exiting Content</value>
+  </data>
+  <data name="lModule.Text" xml:space="preserve">
+    <value>Module</value>
+  </data>
+  <data name="lTab.Text" xml:space="preserve">
+    <value>Page</value>
+  </data>
 </root>

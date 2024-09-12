@@ -405,6 +405,7 @@
     <Compile Include="Components\Common\Utils.cs" />
     <Compile Include="Components\UrlRewriter\OpenContentUrlRule.cs" />
     <Compile Include="Components\UrlRewriter\OpenContentUrlProvider.cs" />
+    <Compile Include="Components\Utils\TemplateItem.cs" />
     <Compile Include="Components\Utils\ZipUtils.cs" />
     <Compile Include="CloneModule.ascx.cs">
       <DependentUpon>CloneModule.ascx</DependentUpon>
@@ -1261,9 +1262,9 @@
     <Content Include="lama\src\App.vue" />
     <Content Include="lama\src\assets\logo.png" />
     <Content Include="lama\src\components\UserRoleField.vue" />
+    <Content Include="lama\src\init.js" />
     <Content Include="lama\src\main.js" />
     <Content Include="lama\vue.config.js" />
-    <Content Include="lama\yarn-error.log" />
     <Content Include="lama\yarn.lock" />
     <Content Include="css\font-awesome\fonts\fontawesome-webfont.eot" />
     <Content Include="css\font-awesome\fonts\fontawesome-webfont.ttf" />
@@ -1283,6 +1284,7 @@
     <Content Include="js\swagger\fonts\DroidSans.ttf" />
     <Content Include="lama\src\components\CollectionField.vue" />
     <Content Include="bundleconfig.json" />
+    <Content Include="lama\src\InitApp.vue" />
     <None Include="packages.config" />
     <None Include="Scripts\_references.js" />
     <Content Include="js\select2\select2.css" />

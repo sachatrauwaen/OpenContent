@@ -327,6 +327,22 @@ namespace Satrabel.OpenContent.Components
                 if (dataJson != null)
                     json["data"] = dataJson;
 
+                if (json["schema"]["properties"]["ModuleTitle"] is JObject)
+                {
+                    if (json["data"]["ModuleTitle"] != null && json["data"]["ModuleTitle"].Type == JTokenType.String)
+                    {
+                        json["data"]["ModuleTitle"] = ActiveModule.ModuleTitle;
+                    }
+                    else if (json["data"]["ModuleTitle"] != null && json["data"]["ModuleTitle"].Type == JTokenType.Object)
+                    {
+                        json["data"]["ModuleTitle"][DnnLanguageUtils.GetCurrentCultureCode()] = ActiveModule.ModuleTitle;
+                    }
+                    else {
+                        json["data"]["ModuleTitle"] = ActiveModule.ModuleTitle;
+                    }
+                }
+
+
                 return Request.CreateResponse(HttpStatusCode.OK, json);
             }
             catch (Exception exc)
@@ -950,6 +966,21 @@ namespace Satrabel.OpenContent.Components
                 {
                     var data = json["data"].ToString();
                     if (!string.IsNullOrEmpty(data)) mc.UpdateModuleSetting(moduleId, "data", data);
+
+                    if (json["data"]["ModuleTitle"] != null && json["data"]["ModuleTitle"].Type == JTokenType.String)
+                    {
+                        string moduleTitle = json["data"]["ModuleTitle"].ToString();
+                        ActiveModule.UpdateModuleTitle(moduleTitle);
+                    }
+                    else if (json["data"]["ModuleTitle"] != null && json["data"]["ModuleTitle"].Type == JTokenType.Object)
+                    {
+                        if (json["data"]["ModuleTitle"][DnnLanguageUtils.GetCurrentCultureCode()] != null)
+                        {
+                            string moduleTitle = json["data"]["ModuleTitle"][DnnLanguageUtils.GetCurrentCultureCode()].ToString();
+                            ActiveModule.UpdateModuleTitle(moduleTitle);
+                        }
+                    }
+
                 }
                 else if (json["form"] != null)
                 {

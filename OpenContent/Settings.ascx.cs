@@ -10,6 +10,9 @@
 #region Using Statements
 
 using System;
+using System.Linq;
+using System.Web.UI.WebControls;
+using DotNetNuke.Common.Lists;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Framework;
 using Satrabel.OpenContent.Components;
@@ -31,7 +34,11 @@ namespace Satrabel.OpenContent
         public override void LoadSettings()
         {
             var template = ModuleContext.OpenContentSettings().Template;
-            scriptList.Items.AddRange(OpenContentUtils.ListOfTemplatesFiles(PortalSettings, ModuleId, template, App.Config.Opencontent).ToArray());
+            scriptList.Items.AddRange(OpenContentUtils.ListOfTemplatesFiles(PortalSettings, ModuleId, template, App.Config.Opencontent)
+                                        .Select(i => new ListItem(i.Text, i.Value)
+                                        {
+                                            Selected = i.Selected,
+                                        }).ToArray());
             base.LoadSettings();
         }
         public override void UpdateSettings()
