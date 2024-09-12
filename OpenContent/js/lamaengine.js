@@ -156,22 +156,16 @@ alpacaEngine.engine = function (config) {
                     value: item.ticks,
                     text: item.text
                 }));
-
             });
         } else {
             $("#" + self.ddlVersions).hide();
         }
-
         //$.alpaca.setDefaultLocale(self.alpacaCulture);
-
         //var connector = Lama.getConnectorClass("default");
         self.CreateForm(self.connector, config, config.data);
-
-
     };
 
     self.CreateForm = function (connector, config, data) {
-
         var view = self.view;
         //if (config.view) {
         //    view = config.view;
@@ -221,6 +215,20 @@ alpacaEngine.engine = function (config) {
                 var href = $(button).attr('href');
                 $(document).trigger("beforeSubmit.opencontent", [value, self.moduleId, self.data.id, self.sf, self.editAction]);
                 self.FormSubmit(value, href);
+                $(document).trigger("afterSubmit.opencontent", [value, self.moduleId, self.data.id, self.sf, self.editAction]);
+
+            });
+            return false;
+        });
+        $("#" + self.copyButton).click(function () {
+            var button = this;
+            app.validate(function () {
+
+                var value = app.getValue();
+                //alert(JSON.stringify(value, null, "  "));
+                var href = $(button).attr('href');
+                $(document).trigger("beforeSubmit.opencontent", [value, self.moduleId, self.data.id, self.sf, self.editAction]);
+                self.FormSubmit(value, href, true);
                 $(document).trigger("afterSubmit.opencontent", [value, self.moduleId, self.data.id, self.sf, self.editAction]);
 
             });
