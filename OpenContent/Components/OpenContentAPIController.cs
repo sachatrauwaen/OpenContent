@@ -295,6 +295,21 @@ namespace Satrabel.OpenContent.Components
                 if (dataJson != null)
                     json["data"] = dataJson;
 
+                if (json["schema"]["properties"]["ModuleTitle"] is JObject)
+                {
+                    if (json["data"]["ModuleTitle"] != null && json["data"]["ModuleTitle"].Type == JTokenType.String)
+                    {
+                        json["data"]["ModuleTitle"] = ActiveModule.ModuleTitle;
+                    }
+                    else if (json["data"]["ModuleTitle"] != null && json["data"]["ModuleTitle"].Type == JTokenType.Object)
+                    {
+                        json["data"]["ModuleTitle"][DnnLanguageUtils.GetCurrentCultureCode()] = ActiveModule.ModuleTitle;
+                    }
+                    else
+                    {
+                        json["data"]["ModuleTitle"] = ActiveModule.ModuleTitle;
+                    }
+                }
                 return Request.CreateResponse(HttpStatusCode.OK, json);
             }
             catch (Exception exc)
@@ -324,8 +339,10 @@ namespace Satrabel.OpenContent.Components
                 var fb = new FormBuilder(templateFolder ? settings.TemplateDir : new FolderUri("~/DesktopModules/OpenContent"));
                 JObject json = fb.BuildForm(key, DnnLanguageUtils.GetCurrentCultureCode());
                 var dataJson = data.ToJObject("Raw settings json");
-                if (dataJson != null)
+                if (dataJson != null) 
                     json["data"] = dataJson;
+                else
+                    json["data"] = new JObject();
 
                 if (json["schema"]["properties"]["ModuleTitle"] is JObject)
                 {
@@ -337,12 +354,11 @@ namespace Satrabel.OpenContent.Components
                     {
                         json["data"]["ModuleTitle"][DnnLanguageUtils.GetCurrentCultureCode()] = ActiveModule.ModuleTitle;
                     }
-                    else {
+                    else
+                    {
                         json["data"]["ModuleTitle"] = ActiveModule.ModuleTitle;
                     }
                 }
-
-
                 return Request.CreateResponse(HttpStatusCode.OK, json);
             }
             catch (Exception exc)
