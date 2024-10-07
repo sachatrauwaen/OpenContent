@@ -86,7 +86,7 @@ namespace Satrabel.OpenContent.Components
 
         public static List<TemplateItem> GetTemplates(PortalSettings portalSettings, int moduleId, string selectedTemplate, string moduleSubDir)
         {
-            return GetTemplates(portalSettings, moduleId, new FileUri(selectedTemplate), moduleSubDir);
+            return GetTemplates2(portalSettings, moduleId, new FileUri(selectedTemplate), moduleSubDir);
         }
 
         /// <summary>
@@ -105,13 +105,23 @@ namespace Satrabel.OpenContent.Components
         }
 
         [Obsolete("This method is obsolete since dec 2015; use GetTemplatesFiles(PortalSettings portalSettings, int moduleId, TemplateManifest selectedTemplate, string moduleSubDir) instead")]
-        public static List<TemplateItem> GetTemplates(PortalSettings portalSettings, int moduleId, FileUri selectedTemplate, string moduleSubDir)
+        public static List<TemplateItem> GetTemplates2(PortalSettings portalSettings, int moduleId, FileUri selectedTemplate, string moduleSubDir)
         {
             if (selectedTemplate == null)
             {
                 return GetTemplates(portalSettings, moduleId, null as TemplateManifest, moduleSubDir);
             }
             return GetTemplates(portalSettings, moduleId, selectedTemplate.ToTemplateManifest(), moduleSubDir);
+        }
+
+        [Obsolete("This method is obsolete since dec 2015; use GetTemplatesFiles(PortalSettings portalSettings, int moduleId, TemplateManifest selectedTemplate, string moduleSubDir) instead")]
+        public static List<ListItem> GetTemplates(PortalSettings portalSettings, int moduleId, FileUri selectedTemplate, string moduleSubDir)
+        {
+            if (selectedTemplate == null)
+            {
+                return GetTemplates(portalSettings, moduleId, null as TemplateManifest, moduleSubDir).Select(t=> new ListItem(t.Text, t.Value)).ToList();
+            }
+            return GetTemplates(portalSettings, moduleId, selectedTemplate.ToTemplateManifest(), moduleSubDir).Select(t => new ListItem(t.Text, t.Value)).ToList();
         }
 
         /// <summary>
