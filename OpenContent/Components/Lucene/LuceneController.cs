@@ -7,7 +7,7 @@ using Lucene.Net.Search;
 using Satrabel.OpenContent.Components.Lucene.Mapping;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using Version = Lucene.Net.Util.Version;
-
+#pragma warning disable CS0618 // Type or member is obsolete, but not in this file
 
 namespace Satrabel.OpenContent.Components.Lucene
 {

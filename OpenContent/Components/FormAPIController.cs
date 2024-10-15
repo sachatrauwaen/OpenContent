@@ -80,7 +80,7 @@ namespace Satrabel.OpenContent.Components
             }
             catch (Exception exc)
             {
-                Log.Logger.Error(exc);
+                App.Services.Logger.Error(exc);
             }
             try
             {
