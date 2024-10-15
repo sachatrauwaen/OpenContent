@@ -159,8 +159,20 @@ function getSchema(formdef) {
         if (value.required) {
             prop.required = value.required;
         }
-        if (value.default) {
-            prop.default = value.default;
+        if (value.default !== undefined) {
+            switch (prop.type) {
+                case "number":
+                    prop.default = Number(value.default);
+                    break;
+                case "boolean":
+                    prop.default = value.default === "true" || value.default === true;
+                    break;
+                case "integer":
+                    prop.default = parseInt(value.default, 10);
+                    break;
+                default:
+                    prop.default = value.default;
+            }
         }
         if (value.dependencies && value.dependencies.length > 0) {
             var deps = [];
