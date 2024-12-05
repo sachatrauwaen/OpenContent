@@ -754,12 +754,7 @@ namespace Satrabel.OpenContent.Components
                         App.Services.Logger.Error(errorOccured);
                         continue;
                     }
-
-
-
                     var json = dsItem.Data;
-
-
 
                     if (ml) // multi language
                     {
@@ -791,7 +786,7 @@ namespace Satrabel.OpenContent.Components
                     }
                     else
                     {
-                        var sortIndex = json["SortIndex"].Value<int>();
+                        var sortIndex = json["SortIndex"] == null ? -1 : json["SortIndex"].Value<int>();
                         if (sortIndex != i)
                         {
                             json["SortIndex"] = i;
@@ -812,8 +807,6 @@ namespace Satrabel.OpenContent.Components
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc);
             }
         }
-
-
 
         private void AddNotifyInfo(DataSourceContext dsContext)
         {
