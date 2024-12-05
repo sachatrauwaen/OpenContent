@@ -161,6 +161,7 @@
                     lUseContent: '<%= Resource("lUseContent") %>',
                     lDetailPage: '<%= Resource("lDetailPage") %>',
                     Advanced: '<%=Resource("Advanced")%>',
+                    More: '<%=Resource("More")%>',
                     lAddNewContent: '<%=Resource("lAddNewContent")%>',
                     lUseExistingContent: '<%=Resource("lUseExistingContent")%>',
                     lDataSource: '<%=Resource("lDataSource")%>',
@@ -174,6 +175,7 @@
                     liOtherModule: '<%=Resource("liOtherModule")%>',
                     lTab: '<%=Resource("lTab")%>',
                     lModule: '<%=Resource("lModule")%>',
+                    CreateNewTemplate: '<%=Resource("CreateNewTemplate")%>',
                 }
 
             });

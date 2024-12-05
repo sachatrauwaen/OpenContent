@@ -3,18 +3,19 @@
         <div class="oc-view" v-if="step==1" v-cloak>
 
             <div class="octabs">
-                <a href="#" @click.prevent="basic" :class="{advanced:true, active: tab==1 }">{{Resource("lAddNewContent")}}</a>
+                <a href="#" @click.prevent="goBasic" :class="{advanced:true, active: tab==1 }">{{Resource("lAddNewContent")}}</a>
             </div>
             <div class="octabs">
                 <a href="#" @click.prevent="goShared" :class="{advanced:true, active: tab==2 }">{{Resource("lUseExistingContent")}}</a>
             </div>
             <div class="octabs">
-                <a href="#" @click.prevent="goAdvanced" :class="{advanced:true, active: tab==3 }">{{Resource("Advanced")}}</a>
+                <a href="#" @click.prevent="goCreate" :class="{advanced:true, active: tab==3 }">{{Resource("CreateNewTemplate")}}</a>
             </div>
             <div style="clear:both"></div>
-            <div v-if="!advanced ">
-                <div v-if="tab==1">
-                    <p style="text-align:left">Choose a template</p>
+            
+            <div v-if="tab==1">
+                <div v-if="!basicAll">
+                    <!--<p style="text-align:left">Choose a template</p>-->
                     <div class="octemplate" v-for="(val) in templates.slice(0, 23)" :key="val.Value">
                         <a style="height:auto;" :value="val.Value" @click.prevent="selectTemplate(val.Value)" href="#" :title="val.Text" @mouseover="tooltip = val.Value" @mouseleave="tooltip = null">
                             <div>{{val.Text}} <span v-if="val.ImageUrl || val.Description" style="background-color:#555555;padding:2px 4px;line-height:16px;font-size:10px;">?</span></div>                            
@@ -24,95 +25,93 @@
                             <div v-if="val.Description" style="color:#fff">{{val.Description}}</div>
                         </div>
                     </div>
+                    <div class="octemplate" v-if="templates.length > 2">
+                        <a style="height:auto;"  @click.prevent="goBasicAll" href="#" class="advanced" >
+                            <div>{{Resource("More")}} </div>                            
+                        </a>                        
+                    </div>
                 </div>
-                <div v-if="tab==2">
-                    <div class="dnnForm" style="max-width:600px;">
-                        <fieldset>
-                            <div v-if="UseContent=='1'" class="dnnFormItem">
-                                <label class="dnnLabel">{{ Resource("lTab") }}</label>
-                                <select v-model="currentTab" @change="tabChange">
-                                    <option v-for="tab in tabs" :key="tab.TabId" :value="tab">{{tab.Text}}</option>
-                                </select>
+                <div v-else class="dnnForm" style="max-width:600px;">
+                    <fieldset>
+                        <div class="dnnFormItem">
+                            <label class="dnnLabel">{{ Resource("lTemplate") }}</label>
+                            <select v-model="Template" @change="templateChange">
+                                <option v-for="template in templates" :key="template.Value" :value="template.Value">{{template.Text}}</option>
+                            </select>
+                            <span v-if="currentTemplate && (currentTemplate.ImageUrl || currentTemplate.Description)" style="margin-left:5px;background-color:#555555;padding:10px;line-height:16px;font-size:14px;color:#fff;border-radius:3px;" @mouseover="tooltip = Template" @mouseleave="tooltip = null" >?</span>
+                            <div v-if="currentTemplate && tooltip == currentTemplate.Value && (currentTemplate.ImageUrl || currentTemplate.Description)" style="position: absolute; right: 10px; top: 40px; z-index: 999; width: 200px;  background-color: #3D3C3C; padding: 0.3em 0.5em;border:1px solid #eee;">
+                                <div v-if="currentTemplate.ImageUrl" style="background-color:#fff;"><img style="max-width: 100%; height: auto;" :src="currentTemplate.ImageUrl" /></div>
+                                <div v-if="currentTemplate.Description" style="color:#fff">{{currentTemplate.Description}}</div>
                             </div>
-                            <div v-if="UseContent=='1' && currentTab" class="dnnFormItem">
-                                <label class="dnnLabel">{{ Resource("lModule") }}</label>
-                                <select v-model="tabModuleId" @change="moduleChange">
-                                    <option v-for="mod in modules" :key="mod.TabModuleId" :value="mod.TabModuleId">{{mod.Text}}</option>
-                                </select>
-                            </div>
-                            <div v-if="false" class="dnnFormItem" style="padding-left: 32%; margin-left: 38px; width: auto;">
-                                <label runat="server" />
-                            </div>
-                            <!--<div v-if="currentTab && tabModuleId" class="dnnFormItem">
-                                <label class="dnnLabel">{{ Resource("lTemplate") }}</label>
-                                <select v-model="Template" @change="templateChange">
-                                    <option v-for="template in templates" :key="template.Value" :value="template.Value">{{template.Text}}</option>
-                                </select>
-                            </div>-->
-                            <div v-if="existingTemplate && Template && detailPages.length" class="dnnFormItem">
-                                <label class="dnnLabel">{{ Resource("lDetailPage") }}</label>
-                                <select v-model="detailPage">
-                                    <option v-for="page in detailPages" :key="page.TabId" :value="page.TabId">{{page.Text}}</option>
-                                </select>
-                            </div>
-                            
-                            <div v-if="currentTab && tabModuleId">
-                                <div class="octemplate" v-for="(val) in templates.slice(0, 23)" :key="val.Value">
-                                    <a style="height:auto;" :value="val.Value" @click.prevent="selectTemplate(val.Value)" href="#" :title="val.Text" @mouseover="tooltip = val.Value" @mouseleave="tooltip = null">
-                                        <div>{{val.Text}} <span v-if="val.ImageUrl || val.Description" style="background-color:#555555;padding:2px 4px;line-height:16px;font-size:10px;">?</span></div>
-                                    </a>
-                                    <div v-if="tooltip == val.Value && (val.ImageUrl || val.Description)" style="position: absolute; left: 10px; top: 40px; z-index: 999; width: 200px;  background-color: #3D3C3C; padding: 0.3em 0.5em;border:1px solid #eee;">
-                                        <div v-if="val.ImageUrl" style="background-color:#fff;"><img style="max-width: 100%; height: auto;" :src="val.ImageUrl" /></div>
-                                        <div v-if="val.Description" style="color:#fff">{{val.Description}}</div>
-                                    </div>
+                        </div>
+                    </fieldset>
+                    <ul class="dnnActions dnnClear" style="padding-left: 32%; margin-left: 38px;">
+                    <li>
+                        <a href="" @click.prevent="save" class="dnnPrimaryAction" :disabled="loading">{{Resource("Save")}}</a>
+                    </li>                    
+                </ul>
+                </div>
+            </div>
+            <div v-if="tab==2">
+                <div class="dnnForm" style="max-width:600px;">
+                    <fieldset>
+                        <div v-if="UseContent=='1'" class="dnnFormItem">
+                            <label class="dnnLabel">{{ Resource("lTab") }}</label>
+                            <select v-model="currentTab" @change="tabChange">
+                                <option v-for="tab in tabs" :key="tab.TabId" :value="tab">{{tab.Text}}</option>
+                                <option v-if="!moreTabs" :value="{TabId:0,Text:Resource('More')}">{{Resource("More")}}</option>
+                            </select>
+                        </div>
+                        <div v-if="currentTab" class="dnnFormItem">
+                            <label class="dnnLabel">{{ Resource("lModule") }}</label>
+                            <select v-model="tabModuleId" @change="moduleChange">
+                                <option v-for="mod in modules" :key="mod.TabModuleId" :value="mod.TabModuleId">{{mod.Text}}</option>
+                            </select>
+                        </div>
+                        <div v-if="false" class="dnnFormItem" style="padding-left: 32%; margin-left: 38px; width: auto;">
+                            <label runat="server" />
+                        </div>
+                        <!--<div v-if="currentTab && tabModuleId" class="dnnFormItem">
+                            <label class="dnnLabel">{{ Resource("lTemplate") }}</label>
+                            <select v-model="Template" @change="templateChange">
+                                <option v-for="template in templates" :key="template.Value" :value="template.Value">{{template.Text}}</option>
+                            </select>
+                        </div>-->
+                        <div v-if="existingTemplate && Template && detailPages.length" class="dnnFormItem">
+                            <label class="dnnLabel">{{ Resource("lDetailPage") }}</label>
+                            <select v-model="detailPage">
+                                <option v-for="page in detailPages" :key="page.TabId" :value="page.TabId">{{page.Text}}</option>
+                            </select>
+                        </div>
+                        
+                        <div v-if="currentTab && tabModuleId">
+                            <div class="octemplate" v-for="(val) in templates.slice(0, 23)" :key="val.Value">
+                                <a style="height:auto;" :value="val.Value" @click.prevent="selectTemplate(val.Value)" href="#" :title="val.Text" @mouseover="tooltip = val.Value" @mouseleave="tooltip = null">
+                                    <div>{{val.Text}} <span v-if="val.ImageUrl || val.Description" style="background-color:#555555;padding:2px 4px;line-height:16px;font-size:10px;">?</span></div>
+                                </a>
+                                <div v-if="tooltip == val.Value && (val.ImageUrl || val.Description)" style="position: absolute; left: 10px; top: 40px; z-index: 999; width: 200px;  background-color: #3D3C3C; padding: 0.3em 0.5em;border:1px solid #eee;">
+                                    <div v-if="val.ImageUrl" style="background-color:#fff;"><img style="max-width: 100%; height: auto;" :src="val.ImageUrl" /></div>
+                                    <div v-if="val.Description" style="color:#fff">{{val.Description}}</div>
                                 </div>
                             </div>
+                        </div>
 
-                        </fieldset>
-                        <!--<ul class="dnnActions dnnClear" style="padding-left: 32%; margin-left: 38px;">
-                            <li>
-                                <a href="" @click.prevent="save" class="dnnPrimaryAction" :disabled="loading">{{newTemplate ? Resource("Create") : Resource("Save")}}</a>
-                            </li>
-                        </ul>-->
-                    </div>
+                    </fieldset>
+                    <!--<ul class="dnnActions dnnClear" style="padding-left: 32%; margin-left: 38px;">
+                        <li>
+                            <a href="" @click.prevent="save" class="dnnPrimaryAction" :disabled="loading">{{newTemplate ? Resource("Create") : Resource("Save")}}</a>
+                        </li>
+                    </ul>-->
                 </div>
-                <!--<div class="octemplate">
-                    <a href="#" @click.prevent="goAdvanced" class="advanced">{{Resource("Advanced")}}</a>
-                </div>-->
-                <div style="clear:both"></div>
             </div>
-            <div v-else class="dnnForm" style="max-width:600px;">
+            <!--<div class="octemplate">
+                <a href="#" @click.prevent="goAdvanced" class="advanced">{{Resource("Advanced")}}</a>
+            </div>-->
+            <div style="clear:both"></div>
+        
+            <div v-if="tab==3" class="dnnForm" style="max-width:600px;">
                 <fieldset>
-                    <div v-if="advanced && existingTemplate" class="dnnFormItem">
-                        <!--<label class="dnnLabel">{{ Resource("lUseContent") }}</label>-->
-                        <label class="dnnLabel"> </label>
-                        <table class="">
-                            <tr>
-                                <td>
-                                    <input type="checkbox" v-model="UseOtherContent" @change="useModuleChange" value="0" class="dnnRadiobutton" /><label>{{ Resource("lUseExistingContent") }}</label>
-                                </td>
-                                <!--<td>
-                                    <input type="radio" v-model="UseContent" @change="thisModuleChange" value="0" class="dnnRadiobutton" /><label>{{ Resource("liThisModule") }}</label>
-                                </td>
-                                <td>
-                                    <input type="radio" v-model="UseContent" @change="otherModuleChange" value="1" class="dnnRadiobutton" :disabled="noTemplates" /><label>{{Resource("liOtherModule")}}</label>
-                                </td>-->
-                            </tr>
-                        </table>
-                    </div>
-                    <div v-if="UseContent=='1'" class="dnnFormItem">
-                        <label class="dnnLabel">{{ Resource("lTab") }}</label>
-                        <select v-model="currentTab" @change="tabChange">
-                            <option v-for="tab in tabs" :key="tab.TabId" :value="tab">{{tab.Text}}</option>
-                        </select>
-                    </div>
-                    <div v-if="UseContent=='1' && currentTab" class="dnnFormItem">
-                        <label class="dnnLabel">{{ Resource("lModule") }}</label>
-                        <select v-model="tabModuleId" @change="moduleChange">
-                            <option v-for="mod in modules" :key="mod.TabModuleId" :value="mod.TabModuleId">{{mod.Text}}</option>
-                        </select>
-                    </div>
-                    <div v-if="UseTemplate=='1'" class="dnnFormItem">
+                    <div class="dnnFormItem">
                         <label class="dnnLabel">{{ Resource("lFrom") }}</label>
                         <table class="dnnFormRadioButtons">
                             <tr>
@@ -125,9 +124,6 @@
                             </tr>
                         </table>
                     </div>
-                    <div v-if="false" class="dnnFormItem" style="padding-left: 32%; margin-left: 38px; width: auto;">
-                        <label runat="server" />
-                    </div>
                     <div class="dnnFormItem">
                         <label class="dnnLabel">{{ Resource("lTemplate") }}</label>
                         <select v-model="Template" @change="templateChange">
@@ -139,35 +135,15 @@
                             <div v-if="currentTemplate.Description" style="color:#fff">{{currentTemplate.Description}}</div>
                         </div>
                     </div>
-                    <div class="dnnFormItem" v-if="isPageAdmin && !otherModule && existingTemplate">
-                        <label class="dnnLabel"> </label>
-                        <a href="#" @click.prevent="newTemplateChange" class="" :disabled="loading">{{Resource("liCreateNewTemplate")}}</a>
-                    </div>
-                    <div v-if="UseTemplate=='1'" class="dnnFormItem">
+                    <div class="dnnFormItem">
                         <label class="dnnLabel">{{ Resource("lTemplateName") }}</label>
                         <input v-model="templateName" type="text" runat="server" />
-                    </div>
-                    <div v-if="advanced && existingTemplate && Template && detailPages.length" class="dnnFormItem">
-                        <label class="dnnLabel">{{ Resource("lDetailPage") }}</label>
-                        <select v-model="detailPage">
-                            <option v-for="page in detailPages" :key="page.TabId" :value="page.TabId">{{page.Text}}</option>
-                        </select>
                     </div>
                 </fieldset>
                 <ul class="dnnActions dnnClear" style="padding-left: 32%; margin-left: 38px;">
                     <li>
-                        <a href="" @click.prevent="save" class="dnnPrimaryAction" :disabled="loading">{{newTemplate ? Resource("Create") : Resource("Save")}}</a>
-                    </li>
-                    <!--<li>
-                        <a href="#" v-if="existingTemplate && thisModule" @click.prevent="basic" class="dnnSecondaryAction" :disabled="loading">Basic</a>
-                    </li>-->
-                    <!--<li>
-                        <a href="#" v-if="isPageAdmin && !otherModule && existingTemplate" @click.prevent="newTemplateChange" class="dnnSecondaryAction" :disabled="loading">{{Resource("liCreateNewTemplate")}}</a>
-                    </li>-->
-                    <li>
-                        <a href="#" v-if="!otherModule && !existingTemplate" @click.prevent="existingTemplateChange" class="dnnSecondaryAction" :disabled="loading">{{Resource("liUseExistingTemplate")}}</a>
-                    </li>
-
+                        <a href="" @click.prevent="save" class="dnnPrimaryAction" :disabled="loading">{{Resource("Create")}}</a>
+                    </li>                    
                 </ul>
             </div>
         </div>
@@ -250,11 +226,14 @@
                 dataDefined: false,
                 //UseContent: '0',
                 UseOtherContent: false,
-                UseTemplate: '0',
+
                 Template: "",
                 from: "0",
-                advanced: false,
+                createTemplate: false,
+                newTemplate: false,
                 shared: false,
+                moreTabs: false,
+                basicAll: false,
                 templates: [],
                 currentTab: null,
                 tabModuleId: 0,
@@ -295,12 +274,6 @@
             isPageAdmin() {
                 return this.config.IsPageAdmin;
             },
-            existingTemplate: function () {
-                return this.UseTemplate == '0';
-            },
-            newTemplate: function () {
-                return this.UseTemplate == '1';
-            },
             thisModule: function () {
                 return this.UseContent == '0';
             },
@@ -322,7 +295,7 @@
                     return 3
             },
             tab: function () {
-                if (this.advanced)
+                if (this.createTemplate)
                     return 3;
                 else if (this.shared)
                     return 2;
@@ -352,8 +325,7 @@
                 self.loading = false;
                 if (self.templates.length == 0) {
                     self.noTemplates = true;
-                    self.advanced = true;
-                    self.UseTemplate = '1';
+                    self.createTemplate = true;                    
                     self.from = '1';
                     self.loading = true;
                     self.apiGet('GetNewTemplates', { web: true }, function (data) {
@@ -394,39 +366,46 @@
             Resource(key) {
                 return this.config.resources[key];
             },
-            basic: function () {
-                this.advanced = false;
+            goBasic: function () {
+                this.basicAll = false;
+                this.createTemplate = false;
                 this.shared = false;
                 this.UseOtherContent = false;
+                this.newTemplate = false;
                 this.existingTemplateChange();
             },
-            goAdvanced: function () {
-                this.advanced = true;
+            goBasicAll: function () {
+                this.basicAll = true;
+            },
+            goCreate: function () {
+                this.createTemplate = true;
                 this.shared = false;
                 this.UseOtherContent = false;
                 this.currentTab = null;
                 this.tabs = [];
-                this.existingTemplateChange();
+                this.newTemplate = true;
+                //this.existingTemplateChange();
+                this.newTemplateChange();
             },
             goShared() {
                 this.shared = true;
-                this.advanced = false;
+                this.createTemplate = false;
                 this.UseOtherContent = true;
                 this.currentTab = null;
                 this.tabs = [];
+                this.moreTabs = false;
+                this.newTemplate = false;
                 this.sharedTemplateChange();
             },
             thisModuleChange: function () {
-                this.UseTemplate = "0";
                 this.tabModuleId = 0;
                 this.Template = '';
                 var self = this;
-                this.apiGet('GetTemplates', { advanced: this.advanced }, function (data) {
+                this.apiGet('GetTemplates', { advanced: this.createTemplate }, function (data) {
                     self.templates = data;
                 });
             },
             otherModuleChange: function () {
-                this.UseTemplate = "0";
                 this.tabModuleId = 0;
                 this.Template = '';
                 var self = this;
@@ -451,10 +430,17 @@
             },
             tabChange: function () {
                 var self = this;
+                if (this.currentTab.TabId == 0) {
+                    this.apiGet('GetTabs', { shared: false }, function (data) {
+                        self.tabs = data;
+                        self.moreTabs = true;
+                        self.currentTab = null;
+                    });
+                }
+                else {
+                    this.modules = this.currentTab.Modules;
+                }
                 this.Template = '';
-                
-                self.modules = this.currentTab.Modules;
-                
             },
             moduleChange: function () {
                 var self = this;
@@ -464,12 +450,11 @@
                 });
             },
             existingTemplateChange: function () {
-                this.UseTemplate = "0";
+                
                 this.thisModuleChange();
             },
             sharedTemplateChange: function () {
                 this.UseOtherContent = true;
-                this.UseTemplate = "0";
                 this.tabModuleId = 0;
                 this.Template = '';
                 var self = this;
@@ -484,7 +469,6 @@
                 //});
             },
             newTemplateChange: function () {
-                this.UseTemplate = "1";
                 this.from = "0";
                 this.Template = '';
                 this.fromSiteChange();
@@ -545,11 +529,10 @@
                     self.dataDefined = data.DataDefined;
                     self.Template = data.Template;
                     if (self.newTemplate) {
-                        self.apiGet('GetTemplates', { advanced: this.advanced }, function (dataTemplates) {
+                        self.apiGet('GetTemplates', { advanced: true }, function (dataTemplates) {
                             self.templates = dataTemplates;
                             self.Template = data.Template;
                         });
-                        self.UseTemplate = "0";
                     }
                 });
                 self.noTemplates = false;
@@ -598,19 +581,7 @@
             }
         },
         components: {
-            //    modal: {
-            //        template: '<div v-show="showModal" class="oc-modal"><div class="oc-modal-content"><span class="close">&times;</span><slot></slot></div></div>',
-            //        data: function () {
-            //            return {
-            //                showModal: true
-            //            };
-            //        },
-            //        methods: {
-            //            show: function () {
-            //                this.showModal = true;
-            //            }
-            //        }
-            //    },
+          
         }
     }
 

@@ -282,8 +282,11 @@ namespace Satrabel.OpenContent.Components
 
             if (!input.otherModule) // this module
             {
-                mc.DeleteModuleSetting(ActiveModule.ModuleID, "tabid");
-                mc.DeleteModuleSetting(ActiveModule.ModuleID, "moduleid");
+                if (ActiveModule.ModuleSettings["tabid"] != null )
+                    mc.DeleteModuleSetting(ActiveModule.ModuleID, "tabid");
+
+                if (ActiveModule.ModuleSettings["moduleid"] != null)
+                    mc.DeleteModuleSetting(ActiveModule.ModuleID, "moduleid");
             }
             else // other module
             {

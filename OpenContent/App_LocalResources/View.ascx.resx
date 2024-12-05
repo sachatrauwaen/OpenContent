@@ -208,4 +208,10 @@
   <data name="Advanced.Text" xml:space="preserve">
     <value>Advanced...</value>
   </data>
+  <data name="More.Text" xml:space="preserve">
+    <value>More...</value>
+  </data>
+  <data name="CreateNewTemplate.Text" xml:space="preserve">
+    <value>Create new template folder</value>
+  </data>
 </root>
