@@ -42,6 +42,8 @@ using System.Drawing.Imaging;
 using Satrabel.OpenContent.Components.Manifest;
 using DotNetNuke.Security;
 using Satrabel.OpenContent.Components.TemplateHelpers;
+using System.Runtime.Remoting.Contexts;
+using System.Xml.Linq;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -77,6 +79,99 @@ namespace Satrabel.OpenContent.Components
             }
             return IframeSafeJson(statuses);
         }
+
+
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
+        [HttpPost]
+        //[IFrameSupportedValidateAntiForgeryToken]
+        public HttpResponseMessage DeleteFile()
+        {
+            var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
+            var manifest = module.Settings.Template.Manifest;
+            if (!DnnPermissionsUtils.HasEditPermissions(module, manifest.GetEditRole(), manifest.GetEditRoleAllItems(), -1))
+            {
+                return Request.CreateResponse(HttpStatusCode.Unauthorized);
+            }
+
+            try
+            {
+                var context = HttpContextSource.Current;
+                string fileName = "";
+                if (!string.IsNullOrEmpty(context.Request.Form["name"]))
+                {
+                    var name = context.Request.Form["name"];
+                    if (name.IndexOf('?') > 0)
+                    {
+                        name = name.Substring(0, name.IndexOf('?'));
+                    }
+                    fileName = CleanUpFileName(Path.GetFileName(name));
+                }
+
+                bool secure = false;
+
+                if (!string.IsNullOrEmpty(context.Request.Form["secure"]))
+                {
+                    secure = context.Request.Form["secure"] == "true";
+                }
+
+                string uploadfolder;
+                if (!string.IsNullOrEmpty(context.Request.Form["uploadfolder"])) // custom upload folder
+                {
+                    uploadfolder = context.Request.Form["uploadfolder"];
+                    if (uploadfolder.Contains("[ITEMUSERFOLDER]"))
+                    {
+                        if (!string.IsNullOrEmpty(context.Request.Form["itemId"]))
+                        {
+                            int itemId;
+                            if (int.TryParse(context.Request.Form["itemId"], out itemId))
+                            {
+                                var user = DotNetNuke.Entities.Users.UserController.GetUserById(PortalSettings.PortalId, itemId);
+                                if (user != null)
+                                {
+                                    var userFolder = _folderManager.GetUserFolder(user).FolderPath;
+                                    uploadfolder = uploadfolder.Replace("[ITEMUSERFOLDER]", userFolder);
+                                }
+                            }
+                        }
+
+                    }
+                    if (uploadfolder.Contains("[USERFOLDER]") && PortalSettings.UserId > -1)
+                    {
+                        var userFolder = _folderManager.GetUserFolder(PortalSettings.UserInfo).FolderPath;
+                        uploadfolder = uploadfolder.Replace("[USERFOLDER]", userFolder);
+                    }
+                    //uploadfolder = uploadfolder.Replace("[MODULEID]", PortalSettings.UserId.ToString());                        
+                }
+                else
+                {
+                    string uploadParentFolder = "OpenContent/" + (secure ? "Secure" : "") + "Files/";
+                    uploadfolder = uploadParentFolder + module.DataModule.ModuleId + "/";
+                    if (module.Settings.Manifest.DeleteFiles)
+                    {
+                        if (!string.IsNullOrEmpty(context.Request.Form["itemKey"]))
+                        {
+                            uploadfolder += context.Request.Form["itemKey"];
+                        }
+                    }
+                }
+                IFolderInfo uploadFolderInfo = _folderManager.GetFolder(PortalSettings.PortalId, uploadfolder);
+                if (uploadFolderInfo != null && !string.IsNullOrEmpty(fileName))
+                {
+                    var oldfileInfo = _fileManager.GetFile(uploadFolderInfo, fileName);
+                    if (oldfileInfo != null)
+                    {
+                        _fileManager.DeleteFile(oldfileInfo);
+                    }
+                }
+            }
+            catch (Exception exc)
+            {
+                Logger.Error(exc);
+                throw;
+            }
+            return Request.CreateResponse(HttpStatusCode.OK);
+        }
+
         /*
         [DnnAuthorize]
         [HttpPost]
@@ -179,6 +274,12 @@ namespace Satrabel.OpenContent.Components
                 {
                     bool? overwrite = null;
                     bool secure = false;
+                    string old = context.Request.Form["old"];
+                    if (old.IndexOf('?') > 0)
+                    {
+                        old = old.Substring(0, old.IndexOf('?'));
+                    }
+                    bool deleteOld = false;
 
                     var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
                     if (!string.IsNullOrEmpty(context.Request.Form["secure"]))
@@ -188,6 +289,10 @@ namespace Satrabel.OpenContent.Components
                     if (!string.IsNullOrEmpty(context.Request.Form["overwrite"]))
                     {
                         overwrite = context.Request.Form["overwrite"] == "true";
+                    }
+                    if (!string.IsNullOrEmpty(context.Request.Form["deleteOld"]))
+                    {
+                        deleteOld = context.Request.Form["deleteOld"] == "true";
                     }
 
                     string uploadfolder;
@@ -215,7 +320,7 @@ namespace Satrabel.OpenContent.Components
                             if (!string.IsNullOrEmpty(context.Request.Form["itemId"]))
                             {
                                 int itemId;
-                                if (int.TryParse(context.Request.Form["itemId"],out itemId))
+                                if (int.TryParse(context.Request.Form["itemId"], out itemId))
                                 {
                                     var user = DotNetNuke.Entities.Users.UserController.GetUserById(PortalSettings.PortalId, itemId);
                                     if (user != null)
@@ -225,7 +330,7 @@ namespace Satrabel.OpenContent.Components
                                     }
                                 }
                             }
-                            
+
                         }
                         if (uploadfolder.Contains("[USERFOLDER]") && PortalSettings.UserId > -1)
                         {
@@ -249,6 +354,16 @@ namespace Satrabel.OpenContent.Components
                         }
                     }
                     IFolderInfo uploadFolderInfo = GetOrCreateFolder(secure, uploadfolder);
+
+                    if (deleteOld && !string.IsNullOrEmpty(old))
+                    {
+                        var oldfileInfo = _fileManager.GetFile(uploadFolderInfo, Path.GetFileName(old));
+                        if (oldfileInfo != null)
+                        {
+                            _fileManager.DeleteFile(oldfileInfo);
+                        }
+                    }
+
                     int suffix = 0;
                     string baseFileName = Path.GetFileNameWithoutExtension(fileName);
                     string extension = Path.GetExtension(fileName);
@@ -331,25 +446,25 @@ namespace Satrabel.OpenContent.Components
         }
 
         /*
-private void UploadWholeFile2(HttpContextBase context, ICollection<FilesStatus> statuses)
-{
-   for (var i = 0; i < context.Request.Files.Count; i++)
-   {
-       var file = context.Request.Files[i];
-       if (file == null) continue;
-       string fileName;
-       if (!string.IsNullOrEmpty(context.Request.Form["name"]))
-       {
+        private void UploadWholeFile2(HttpContextBase context, ICollection<FilesStatus> statuses)
+        {
+        for (var i = 0; i < context.Request.Files.Count; i++)
+        {
+        var file = context.Request.Files[i];
+        if (file == null) continue;
+        string fileName;
+        if (!string.IsNullOrEmpty(context.Request.Form["name"]))
+        {
            var name = context.Request.Form["name"];
            fileName = CleanUpFileName(Path.GetFileName(name));
-       }
-       else
-       {
+        }
+        else
+        {
            fileName = CleanUpFileName(Path.GetFileName(file.FileName));
-       }
+        }
 
-       if (IsAllowedExtension(fileName))
-       {
+        if (IsAllowedExtension(fileName))
+        {
            bool? overwrite = null;
 
            var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
@@ -471,19 +586,19 @@ private void UploadWholeFile2(HttpContextBase context, ICollection<FilesStatus> 
                message = "success",
                id = fileInfo.FileId,
            });
-       }
-       else
-       {
+        }
+        else
+        {
            statuses.Add(new FilesStatus
            {
                success = false,
                name = fileName,
                message = "File type not allowed."
            });
-       }
-   }
-}
-*/
+        }
+        }
+        }
+        */
         public static string CleanUpFileName(string filename)
         {
             var newName = HttpUtility.UrlDecode(filename);

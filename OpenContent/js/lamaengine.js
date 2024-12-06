@@ -637,6 +637,12 @@ alpacaEngine.engine = function (config) {
                 if (typeof config.secure !== 'undefined')
                     formData.append('secure', config.secure);
 
+                if (typeof config.old !== 'undefined')
+                    formData.append('old', config.old);
+
+                if (typeof config.deleteOld !== 'undefined')
+                    formData.append('deleteOld', config.deleteOld);
+
                 if (typeof config.folder !== 'undefined')
                     formData.append('uploadfolder', config.folder);
 
@@ -675,6 +681,29 @@ alpacaEngine.engine = function (config) {
                 } else {
                     errorCallback(status.message);
                     console.log(status.name +" : "+status.message);
+                }
+            });
+        },
+        deleteFile(config, successCallback, errorCallback) {
+            var formData = new FormData();
+            formData.append('name', config.url);
+
+            if (typeof config.folder !== 'undefined')
+                formData.append('uploadfolder', config.folder);
+
+            if (typeof config.secure !== 'undefined')
+                formData.append('secure', config.secure);
+
+            var url = self.sf.getServiceRoot('OpenContent') + "FileUpload/DeleteFile";
+            $.ajax({
+                type: 'POST',
+                url: url,
+                data: formData,
+                contentType: false,
+                processData: false,
+                beforeSend: self.sf.setModuleHeaders,
+                success: function (response) {
+                    successCallback(response);
                 }
             });
         }
