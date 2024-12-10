@@ -41,70 +41,108 @@
 
 
 /* For Template Picker */
+.DnnModule-OpenContent .oc-select-template {
+	--background-color: white;
+	--border-color: #aaa;
+	
+	--tabs-border-bottom: solid 1px var(--border-color);
+	--tabs-margin: 1em 0 0;
+	--tabs-gap: 0.5em;
+	
+	--tab-min-width: 12em;
+	--tab-border: solid 1px var(--border-color);
+	--tab-color: black;
+	--tab-bg: #eee;
+	--tab-bg-hover: #f4f4f4;
+	--tab-border-active: solid 1px var(--border-color);
+	--tab-border-bottom-active: #fff;
+	
+	--tab-padding: 0.5em 0.7em;
+	--tab-radius: 0.4em 0.4em 0 0;
+	--tab-margin-right: 0.3em;
+	--tab-margin-bottom: -1px;
+	
+	--templates-border: solid 1px var(--border-color);
+	--templates-padding: 1em;
+	--template-border: solid 1px var(--border-color);
+	--template-border-radius: 0.25em;
+	--template-padding: 0.5em;
+	
+	--template-advanced-color: black;
 
-.DnnModule-OpenContent .oc-view .dnnFormItem input[type="checkbox"], .DnnModule-OpenContent .oc-view .dnnFormItem input[type="radio"] {
+
+}
+
+.DnnModule-OpenContent .oc-select-template .dnnFormItem input[type="checkbox"],
+.DnnModule-OpenContent .oc-select-template .dnnFormItem input[type="radio"] {
 	display: inline-block;
 	width: auto;
 	margin: 6px 5px 6px 5px;
 }
-.DnnModule-OpenContent .oc-view .octemplate {
-    float: left;
-    width: 160px;
-    
-    position:relative;
-}
-    .DnnModule-OpenContent .oc-view .octemplate a, 
-    .DnnModule-OpenContent .oc-view .octabs a {
-        background-color: #3D3C3C;
-        display: block;
-        height: 2em;
-        padding: 0.3em 0.5em;
-        margin: 0.3em;
-        color: #ffffff;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        border-radius: 3px;
-    }
 
-
-    .DnnModule-OpenContent .oc-view .octabs {
-        float: left;
-        border-bottom: 1px solid #eee;
-        margin-bottom: 20px;
-        width: 180px;
-    }
-
-.DnnModule-OpenContent .oc-view .octemplate a.advanced, 
-.DnnModule-OpenContent .oc-view .octabs a.advanced {
-    background-color: #EEE;
-    color: #000;
-    border-radius: 5px 5px 0 0;
-    margin-bottom: 0;
+.DnnModule-OpenContent .oc-select-template .oc-tabs {
+	display: flex;
+	flex-wrap: wrap;
+	container-type: inline-size;
+	margin: var(--tabs-margin);
 }
 
-.DnnModule-OpenContent .oc-view .octabs a.advanced:hover {
-    background-color: #1DAFE5;
-    color: #3D3C3C;
-}
-.DnnModule-OpenContent .oc-view .octabs a.active {
-    background-color: #1DAFE5;
-    color: #FFF;
-    border-radius: 5px 5px 0 0;
-}
-
-    .DnnModule-OpenContent .oc-view .octemplate a.active:hover  {
-        color: #3D3C3C;
-    }
-
-
-.DnnModule-OpenContent .oc-view .octemplate a:visited {
-	color: #ffffff;
-}
-.DnnModule-OpenContent .oc-view .octemplate a:hover {
-	color: #1DAFE5;
+.DnnModule-OpenContent .oc-select-template .oc-tab-link {
+	display: inline-block;
+	min-width: var(--tab-min-width);
+	padding: var(--tab-padding);
+	border-radius: var(--tab-radius);
+	margin-right: var(--tab-margin-right);
+	color: var(--tab-color);
+	background: var(--background-color);
+	border: var(--tab-border-active);
+	margin-bottom: var(--tab-margin-bottom);
 }
 
-.DnnModule-OpenContent .oc-view [v-cloak] {
-	display: none;
+.DnnModule-OpenContent .oc-select-template .oc-tab-new-template .oc-tab-link {
+	border: none;
 }
+
+.DnnModule-OpenContent .oc-select-template .oc-tab-link.advanced:hover {
+	background: var(--tab-bg-hover);
+}
+
+.DnnModule-OpenContent .oc-select-template .oc-tab-link.active {
+	background: var(--background-color);
+	border: var(--tab-border-active);
+	border-bottom-color: var(--tab-border-bottom-active);
+}
+
+.DnnModule-OpenContent .oc-select-template .oc-tab-new-template {
+	margin-left: auto;
+	
+}
+
+.DnnModule-OpenContent .oc-select-template .oc-tab-new-template .oc-tab-link{
+	background: none;
+}
+	
+
+.DnnModule-OpenContent .oc-select-template .oc-templates {
+	display: flex;
+	container-type: inline-size;
+	background: var(--background-color);
+	flex-wrap: wrap;
+	border: var(--templates-border);
+	padding: var(--templates-padding);
+	gap: var(--tabs-gap);
+	
+}
+
+.DnnModule-OpenContent .oc-select-template .oc-template {
+	border: var(--template-border);
+	border-radius: var(--template-border-radius);
+	min-width: var(--template-min-width);
+	padding: var(--template-padding);
+	position: relative;
+}
+
+.DnnModule-OpenContent .oc-select-template .oc-template .advanced{
+	color: var(--template-advanced-color);
+}
+
