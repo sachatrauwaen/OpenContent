@@ -49,6 +49,7 @@
 	--tabs-margin: 1em 0 0;
 	--tabs-gap: 0.5em;
 	
+	--tab-min-width-sm: 100%;
 	--tab-min-width: 12em;
 	--tab-border: solid 1px var(--border-color);
 	--tab-color: black;
@@ -58,6 +59,7 @@
 	--tab-border-bottom-active: #fff;
 	
 	--tab-padding: 0.5em 0.7em;
+	--tab-radius-sm: 0.4em;
 	--tab-radius: 0.4em 0.4em 0 0;
 	--tab-margin-right: 0.3em;
 	--tab-margin-bottom: -1px;
@@ -87,16 +89,33 @@
 	margin: var(--tabs-margin);
 }
 
+
+.DnnModule-OpenContent .oc-select-template .oc-tab-wrap {
+	min-width: var(--tab-min-width-sm);
+	margin-bottom: 0.5em;
+}
+	
+	
 .DnnModule-OpenContent .oc-select-template .oc-tab-link {
-	display: inline-block;
-	min-width: var(--tab-min-width);
+	display: block;
 	padding: var(--tab-padding);
-	border-radius: var(--tab-radius);
+	border-radius: var(--tab-radius-sm);
 	margin-right: var(--tab-margin-right);
 	color: var(--tab-color);
 	background: var(--background-color);
 	border: var(--tab-border-active);
 	margin-bottom: var(--tab-margin-bottom);
+}
+
+@container (min-width: 400px){
+	.DnnModule-OpenContent .oc-select-template .oc-tab-wrap {
+		min-width: var(--tab-min-width);
+	}
+	.DnnModule-OpenContent .oc-select-template .oc-tab-link {
+		
+		border-radius: var(--tab-radius);
+	}
+
 }
 
 .DnnModule-OpenContent .oc-select-template .oc-tab-new-template .oc-tab-link {
@@ -108,9 +127,16 @@
 }
 
 .DnnModule-OpenContent .oc-select-template .oc-tab-link.active {
+	background: #eee;
+
+}
+
+@container (min-width: 400px){
+	.DnnModule-OpenContent .oc-select-template .oc-tab-link.active {
 	background: var(--background-color);
 	border: var(--tab-border-active);
 	border-bottom-color: var(--tab-border-bottom-active);
+	}
 }
 
 .DnnModule-OpenContent .oc-select-template .oc-tab-new-template {
@@ -134,12 +160,22 @@
 	
 }
 
-.DnnModule-OpenContent .oc-select-template .oc-template {
-	border: var(--template-border);
-	border-radius: var(--template-border-radius);
-	min-width: var(--template-min-width);
-	padding: var(--template-padding);
-	position: relative;
+
+	.DnnModule-OpenContent .oc-select-template .oc-template {
+		border: var(--template-border);
+		border-radius: var(--template-border-radius);
+		min-width: var(--template-min-width);
+		padding: var(--template-padding);
+		position: relative;
+		min-width:100%;
+	}
+	
+@container (min-width: 400px){
+	
+	.DnnModule-OpenContent .oc-select-template .oc-template {
+		min-width: var(--template-min-width);
+	}
+
 }
 
 .DnnModule-OpenContent .oc-select-template .oc-template .advanced{
