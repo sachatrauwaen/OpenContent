@@ -77,6 +77,46 @@ namespace Satrabel.OpenContent.Components.Render
         public string MetaDescription { get; set; }
         public string MetaOther { get; set; }
 
+
+        public void RenderWithTryCatch(Page page, Control control)
+        {
+            try
+            {
+                Render(page);
+                
+            }
+            catch (TemplateException ex)
+            {
+                RenderTemplateException(page, ex);
+            }
+            catch (InvalidJsonFileException ex)
+            {
+                RenderJsonException(page, ex);
+            }
+            catch (NotAuthorizedException ex)
+            {
+                if (_module.ViewModule.HasEditRightsOnModule())
+                    RenderHttpException(page, ex);
+                else
+                    throw;
+            }
+            catch (Exception ex)
+            {
+                LoggingUtils.ProcessModuleLoadException(page, _module.ViewModule.ModuleInfo, ex);
+            }
+            if (_renderinfo.Template != null && !string.IsNullOrEmpty(_renderinfo.OutputString))
+            {
+                try
+                {
+                    this.IncludeResourses(page, control);
+                }
+                catch (Exception ex)
+                {
+                    DotNetNuke.UI.Skins.Skin.AddModuleMessage(page, ex.Message, DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
+                }
+            }
+        }
+
         public void Render(Page page)
         {
             //start rendering           
@@ -656,7 +696,7 @@ namespace Satrabel.OpenContent.Components.Render
                     return ExecuteTemplate(page, templateManifest, files, templateUri, model);
                 }
             }
-            
+
             return "";
         }
 
@@ -926,6 +966,53 @@ namespace Satrabel.OpenContent.Components.Render
 
             return actions;
         }
+
+        #region Exceptions
+        private void RenderTemplateException(Page page, TemplateException ex)
+        {
+            DotNetNuke.UI.Skins.Skin.AddModuleMessage(page, "<p><b>Template error</b></p>" + ex.MessageAsHtml(), DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
+            //DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "<p><b>Template source</b></p>" + Server.HtmlEncode(ex.TemplateSource).Replace("\n", "<br/>"), DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.BlueInfo);
+            //DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "<p><b>Template model</b></p> <pre>" + JsonConvert.SerializeObject(ex.TemplateModel, Formatting.Indented)/*.Replace("\n", "<br/>")*/+"</pre>", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.BlueInfo);
+            //lErrorMessage.Text = ex.HtmlMessage;
+            //lErrorModel.Text = "<pre>" + JsonConvert.SerializeObject(ex.TemplateModel, Formatting.Indented)/*.Replace("\n", "<br/>")*/+"</pre>";
+            if (LogContext.IsLogActive)
+            {
+                var logKey = "Error in tempate";
+                LogContext.Log(_module.ModuleId, logKey, "Error", ex.MessageAsList());
+                LogContext.Log(_module.ModuleId, logKey, "Model", ex.TemplateModel);
+                LogContext.Log(_module.ModuleId, logKey, "Source", ex.TemplateSource);
+                //LogContext.Log(logKey, "StackTrace", ex.StackTrace);
+                //DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "<p>More info is availale on de browser console (F12)</p>", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.BlueInfo);
+            }
+            LoggingUtils.ProcessLogFileException(page, _module.ViewModule.ModuleInfo, ex);
+        }
+        private void RenderJsonException(Page page, InvalidJsonFileException ex)
+        {
+            DotNetNuke.UI.Skins.Skin.AddModuleMessage(page, "<p><b>Json error</b></p>" + ex.MessageAsHtml(), DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
+            if (LogContext.IsLogActive)
+            {
+                var logKey = "Error in json";
+                LogContext.Log(_module.ModuleId, logKey, "Error", ex.MessageAsList());
+                LogContext.Log(_module.ModuleId, logKey, "Filename", ex.Filename);
+                //LogContext.Log(logKey, "StackTrace", ex.StackTrace);
+                //DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "<p>More info is availale on de browser console (F12)</p>", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.BlueInfo);
+            }
+            LoggingUtils.ProcessLogFileException(page, _module.ViewModule.ModuleInfo, ex);
+        }
+
+        private void RenderHttpException(Page page, NotAuthorizedException ex)
+        {
+            DotNetNuke.UI.Skins.Skin.AddModuleMessage(page, "<p><b>Permission error</b></p>" + ex.Message.Replace("\n", "<br />"), DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
+            if (LogContext.IsLogActive)
+            {
+                var logKey = "Error accessing data";
+                LogContext.Log(_module.ModuleId, logKey, "Error", ex.MessageAsList());
+                //LogContext.Log(logKey, "StackTrace", ex.StackTrace);
+                //DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "<p>More info is availale on de browser console (F12)</p>", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.BlueInfo);
+            }
+            LoggingUtils.ProcessLogFileException(page, _module.ViewModule.ModuleInfo, ex);
+        }
+        #endregion
 
     }
 

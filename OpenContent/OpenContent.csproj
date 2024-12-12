@@ -181,6 +181,7 @@
     <Compile Include="Components\Datasource\DnnPortalSettingsDataSource.cs" />
     <Compile Include="Components\Datasource\IDataQuery.cs" />
     <Compile Include="Components\Datasource\IDataQueries.cs" />
+    <Compile Include="Components\Dnn\DnnModuleUtils.cs" />
     <Compile Include="Components\Dnn\DnnUsersUtils.cs" />
     <Compile Include="Components\Export\ExcelApiController.cs" />
     <Compile Include="Components\Export\FullExport.cs" />
@@ -193,6 +194,7 @@
     <Compile Include="Components\Migration\Migrator.cs" />
     <Compile Include="Components\Migration\MigratorHelper.cs" />
     <Compile Include="Components\Migration\OcFieldInfo.cs" />
+    <Compile Include="Components\Render\WebFormsPageContext.cs" />
     <Compile Include="Components\ResourceController.cs" />
     <Compile Include="Components\Localization\LocalizationUtils.cs" />
     <Compile Include="Components\Logging\Logger.cs" />

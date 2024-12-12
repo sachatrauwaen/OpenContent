@@ -1,7 +1,10 @@
 using System;
 using System.Web;
 using DotNetNuke.Common;
+using DotNetNuke.Common.Utilities;
 using DotNetNuke.Entities.Modules;
+using DotNetNuke.Entities.Portals;
+using DotNetNuke.Entities.Tabs;
 using DotNetNuke.Security;
 using DotNetNuke.Security.Permissions;
 using DotNetNuke.Services.Personalization;
@@ -86,6 +89,35 @@ namespace Satrabel.OpenContent.Components.Dnn
                 isEditable = false;
             }
             return isEditable;
+        }
+
+        public static bool IsModuleAdmin()
+        {
+            bool isModuleAdmin = Null.NullBoolean;
+            foreach (ModuleInfo objModule in TabController.CurrentPage.Modules)
+            {
+                if (!objModule.IsDeleted)
+                {
+                    bool blnHasModuleEditPermissions = ModulePermissionController.HasModuleAccess(SecurityAccessLevel.Edit, Null.NullString, objModule);
+                    if (blnHasModuleEditPermissions && objModule.ModuleDefinition.DefaultCacheTime != -1)
+                    {
+                        isModuleAdmin = true;
+                        break;
+                    }
+                }
+            }
+            return PortalSettings.Current.ControlPanelSecurity == PortalSettings.ControlPanelPermission.TabEditor && isModuleAdmin;
+        }
+
+        public static bool IsPageAdmin()
+        {
+            bool isPageAdmin = Null.NullBoolean;
+            if (TabPermissionController.CanAddContentToPage() || TabPermissionController.CanAddPage() || TabPermissionController.CanAdminPage() || TabPermissionController.CanCopyPage() ||
+                TabPermissionController.CanDeletePage() || TabPermissionController.CanExportPage() || TabPermissionController.CanImportPage() || TabPermissionController.CanManagePage())
+            {
+                isPageAdmin = true;
+            }
+            return isPageAdmin;
         }
     }
 }
