@@ -275,7 +275,7 @@ namespace Satrabel.OpenContent.Components
                     bool? overwrite = null;
                     bool secure = false;
                     string old = context.Request.Form["old"];
-                    if (old.IndexOf('?') > 0)
+                    if (old != null && old.IndexOf('?') > 0)
                     {
                         old = old.Substring(0, old.IndexOf('?'));
                     }
