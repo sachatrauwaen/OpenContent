@@ -325,6 +325,7 @@
                 self.loading = false;
                 if (self.templates.length == 0) {
                     self.noTemplates = true;
+                    self.newTemplate = true;
                     self.createTemplate = true;                    
                     self.from = '1';
                     self.loading = true;
