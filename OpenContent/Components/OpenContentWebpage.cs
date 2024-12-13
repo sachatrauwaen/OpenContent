@@ -4,6 +4,7 @@ using System.Web.WebPages;
 using DotNetNuke.Web.Client;
 using DotNetNuke.Web.Client.ClientResourceManagement;
 using DotNetNuke.Web.Razor.Helpers;
+using Satrabel.OpenContent.Components.Render;
 using Satrabel.OpenContent.Components.TemplateHelpers;
 
 namespace Satrabel.OpenContent.Components
@@ -45,7 +46,7 @@ namespace Satrabel.OpenContent.Components
         /// <param name="jsfilename">name of the script file to register</param>
         public void RegisterScript(string jsfilename)
         {
-            DnnUtils.RegisterScript((Page)HttpContext.Current.CurrentHandler, VirtualPath, jsfilename, JSOrder);
+            DnnUtils.RegisterScript(new WebFormsPageContext((Page)HttpContext.Current.CurrentHandler, null), VirtualPath, jsfilename, JSOrder);
             JSOrder++;
         }
 
@@ -55,18 +56,18 @@ namespace Satrabel.OpenContent.Components
         /// <param name="jsfilename">name of the script file to register</param>
         public void RegisterScriptInPageHeader(string jsfilename)
         {
-            DnnUtils.RegisterScript((Page)HttpContext.Current.CurrentHandler, VirtualPath, jsfilename, JSOrder, "DnnPageHeaderProvider");
+            DnnUtils.RegisterScript(new WebFormsPageContext((Page)HttpContext.Current.CurrentHandler, null), VirtualPath, jsfilename, JSOrder, "DnnPageHeaderProvider");
             JSOrder++;
         }
         public void RegisterForm(string view = "bootstrap")
         {
             var page = (Page)HttpContext.Current.CurrentHandler;
-            FormHelpers.RegisterForm(page, VirtualPath, view, ref JSOrder);
+            FormHelpers.RegisterForm(new WebFormsPageContext(page, null), VirtualPath, view, ref JSOrder);
         }
         public void RegisterEditForm(string prefix = "")
         {
             var page = (Page)HttpContext.Current.CurrentHandler;
-            FormHelpers.RegisterEditForm(page, VirtualPath, Dnn.Portal.PortalId, prefix, ref JSOrder);
+            FormHelpers.RegisterEditForm(new WebFormsPageContext(page, null), VirtualPath, Dnn.Portal.PortalId, prefix, ref JSOrder);
         }
 
         #endregion

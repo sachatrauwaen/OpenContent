@@ -19,6 +19,7 @@ using System.Text.RegularExpressions;
 using DotNetNuke.Common.Utilities;
 using Satrabel.OpenContent.Components.Rest.Swagger;
 using System.Net.Http;
+using Satrabel.OpenContent.Components.Render;
 
 namespace Satrabel.OpenContent.Components.Handlebars
 {
@@ -198,7 +199,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 }
             });
         }
-        public string Execute(Page page, FileUri sourceFileUri, object model)
+        public string Execute(IPageContext page, FileUri sourceFileUri, object model)
         {
             try
             {
@@ -218,7 +219,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                 throw new TemplateException("Failed to render Handlebar template " + sourceFileUri.FilePath, ex, model, sourceFileUri.FilePath);
             }
         }
-        public string Execute(Page page, TemplateFiles files, string templateVirtualFolder, object model)
+        public string Execute(IPageContext page, TemplateFiles files, string templateVirtualFolder, object model)
         {
             var sourceFileUri = new FileUri(templateVirtualFolder + "/" + files.Template);
             try
@@ -510,7 +511,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
 
         }
 
-        private void RegisterRegisterScriptHelper(HandlebarsDotNet.IHandlebars hbs, Page page, string sourceFolder)
+        private void RegisterRegisterScriptHelper(HandlebarsDotNet.IHandlebars hbs, IPageContext page, string sourceFolder)
         {
             hbs.RegisterHelper("registerscript", (writer, context, parameters) =>
             {
@@ -547,7 +548,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
             });
 
         }
-        private static void RegisterRegisterStylesheetHelper(HandlebarsDotNet.IHandlebars hbs, Page page, string sourceFolder)
+        private static void RegisterRegisterStylesheetHelper(HandlebarsDotNet.IHandlebars hbs, IPageContext page, string sourceFolder)
         {
             hbs.RegisterHelper("registerstylesheet", (writer, context, parameters) =>
             {
@@ -558,7 +559,7 @@ namespace Satrabel.OpenContent.Components.Handlebars
                     {
                         cssfilename = sourceFolder + cssfilename;
                     }
-                    ClientResourceManager.RegisterStyleSheet(page, page.ResolveUrl(cssfilename), FileOrder.Css.PortalCss);
+                    page.RegisterStyleSheet(page.ResolveUrl(cssfilename), FileOrder.Css.PortalCss);
                 }
             });
         }

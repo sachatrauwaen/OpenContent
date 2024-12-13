@@ -62,7 +62,7 @@ namespace Satrabel.OpenContent
         protected override void OnInit(EventArgs e)
         {
             base.OnInit(e);
-            _pageContext= new WebFormsPageContext(this.Page);
+            _pageContext= new WebFormsPageContext(this.Page, this);
 
             ModuleInfo module = ModuleContext.Configuration;
 
@@ -93,13 +93,13 @@ namespace Satrabel.OpenContent
             base.OnLoad(e);
             if (!Page.IsPostBack)
             {
-                DnnModuleUtils.AddEditorRole(ModuleContext);
+                DnnModuleUtils.AddEditorRole(ModuleContext.Configuration);
                 //if (!Page.IsPostBack)
                 //{
                 //    AutoEditMode();
                 //}
             }
-            _engine.RenderWithTryCatch(Page, this);
+            _engine.RenderWithTryCatch(_pageContext);
             
             /*
             if (App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetCompositeCss())
@@ -139,13 +139,13 @@ namespace Satrabel.OpenContent
                 {
                     AJAX.WrapUpdatePanelControl(lit, true);
                 }
-                _engine.IncludeMeta(Page);
+                _engine.IncludeMeta(_pageContext);
             }
             if (LogContext.IsLogActive && !Debugger.IsAttached)
             {
                 //VirtualPathUtility.ToAbsolute
 
-                ClientResourceManager.RegisterScript(Page, Page.ResolveUrl("~/DesktopModules/OpenContent/js/opencontent.js"), FileOrder.Js.DefaultPriority);
+                _pageContext.RegisterScript(_pageContext.ResolveUrl("~/DesktopModules/OpenContent/js/opencontent.js"), FileOrder.Js.DefaultPriority);
                 var json = JsonConvert.SerializeObject(LogContext.Current.ModuleLogs(ModuleContext.ModuleId));
                 json = json.Replace("<script>", "*script*");
                 json = json.Replace("</script>", "*/script*");
@@ -185,17 +185,17 @@ namespace Satrabel.OpenContent
                         RenderInitForm();
                         if (_renderinfo.ShowDemoData)
                         {
-                            _engine.RenderDemoData(Page);
+                            _engine.RenderDemoData(_pageContext);
                         }
                     }
                     else if (_renderinfo.Template != null)
                     {
-                        _engine.RenderDemoData(Page);
+                        _engine.RenderDemoData(_pageContext);
                     }
                 }
                 else if (_renderinfo.Template != null)
                 {
-                    _engine.RenderDemoData(Page);
+                    _engine.RenderDemoData(_pageContext);
                 }
             }
         }
@@ -206,10 +206,10 @@ namespace Satrabel.OpenContent
             //ti.RenderInitForm();
             pInit.Visible = true;
             //App.Services.ClientResourceManager.RegisterStyleSheet(page, cssfilename.UrlFilePath);
-            App.Services.ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/js/vue/vue.js");
+            _pageContext.RegisterScript("~/DesktopModules/OpenContent/js/vue/vue.js");
 
-            ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/lama/dist/js/chunk-vendors.js", FileOrder.Js.DefaultPriority + 10);
-            ClientResourceManager.RegisterScript(Page, "~/DesktopModules/OpenContent/lama/dist/js/init.js", FileOrder.Js.DefaultPriority + 10);
+            _pageContext.RegisterScript("~/DesktopModules/OpenContent/lama/dist/js/chunk-vendors.js", FileOrder.Js.DefaultPriority + 10);
+            _pageContext.RegisterScript("~/DesktopModules/OpenContent/lama/dist/js/init.js", FileOrder.Js.DefaultPriority + 10);
 
 
         }

@@ -13,6 +13,7 @@ using DotNetNuke.Services.Localization;
 using DotNetNuke.UI.Modules;
 using DotNetNuke.Web.Client.ClientResourceManagement;
 using Satrabel.OpenContent.Components.AppDefinitions;
+using Satrabel.OpenContent.Components.Render;
 
 
 namespace Satrabel.OpenContent.Components
@@ -94,7 +95,7 @@ namespace Satrabel.OpenContent.Components
             return new OpenContentSettings(ComponentSettingsInfo.Create(module.Settings, null));
         }
 
-        internal static void RegisterScript(Page page, string sourceFolder, string jsfilename, int jsOrder, string provider = "DnnBodyProvider")
+        internal static void RegisterScript(IPageContext page, string sourceFolder, string jsfilename, int jsOrder, string provider = "DnnBodyProvider")
         {
             if (page == null) return;
             if (string.IsNullOrEmpty(jsfilename)) return;
@@ -108,7 +109,7 @@ namespace Satrabel.OpenContent.Components
                 var file = new FileUri(jsfilename);
                 jsfilename = file.UrlFilePath;
             }
-            ClientResourceManager.RegisterScript(page, jsfilename, jsOrder, provider);
+            page.RegisterScript( jsfilename, jsOrder, provider);
         }
 
         // for openform compatibility

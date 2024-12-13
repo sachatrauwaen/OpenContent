@@ -90,15 +90,15 @@ namespace Satrabel.OpenContent.Components.Dnn
             
         }
 
-        public static void AddEditorRole(ModuleInstanceContext ModuleContext)
+        public static void AddEditorRole(ModuleInfo module)
         {
-            if (ModuleContext.PortalSettings.UserId > 0)
+            if (PortalSettings.Current.UserId > 0)
             {
-                var roleIdStr = App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetEditorRoleId();
+                var roleIdStr = App.Services.CreateGlobalSettingsRepository(module.PortalID).GetEditorRoleId();
                 if (!string.IsNullOrEmpty(roleIdStr))
                 {
                     int roleId = int.Parse(roleIdStr);
-                    var objModule = ModuleContext.Configuration;
+                    var objModule = module;
                     //todo: probable DNN bug.  objModule.ModulePermissions doesn't return correct permissions for attached multi-lingual modules
                     //don't alter permissions of modules that are non-default language and that are attached
                     var permExist = objModule.ModulePermissions.Where(tp => tp.RoleID == roleId).Any();
