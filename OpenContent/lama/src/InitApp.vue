@@ -18,11 +18,11 @@
                     <!--<p style="text-align:left">Choose a template</p>-->
                     <div class="oc-template" v-for="(val) in templates.slice(0, 23)" :key="val.Value">
                         <a class="oc-template-link" :value="val.Value" @click.prevent="selectTemplate(val.Value)" href="#" :title="val.Text" @mouseover="tooltip = val.Value" @mouseleave="tooltip = null">
-                            <div>{{val.Text}} <span class="oc-template-info-icon" v-if="val.ImageUrl || val.Description">?</span></div>                            
+                            {{val.Text}} <span class="oc-template-info-icon" v-if="val.ImageUrl || val.Description">?</span>                            
                         </a>
                         <div class="oc-template-info" v-if="tooltip == val.Value && (val.ImageUrl || val.Description)">
-                            <div v-if="val.ImageUrl" style="background-color:#fff;" ><img style="max-width: 100%; height: auto;" :src="val.ImageUrl" /></div>
-                            <div v-if="val.Description" style="color:#fff">{{val.Description}}</div>
+                            <div class="oc-template-info-img"v-if="val.ImageUrl"><img style="max-width: 100%; height: auto;" :src="val.ImageUrl" /></div>
+                            <div class="oc-template-info-text" v-if="val.Description">{{val.Description}}</div>
                         </div>
                     </div>
                     <div class="oc-template" v-if="templates.length > 2">
@@ -41,7 +41,7 @@
                             <span v-if="currentTemplate && (currentTemplate.ImageUrl || currentTemplate.Description)" style="margin-left:5px;background-color:#555555;padding:10px;line-height:16px;font-size:14px;color:#fff;border-radius:3px;" @mouseover="tooltip = Template" @mouseleave="tooltip = null" >?</span>
                             <div v-if="currentTemplate && tooltip == currentTemplate.Value && (currentTemplate.ImageUrl || currentTemplate.Description)" style="position: absolute; right: 10px; top: 40px; z-index: 999; width: 200px;  background-color: #3D3C3C; padding: 0.3em 0.5em;border:1px solid #eee;">
                                 <div v-if="currentTemplate.ImageUrl" style="background-color:#fff;"><img style="max-width: 100%; height: auto;" :src="currentTemplate.ImageUrl" /></div>
-                                <div v-if="currentTemplate.Description" style="color:#fff">{{currentTemplate.Description}}</div>
+                                <div v-if="currentTemplate.Description" >{{currentTemplate.Description}}</div>
                             </div>
                         </div>
                     </fieldset>
