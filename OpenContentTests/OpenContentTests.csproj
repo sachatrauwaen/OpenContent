@@ -38,6 +38,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DotNetNuke">
+      <HintPath>..\ref\dnn740\DotNetNuke.dll</HintPath>
+    </Reference>
     <Reference Include="DotNetNuke.Instrumentation">
       <HintPath>..\ref\dnn740\DotNetNuke.Instrumentation.dll</HintPath>
     </Reference>

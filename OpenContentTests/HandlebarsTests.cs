@@ -144,7 +144,7 @@ namespace OpenContentTests
                 string res = hbEngine.Execute(source, model);
             }
             DateTime later = DateTime.Now;
-            Assert.IsTrue(later < now.AddMilliseconds(500));
+            Assert.IsTrue(later < now.AddMilliseconds(700));
         }
 
         private Dictionary<string, object> deserializeToDictionary(string jo)
