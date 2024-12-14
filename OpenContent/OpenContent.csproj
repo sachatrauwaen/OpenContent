@@ -417,6 +417,7 @@
     <Compile Include="CloneModule.ascx.designer.cs">
       <DependentUpon>CloneModule.ascx</DependentUpon>
     </Compile>
+    <Compile Include="Components\ViewControl.cs" />
     <Compile Include="EditNotifications.ascx.cs">
       <DependentUpon>EditNotifications.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
