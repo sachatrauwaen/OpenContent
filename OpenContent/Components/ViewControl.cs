@@ -93,7 +93,7 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
-        public Control Control => throw new NotImplementedException();
+        public Control Control { get { return null; } }
 
 
 
@@ -119,6 +119,7 @@ namespace Satrabel.OpenContent.Components
             set
             {
                 this.localResourceFile = value;
+
             }
         }
     }
