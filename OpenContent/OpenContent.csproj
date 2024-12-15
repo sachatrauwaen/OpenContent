@@ -1252,6 +1252,7 @@
     <Content Include="js\oc.vue.js" />
     <Content Include="js\vue\vue.js" />
     <Content Include="js\vue\vue.min.js" />
+    <Content Include="js\wysihtml\parser_rules\advanced_opencontent.js" />
     <Content Include="lama\.gitignore" />
     <Content Include="lama\babel.config.js" />
     <Content Include="lama\dist\favicon.ico" />

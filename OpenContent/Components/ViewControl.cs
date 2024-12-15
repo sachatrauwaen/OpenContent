@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using DotNetNuke.Services.Localization;
 using System.IO;
 using System.Web.UI;
+using System.Web;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -33,18 +34,14 @@ namespace Satrabel.OpenContent.Components
         {
             get
             {
-
                 var _engine = new RenderEngine(OpenContentModuleConfig.Create(ModuleContext.Configuration, PortalSettings.Current), new DnnRenderContext(ModuleContext), LocalResourceFile);
-                //_engine.QueryString = Page.Request.QueryString;
-                //if (Page.Request.QueryString["id"] != null)
-                //{
-                //    _engine.ItemId = Page.Request.QueryString["id"];
-                //}
-
-
+                _engine.QueryString = HttpContext.Current.Request.QueryString;
+                if (HttpContext.Current.Request.QueryString["id"] != null)
+                {
+                    _engine.ItemId = HttpContext.Current.Request.QueryString["id"];
+                }
                 var actions = new ModuleActionCollection();
                 var actionDefinitions = _engine.GetMenuActions();
-
                 foreach (var item in actionDefinitions)
                 {
                     actions.Add(ModuleContext.GetNextActionID(),
