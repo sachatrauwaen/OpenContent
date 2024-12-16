@@ -89,9 +89,10 @@ namespace Satrabel.OpenContent
                 module = moduleClone;
             }
             var engine = new RenderEngine(OpenContentModuleConfig.Create(module, PortalSettings));
+            var pageContext = new WebFormsPageContext(Page, this);
             try
             {
-                engine.Render(Page);
+                engine.Render(pageContext);
             }
             catch (TemplateException ex)
             {
@@ -112,7 +113,7 @@ namespace Satrabel.OpenContent
                 Controls.Add(lit);
                 try
                 {
-                    engine.IncludeResourses(Page, this);
+                    engine.IncludeResourses(pageContext);
                 }
                 catch (Exception ex)
                 {

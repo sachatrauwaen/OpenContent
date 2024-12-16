@@ -15,6 +15,7 @@ using DotNetNuke.Common;
 using Satrabel.OpenContent.Components;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Lucene;
+using Satrabel.OpenContent.Components.Render;
 
 #endregion
 
@@ -25,13 +26,14 @@ namespace Satrabel.OpenContent
         protected override void OnInit(EventArgs e)
         {
             base.OnInit(e);
+            var pageContext = new WebFormsPageContext(Page, this);
             hlCancel.NavigateUrl = Globals.NavigateURL();
             cmdSave.NavigateUrl = Globals.NavigateURL();
             var bootstrap = App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetEditLayout() != AlpacaLayoutEnum.DNN;
             bool loadBootstrap = bootstrap && App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetLoadBootstrap();
             bool loadGlyphicons = bootstrap && App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetLoadGlyphicons();
             OpenContentSettings settings = this.OpenContentSettings();
-            AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext.PortalId, "DeskTopModules/OpenContent", "notifications");
+            AlpacaEngine alpaca = new AlpacaEngine(pageContext, ModuleContext.PortalId, "DeskTopModules/OpenContent", "notifications");
             //AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, "", "");
             alpaca.RegisterAll(bootstrap, loadBootstrap, loadGlyphicons, false);
             string itemId = null;

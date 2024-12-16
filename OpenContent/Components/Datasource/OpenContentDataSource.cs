@@ -27,7 +27,7 @@ namespace Satrabel.OpenContent.Components.Datasource
         public virtual JArray GetVersions(DataSourceContext context, IDataItem item)
         {
             var content = (OpenContentInfo)item.Item;
-            if (!string.IsNullOrEmpty(content.VersionsJson))
+            if (content != null && !string.IsNullOrEmpty(content.VersionsJson))
             {
                 var verLst = new JArray();
                 foreach (var version in content.Versions)

@@ -14,6 +14,7 @@ using DotNetNuke.Entities.Modules;
 using DotNetNuke.Common;
 using Satrabel.OpenContent.Components;
 using Satrabel.OpenContent.Components.Alpaca;
+using Satrabel.OpenContent.Components.Render;
 
 #endregion
 
@@ -24,6 +25,7 @@ namespace Satrabel.OpenContent
         protected override void OnInit(EventArgs e)
         {
             base.OnInit(e);
+            var pageContext = new WebFormsPageContext(Page, this);
             var bootstrap = App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetEditLayout() != AlpacaLayoutEnum.DNN;
             bool loadBootstrap = bootstrap && App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetLoadBootstrap();
             bool loadGlyphicons = bootstrap && App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetLoadGlyphicons();
@@ -38,7 +40,7 @@ namespace Satrabel.OpenContent
 
             string prefix = (string.IsNullOrEmpty(settings.Template.Collection) || settings.Template.Collection == "Items") ? "" : settings.Template.Collection;
 
-            AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext.PortalId, settings.Template.ManifestFolderUri.FolderPath, prefix);
+            AlpacaEngine alpaca = new AlpacaEngine(pageContext, ModuleContext.PortalId, settings.Template.ManifestFolderUri.FolderPath, prefix);
             alpaca.RegisterAll(bootstrap, loadBootstrap, loadGlyphicons, builderV2);
             string itemId = Request.QueryString["id"];
             AlpacaContext = new AlpacaContext(PortalId, ModuleId, itemId,  ScopeWrapper.ClientID, hlCancel.ClientID, cmdSave.ClientID, cmdCopy.ClientID, hlDelete.ClientID, ddlVersions.ClientID);

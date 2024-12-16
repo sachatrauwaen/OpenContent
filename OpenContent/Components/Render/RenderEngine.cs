@@ -77,7 +77,47 @@ namespace Satrabel.OpenContent.Components.Render
         public string MetaDescription { get; set; }
         public string MetaOther { get; set; }
 
-        public void Render(Page page)
+
+        public void RenderWithTryCatch(IPageContext page)
+        {
+            try
+            {
+                Render(page);
+                
+            }
+            catch (TemplateException ex)
+            {
+                RenderTemplateException(page, ex);
+            }
+            catch (InvalidJsonFileException ex)
+            {
+                RenderJsonException(page, ex);
+            }
+            catch (NotAuthorizedException ex)
+            {
+                if (_module.ViewModule.HasEditRightsOnModule())
+                    RenderHttpException(page, ex);
+                else
+                    throw;
+            }
+            catch (Exception ex)
+            {
+                LoggingUtils.ProcessModuleLoadException(page, _module.ViewModule.ModuleInfo, ex);
+            }
+            if (_renderinfo.Template != null && !string.IsNullOrEmpty(_renderinfo.OutputString))
+            {
+                try
+                {
+                    this.IncludeResourses(page);
+                }
+                catch (Exception ex)
+                {
+                    page.AddModuleMessage(ex.Message, DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
+                }
+            }
+        }
+
+        public void Render(IPageContext page)
         {
             //start rendering           
             if (_module.Settings.Template != null)
@@ -157,7 +197,7 @@ namespace Satrabel.OpenContent.Components.Render
             }
         }
 
-        public void RenderDemoData(Page page)
+        public void RenderDemoData(IPageContext page)
         {
             TemplateManifest template = _renderinfo.Template;
             if (template != null && template.IsListTemplate)
@@ -196,7 +236,7 @@ namespace Satrabel.OpenContent.Components.Render
             }
         }
 
-        public void IncludeResourses(Page page, Control control)
+        public void IncludeResourses(IPageContext page)
         {
             IncludeResourses(page, _renderinfo);
             if (_renderinfo.Template != null && _renderinfo.Template.ClientSideData)
@@ -210,13 +250,12 @@ namespace Satrabel.OpenContent.Components.Render
                 {
                     var f = new FileUri(_renderinfo.Template.ManifestFolderUri.FolderPath, item.Value.Template);
                     string s = File.ReadAllText(f.PhysicalFilePath);
-                    var litPartial = new LiteralControl(s);
-                    control.Controls.Add(litPartial);
+                    page.AddLiteral(s);
                 }
             }
         }
 
-        private static void IncludeResourses(Page page, RenderInfo renderInfo)
+        private static void IncludeResourses(IPageContext page, RenderInfo renderInfo)
         {
             var template = renderInfo.Template;
             if (template != null)
@@ -228,7 +267,7 @@ namespace Satrabel.OpenContent.Components.Render
                         var cssfilename = new FileUri(Path.ChangeExtension(template.MainTemplateUri().FilePath, "css"));
                         if (cssfilename.FileExists)
                         {
-                            App.Services.ClientResourceManager.RegisterStyleSheet(page, cssfilename.UrlFilePath);
+                            page.RegisterStyleSheet(cssfilename.UrlFilePath);
                         }
                     }
                     var jsfilename = new FileUri(Path.ChangeExtension(template.MainTemplateUri().FilePath, "js"));
@@ -249,7 +288,7 @@ namespace Satrabel.OpenContent.Components.Render
             }
         }
 
-        public void IncludeMeta(Page page)
+        public void IncludeMeta(IPageContext page)
         {
             if (!string.IsNullOrEmpty(MetaTitle))
             {
@@ -257,11 +296,11 @@ namespace Satrabel.OpenContent.Components.Render
             }
             if (!string.IsNullOrEmpty(MetaDescription))
             {
-                PageUtils.SetPageDescription(page, MetaDescription);
+                page.SetPageDescription(MetaDescription);
             }
             if (!string.IsNullOrEmpty(MetaOther))
             {
-                PageUtils.SetPageMeta(page, MetaOther);
+                page.SetPageMeta(MetaOther);
             }
         }
 
@@ -480,7 +519,7 @@ namespace Satrabel.OpenContent.Components.Render
             }
             return writer.ToString();
         }
-        private string ExecuteTemplate(Page page, TemplateManifest templateManifest, TemplateFiles files, FileUri templateUri, object model)
+        private string ExecuteTemplate(IPageContext page, TemplateManifest templateManifest, TemplateFiles files, FileUri templateUri, object model)
         {
             var templateVirtualFolder = templateManifest.ManifestFolderUri.UrlFolder;
             string output;
@@ -516,7 +555,7 @@ namespace Satrabel.OpenContent.Components.Render
 
         #region Generate output
 
-        private string GenerateOutputDetail(Page page, TemplateManifest templateManifest, TemplateFiles files, JToken dataJson, string settingsJson)
+        private string GenerateOutputDetail(IPageContext page, TemplateManifest templateManifest, TemplateFiles files, JToken dataJson, string settingsJson)
         {
             // detail template
             if (!string.IsNullOrEmpty(files.Template))
@@ -571,7 +610,7 @@ namespace Satrabel.OpenContent.Components.Render
             }
         }
 
-        private string GenerateOutputSingle(Page page, FileUri template, JToken dataJson, string settingsJson, TemplateFiles files)
+        private string GenerateOutputSingle(IPageContext page, FileUri template, JToken dataJson, string settingsJson, TemplateFiles files)
         {
             if (template != null)
             {
@@ -627,7 +666,7 @@ namespace Satrabel.OpenContent.Components.Render
             }
         }
 
-        private string GenerateListOutput(Page page, TemplateManifest templateManifest, TemplateFiles files, IEnumerable<IDataItem> dataList, string settingsJson)
+        private string GenerateListOutput(IPageContext page, TemplateManifest templateManifest, TemplateFiles files, IEnumerable<IDataItem> dataList, string settingsJson)
         {
             if (!string.IsNullOrEmpty(files.Template))
             {
@@ -656,7 +695,7 @@ namespace Satrabel.OpenContent.Components.Render
                     return ExecuteTemplate(page, templateManifest, files, templateUri, model);
                 }
             }
-            
+
             return "";
         }
 
@@ -926,6 +965,53 @@ namespace Satrabel.OpenContent.Components.Render
 
             return actions;
         }
+
+        #region Exceptions
+        private void RenderTemplateException(IPageContext page, TemplateException ex)
+        {
+            page.AddModuleMessage("<p><b>Template error</b></p>" + ex.MessageAsHtml(), DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
+            //DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "<p><b>Template source</b></p>" + Server.HtmlEncode(ex.TemplateSource).Replace("\n", "<br/>"), DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.BlueInfo);
+            //DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "<p><b>Template model</b></p> <pre>" + JsonConvert.SerializeObject(ex.TemplateModel, Formatting.Indented)/*.Replace("\n", "<br/>")*/+"</pre>", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.BlueInfo);
+            //lErrorMessage.Text = ex.HtmlMessage;
+            //lErrorModel.Text = "<pre>" + JsonConvert.SerializeObject(ex.TemplateModel, Formatting.Indented)/*.Replace("\n", "<br/>")*/+"</pre>";
+            if (LogContext.IsLogActive)
+            {
+                var logKey = "Error in tempate";
+                LogContext.Log(_module.ModuleId, logKey, "Error", ex.MessageAsList());
+                LogContext.Log(_module.ModuleId, logKey, "Model", ex.TemplateModel);
+                LogContext.Log(_module.ModuleId, logKey, "Source", ex.TemplateSource);
+                //LogContext.Log(logKey, "StackTrace", ex.StackTrace);
+                //DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "<p>More info is availale on de browser console (F12)</p>", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.BlueInfo);
+            }
+            LoggingUtils.ProcessLogFileException(page, _module.ViewModule.ModuleInfo, ex);
+        }
+        private void RenderJsonException(IPageContext page, InvalidJsonFileException ex)
+        {
+            page.AddModuleMessage("<p><b>Json error</b></p>" + ex.MessageAsHtml(), DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
+            if (LogContext.IsLogActive)
+            {
+                var logKey = "Error in json";
+                LogContext.Log(_module.ModuleId, logKey, "Error", ex.MessageAsList());
+                LogContext.Log(_module.ModuleId, logKey, "Filename", ex.Filename);
+                //LogContext.Log(logKey, "StackTrace", ex.StackTrace);
+                //DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "<p>More info is availale on de browser console (F12)</p>", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.BlueInfo);
+            }
+            LoggingUtils.ProcessLogFileException(page, _module.ViewModule.ModuleInfo, ex);
+        }
+
+        private void RenderHttpException(IPageContext page, NotAuthorizedException ex)
+        {
+            page.AddModuleMessage("<p><b>Permission error</b></p>" + ex.Message.Replace("\n", "<br />"), DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.RedError);
+            if (LogContext.IsLogActive)
+            {
+                var logKey = "Error accessing data";
+                LogContext.Log(_module.ModuleId, logKey, "Error", ex.MessageAsList());
+                //LogContext.Log(logKey, "StackTrace", ex.StackTrace);
+                //DotNetNuke.UI.Skins.Skin.AddModuleMessage(this, "<p>More info is availale on de browser console (F12)</p>", DotNetNuke.UI.Skins.Controls.ModuleMessage.ModuleMessageType.BlueInfo);
+            }
+            LoggingUtils.ProcessLogFileException(page, _module.ViewModule.ModuleInfo, ex);
+        }
+        #endregion
 
     }
 

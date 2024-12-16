@@ -14,6 +14,7 @@ using DotNetNuke.Entities.Modules;
 using DotNetNuke.Common;
 using Satrabel.OpenContent.Components;
 using Satrabel.OpenContent.Components.Alpaca;
+using Satrabel.OpenContent.Components.Render;
 
 #endregion
 
@@ -24,6 +25,7 @@ namespace Satrabel.OpenContent
         protected override void OnInit(EventArgs e)
         {
             base.OnInit(e);
+            var pageContext = new WebFormsPageContext(Page, this);
             hlCancel.NavigateUrl = Globals.NavigateURL();
             cmdSave.NavigateUrl = Globals.NavigateURL();
             bool bootstrap = App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetEditLayout() != AlpacaLayoutEnum.DNN;
@@ -32,7 +34,7 @@ namespace Satrabel.OpenContent
             bool builderV2 = App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).IsBuilderV2();
             string apikey = App.Services.CreateGlobalSettingsRepository(PortalId).GetGoogleApiKey();
             OpenContentSettings settings = this.OpenContentSettings();
-            AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext.PortalId, "DeskTopModules/OpenContent", "formsettings");
+            AlpacaEngine alpaca = new AlpacaEngine(pageContext, ModuleContext.PortalId, "DeskTopModules/OpenContent", "formsettings");
             //AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, "", "");
             alpaca.RegisterAll(bootstrap, loadBootstrap, loadGlyphicons, builderV2);
             string itemId = null;

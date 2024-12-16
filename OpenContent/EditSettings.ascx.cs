@@ -15,6 +15,7 @@ using DotNetNuke.Common;
 using Satrabel.OpenContent.Components;
 using Satrabel.OpenContent.Components.Alpaca;
 using DotNetNuke.Services.Localization;
+using Satrabel.OpenContent.Components.Render;
 
 #endregion
 
@@ -29,13 +30,14 @@ namespace Satrabel.OpenContent
         protected override void OnInit(EventArgs e)
         {
             base.OnInit(e);
+            var pageContext = new WebFormsPageContext(Page, this);
             hlCancel.NavigateUrl = Globals.NavigateURL();
             cmdSaveClose.NavigateUrl = Globals.NavigateURL();
 
             var settings = ModuleContext.OpenContentSettings();
             if (settings.TemplateAvailable)
             {
-                AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext.PortalId, settings.TemplateDir.FolderPath, settings.TemplateKey.ShortKey);
+                AlpacaEngine alpaca = new AlpacaEngine(pageContext, ModuleContext.PortalId, settings.TemplateDir.FolderPath, settings.TemplateKey.ShortKey);
                 alpaca.RegisterAll(false, false, false, false);
             }
         }

@@ -88,6 +88,12 @@ namespace Satrabel.OpenContent.Components.Logging
             App.Services.Logger.Error(friendlyMessage);
         }
 
+        public static void ProcessLogFileException(IPageContext page, ModuleInfo module, Exception exc)
+        {
+            string friendlyMessage = PrepareErrorMessage(module, exc);
+            App.Services.Logger.Error(friendlyMessage);
+        }
+
         public static void ProcessApiLoadException(DnnApiController ctrl, Exception exc)
         {
             string friendlyMessage = PrepareErrorMessage(ctrl, exc);
@@ -108,6 +114,12 @@ namespace Satrabel.OpenContent.Components.Logging
         {
             string friendlyMessage = PrepareErrorMessage(module, exc);
             DotNetNuke.Services.Exceptions.Exceptions.ProcessModuleLoadException(friendlyMessage, ctrl, exc);
+        }
+
+        public static void ProcessModuleLoadException(IPageContext page, ModuleInfo module, Exception exc)
+        {
+            string friendlyMessage = PrepareErrorMessage(module, exc);
+            page.ProcessModuleLoadException(friendlyMessage, exc);
         }
         public static string HttpRequestLogInfo(HttpContext context)
         {

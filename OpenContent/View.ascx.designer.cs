@@ -15,15 +15,6 @@ namespace Satrabel.OpenContent
     {
 
         /// <summary>
-        /// Contrôle TemplateInitControl.
-        /// </summary>
-        /// <remarks>
-        /// Champ généré automatiquement.
-        /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
-        /// </remarks>
-        protected global::System.Web.UI.UserControl TemplateInitControl;
-
-        /// <summary>
         /// Contrôle pInit.
         /// </summary>
         /// <remarks>
@@ -40,14 +31,5 @@ namespace Satrabel.OpenContent
         /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Panel pVue2;
-
-        /// <summary>
-        /// Contrôle pVue.
-        /// </summary>
-        /// <remarks>
-        /// Champ généré automatiquement.
-        /// Pour modifier, déplacez la déclaration de champ du fichier de concepteur dans le fichier code-behind.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pVue;
     }
 }
