@@ -86,12 +86,13 @@
                         
                         <div v-if="currentTab && tabModuleId">
                             <div class="oc-template" v-for="(val) in templates.slice(0, 23)" :key="val.Value">
-                                <a style="height:auto;" :value="val.Value" @click.prevent="selectTemplate(val.Value)" href="#" :title="val.Text" @mouseover="tooltip = val.Value" @mouseleave="tooltip = null">
-                                    <div>{{val.Text}} <span v-if="val.ImageUrl || val.Description" style="background-color:#555555;padding:2px 4px;line-height:16px;font-size:10px;">?</span></div>
+
+                                <a class="oc-template-link" :value="val.Value" @click.prevent="selectTemplate(val.Value)" href="#" :title="val.Text" @mouseover="tooltip = val.Value" @mouseleave="tooltip = null">
+                                    {{val.Text}} <span class="oc-template-info-icon" v-if="val.ImageUrl || val.Description">?</span>                            
                                 </a>
-                                <div v-if="tooltip == val.Value && (val.ImageUrl || val.Description)" style="position: absolute; left: 10px; top: 40px; z-index: 999; width: 200px;  background-color: #3D3C3C; padding: 0.3em 0.5em;border:1px solid #eee;">
-                                    <div v-if="val.ImageUrl" style="background-color:#fff;"><img style="max-width: 100%; height: auto;" :src="val.ImageUrl" /></div>
-                                    <div v-if="val.Description" style="color:#fff">{{val.Description}}</div>
+                                <div class="oc-template-info" v-if="tooltip == val.Value && (val.ImageUrl || val.Description)">
+                                    <div class="oc-template-info-img"v-if="val.ImageUrl"><img style="max-width: 100%; height: auto;" :src="val.ImageUrl" /></div>
+                                    <div class="oc-template-info-text" v-if="val.Description">{{val.Description}}</div>
                                 </div>
                             </div>
                         </div>
