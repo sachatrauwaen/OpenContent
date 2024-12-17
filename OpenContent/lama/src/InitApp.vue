@@ -1,32 +1,32 @@
 <template>
     <div id="app">
-        <div class="oc-view" v-if="step==1" v-cloak>
-
-            <div class="octabs">
-                <a href="#" @click.prevent="goBasic" :class="{advanced:true, active: tab==1 }">{{Resource("lAddNewContent")}}</a>
+        <div class="oc-view oc-select-template" v-if="step==1" v-cloak>
+            <div class="oc-tabs">
+                <div class="oc-tab-wrap oc-tab-basic">
+                    <a class="oc-tab-link" href="#" @click.prevent="goBasic" :class="{advanced:true, active: tab==1 }">{{Resource("lAddNewContent")}}</a>
+                </div>
+                <div class="oc-tab-wrap oc-tab-shared">
+                    <a class="oc-tab-link" href="#" @click.prevent="goShared" :class="{advanced:true, active: tab==2 }">{{Resource("lUseExistingContent")}}</a>
+                </div>
+                <div class="oc-tab-wrap oc-tab-new-template">
+                    <a class="oc-tab-link" href="#" @click.prevent="goCreate" :class="{advanced:true, active: tab==3 }">{{Resource("CreateNewTemplate")}}</a>
+                </div>
             </div>
-            <div class="octabs">
-                <a href="#" @click.prevent="goShared" :class="{advanced:true, active: tab==2 }">{{Resource("lUseExistingContent")}}</a>
-            </div>
-            <div class="octabs">
-                <a href="#" @click.prevent="goCreate" :class="{advanced:true, active: tab==3 }">{{Resource("CreateNewTemplate")}}</a>
-            </div>
-            <div style="clear:both"></div>
             
-            <div v-if="tab==1">
-                <div v-if="!basicAll">
+            <div class="oc-tab-content oc-tab-basic-content" v-if="tab==1">
+                <div class="oc-templates"  v-if="!basicAll">
                     <!--<p style="text-align:left">Choose a template</p>-->
-                    <div class="octemplate" v-for="(val) in templates.slice(0, 23)" :key="val.Value">
-                        <a style="height:auto;" :value="val.Value" @click.prevent="selectTemplate(val.Value)" href="#" :title="val.Text" @mouseover="tooltip = val.Value" @mouseleave="tooltip = null">
-                            <div>{{val.Text}} <span v-if="val.ImageUrl || val.Description" style="background-color:#555555;padding:2px 4px;line-height:16px;font-size:10px;">?</span></div>                            
+                    <div class="oc-template" v-for="(val) in templates.slice(0, 23)" :key="val.Value">
+                        <a class="oc-template-link" :value="val.Value" @click.prevent="selectTemplate(val.Value)" href="#" :title="val.Text" @mouseover="tooltip = val.Value" @mouseleave="tooltip = null">
+                            {{val.Text}} <span class="oc-template-info-icon" v-if="val.ImageUrl || val.Description">?</span>                            
                         </a>
-                        <div v-if="tooltip == val.Value && (val.ImageUrl || val.Description)" style="position: absolute; left: 10px; top: 40px; z-index: 999; width: 200px;  background-color: #3D3C3C; padding: 0.3em 0.5em;border:1px solid #eee;">
-                            <div v-if="val.ImageUrl" style="background-color:#fff;" ><img style="max-width: 100%; height: auto;" :src="val.ImageUrl" /></div>
-                            <div v-if="val.Description" style="color:#fff">{{val.Description}}</div>
+                        <div class="oc-template-info" v-if="tooltip == val.Value && (val.ImageUrl || val.Description)">
+                            <div class="oc-template-info-img"v-if="val.ImageUrl"><img style="max-width: 100%; height: auto;" :src="val.ImageUrl" /></div>
+                            <div class="oc-template-info-text" v-if="val.Description">{{val.Description}}</div>
                         </div>
                     </div>
-                    <div class="octemplate" v-if="templates.length > 2">
-                        <a style="height:auto;"  @click.prevent="goBasicAll" href="#" class="advanced" >
+                    <div class="oc-template" v-if="templates.length > 2">
+                        <a class="oc-template-link advanced" @click.prevent="goBasicAll" href="#">
                             <div>{{Resource("More")}} </div>                            
                         </a>                        
                     </div>
@@ -41,7 +41,7 @@
                             <span v-if="currentTemplate && (currentTemplate.ImageUrl || currentTemplate.Description)" style="margin-left:5px;background-color:#555555;padding:10px;line-height:16px;font-size:14px;color:#fff;border-radius:3px;" @mouseover="tooltip = Template" @mouseleave="tooltip = null" >?</span>
                             <div v-if="currentTemplate && tooltip == currentTemplate.Value && (currentTemplate.ImageUrl || currentTemplate.Description)" style="position: absolute; right: 10px; top: 40px; z-index: 999; width: 200px;  background-color: #3D3C3C; padding: 0.3em 0.5em;border:1px solid #eee;">
                                 <div v-if="currentTemplate.ImageUrl" style="background-color:#fff;"><img style="max-width: 100%; height: auto;" :src="currentTemplate.ImageUrl" /></div>
-                                <div v-if="currentTemplate.Description" style="color:#fff">{{currentTemplate.Description}}</div>
+                                <div v-if="currentTemplate.Description" >{{currentTemplate.Description}}</div>
                             </div>
                         </div>
                     </fieldset>
@@ -52,7 +52,7 @@
                 </ul>
                 </div>
             </div>
-            <div v-if="tab==2">
+            <div class="oc-tab-content oc-tab-shared-content"v-if="tab==2">
                 <div class="dnnForm" style="max-width:600px;">
                     <fieldset>
                         <div v-if="UseContent=='1'" class="dnnFormItem">
@@ -85,13 +85,14 @@
                         </div>
                         
                         <div v-if="currentTab && tabModuleId">
-                            <div class="octemplate" v-for="(val) in templates.slice(0, 23)" :key="val.Value">
-                                <a style="height:auto;" :value="val.Value" @click.prevent="selectTemplate(val.Value)" href="#" :title="val.Text" @mouseover="tooltip = val.Value" @mouseleave="tooltip = null">
-                                    <div>{{val.Text}} <span v-if="val.ImageUrl || val.Description" style="background-color:#555555;padding:2px 4px;line-height:16px;font-size:10px;">?</span></div>
+                            <div class="oc-template" v-for="(val) in templates.slice(0, 23)" :key="val.Value">
+
+                                <a class="oc-template-link" :value="val.Value" @click.prevent="selectTemplate(val.Value)" href="#" :title="val.Text" @mouseover="tooltip = val.Value" @mouseleave="tooltip = null">
+                                    {{val.Text}} <span class="oc-template-info-icon" v-if="val.ImageUrl || val.Description">?</span>                            
                                 </a>
-                                <div v-if="tooltip == val.Value && (val.ImageUrl || val.Description)" style="position: absolute; left: 10px; top: 40px; z-index: 999; width: 200px;  background-color: #3D3C3C; padding: 0.3em 0.5em;border:1px solid #eee;">
-                                    <div v-if="val.ImageUrl" style="background-color:#fff;"><img style="max-width: 100%; height: auto;" :src="val.ImageUrl" /></div>
-                                    <div v-if="val.Description" style="color:#fff">{{val.Description}}</div>
+                                <div class="oc-template-info" v-if="tooltip == val.Value && (val.ImageUrl || val.Description)">
+                                    <div class="oc-template-info-img"v-if="val.ImageUrl"><img style="max-width: 100%; height: auto;" :src="val.ImageUrl" /></div>
+                                    <div class="oc-template-info-text" v-if="val.Description">{{val.Description}}</div>
                                 </div>
                             </div>
                         </div>
@@ -104,12 +105,12 @@
                     </ul>-->
                 </div>
             </div>
-            <!--<div class="octemplate">
+            <!--<div class="oc-template">
                 <a href="#" @click.prevent="goAdvanced" class="advanced">{{Resource("Advanced")}}</a>
             </div>-->
             <div style="clear:both"></div>
         
-            <div v-if="tab==3" class="dnnForm" style="max-width:600px;">
+            <div class="oc-tab-content oc-tab-new-template-content dnnForm" v-if="tab==3">
                 <fieldset>
                     <div class="dnnFormItem">
                         <label class="dnnLabel">{{ Resource("lFrom") }}</label>
