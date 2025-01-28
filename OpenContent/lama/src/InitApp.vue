@@ -383,6 +383,7 @@
             },
             goBasicAll: function () {
                 this.basicAll = true;
+                this.existingTemplateChange();
             },
             goCreate: function () {
                 this.createTemplate = true;
@@ -409,7 +410,7 @@
                 this.tabModuleId = 0;
                 this.Template = '';
                 var self = this;
-                this.apiGet('GetTemplates', { advanced: this.createTemplate }, function (data) {
+                this.apiGet('GetTemplates', { advanced: this.basicAll }, function (data) {
                     self.templates = data;
                 });
             },

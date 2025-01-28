@@ -92,7 +92,11 @@ namespace Satrabel.OpenContent.Components.Datasource
                         if (j.Type == JTokenType.Array)
                         {
                             item.Data["Profile"][def.PropertyName] = j;
-                        }                        
+                        }
+                        else if (j.Type == JTokenType.Object)
+                        {
+                            item.Data["Profile"][def.PropertyName] = j;
+                        }
                         else
                         {
                             item.Data["Profile"][def.PropertyName] = def.PropertyValue;

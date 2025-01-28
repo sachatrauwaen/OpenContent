@@ -259,7 +259,7 @@ namespace Satrabel.OpenContent
             var zipFile = new System.IO.FileInfo(zipFileName);
             FileStream strmZipFile = null;
             
-            //Log.StartJob(Util.WRITER_CreatingPackage);
+            //Log.StartJob(Util.WRITER_CreatingPackage);    
             try
             {
                 //Log.AddInfo(string.Format(Util.WRITER_CreateArchive, ZipFileShortName));

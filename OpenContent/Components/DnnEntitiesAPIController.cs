@@ -294,7 +294,7 @@ namespace Satrabel.OpenContent.Components
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         [HttpGet]
-        public HttpResponseMessage FilesLookupSecure(string q, string folder, bool secure, string filter = "")
+        public HttpResponseMessage FilesLookupSecure(string q, string folder, bool secure, string filter = "", string itemKey = "", string itemId = "")
         {
             var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
             var manifest = module.Settings.Template.Manifest;
@@ -307,16 +307,42 @@ namespace Satrabel.OpenContent.Components
                 //var module = OpenContentModuleConfig.Create(ActiveModule, PortalSettings);
                 var folderManager = FolderManager.Instance;
                 string filesFolder = "OpenContent/" + (secure ? "Secure" : "") + "Files/" + module.DataModule.ModuleId;
-                //if (module.Settings.Manifest.DeleteFiles)
-                //{
-                //    if (!string.IsNullOrEmpty(itemKey))
-                //    {
-                //        filesFolder += "/" + itemKey;
-                //    }
-                //}
+                if (module.Settings.Manifest.DeleteFiles)
+                {
+                    if (!string.IsNullOrEmpty(itemKey))
+                    {
+                        filesFolder += "/" + itemKey;
+                    }
+                }
                 if (!string.IsNullOrEmpty(folder))
                 {
                     filesFolder = folder;
+
+                    if (folder.Contains("[ITEMUSERFOLDER]"))
+                    {
+                        if (!string.IsNullOrEmpty(itemId))
+                        {
+                            int userId;
+                            if (int.TryParse(itemId, out userId))
+                            {
+                                var user = DotNetNuke.Entities.Users.UserController.GetUserById(PortalSettings.PortalId, userId);
+                                if (user != null)
+                                {
+                                    var userFolder = folderManager.GetUserFolder(user).FolderPath;
+                                    filesFolder = filesFolder.Replace("[ITEMUSERFOLDER]", userFolder);
+                                }
+                            }
+                        }
+                    }
+                    if (folder.Contains("[USERFOLDER]"))
+                    {
+                        if (PortalSettings.UserId > -1)
+                        {
+                            var userFolder = folderManager.GetUserFolder(PortalSettings.UserInfo).FolderPath;
+                            filesFolder = filesFolder.Replace("[USERFOLDER]", userFolder);
+                        }
+                    }
+
                 }
 
 

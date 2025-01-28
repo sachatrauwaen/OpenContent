@@ -44,6 +44,9 @@ using DotNetNuke.Security;
 using Satrabel.OpenContent.Components.TemplateHelpers;
 using System.Runtime.Remoting.Contexts;
 using System.Xml.Linq;
+using System.Collections.Specialized;
+using System.Security.Policy;
+using System.Security.Cryptography;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -100,15 +103,18 @@ namespace Satrabel.OpenContent.Components
                 if (!string.IsNullOrEmpty(context.Request.Form["name"]))
                 {
                     var name = context.Request.Form["name"];
-                    if (name.IndexOf('?') > 0)
+                    if (name.IndexOf('?') > 0 && !name.StartsWith(@"/LinkClick.aspx", StringComparison.OrdinalIgnoreCase))
                     {
                         name = name.Substring(0, name.IndexOf('?'));
+                        fileName = CleanUpFileName(Path.GetFileName(name));
                     }
-                    fileName = CleanUpFileName(Path.GetFileName(name));
+                    else
+                    {
+                        fileName = name;
+                    }
                 }
 
                 bool secure = false;
-
                 if (!string.IsNullOrEmpty(context.Request.Form["secure"]))
                 {
                     secure = context.Request.Form["secure"] == "true";
@@ -157,7 +163,21 @@ namespace Satrabel.OpenContent.Components
                 IFolderInfo uploadFolderInfo = _folderManager.GetFolder(PortalSettings.PortalId, uploadfolder);
                 if (uploadFolderInfo != null && !string.IsNullOrEmpty(fileName))
                 {
-                    var oldfileInfo = _fileManager.GetFile(uploadFolderInfo, fileName);
+                    IFileInfo oldfileInfo = null;
+                    if (fileName.StartsWith(@"/LinkClick.aspx", StringComparison.OrdinalIgnoreCase) && fileName.Contains("fileticket="))
+                    {
+                        string queryString = fileName.Substring(fileName.IndexOf('?') + 1);
+                        NameValueCollection queryParameters = HttpUtility.ParseQueryString(queryString);
+                        int fileId = FileLinkClickController.Instance.GetFileIdFromLinkClick(queryParameters);
+                        if (fileId > 0)
+                        {
+                            oldfileInfo = _fileManager.GetFile(fileId);
+                        }
+                    }
+                    else
+                    {
+                        oldfileInfo = _fileManager.GetFile(uploadFolderInfo, fileName);
+                    }
                     if (oldfileInfo != null)
                     {
                         _fileManager.DeleteFile(oldfileInfo);
@@ -275,7 +295,7 @@ namespace Satrabel.OpenContent.Components
                     bool? overwrite = null;
                     bool secure = false;
                     string old = context.Request.Form["old"];
-                    if (old != null && old.IndexOf('?') > 0)
+                    if (old != null && old.IndexOf('?') > 0 & !old.StartsWith(@"/LinkClick.aspx", StringComparison.OrdinalIgnoreCase))
                     {
                         old = old.Substring(0, old.IndexOf('?'));
                     }
@@ -357,7 +377,21 @@ namespace Satrabel.OpenContent.Components
 
                     if (deleteOld && !string.IsNullOrEmpty(old))
                     {
-                        var oldfileInfo = _fileManager.GetFile(uploadFolderInfo, Path.GetFileName(old));
+                        IFileInfo oldfileInfo = null;
+                        if (old.StartsWith(@"/LinkClick.aspx", StringComparison.OrdinalIgnoreCase) && old.Contains("fileticket="))
+                        {
+                            string queryString = old.Substring(old.IndexOf('?') + 1);
+                            NameValueCollection queryParameters = HttpUtility.ParseQueryString(queryString);
+                            int fileId = FileLinkClickController.Instance.GetFileIdFromLinkClick(queryParameters);
+                            if (fileId > 0)
+                            {
+                                oldfileInfo = _fileManager.GetFile(fileId);
+                            }
+                        }
+                        else
+                        {
+                            oldfileInfo = _fileManager.GetFile(uploadFolderInfo, Path.GetFileName(old));
+                        }
                         if (oldfileInfo != null)
                         {
                             _fileManager.DeleteFile(oldfileInfo);

@@ -21,8 +21,6 @@
             <asp:DropDownList ID="rblAction" runat="server" AutoPostBack="true" OnSelectedIndexChanged="rblAction_SelectedIndexChanged">
                 <asp:ListItem Text="--select--"></asp:ListItem>
                 <asp:ListItem Text="Import from file" Value="importfile"></asp:ListItem>
-                <asp:ListItem Text="Import from web" Value="importweb"></asp:ListItem>
-                <asp:ListItem Text="Copy template" Value="copy"></asp:ListItem>
                 <asp:ListItem Text="Export" Value="exportfile"></asp:ListItem>
                 <asp:ListItem Text="Full Export" Value="fullexport"></asp:ListItem>
                 <asp:ListItem Text="Full Import" Value="fullimport"></asp:ListItem>

@@ -150,6 +150,10 @@ alpacaEngine.engine = function (config) {
         //connector.defaultCulture = self.defaultCulture;
         //connector.numberDecimalSeparator = self.numberDecimalSeparator;
         //connector.rootUrl = self.rootUrl;
+        if (config && config.context) {
+            // connector.itemKey = config.context.itemKey;
+            this.itemKey = config.context.itemKey;
+        }
         if (config.versions) {
             $.each(config.versions, function (i, item) {
                 $("#" + self.ddlVersions).append($('<option>', {
@@ -247,6 +251,8 @@ alpacaEngine.engine = function (config) {
         //var action = "Update"; //self.getUpdateAction();
         if (copy) {
             delete postData.id;
+        } else if (!postData.id) {
+            postData.form["_id"] = this.itemKey;
         }
 
         $.ajax({
@@ -527,11 +533,17 @@ alpacaEngine.engine = function (config) {
                     //    callback();
                     //};
 
+                    var itemId = '';
+                    if (self.data && self.data.id) {
+                        itemId = self.data.id;
+                    }
+
                     var postData = {
                         q: "*",
                         folder: config.query.folder ||"" /*self.options.uploadfolder*/,
                         secure: config.query.secure,
-                        itemKey: ""/*self.itemKey*/
+                        itemKey: "", /*self.itemKey*/
+                        itemId: itemId
                     };
                     $.ajax({
                         url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "FilesLookupSecure",
@@ -545,7 +557,7 @@ alpacaEngine.engine = function (config) {
                             if (ds) {
                                 $.each(ds, function (index, value) {
                                     files.push({
-                                        id: value.id,
+                                        id: value.value,
                                         url: value.url,
                                         filename: value.filename,
                                         folderId: "1",
@@ -654,6 +666,11 @@ alpacaEngine.engine = function (config) {
                 if (self.data && self.data.id) {
                     formData.append('itemId', self.data.id);
                 }
+
+                if (self.itemKey) {
+                    formData.append('itemKey', self.itemKey);
+                }
+
                 var url = self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile";
 
                 $.ajax({
@@ -693,6 +710,14 @@ alpacaEngine.engine = function (config) {
 
             if (typeof config.secure !== 'undefined')
                 formData.append('secure', config.secure);
+
+            if (self.data && self.data.id) {
+                formData.append('itemId', self.data.id);
+            }
+
+            if (self.itemKey) {
+                formData.append('itemKey', self.itemKey);
+            }
 
             var url = self.sf.getServiceRoot('OpenContent') + "FileUpload/DeleteFile";
             $.ajax({
