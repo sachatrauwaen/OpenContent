@@ -335,6 +335,7 @@ namespace Satrabel.OpenContent.Components
                     else if (!string.IsNullOrEmpty(context.Request.Form["uploadfolder"])) // custom upload folder
                     {
                         uploadfolder = context.Request.Form["uploadfolder"];
+                        uploadfolder = uploadfolder.TrimStart('/').TrimEnd('/');
                         if (uploadfolder.Contains("[ITEMUSERFOLDER]"))
                         {
                             if (!string.IsNullOrEmpty(context.Request.Form["itemId"]))
