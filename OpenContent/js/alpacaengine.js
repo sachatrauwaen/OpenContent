@@ -261,9 +261,9 @@ alpacaEngine.engine = function (config) {
         }).done(function (data) {
             if (data.isValid) {
                 var windowTop = parent; //needs to be assign to a varaible for Opera compatibility issues.
-                var popup = windowTop.jQuery("#iPopUp");
-                if (popup.length > 0 && windowTop.WebForm_GetElementById('dnn_ctr' + self.moduleId + '_View__UP')) {
-                    setTimeout(function () { windowTop.__doPostBack('dnn_ctr' + self.moduleId + '_View__UP', ''); }, 1);
+                var popup = windowTop.jQuery("#iPopUp"); // Enable Popups == on
+                if (popup.length > 0) { // && windowTop.document.getElementById('dnn_ctr' + self.moduleId) != null) {
+                    //setTimeout(function () { windowTop.__doPostBack('dnn_ctr' + self.moduleId + '_View__UP', ''); }, 1);
                     dnnModal.closePopUp(false, href);
                 }
                 else {
