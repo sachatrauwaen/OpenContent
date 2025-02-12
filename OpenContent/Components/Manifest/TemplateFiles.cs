@@ -63,6 +63,16 @@ namespace Satrabel.OpenContent.Components.Manifest
         [JsonProperty(PropertyName = "dnnSearchText")]
         public string DnnSearchText { get; set; }
 
+
+        /// <summary>
+        /// Gets or sets a value specifying the field(s) to use for document indexing in [DNN search].
+        /// </summary>
+        /// <value>
+        ///   You can use a Handlebars template.
+        /// </value>
+        [JsonProperty(PropertyName = "dnnSearchTags")]
+        public string DnnSearchTags { get; set; }
+
         /// <summary>
         /// Gets or sets a value specifying the url to use for the indexed document in [DNN search].
         /// </summary>

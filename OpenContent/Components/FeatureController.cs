@@ -37,6 +37,7 @@ using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.TemplateHelpers;
 using PortalInfo = DotNetNuke.Entities.Portals.PortalInfo;
 using System.Runtime.InteropServices;
+using System.Linq.Expressions;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -321,6 +322,35 @@ namespace Satrabel.OpenContent.Components
             {
                 retval.Description = retval.Body;
             }
+
+
+            // for tags we don't use a fallback as they have not been supported before
+            if (!string.IsNullOrEmpty(settings.Template?.Main?.DnnSearchTags))
+            {
+                var dicForHbs = JsonUtils.JsonToDictionary(contentData.ToString());
+                var hbEngine = new HandlebarsEngine();
+
+                string tagsString = hbEngine.ExecuteWithoutFaillure(settings.Template.Main.DnnSearchTags, dicForHbs, modInfo.ModuleTitle);
+                
+                try
+                {
+                    IEnumerable<string> tags;
+
+                    tags = tagsString
+                            .Split(',') // Split by comma
+                            .Select(tag => tag.Trim()); // Trim spaces
+
+                    retval.Tags = tags;
+                }
+                    
+                catch(Exception e)
+                {
+                    App.Services.Logger.Error("Error Parsing DNN Search Tags.", e);
+                }
+
+                
+            }
+          
 
             retval.Title = HttpUtility.HtmlDecode(retval.Title).StripHtml();
             retval.Body = HttpUtility.HtmlDecode(retval.Body).StripHtml();
