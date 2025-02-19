@@ -334,13 +334,18 @@ namespace Satrabel.OpenContent.Components
                 
                 try
                 {
-                    IEnumerable<string> tags;
+                     // Don't insert "empty" tags
+                     if (tagsString.Trim().Length > 0)
+                        {
+                            IEnumerable<string> tags;
 
-                    tags = tagsString
-                            .Split(',') // Split by comma
-                            .Select(tag => tag.Trim()); // Trim spaces
+                            tags = tagsString
+                                    .Split(',') // Split by comma
+                                    .Select(tag => tag.Trim()); // Trim spaces
 
-                    retval.Tags = tags;
+                            retval.Tags = tags;
+                        }
+                    
                 }
                     
                 catch(Exception e)
