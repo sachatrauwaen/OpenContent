@@ -19,7 +19,7 @@ namespace Satrabel.OpenContent.Components.Json
         {
             if (json == null) return true;
             return json.Children().All(child => child.IsEmpty());
-            return !json.HasValues;
+            // return !json.HasValues;
         }
 
         public static bool IsEmpty(this JToken jtoken)

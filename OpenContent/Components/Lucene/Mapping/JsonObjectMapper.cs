@@ -27,7 +27,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
         /// </summary>
         private static readonly JsonSerializer Serializer = new JsonSerializer()
         {
-            TypeNameAssemblyFormat = FormatterAssemblyStyle.Simple,
+            TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
             TypeNameHandling = TypeNameHandling.Auto,
         };
 
@@ -253,7 +253,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
                     Debug.Fail("Unsupported JToken: " + token);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 if(Debugger.IsAttached) Debugger.Break();
                 throw;

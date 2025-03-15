@@ -244,9 +244,8 @@ namespace Satrabel.OpenContent.Components.Datasource
         }
         private static DefaultDataItem CreateDefaultDataItem(JToken content)
         {
-            return new DefaultDataItem
+            return new DefaultDataItem(content["id"].ToString())
             {
-                Id = content["id"].ToString(),
                 Key = content["id"].ToString(),
                 Collection = "Items",
                 Title = content["title"]?.ToString(),

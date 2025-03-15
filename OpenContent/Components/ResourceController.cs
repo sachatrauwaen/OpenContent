@@ -32,6 +32,7 @@ using Satrabel.OpenContent.Components.Logging;
 using System.Text;
 using ClientDependency.Core.CompositeFiles;
 using System.Net.Http.Headers;
+using ClientDependency.Core;
 
 #endregion
 
@@ -61,7 +62,7 @@ namespace Satrabel.OpenContent.Components
                             {
                                 css.Append("/*").Append((cssfilename.FilePath)).AppendLine("*/");
                             }
-                            css.AppendLine(CssMin.CompressCSS(File.ReadAllText(cssfilename.PhysicalFilePath)));
+                            css.AppendLine(CssHelper.MinifyCss(File.ReadAllText(cssfilename.PhysicalFilePath)));
                         }
                         templates.Add(filePath);
                     }

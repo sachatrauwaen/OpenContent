@@ -90,7 +90,7 @@ namespace Satrabel.OpenContent
                         dict[p.Key] = p.Value;
                     }
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     o.Error = $"Failed to Convert item [{item.ContentId}] to dynamic. Item.CreatedOnDate: {item.CreatedOnDate}";
                 }

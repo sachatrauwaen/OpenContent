@@ -313,13 +313,13 @@ namespace Satrabel.OpenContent
                 var model = new JObject();
                 TemplateManifest template = ModuleContext.OpenContentSettings().Template;
                 var schemaFile = new FileUri(template.ManifestFolderUri, "schema.json");
-                model["schema"] = JsonUtils.LoadJsonFromFile(template.ManifestFolderUri.UrlFolder + "schema.json");
-                model["options"] = JsonUtils.LoadJsonFromFile(template.ManifestFolderUri.UrlFolder + "options.json");
+                model["schema"] = JsonUtils.LoadJsonFromCacheOrDisk(new FileUri(template.ManifestFolderUri.UrlFolder + "schema.json"));
+                model["options"] = JsonUtils.LoadJsonFromCacheOrDisk(new FileUri(template.ManifestFolderUri.UrlFolder + "options.json"));
                 string key = template.MainTemplateUri().FileNameWithoutExtension;
-                model["settingsSchema"] = JsonUtils.LoadJsonFromFile(template.ManifestFolderUri.UrlFolder + key + "-schema.json");
-                model["settingsOptions"] = JsonUtils.LoadJsonFromFile(template.ManifestFolderUri.UrlFolder + key + "-options.json");
+                model["settingsSchema"] = JsonUtils.LoadJsonFromCacheOrDisk(new FileUri(template.ManifestFolderUri.UrlFolder + key + "-schema.json"));
+                model["settingsOptions"] = JsonUtils.LoadJsonFromCacheOrDisk(new FileUri(template.ManifestFolderUri.UrlFolder + key + "-options.json"));
                 model["listTemplate"] = template.IsListTemplate;
-                model["localization"] = JsonUtils.LoadJsonFromFile(template.ManifestFolderUri.UrlFolder + DnnLanguageUtils.GetCurrentCultureCode() + ".json");
+                model["localization"] = JsonUtils.LoadJsonFromCacheOrDisk(new FileUri(template.ManifestFolderUri.UrlFolder + DnnLanguageUtils.GetCurrentCultureCode() + ".json"));
                 var additionalData = new JObject();
                 model["additionalData"] = additionalData;
                 if (template.Manifest.AdditionalDataDefined())
@@ -328,21 +328,21 @@ namespace Satrabel.OpenContent
                     {
                         var addDataDef = new JObject();
                         additionalData[addData.Key] = addDataDef;
-                        addDataDef["schema"] = JsonUtils.LoadJsonFromFile(template.ManifestFolderUri.UrlFolder + addData.Key + "-schema.json");
-                        addDataDef["options"] = JsonUtils.LoadJsonFromFile(template.ManifestFolderUri.UrlFolder + addData.Key + "-options.json");
+                        addDataDef["schema"] = JsonUtils.LoadJsonFromCacheOrDisk(new FileUri(template.ManifestFolderUri.UrlFolder + addData.Key + "-schema.json"));
+                        addDataDef["options"] = JsonUtils.LoadJsonFromCacheOrDisk(new FileUri(template.ManifestFolderUri.UrlFolder + addData.Key + "-options.json"));
                     }
                 }
                 var file = new FileUri(ModuleContext.PortalSettings.HomeDirectory + "OpenContent", "htmlsnippets.json");
                 if (file.FileExists)
                 {
-                    model["snippets"] = JsonUtils.LoadJsonFromFile(file.FilePath);
+                    model["snippets"] = JsonUtils.LoadJsonFromCacheOrDisk(new FileUri(file.FilePath));
                 }
                 else
                 {
                     file = new FileUri("/Portals/_default/OpenContent", "htmlsnippets.json");
                     if (file.FileExists)
                     {
-                        model["snippets"] = JsonUtils.LoadJsonFromFile(file.FilePath);
+                        model["snippets"] = JsonUtils.LoadJsonFromCacheOrDisk(new FileUri(file.FilePath));
                     }
                 }
                 return model;

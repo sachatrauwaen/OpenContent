@@ -106,7 +106,8 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
         /// <param name="json">The JToken object containing the JSON data to be corrected.</param>
         private static void CorrectSortIndexData(JToken json)
         {
-            return; 
+            return;
+            /*
             if (json["SortIndex"].Type == JTokenType.Object)
             {
                 foreach (var prop in json["SortIndex"].Children<JProperty>())
@@ -142,6 +143,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
                     }
                 }
             }
+            */
         }
     }
 
