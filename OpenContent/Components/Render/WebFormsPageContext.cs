@@ -45,12 +45,12 @@ namespace Satrabel.OpenContent.Components.Render
 
         public void AddModuleMessage(string messsage, ModuleMessage.ModuleMessageType moduleMessageType)
         {
-            DotNetNuke.UI.Skins.Skin.AddModuleMessage(page,messsage, moduleMessageType);
+            DotNetNuke.UI.Skins.Skin.AddModuleMessage(module, messsage, moduleMessageType);
         }
 
         public void ProcessModuleLoadException(string friendlyMessage, Exception exc)
         {
-            DotNetNuke.Services.Exceptions.Exceptions.ProcessModuleLoadException(friendlyMessage, page, exc);
+            DotNetNuke.Services.Exceptions.Exceptions.ProcessModuleLoadException(friendlyMessage, module, exc);
         }
 
         public void RegisterClientScriptBlock(Type type, string key, string script, bool addScriptTag)
