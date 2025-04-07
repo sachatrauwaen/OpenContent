@@ -60,8 +60,14 @@ namespace Satrabel.OpenContent.Components
                 var response = client.GetStringAsync(new Uri(url)).Result;
                 if (response != null)
                 {
+                    // Parse the response and add the contents
+                    var allContents = Contents.FromJson(response);
+
+                    // Filter the .github folder
+                    var filteredContents = allContents.Where(content => !content.Name.Equals(".github", StringComparison.OrdinalIgnoreCase)).ToList();
+
                     //content = JArray.Parse(response);
-                    contents .AddRange(Contents.FromJson(response));
+                    contents.AddRange(filteredContents);
                 }
             }
             return contents;
