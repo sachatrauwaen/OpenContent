@@ -1048,6 +1048,11 @@ namespace Satrabel.OpenContent.Components
             {
                 OpenContentSettings settings = ActiveModule.OpenContentSettings();
 
+                if (settings.Manifest.BuilderVersion > 0)
+                {
+                    builderV2 = settings.Manifest.BuilderVersion == 2;
+                }
+
                 if (json["data"] != null && json["schema"] != null && json["options"] != null)
                 {
                     var key = json["key"].ToString();

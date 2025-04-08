@@ -38,6 +38,11 @@ namespace Satrabel.OpenContent
             cmdCopy.NavigateUrl = Globals.NavigateURL();
             OpenContentSettings settings = this.OpenContentSettings();
 
+            if (settings.Manifest.BuilderVersion > 0)
+            {
+                builderV2 = settings.Manifest.BuilderVersion == 2;
+            }
+
             string prefix = (string.IsNullOrEmpty(settings.Template.Collection) || settings.Template.Collection == "Items") ? "" : settings.Template.Collection;
 
             AlpacaEngine alpaca = new AlpacaEngine(pageContext, ModuleContext.PortalId, settings.Template.ManifestFolderUri.FolderPath, prefix);

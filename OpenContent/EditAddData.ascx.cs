@@ -36,6 +36,10 @@ namespace Satrabel.OpenContent
             hlCancel.NavigateUrl = Globals.NavigateURL();
             cmdSave.NavigateUrl = Globals.NavigateURL();
             OpenContentSettings settings = this.OpenContentSettings();
+            if (settings.Manifest.BuilderVersion > 0)
+            {
+                builderV2 = settings.Manifest.BuilderVersion == 2;
+            }
             AlpacaEngine alpaca = new AlpacaEngine(pageContext, ModuleContext.PortalId, settings.Template.ManifestFolderUri.FolderPath, Key);
             alpaca.RegisterAll(bootstrap,loadBootstrap, loadGlyphicons, builderV2);
             string itemId = null;//Request.QueryString["id"] == null ? -1 : int.Parse(Request.QueryString["id"]);

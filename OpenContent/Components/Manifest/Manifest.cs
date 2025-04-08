@@ -94,6 +94,9 @@ namespace Satrabel.OpenContent.Components.Manifest
         public bool HasTemplates => (Templates != null);
         public FolderUri ManifestDir { get; set; }
 
+        [JsonProperty(PropertyName = "builderVersion")]
+        public int BuilderVersion { get; set; }
+
         public TemplateManifest GetTemplateManifest(FileUri template)
         {
             if (Templates != null && Templates.ContainsKey(template.FileNameWithoutExtension))

@@ -878,9 +878,14 @@ namespace Satrabel.OpenContent.Components.Render
                 }
             }
 
+            var builderV2 = App.Services.CreateGlobalSettingsRepository(PortalSettings.Current.PortalId).IsBuilderV2();
+            if (templateDefined && _settings.Manifest.BuilderVersion > 0)
+            {
+                builderV2 = _settings.Manifest.BuilderVersion == 2;
+            }
+
             //Form Builder
-            if (templateDefined && (OpenContentUtils.BuildersExist(_settings.Template.ManifestFolderUri) ||
-                        App.Services.CreateGlobalSettingsRepository(PortalSettings.Current.PortalId).IsBuilderV2()))
+            if (templateDefined && (OpenContentUtils.BuildersExist(_settings.Template.ManifestFolderUri) || builderV2))
                 actions.Add(
                     new MenuAction(
                         App.Services.Localizer.GetString("Builder.Action", ResourceFile),
