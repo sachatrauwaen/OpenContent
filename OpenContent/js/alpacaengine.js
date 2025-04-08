@@ -193,6 +193,11 @@ alpacaEngine.engine = function (config) {
             "data": data,
             "view": view,
             "connector": connector,
+            "error": function (err) {
+                $('#field1validation .serverside').text(err.message);
+                $('#field1validation .serverside').show();
+                $('#field1validation').show();
+            },
             "postRender": function (control) {
                 selfControl = control;
                 $("#" + self.saveButton).click(function () {

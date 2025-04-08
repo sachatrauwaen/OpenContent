@@ -202,6 +202,12 @@ alpacaEngine.engine = function (config) {
             delete config.options.form;
         }
 
+        Lama.defaultErrorCallback = function (err) {
+            $('#field1validation .serverside').text(err.message);
+            $('#field1validation .serverside').show();
+            $('#field1validation').show();
+        };
+
         var app = Lama.mount("#field1", {
             "schema": config.schema,
             "options": config.options,
