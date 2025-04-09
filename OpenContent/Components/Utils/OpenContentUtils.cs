@@ -331,6 +331,7 @@ namespace Satrabel.OpenContent.Components
                                         {
                                             item.Selected = true;
                                         }
+                                        templateUri = new FileUri(manifestFileUri.FolderPath, template.Value.Main.Template);
                                         var descriptionFilename = templateUri.PhysicalFilePath.Replace(templateUri.Extension, ".txt");
                                         var imageFilename = templateUri.PhysicalFilePath.Replace(templateUri.Extension, ".jpg");
                                         if (File.Exists(descriptionFilename))
