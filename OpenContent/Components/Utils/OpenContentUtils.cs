@@ -331,6 +331,16 @@ namespace Satrabel.OpenContent.Components
                                         {
                                             item.Selected = true;
                                         }
+                                        var descriptionFilename = templateUri.PhysicalFilePath.Replace(templateUri.Extension, ".txt");
+                                        var imageFilename = templateUri.PhysicalFilePath.Replace(templateUri.Extension, ".jpg");
+                                        if (File.Exists(descriptionFilename))
+                                        {
+                                            item.Description = File.ReadAllText(descriptionFilename);
+                                        }
+                                        if (File.Exists(imageFilename))
+                                        {
+                                            item.Image = FileUri.ReverseMapPath(imageFilename);
+                                        }
                                         lst.Add(item);
                                         if (!advanced) break;
                                     }
@@ -355,6 +365,16 @@ namespace Satrabel.OpenContent.Components
                                 && templateUri.FilePath.ToLowerInvariant() == selectedTemplate.Key.ToString().ToLowerInvariant())
                             {
                                 item.Selected = true;
+                            }
+                            var descriptionFilename = templateUri.PhysicalFilePath.Replace(templateUri.Extension, ".txt");
+                            var imageFilename = templateUri.PhysicalFilePath.Replace(templateUri.Extension, ".jpg");
+                            if (File.Exists(descriptionFilename))
+                            {
+                                item.Description = File.ReadAllText(descriptionFilename);
+                            }
+                            if (File.Exists(imageFilename))
+                            {
+                                item.Image = FileUri.ReverseMapPath(imageFilename);
                             }
                             lst.Add(item);
                         }
