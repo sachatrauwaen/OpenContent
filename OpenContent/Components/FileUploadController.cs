@@ -330,6 +330,7 @@ namespace Satrabel.OpenContent.Components
                         if (!string.IsNullOrEmpty(context.Request.Form["cropfolder"]))
                         {
                             uploadfolder = context.Request.Form["cropfolder"];
+                            GetOrCreateFolder(secure, uploadfolder);
                         }
                     }
                     else if (!string.IsNullOrEmpty(context.Request.Form["uploadfolder"])) // custom upload folder
@@ -466,14 +467,25 @@ namespace Satrabel.OpenContent.Components
             var userFolder = _folderManager.GetFolder(PortalSettings.PortalId, uploadfolder);
             if (userFolder == null)
             {
-                if (secure)
+                var folders = uploadfolder.Split('/');
+                string parentFolder="";
+                foreach (var folder in folders)
                 {
-                    var folderMapping = FolderMappingController.Instance.GetFolderMapping(PortalSettings.PortalId, "Secure");
-                    userFolder = _folderManager.AddFolder(folderMapping, uploadfolder);
-                }
-                else
-                {
-                    userFolder = _folderManager.AddFolder(PortalSettings.PortalId, uploadfolder);
+                    parentFolder += "/"+folder;
+                    parentFolder = parentFolder.Trim('/');
+                    var dnnFolder = _folderManager.GetFolder(PortalSettings.PortalId, parentFolder);
+                    if (dnnFolder == null)
+                    {
+                        if (secure)
+                        {
+                            var folderMapping = FolderMappingController.Instance.GetFolderMapping(PortalSettings.PortalId, "Secure");
+                            userFolder = _folderManager.AddFolder(folderMapping, parentFolder);
+                        }
+                        else
+                        {
+                            userFolder = _folderManager.AddFolder(PortalSettings.PortalId, parentFolder);
+                        }
+                    }
                 }
             }
 
