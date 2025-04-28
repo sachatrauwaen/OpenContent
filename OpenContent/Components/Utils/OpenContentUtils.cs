@@ -119,7 +119,7 @@ namespace Satrabel.OpenContent.Components
         {
             if (selectedTemplate == null)
             {
-                return GetTemplates(portalSettings, moduleId, null as TemplateManifest, moduleSubDir).Select(t=> new ListItem(t.Text, t.Value)).ToList();
+                return GetTemplates(portalSettings, moduleId, null as TemplateManifest, moduleSubDir).Select(t => new ListItem(t.Text, t.Value)).ToList();
             }
             return GetTemplates(portalSettings, moduleId, selectedTemplate.ToTemplateManifest(), moduleSubDir).Select(t => new ListItem(t.Text, t.Value)).ToList();
         }
@@ -208,16 +208,19 @@ namespace Satrabel.OpenContent.Components
                                         item.Selected = true;
                                     }
 
-                                    templateUri = new FileUri(manifestFileUri.FolderPath, template.Value.Main.Template);
-                                    var descriptionFilename = templateUri.PhysicalFilePath.Replace(templateUri.Extension, ".txt");
-                                    var imageFilename = templateUri.PhysicalFilePath.Replace(templateUri.Extension, ".jpg");
-                                    if (File.Exists(descriptionFilename))
+                                    if (template.Value.Main != null && !string.IsNullOrEmpty(template.Value.Main.Template))
                                     {
-                                        item.Description = File.ReadAllText(descriptionFilename);
-                                    }
-                                    if (File.Exists(imageFilename))
-                                    {
-                                        item.Image = FileUri.ReverseMapPath(imageFilename);
+                                        templateUri = new FileUri(manifestFileUri.FolderPath, template.Value.Main.Template);
+                                        var descriptionFilename = templateUri.PhysicalFilePath.Replace(templateUri.Extension, ".txt");
+                                        var imageFilename = templateUri.PhysicalFilePath.Replace(templateUri.Extension, ".jpg");
+                                        if (File.Exists(descriptionFilename))
+                                        {
+                                            item.Description = File.ReadAllText(descriptionFilename);
+                                        }
+                                        if (File.Exists(imageFilename))
+                                        {
+                                            item.Image = FileUri.ReverseMapPath(imageFilename);
+                                        }
                                     }
                                     lst.Add(item);
                                     if (!advanced) break;
