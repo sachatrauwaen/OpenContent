@@ -157,22 +157,67 @@ namespace Satrabel.OpenContent.Components.Alpaca
             Page.RegisterStyleSheet("~/DesktopModules/OpenContent/css/font-awesome/css/font-awesome.min.css", FileOrder.Css.DefaultPriority + 1);
 
 
-            //string prefix = (string.IsNullOrEmpty(Prefix) ? "" : $"{Prefix}-");
-            string physicalDirectory = HostingEnvironment.MapPath("~/" + VirtualDirectory);
-            //string jsFilename = physicalDirectory + "\\" + $"{prefix}edit.js";
-            string jsFilename = physicalDirectory + "\\" + $"edit.js";
-            if (File.Exists(jsFilename))
+            // Register Edit.js and css
+            RegisterEditFiles(VirtualDirectory);
+
+            // Register Edit.js and css in the template directory..
+            string trimmedPath = VirtualDirectory.TrimEnd('/');
+            int lastSlash = trimmedPath.LastIndexOf('/');
+
+            if (lastSlash > -1)
             {
-                //ClientResourceManager.RegisterScript(Page, $"~/{VirtualDirectory}/{prefix}edit.js", FileOrder.Js.DefaultPriority + 11);
-                Page.RegisterScript($"~/{VirtualDirectory}/edit.js", FileOrder.Js.DefaultPriority + 11);
+                // Get the parent directory (one level up)
+                string parentVirtualPath = trimmedPath.Substring(0, lastSlash);
+
+                // Check if the parent directory contains 'templates', if so register files from it
+                if (parentVirtualPath.EndsWith("templates", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Always register from the "templates" folder
+                    RegisterEditFiles(parentVirtualPath); // This will register from "templates"
+                }
             }
-            string cssFilename = physicalDirectory + "\\" + $"edit.css";
-            if (File.Exists(cssFilename))
+
+
+        }
+
+        /// <summary>
+        /// Registers both `edit.js` and `edit.css` files if they exist in the specified physical directory.
+        /// </summary>
+        /// <param name="virtualPath">The physical file system path to the directory containing the files.</param>
+        public void RegisterEditFiles(string virtualPath)
+        {
+            RegisterEditFile(virtualPath, "edit.js");
+            RegisterEditFile(virtualPath, "edit.css");
+        }
+
+        /// <summary>
+        /// Registers a single JS or CSS file if it exists at the specified virtual path.
+        /// </summary>
+        /// <param name="virtualPath">The virtual (URL) path relative to the application root, e.g., "Templates/MyTemplate".</param>
+        /// <param name="fileName">The name of the file to register (e.g., "edit.js" or "edit.css").</param>
+        public void RegisterEditFile(string virtualPath, string fileName)
+        {
+            // Map the virtual path to a physical path
+            string physicalPath = HostingEnvironment.MapPath("~/" + virtualPath);
+            if (physicalPath == null) return; // Safety check in case the path doesn't resolve
+
+            string filePath = Path.Combine(physicalPath, fileName);
+
+            if (File.Exists(filePath))
             {
-                //ClientResourceManager.RegisterScript(Page, $"~/{VirtualDirectory}/{prefix}edit.js", FileOrder.Js.DefaultPriority + 11);
-                Page.RegisterStyleSheet( $"~/{VirtualDirectory}/edit.css", FileOrder.Css.DefaultPriority + 11);
+                string relativePath = $"~/{virtualPath.TrimEnd('/')}/{fileName}";
+
+                if (fileName.EndsWith(".js", StringComparison.OrdinalIgnoreCase))
+                {
+                    Page.RegisterScript(relativePath, FileOrder.Js.DefaultPriority + 11);
+                }
+                else if (fileName.EndsWith(".css", StringComparison.OrdinalIgnoreCase))
+                {
+                    Page.RegisterStyleSheet(relativePath, FileOrder.Css.DefaultPriority + 11);
+                }
             }
         }
+
         public void RegisterTemplates()
         {
             /*
