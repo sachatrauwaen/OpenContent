@@ -157,9 +157,6 @@ namespace Satrabel.OpenContent.Components.Alpaca
             Page.RegisterStyleSheet("~/DesktopModules/OpenContent/css/font-awesome/css/font-awesome.min.css", FileOrder.Css.DefaultPriority + 1);
 
 
-            // Register Edit.js and css
-            RegisterEditFiles(VirtualDirectory);
-
             // Register Edit.js and css in the template directory..
             string trimmedPath = VirtualDirectory.TrimEnd('/');
             int lastSlash = trimmedPath.LastIndexOf('/');
@@ -176,6 +173,9 @@ namespace Satrabel.OpenContent.Components.Alpaca
                     RegisterEditFiles(parentVirtualPath); // This will register from "templates"
                 }
             }
+
+            // Register Edit.js and css for this template (loaded later so you can derive from the central definitions)
+            RegisterEditFiles(VirtualDirectory);
 
 
         }
