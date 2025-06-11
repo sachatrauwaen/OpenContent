@@ -257,6 +257,7 @@ alpacaEngine.engine = function (config) {
         //var action = "Update"; //self.getUpdateAction();
         if (copy) {
             delete postData.id;
+            delete postData.form["_id"];
         } else if (!postData.id) {
             postData.form["_id"] = this.itemKey;
         }
