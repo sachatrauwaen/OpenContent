@@ -253,6 +253,7 @@ alpacaEngine.engine = function (config) {
         var postData = $.extend({ form: data }, self.data);
         if (copy) {
             delete postData.id;
+            delete postData.form["_id"];
         } else if (!postData.id) {
             postData.form["_id"] = this.itemKey;
         }
