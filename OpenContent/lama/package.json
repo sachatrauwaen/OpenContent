@@ -11,7 +11,7 @@
   "dependencies": {
     "core-js": "^3.6.5",
     "lamavue": "github:sachatrauwaen/lamavue",
-    "vue": "^2.6.11"
+    "vue": "^3.0.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
