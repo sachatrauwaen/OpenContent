@@ -445,7 +445,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 {
                     string roleName = role.ToString();
                     rolesToRemove.Remove(roleName);
-                    if (!user.Roles.Contains(roleName))
+                    if (!user.Roles.Contains(roleName) && roleName != PortalSettings.Current.AdministratorRoleName)
                     {
                         var roleInfo = RoleController.Instance.GetRoleByName(context.PortalId, roleName);
                         RoleController.AddUserRole(user, roleInfo, PortalSettings.Current, RoleStatus.Approved, Null.NullDate, Null.NullDate, false, false);
