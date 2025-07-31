@@ -375,7 +375,7 @@ alpacaEngine.engine = function (config) {
                         l: self.currentCulture
                     };
                     $.ajax({
-                        
+
                         url: self.sf.getServiceRoot("OpenContent") + "DnnEntitiesAPI" + "/" + "TabsLookup",
                         beforeSend: self.sf.setModuleHeaders,
                         type: "get",
@@ -462,7 +462,7 @@ alpacaEngine.engine = function (config) {
                     //};
                     var itemId = '';
                     if (self.data && self.data.id) {
-                        itemId= self.data.id;
+                        itemId = self.data.id;
                     }
 
                     var postData = {
@@ -482,25 +482,25 @@ alpacaEngine.engine = function (config) {
                         success: function (jsonDocument) {
                             var ds = jsonDocument;
                             if (ds) {
-                                    $.each(ds, function (index, value) {
-                                        files.push({
-                                            id: value.id,
-                                            url: value.url,
-                                            filename: value.filename,
-                                            folderId: "1",
-                                            thumbUrl: value.thumbUrl,
-                                            //"text": value.text,
-                                            //"width": value.width,
-                                            //"height": value.height,
-                                        });
+                                $.each(ds, function (index, value) {
+                                    files.push({
+                                        id: value.id,
+                                        url: value.url,
+                                        filename: value.filename,
+                                        folderId: "1",
+                                        thumbUrl: value.thumbUrl,
+                                        //"text": value.text,
+                                        //"width": value.width,
+                                        //"height": value.height,
                                     });
-                                    //completionFunction();
+                                });
+                                //completionFunction();
                                 successCallback(files);
                             }
                         },
                         "error": function (jqXHR, textStatus, errorThrown) {
                             errorCallback({
-                                "message": "Unable to load data from uri : " ,
+                                "message": "Unable to load data from uri : ",
                                 "stage": "DATASOURCE_LOADING_ERROR",
                                 "details": {
                                     "jqXHR": jqXHR,
@@ -547,7 +547,7 @@ alpacaEngine.engine = function (config) {
 
                     var postData = {
                         q: "*",
-                        folder: config.query.folder ||"" /*self.options.uploadfolder*/,
+                        folder: config.query.folder || "" /*self.options.uploadfolder*/,
                         secure: config.query.secure,
                         itemKey: "", /*self.itemKey*/
                         itemId: itemId
@@ -637,7 +637,7 @@ alpacaEngine.engine = function (config) {
                     });
                 }
             }
-            
+
             else {
                 errorCallback();
             }
@@ -704,7 +704,7 @@ alpacaEngine.engine = function (config) {
                     });
                 } else {
                     errorCallback(status.message);
-                    console.log(status.name +" : "+status.message);
+                    console.log(status.name + " : " + status.message);
                 }
             });
         },
@@ -738,7 +738,24 @@ alpacaEngine.engine = function (config) {
                     successCallback(response);
                 }
             });
+        },
+        CKEditor: {
+            getConfig: function () {
+                var ckConfig = {
+                    // filebrowserUploadUrl: self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile?secure=" + config.secure + "&itemKey=" + self.itemKey + "&itemId=" + (self.data && self.data.id ? self.data.id : ""),
+                    // filebrowserImageUploadUrl: self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadFile?secure=" + config.secure + "&itemKey=" + self.itemKey + "&itemId=" + (self.data && self.data.id ? self.data.id : ""),
+                    // removePlugins: 'image',
+                    // extraPlugins: 'uploadimage,image2,uploadfile,filetools',
+                    // height: 400
+                    cloudServices_uploadUrl: self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadEasyImage",
+                    cloudServices_tokenUrl: self.sf.getServiceRoot('OpenContent') + "FileUpload/EasyImageToken"
+                };
+                return ckConfig;
+            },
+            setRequestHeaders: function (xhr) {
+                self.sf.setModuleHeaders(xhr);
+            },
+            editorUrl: "/DesktopModules/OpenContent/js/ckeditor/ckeditor.js"
         }
     };
-
 };
