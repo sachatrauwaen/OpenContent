@@ -65,17 +65,38 @@ namespace Satrabel.OpenContent.Components
         {
             return portalSettings.HomeDirectory + moduleSubDir + "/Templates/";
         }
+
+
+        /// <summary>
+        /// Returns the URL path to the module's Templates folder,
+        /// based on the active skin in use.
+        /// The code will make sure the Skin se for the PAge is used and not the Edit skin
+        /// </summary>
         public static string GetSkinTemplateFolder(PortalSettings portalSettings, string moduleSubDir)
         {
-            var SkinPath = portalSettings.ActiveTab.SkinPath;
-            if (string.IsNullOrEmpty(SkinPath))
+            // Start with the portal default skin path
+            var skinSrc = DotNetNuke.Common.Globals.ResolveUrl(portalSettings.DefaultPortalSkin);
+
+            // Check if the active tab uses a different skin
+            string tabSkinSrc = DotNetNuke.Entities.Tabs.TabController.Instance
+                .GetTab(portalSettings.ActiveTab.TabID, portalSettings.PortalId)
+                .SkinSrc;
+
+            if (!string.IsNullOrEmpty(tabSkinSrc))
             {
-                var SkinSrc = SkinController.FormatSkinSrc(!string.IsNullOrEmpty(portalSettings.ActiveTab.SkinSrc) ? portalSettings.ActiveTab.SkinSrc : portalSettings.DefaultPortalSkin, portalSettings);
-                SkinPath = SkinController.FormatSkinPath(SkinSrc);
-                //SkinPath = DotNetNuke.Entities.Tabs.TabController.Instance.GetTab(portalSettings.ActiveTab.TabID, portalSettings.PortalId).SkinPath;
+                skinSrc = tabSkinSrc;
             }
-            return SkinPath + moduleSubDir + "/Templates/";
+
+            // Expand [G] or [L] tokens into a full skin file path
+            var skinFilePath = SkinController.FormatSkinSrc(skinSrc, portalSettings);
+
+            // Get the folder path from the skin .ascx file path
+            var skinPath = SkinController.FormatSkinPath(skinFilePath);
+
+            // Combine skin path with module folder and Templates subfolder
+            return skinPath + moduleSubDir + "/Templates/";
         }
+
 
         public static string GetHostTemplateFolder(PortalSettings portalSettings, string moduleSubDir)
         {

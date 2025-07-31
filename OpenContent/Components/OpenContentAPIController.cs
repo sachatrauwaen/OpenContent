@@ -295,6 +295,11 @@ namespace Satrabel.OpenContent.Components
                 if (dataJson != null)
                     json["data"] = dataJson;
 
+                if (json["data"] == null || json["data"].Type != JTokenType.Object)
+                {
+                    json["data"] = new JObject();
+                }
+
                 if (json["schema"]["properties"]["ModuleTitle"] is JObject)
                 {
                     if (json["data"]["ModuleTitle"] != null && json["data"]["ModuleTitle"].Type == JTokenType.String)
