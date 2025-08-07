@@ -1299,7 +1299,6 @@
     <Content Include="lama\src\components\CollectionField.vue" />
     <Content Include="bundleconfig.json" />
     <Content Include="lama\src\InitApp.vue" />
-    <Content Include="Edit.cshtml" />
     <Content Include="Views\Edit.cshtml" />
     <None Include="packages.config" />
     <None Include="Scripts\_references.js" />
