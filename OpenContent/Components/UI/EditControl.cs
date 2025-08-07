@@ -52,9 +52,9 @@ namespace Satrabel.OpenContent.Components.UI
         /// <param name="pageContext">The page context</param>
         public EditControl(ModuleInstanceContext moduleContext, IPageContext pageContext, string resourceFile)
         {
-            _moduleContext = moduleContext ?? throw new ArgumentNullException(nameof(moduleContext));
-            _pageContext = pageContext ?? throw new ArgumentNullException(nameof(pageContext));
-            _resourceFile = resourceFile ?? throw new ArgumentNullException(nameof(resourceFile));
+            _moduleContext = moduleContext;
+            _pageContext = pageContext;
+            _resourceFile = resourceFile;
         }
 
         #endregion
