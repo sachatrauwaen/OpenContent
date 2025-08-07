@@ -1,4 +1,9 @@
 <%@ Control Language="C#" AutoEventWireup="false" Inherits="Satrabel.OpenContent.Edit" CodeBehind="Edit.ascx.cs" %>
+
+<asp:Literal ID="module" runat="server"></asp:Literal>
+
+<%--
+
 <%@ Import Namespace="Newtonsoft.Json" %>
 
 <asp:Panel ID="ScopeWrapper" runat="server">
@@ -35,3 +40,4 @@
         engine.init();
     });
 </script>
+    --%>

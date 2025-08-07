@@ -1,0 +1,72 @@
+@using Newtonsoft.Json
+@using Satrabel.OpenContent.Components.UI
+@using DotNetNuke.Services.Localization
+@using Satrabel.OpenContent.Views 
+@inherits System.Web.Mvc.WebViewPage<EditModel>
+
+@{
+
+}
+
+<div id="@Model.ScopeWrapperClientId" class="scope-wrapper">
+    <div class="container-fluid @(Model.AlpacaContext.BuilderV2 ? "lama-editor" : "alpaca-editor")">
+        <div id="field1" class="alpaca"></div>
+    </div>
+
+    <ul class="dnnActions dnnClear" style="display: block; padding-left: 35%">
+        <li>
+            <a id="@Model.SaveClientId"
+               href="@Model.SaveUrl"
+               class="dnnPrimaryAction">
+                @Html.GetLocalizedString("cmdSave")
+            </a>
+        </li>
+        @if (Model.IsCopyVisible)
+        {
+            <li>
+                <a id="@Model.CopyClientId"
+                   href="@Model.CopyUrl"
+                   class="dnnSecondaryAction">
+                    @Html.GetLocalizedString("cmdCopy")
+                </a>
+            </li>
+        }
+        <li>
+            <a id="@Model.CancelClientId"
+               href="@Model.CancelUrl"
+               class="dnnSecondaryAction">
+                @Html.GetLocalizedString("cmdCancel")
+            </a>
+        </li>
+        @if (Model.IsDeleteVisible)
+        {
+            <li>
+                <a id="@Model.DeleteClientId"
+                   href="#"
+                   class="dnnSecondaryAction">
+                    @Html.GetLocalizedString("cmdDelete")
+                </a>
+            </li>
+        }
+        <li style="padding-left: 10px;">
+            <select id="@Model.VersionsClientId"
+                    class="oc-ddl-versions form-control">
+                <!-- Options would be populated via JavaScript or server-side -->
+            </select>
+        </li>
+    </ul>
+
+    <div id="field1validation" style="display: none; color: #b94a48; padding-left: 35%">
+        <i class="glyphicon glyphicon-exclamation-sign"></i>
+        <span class="serverside" style="display: none;"></span>
+        <span class="clientside" style="display: none;">@Html.GetLocalizedString("errInvalid")</span>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var alpacaContextData = @Html.Raw(JsonConvert.SerializeObject(Model.AlpacaContext));
+        var engine = new alpacaEngine.engine(alpacaContextData);
+        engine.init();
+    });
+</script>

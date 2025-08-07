@@ -117,9 +117,9 @@
       <HintPath>..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\ref\dnn920\Newtonsoft.Json.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
     <Reference Include="PresentationCore" />
@@ -153,6 +153,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ref\dnn920\System.Web.Http.WebHost.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Web.Mvc">
+      <HintPath>..\ref\dnn920\System.Web.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.WebPages, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -257,6 +260,10 @@
     <Compile Include="Components\Settings\ComponentSettingsInfo.cs" />
     <Compile Include="Components\TemplateHelpers\FormHelpers.cs" />
     <Compile Include="Components\TemplateHelpers\RazorUtils.cs" />
+    <Compile Include="Components\UI\BaseControl.cs" />
+    <Compile Include="Components\UI\BaseModel.cs" />
+    <Compile Include="Components\UI\EditModel.cs" />
+    <Compile Include="Components\UI\EditControl.cs" />
     <Compile Include="Components\UrlRewriter\UrlRulesCaching.cs" />
     <Compile Include="Components\Github\GithubTemplateUtils.cs" />
     <Compile Include="Components\Utils\Requires.cs" />
@@ -434,6 +441,8 @@
       <DependentUpon>EditFormSettings.ascx</DependentUpon>
     </Compile>
     <Compile Include="Components\AppDefinitions\IMenuAction.cs" />
+    <Compile Include="Components\UI\RazorEngineHelper.cs" />
+    <Compile Include="Components\UI\HtmlHelper.cs" />
     <Content Include="alpaca\js\fields\dnn\MLAddressField.js" />
     <Content Include="alpaca\js\fields\dnn\CheckboxField.js" />
     <Content Include="alpaca\js\fields\dnn\ImageXField.js" />
@@ -1290,6 +1299,8 @@
     <Content Include="lama\src\components\CollectionField.vue" />
     <Content Include="bundleconfig.json" />
     <Content Include="lama\src\InitApp.vue" />
+    <Content Include="Edit.cshtml" />
+    <Content Include="Views\Edit.cshtml" />
     <None Include="packages.config" />
     <None Include="Scripts\_references.js" />
     <Content Include="js\select2\select2.css" />
@@ -1351,6 +1362,13 @@
     <Content Include="web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Views\web.config" />
+    <None Include="Views\web.Debug.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+    <None Include="Views\web.Release.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>

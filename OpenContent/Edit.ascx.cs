@@ -15,6 +15,7 @@ using DotNetNuke.Common;
 using Satrabel.OpenContent.Components;
 using Satrabel.OpenContent.Components.Alpaca;
 using Satrabel.OpenContent.Components.Render;
+using Satrabel.OpenContent.Components.UI;
 
 #endregion
 
@@ -22,47 +23,80 @@ namespace Satrabel.OpenContent
 {
     public partial class Edit : PortalModuleBase
     {
+        /*
+        /// <summary>
+        /// Alpaca context for backward compatibility with the view
+        /// </summary>
+        public AlpacaContext AlpacaContext => Model?.AlpacaContext;
+        */
         protected override void OnInit(EventArgs e)
         {
             base.OnInit(e);
             var pageContext = new WebFormsPageContext(Page, this);
-            var bootstrap = App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetEditLayout() != AlpacaLayoutEnum.DNN;
-            bool loadBootstrap = bootstrap && App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetLoadBootstrap();
-            bool loadGlyphicons = bootstrap && App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetLoadGlyphicons();
-            bool builderV2 = App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).IsBuilderV2();
+            string itemId = Request.QueryString["id"];
+            var editController = new EditControl(ModuleContext, pageContext, LocalResourceFile);
+            module.Text = editController.Invoke(itemId);
 
-            string apikey = App.Services.CreateGlobalSettingsRepository(PortalId).GetGoogleApiKey();
-
+            /*
+            // Create client IDs container
+            var clientIds = new EditControlClientIds
+            {
+                ScopeWrapper = ScopeWrapper.ClientID,
+                Cancel = hlCancel.ClientID,
+                Save = cmdSave.ClientID,
+                Copy = cmdCopy.ClientID,
+                Delete = hlDelete.ClientID,
+                Versions = ddlVersions.ClientID
+            };
+            
+            // Create the model using the factory method
+            Model = EditModel.Create(ModuleContext, pageContext, itemId, clientIds);
+            
+            // Configure URLs
             hlCancel.NavigateUrl = Globals.NavigateURL();
             cmdSave.NavigateUrl = Globals.NavigateURL();
             cmdCopy.NavigateUrl = Globals.NavigateURL();
-            OpenContentSettings settings = this.OpenContentSettings();
-
-            if (settings.Manifest.BuilderVersion > 0)
+            
+            // Set URLs in model for reference
+            Model.CancelUrl = hlCancel.NavigateUrl;
+            Model.SaveUrl = cmdSave.NavigateUrl;
+            Model.CopyUrl = cmdCopy.NavigateUrl;
+            
+            // Configure delete confirmation message
+            Model.DeleteConfirmMessage = LocalizeSafeJsString("txtDeleteConfirmMessage");
+            if (Model.IsMultiLingual)
             {
-                builderV2 = settings.Manifest.BuilderVersion == 2;
+                Model.DeleteConfirmMessage = LocalizeSafeJsString("txtMLDeleteConfirmMessage");
             }
+            Model.AlpacaContext.DeleteConfirmMessage = Model.DeleteConfirmMessage;
+            
+            // Set control visibility
+            cmdCopy.Visible = Model.IsCopyVisible;
+            hlDelete.Visible = Model.IsDeleteVisible;
 
-            string prefix = (string.IsNullOrEmpty(settings.Template.Collection) || settings.Template.Collection == "Items") ? "" : settings.Template.Collection;
-
-            AlpacaEngine alpaca = new AlpacaEngine(pageContext, ModuleContext.PortalId, settings.Template.ManifestFolderUri.FolderPath, prefix);
-            alpaca.RegisterAll(bootstrap, loadBootstrap, loadGlyphicons, builderV2);
-            string itemId = Request.QueryString["id"];
-            AlpacaContext = new AlpacaContext(PortalId, ModuleId, itemId,  ScopeWrapper.ClientID, hlCancel.ClientID, cmdSave.ClientID, cmdCopy.ClientID, hlDelete.ClientID, ddlVersions.ClientID);
-            AlpacaContext.Bootstrap = bootstrap;
-            AlpacaContext.Horizontal = App.Services.CreateGlobalSettingsRepository(ModuleContext.PortalId).GetEditLayout() == AlpacaLayoutEnum.BootstrapHorizontal;
-            AlpacaContext.IsNew = settings.Template.IsListTemplate && string.IsNullOrEmpty(itemId);
-            AlpacaContext.DeleteConfirmMessage = LocalizeSafeJsString("txtDeleteConfirmMessage");
-            if (DnnLanguageUtils.IsMultiLingualPortal(PortalId))
-            {
-                AlpacaContext.DeleteConfirmMessage = LocalizeSafeJsString("txtMLDeleteConfirmMessage");
-            }
-            AlpacaContext.BuilderV2 = builderV2;
-            AlpacaContext.GoogleApiKey = apikey;
-            cmdCopy.Visible = !settings.Template.Manifest.DisableCopy;
-            hlDelete.Visible = !settings.Template.Manifest.DisableDelete;
+            // Register Alpaca resources
+            RegisterAlpacaResources();
+            */
         }
-        public AlpacaContext AlpacaContext { get; private set; }
+        /*
+        /// <summary>
+        /// Registers all necessary Alpaca resources
+        /// </summary>
+        private void RegisterAlpacaResources()
+        {
+            var alpaca = new AlpacaEngine(
+                Model.PageContext, 
+                Model.PortalId, 
+                Model.Settings.Template.ManifestFolderUri.FolderPath, 
+                Model.TemplatePrefix);
+            
+            alpaca.RegisterAll(
+                Model.Bootstrap, 
+                Model.LoadBootstrap, 
+                Model.LoadGlyphicons, 
+                Model.BuilderV2);
+        }
+        */
     }
 }
 
