@@ -9,6 +9,8 @@ namespace Satrabel.OpenContent.Components.Manifest
     {
         private Dictionary<string, AdditionalDataManifest> _additionalData;
 
+        private Dictionary<string, CollectionDefManifest> _collections;
+
         [JsonProperty(PropertyName = "title")]
         public string Title { get; set; }
 
@@ -58,6 +60,19 @@ namespace Satrabel.OpenContent.Components.Manifest
             set
             {
                 _additionalData = new Dictionary<string, AdditionalDataManifest>(value, StringComparer.OrdinalIgnoreCase);
+            }
+        }
+
+        [JsonProperty(PropertyName = "collections")]
+        public Dictionary<string, CollectionDefManifest> Collections
+        {
+            get
+            {
+                return _collections;
+            }
+            set
+            {
+                _collections = new Dictionary<string, CollectionDefManifest>(value, StringComparer.OrdinalIgnoreCase);
             }
         }
 

@@ -121,10 +121,11 @@ namespace Satrabel.OpenContent.Components.UI
         /// </summary>
         /// <param name="itemId">The item ID being edited</param>
         /// <returns>Configured EditModel</returns>
-        private EditModel CreateEditModel(string itemId)
+        public EditModel CreateEditModel(string itemId, EditControlClientIds clientIds = null)
         {
             // Generate unique client IDs (similar to WebForms)
-            var clientIds = GenerateClientIds();
+            if (clientIds == null)
+                clientIds = GenerateClientIds();
 
             // Create the model using the factory method
            

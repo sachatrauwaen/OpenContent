@@ -23,21 +23,19 @@ namespace Satrabel.OpenContent
 {
     public partial class Edit : PortalModuleBase
     {
-        /*
-        /// <summary>
-        /// Alpaca context for backward compatibility with the view
-        /// </summary>
-        public AlpacaContext AlpacaContext => Model?.AlpacaContext;
-        */
+        public AlpacaContext AlpacaContext { get; set; }
+        
         protected override void OnInit(EventArgs e)
         {
             base.OnInit(e);
             var pageContext = new WebFormsPageContext(Page, this);
+            
             string itemId = Request.QueryString["id"];
+            
             var editController = new EditControl(ModuleContext, pageContext, LocalResourceFile);
-            module.Text = editController.Invoke(itemId);
-
             /*
+            module.Text = editController.Invoke(itemId);
+            */
             // Create client IDs container
             var clientIds = new EditControlClientIds
             {
@@ -48,9 +46,9 @@ namespace Satrabel.OpenContent
                 Delete = hlDelete.ClientID,
                 Versions = ddlVersions.ClientID
             };
-            
-            // Create the model using the factory method
-            Model = EditModel.Create(ModuleContext, pageContext, itemId, clientIds);
+
+            var Model = editController.CreateEditModel(itemId, clientIds);
+            AlpacaContext = Model.AlpacaContext;
             
             // Configure URLs
             hlCancel.NavigateUrl = Globals.NavigateURL();
@@ -74,29 +72,21 @@ namespace Satrabel.OpenContent
             cmdCopy.Visible = Model.IsCopyVisible;
             hlDelete.Visible = Model.IsDeleteVisible;
 
-            // Register Alpaca resources
-            RegisterAlpacaResources();
-            */
-        }
-        /*
-        /// <summary>
-        /// Registers all necessary Alpaca resources
-        /// </summary>
-        private void RegisterAlpacaResources()
-        {
             var alpaca = new AlpacaEngine(
-                Model.PageContext, 
-                Model.PortalId, 
-                Model.Settings.Template.ManifestFolderUri.FolderPath, 
-                Model.TemplatePrefix);
-            
+                 Model.PageContext,
+                 Model.PortalId,
+                 Model.Settings.Template.ManifestFolderUri.FolderPath,
+                 Model.TemplatePrefix);
+
             alpaca.RegisterAll(
-                Model.Bootstrap, 
-                Model.LoadBootstrap, 
-                Model.LoadGlyphicons, 
+                Model.Bootstrap,
+                Model.LoadBootstrap,
+                Model.LoadGlyphicons,
                 Model.BuilderV2);
+
         }
-        */
+      
+        
     }
 }
 

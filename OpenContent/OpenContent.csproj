@@ -59,10 +59,9 @@
       <HintPath>..\ref\dnn920\ClientDependency.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="DotNetNuke, Version=7.4.1.280, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="DotNetNuke, Version=9.2.0.366, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ref\dnn920\DotNetNuke.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="DotNetNuke.Instrumentation, Version=7.4.1.280, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -154,7 +153,8 @@
       <HintPath>..\ref\dnn920\System.Web.Http.WebHost.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="System.Web.Mvc">
+    <Reference Include="System.Web.Mvc, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ref\dnn920\System.Web.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.WebPages, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -192,6 +192,7 @@
     <Compile Include="Components\Files\FileUriUtils.cs" />
     <Compile Include="Components\Github\GithubDtos.cs" />
     <Compile Include="Components\ImageStatus.cs" />
+    <Compile Include="Components\Manifest\CollectionDefManifest.cs" />
     <Compile Include="Components\Migration\MigrationConfig.cs" />
     <Compile Include="Components\Migration\MigrationStatusReport.cs" />
     <Compile Include="Components\Migration\Migrator.cs" />
@@ -1356,24 +1357,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_LocalResources\ShareTemplate.ascx.resx" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="web.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\web.config" />
-    <None Include="Views\web.Debug.config">
-      <DependentUpon>web.config</DependentUpon>
-    </None>
-    <None Include="Views\web.Release.config">
-      <DependentUpon>web.config</DependentUpon>
-    </None>
-    <None Include="web.Debug.config">
-      <DependentUpon>web.config</DependentUpon>
-    </None>
-    <None Include="web.Release.config">
-      <DependentUpon>web.config</DependentUpon>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_LocalResources\EditSettings.ascx.resx" />

@@ -12,9 +12,10 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
 {
     public class OpenContentUrlProvider
     {
+        private static readonly object padlock = new object();
         public static List<OpenContentUrlRule> GetRules(int portalId)
         {
-            object padlock = new object();
+            
             lock (padlock)
             {
                 List<OpenContentUrlRule> rules = new List<OpenContentUrlRule>();
@@ -78,66 +79,17 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                             //#endif
                             moduleRules = new List<OpenContentUrlRule>();
                             IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
-
-                            var dataList = ds.GetAll(dsContext, null).Items.ToList();
-                            if (dataList.Count() > 1000)
-                            {
-                                App.Services.Logger.Warn($"Module {module.DataModule.ModuleId} (portal/tab {module.DataModule.PortalId}/{module.DataModule.TabId}) has >1000 items. We are not making sluggs for them as this would be too inefficient");
-                                continue;
-                            }
-                            HandlebarsEngine hbEngine = new HandlebarsEngine();
-                            if (!string.IsNullOrEmpty(module.Settings.Manifest.DetailUrl))
-                            {
-                                hbEngine.Compile(module.Settings.Manifest.DetailUrl);
-                            }
-                            foreach (KeyValuePair<string, Locale> key in dicLocales)
-                            {
-                                string cultureCode = key.Value.Code;
-                                string ruleCultureCode = (dicLocales.Count > 1 ? cultureCode : null);
-                                ModelFactoryMultiple mf = new ModelFactoryMultiple(dataList, module.Settings.Data, module.Settings.Template.Manifest, module.Settings.Template, module.Settings.Template.Main, module, portalId, cultureCode);
-                                IEnumerable<Dictionary<string, object>> items = mf.GetModelAsDictionaryList();
-                                //App.Services.Logger.Debug("OCUR/" + PortalId + "/" + module.TabID + "/" + MainTabId + "/" + module.ModuleID + "/" + MainModuleId + "/" + CultureCode + "/" + dataList.Count() + "/" + module.ModuleTitle);
-                                foreach (Dictionary<string, object> content in items)
-                                {
-                                    string id = (content["Context"] as Dictionary<string, object>)["Id"].ToString();
-                                    string url = "content-" + id;
-                                    if (!string.IsNullOrEmpty(module.Settings.Manifest.DetailUrl))
-                                    {
-                                        try
-                                        {
-                                            url = hbEngine.Execute(content);
-                                            url = HttpUtility.HtmlDecode(url).StripHtml("-").CleanupUrl();
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            App.Services.Logger.Error("Failed to generate url for opencontent item " + id, ex);
-                                        }
-                                    }
-
-                                    if (!string.IsNullOrEmpty(url))
-                                    {
-                                        var rule = new OpenContentUrlRule
-                                        {
-                                            CultureCode = ruleCultureCode,
-                                            TabId = module.GetDetailTabId(),
-                                            Parameters = "id=" + id,
-                                            Url = url,
-                                            InSitemap = true
-                                        };
-                                        var reducedRules = rules.Where(r => r.CultureCode == rule.CultureCode && r.TabId == rule.TabId).ToList();
-                                        bool ruleExist = reducedRules.Any(r => r.Parameters == rule.Parameters);
-                                        if (!ruleExist)
-                                        {
-                                            if (reducedRules.Any(r => r.Url == rule.Url))
-                                            {
-                                                rule.Url = id + "-" + url;
-                                            }
-                                            rules.Add(rule);
-                                            moduleRules.Add(rule);
-                                        }
-                                    }
-                                }
-                            }
+                            GenerateCollectionRules(portalId, rules, dicLocales, module, dsContext, moduleRules, ds);
+                            //var collections = new string[] { "Items", "Kunstenaars" };
+                            //if (module.Settings.Manifest.Collections != null)
+                            //{
+                            //    foreach (string collectionKey in module.Settings.Manifest.Collections.Keys)
+                            //    {
+                            //        var collection = module.Settings.Manifest.Collections[collectionKey];
+                            //        dsContext.Collection = collectionKey;
+                            //        GenerateCollectionRules(portalId, rules, dicLocales, module, dsContext, moduleRules, ds, collection.DetailUrl);
+                            //    }
+                            //}
                             UrlRulesCaching.SetCache(portalId, UrlRulesCaching.GenerateModuleCacheKey(module.TabId, module.ModuleId, dsContext.ModuleId, null), new TimeSpan(1, 0, 0, 0), moduleRules);
                             //App.Services.Logger.Error($"GetRules {portalId}/{module.TabId}/{module.ModuleId} NewCount: {moduleRules.Count}");
                         }
@@ -157,6 +109,81 @@ namespace Satrabel.OpenContent.Components.UrlRewriter
                 //                Console.WriteLine(mess);
                 //#endif
                 return rules;
+            }
+        }
+
+        private static void GenerateCollectionRules(int portalId, List<OpenContentUrlRule> rules, Dictionary<string, Locale> dicLocales, OpenContentModuleConfig module, DataSourceContext dsContext, List<OpenContentUrlRule> moduleRules, IDataSource ds)
+        {
+            var dataList = ds.GetAll(dsContext, null).Items.ToList();
+            if (dataList.Count() > 1000)
+            {
+                App.Services.Logger.Warn($"Module {module.DataModule.ModuleId} (portal/tab {module.DataModule.PortalId}/{module.DataModule.TabId}) has >1000 items. We are not making sluggs for them as this would be too inefficient");
+                return;
+            }
+            HandlebarsEngine hbEngine = new HandlebarsEngine();
+
+            var detailUrl = module.Settings.Manifest.DetailUrl;
+            if (!string.IsNullOrEmpty(dsContext.Collection) && 
+                module.Settings.Manifest.Collections != null &&
+                module.Settings.Manifest.Collections.ContainsKey(dsContext.Collection)
+                )
+            {
+                var collection = module.Settings.Manifest.Collections[dsContext.Collection];
+                if (!string.IsNullOrEmpty(collection.DetailUrl))
+                {
+                    detailUrl = collection.DetailUrl;
+                }
+            }
+            if (!string.IsNullOrEmpty(detailUrl))
+            {
+                hbEngine.Compile(detailUrl);
+            }
+            foreach (KeyValuePair<string, Locale> key in dicLocales)
+            {
+                string cultureCode = key.Value.Code;
+                string ruleCultureCode = (dicLocales.Count > 1 ? cultureCode : null);
+                ModelFactoryMultiple mf = new ModelFactoryMultiple(dataList, module.Settings.Data, module.Settings.Template.Manifest, module.Settings.Template, module.Settings.Template.Main, module, portalId, cultureCode);
+                IEnumerable<Dictionary<string, object>> items = mf.GetModelAsDictionaryList();
+                //App.Services.Logger.Debug("OCUR/" + PortalId + "/" + module.TabID + "/" + MainTabId + "/" + module.ModuleID + "/" + MainModuleId + "/" + CultureCode + "/" + dataList.Count() + "/" + module.ModuleTitle);
+                foreach (Dictionary<string, object> content in items)
+                {
+                    string id = (content["Context"] as Dictionary<string, object>)["Id"].ToString();
+                    string url = "content-" + id;
+                    if (!string.IsNullOrEmpty(detailUrl))
+                    {
+                        try
+                        {
+                            url = hbEngine.Execute(content);
+                            url = HttpUtility.HtmlDecode(url).StripHtml("-").CleanupUrl();
+                        }
+                        catch (Exception ex)
+                        {
+                            App.Services.Logger.Error("Failed to generate url for opencontent item " + id, ex);
+                        }
+                    }
+                    if (!string.IsNullOrEmpty(url))
+                    {
+                        var rule = new OpenContentUrlRule
+                        {
+                            CultureCode = ruleCultureCode,
+                            TabId = module.GetDetailTabId(),
+                            Parameters = "id=" + id,
+                            Url = url,
+                            InSitemap = true
+                        };
+                        var reducedRules = rules.Where(r => r.CultureCode == rule.CultureCode && r.TabId == rule.TabId).ToList();
+                        bool ruleExist = reducedRules.Any(r => r.Parameters == rule.Parameters);
+                        if (!ruleExist)
+                        {
+                            if (reducedRules.Any(r => r.Url == rule.Url))
+                            {
+                                rule.Url = id + "-" + url;
+                            }
+                            rules.Add(rule);
+                            moduleRules.Add(rule);
+                        }
+                    }
+                }
             }
         }
     }
