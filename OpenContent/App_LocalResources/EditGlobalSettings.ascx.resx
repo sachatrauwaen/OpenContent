@@ -166,7 +166,7 @@
     <value>Composite &amp; Minify Template Css (require DNN 8 or greater)</value>
   </data>
   <data name="lBuilderV2.Text" xml:space="preserve">
-    <value>Buider V2 (require Bootstrap 4)</value>
+    <value>Builder V2 (require Bootstrap 4)</value>
   </data>
   <data name="lRestApiKey.Text" xml:space="preserve">
     <value>External Rest Api Key</value>
