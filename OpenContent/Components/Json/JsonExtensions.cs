@@ -31,9 +31,20 @@ namespace Satrabel.OpenContent.Components.Json
                 case JTokenType.Object:
                     return (jtoken as JObject).IsEmpty();
                 case JTokenType.Array:
-                    return (jtoken as JArray).HasValues;
+                    {
+                        var jArray = (jtoken as JArray);
+                        return jArray != null && jArray.HasValues;
+                    }
                 case JTokenType.Property:
-                    return ((jtoken as JProperty).Value as JValue).IsEmpty();
+                    if (jtoken is JProperty jProperty)
+                    {
+                        var jPropertyValue = (jProperty.Value as JValue);
+                        if (jPropertyValue == null && jProperty.Value != null)
+                            return jProperty.Value.IsEmpty();
+                        else
+                            return jPropertyValue.IsEmpty();
+                    }
+                    return true;
             }
 
             string json = jtoken.ToString();
