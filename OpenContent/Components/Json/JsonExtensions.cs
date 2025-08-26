@@ -36,8 +36,9 @@ namespace Satrabel.OpenContent.Components.Json
                         return jArray != null && jArray.HasValues;
                     }
                 case JTokenType.Property:
-                    if (jtoken is JProperty jProperty)
+                    if (jtoken is JProperty)
                     {
+                        JProperty jProperty = (JProperty)jtoken;
                         var jPropertyValue = (jProperty.Value as JValue);
                         if (jPropertyValue == null && jProperty.Value != null)
                             return jProperty.Value.IsEmpty();
