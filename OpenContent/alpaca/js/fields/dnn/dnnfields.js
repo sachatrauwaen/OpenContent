@@ -13317,7 +13317,7 @@
                                     // to preserve order, consider using an array as below
                                     $.each(ds, function (key, value) {
                                         self.selectOptions.push({
-                                            "value": key,
+                                            "value": key.toString(),
                                             "text": value
                                         });
                                     });
@@ -13329,7 +13329,7 @@
                                     // this preserves order
                                     $.each(ds, function (index, value) {
                                         self.selectOptions.push({
-                                            "value": value.value,
+                                            "value": value.value.toString(),
                                             "text": value.text
                                         });
                                         self.dataSource[value.value] = value;
