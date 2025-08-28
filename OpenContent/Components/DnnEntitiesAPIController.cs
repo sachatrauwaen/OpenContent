@@ -184,7 +184,7 @@ namespace Satrabel.OpenContent.Components
                 }
                 if (!string.IsNullOrEmpty(folder))
                 {
-                    imageFolder = folder;
+                    imageFolder = folder.Trim('/');
                     if (folder.Contains("[ITEMUSERFOLDER]"))
                     {
                         if (!string.IsNullOrEmpty(itemId))
