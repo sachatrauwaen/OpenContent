@@ -748,7 +748,14 @@ alpacaEngine.engine = function (config) {
                     // extraPlugins: 'uploadimage,image2,uploadfile,filetools',
                     // height: 400
                     cloudServices_uploadUrl: self.sf.getServiceRoot('OpenContent') + "FileUpload/UploadEasyImage",
-                    cloudServices_tokenUrl: self.sf.getServiceRoot('OpenContent') + "FileUpload/EasyImageToken"
+                    cloudServices_tokenUrl: self.sf.getServiceRoot('OpenContent') + "FileUpload/EasyImageToken",
+                    on: {
+                        fileUploadResponse: ($event) => {
+                            setTimeout(() => {
+                                $event.editor.fire('change')
+                            }, 100)
+                        }
+                    }
                 };
                 return ckConfig;
             },
