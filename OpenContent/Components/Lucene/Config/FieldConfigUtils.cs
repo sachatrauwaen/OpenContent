@@ -109,7 +109,8 @@ namespace Satrabel.OpenContent.Components.Lucene.Config
             {
                 Field = field + cultureSuffix,
                 FieldType = indexType,
-                Descending = descending
+                Descending = descending,
+                //MultiLanguage = fieldConfig != null && fieldConfig.MultiLanguage
             };
             return rule;
         }

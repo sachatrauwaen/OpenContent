@@ -1,6 +1,7 @@
 ﻿using DotNetNuke.Common;
 using DotNetNuke.Entities.Portals;
 using Newtonsoft.Json.Linq;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Datasource.Search;
 using Satrabel.OpenContent.Components.Dnn;
@@ -139,9 +140,10 @@ namespace Satrabel.OpenContent.Components.Render
             JsonUtils.ImagesJson(model, Options, _optionsJson, IsEditMode);
         }
 
-        protected void EnhanceSelect2(JObject model, bool onlyData)
+        protected void EnhanceSelect2(JObject model, bool onlyData, string collection)
         {
-            string colName = string.IsNullOrEmpty(_collection) ? "Items" : _collection;
+            //_collection
+            string colName = string.IsNullOrEmpty(collection) ? "Items" : collection;
             bool addDataEnhance = _manifest.AdditionalDataDefined();
             if (addDataEnhance && _additionalData == null)
             {
@@ -160,14 +162,31 @@ namespace Satrabel.OpenContent.Components.Render
                     _optionsJson = alpaca["options"] as JObject; // cache
                 }
             }
+            
             if (enhance)
             {
+                var sch = _schemaJson;
+                var opt= _optionsJson;
+                
+
                 var colManifest = collectionEnhance ? _templateFiles.Model[colName] : null;
                 var includes = colManifest?.Includes;
                 var includelabels = _templateFiles != null && _templateFiles.LabelsInTemplate;
                 var ds = DataSourceManager.GetDataSource(_manifest.DataSource);
                 var dsContext = OpenContentUtils.CreateDataContext(_module);
-                JsonUtils.LookupJson(model, _additionalData, _schemaJson, _optionsJson, includelabels, includes,
+                dsContext.Collection = collection;
+                if (collection != _collection)
+                {
+                    var alpaca = ds.GetAlpaca(dsContext, true, true, false);
+
+                    if (alpaca != null)
+                    {
+                        sch = alpaca["schema"] as JObject; // cache
+                        opt = alpaca["options"] as JObject; // cache
+                    }
+                }
+
+                JsonUtils.LookupJson(model, _additionalData, sch, opt, includelabels, includes,
                     (col, id) =>
                     {
                         // collection enhancement
@@ -249,7 +268,7 @@ namespace Satrabel.OpenContent.Components.Render
                 // include collections
                 if (_templateFiles.Model != null)
                 {
-                    var additionalCollections = _templateFiles.Model.Where(c => c.Key != _collection);
+                    var additionalCollections = _templateFiles.Model; // .Where(c => c.Key != _collection);
                     if (additionalCollections.Any())
                     {
                         var collections = model["Collections"] = new JObject();
@@ -287,7 +306,7 @@ namespace Satrabel.OpenContent.Components.Render
                                     JObject context = new JObject();
                                     json["Context"] = context;
                                     context["Id"] = dataItem.Id;
-                                    EnhanceSelect2(json as JObject, onlyData);
+                                    EnhanceSelect2(json as JObject, onlyData, item.Key);
                                     JsonUtils.SimplifyJson(json, GetCurrentCultureCode());
                                 }
                                 colDataJson.Add(json);

@@ -64,7 +64,7 @@ namespace Satrabel.OpenContent.Components.Render
                     context["Id"] = item.Id;
                     context["CreatedOnDate"] = item.CreatedOnDate.ToString("yyyy-MM-ddTHH:mm:ss");                    
                     JsonUtils.SimplifyJson(model, GetCurrentCultureCode());
-                    EnhanceSelect2(model, true);
+                    EnhanceSelect2(model, true, item.Key);
                     yield return JsonUtils.JsonToDictionary(model.ToString());
                 }
             }
@@ -96,7 +96,7 @@ namespace Satrabel.OpenContent.Components.Render
                     context["Id"] = item.Id;
                     context["CreatedOnDate"] = item.CreatedOnDate.ToString("yyyy-MM-ddTHH:mm:ss");
                     JsonUtils.SimplifyJson(dyn, GetCurrentCultureCode());
-                    EnhanceSelect2(dyn, onlyData);
+                    EnhanceSelect2(dyn, onlyData, _collection);
                     EnhanceUser(dyn, item.CreatedByUserId);
                     EnhanceImages(dyn);
                     if (onlyData)

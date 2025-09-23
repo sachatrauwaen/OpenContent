@@ -40,7 +40,7 @@ namespace Satrabel.OpenContent.Components.Render
             var enhancedModel = new JObject();
             ExtendSchemaOptions(enhancedModel, onlyData || onlyMainData);
             ExtendModel(enhancedModel, onlyData, onlyMainData, _data?.Id);
-            EnhanceSelect2(model, onlyData);
+            EnhanceSelect2(model, onlyData, _collection);
             EnhanceImages(model);
             JsonUtils.Merge(model, enhancedModel);
             ExtendModelSingle(model);

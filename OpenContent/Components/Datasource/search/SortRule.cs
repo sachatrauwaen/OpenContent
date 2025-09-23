@@ -6,5 +6,6 @@
         public FieldTypeEnum FieldType { get; set; }
         public bool Descending { get; set; }
 
+        //public bool MultiLanguage { get; set; }
     }
 }

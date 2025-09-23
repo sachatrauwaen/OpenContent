@@ -224,7 +224,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
                                 }
                                 if (sort)
                                 {
-                                    doc.Add(new Field("@" + prefix, Truncate(val, 100), Field.Store.NO, Field.Index.NOT_ANALYZED));
+                                    doc.Add(new Field("@" + prefix, Truncate(val.ToLower(), 100), Field.Store.NO, Field.Index.NOT_ANALYZED));
                                 }
                             }
                             break;

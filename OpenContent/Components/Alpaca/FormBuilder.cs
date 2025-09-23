@@ -329,7 +329,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 if (prop.Value.Type == "array")
                 {
                     string optType = (opts == null) ? "array" : opts.Type ?? "array";
-                    if (prop.Value.Enum != null || optType == "select" || optType == "select2" || optType == "role2" || optType == "relation" )
+                    if (prop.Value.Enum != null || optType == "select" || optType == "select2" || optType == "role2" || optType == "relation")
                     {
                         var newField = new FieldConfig()
                         {
@@ -348,6 +348,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
                 else
                 {
                     string optType = (opts == null) ? "text" : opts.Type ?? "text";
+                    bool optML = (opts == null) ? false : opts.MultiLanguage;
                     if (prop.Value.Enum != null || optType == "select" || optType == "select2" || optType == "role2" || optType == "relation")
                     {
                         var newField = new FieldConfig()
@@ -385,7 +386,8 @@ namespace Satrabel.OpenContent.Components.Alpaca
                         {
                             IndexType = "float",
                             Index = true,
-                            Sort = true
+                            Sort = true,
+                            MultiLanguage = optML
                         };
                         newConfig.Fields.Add(prop.Key, newField);
                     }
@@ -395,7 +397,8 @@ namespace Satrabel.OpenContent.Components.Alpaca
                         {
                             IndexType = "text",
                             Index = true,
-                            Sort = true
+                            Sort = true,
+                            MultiLanguage = optML
                         };
                         newConfig.Fields.Add(prop.Key, newField);
                     }
@@ -405,7 +408,8 @@ namespace Satrabel.OpenContent.Components.Alpaca
                         {
                             IndexType = "html",
                             Index = true,
-                            Sort = true
+                            Sort = true,
+                            MultiLanguage = optML
                         };
                         newConfig.Fields.Add(prop.Key, newField);
                     }
@@ -415,7 +419,8 @@ namespace Satrabel.OpenContent.Components.Alpaca
                         {
                             IndexType = "html",
                             Index = true,
-                            Sort = true
+                            Sort = true,
+                            MultiLanguage = optML
                         };
                         newConfig.Fields.Add(prop.Key, newField);
                     }
