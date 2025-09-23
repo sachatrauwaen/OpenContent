@@ -62,7 +62,11 @@ namespace Satrabel.OpenContent.Components
                             {
                                 css.Append("/*").Append((cssfilename.FilePath)).AppendLine("*/");
                             }
+#if DNN7
+                            css.AppendLine(File.ReadAllText(cssfilename.PhysicalFilePath));
+#else
                             css.AppendLine(CssHelper.MinifyCss(File.ReadAllText(cssfilename.PhysicalFilePath)));
+#endif
                         }
                         templates.Add(filePath);
                     }

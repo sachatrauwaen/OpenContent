@@ -7,6 +7,8 @@ using System.Web.Routing;
 
 public static class RazorEngineHelper
 {
+#if DNN7
+#else
     public static string RenderPartial(string viewName, object model = null, ViewDataDictionary viewData = null)
     {
         // Initialize view engines if needed
@@ -298,4 +300,5 @@ public static class FileBasedRazorRenderer
             _compiledViews.Clear();
         }
     }
+#endif
 }

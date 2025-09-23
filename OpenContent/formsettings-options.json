@@ -5,114 +5,144 @@
             "titleField": "EmailSubject",
             "items": {
 
-                "fields": {
-                    "From": {
-                        "title": "From",
-                        "type": "select",
-                        "optionLabels": [ "Host", "Site Admin", "Form Field", "Custom", "Current Dnn user" ],
-                        "removeDefaultNone": true
-                    },
-                    "FromName": {
-                        "dependencies": {
-                            "From": "custom"
-                        },
-                        "helper": "Name part of the email address"
-                    },
-                    "FromEmail": {
-                        "dependencies": {
-                            "From": "custom"
-                        }
-                    },
-                    "FromNameField": {
-                        "dependencies": {
-                            "From": "form"
-                        },
-                        "helper": "Form field where the name is extracted"
-                    },
-                    "FromEmailField": {
-                        "dependencies": {
-                            "From": "form"
-                        },
-                        "helper": "Form field where the email is extracted"
-                    },
-                    "To": {
-                        "type": "select",
-                        "optionLabels": [ "Host", "Site Admin", "Form Field", "Custom", "Current Dnn user" ],
-                        "removeDefaultNone": true
-                    },
-                    "ToName": {
-                        "dependencies": {
-                            "To": "custom"
-                        },
-                        "helper": "Name part of the email address"
-                    },
-                    "ToEmail": {
-                        "dependencies": {
-                            "To": "custom"
-                        }
-                    },
-                    "ToNameField": {
-                        "dependencies": {
-                            "To": "form"
-                        },
-                        "helper": "Form field where the name is extracted"
-                    },
-                    "ToEmailField": {
-                        "dependencies": {
-                            "To": "form"
-                        },
-                        "helper": "Form field where the email is extracted"
-                    },
-                    "ReplyTo": {
-                        "type": "select",
-                        "optionLabels": [ "Host", "Site Admin", "Form Field", "Custom", "Current Dnn user" ]
-                    },
-                    "ReplyToName": {
-                        "dependencies": {
-                            "ReplyTo": "custom"
-                        },
-                        "helper": "Name part of the email address"
-                    },
-                    "ReplyToEmail": {
-                        "dependencies": {
-                            "ReplyTo": "custom"
-                        }
-                    },
-                    "ReplyToNameField": {
-                        "dependencies": {
-                            "ReplyTo": "form"
-                        },
-                        "helper": "Form field where the name is extracted"
-                    },
-                    "ReplyToEmailField": {
-                        "dependencies": {
-                            "ReplyTo": "form"
-                        },
-                        "helper": "Form field where the email is extracted"
-                    },
-                    "EmailSubject": {
-                    },
-                    "EmailBody": {
-                        "type": "ckeditor"
-                    }
-
+              "fields": {
+                "From": {
+                  "title": "From",
+                  "type": "select",
+                  "optionLabels": [ "Host", "Site Admin", "Form Field", "Custom", "Current Dnn user" ],
+                  "removeDefaultNone": true,
+                  "helper": "Sender"
+                },
+                "FromName": {
+                  "dependencies": {
+                    "From": "custom"
+                  },
+                  "helper": "Name part of the email address (optional)"
+                },
+                "FromEmail": {
+                  "dependencies": {
+                    "From": "custom"
+                  },
+                  "helper": "Email address of the sender"
+                },
+                "FromNameField": {
+                  "dependencies": {
+                    "From": "form"
+                  },
+                  "helper": "Name of the field where the name is extracted (optional)"
+                },
+                "FromEmailField": {
+                  "dependencies": {
+                    "From": "form"
+                  },
+                  "helper": "Name of the field where the email is extracted"
+                },
+                "To": {
+                  "type": "select",
+                  "optionLabels": [ "Host", "Site Admin", "Form Field", "Custom", "Current Dnn user" ],
+                  "removeDefaultNone": true,
+                  "helper": "Recipient"
+                },
+                "ToName": {
+                  "dependencies": {
+                    "To": "custom"
+                  },
+                  "helper": "Name part of the email address (optional)"
+                },
+                "ToEmail": {
+                  "dependencies": {
+                    "To": "custom"
+                  },
+                  "helper": "Email address of the recipient"
+                },
+                "ToNameField": {
+                  "dependencies": {
+                    "To": "form"
+                  },
+                  "helper": "Name of the field where the name is extracted (optional)"
+                },
+                "ToEmailField": {
+                  "dependencies": {
+                    "To": "form"
+                  },
+                  "helper": "Name of the field where the email is extracted"
+                },
+                "ReplyTo": {
+                  "type": "select",
+                  "optionLabels": [ "Host", "Site Admin", "Form Field", "Custom", "Current Dnn user" ],
+                  "helper": "Reply-to"
+                },
+                "ReplyToName": {
+                  "dependencies": {
+                    "ReplyTo": "custom"
+                  },
+                  "helper": "Name part of the email address (optional)"
+                },
+                "ReplyToEmail": {
+                  "dependencies": {
+                    "ReplyTo": "custom"
+                  },
+                  "helper": "Email address of the reply-to"
+                },
+                "ReplyToNameField": {
+                  "dependencies": {
+                    "ReplyTo": "form"
+                  },
+                  "helper": "Name of the field where the name is extracted (optional)"
+                },
+                "ReplyToEmailField": {
+                  "dependencies": {
+                    "ReplyTo": "form"
+                  },
+                  "helper": "Name of the field where the email is extracted"
+                },
+                "EmailSubject": {
+                  "helper": "Subject of the email"
+                },
+                "EmailBodyType": {
+                  "type": "select",
+                  "optionLabels": [ "Html Editor", "Raw Html" ],
+                  "noneLabel": "Default",
+                  "helper": "Type of the email body (Html editor or Raw html)"
+                },
+                "EmailBody": {
+                  "type": "ckeditor",
+                  "dependencies": {
+                    "EmailBodyType": "html"
+                  },
+                  "helper": "Body of the email"
+                },
+                "EmailRaw": {
+                  "type": "raw",
+                  "dependencies": {
+                    "EmailBodyType": "raw"
+                  },
+                  "helper": "Body of the email"
                 }
+              }
             }
         },
         "Settings": {
             "fields": {
                 "Message": {
-                    "type": "ckeditor"
+                    "type": "ckeditor",
+                    "helper": "Message after submit"
+                },
+                "Captcha": {
+                    "helper": "Show Captcha"
                 },
                 "Tracking": {
                     "type": "textarea",
-                    "hidden": true
+                    "hidden": true,
+                    "helper": "Tracking script (Adwords, ...)"
                 },
                 "SiteKey": {
-                    "hidden": true
+                    "hidden": true,
+                    "helper": "reCaptcha Site Key"
                 },
                 "SecretKey": {
-                    "hidden": true
+                    "hidden": true,
+                    "helper": "reCaptcha Secret Key"
                 }
             }
         }

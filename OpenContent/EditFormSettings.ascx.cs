@@ -38,7 +38,8 @@ namespace Satrabel.OpenContent
             {
                 builderV2 = settings.Manifest.BuilderVersion == 2;
             }
-            AlpacaEngine alpaca = new AlpacaEngine(pageContext, ModuleContext.PortalId, "DeskTopModules/OpenContent", "formsettings");
+            builderV2 = false; // force builder v1 for form settings
+            AlpacaEngine alpaca = new AlpacaEngine(pageContext, ModuleContext.PortalId, "DesktopModules/OpenContent", "formsettings");
             //AlpacaEngine alpaca = new AlpacaEngine(Page, ModuleContext, "", "");
             alpaca.RegisterAll(bootstrap, loadBootstrap, loadGlyphicons, builderV2);
             string itemId = null;

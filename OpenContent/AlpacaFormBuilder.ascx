@@ -44,9 +44,11 @@
 </asp:Panel>
 
 <script type="text/javascript">
-    $(document).ready(function () {
-
-        var BuilderV2 = <%= AlpacaContext.BuilderV2 ? "true" : "false"%>;
+    var BuilderV2 = <%= AlpacaContext.BuilderV2 ? "true" : "false"%>;
+    if (BuilderV2) {
+        Lama.options = { multilanguage: false, fields: ["checkbox", "text", "date", "file", "number", "radio", "select", "textarea"] };
+    }
+    $(document).ready(function () {        
         if (!BuilderV2) {
             $(".form-builder .fb-container").show();
         }
@@ -99,7 +101,6 @@
         // global variables for formbuilmder.js
         BootstrapForm = <%= AlpacaContext.Bootstrap ? "true" : "false"%>;
         BootstrapHorizontal = <%= AlpacaContext.Horizontal ? "true" : "false"%>;
-
 
         if (BootstrapForm) {
             formbuilderConfig.view = "dnnbootstrap-edit-horizontal";

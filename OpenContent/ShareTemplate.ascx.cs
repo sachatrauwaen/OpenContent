@@ -332,7 +332,10 @@ namespace Satrabel.OpenContent
                     throw new ArgumentOutOfRangeException("contentDisposition");
             }
             //objResponse.AppendHeader("Content-Length", File.get.ToString());
+#if DNN7
+#else
             objResponse.ContentType = FileContentTypeManager.Instance.GetContentType(Path.GetExtension(FileName).Replace(".", ""));
+#endif
             try
             {
                 Response.WriteFile(FileName);

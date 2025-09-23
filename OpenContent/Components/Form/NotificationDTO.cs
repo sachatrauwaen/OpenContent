@@ -21,5 +21,7 @@
         public string BccEmails { get; set; }
         public string EmailSubject { get; set; }
         public string EmailBody { get; set; }
+        public string EmailBodyType { get; set; }
+        public string EmailRaw { get; set; }
     }
 }

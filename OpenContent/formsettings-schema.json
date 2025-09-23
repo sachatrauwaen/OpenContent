@@ -107,9 +107,20 @@
                   "title": "Email subject",
                   "type": "string"
                 },
+                "EmailBodyType": {
+                  "type": "string",
+                  "title": "Email body type",
+                  "enum": [ "html", "raw" ]
+                },
                 "EmailBody": {
                   "title": "Email body",
-                  "type": "string"
+                  "type": "string",
+                  "dependencies": "EmailBodyType"
+                },
+                "EmailRaw": {
+                  "title": "Email body",
+                  "type": "string",
+                  "dependencies": "EmailBodyType"
                 }
               }
             }
@@ -121,6 +132,10 @@
                 "Message": {
                     "title": "Message After Submit",
                     "type": "string"
+                },
+                "Captcha": {
+                    "title": "Captcha",
+                    "type": "boolean"
                 },
                 "Tracking": {
                     "title": "Tracking script (Adwords, ...)",

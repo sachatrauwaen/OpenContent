@@ -102,8 +102,10 @@ namespace Satrabel.OpenContent.Components.UI
                 var model = CreateEditModel(id);
                 RegisterAlpacaResources(model);
                 var res = string.Empty;
+#if DNN7
+#else
                 res = RazorEngineHelper.RenderPartialFromPath(RazorScriptFile, model);
-
+#endif
                 return res;
             }
             catch (Exception ex)
@@ -112,7 +114,7 @@ namespace Satrabel.OpenContent.Components.UI
                 throw new Exception($"Error initializing edit form: {ex.Message}", ex);
             }
         }
-        #endregion
+#endregion
 
         #region Private Methods
 

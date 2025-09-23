@@ -299,11 +299,20 @@ namespace Satrabel.OpenContent.Components.Form
                                 reply = FormUtils.GenerateMailAddress(notification.ReplyTo, notification.ReplyToEmail, notification.ReplyToName, notification.ReplyToEmailField, notification.ReplyToNameField, form);
                             }
                             string body = formData;
-                            if (!string.IsNullOrEmpty(notification.EmailBody))
+                            string rawBody= string.Empty;
+                            if (notification.EmailBodyType == "raw")
+                            {
+                                rawBody = notification.EmailRaw;
+                            }
+                            else
+                            {
+                                rawBody = notification.EmailBody;
+                            }
+                            if (!string.IsNullOrEmpty(rawBody))
                             {
                                 try
                                 {
-                                    body = hbs.Execute(notification.EmailBody, data);
+                                    body = hbs.Execute(rawBody, data);
                                 }
                                 catch (Exception ex)
                                 {
