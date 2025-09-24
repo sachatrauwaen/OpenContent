@@ -45,9 +45,10 @@
 
 <script type="text/javascript">
     var BuilderV2 = <%= AlpacaContext.BuilderV2 ? "true" : "false"%>;
-    if (BuilderV2) {
+    <% if(AlpacaContext.BuilderV2 && IsForm) { %>
+    
         Lama.options = { multilanguage: false, fields: ["checkbox", "text", "date", "file", "number", "radio", "select", "textarea"] };
-    }
+    <%} %>
     $(document).ready(function () {        
         if (!BuilderV2) {
             $(".form-builder .fb-container").show();

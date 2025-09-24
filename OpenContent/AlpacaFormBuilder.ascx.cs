@@ -87,9 +87,12 @@ namespace Satrabel.OpenContent
             AlpacaContext.Horizontal = globalSettingsController.GetEditLayout() == AlpacaLayoutEnum.BootstrapHorizontal;
             AlpacaContext.BuilderV2 = builderV2;
             AlpacaContext.GoogleApiKey = apikey;
+
+            IsForm = ddlForms.SelectedValue == "form";
         }
         public AlpacaContext AlpacaContext { get; private set; }
 
+        public bool IsForm { get; set; }
 
     }
 }
