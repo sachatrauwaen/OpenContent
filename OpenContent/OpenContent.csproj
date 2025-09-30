@@ -113,7 +113,7 @@
       <HintPath>..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=13.0.1.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ref\dnn920\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -1292,6 +1292,7 @@
     <Content Include="bundleconfig.json" />
     <Content Include="lama\src\InitApp.vue" />
     <Content Include="Views\Edit.cshtml" />
+    <Content Include="BuildScripts\ModuleDeploy.targets" />
     <None Include="packages.config" />
     <None Include="Scripts\_references.js" />
     <Content Include="js\select2\select2.css" />

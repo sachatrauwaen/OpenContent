@@ -10,23 +10,16 @@
 ' 
 */
 
-using System.Collections.Generic;
-using DotNetNuke.Entities.Modules;
-using DotNetNuke.Common.Utilities;
-using System.Xml;
-using System.Linq;
 using DotNetNuke.Common;
-using System;
-using System.Collections;
+using DotNetNuke.Common.Internal;
+using DotNetNuke.Common.Utilities;
+using DotNetNuke.Entities.Content.Taxonomy;
+using DotNetNuke.Entities.Modules;
+using DotNetNuke.Entities.Portals;
+using DotNetNuke.Entities.Users;
+using DotNetNuke.Services.Search.Controllers;
 using DotNetNuke.Services.Search.Entities;
 using Newtonsoft.Json.Linq;
-using DotNetNuke.Entities.Portals;
-using DotNetNuke.Entities.Content.Taxonomy;
-using System.IO;
-using System.Web;
-using System.Web.Hosting;
-using DotNetNuke.Common.Internal;
-using DotNetNuke.Services.Search.Controllers;
 using Satrabel.OpenContent.Components.Datasource;
 using Satrabel.OpenContent.Components.Datasource.Search;
 using Satrabel.OpenContent.Components.Dnn;
@@ -34,10 +27,20 @@ using Satrabel.OpenContent.Components.Handlebars;
 using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Lucene;
 using Satrabel.OpenContent.Components.Lucene.Config;
+using Satrabel.OpenContent.Components.Querying;
 using Satrabel.OpenContent.Components.TemplateHelpers;
-using PortalInfo = DotNetNuke.Entities.Portals.PortalInfo;
-using System.Runtime.InteropServices;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Runtime.InteropServices;
+using System.Web;
+using System.Web.Hosting;
+using System.Xml;
+using PortalInfo = DotNetNuke.Entities.Portals.PortalInfo;
 
 namespace Satrabel.OpenContent.Components
 {
@@ -163,8 +166,15 @@ namespace Satrabel.OpenContent.Components
 
             IDataSource ds = DataSourceManager.GetDataSource(module.Settings.Manifest.DataSource);
             var dsContext = OpenContentUtils.CreateDataContext(module);
-
-            IDataItems contentList = ds.GetAll(dsContext, null);
+            Select select = null;
+            if (module.Settings.Template.Main.DnnSearchFilter)
+            {
+                var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.TemplateDir, dsContext.Collection);
+                QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
+                queryBuilder.Build(module.Settings.Query, true, -1, DnnLanguageUtils.GetCurrentCultureCode(), new List<Querying.UserRoleInfo>());
+                select = queryBuilder.Select;
+            }
+            IDataItems contentList = ds.GetAll(dsContext, select);
             if (!contentList.Items.Any())
             {
                 App.Services.Logger.Trace($"Indexing content {modInfo.ModuleID}|{modInfo.CultureCode} - NOT - No content found");
@@ -227,7 +237,7 @@ namespace Satrabel.OpenContent.Components
             JObject context = new JObject();
             retval["Context"] = context;
             context["TabId"] = modInfo.TabID;
-            context["ModuleId"] = modInfo.ModuleID;            
+            context["ModuleId"] = modInfo.ModuleID;
             context["ModuleTitle"] = modInfo.ModuleTitle;
             return retval;
         }
@@ -331,31 +341,31 @@ namespace Satrabel.OpenContent.Components
                 var hbEngine = new HandlebarsEngine();
 
                 string tagsString = hbEngine.ExecuteWithoutFaillure(settings.Template.Main.DnnSearchTags, dicForHbs, modInfo.ModuleTitle);
-                
+
                 try
                 {
-                     // Don't insert "empty" tags
-                     if (tagsString.Trim().Length > 0)
-                        {
-                            IEnumerable<string> tags;
+                    // Don't insert "empty" tags
+                    if (tagsString.Trim().Length > 0)
+                    {
+                        IEnumerable<string> tags;
 
-                            tags = tagsString
-                                    .Split(',') // Split by comma
-                                    .Select(tag => tag.Trim()); // Trim spaces
+                        tags = tagsString
+                                .Split(',') // Split by comma
+                                .Select(tag => tag.Trim()); // Trim spaces
 
-                            retval.Tags = tags;
-                        }
-                    
+                        retval.Tags = tags;
+                    }
+
                 }
-                    
-                catch(Exception e)
+
+                catch (Exception e)
                 {
                     App.Services.Logger.Error("Error Parsing DNN Search Tags.", e);
                 }
 
-                
+
             }
-          
+
 
             retval.Title = HttpUtility.HtmlDecode(retval.Title).StripHtml();
             retval.Body = HttpUtility.HtmlDecode(retval.Body).StripHtml();
