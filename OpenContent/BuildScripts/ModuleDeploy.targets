@@ -12,6 +12,8 @@
   <Import Project="$(ImportPath)" Condition=" '$(ImportPath)' != '' "/>
 
   <Target Name="DeployModule" Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+
+	  <Message Text="WebsitePath :  $(WebsitePath) " Importance="high" />
     
 	<!-- Copy files into Website's bin folder -->
     <Copy SourceFiles="$(MSBuildProjectDirectory)\bin\Debug\OpenContent.dll" DestinationFolder="$(WebsitePath)\bin\" SkipUnchangedFiles="True" />

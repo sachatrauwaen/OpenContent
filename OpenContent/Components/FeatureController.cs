@@ -171,7 +171,7 @@ namespace Satrabel.OpenContent.Components
             {
                 var indexConfig = OpenContentUtils.GetIndexConfig(module.Settings.TemplateDir, dsContext.Collection);
                 QueryBuilder queryBuilder = new QueryBuilder(indexConfig);
-                queryBuilder.Build(module.Settings.Query, true, -1, DnnLanguageUtils.GetCurrentCultureCode(), new List<Querying.UserRoleInfo>());
+                queryBuilder.Build(module.Settings.Query, true, -1, modInfo.CultureCode, new List<Querying.UserRoleInfo>());
                 select = queryBuilder.Select;
             }
             IDataItems contentList = ds.GetAll(dsContext, select);
