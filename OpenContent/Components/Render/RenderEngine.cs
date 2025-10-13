@@ -910,7 +910,7 @@ namespace Satrabel.OpenContent.Components.Render
 
             //Edit Raw Data
             if (templateDefined && _settings.Manifest != null &&
-               (template.DataNeeded() || template.SettingsNeeded() || template.Manifest.AdditionalDataDefined()) && !_settings.Manifest.DisableEdit && !template.DisableEdit)
+               (template.DataNeeded() || OpenContentUtils.FormExist(_settings.Template.ManifestFolderUri) || template.SettingsNeeded() || template.Manifest.AdditionalDataDefined()) && !_settings.Manifest.DisableEdit && !template.DisableEdit)
             {
                 actions.Add(
                     new MenuAction(

@@ -243,7 +243,9 @@ namespace Satrabel.OpenContent.Components.Form
         {
             if (formInfo["formSettings"] is JObject)
             {
-                var settings = (formInfo["formSettings"] as JObject).ToObject<SettingsDTO>();
+                var settingsJson = (formInfo["formSettings"] as JObject).DeepClone();
+                JsonUtils.SimplifyJson(settingsJson, DnnLanguageUtils.GetCurrentCultureCode());
+                var settings = settingsJson.ToObject<SettingsDTO>();                
                 var form = formInfo["form"] as JObject;
                 return FormSubmit(form, settings, item);
             }

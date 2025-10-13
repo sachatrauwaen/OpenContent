@@ -14,12 +14,14 @@
                   "helper": "Sender"
                 },
                 "FromName": {
+                  "type": "mltext",
                   "dependencies": {
                     "From": "custom"
                   },
                   "helper": "Name part of the email address (optional)"
                 },
                 "FromEmail": {
+                  "type": "mltext",
                   "dependencies": {
                     "From": "custom"
                   },
@@ -44,12 +46,14 @@
                   "helper": "Recipient"
                 },
                 "ToName": {
+                  "type": "mltext",
                   "dependencies": {
                     "To": "custom"
                   },
                   "helper": "Name part of the email address (optional)"
                 },
                 "ToEmail": {
+                  "type": "mltext",
                   "dependencies": {
                     "To": "custom"
                   },
@@ -73,12 +77,14 @@
                   "helper": "Reply-to"
                 },
                 "ReplyToName": {
+                  "type": "mltext",
                   "dependencies": {
                     "ReplyTo": "custom"
                   },
                   "helper": "Name part of the email address (optional)"
                 },
                 "ReplyToEmail": {
+                  "type": "mltext",
                   "dependencies": {
                     "ReplyTo": "custom"
                   },
@@ -96,7 +102,14 @@
                   },
                   "helper": "Name of the field where the email is extracted"
                 },
+                "CcEmails": {
+                  "type": "mltext"
+                },
+                "BccEmails": {
+                  "type": "mltext"
+                },
                 "EmailSubject": {
+                  "type": "mltext",
                   "helper": "Subject of the email"
                 },
                 "EmailBodyType": {
@@ -106,14 +119,14 @@
                   "helper": "Type of the email body (Html editor or Raw html)"
                 },
                 "EmailBody": {
-                  "type": "ckeditor",
+                  "type": "mlckeditor",
                   "dependencies": {
                     "EmailBodyType": "html"
                   },
                   "helper": "Body of the email"
                 },
                 "EmailRaw": {
-                  "type": "raw",
+                  "type": "mlraw",
                   "dependencies": {
                     "EmailBodyType": "raw"
                   },
@@ -125,7 +138,7 @@
         "Settings": {
             "fields": {
                 "Message": {
-                    "type": "ckeditor",
+                    "type": "mlckeditor",
                     "helper": "Message after submit"
                 },
                 "Captcha": {

@@ -9,6 +9,9 @@
     <TypeScriptToolsVersion>4.3</TypeScriptToolsVersion>
   </PropertyGroup>
   <PropertyGroup>
+    <DnnRefPath Condition="'$(DnnRefPath)' == ''">..\ref\dnn732\</DnnRefPath>
+  </PropertyGroup>
+  <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>
@@ -39,7 +42,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;DNN7</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -56,31 +59,31 @@
   <ItemGroup>
     <Reference Include="ClientDependency.Core, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ref\dnn920\ClientDependency.Core.dll</HintPath>
+      <HintPath>$(DnnRefPath)ClientDependency.Core.dll</HintPath>
     </Reference>
     <Reference Include="DotNetNuke, Version=7.4.0.353, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ref\dnn920\DotNetNuke.dll</HintPath>
+      <HintPath>$(DnnRefPath)DotNetNuke.dll</HintPath>
     </Reference>
     <Reference Include="DotNetNuke.Instrumentation, Version=7.4.0.353, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ref\dnn920\DotNetNuke.Instrumentation.dll</HintPath>
+      <HintPath>$(DnnRefPath)DotNetNuke.Instrumentation.dll</HintPath>
     </Reference>
     <Reference Include="DotNetNuke.Web, Version=7.4.0.353, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ref\dnn920\DotNetNuke.Web.dll</HintPath>
+      <HintPath>$(DnnRefPath)DotNetNuke.Web.dll</HintPath>
     </Reference>
     <Reference Include="DotNetNuke.Web.Client, Version=7.4.0.353, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ref\dnn920\DotNetNuke.Web.Client.dll</HintPath>
+      <HintPath>$(DnnRefPath)DotNetNuke.Web.Client.dll</HintPath>
     </Reference>
     <Reference Include="DotNetNuke.Web.Razor, Version=7.4.0.353, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ref\dnn920\DotNetNuke.Web.Razor.dll</HintPath>
+      <HintPath>$(DnnRefPath)DotNetNuke.Web.Razor.dll</HintPath>
     </Reference>
     <Reference Include="DotNetNuke.WebUtility, Version=4.2.1.783, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ref\dnn920\DotNetNuke.WebUtility.dll</HintPath>
+      <HintPath>$(DnnRefPath)DotNetNuke.WebUtility.dll</HintPath>
     </Reference>
     <Reference Include="EPPlus, Version=4.5.2.1, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -91,7 +94,7 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib">
-      <HintPath>..\ref\dnn920\ICSharpCode.SharpZipLib.dll</HintPath>
+      <HintPath>$(DnnRefPath)ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
     <Reference Include="Lucene.Net, Version=3.0.3.0, Culture=neutral, PublicKeyToken=85089178b9ac3181, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -128,29 +131,29 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.Formatting, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ref\dnn920\System.Net.Http.Formatting.dll</HintPath>
+      <HintPath>$(DnnRefPath)System.Net.Http.Formatting.dll</HintPath>
     </Reference>
     <Reference Include="System.Security" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web.Helpers, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ref\dnn920\System.Web.Helpers.dll</HintPath>
+      <HintPath>$(DnnRefPath)System.Web.Helpers.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ref\dnn920\System.Web.Http.dll</HintPath>
+      <HintPath>$(DnnRefPath)System.Web.Http.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Http.WebHost, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ref\dnn920\System.Web.Http.WebHost.dll</HintPath>
+      <HintPath>$(DnnRefPath)System.Web.Http.WebHost.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Mvc">
-      <HintPath>..\ref\dnn920\System.Web.Mvc.dll</HintPath>
+      <HintPath>$(DnnRefPath)System.Web.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.WebPages, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ref\dnn920\System.Web.WebPages.dll</HintPath>
+      <HintPath>$(DnnRefPath)System.Web.WebPages.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
