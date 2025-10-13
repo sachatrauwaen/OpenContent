@@ -9,7 +9,7 @@
     <TypeScriptToolsVersion>4.3</TypeScriptToolsVersion>
   </PropertyGroup>
   <PropertyGroup>
-    <DnnRefPath Condition="'$(DnnRefPath)' == ''">..\ref\dnn732\</DnnRefPath>
+    <DnnRefPath Condition="'$(DnnRefPath)' == ''">..\ref\dnn920\</DnnRefPath>
   </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
