@@ -27,12 +27,11 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
         /// </summary>
         private static readonly JsonSerializer Serializer = new JsonSerializer()
         {
-            #if DNN7
-            #else
+#if DNN7
+#else
+
+#endif
             TypeNameHandling = TypeNameHandling.Auto,
-            #endif
-            TypeNameHandling = TypeNameHandling.Auto,
-            
         };
 
         #endregion
@@ -97,7 +96,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
                     {
                         index = fieldconfig.Index;
                         sort = fieldconfig.Sort;
-                        if ( (fieldconfig.IndexType == "datetime" || fieldconfig.IndexType == "date") && value.Type == JTokenType.String)
+                        if ((fieldconfig.IndexType == "datetime" || fieldconfig.IndexType == "date") && value.Type == JTokenType.String)
                         {
                             DateTime d;
                             if (DateTime.TryParse(value.Value.ToString(), null, System.Globalization.DateTimeStyles.RoundtripKind, out d))
@@ -259,7 +258,7 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
             }
             catch (Exception)
             {
-                if(Debugger.IsAttached) Debugger.Break();
+                if (Debugger.IsAttached) Debugger.Break();
                 throw;
             }
         }
