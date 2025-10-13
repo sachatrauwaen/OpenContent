@@ -27,8 +27,12 @@ namespace Satrabel.OpenContent.Components.Lucene.Mapping
         /// </summary>
         private static readonly JsonSerializer Serializer = new JsonSerializer()
         {
-            TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
+            #if DNN7
+            #else
             TypeNameHandling = TypeNameHandling.Auto,
+            #endif
+            TypeNameHandling = TypeNameHandling.Auto,
+            
         };
 
         #endregion
