@@ -29,6 +29,7 @@ namespace Satrabel.OpenContent
     {
         private const string DATATYPE_DATA = "Data";
         private const string DATATYPE_SETTINGS = "Settings";
+        private const string DATATYPE_FORMSETTINGS = "FormSettings";
         private const string DATATYPE_FILTER = "Filter";
 
         #region Event Handlers
@@ -198,6 +199,9 @@ namespace Satrabel.OpenContent
                 case DATATYPE_SETTINGS:
                     json = ModuleContext.Settings["data"] as string;
                     break;
+                case DATATYPE_FORMSETTINGS:
+                    json = ModuleContext.Settings["formsettings"] as string;
+                    break;
                 case DATATYPE_FILTER:
                     json = ModuleContext.Settings["query"] as string;
                     break;
@@ -237,6 +241,7 @@ namespace Satrabel.OpenContent
                     sourceList.Items.Add(new ListItem(title, addData.Key));
                 }
             }
+            sourceList.Items.Add(new ListItem(DATATYPE_FORMSETTINGS, DATATYPE_FORMSETTINGS));
         }
 
         protected void cmdSave_Click(object sender, EventArgs e)
@@ -248,6 +253,10 @@ namespace Satrabel.OpenContent
             else if (sourceList.SelectedValue == DATATYPE_SETTINGS)
             {
                 SaveSettings();
+            }
+            else if (sourceList.SelectedValue == DATATYPE_FORMSETTINGS)
+            {
+                SaveFormSettings();
             }
             else if (sourceList.SelectedValue == DATATYPE_FILTER)
             {
@@ -469,6 +478,15 @@ namespace Satrabel.OpenContent
                 mc.DeleteModuleSetting(ModuleId, "data");
             else
                 mc.UpdateModuleSetting(ModuleId, "data", txtSource.Text);
+        }
+
+        private void SaveFormSettings()
+        {
+            ModuleController mc = new ModuleController();
+            if (string.IsNullOrEmpty(txtSource.Text))
+                mc.DeleteModuleSetting(ModuleId, "formsettings");
+            else
+                mc.UpdateModuleSetting(ModuleId, "formsettings", txtSource.Text);
         }
         protected void cmdCancel_Click(object sender, EventArgs e)
         {
