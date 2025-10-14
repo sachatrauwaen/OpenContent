@@ -183,6 +183,10 @@ namespace Satrabel.OpenContent.Components.Alpaca
                         {
                             newProp.Type = "array";
                             newField.Type = "checkbox";
+                            if (opts!= null && opts.OptionLabels != null && opts.OptionLabels.Count == prop.Value.Enum.Count)
+                            {
+                                newField.OptionLabels = opts.OptionLabels;
+                            }
                         }
                         if (optType == "select2")
                         {

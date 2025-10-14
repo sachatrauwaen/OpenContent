@@ -30,5 +30,8 @@ namespace Satrabel.OpenContent.Components.Alpaca
         [JsonProperty(PropertyName = "multilanguage", NullValueHandling = NullValueHandling.Ignore)]
         public bool MultiLanguage { get; set; }
 
+        [JsonProperty(PropertyName = "optionLabels", NullValueHandling = NullValueHandling.Ignore)]
+        public List<string> OptionLabels { get; set; }
+
     }
 }
