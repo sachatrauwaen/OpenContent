@@ -52,7 +52,7 @@ namespace Satrabel.OpenContent.Components
                 }
             else
             {
-                SyncronizeLinkedModules(PortalSettings.Current.PortalId, dataModuleId);
+                SyncronizeLinkedModules(ocModuleConfig.PortalId, dataModuleId);
             }
         }
 

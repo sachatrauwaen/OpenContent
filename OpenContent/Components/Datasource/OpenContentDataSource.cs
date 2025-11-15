@@ -289,7 +289,8 @@ namespace Satrabel.OpenContent.Components.Datasource
             //Index the content item
             if (context.Index)
             {
-                var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection);
+                // pass cultureCode in case there is no HttpContext (and therefore no PortalSettings.Current)
+                var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection, PortalSettings.Current == null ? context.CurrentCultureCode : null);
                 LuceneController.Instance.Add(content, indexConfig);
                 LuceneController.Instance.Commit();
             }
@@ -308,7 +309,8 @@ namespace Satrabel.OpenContent.Components.Datasource
             if (context.Index)
             {
                 var module = OpenContentModuleConfig.Create(ModuleController.Instance.GetModule(context.ModuleId, -1, false), new PortalSettings(context.PortalId));
-                var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection);
+                // add cultureCode in case there is no HttpContext (and therefore no PortalSettings.Current)
+                var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection, PortalSettings.Current == null ? context.CurrentCultureCode : null );
                 content.HydrateDefaultFields(indexConfig, module.Settings?.Manifest?.UsePublishTime ?? false);
                 LuceneController.Instance.Update(content, indexConfig);
                 LuceneController.Instance.Commit();
@@ -428,7 +430,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             additionalData.Json = data.ToString();
             additionalData.LastModifiedByUserId = context.UserId;
             additionalData.LastModifiedOnDate = DateTime.Now;
-            ctrl.UpdateData(additionalData);
+            ctrl.UpdateData(additionalData, context.PortalId);
             ClearUrlRewriterCache(context);
         }
 
