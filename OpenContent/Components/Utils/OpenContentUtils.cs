@@ -652,12 +652,20 @@ namespace Satrabel.OpenContent.Components
         {
             return GetIndexConfig(template.Key.TemplateDir, template.Collection);
         }
-        public static FieldConfig GetIndexConfig(FolderUri folder, string collection)
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="folder"></param>
+        /// <param name="collection"></param>
+        /// <param name="cultureCode">Optional, to be passed in when in scheduler context</param>
+        /// <returns></returns>
+        public static FieldConfig GetIndexConfig(FolderUri folder, string collection, string cultureCode = null)
         {
             try
             {
                 var fb = new FormBuilder(folder);
-                FieldConfig indexConfig = fb.BuildIndex(collection);
+                FieldConfig indexConfig = fb.BuildIndex(collection, cultureCode);
                 return indexConfig;
             }
             catch (Exception ex)

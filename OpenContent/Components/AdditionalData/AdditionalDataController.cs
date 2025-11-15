@@ -51,7 +51,7 @@ namespace Satrabel.OpenContent.Components
             }
         }
 
-        public void UpdateData(AdditionalDataInfo data)
+        public void UpdateData(AdditionalDataInfo data, int portalId = -1)
         {
             OpenContentVersion ver = new OpenContentVersion()
             {
@@ -65,7 +65,7 @@ namespace Satrabel.OpenContent.Components
             if (versions.Count == 0 || versions[0].Json.ToString() != data.Json)
             {
                 versions.Insert(0, ver);
-                if (versions.Count > App.Services.CreateGlobalSettingsRepository().GetMaxVersions())
+                if (versions.Count > App.Services.CreateGlobalSettingsRepository(portalId).GetMaxVersions())
                 {
                     versions.RemoveAt(versions.Count - 1);
                 }

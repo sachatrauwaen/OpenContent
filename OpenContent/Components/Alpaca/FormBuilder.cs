@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using DotNetNuke.Entities.Portals;
 using Newtonsoft.Json.Linq;
 using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Lucene.Config;
@@ -286,14 +287,20 @@ namespace Satrabel.OpenContent.Components.Alpaca
             return json;
         }
 
-        public FieldConfig BuildIndex(string key)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="cultureCode">Optional, to be passed in when in scheduler context</param>
+        /// <returns></returns>
+        public FieldConfig BuildIndex(string key, string cultureCode = null)
         {
             string prefix = (string.IsNullOrEmpty(key) || key == "Items") ? "" : key + "-";
             var file = new FileUri(_templateUri, $"{prefix}index.json");
             FieldConfig newConfig = JsonUtils.LoadJsonFileFromCacheOrDisk<FieldConfig>(file);
             if (newConfig == null)
             {
-                newConfig = CreateFieldConfigFromSchemaAndOptionFile(key);
+                newConfig = CreateFieldConfigFromSchemaAndOptionFile(key, PortalSettings.Current == null ? cultureCode : null);
                 var schemaFile = new FileUri(_templateUri, $"{prefix}schema.json");
                 var optionsFile = new FileUri(_templateUri, $"{prefix}options.json");
 
@@ -302,10 +309,16 @@ namespace Satrabel.OpenContent.Components.Alpaca
             return newConfig;
         }
 
-        private FieldConfig CreateFieldConfigFromSchemaAndOptionFile(string key)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="cultureCode">Optional, to be passed in when in scheduler context</param>
+        /// <returns></returns>
+        private FieldConfig CreateFieldConfigFromSchemaAndOptionFile(string key, string cultureCode = null)
         {
             var newConfig = new FieldConfig(true);
-            var jsonEdit = Build(key, DnnLanguageUtils.GetCurrentCultureCode(), true, true, false, false);
+            var jsonEdit = Build(key, PortalSettings.Current == null ? cultureCode : DnnLanguageUtils.GetCurrentCultureCode(), true, true, false, false);
             SchemaConfig schemaConfig = new SchemaConfig();
             var schemaJson = jsonEdit["schema"];
             if (schemaJson != null)
