@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AddContent.Action" xml:space="preserve">
+    <value>Ajouter</value>
+  </data>
+  <data name="EditData.Action" xml:space="preserve">
+    <value>Données brutes</value>
+  </data>
+  <data name="EditGlobalSettings.Action" xml:space="preserve">
+    <value>Paramètres globaux</value>
+  </data>
+  <data name="EditSettings.Action" xml:space="preserve">
+    <value>Paramètres</value>
+  </data>
+  <data name="EditTemplate.Action" xml:space="preserve">
+    <value>Fichiers du modèle</value>
+  </data>
+  <data name="Help.Action" xml:space="preserve">
+    <value>Aide</value>
+  </data>
+  <data name="ShareTemplate.Action" xml:space="preserve">
+    <value>Échange de modèles</value>
+  </data>
+  <data name="Intro.Text" xml:space="preserve">
+    <value>Démarrer</value>
+  </data>
+  <data name="EditContent.Action" xml:space="preserve">
+    <value>Modifier</value>
+  </data>
+  <data name="cmdSave.Text" xml:space="preserve">
+    <value>Enregistrer</value>
+  </data>
+  <data name="EditQuery.Action" xml:space="preserve">
+    <value>Filtres</value>
+  </data>
+  <data name="EditInit.Action" xml:space="preserve">
+    <value>Changer de modèle</value>
+  </data>
+  <data name="Add.Action" xml:space="preserve">
+    <value>Ajouter</value>
+  </data>
+  <data name="Edit.Action" xml:space="preserve">
+    <value>Modifier</value>
+  </data>
+  <data name="Builder.Action" xml:space="preserve">
+    <value>Constructeur</value>
+  </data>
+  <data name="FormSettings.Action" xml:space="preserve">
+    <value>Paramètres formulaire</value>
+  </data>
+  <data name="ModuleHelp.Text" xml:space="preserve">
+    <value>&lt;p&gt;
+&lt;br&gt;
+&lt;a href="https://opencontent.readme.io/docs/getting-started" &gt;Documentation de démarrage&lt;/a&gt;
+&lt;br&gt;
+&lt;/p&gt;
+
+
+&lt;h2&gt;Plus d'informations &lt;/h2&gt;
+
+&lt;p&gt;
+
+&lt;span style="color: #253340;"&gt;Documentation :&amp;nbsp;&lt;/span&gt;&lt;a href="https://opencontent.readme.io/" style="color: #2e8bcc; background: transparent;"&gt;https://opencontent.readme.io&lt;/a&gt;
+&lt;br&gt;
+&lt;/p&gt;
+&lt;p&gt;
+&lt;span style="color: #253340;"&gt;Démos :&amp;nbsp;&lt;/span&gt;&lt;a href="https://www.openextensions.net/dnn-modules/opencontent/bootstrap" style="color: #2e8bcc; background: transparent;"&gt;http://www.openextensions.net/dnn-modules/opencontent/bootstrap&lt;/a&gt;
+&lt;br&gt;
+&lt;/p&gt;
+&lt;p&gt;
+&lt;span style="color: #253340;"&gt;Modèles :&amp;nbsp;&lt;/span&gt;&lt;a href="https://www.openextensions.net/templates/open-content" style="color: #2e8bcc; background: transparent;"&gt;http://www.openextensions.net/templates/open-content&lt;/a&gt;
+&lt;br&gt;
+&lt;/p&gt;
+&lt;p&gt;
+&lt;span style="color: #253340;"&gt;Support :&amp;nbsp;&lt;/span&gt;&lt;a href="https://opencontent.readme.io/discuss" style="color: #2e8bcc; background: transparent;"&gt;http://https://opencontent.codeplex.com/discussions&lt;/a&gt;
+&lt;br&gt;
+&lt;/p&gt;</value>
+  </data>
+  <data name="Notifications.Action" xml:space="preserve">
+    <value>Notifications</value>
+  </data>
+  <data name="CloneModule.Action" xml:space="preserve">
+    <value>Cloner</value>
+  </data>
+  <data name="Create.Text" xml:space="preserve">
+    <value>Créer</value>
+  </data>
+  <data name="CretateHelp.Text" xml:space="preserve">
+    <value>Créez un nouveau modèle depuis le web.</value>
+  </data>
+  <data name="Advanced.Text" xml:space="preserve">
+    <value>Avancé...</value>
+  </data>
+  <data name="More.Text" xml:space="preserve">
+    <value>Plus...</value>
+  </data>
+  <data name="CreateNewTemplate.Text" xml:space="preserve">
+    <value>Nouveau dossier modèle</value>
+  </data>
+</root>
