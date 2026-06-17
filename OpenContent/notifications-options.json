@@ -47,7 +47,7 @@
             "helper": "Name part of the email address"
           },
           "ToEmail": {
-            "type": "email",
+            "type": "text",
             "dependencies": {
               "To": "custom"
             }
