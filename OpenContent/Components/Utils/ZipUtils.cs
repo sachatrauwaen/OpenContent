@@ -58,9 +58,20 @@ namespace Satrabel.OpenContent.Components
         {
             //ICSharpCode.SharpZipLib.Zip.ZipOutputStream strmZipStream = null;
             object strmZipStream = null;
-            strmZipStream = ZipInputStreamType.InvokeMember("", BindingFlags.CreateInstance, null, null, new object[] { stream }, null);
-            //FileSystemUtils.UnzipResources(new ZipInputStream(fuFile.FileContent), folder.PhysicalPath);
-            typeof(FileSystemUtils).InvokeMember("UnzipResources", BindingFlags.InvokeMethod, null, null, new object[] { strmZipStream, PhysicalPath });
+            try
+            {
+                strmZipStream = ZipInputStreamType.InvokeMember("", BindingFlags.CreateInstance, null, null, new object[] { stream }, null);
+                //FileSystemUtils.UnzipResources(new ZipInputStream(fuFile.FileContent), folder.PhysicalPath);
+                typeof(FileSystemUtils).InvokeMember("UnzipResources", BindingFlags.InvokeMethod, null, null, new object[] { strmZipStream, PhysicalPath });
+            }
+            finally
+            {
+                if (strmZipStream != null)
+                {
+                    //strmZipStream.Close();
+                    ZipInputStreamType.InvokeMember("Close", BindingFlags.InvokeMethod, null, strmZipStream, null);
+                }
+            }
         }
     }
 }

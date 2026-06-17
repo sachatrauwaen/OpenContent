@@ -532,13 +532,12 @@ namespace Satrabel.OpenContent.Components
                     }
                     folder = FolderManager.Instance.AddFolder(portalId, folderName);
                     var req = (HttpWebRequest)WebRequest.Create(fileName);
-                    Stream stream = req.GetResponse().GetResponseStream();
-                    //var file = FileManager.Instance.AddFile(folder, fileName, stream, true);
-                    //FileManager.Instance.UnzipFile(file);
-
-                    //FileSystemUtils.UnzipResources(new ZipInputStream(stream), folder.PhysicalPath);
-                    var zip = new ZipUtils();
-                    zip.UnzipFiles(stream, folder.PhysicalPath);
+                    using (var response = req.GetResponse())
+                    using (var stream = response.GetResponseStream())
+                    {
+                        var zip = new ZipUtils();
+                        zip.UnzipFiles(stream, folder.PhysicalPath);
+                    }
                     return GetDefaultTemplate(folder.PhysicalPath);
                 }
             }
