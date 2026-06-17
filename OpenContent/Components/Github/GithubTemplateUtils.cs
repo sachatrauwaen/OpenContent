@@ -55,20 +55,22 @@ namespace Satrabel.OpenContent.Components
             foreach (var repo in gitRepos.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries))
             {
                 string url = "https://api.github.com/repos/" + repo + "/contents";
-                HttpClient client = new HttpClient();
-                client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36");
-                var response = client.GetStringAsync(new Uri(url)).Result;
-                if (response != null)
-                {                    
-                    var content = Contents.FromJson(response);
-                    // Filter the .github folder
-                    var filteredContents = content.Where(c => !c.Name.Equals(".github", StringComparison.OrdinalIgnoreCase)).ToList();
-                    foreach (var item in filteredContents)
+                using (var client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36");
+                    var response = client.GetStringAsync(new Uri(url)).Result;
+                    if (response != null)
                     {
-                        item.Path = repo + "/contents/" + item.Path;
+                        var content = Contents.FromJson(response);
+                        // Filter the .github folder
+                        var filteredContents = content.Where(c => !c.Name.Equals(".github", StringComparison.OrdinalIgnoreCase)).ToList();
+                        foreach (var item in filteredContents)
+                        {
+                            item.Path = repo + "/contents/" + item.Path;
+                        }
+                        //content = JArray.Parse(response);
+                        contents.AddRange(filteredContents);
                     }
-                    //content = JArray.Parse(response);
-                    contents.AddRange(filteredContents);
                 }
             }
             return contents;
@@ -84,12 +86,14 @@ namespace Satrabel.OpenContent.Components
             List<Contents> contents = null;
             //string url = "https://api.github.com/repos/" + GetGitRepository(portalId) + "/contents/" + path;
             string url = "https://api.github.com/repos/" + path;
-            HttpClient client = new HttpClient();
-            client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36");
-            var response = client.GetStringAsync(new Uri(url)).Result;
-            if (response != null)
+            using (var client = new HttpClient())
             {
-                contents = Contents.FromJson(response);
+                client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36");
+                var response = client.GetStringAsync(new Uri(url)).Result;
+                if (response != null)
+                {
+                    contents = Contents.FromJson(response);
+                }
             }
             return contents;
         }
@@ -131,15 +135,17 @@ namespace Satrabel.OpenContent.Components
         */
         public static void SaveFileContent(Contents file, IFolderInfo folder)
         {
-            HttpClient client = new HttpClient();
-            client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36");
-            Task<HttpResponseMessage> getManifest = client.GetAsync(file.DownloadUrl);
-            var response = getManifest.GetAwaiter().GetResult();
-            if (response.IsSuccessStatusCode)
+            using (var client = new HttpClient())
             {
-                var content = response.Content.ReadAsStringAsync();
-                var res = content.GetAwaiter().GetResult();
-                File.WriteAllText(folder.PhysicalPath + file.Name, res);
+                client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36");
+                using (var response = client.GetAsync(file.DownloadUrl).GetAwaiter().GetResult())
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var res = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                        File.WriteAllText(folder.PhysicalPath + file.Name, res);
+                    }
+                }
             }
         }
 

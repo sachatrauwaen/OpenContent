@@ -35,11 +35,10 @@ namespace Satrabel.OpenContent.Components.Datasource
             var url = context.Config["listUrl"].ToString();
 
             using (var client = new HttpClient())
+            using (var response = client.GetAsync(url).GetAwaiter().GetResult())
             {
-                var response = client.GetAsync(url).GetAwaiter().GetResult(); ;
                 response.EnsureSuccessStatusCode();
-                var responseBody = response.Content.ReadAsStringAsync();
-                var content = responseBody.GetAwaiter().GetResult();
+                var content = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
                 items = JArray.Parse(content);
             }
             var dataList = items
@@ -144,11 +143,10 @@ namespace Satrabel.OpenContent.Components.Datasource
                 var url = query;
 
                 using (var client = new HttpClient())
+                using (var response = client.GetAsync(url).GetAwaiter().GetResult())
                 {
-                    var response = client.GetAsync(url).GetAwaiter().GetResult(); ;
                     response.EnsureSuccessStatusCode();
-                    var responseBody = response.Content.ReadAsStringAsync();
-                    var content = responseBody.GetAwaiter().GetResult();
+                    var content = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
                     items = JArray.Parse(content);
                 }
                 var dataList = items
@@ -176,11 +174,10 @@ namespace Satrabel.OpenContent.Components.Datasource
             var url = context.Config["detailUrl"].ToString();
 
             using (var client = new HttpClient())
+            using (var response = client.GetAsync(string.Format(url, id)).GetAwaiter().GetResult())
             {
-                var response = client.GetAsync(string.Format(url, id)).GetAwaiter().GetResult(); ;
                 response.EnsureSuccessStatusCode();
-                var responseBody = response.Content.ReadAsStringAsync();
-                var content = responseBody.GetAwaiter().GetResult();
+                var content = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
                 item = JObject.Parse(content);
             }
 
@@ -219,11 +216,10 @@ namespace Satrabel.OpenContent.Components.Datasource
             var url = context.Config["dataUrl"].ToString();
 
             using (var client = new HttpClient())
+            using (var response = client.GetAsync(string.Format(url, scope, key)).GetAwaiter().GetResult())
             {
-                var response = client.GetAsync(string.Format(url, scope, key)).GetAwaiter().GetResult(); ;
                 response.EnsureSuccessStatusCode();
-                var responseBody = response.Content.ReadAsStringAsync();
-                var content = responseBody.GetAwaiter().GetResult();
+                var content = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
                 item = JToken.Parse(content);
             }
             if (item != null)
@@ -257,9 +253,5 @@ namespace Satrabel.OpenContent.Components.Datasource
                 Item = null
             };
         }
-
     }
-
-
-
 }
