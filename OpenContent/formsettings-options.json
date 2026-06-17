@@ -57,7 +57,7 @@
                   "dependencies": {
                     "To": "custom"
                   },
-                  "helper": "Email address of the recipient"
+                  "helper": "Email address of the recipient (comma separated for multiple emails)"
                 },
                 "ToNameField": {
                   "dependencies": {
@@ -103,10 +103,12 @@
                   "helper": "Name of the field where the email is extracted"
                 },
                 "CcEmails": {
-                  "type": "mltext"
+                  "type": "mltext",
+                  "helper": "Email address (comma separated for multiple emails)"
                 },
                 "BccEmails": {
-                  "type": "mltext"
+                  "type": "mltext",
+                  "helper": "Email address (comma separated for multiple emails)"
                 },
                 "EmailSubject": {
                   "type": "mltext",
