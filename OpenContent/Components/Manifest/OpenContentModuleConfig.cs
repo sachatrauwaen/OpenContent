@@ -1,4 +1,5 @@
-﻿using DotNetNuke.Entities.Modules;
+﻿using System;
+using DotNetNuke.Entities.Modules;
 using System.Collections;
 using System.Collections.Generic;
 using DotNetNuke.Entities.Portals;
@@ -21,6 +22,12 @@ namespace Satrabel.OpenContent.Components
 
         private OpenContentModuleConfig(ModuleInfo viewModule, PortalSettings portalSettings)
         {
+            if (viewModule == null)
+            {
+                throw new ArgumentNullException(nameof(viewModule),
+                    "OpenContent module was null. The moduleId/tabId pair was not found or was not passed in.");
+            }
+
             ViewModule = new OpenContentModuleInfo(viewModule);
             PortalId = viewModule.PortalID;
             _moduleSettings = viewModule.ModuleSettings;
@@ -31,6 +38,12 @@ namespace Satrabel.OpenContent.Components
         public static OpenContentModuleConfig Create(int moduleId, int tabId, PortalSettings portalSettings)
         {
             var viewModule = DnnUtils.GetDnnModule(tabId, moduleId);
+            if (viewModule == null)
+            {
+                throw new InvalidOperationException(
+                    $"No DNN module found for tabId={tabId}, moduleId={moduleId}. " +
+                    "Check that the module exists on that page (e.g. dataSourceConfig membersModuleId/membersTabId, or OtherModule settings).");
+            }
             return Create(viewModule, portalSettings);
         }
 

@@ -15,6 +15,12 @@ namespace Satrabel.OpenContent.Components
         [Obsolete("This method is obsolete since aug 2017; use another constructor instead")]
         public OpenContentModuleInfo(ModuleInfo activeModule, Hashtable moduleSettings)
         {
+            if (activeModule == null)
+            {
+                throw new ArgumentNullException(nameof(activeModule),
+                    "DNN ModuleInfo was null. The moduleId/tabId pair was not found.");
+            }
+
             _moduleInfo = activeModule;
             ModuleId = activeModule.ModuleID;
             PortalId = activeModule.PortalID;
@@ -23,6 +29,12 @@ namespace Satrabel.OpenContent.Components
 
         public OpenContentModuleInfo(ModuleInfo activeModule)
         {
+            if (activeModule == null)
+            {
+                throw new ArgumentNullException(nameof(activeModule),
+                    "DNN ModuleInfo was null. The moduleId/tabId pair was not found.");
+            }
+
             _moduleInfo = activeModule;
             ModuleId = activeModule.ModuleID;
             PortalId = activeModule.PortalID;
