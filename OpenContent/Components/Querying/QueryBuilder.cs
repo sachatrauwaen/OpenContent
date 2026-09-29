@@ -21,7 +21,7 @@ namespace Satrabel.OpenContent.Components.Querying
             _indexConfig = config;
             Select = new Select
             {
-                PageSize = 100
+                PageSize = Select.DefaultPageSize
             };
         }
 

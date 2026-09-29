@@ -27,6 +27,9 @@ namespace Satrabel.OpenContent.Components.Alpaca
         [JsonProperty(PropertyName = "helper", NullValueHandling = NullValueHandling.Ignore)]
         public string Helper { get; set; }
 
+        [JsonProperty(PropertyName = "placeholder", NullValueHandling = NullValueHandling.Ignore)]
+        public string Placeholder { get; set; }
+
         [JsonProperty(PropertyName = "multilanguage", NullValueHandling = NullValueHandling.Ignore)]
         public bool MultiLanguage { get; set; }
 

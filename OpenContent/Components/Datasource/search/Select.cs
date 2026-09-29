@@ -5,6 +5,8 @@ namespace Satrabel.OpenContent.Components.Datasource.Search
 {
     public class Select
     {
+        public const int DefaultPageSize = 1000;
+
         public Select()
         {
             Filter = new FilterGroup();
