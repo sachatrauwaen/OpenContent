@@ -20,7 +20,7 @@ namespace Satrabel.OpenContent.Components.Lucene
         {
             Query = _DefaultQuery;
             Sort = Sort.RELEVANCE;
-            PageSize = 100;
+            PageSize = Select.DefaultPageSize;
         }
         public Query Filter { get; private set; }
         public Query Query { get; private set; }
@@ -50,7 +50,7 @@ namespace Satrabel.OpenContent.Components.Lucene
 
         private SelectQueryDefinition BuildPage(Select select)
         {
-            PageSize = select.PageSize == 0 ? 100 : select.PageSize;
+            PageSize = select.PageSize == 0 ? Select.DefaultPageSize : select.PageSize;
             PageIndex = select.PageIndex;
             // ????? DefaultNoResults = ;
             return this;

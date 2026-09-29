@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
+using Satrabel.OpenContent.Components.Datasource.Search;
 using Satrabel.OpenContent.Components.Json;
 using Satrabel.OpenContent.Components.Lucene.Config;
 using Satrabel.OpenContent.Components.Lucene.Mapping;
@@ -49,6 +50,11 @@ namespace Satrabel.OpenContent.Components.Alpaca
             };
             newSchema.Properties.Add("Filter", newSchemaFilter);
             OptionsConfig newOptions = new OptionsConfig(true);
+            newOptions.Fields.Add("MaxResults", new OptionsConfig()
+            {
+                Placeholder = Select.DefaultPageSize.ToString(),
+                Helper = $"Leave empty to use the default ({Select.DefaultPageSize})"
+            });
             OptionsConfig newOptionsFilter = new OptionsConfig(true);
             newOptions.Fields.Add("Filter", newOptionsFilter);
 
