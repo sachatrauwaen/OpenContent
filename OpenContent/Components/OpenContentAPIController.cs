@@ -930,29 +930,25 @@ namespace Satrabel.OpenContent.Components
                 }
                 App.Services.CacheAdapter.SyncronizeCache(module);
 
-                if (module.IsListMode() && module.Settings.Manifest.DeleteFiles)
+                if (module.IsListMode() && module.Settings.Manifest.DeleteFiles && content != null)
                 {
-                    string uploadfolder = "OpenContent/Files/" + ActiveModule.ModuleID;
-                    if (module.IsListMode())
-                    {
-                        uploadfolder += "/" + content.Key;// json["_id"].ToString();
-                    }
                     var folderManager = FolderManager.Instance;
                     var fileManager = FileManager.Instance;
-                    var moduleFolder = folderManager.GetFolder(PortalSettings.PortalId, uploadfolder);
-                    var files = folderManager.GetFiles(moduleFolder);
-                    fileManager.DeleteFiles(files);
-                    folderManager.DeleteFolder(moduleFolder);
 
-                    uploadfolder = "OpenContent/Cropped/" + ActiveModule.ModuleID;
-                    if (module.IsListMode())
+                    var uploadfolder = "OpenContent/Files/" + ActiveModule.ModuleID + "/" + content.Key;
+                    var moduleFolder = folderManager.GetFolder(PortalSettings.PortalId, uploadfolder);
+                    if (moduleFolder != null)
                     {
-                        uploadfolder += "/" + content.Key;// json["_id"].ToString();
+                        var files = folderManager.GetFiles(moduleFolder);
+                        fileManager.DeleteFiles(files);
+                        folderManager.DeleteFolder(moduleFolder);
                     }
+
+                    uploadfolder = "OpenContent/Cropped/" + ActiveModule.ModuleID + "/" + content.Key;
                     moduleFolder = folderManager.GetFolder(PortalSettings.PortalId, uploadfolder);
                     if (moduleFolder != null)
                     {
-                        files = folderManager.GetFiles(moduleFolder);
+                        var files = folderManager.GetFiles(moduleFolder);
                         fileManager.DeleteFiles(files);
                         folderManager.DeleteFolder(moduleFolder);
                     }
