@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -106,6 +107,89 @@ namespace OpenContentTests
         {
             var json = "{\"Data\":\"" + new string('x', 2100000) + "\"}";
             JsonUtils.JsonToDictionary(json);
+        }
+
+        [TestMethod]
+        public void JsonToDictionaryForLargeLists_ThrowsWhenExceedingMaxLargeListJsonLength()
+        {
+            var previous = JsonUtils.MaxLargeListJsonLength;
+            try
+            {
+                JsonUtils.MaxLargeListJsonLength = 100;
+                var token = JObject.Parse("{\"Data\":\"" + new string('x', 200) + "\"}");
+                try
+                {
+                    JsonUtils.JsonToDictionaryForLargeLists(token);
+                    Assert.Fail("Expected Exception for oversized large-list payload");
+                }
+                catch (Exception ex)
+                {
+                    StringAssert.Contains(ex.Message, "supportLargeLists");
+                    StringAssert.Contains(ex.Message, "max=100");
+                }
+            }
+            finally
+            {
+                JsonUtils.MaxLargeListJsonLength = previous;
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(System.Exception))]
+        public void JsonToDictionary_SupportLargeLists_ThrowsWhenStringExceedsMaxLargeListJsonLength()
+        {
+            var previous = JsonUtils.MaxLargeListJsonLength;
+            try
+            {
+                JsonUtils.MaxLargeListJsonLength = 50;
+                JsonUtils.JsonToDictionary("{\"Data\":\"" + new string('x', 80) + "\"}", supportLargeLists: true);
+            }
+            finally
+            {
+                JsonUtils.MaxLargeListJsonLength = previous;
+            }
+        }
+
+        [TestMethod]
+        public void GetQuerySelectFields_ReadsSelectArrayFromFilterQuery()
+        {
+            var query = JObject.Parse("{\"MaxResults\":100,\"Select\":[\"Title\",\"Summary\",\"Title\"]}");
+            var fields = JsonUtils.GetQuerySelectFields(query);
+            Assert.IsNotNull(fields);
+            Assert.AreEqual(2, fields.Count);
+            Assert.AreEqual("Title", fields[0]);
+            Assert.AreEqual("Summary", fields[1]);
+        }
+
+        [TestMethod]
+        public void GetQuerySelectFields_ReturnsNullWhenSelectMissingOrEmpty()
+        {
+            Assert.IsNull(JsonUtils.GetQuerySelectFields(JObject.Parse("{\"MaxResults\":10}")));
+            Assert.IsNull(JsonUtils.GetQuerySelectFields(JObject.Parse("{\"Select\":[]}")));
+            Assert.IsNull(JsonUtils.GetQuerySelectFields(null));
+        }
+
+        [TestMethod]
+        public void ProjectFields_KeepsOnlySelectedRootProperties_AndPreservesContext()
+        {
+            var source = JObject.Parse("{\"Title\":\"Cook\",\"Summary\":\"Bio\",\"Attachments\":[{\"Text\":\"x\"}],\"Context\":{\"Id\":\"1\"}}");
+            var projected = JsonUtils.ProjectFields(source, new List<string> { "Title", "Summary" });
+
+            Assert.AreEqual("Cook", projected["Title"].ToString());
+            Assert.AreEqual("Bio", projected["Summary"].ToString());
+            Assert.IsNull(projected["Attachments"]);
+            Assert.IsNotNull(projected["Context"]);
+            Assert.AreEqual("1", projected["Context"]["Id"].ToString());
+            // Source unchanged
+            Assert.IsNotNull(source["Attachments"]);
+        }
+
+        [TestMethod]
+        public void ProjectFields_WithoutFields_ReturnsSameInstance()
+        {
+            var source = JObject.Parse("{\"Title\":\"Cook\"}");
+            Assert.AreSame(source, JsonUtils.ProjectFields(source, null));
+            Assert.AreSame(source, JsonUtils.ProjectFields(source, new List<string>()));
         }
     }
 }

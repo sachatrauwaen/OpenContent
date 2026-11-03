@@ -34,7 +34,8 @@ namespace Satrabel.OpenContent.Components.Manifest
 
         /// <summary>
         /// When true, enables model conversion that supports large multi-item server-side
-        /// lists (avoids JavaScriptSerializer maxJsonLength). Default false keeps legacy conversion.
+        /// lists (avoids JavaScriptSerializer maxJsonLength). Still capped by
+        /// JsonUtils.MaxLargeListJsonLength (default 2 GB). Default false keeps legacy conversion.
         /// </summary>
         [JsonProperty(PropertyName = "supportLargeLists")]
         public bool SupportLargeLists { get; set; }

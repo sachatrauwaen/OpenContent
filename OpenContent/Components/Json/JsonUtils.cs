@@ -98,9 +98,15 @@ namespace Satrabel.OpenContent.Components.Json
         }
 
         /// <summary>
+        /// Safety ceiling (approximate JSON character count) for <c>supportLargeLists</c> conversion.
+        /// Default is 2 GB. Not unlimited — keep list models below this (e.g. with field selection or client-side data).
+        /// </summary>
+        public static long MaxLargeListJsonLength { get; set; } = 2L * 1024 * 1024 * 1024;
+
+        /// <summary>
         /// Converts JSON to a dynamic model for Razor templates.
         /// Default (<paramref name="supportLargeLists"/> false): System.Web.Helpers.Json.Decode (legacy).
-        /// Opt-in via template manifest <c>supportLargeLists: true</c>.
+        /// Opt-in via template manifest <c>supportLargeLists: true</c> (still capped by <see cref="MaxLargeListJsonLength"/>).
         /// </summary>
         public static dynamic JsonToDynamic(string json, bool supportLargeLists = false)
         {
@@ -110,6 +116,7 @@ namespace Satrabel.OpenContent.Components.Json
             }
             if (supportLargeLists)
             {
+                EnsureWithinLargeListLimit(json.Length);
                 return JsonToDynamicForLargeLists(ParseJsonToken(json));
             }
             return System.Web.Helpers.Json.Decode(json);
@@ -134,6 +141,7 @@ namespace Satrabel.OpenContent.Components.Json
 
         /// <summary>
         /// Large-list model conversion without a string round-trip (manifest <c>supportLargeLists</c>).
+        /// Capped by <see cref="MaxLargeListJsonLength"/>.
         /// </summary>
         public static dynamic JsonToDynamicForLargeLists(JToken token)
         {
@@ -141,13 +149,14 @@ namespace Satrabel.OpenContent.Components.Json
             {
                 return null;
             }
-            return OpenContentDynamicJson.Wrap(ConvertJToken(token));
+            long charCount = 0;
+            return OpenContentDynamicJson.Wrap(ConvertJToken(token, ref charCount));
         }
 
         /// <summary>
         /// Converts JSON to a dictionary model for Handlebars templates.
         /// Default (<paramref name="supportLargeLists"/> false): JavaScriptSerializer (legacy).
-        /// Opt-in via template manifest <c>supportLargeLists: true</c>.
+        /// Opt-in via template manifest <c>supportLargeLists: true</c> (still capped by <see cref="MaxLargeListJsonLength"/>).
         /// </summary>
         public static Dictionary<string, object> JsonToDictionary(string json, bool supportLargeLists = false)
         {
@@ -157,6 +166,7 @@ namespace Satrabel.OpenContent.Components.Json
             }
             if (supportLargeLists)
             {
+                EnsureWithinLargeListLimit(json.Length);
                 return JsonToDictionaryForLargeLists(ParseJsonToken(json));
             }
 
@@ -187,6 +197,7 @@ namespace Satrabel.OpenContent.Components.Json
 
         /// <summary>
         /// Large-list model conversion without a string round-trip (manifest <c>supportLargeLists</c>).
+        /// Capped by <see cref="MaxLargeListJsonLength"/>.
         /// </summary>
         public static Dictionary<string, object> JsonToDictionaryForLargeLists(JToken token)
         {
@@ -195,13 +206,76 @@ namespace Satrabel.OpenContent.Components.Json
                 return new DictionaryNoCase();
             }
 
-            var converted = ConvertJToken(token);
+            long charCount = 0;
+            var converted = ConvertJToken(token, ref charCount);
             if (converted is Dictionary<string, object> dictionary)
             {
                 return dictionary;
             }
 
             throw new ArgumentException("JSON root must be an object.", nameof(token));
+        }
+
+        private static void EnsureWithinLargeListLimit(long charCount)
+        {
+            if (charCount > MaxLargeListJsonLength)
+            {
+                throw new Exception(
+                    $"Too much data to deserialize {charCount} (max={MaxLargeListJsonLength} for supportLargeLists). " +
+                    "Reduce the list payload (e.g. fewer fields per item), or use a client side template.");
+            }
+        }
+
+        /// <summary>
+        /// Reads optional field projection from a Filter Settings query object (<c>Select</c> array).
+        /// Returns null when no projection is configured.
+        /// </summary>
+        public static IList<string> GetQuerySelectFields(JObject query)
+        {
+            var selectFields = query?["Select"] as JArray;
+            if (selectFields == null || !selectFields.Any())
+            {
+                return null;
+            }
+
+            var fields = new List<string>();
+            foreach (var field in selectFields)
+            {
+                var name = field?.ToString();
+                if (!string.IsNullOrWhiteSpace(name) && !fields.Contains(name))
+                {
+                    fields.Add(name);
+                }
+            }
+            return fields.Count > 0 ? fields : null;
+        }
+
+        /// <summary>
+        /// Keeps only the listed root properties on <paramref name="source"/> (field projection).
+        /// <c>Context</c> is always preserved when present. Returns a new object; does not mutate <paramref name="source"/>.
+        /// </summary>
+        public static JObject ProjectFields(JObject source, IList<string> fields)
+        {
+            if (source == null)
+            {
+                return null;
+            }
+            if (fields == null || fields.Count == 0)
+            {
+                return source;
+            }
+
+            var projected = new JObject();
+            var fieldSet = new HashSet<string>(fields, StringComparer.OrdinalIgnoreCase);
+            foreach (var property in source.Properties())
+            {
+                if (fieldSet.Contains(property.Name) ||
+                    string.Equals(property.Name, "Context", StringComparison.OrdinalIgnoreCase))
+                {
+                    projected[property.Name] = property.Value;
+                }
+            }
+            return projected;
         }
 
         private static JToken ParseJsonToken(string json)
@@ -214,7 +288,7 @@ namespace Satrabel.OpenContent.Components.Json
             }
         }
 
-        private static object ConvertJToken(JToken token)
+        private static object ConvertJToken(JToken token, ref long charCount)
         {
             if (token == null || token.Type == JTokenType.Null || token.Type == JTokenType.Undefined)
             {
@@ -228,14 +302,26 @@ namespace Satrabel.OpenContent.Components.Json
                         var dictionary = new DictionaryNoCase();
                         foreach (var property in ((JObject)token).Properties())
                         {
-                            dictionary[property.Name] = ConvertJToken(property.Value);
+                            charCount += property.Name.Length;
+                            EnsureWithinLargeListLimit(charCount);
+                            dictionary[property.Name] = ConvertJToken(property.Value, ref charCount);
                         }
                         return dictionary;
                     }
                 case JTokenType.Array:
-                    return ((JArray)token).Select(ConvertJToken).ToArray();
+                    {
+                        var array = (JArray)token;
+                        var values = new object[array.Count];
+                        for (var i = 0; i < array.Count; i++)
+                        {
+                            values[i] = ConvertJToken(array[i], ref charCount);
+                        }
+                        return values;
+                    }
                 case JTokenType.Integer:
                     {
+                        charCount += 8;
+                        EnsureWithinLargeListLimit(charCount);
                         var number = token.Value<long>();
                         if (number >= int.MinValue && number <= int.MaxValue)
                         {
@@ -244,26 +330,63 @@ namespace Satrabel.OpenContent.Components.Json
                         return number;
                     }
                 case JTokenType.Float:
+                    charCount += 8;
+                    EnsureWithinLargeListLimit(charCount);
                     return token.Value<double>();
                 case JTokenType.String:
-                    return token.Value<string>();
+                    {
+                        var value = token.Value<string>();
+                        charCount += value?.Length ?? 0;
+                        EnsureWithinLargeListLimit(charCount);
+                        return value;
+                    }
                 case JTokenType.Boolean:
+                    charCount += 5;
+                    EnsureWithinLargeListLimit(charCount);
                     return token.Value<bool>();
                 case JTokenType.Date:
-                    // Match previous Decode path after JObject.ToString(): dates become strings.
-                    return token.Value<DateTime>().ToString("yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture);
+                    {
+                        // Match previous Decode path after JObject.ToString(): dates become strings.
+                        var value = token.Value<DateTime>().ToString("yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture);
+                        charCount += value.Length;
+                        EnsureWithinLargeListLimit(charCount);
+                        return value;
+                    }
                 case JTokenType.Guid:
-                    return token.Value<Guid>().ToString();
+                    {
+                        var value = token.Value<Guid>().ToString();
+                        charCount += value.Length;
+                        EnsureWithinLargeListLimit(charCount);
+                        return value;
+                    }
                 case JTokenType.Bytes:
-                    return token.Value<byte[]>();
+                    {
+                        var value = token.Value<byte[]>();
+                        charCount += value?.Length ?? 0;
+                        EnsureWithinLargeListLimit(charCount);
+                        return value;
+                    }
                 case JTokenType.TimeSpan:
-                    return token.Value<TimeSpan>().ToString();
+                    {
+                        var value = token.Value<TimeSpan>().ToString();
+                        charCount += value.Length;
+                        EnsureWithinLargeListLimit(charCount);
+                        return value;
+                    }
                 case JTokenType.Uri:
-                    return token.Value<Uri>()?.ToString();
+                    {
+                        var value = token.Value<Uri>()?.ToString();
+                        charCount += value?.Length ?? 0;
+                        EnsureWithinLargeListLimit(charCount);
+                        return value;
+                    }
                 default:
                     {
                         var value = token as JValue;
-                        return value != null ? value.Value : token.ToString();
+                        var result = value != null ? value.Value : token.ToString();
+                        charCount += result?.ToString().Length ?? 0;
+                        EnsureWithinLargeListLimit(charCount);
+                        return result;
                     }
             }
         }
