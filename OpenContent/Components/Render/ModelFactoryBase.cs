@@ -113,15 +113,17 @@ namespace Satrabel.OpenContent.Components.Render
             if (_module.CanvasUnavailable) onlyData = true;
 
             JToken model = GetModelAsJson(onlyData);
-            return JsonUtils.JsonToDynamic(model.ToString());
+            return JsonUtils.JsonToDynamic(model, SupportLargeLists);
         }
         public Dictionary<string, object> GetModelAsDictionary(bool onlyData = false, bool onlyMainData = false)
         {
             if (_module.CanvasUnavailable) onlyData = true;
 
             JToken model = GetModelAsJson(onlyData, onlyMainData);
-            return JsonUtils.JsonToDictionary(model.ToString());
+            return JsonUtils.JsonToDictionary(model, SupportLargeLists);
         }
+
+        protected bool SupportLargeLists => _templateManifest != null && _templateManifest.SupportLargeLists;
 
         public abstract JToken GetModelAsJson(bool onlyData = false, bool onlyMainData = false);
 
@@ -605,7 +607,7 @@ namespace Satrabel.OpenContent.Components.Render
             if (!string.IsNullOrEmpty(manifest.DetailUrl))
             {
                 HandlebarsEngine hbEngine = new HandlebarsEngine();
-                var dynForHBS = JsonUtils.JsonToDictionary(dyn.ToString());
+                var dynForHBS = JsonUtils.JsonToDictionary(dyn, SupportLargeLists);
 
                 url = hbEngine.Execute(manifest.DetailUrl, dynForHBS);
                 url = HttpUtility.HtmlDecode(url);

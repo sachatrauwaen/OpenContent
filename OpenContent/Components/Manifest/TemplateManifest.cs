@@ -32,6 +32,13 @@ namespace Satrabel.OpenContent.Components.Manifest
         [JsonProperty(PropertyName = "clientSideData")]
         public bool ClientSideData { get; set; }
 
+        /// <summary>
+        /// When true, enables model conversion that supports large multi-item server-side
+        /// lists (avoids JavaScriptSerializer maxJsonLength). Default false keeps legacy conversion.
+        /// </summary>
+        [JsonProperty(PropertyName = "supportLargeLists")]
+        public bool SupportLargeLists { get; set; }
+
         [JsonProperty(PropertyName = "collection")]
         public string Collection { get; set; } = "Items";
 

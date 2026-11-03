@@ -13,6 +13,8 @@ using DotNetNuke.Entities.Portals;
 using DotNetNuke.Services.Cache;
 using Newtonsoft.Json;
 using Satrabel.OpenContent.Components.Files;
+using System.Globalization;
+using System.Web.Script.Serialization;
 
 namespace Satrabel.OpenContent.Components.Json
 {
@@ -95,59 +97,174 @@ namespace Satrabel.OpenContent.Components.Json
             return json;
         }
 
-        public static dynamic JsonToDynamic(string json)
+        /// <summary>
+        /// Converts JSON to a dynamic model for Razor templates.
+        /// Default (<paramref name="supportLargeLists"/> false): System.Web.Helpers.Json.Decode (legacy).
+        /// Opt-in via template manifest <c>supportLargeLists: true</c>.
+        /// </summary>
+        public static dynamic JsonToDynamic(string json, bool supportLargeLists = false)
         {
-            var dynamicObject = System.Web.Helpers.Json.Decode(json);
-            return dynamicObject;
+            if (string.IsNullOrWhiteSpace(json))
+            {
+                return null;
+            }
+            if (supportLargeLists)
+            {
+                return JsonToDynamicForLargeLists(ParseJsonToken(json));
+            }
+            return System.Web.Helpers.Json.Decode(json);
         }
 
-        public static Dictionary<string, object> JsonToDictionary(string json)
+        /// <summary>
+        /// Converts a <see cref="JToken"/> to a dynamic model.
+        /// Legacy path round-trips via ToString()+Decode; large-list path converts the token directly.
+        /// </summary>
+        public static dynamic JsonToDynamic(JToken token, bool supportLargeLists = false)
         {
-            var jsSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+            if (token == null || token.Type == JTokenType.Null || token.Type == JTokenType.Undefined)
+            {
+                return null;
+            }
+            if (supportLargeLists)
+            {
+                return JsonToDynamicForLargeLists(token);
+            }
+            return System.Web.Helpers.Json.Decode(token.ToString(Formatting.None));
+        }
 
+        /// <summary>
+        /// Large-list model conversion without a string round-trip (manifest <c>supportLargeLists</c>).
+        /// </summary>
+        public static dynamic JsonToDynamicForLargeLists(JToken token)
+        {
+            if (token == null || token.Type == JTokenType.Null || token.Type == JTokenType.Undefined)
+            {
+                return null;
+            }
+            return OpenContentDynamicJson.Wrap(ConvertJToken(token));
+        }
+
+        /// <summary>
+        /// Converts JSON to a dictionary model for Handlebars templates.
+        /// Default (<paramref name="supportLargeLists"/> false): JavaScriptSerializer (legacy).
+        /// Opt-in via template manifest <c>supportLargeLists: true</c>.
+        /// </summary>
+        public static Dictionary<string, object> JsonToDictionary(string json, bool supportLargeLists = false)
+        {
+            if (string.IsNullOrWhiteSpace(json))
+            {
+                return supportLargeLists ? new DictionaryNoCase() : new Dictionary<string, object>();
+            }
+            if (supportLargeLists)
+            {
+                return JsonToDictionaryForLargeLists(ParseJsonToken(json));
+            }
+
+            var jsSerializer = new JavaScriptSerializer();
             if (json.Length >= jsSerializer.MaxJsonLength)
             {
-                //jsSerializer.MaxJsonLength = jsSerializer.MaxJsonLength + 40000; //temp fix
-                throw new Exception($"Too much data to deserialize {json.Length} (max={jsSerializer.MaxJsonLength}). Please use a client side template to circumvent that.");
+                throw new Exception($"Too much data to deserialize {json.Length} (max={jsSerializer.MaxJsonLength}). Set \"supportLargeLists\": true on the template in manifest.json, or use a client side template.");
             }
-            // next line fails with large amount of data (>4MB). Use a client side template to fix that.
-            Dictionary<string, object> model = (Dictionary<string, object>)jsSerializer.DeserializeObject(json);
-            return model;
-            //return ToDictionaryNoCase(model);
+            return (Dictionary<string, object>)jsSerializer.DeserializeObject(json);
         }
 
-        private static DictionaryNoCase ToDictionaryNoCase(Dictionary<string, object> dic)
+        /// <summary>
+        /// Converts a <see cref="JToken"/> to a dictionary model.
+        /// Legacy path round-trips via ToString()+JavaScriptSerializer; large-list path converts the token directly.
+        /// </summary>
+        public static Dictionary<string, object> JsonToDictionary(JToken token, bool supportLargeLists = false)
         {
-            var newDic = new DictionaryNoCase();
-            foreach (KeyValuePair<string, object> entry in dic)
+            if (token == null || token.Type == JTokenType.Null || token.Type == JTokenType.Undefined)
             {
-                newDic.Add(entry.Key, ConvertObject(entry.Value));
+                return supportLargeLists ? new DictionaryNoCase() : new Dictionary<string, object>();
             }
-            return newDic;
+            if (supportLargeLists)
+            {
+                return JsonToDictionaryForLargeLists(token);
+            }
+            return JsonToDictionary(token.ToString(Formatting.None), false);
         }
-        private static object ConvertObject(object obj)
+
+        /// <summary>
+        /// Large-list model conversion without a string round-trip (manifest <c>supportLargeLists</c>).
+        /// </summary>
+        public static Dictionary<string, object> JsonToDictionaryForLargeLists(JToken token)
         {
-            if (obj is string)
+            if (token == null || token.Type == JTokenType.Null || token.Type == JTokenType.Undefined)
             {
-                return obj;
+                return new DictionaryNoCase();
             }
-            else if (obj is Dictionary<string, object>)
+
+            var converted = ConvertJToken(token);
+            if (converted is Dictionary<string, object> dictionary)
             {
-                return ToDictionaryNoCase((Dictionary<string, object>)obj);
+                return dictionary;
             }
-            else if (obj is IEnumerable)
+
+            throw new ArgumentException("JSON root must be an object.", nameof(token));
+        }
+
+        private static JToken ParseJsonToken(string json)
+        {
+            // Keep ISO date strings as strings (same as JavaScriptSerializer / Json.Decode).
+            using (var stringReader = new StringReader(json))
+            using (var jsonReader = new JsonTextReader(stringReader) { DateParseHandling = DateParseHandling.None })
             {
-                var arr = (IEnumerable)obj;
-                var newArr = new List<object>();
-                foreach (var item in arr)
-                {
-                    newArr.Add(ConvertObject(item));
-                }
-                return newArr.ToArray();
+                return JToken.Load(jsonReader);
             }
-            else
+        }
+
+        private static object ConvertJToken(JToken token)
+        {
+            if (token == null || token.Type == JTokenType.Null || token.Type == JTokenType.Undefined)
             {
-                return obj;
+                return null;
+            }
+
+            switch (token.Type)
+            {
+                case JTokenType.Object:
+                    {
+                        var dictionary = new DictionaryNoCase();
+                        foreach (var property in ((JObject)token).Properties())
+                        {
+                            dictionary[property.Name] = ConvertJToken(property.Value);
+                        }
+                        return dictionary;
+                    }
+                case JTokenType.Array:
+                    return ((JArray)token).Select(ConvertJToken).ToArray();
+                case JTokenType.Integer:
+                    {
+                        var number = token.Value<long>();
+                        if (number >= int.MinValue && number <= int.MaxValue)
+                        {
+                            return (int)number;
+                        }
+                        return number;
+                    }
+                case JTokenType.Float:
+                    return token.Value<double>();
+                case JTokenType.String:
+                    return token.Value<string>();
+                case JTokenType.Boolean:
+                    return token.Value<bool>();
+                case JTokenType.Date:
+                    // Match previous Decode path after JObject.ToString(): dates become strings.
+                    return token.Value<DateTime>().ToString("yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture);
+                case JTokenType.Guid:
+                    return token.Value<Guid>().ToString();
+                case JTokenType.Bytes:
+                    return token.Value<byte[]>();
+                case JTokenType.TimeSpan:
+                    return token.Value<TimeSpan>().ToString();
+                case JTokenType.Uri:
+                    return token.Value<Uri>()?.ToString();
+                default:
+                    {
+                        var value = token as JValue;
+                        return value != null ? value.Value : token.ToString();
+                    }
             }
         }
 

@@ -280,7 +280,7 @@ namespace Satrabel.OpenContent.Components.Form
                     data = FormUtils.GenerateFormData(form.ToString(), out formData);
                     if (item != null)
                     {
-                        data.Item = JsonUtils.JsonToDynamic(item.ToString());
+                        data.Item = JsonUtils.JsonToDynamic(item);
                     }
                 }
                 // Send emails

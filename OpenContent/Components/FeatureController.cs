@@ -263,7 +263,7 @@ namespace Satrabel.OpenContent.Components
             // if we have, we use the OpenContent url as default
             if (!string.IsNullOrEmpty(settings.Template?.Main?.DnnSearchUrl))
             {
-                var dicForHbs = JsonUtils.JsonToDictionary(contentData.ToString());
+                var dicForHbs = JsonUtils.JsonToDictionary(contentData, settings.Template.SupportLargeLists);
                 var hbEngine = new HandlebarsEngine();
                 url = hbEngine.ExecuteWithoutFaillure(settings.Template.Main.DnnSearchUrl, dicForHbs, url);
             }
@@ -284,7 +284,7 @@ namespace Satrabel.OpenContent.Components
             // get the title from the template, if it's there
             if (!string.IsNullOrEmpty(settings.Template?.Main?.DnnSearchTitle))
             {
-                var dicForHbs = JsonUtils.JsonToDictionary(contentData.ToString());
+                var dicForHbs = JsonUtils.JsonToDictionary(contentData, settings.Template.SupportLargeLists);
                 var hbEngine = new HandlebarsEngine();
                 retval.Title = hbEngine.ExecuteWithoutFaillure(settings.Template.Main.DnnSearchTitle, dicForHbs, modInfo.ModuleTitle);
             }
@@ -307,7 +307,7 @@ namespace Satrabel.OpenContent.Components
             // - otherwise just get the whole item contents
             if (!string.IsNullOrEmpty(settings.Template?.Main?.DnnSearchText))
             {
-                var dicForHbs = JsonUtils.JsonToDictionary(contentData.ToString());
+                var dicForHbs = JsonUtils.JsonToDictionary(contentData, settings.Template.SupportLargeLists);
                 var hbEngine = new HandlebarsEngine();
                 retval.Body = hbEngine.ExecuteWithoutFaillure(settings.Template.Main.DnnSearchText, dicForHbs, modInfo.ModuleTitle);
             }
@@ -324,7 +324,7 @@ namespace Satrabel.OpenContent.Components
             // if that's not there, we'll use the body text for the search document
             if (!string.IsNullOrEmpty(settings.Template?.Main?.DnnSearchDescription))
             {
-                var dicForHbs = JsonUtils.JsonToDictionary(contentData.ToString());
+                var dicForHbs = JsonUtils.JsonToDictionary(contentData, settings.Template.SupportLargeLists);
                 var hbEngine = new HandlebarsEngine();
                 retval.Description = hbEngine.ExecuteWithoutFaillure(settings.Template.Main.DnnSearchDescription, dicForHbs, modInfo.ModuleTitle);
             }
@@ -337,7 +337,7 @@ namespace Satrabel.OpenContent.Components
             // for tags we don't use a fallback as they have not been supported before
             if (!string.IsNullOrEmpty(settings.Template?.Main?.DnnSearchTags))
             {
-                var dicForHbs = JsonUtils.JsonToDictionary(contentData.ToString());
+                var dicForHbs = JsonUtils.JsonToDictionary(contentData, settings.Template.SupportLargeLists);
                 var hbEngine = new HandlebarsEngine();
 
                 string tagsString = hbEngine.ExecuteWithoutFaillure(settings.Template.Main.DnnSearchTags, dicForHbs, modInfo.ModuleTitle);

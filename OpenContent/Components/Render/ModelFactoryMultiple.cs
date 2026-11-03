@@ -65,7 +65,7 @@ namespace Satrabel.OpenContent.Components.Render
                     context["CreatedOnDate"] = item.CreatedOnDate.ToString("yyyy-MM-ddTHH:mm:ss");                    
                     JsonUtils.SimplifyJson(model, GetCurrentCultureCode());
                     EnhanceSelect2(model, true, item.Key);
-                    yield return JsonUtils.JsonToDictionary(model.ToString());
+                    yield return JsonUtils.JsonToDictionary(model, SupportLargeLists);
                 }
             }
         }

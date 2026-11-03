@@ -391,6 +391,7 @@
     <Compile Include="Components\Json\JsonMergeOptionArrayHandling.cs" />
     <Compile Include="Components\Json\JsonMergeOptions.cs" />
     <Compile Include="Components\Json\JsonUtils.cs" />
+    <Compile Include="Components\Json\OpenContentDynamicJson.cs" />
     <Compile Include="Components\DnnEntitiesAPIController.cs" />
     <Compile Include="Components\Utils\HttpUtils.cs" />
     <Compile Include="Components\OpenContentController.cs" />
