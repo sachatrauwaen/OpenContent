@@ -102,6 +102,54 @@ namespace OpenContentTests
         }
 
         [TestMethod]
+        public void JsonToDynamicForLargeLists_SupportsIndexerAssignment_LikeOcUtilsRegisterDynamic()
+        {
+            dynamic settings = JsonUtils.JsonToDynamicForLargeLists(JObject.Parse("{\"ListItemTemplate\":\"x.cshtml\"}"));
+            Assert.IsNull(settings.GridSettings);
+
+            // HolonCom.OcUtils.RegisterDynamic uses source[name] = new ExpandoObject()
+            settings["GridSettings"] = new System.Dynamic.ExpandoObject();
+            settings.IsMobile = true;
+
+            Assert.IsNotNull(settings.GridSettings);
+            Assert.IsTrue((bool)settings.IsMobile);
+        }
+
+        [TestMethod]
+        public void JsonToDynamicForLargeLists_ArrayMissingMembersReturnNull_LikeDynamicJsonArray()
+        {
+            // Templates do dataitem.Attachments.RelatedUrls even when Attachments is [].
+            // DynamicJsonArray returns null; raw object[] throws RuntimeBinderException.
+            dynamic model = JsonUtils.JsonToDynamicForLargeLists(JObject.Parse("{\"Attachments\":[]}"));
+            Assert.AreEqual(0, (int)model.Attachments.Length);
+            Assert.IsNull(model.Attachments.RelatedUrls);
+
+            dynamic withUrls = JsonUtils.JsonToDynamicForLargeLists(
+                JObject.Parse("{\"Attachments\":{\"RelatedUrls\":[{\"Url\":\"http://x\"}]}}"));
+            Assert.AreEqual(1, (int)withUrls.Attachments.RelatedUrls.Length);
+            Assert.AreEqual("http://x", (string)withUrls.Attachments.RelatedUrls[0].Url);
+        }
+
+        [TestMethod]
+        public void JsonToDynamicForLargeLists_ItemsLengthWorksForRazorCondition()
+        {
+            dynamic empty = JsonUtils.JsonToDynamicForLargeLists(JObject.Parse("{\"Items\":[]}"));
+            Assert.IsFalse(empty.Items != null && empty.Items.Length > 0);
+
+            dynamic withItems = JsonUtils.JsonToDynamicForLargeLists(
+                JObject.Parse("{\"Items\":[{\"Title\":\"A\"},{\"Title\":\"B\"}]}"));
+            Assert.IsTrue(withItems.Items != null && withItems.Items.Length > 0);
+            Assert.AreEqual(2, (int)withItems.Items.Length);
+
+            var titles = new List<string>();
+            foreach (var item in withItems.Items)
+            {
+                titles.Add((string)item.Title);
+            }
+            CollectionAssert.AreEqual(new[] { "A", "B" }, titles);
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(System.Exception))]
         public void JsonToDictionary_LegacyPath_ThrowsOnPayloadLargerThanMaxJsonLength()
         {
