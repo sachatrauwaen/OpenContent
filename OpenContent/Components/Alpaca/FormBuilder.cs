@@ -73,8 +73,11 @@ namespace Satrabel.OpenContent.Components.Alpaca
             List<string> fieldLst = new List<string>();
             GetFields(newSchemaFilter, newOptionsFilter, schemaConfig, optionsConfig, fieldLst, indexConfig);
 
-            // Select (field projection for list models) — content fields only, before system sort fields
+            // Select (field projection for list models) — content fields only, before system sort fields.
+            // Start from filterable fields, then add other indexed root fields (e.g. ckeditor Summary)
+            // that GetFields skips because they are not useful as Filter controls.
             var selectFieldLst = new List<string>(fieldLst);
+            AppendIndexedRootFieldsForSelect(selectFieldLst, indexConfig);
             SchemaConfig newSchemaSelect = new SchemaConfig()
             {
                 Type = "array",
@@ -89,7 +92,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
             newOptions.Fields.Add("Select", new OptionsConfig()
             {
                 Type = "checkbox",
-                Helper = "Optional. When set, only these fields are kept on each list item (smaller models for large lists). Always include fields used by detail URLs or list templates."
+                Helper = "Optional field whitelist for list models. When set, each list item keeps only the checked fields (plus Context). The list shows indexed root fields (including HTML fields such as Summary). Non-indexed fields (often large ones such as Attachments) are not listed and are omitted when Select is set. Include every field your list template or detail URL needs."
             });
 
             fieldLst.Add(JsonMappingUtils.FIELD_TIMESTAMP);
@@ -136,6 +139,26 @@ namespace Satrabel.OpenContent.Components.Alpaca
 
             //File.WriteAllText(TemplateUri.PhysicalFullDirectory + "\\test.json", json.ToString());
             return json;
+        }
+
+        /// <summary>
+        /// Adds indexed root fields to the Select checklist. Filter UI omits types like ckeditor;
+        /// Select still needs them for list projection (e.g. keep Summary, drop Attachments).
+        /// </summary>
+        private static void AppendIndexedRootFieldsForSelect(List<string> selectFieldLst, FieldConfig indexConfig)
+        {
+            if (selectFieldLst == null || indexConfig?.Fields == null)
+            {
+                return;
+            }
+
+            foreach (var field in indexConfig.Fields)
+            {
+                if (field.Value != null && field.Value.Index && !selectFieldLst.Contains(field.Key))
+                {
+                    selectFieldLst.Add(field.Key);
+                }
+            }
         }
 
         private static void GetFields(SchemaConfig newSchemaFilter, OptionsConfig newOptionsFilter, SchemaConfig schemaConfig, OptionsConfig optionsConfig, List<string> fieldLst, FieldConfig indexConfig, string prefix = "")
