@@ -29,12 +29,14 @@ namespace Satrabel.OpenContent.Components.Json
                 return value;
             }
 
-            if (value is IDictionary<string, object> dict)
+            var dict = value as IDictionary<string, object>;
+            if (dict != null)
             {
                 return new OpenContentDynamicJson(dict);
             }
 
-            if (value is object[] array)
+            var array = value as object[];
+            if (array != null)
             {
                 var wrapped = new object[array.Length];
                 for (var i = 0; i < array.Length; i++)

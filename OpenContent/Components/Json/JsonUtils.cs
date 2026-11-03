@@ -208,7 +208,8 @@ namespace Satrabel.OpenContent.Components.Json
 
             long charCount = 0;
             var converted = ConvertJToken(token, ref charCount);
-            if (converted is Dictionary<string, object> dictionary)
+            var dictionary = converted as Dictionary<string, object>;
+            if (dictionary != null)
             {
                 return dictionary;
             }
