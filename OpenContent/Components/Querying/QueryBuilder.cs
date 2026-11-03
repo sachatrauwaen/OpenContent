@@ -34,6 +34,7 @@ namespace Satrabel.OpenContent.Components.Querying
             else
             {
                 BuildPage(query);
+                BuildSelect(query);
                 BuildFilter(query, addWorkflowFilter, userId, cultureCode, roles, queryString);
                 BuildSort(query, cultureCode);
             }
@@ -52,6 +53,24 @@ namespace Satrabel.OpenContent.Components.Querying
             if (sDefaultNoResults != null && sDefaultNoResults.Type == JTokenType.Boolean)
             {
                 DefaultNoResults = (bool)sDefaultNoResults.Value;
+            }
+            return this;
+        }
+
+        private QueryBuilder BuildSelect(JObject query)
+        {
+            var selectFields = query["Select"] as JArray;
+            if (selectFields == null)
+            {
+                return this;
+            }
+            foreach (var field in selectFields)
+            {
+                var name = field?.ToString();
+                if (!string.IsNullOrWhiteSpace(name) && !Select.Fields.Contains(name))
+                {
+                    Select.Fields.Add(name);
+                }
             }
             return this;
         }

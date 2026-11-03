@@ -78,6 +78,7 @@
   <ItemGroup>
     <Compile Include="HandlebarsTests.cs" />
     <Compile Include="JsonUtilsTests.cs" />
+    <Compile Include="QueryBuilderSelectTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

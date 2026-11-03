@@ -125,6 +125,24 @@ namespace Satrabel.OpenContent.Components.Render
 
         protected bool SupportLargeLists => _templateManifest != null && _templateManifest.SupportLargeLists;
 
+        /// <summary>
+        /// Field projection from Filter Settings query (<c>Select</c>). Null = keep all fields.
+        /// </summary>
+        protected IList<string> QuerySelectFields
+        {
+            get
+            {
+                try
+                {
+                    return JsonUtils.GetQuerySelectFields(_module?.Settings?.Query);
+                }
+                catch
+                {
+                    return null;
+                }
+            }
+        }
+
         public abstract JToken GetModelAsJson(bool onlyData = false, bool onlyMainData = false);
 
         protected void EnhanceImages(JObject model)

@@ -73,6 +73,25 @@ namespace Satrabel.OpenContent.Components.Alpaca
             List<string> fieldLst = new List<string>();
             GetFields(newSchemaFilter, newOptionsFilter, schemaConfig, optionsConfig, fieldLst, indexConfig);
 
+            // Select (field projection for list models) — content fields only, before system sort fields
+            var selectFieldLst = new List<string>(fieldLst);
+            SchemaConfig newSchemaSelect = new SchemaConfig()
+            {
+                Type = "array",
+                Title = "Select",
+                Items = new SchemaConfig()
+                {
+                    Type = "string",
+                    Enum = selectFieldLst
+                }
+            };
+            newSchema.Properties.Add("Select", newSchemaSelect);
+            newOptions.Fields.Add("Select", new OptionsConfig()
+            {
+                Type = "checkbox",
+                Helper = "Optional. When set, only these fields are kept on each list item (smaller models for large lists). Always include fields used by detail URLs or list templates."
+            });
+
             fieldLst.Add(JsonMappingUtils.FIELD_TIMESTAMP);
             fieldLst.Add(JsonMappingUtils.FIELD_CREATED_ON_DATE);
             // Sort

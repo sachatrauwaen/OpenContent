@@ -12,13 +12,20 @@ namespace Satrabel.OpenContent.Components.Datasource.Search
             Filter = new FilterGroup();
             Query = new FilterGroup();
             Sort = new List<SortRule>();
+            Fields = new List<string>();
         }
         public FilterGroup Filter { get; private set; }
         public FilterGroup Query { get; private set; }
         public List<SortRule> Sort { get; private set; }
+        /// <summary>
+        /// Optional field projection from Filter Settings query "Select".
+        /// When non-empty, list item JSON is reduced to these root property names.
+        /// </summary>
+        public List<string> Fields { get; private set; }
         public int PageSize { get; set; }
         public int PageIndex { get; set; }
 
         public bool IsEmptyQuery => !Query.FilterRules.Any() && !Query.FilterGroups.Any();
+        public bool HasFieldProjection => Fields != null && Fields.Count > 0;
     }
 }

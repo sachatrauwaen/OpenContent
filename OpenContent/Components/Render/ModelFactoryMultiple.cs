@@ -58,7 +58,11 @@ namespace Satrabel.OpenContent.Components.Render
             {
                 foreach (var item in _dataList)
                 {
-                    var model = item.Data.DeepClone() as JObject;
+                    var model = PrepareListItemJson(item);
+                    if (model == null)
+                    {
+                        continue;
+                    }
                     JObject context = new JObject();
                     model["Context"] = context;
                     context["Id"] = item.Id;
@@ -90,7 +94,11 @@ namespace Satrabel.OpenContent.Components.Render
                 var mainUrl = _module.GetUrl(_detailTabId, GetCurrentCultureCode());
                 foreach (var item in _dataList)
                 {
-                    JObject dyn = item.Data as JObject;
+                    JObject dyn = PrepareListItemJson(item);
+                    if (dyn == null)
+                    {
+                        continue;
+                    }
                     JObject context = new JObject();
                     dyn["Context"] = context;
                     context["Id"] = item.Id;
@@ -142,6 +150,29 @@ namespace Satrabel.OpenContent.Components.Render
                 }
                 context["AddUrl"] = _module.EditUrl(_module.ViewModule.ModuleId);
             }
+        }
+
+        /// <summary>
+        /// Clone item data and optionally project to Filter Settings <c>Select</c> fields.
+        /// Clones so projection never mutates the datasource cache.
+        /// </summary>
+        private JObject PrepareListItemJson(IDataItem item)
+        {
+            if (item?.Data == null)
+            {
+                return null;
+            }
+            var model = item.Data.DeepClone() as JObject;
+            if (model == null)
+            {
+                return null;
+            }
+            var selectFields = QuerySelectFields;
+            if (selectFields != null && selectFields.Count > 0)
+            {
+                model = JsonUtils.ProjectFields(model, selectFields);
+            }
+            return model;
         }
 
         private void EnhanceUser(JObject model, int createdByUserId)
