@@ -239,5 +239,28 @@ namespace OpenContentTests
             Assert.AreSame(source, JsonUtils.ProjectFields(source, null));
             Assert.AreSame(source, JsonUtils.ProjectFields(source, new List<string>()));
         }
+
+        [TestMethod]
+        public void ProjectFields_DoesNotAffectDetailUrlWhenBuiltFromFullItem()
+        {
+            // Select whitelist for list models must not strip fields used by detailUrl.
+            // Detail URL is built from a full clone; list item keeps the projected payload.
+            var source = JObject.Parse(
+                "{\"Title\":\"A Group\",\"Summary\":\"Over 100\"," +
+                "\"PageInfo\":{\"Name\":\"a-group-of-family-trees-of-people-associated-with-james-cook\"}," +
+                "\"Attachments\":[{\"Text\":\"heavy\"}]}");
+            var listItem = JsonUtils.ProjectFields(source, new List<string> { "Title", "Summary" });
+            var detailUrlSource = source.DeepClone() as JObject;
+
+            Assert.IsNull(listItem["PageInfo"]);
+            Assert.IsNull(listItem["Attachments"]);
+
+            var hb = new HandlebarsEngine();
+            var leanUrl = hb.Execute("{{PageInfo.Name}}", JsonUtils.JsonToDictionary(listItem, true));
+            var fullUrl = hb.Execute("{{PageInfo.Name}}", JsonUtils.JsonToDictionary(detailUrlSource, true));
+
+            Assert.AreEqual(string.Empty, leanUrl);
+            Assert.AreEqual("a-group-of-family-trees-of-people-associated-with-james-cook", fullUrl);
+        }
     }
 }

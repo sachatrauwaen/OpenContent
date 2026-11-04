@@ -92,7 +92,7 @@ namespace Satrabel.OpenContent.Components.Alpaca
             newOptions.Fields.Add("Select", new OptionsConfig()
             {
                 Type = "checkbox",
-                Helper = "Optional field whitelist for list models. When set, each list item keeps only the checked fields (plus Context). The list shows indexed root fields (including HTML fields such as Summary). Non-indexed fields (often large ones such as Attachments) are not listed and are omitted when Select is set. Include every field your list template or detail URL needs."
+                Helper = "Optional field whitelist for list models. When set, each list item keeps only the checked fields (plus Context). Detail URLs are always built from the full item. Include every field your list template needs; omit heavy fields (Attachments, long HTML) to keep large lists under the model size limit."
             });
 
             fieldLst.Add(JsonMappingUtils.FIELD_TIMESTAMP);

@@ -47,7 +47,9 @@ namespace Satrabel.OpenContent.Components.Render
         }
 
         /// <summary>
-        /// Gets the model as dictionary list, used by Url Rewriter
+        /// Gets the model as dictionary list, used by Url Rewriter.
+        /// Uses the full item (no Filter Settings Select projection) so detailUrl
+        /// templates (e.g. {{PageInfo.Name}}) still resolve when list models are lean.
         /// </summary>
         /// <returns></returns>
         public IEnumerable<Dictionary<string, object>> GetModelAsDictionaryList()
@@ -58,7 +60,7 @@ namespace Satrabel.OpenContent.Components.Render
             {
                 foreach (var item in _dataList)
                 {
-                    var model = PrepareListItemJson(item);
+                    var model = CloneItemData(item);
                     if (model == null)
                     {
                         continue;
@@ -122,7 +124,9 @@ namespace Satrabel.OpenContent.Components.Render
                         {
                             context["EditUrl"] = _module.EditUrl("id", item.Id, _module.ViewModule.ModuleId);
                         }
-                        context["DetailUrl"] = GenerateDetailUrl(item, dyn, _manifest, GetCurrentCultureCode(), _detailTabId);
+                        // DetailUrl from full item — Select must not strip fields used by detailUrl.
+                        // Only the resulting URL string is kept on the (possibly projected) list item.
+                        context["DetailUrl"] = GenerateDetailUrl(item, PrepareDetailUrlItemJson(item) ?? dyn, _manifest, GetCurrentCultureCode(), _detailTabId);
                         context["MainUrl"] = mainUrl;
                     }
                     items.Add(dyn);
@@ -152,17 +156,19 @@ namespace Satrabel.OpenContent.Components.Render
             }
         }
 
+        private static JObject CloneItemData(IDataItem item)
+        {
+            return item?.Data?.DeepClone() as JObject;
+        }
+
         /// <summary>
-        /// Clone item data and optionally project to Filter Settings <c>Select</c> fields.
+        /// Clone item data and optionally project to Filter Settings <c>Select</c> fields
+        /// for the list model (keeps large-list payloads under MaxLargeListJsonLength).
         /// Clones so projection never mutates the datasource cache.
         /// </summary>
         private JObject PrepareListItemJson(IDataItem item)
         {
-            if (item?.Data == null)
-            {
-                return null;
-            }
-            var model = item.Data.DeepClone() as JObject;
+            var model = CloneItemData(item);
             if (model == null)
             {
                 return null;
@@ -172,6 +178,20 @@ namespace Satrabel.OpenContent.Components.Render
             {
                 model = JsonUtils.ProjectFields(model, selectFields);
             }
+            return model;
+        }
+
+        /// <summary>
+        /// Full item clone for detail URL generation (never projected by Select).
+        /// </summary>
+        private JObject PrepareDetailUrlItemJson(IDataItem item)
+        {
+            var model = CloneItemData(item);
+            if (model == null)
+            {
+                return null;
+            }
+            JsonUtils.SimplifyJson(model, GetCurrentCultureCode());
             return model;
         }
 
