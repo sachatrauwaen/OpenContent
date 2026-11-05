@@ -124,7 +124,7 @@
     <value>Save</value>
   </data>
   <data name="cmdSaveClose.Text" xml:space="preserve">
-    <value>Save and Close</value>
+    <value>Save &amp; Close</value>
   </data>
   <data name="lDataSource.Text" xml:space="preserve">
     <value>Page - Module</value>

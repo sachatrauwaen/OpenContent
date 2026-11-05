@@ -65,7 +65,7 @@
     <value>Enregistrer</value>
   </data>
   <data name="cmdSaveClose.Text" xml:space="preserve">
-    <value>Enregistrer et fermer</value>
+    <value>Enregistrer &amp; fermer</value>
   </data>
   <data name="OverwriteTemplate.Text" xml:space="preserve">
     <value>Écraser avec le modèle sélectionné</value>
