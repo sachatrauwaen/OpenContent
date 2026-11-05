@@ -286,13 +286,8 @@ namespace Satrabel.OpenContent.Components.Datasource
             ctrl.AddContent(content);
             context.Id = content.Id;
 
-            //Index the content item
-            if (context.Index)
-            {
-                var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection);
-                LuceneController.Instance.Add(content, indexConfig);
-                LuceneController.Instance.Commit();
-            }
+            // Index must match Update/ReIndex: hydrate publish defaults, then write Lucene doc.
+            IndexContentItem(context, content, context.Collection, isUpdate: false);
             ClearUrlRewriterCache(context);
             Notify(context, data, "add");
         }
@@ -305,14 +300,7 @@ namespace Satrabel.OpenContent.Components.Datasource
             content.LastModifiedByUserId = context.UserId;
             content.LastModifiedOnDate = DateTime.Now;
             ctrl.UpdateContent(content);
-            if (context.Index)
-            {
-                var module = OpenContentModuleConfig.Create(ModuleController.Instance.GetModule(context.ModuleId, -1, false), new PortalSettings(context.PortalId));
-                var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), context.Collection);
-                content.HydrateDefaultFields(indexConfig, module.Settings?.Manifest?.UsePublishTime ?? false);
-                LuceneController.Instance.Update(content, indexConfig);
-                LuceneController.Instance.Commit();
-            }
+            IndexContentItem(context, content, context.Collection, isUpdate: true);
             ClearUrlRewriterCache(context);
             Notify(context, data, "update");
         }
@@ -376,14 +364,7 @@ namespace Satrabel.OpenContent.Components.Datasource
                 };
                 ctrl.AddContent(content);
 
-                //Index the content item
-
-                if (context.Index)
-                {
-                    var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), "Submissions");
-                    LuceneController.Instance.Add(content, indexConfig);
-                    LuceneController.Instance.Commit();
-                }
+                IndexContentItem(context, content, "Submissions", isUpdate: false);
                 return FormUtils.FormSubmit(data as JObject, item?.Data?.DeepClone() as JObject);
             }
             return null;
@@ -483,6 +464,58 @@ namespace Satrabel.OpenContent.Components.Datasource
         private static void ClearUrlRewriterCache(DataSourceContext context)
         {
             UrlRewriter.UrlRulesCaching.Remove(context.PortalId, context.ModuleId);
+        }
+
+        /// <summary>
+        /// Shared Lucene write for Add/Update. Applies <see cref="OpenContentUtils.HydrateDefaultFields"/>
+        /// on both paths (previously only Update did), so new items get the same publish
+        /// defaults as a full module reindex.
+        /// </summary>
+        private static void IndexContentItem(DataSourceContext context, OpenContentInfo content, string collection, bool isUpdate)
+        {
+            if (!context.Index || content == null)
+            {
+                return;
+            }
+
+            try
+            {
+                var indexConfig = OpenContentUtils.GetIndexConfig(new FolderUri(context.TemplateFolder), collection);
+                var usePublishTime = false;
+                try
+                {
+                    var moduleInfo = ModuleController.Instance.GetModule(context.ModuleId, -1, false);
+                    if (moduleInfo != null)
+                    {
+                        var module = OpenContentModuleConfig.Create(moduleInfo, new PortalSettings(context.PortalId));
+                        usePublishTime = module.Settings?.Manifest?.UsePublishTime ?? false;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    App.Services.Logger.Error(
+                        $"OpenContent index: could not resolve UsePublishTime for moduleId={context.ModuleId}",
+                        ex);
+                }
+
+                content.HydrateDefaultFields(indexConfig, usePublishTime);
+                if (isUpdate)
+                {
+                    LuceneController.Instance.Update(content, indexConfig);
+                }
+                else
+                {
+                    LuceneController.Instance.Add(content, indexConfig);
+                }
+                LuceneController.Instance.Commit();
+            }
+            catch (Exception ex)
+            {
+                App.Services.Logger.Error(
+                    $"OpenContent Lucene {(isUpdate ? "Update" : "Add")} failed for moduleId={context.ModuleId}, contentId={content.ContentId}, collection={collection}. Item is saved in DB but the Lucene index may be incomplete; reindex the module.",
+                    ex);
+                throw;
+            }
         }
 
         #endregion
