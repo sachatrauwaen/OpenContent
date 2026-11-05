@@ -25,39 +25,64 @@ namespace Satrabel.OpenContent.Components
 {
     public static class OpenContentUtils
     {
+        /// <summary>
+        /// Fills missing publish defaults on the item JSON before Lucene indexing.
+        /// Must assign back via <see cref="OpenContentInfo.JsonAsJToken"/> setter:
+        /// the getter returns a DeepClone, so in-place edits on the getter result were discarded
+        /// (except the end-date time-adjust branch that already reassigned). That left Add/Update
+        /// Lucene docs without defaults until a full module reindex.
+        /// </summary>
         public static void HydrateDefaultFields(this OpenContentInfo content, FieldConfig indexConfig, bool usePublishTime = false)
         {
-            if (indexConfig.HasField(App.Config.FieldNamePublishStartDate)
-                   && content.JsonAsJToken != null && content.JsonAsJToken[App.Config.FieldNamePublishStartDate] == null)
+            if (content == null || indexConfig == null)
             {
-                content.JsonAsJToken[App.Config.FieldNamePublishStartDate] = DateTime.MinValue;
+                return;
             }
-            if (indexConfig.HasField(App.Config.FieldNamePublishEndDate)
-                && content.JsonAsJToken != null)
+
+            var json = content.JsonAsJToken as JObject;
+            if (json == null)
             {
-                if (content.JsonAsJToken[App.Config.FieldNamePublishEndDate] == null)
+                return;
+            }
+
+            var changed = false;
+
+            if (indexConfig.HasField(App.Config.FieldNamePublishStartDate)
+                   && json[App.Config.FieldNamePublishStartDate] == null)
+            {
+                json[App.Config.FieldNamePublishStartDate] = DateTime.MinValue;
+                changed = true;
+            }
+            if (indexConfig.HasField(App.Config.FieldNamePublishEndDate))
+            {
+                if (json[App.Config.FieldNamePublishEndDate] == null)
                 {
-                    content.JsonAsJToken[App.Config.FieldNamePublishEndDate] = DateTime.MaxValue;
+                    json[App.Config.FieldNamePublishEndDate] = DateTime.MaxValue;
+                    changed = true;
                 }
                 else
                 {
                     // if the enddata has no time,
                     // and we don't need to usePublishTime
                     // we add 23:59:59.999 as a time
-                    var t = content.JsonAsJToken[App.Config.FieldNamePublishEndDate].Value<DateTime>();
+                    var t = json[App.Config.FieldNamePublishEndDate].Value<DateTime>();
                     if (!usePublishTime && t.TimeOfDay.TotalMilliseconds == 0)
                     {
-                        var contentJToken = content.JsonAsJToken;
-                        contentJToken[App.Config.FieldNamePublishEndDate] = t.AddDays(1).AddMilliseconds(-1);
-                        content.JsonAsJToken = contentJToken;
+                        json[App.Config.FieldNamePublishEndDate] = t.AddDays(1).AddMilliseconds(-1);
+                        changed = true;
                     }
                 }
-
             }
             if (indexConfig.HasField(App.Config.FieldNamePublishStatus)
-                && content.JsonAsJToken != null && content.JsonAsJToken[App.Config.FieldNamePublishStatus] == null)
+                && json[App.Config.FieldNamePublishStatus] == null)
             {
-                content.JsonAsJToken[App.Config.FieldNamePublishStatus] = "published";
+                json[App.Config.FieldNamePublishStatus] = "published";
+                changed = true;
+            }
+
+            if (changed)
+            {
+                content.JsonAsJToken = json;
             }
         }
 
