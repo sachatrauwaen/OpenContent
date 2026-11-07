@@ -144,4 +144,46 @@
   <data name="lDetailPage.Text" xml:space="preserve">
     <value>Detailseite</value>
   </data>
+  <data name="cmdCancel.Text" xml:space="preserve">
+    <value>Abbrechen</value>
+  </data>
+  <data name="cmdSaveClose.Text" xml:space="preserve">
+    <value>Speichern &amp; Schließen</value>
+  </data>
+  <data name="liCreateNewTemplate.Text" xml:space="preserve">
+    <value>Neuen Vorlagenordner erstellen</value>
+  </data>
+  <data name="liFromSite.Text" xml:space="preserve">
+    <value>Website</value>
+  </data>
+  <data name="liFromWeb.Text" xml:space="preserve">
+    <value>Web (github)</value>
+  </data>
+  <data name="liOtherModule.Text" xml:space="preserve">
+    <value>Anderes Modul</value>
+  </data>
+  <data name="liThisModule.Text" xml:space="preserve">
+    <value>Dieses Modul</value>
+  </data>
+  <data name="liUseExistingTemplate.Text" xml:space="preserve">
+    <value>Bestehende Vorlage verwenden</value>
+  </data>
+  <data name="liOtherPortal.Text" xml:space="preserve">
+    <value>Anderes Portal</value>
+  </data>
+  <data name="lPortals.Text" xml:space="preserve">
+    <value>Portal</value>
+  </data>
+  <data name="lAddNewContent.Text" xml:space="preserve">
+    <value>Neuen Inhalt hinzufügen</value>
+  </data>
+  <data name="lUseExistingContent.Text" xml:space="preserve">
+    <value>Bestehenden Inhalt verwenden</value>
+  </data>
+  <data name="lModule.Text" xml:space="preserve">
+    <value>Modul</value>
+  </data>
+  <data name="lTab.Text" xml:space="preserve">
+    <value>Seite</value>
+  </data>
 </root>
