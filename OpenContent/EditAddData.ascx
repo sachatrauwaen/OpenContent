@@ -2,7 +2,7 @@
 <%@ Import Namespace="Newtonsoft.Json" %>
 
 <asp:Panel ID="ScopeWrapper" runat="server">
-    <div class="container-fluid">
+    <div class="container-fluid <%=AlpacaContext.BuilderV2 ? "lama-editor" : "alpaca-editor" %>">
         <div id="field1" class="alpaca"></div>
     </div>
     <ul class="dnnActions dnnClear" style="display: block; padding-left: 35%">
