@@ -652,6 +652,8 @@ namespace Satrabel.OpenContent.Components.Render
                             LogContext.Log(_module.ViewModule.ModuleId, logKey, "model", model);
                         }
                         HandlebarsEngine hbEngine = new HandlebarsEngine();
+                        if (files != null)
+                            return hbEngine.Execute(page, files, _renderinfo.Template.ManifestFolderUri.UrlFolder, model);
                         return hbEngine.Execute(page, template, model);
                     }
                 }
