@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -342,6 +343,8 @@ namespace Satrabel.OpenContent.Components.Render
                 context["IsEditMode"] = IsEditMode;
                 context["PortalId"] = _portalId;
                 context["MainUrl"] = _module.GetUrl(_detailTabId, GetCurrentCultureCode());
+                context["Culture"] = GetCurrentCultureCode(); // e.g. nl-NL
+                context["Language"] = new CultureInfo(GetCurrentCultureCode()).TwoLetterISOLanguageName; // e.g. nl
                 context["HomeDirectory"] = _module.HomeDirectory;
                 context["HTTPAlias"] = _module.HostName;
                 context["PortalName"] = _module.PortalName;
